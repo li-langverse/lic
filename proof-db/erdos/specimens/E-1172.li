@@ -1,10 +1,22 @@
-# Catalog: E-1172
-# Statement: Establish whether the following are true assuming the generalised continuum hypothesis:\[\omega_3 \to (\omega_2,\omega_1+2)^2,\]\[\omega_3\to (\omega_2+\omega_1,\omega_2+\omega)^2,\]\[\omega_2\to (\omega_1^{\omega+2}+2, \omega_1+2)^2.\]Esta
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1172: Establish whether the following are true assuming the generalised continuum hypothesis:\[\omega_3 \to (\omega_2,\omega_1+2)^2,\]\[\omega_3\to (\omega_2+\omega_1,\omega_2+\omega)^2,\]\[\omega_2\to (\omega_1^{\omega+2}+2, \omega_1+2)^2.\]Establish whether the following is consistent with the generalised continuum hypothesis:\[\omega_2\to (\omega_1+\omega)_2^2,\]or even $\omega_2 \to (\xi)_2^2$ for all $\xi<\omega_2$.
+# erdos_number: 1172
+# erdos_status: open
+# priority_tier: P2
+# tags: ramsey_theory, set_theory
 
-def formal_target_e_1172() -> int
+def erdos_e1172_establish_whether_the_following_are_true() -> int
+  requires true
+  ensures result == 0  # open: E-1172
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1172_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

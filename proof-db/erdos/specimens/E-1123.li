@@ -1,10 +1,22 @@
-# Catalog: E-1123
-# Statement: Let $B_1$ be the Boolean algebra of sets of integers modulo sets of density $0$ (that is, in which two sets are equivalent if and only if they differ by a set of density $0$) and let $B_2$ be the Boolean algebra of sets modulo sets of logar
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1123: Let $B_1$ be the Boolean algebra of sets of integers modulo sets of density $0$ (that is, in which two sets are equivalent if and only if they differ by a set of density $0$) and let $B_2$ be the Boolean algebra of sets modulo sets of logarithmic density $0$. Prove that $B_1$ and $B_2$ are not isomorphic.
+# erdos_number: 1123
+# erdos_status: open
+# priority_tier: P2
+# tags: algebra
 
-def formal_target_e_1123() -> int
+def erdos_e1123_let_b_1_be_the_boolean_algebra_of_sets_o() -> int
+  requires true
+  ensures result == 0  # open: E-1123
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1123_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

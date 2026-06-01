@@ -1,10 +1,22 @@
-# Catalog: E-902
-# Statement: Let $f(n)$ be minimal such that there is a tournament (a complete directed graph) on $f(n)$ vertices such that every set of $n$ vertices is dominated by at least one other vertex. Estimate $f(n)$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-902: Let $f(n)$ be minimal such that there is a tournament (a complete directed graph) on $f(n)$ vertices such that every set of $n$ vertices is dominated by at least one other vertex. Estimate $f(n)$.
+# erdos_number: 902
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_902() -> int
+def erdos_e902_let_f_n_be_minimal_such_that_there_is_a() -> int
+  requires true
+  ensures result == 0  # open: E-902
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e902_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

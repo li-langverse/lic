@@ -1,10 +1,22 @@
-# Catalog: E-509
-# Statement: Let $f(z)\in\mathbb{C}[z]$ be a monic non-constant polynomial. Can the set\[\{ z\in \mathbb{C} : \lvert f(z)\rvert \leq 1\}\]be covered by a set of circles the sum of whose radii is $\leq 2$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-509: Let $f(z)\in\mathbb{C}[z]$ be a monic non-constant polynomial. Can the set\[\{ z\in \mathbb{C} : \lvert f(z)\rvert \leq 1\}\]be covered by a set of circles the sum of whose radii is $\leq 2$?
+# erdos_number: 509
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis, polynomials
 
-def formal_target_e_509() -> int
+def erdos_e509_let_f_z_in_mathbb_c_z_be_a_monic_non_con() -> int
+  requires true
+  ensures result == 0  # open: E-509
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e509_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

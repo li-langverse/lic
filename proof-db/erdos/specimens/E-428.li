@@ -1,10 +1,22 @@
-# Catalog: E-428
-# Statement: Is there a set $A\subseteq \mathbb{N}$ such that, for infinitely many $n$, all of $n-a$ are prime for all $a\in A$ with $0<a<n$ and\[\liminf\frac{\lvert A\cap [1,x]\rvert}{\pi(x)}>0?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-428: Is there a set $A\subseteq \mathbb{N}$ such that, for infinitely many $n$, all of $n-a$ are prime for all $a\in A$ with $0<a<n$ and\[\liminf\frac{\lvert A\cap [1,x]\rvert}{\pi(x)}>0?\]
+# erdos_number: 428
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
 
-def formal_target_e_428() -> int
+def erdos_e428_is_there_a_set_a_subseteq_mathbb_n_such() -> int
+  requires true
+  ensures result == 0  # open: E-428
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e428_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-577
-# Statement: If $G$ is a graph with $4k$ vertices and minimum degree at least $2k$ then $G$ contains $k$ vertex-disjoint $4$-cycles.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-577: If $G$ is a graph with $4k$ vertices and minimum degree at least $2k$ then $G$ contains $k$ vertex-disjoint $4$-cycles.
+# erdos_number: 577
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_577() -> int
+def erdos_e577_if_g_is_a_graph_with_4k_vertices_and_min() -> int
+  requires true
+  ensures result == 0  # open: E-577
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e577_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

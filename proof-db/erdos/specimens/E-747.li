@@ -1,10 +1,22 @@
-# Catalog: E-747
-# Statement: How large should $\ell(n)$ be such that, almost surely, a random $3$-uniform hypergraph on $3n$ vertices with $\ell(n)$ edges must contain $n$ vertex-disjoint edges?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-747: How large should $\ell(n)$ be such that, almost surely, a random $3$-uniform hypergraph on $3n$ vertices with $\ell(n)$ edges must contain $n$ vertex-disjoint edges?
+# erdos_number: 747
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics, hypergraphs
 
-def formal_target_e_747() -> int
+def erdos_e747_how_large_should_ell_n_be_such_that_almo() -> int
+  requires true
+  ensures result == 0  # open: E-747
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e747_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

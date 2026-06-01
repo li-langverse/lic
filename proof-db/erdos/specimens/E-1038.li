@@ -1,10 +1,22 @@
-# Catalog: E-1038
-# Statement: Determine the infimum and supremum of\[\lvert \{ x\in \mathbb{R} : \lvert f(x)\rvert < 1\}\rvert\]as $f\in \mathbb{R}[x]$ ranges over all non-constant monic polynomials, all of whose roots are real and in the interval $[-1,1]$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1038: Determine the infimum and supremum of\[\lvert \{ x\in \mathbb{R} : \lvert f(x)\rvert < 1\}\rvert\]as $f\in \mathbb{R}[x]$ ranges over all non-constant monic polynomials, all of whose roots are real and in the interval $[-1,1]$.
+# erdos_number: 1038
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis
 
-def formal_target_e_1038() -> int
+def erdos_e1038_determine_the_infimum_and_supremum_of_lv() -> int
+  requires true
+  ensures result == 0  # open: E-1038
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1038_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

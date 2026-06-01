@@ -1,10 +1,22 @@
-# Catalog: E-894
-# Statement: Let $A=\{n_1<n_2<\cdots\}\subset \mathbb{N}$ be a lacunary sequence (so there exists some $\epsilon>0$ with $n_{k+1}\geq (1+\epsilon)n_k$ for all $k$). Is it true that there must exist a finite colouring of $\mathbb{N}$ with no monochromati
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-894: Let $A=\{n_1<n_2<\cdots\}\subset \mathbb{N}$ be a lacunary sequence (so there exists some $\epsilon>0$ with $n_{k+1}\geq (1+\epsilon)n_k$ for all $k$). Is it true that there must exist a finite colouring of $\mathbb{N}$ with no monochromatic solutions to $a-b\in A$?
+# erdos_number: 894
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory, ramsey_theory
 
-def formal_target_e_894() -> int
+def erdos_e894_let_a_n_1_n_2_cdots_subset_mathbb_n_be_a() -> int
+  requires true
+  ensures result == 0  # open: E-894
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e894_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

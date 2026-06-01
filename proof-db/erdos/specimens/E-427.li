@@ -1,10 +1,22 @@
-# Catalog: E-427
-# Statement: Is it true that, for every $n$ and $d$, there exists $k$ such that\[d \mid p_{n+1}+\cdots+p_{n+k},\]where $p_r$ denotes the $r$th prime?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-427: Is it true that, for every $n$ and $d$, there exists $k$ such that\[d \mid p_{n+1}+\cdots+p_{n+k},\]where $p_r$ denotes the $r$th prime?
+# erdos_number: 427
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory, primes
 
-def formal_target_e_427() -> int
+def erdos_e427_is_it_true_that_for_every_n_and_d_there() -> int
+  requires true
+  ensures result == 0  # open: E-427
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e427_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

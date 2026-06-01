@@ -1,10 +1,22 @@
-# Catalog: E-24
-# Statement: Does every triangle-free graph on $5n$ vertices contain at most $n^5$ copies of $C_5$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-24: Does every triangle-free graph on $5n$ vertices contain at most $n^5$ copies of $C_5$?
+# erdos_number: 24
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_24() -> int
+def erdos_e24_does_every_triangle_free_graph_on_5n_ver() -> int
+  requires true
+  ensures result == 0  # open: E-24
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e24_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

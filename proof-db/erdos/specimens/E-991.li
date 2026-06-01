@@ -1,10 +1,22 @@
-# Catalog: E-991
-# Statement: Suppose $A=\{w_1,\ldots,w_n\}\subset S^2$ maximises\[\prod_{i<j}\lvert w_i-w_j\rvert\]over all possible sets of size $n$. Is it true that\[\max_C\lvert \lvert A\cap C\rvert - \alpha_C n\rvert =o(n),\]where the maximum is taken over all sphe
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-991: Suppose $A=\{w_1,\ldots,w_n\}\subset S^2$ maximises\[\prod_{i<j}\lvert w_i-w_j\rvert\]over all possible sets of size $n$. Is it true that\[\max_C\lvert \lvert A\cap C\rvert - \alpha_C n\rvert =o(n),\]where the maximum is taken over all spherical caps $C$ and $\alpha_C$ is the area of $C$ (normalised so that the entire sphere has area $1$)?
+# erdos_number: 991
+# erdos_status: proved
+# priority_tier: P2
+# tags: discrepancy
 
-def formal_target_e_991() -> int
+def erdos_e991_suppose_a_w_1_ldots_w_n_subset_s_2_maxim() -> int
+  requires true
+  ensures result == 0  # open: E-991
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e991_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

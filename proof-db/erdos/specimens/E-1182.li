@@ -1,10 +1,22 @@
-# Catalog: E-1182
-# Statement: Let $f(n)$ be maximal such that there is a connected graph $G$ with $n$ vertices and $f(n)$ edges such that\[R(K_3,G)= 2n-1.\]Let $F(n)$ be maximal such that every connected graph $G$ with $n$ vertices and $\leq F(n)$ edges has\[R(K_3,G)= 2
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1182: Let $f(n)$ be maximal such that there is a connected graph $G$ with $n$ vertices and $f(n)$ edges such that\[R(K_3,G)= 2n-1.\]Let $F(n)$ be maximal such that every connected graph $G$ with $n$ vertices and $\leq F(n)$ edges has\[R(K_3,G)= 2n-1.\]Estimate $f(n)$ and $F(n)$. In particular, is it true that $F(n)/n\to \infty$?
+# erdos_number: 1182
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
 
-def formal_target_e_1182() -> int
+def erdos_e1182_let_f_n_be_maximal_such_that_there_is_a() -> int
+  requires true
+  ensures result == 0  # open: E-1182
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1182_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

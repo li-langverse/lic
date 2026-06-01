@@ -1,10 +1,22 @@
-# Catalog: E-1159
-# Statement: Determine whether there exists a constant $C>1$ such that the following holds. Let $P$ be a finite projective plane . Must there exist a set of points $S$ such that $1\leq \lvert S\cap \ell\rvert \leq C$ for all lines $\ell$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1159: Determine whether there exists a constant $C>1$ such that the following holds. Let $P$ be a finite projective plane . Must there exist a set of points $S$ such that $1\leq \lvert S\cap \ell\rvert \leq C$ for all lines $\ell$?
+# erdos_number: 1159
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics
 
-def formal_target_e_1159() -> int
+def erdos_e1159_determine_whether_there_exists_a_constan() -> int
+  requires true
+  ensures result == 0  # open: E-1159
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1159_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

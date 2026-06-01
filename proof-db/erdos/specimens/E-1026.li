@@ -1,10 +1,22 @@
-# Catalog: E-1026
-# Statement: Let $x_1,\ldots,x_n$ be a sequence of distinct real numbers. Determine\[\max\left(\sum x_{i_r}\right),\]where the maximum is taken over all monotonic subsequences.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1026: Let $x_1,\ldots,x_n$ be a sequence of distinct real numbers. Determine\[\max\left(\sum x_{i_r}\right),\]where the maximum is taken over all monotonic subsequences.
+# erdos_number: 1026
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics
 
-def formal_target_e_1026() -> int
+def erdos_e1026_let_x_1_ldots_x_n_be_a_sequence_of_disti() -> int
+  requires true
+  ensures result == 0  # open: E-1026
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1026_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

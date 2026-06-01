@@ -1,10 +1,22 @@
-# Catalog: E-757
-# Statement: Let $A\subset \mathbb{R}$ be a set of size $n$ such that every subset $B\subseteq A$ with $\lvert B\rvert =4$ has $\lvert B-B\rvert\geq 11$. Find the best constant $c>0$ such that $A$ must always contain a Sidon set of size $\geq cn$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-757: Let $A\subset \mathbb{R}$ be a set of size $n$ such that every subset $B\subseteq A$ with $\lvert B\rvert =4$ has $\lvert B-B\rvert\geq 11$. Find the best constant $c>0$ such that $A$ must always contain a Sidon set of size $\geq cn$.
+# erdos_number: 757
+# erdos_status: open
+# priority_tier: P2
+# tags: distances, geometry, sidon_sets
 
-def formal_target_e_757() -> int
+def erdos_e757_let_a_subset_mathbb_r_be_a_set_of_size_n() -> int
+  requires true
+  ensures result == 0  # open: E-757
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e757_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

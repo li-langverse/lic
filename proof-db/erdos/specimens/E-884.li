@@ -1,10 +1,22 @@
-# Catalog: E-884
-# Statement: Is it true that, for any $n$, if $d_1<\cdots <d_t$ are the divisors of $n$, then\[\sum_{1\leq i<j\leq t}\frac{1}{d_j-d_i} \ll 1+\sum_{1\leq i<t}\frac{1}{d_{i+1}-d_i},\]where the implied constant is absolute?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-884: Is it true that, for any $n$, if $d_1<\cdots <d_t$ are the divisors of $n$, then\[\sum_{1\leq i<j\leq t}\frac{1}{d_j-d_i} \ll 1+\sum_{1\leq i<t}\frac{1}{d_{i+1}-d_i},\]where the implied constant is absolute?
+# erdos_number: 884
+# erdos_status: open
+# priority_tier: P2
+# tags: divisors, number_theory
 
-def formal_target_e_884() -> int
+def erdos_e884_is_it_true_that_for_any_n_if_d_1_cdots_d() -> int
+  requires true
+  ensures result == 0  # open: E-884
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e884_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-1215
-# Statement: Does there exist a constant $C$ such that for every polynomial $P$ with $P(0)=1$, all of whose roots are on the unit circle, there exists a path in\[\{ z: \lvert P(z)\rvert < 1\}\]which connects $0$ to the unit circle of length at most $C$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1215: Does there exist a constant $C$ such that for every polynomial $P$ with $P(0)=1$, all of whose roots are on the unit circle, there exists a path in\[\{ z: \lvert P(z)\rvert < 1\}\]which connects $0$ to the unit circle of length at most $C$?
+# erdos_number: 1215
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis
 
-def formal_target_e_1215() -> int
+def erdos_e1215_does_there_exist_a_constant_c_such_that() -> int
+  requires true
+  ensures result == 0  # open: E-1215
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1215_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

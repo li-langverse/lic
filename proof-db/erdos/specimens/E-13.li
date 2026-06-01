@@ -1,10 +1,22 @@
-# Catalog: E-13
-# Statement: Let $A\subseteq \{1,\ldots,N\}$ be such that there are no $a,b,c\in A$ such that $a\mid(b+c)$ and $a<\min(b,c)$. Is it true that $\lvert A\rvert\leq N/3+O(1)$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-13: Let $A\subseteq \{1,\ldots,N\}$ be such that there are no $a,b,c\in A$ such that $a\mid(b+c)$ and $a<\min(b,c)$. Is it true that $\lvert A\rvert\leq N/3+O(1)$?
+# erdos_number: 13
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_13() -> int
+def erdos_e13_let_a_subseteq_1_ldots_n_be_such_that_th() -> int
+  requires true
+  ensures result == 0  # open: E-13
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e13_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-856
-# Statement: Let $k\geq 3$ and $f_k(N)$ be the maximum value of $\sum_{n\in A}\frac{1}{n}$, where $A$ ranges over all subsets of $\{1,\ldots,N\}$ which contain no subset of size $k$ with the same pairwise least common multiple. Estimate $f_k(N)$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-856: Let $k\geq 3$ and $f_k(N)$ be the maximum value of $\sum_{n\in A}\frac{1}{n}$, where $A$ ranges over all subsets of $\{1,\ldots,N\}$ which contain no subset of size $k$ with the same pairwise least common multiple. Estimate $f_k(N)$.
+# erdos_number: 856
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_856() -> int
+def erdos_e856_let_k_geq_3_and_f_k_n_be_the_maximum_val() -> int
+  requires true
+  ensures result == 0  # open: E-856
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e856_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

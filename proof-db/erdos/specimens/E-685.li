@@ -1,10 +1,22 @@
-# Catalog: E-685
-# Statement: Let $\epsilon>0$ and $n$ be large depending on $\epsilon$. Is it true that for all $n^\epsilon<k\leq n^{1-\epsilon}$ the number of distinct prime divisors of $\binom{n}{k}$ is\[(1+o(1))k\sum_{k<p<n}\frac{1}{p}?\]Or perhaps even when $k \geq
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-685: Let $\epsilon>0$ and $n$ be large depending on $\epsilon$. Is it true that for all $n^\epsilon<k\leq n^{1-\epsilon}$ the number of distinct prime divisors of $\binom{n}{k}$ is\[(1+o(1))k\sum_{k<p<n}\frac{1}{p}?\]Or perhaps even when $k \geq (\log n)^c$?
+# erdos_number: 685
+# erdos_status: open
+# priority_tier: P2
+# tags: binomial_coefficients, number_theory, primes
 
-def formal_target_e_685() -> int
+def erdos_e685_let_epsilon_0_and_n_be_large_depending_o() -> int
+  requires true
+  ensures result == 0  # open: E-685
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e685_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

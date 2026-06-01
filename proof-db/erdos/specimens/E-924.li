@@ -1,10 +1,22 @@
-# Catalog: E-924
-# Statement: Let $k\geq 2$ and $l\geq 3$. Is there a graph $G$ which contains no $K_{l+1}$ such that every $k$-colouring of the edges of $G$ contains a monochromatic copy of $K_l$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-924: Let $k\geq 2$ and $l\geq 3$. Is there a graph $G$ which contains no $K_{l+1}$ such that every $k$-colouring of the edges of $G$ contains a monochromatic copy of $K_l$?
+# erdos_number: 924
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
 
-def formal_target_e_924() -> int
+def erdos_e924_let_k_geq_2_and_l_geq_3_is_there_a_graph() -> int
+  requires true
+  ensures result == 0  # open: E-924
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e924_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

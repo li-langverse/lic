@@ -1,10 +1,22 @@
-# Catalog: E-37
-# Statement: We say that $A\subset \mathbb{N}$ is an essential component if $d_s(A+B)>d_s(B)$ for every $B\subset \mathbb{N}$ with $0<d_s(B)<1$ where $d_s$ is the Schnirelmann density . Can a lacunary set $A\subset\mathbb{N}$ be an essential component?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-37: We say that $A\subset \mathbb{N}$ is an essential component if $d_s(A+B)>d_s(B)$ for every $B\subset \mathbb{N}$ with $0<d_s(B)<1$ where $d_s$ is the Schnirelmann density . Can a lacunary set $A\subset\mathbb{N}$ be an essential component?
+# erdos_number: 37
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, number_theory
 
-def formal_target_e_37() -> int
+def erdos_e37_we_say_that_a_subset_mathbb_n_is_an_esse() -> int
+  requires true
+  ensures result == 0  # open: E-37
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e37_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

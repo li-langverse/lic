@@ -1,10 +1,22 @@
-# Catalog: E-1189
-# Statement: Call a set of distinct integers $1<n_1<\cdots<n_k$ a covering set if there is a choice of $a_i\pmod{n_i}$ for $1\leq i\leq k$ such that every integer satisfies at least one of these congruences. A set is an irreducible covering set if no pr
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1189: Call a set of distinct integers $1<n_1<\cdots<n_k$ a covering set if there is a choice of $a_i\pmod{n_i}$ for $1\leq i\leq k$ such that every integer satisfies at least one of these congruences. A set is an irreducible covering set if no proper subset is a covering set. How many irreducible covering sets of size $k$ are there? What is the minimum and maximum that $n_k$ can be? Determine or estimate $\max \sum\frac{1}{n_i}$, where the maximum ranges over all irreducible covering sets of size $k$. Are there infinitely many $n$ such that the divisors of $n$ (which are $>1$) form an irreducible covering set?
+# erdos_number: 1189
+# erdos_status: open
+# priority_tier: P2
+# tags: covering_systems, number_theory
 
-def formal_target_e_1189() -> int
+def erdos_e1189_call_a_set_of_distinct_integers_1_n_1_cd() -> int
+  requires true
+  ensures result == 0  # open: E-1189
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1189_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

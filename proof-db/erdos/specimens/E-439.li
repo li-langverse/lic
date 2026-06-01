@@ -1,10 +1,22 @@
-# Catalog: E-439
-# Statement: Is it true that, in any finite colouring of the integers, there must be two integers $x\neq y$ of the same colour such that $x+y$ is a square? What about a $k$th power?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-439: Is it true that, in any finite colouring of the integers, there must be two integers $x\neq y$ of the same colour such that $x+y$ is a square? What about a $k$th power?
+# erdos_number: 439
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory, ramsey_theory
 
-def formal_target_e_439() -> int
+def erdos_e439_is_it_true_that_in_any_finite_colouring() -> int
+  requires true
+  ensures result == 0  # open: E-439
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e439_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

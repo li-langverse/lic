@@ -1,10 +1,22 @@
-# Catalog: E-698
-# Statement: Is there some $h(n)\to \infty$ such that for all $2\leq i<j\leq n/2$\[\textrm{gcd}\left( \binom{n}{i},\binom{n}{j}\right) \geq h(n)?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-698: Is there some $h(n)\to \infty$ such that for all $2\leq i<j\leq n/2$\[\textrm{gcd}\left( \binom{n}{i},\binom{n}{j}\right) \geq h(n)?\]
+# erdos_number: 698
+# erdos_status: proved
+# priority_tier: P2
+# tags: binomial_coefficients, number_theory
 
-def formal_target_e_698() -> int
+def erdos_e698_is_there_some_h_n_to_infty_such_that_for() -> int
+  requires true
+  ensures result == 0  # open: E-698
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e698_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

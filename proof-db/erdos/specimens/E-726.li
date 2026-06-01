@@ -1,10 +1,22 @@
-# Catalog: E-726
-# Statement: As $n\to \infty$ ranges over integers\[\sum_{p\leq n}1_{n\in (p/2,p)\pmod{p}}\frac{1}{p}\sim \frac{\log\log n}{2}.\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-726: As $n\to \infty$ ranges over integers\[\sum_{p\leq n}1_{n\in (p/2,p)\pmod{p}}\frac{1}{p}\sim \frac{\log\log n}{2}.\]
+# erdos_number: 726
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_726() -> int
+def erdos_e726_as_n_to_infty_ranges_over_integers_sum_p() -> int
+  requires true
+  ensures result == 0  # open: E-726
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e726_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

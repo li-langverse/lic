@@ -1,10 +1,22 @@
-# Catalog: E-857
-# Statement: Let $m=m(n,k)$ be minimal such that in any collection of sets $A_1,\ldots,A_m\subseteq \{1,\ldots,n\}$ there must exist a sunflower of size $k$ - that is, some collection of $k$ of the $A_i$ which pairwise have the same intersection. Estima
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-857: Let $m=m(n,k)$ be minimal such that in any collection of sets $A_1,\ldots,A_m\subseteq \{1,\ldots,n\}$ there must exist a sunflower of size $k$ - that is, some collection of $k$ of the $A_i$ which pairwise have the same intersection. Estimate $m(n,k)$, or even better, give an asymptotic formula.
+# erdos_number: 857
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics
 
-def formal_target_e_857() -> int
+def erdos_e857_let_m_m_n_k_be_minimal_such_that_in_any() -> int
+  requires true
+  ensures result == 0  # open: E-857
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e857_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

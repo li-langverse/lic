@@ -1,10 +1,22 @@
-# Catalog: E-78
-# Statement: Are there infinitely many n such that the sum of distinct powers of 2 dividing n equals a prescribed value?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-78: Are there infinitely many n such that the sum of distinct powers of 2 dividing n equals a prescribed value?
+# erdos_number: 78
+# erdos_status: open
+# priority_tier: P3
+# tags: binary, divisors
 
-def formal_target_e_78() -> int
+def erdos_e78_are_there_infinitely_many_n_such_that_th() -> int
+  requires true
+  ensures result == 0  # open: E-78
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e78_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

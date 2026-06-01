@@ -1,10 +1,22 @@
-# Catalog: E-392
-# Statement: Let $A(n)$ denote the least value of $t$ such that\[n!=a_1\cdots a_t\]with $a_1\leq \cdots \leq a_t\leq n^2$. Is it true that\[A(n)=\frac{n}{2}-\frac{n}{2\log n}+o\left(\frac{n}{\log n}\right)?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-392: Let $A(n)$ denote the least value of $t$ such that\[n!=a_1\cdots a_t\]with $a_1\leq \cdots \leq a_t\leq n^2$. Is it true that\[A(n)=\frac{n}{2}-\frac{n}{2\log n}+o\left(\frac{n}{\log n}\right)?\]
+# erdos_number: 392
+# erdos_status: proved
+# priority_tier: P2
+# tags: factorials, number_theory
 
-def formal_target_e_392() -> int
+def erdos_e392_let_a_n_denote_the_least_value_of_t_such() -> int
+  requires true
+  ensures result == 0  # open: E-392
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e392_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

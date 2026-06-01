@@ -1,10 +1,22 @@
-# Catalog: E-265
-# Statement: Let $1\leq a_1<a_2<\cdots$ be an increasing sequence of integers. How fast can $a_n\to \infty$ grow if\[\sum\frac{1}{a_n}\quad\textrm{and}\quad\sum\frac{1}{a_n-1}\]are both rational?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-265: Let $1\leq a_1<a_2<\cdots$ be an increasing sequence of integers. How fast can $a_n\to \infty$ grow if\[\sum\frac{1}{a_n}\quad\textrm{and}\quad\sum\frac{1}{a_n-1}\]are both rational?
+# erdos_number: 265
+# erdos_status: open
+# priority_tier: P2
+# tags: irrationality
 
-def formal_target_e_265() -> int
+def erdos_e265_let_1_leq_a_1_a_2_cdots_be_an_increasing() -> int
+  requires true
+  ensures result == 0  # open: E-265
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e265_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

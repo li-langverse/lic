@@ -1,10 +1,22 @@
-# Catalog: E-937
-# Statement: Are there infinitely many four-term arithmetic progressions of coprime powerful numbers (i.e. if $p\mid n$ then $p^2\mid n$)?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-937: Are there infinitely many four-term arithmetic progressions of coprime powerful numbers (i.e. if $p\mid n$ then $p^2\mid n$)?
+# erdos_number: 937
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory, powerful
 
-def formal_target_e_937() -> int
+def erdos_e937_are_there_infinitely_many_four_term_arit() -> int
+  requires true
+  ensures result == 0  # open: E-937
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e937_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

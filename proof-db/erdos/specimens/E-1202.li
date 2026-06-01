@@ -1,10 +1,22 @@
-# Catalog: E-1202
-# Statement: Let $\epsilon,\eta>0$. Does there exist a $k$ such that, given any set of $k$ primes $p_1<\cdots<p_k<n^{1-\epsilon}$, each with a set $A_i$ of $\frac{p_i-1}{2}$ many congruence classes modulo $p_i$, the number of $m\leq n$ such that $m\not\
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1202: Let $\epsilon,\eta>0$. Does there exist a $k$ such that, given any set of $k$ primes $p_1<\cdots<p_k<n^{1-\epsilon}$, each with a set $A_i$ of $\frac{p_i-1}{2}$ many congruence classes modulo $p_i$, the number of $m\leq n$ such that $m\not\in A_i\pmod{p_i}$ for all $i$ is at most $\epsilon n$?
+# erdos_number: 1202
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
 
-def formal_target_e_1202() -> int
+def erdos_e1202_let_epsilon_eta_0_does_there_exist_a_k_s() -> int
+  requires true
+  ensures result == 0  # open: E-1202
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1202_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-929
-# Statement: Let $k\geq 2$ be large and let $S(k)$ be the minimal $x$ such that there is a positive density set of $n$ where\[n+1,n+2,\ldots,n+k\]are all divisible by primes $\leq x$. Estimate $S(k)$ - in particular, is it true that $S(k)\geq k^{1-o(1)}
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-929: Let $k\geq 2$ be large and let $S(k)$ be the minimal $x$ such that there is a positive density set of $n$ where\[n+1,n+2,\ldots,n+k\]are all divisible by primes $\leq x$. Estimate $S(k)$ - in particular, is it true that $S(k)\geq k^{1-o(1)}$?
+# erdos_number: 929
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_929() -> int
+def erdos_e929_let_k_geq_2_be_large_and_let_s_k_be_the() -> int
+  requires true
+  ensures result == 0  # open: E-929
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e929_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

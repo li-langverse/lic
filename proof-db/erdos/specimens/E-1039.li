@@ -1,10 +1,22 @@
-# Catalog: E-1039
-# Statement: Let $f(z)=\prod_{i=1}^n(z-z_i)\in \mathbb{C}[z]$ with $\lvert z_i\rvert \leq 1$ for all $i$. Let $\rho(f)$ be the radius of the largest disc which is contained in $\{z: \lvert f(z)\rvert< 1\}$. Determine the behaviour of $\rho(f)$. In parti
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1039: Let $f(z)=\prod_{i=1}^n(z-z_i)\in \mathbb{C}[z]$ with $\lvert z_i\rvert \leq 1$ for all $i$. Let $\rho(f)$ be the radius of the largest disc which is contained in $\{z: \lvert f(z)\rvert< 1\}$. Determine the behaviour of $\rho(f)$. In particular, is it always true that $\rho(f)\gg 1/n$?
+# erdos_number: 1039
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis, polynomials
 
-def formal_target_e_1039() -> int
+def erdos_e1039_let_f_z_prod_i_1_n_z_z_i_in_mathbb_c_z_w() -> int
+  requires true
+  ensures result == 0  # open: E-1039
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1039_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

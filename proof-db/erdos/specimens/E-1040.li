@@ -1,10 +1,22 @@
-# Catalog: E-1040
-# Statement: Let $F\subseteq \mathbb{C}$ be a closed infinite set, and let $\mu(F)$ be the infimum of\[\lvert \{ z: \lvert f(z)\rvert < 1\}\rvert,\]as $f$ ranges over all polynomials of the shape $\prod (z-z_i)$ with $z_i\in F$. Is $\mu(F)$ determined b
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1040: Let $F\subseteq \mathbb{C}$ be a closed infinite set, and let $\mu(F)$ be the infimum of\[\lvert \{ z: \lvert f(z)\rvert < 1\}\rvert,\]as $f$ ranges over all polynomials of the shape $\prod (z-z_i)$ with $z_i\in F$. Is $\mu(F)$ determined by the transfinite diameter of $F$? In particular, is $\mu(F)=0$ whenever the transfinite diameter of $F$ is $\geq 1$?
+# erdos_number: 1040
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis
 
-def formal_target_e_1040() -> int
+def erdos_e1040_let_f_subseteq_mathbb_c_be_a_closed_infi() -> int
+  requires true
+  ensures result == 0  # open: E-1040
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1040_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

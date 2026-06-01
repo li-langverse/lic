@@ -1,10 +1,22 @@
-# Catalog: E-1201
-# Statement: Is it true that for every $\epsilon,\eta>0$ there exists a $k$ such that the density of $n$ for which\[P(n(n+1)\cdots(n+k))>n^{1-\epsilon}\]is at least $1-\eta$ (where $P(m)$ is the greatest prime divisor of $m$)?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1201: Is it true that for every $\epsilon,\eta>0$ there exists a $k$ such that the density of $n$ for which\[P(n(n+1)\cdots(n+k))>n^{1-\epsilon}\]is at least $1-\eta$ (where $P(m)$ is the greatest prime divisor of $m$)?
+# erdos_number: 1201
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
 
-def formal_target_e_1201() -> int
+def erdos_e1201_is_it_true_that_for_every_epsilon_eta_0() -> int
+  requires true
+  ensures result == 0  # open: E-1201
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1201_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

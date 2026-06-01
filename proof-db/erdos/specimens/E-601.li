@@ -1,10 +1,22 @@
-# Catalog: E-601
-# Statement: For which limit ordinals $\alpha$ is it true that if $G$ is a graph with vertex set $\alpha$ then $G$ must have either an infinite path or independent set on a set of vertices with order type $\alpha$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-601: For which limit ordinals $\alpha$ is it true that if $G$ is a graph with vertex set $\alpha$ then $G$ must have either an infinite path or independent set on a set of vertices with order type $\alpha$?
+# erdos_number: 601
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, set_theory
 
-def formal_target_e_601() -> int
+def erdos_e601_for_which_limit_ordinals_alpha_is_it_tru() -> int
+  requires true
+  ensures result == 0  # open: E-601
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e601_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

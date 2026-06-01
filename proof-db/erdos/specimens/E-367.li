@@ -1,10 +1,22 @@
-# Catalog: E-367
-# Statement: Let $B_2(n)$ be the $2$-full part of $n$ (that is, $B_2(n)=n/n'$ where $n'$ is the product of all primes that divide $n$ exactly once). Is it true that, for every fixed $k\geq 1$,\[\prod_{n\leq m<n+k}B_2(m) \ll n^{2+o(1)}?\]Or perhaps even 
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-367: Let $B_2(n)$ be the $2$-full part of $n$ (that is, $B_2(n)=n/n'$ where $n'$ is the product of all primes that divide $n$ exactly once). Is it true that, for every fixed $k\geq 1$,\[\prod_{n\leq m<n+k}B_2(m) \ll n^{2+o(1)}?\]Or perhaps even $\ll_k n^2$?
+# erdos_number: 367
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, powerful
 
-def formal_target_e_367() -> int
+def erdos_e367_let_b_2_n_be_the_2_full_part_of_n_that_i() -> int
+  requires true
+  ensures result == 0  # open: E-367
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e367_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

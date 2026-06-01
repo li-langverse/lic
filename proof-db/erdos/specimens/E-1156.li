@@ -1,10 +1,22 @@
-# Catalog: E-1156
-# Statement: Let $G$ be a random graph on $n$ vertices, in which every edge is included independently with probability $1/2$. Is there some constant $C$ such that that chromatic number $\chi(G)$ is, almost surely, concentrated on at most $C$ values? Is 
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1156: Let $G$ be a random graph on $n$ vertices, in which every edge is included independently with probability $1/2$. Is there some constant $C$ such that that chromatic number $\chi(G)$ is, almost surely, concentrated on at most $C$ values? Is it true that, if $\omega(n)\to \infty$ sufficiently slowly, then for every function $f(n)$\[\mathbb{P}(\lvert\chi(G)-f(n)\rvert<\omega(n))<1/2\]if $n$ is sufficiently large?
+# erdos_number: 1156
+# erdos_status: open
+# priority_tier: P2
+# tags: chromatic_number, graph_theory
 
-def formal_target_e_1156() -> int
+def erdos_e1156_let_g_be_a_random_graph_on_n_vertices_in() -> int
+  requires true
+  ensures result == 0  # open: E-1156
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1156_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

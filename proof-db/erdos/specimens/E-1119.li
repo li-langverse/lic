@@ -1,10 +1,22 @@
-# Catalog: E-1119
-# Statement: Let $\mathfrak{m}$ be an infinite cardinal with $\aleph_0<\mathfrak{m}<\mathfrak{c}=2^{\aleph_0}$. Let $\{f_\alpha\}$ be a family of entire functions such that, for every $z_0\in \mathbb{C}$, there are at most $\mathfrak{m}$ distinct values
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1119: Let $\mathfrak{m}$ be an infinite cardinal with $\aleph_0<\mathfrak{m}<\mathfrak{c}=2^{\aleph_0}$. Let $\{f_\alpha\}$ be a family of entire functions such that, for every $z_0\in \mathbb{C}$, there are at most $\mathfrak{m}$ distinct values of $f_\alpha(z_0)$. Must $\{f_\alpha\}$ have cardinality at most $\mathfrak{m}$?
+# erdos_number: 1119
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis, set_theory
 
-def formal_target_e_1119() -> int
+def erdos_e1119_let_mathfrak_m_be_an_infinite_cardinal_w() -> int
+  requires true
+  ensures result == 0  # open: E-1119
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1119_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

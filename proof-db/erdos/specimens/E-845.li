@@ -1,10 +1,22 @@
-# Catalog: E-845
-# Statement: Let $C>0$. Is it true that the set of integers of the form\[n=b_1+\cdots+b_t\textrm{ with }b_1<\cdots<b_t\]where $b_i=2^{k_i}3^{l_i}$ for $1\leq i\leq t$ and $b_t\leq Cb_1$ has density $0$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-845: Let $C>0$. Is it true that the set of integers of the form\[n=b_1+\cdots+b_t\textrm{ with }b_1<\cdots<b_t\]where $b_i=2^{k_i}3^{l_i}$ for $1\leq i\leq t$ and $b_t\leq Cb_1$ has density $0$?
+# erdos_number: 845
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_845() -> int
+def erdos_e845_let_c_0_is_it_true_that_the_set_of_integ() -> int
+  requires true
+  ensures result == 0  # open: E-845
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e845_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

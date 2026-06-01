@@ -1,10 +1,22 @@
-# Catalog: E-843
-# Statement: Are the squares Ramsey $2$-complete? That is, is it true that, in any 2-colouring of the square numbers, every sufficiently large $n\in \mathbb{N}$ can be written as a monochromatic sum of distinct squares?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-843: Are the squares Ramsey $2$-complete? That is, is it true that, in any 2-colouring of the square numbers, every sufficiently large $n\in \mathbb{N}$ can be written as a monochromatic sum of distinct squares?
+# erdos_number: 843
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_843() -> int
+def erdos_e843_are_the_squares_ramsey_2_complete_that_i() -> int
+  requires true
+  ensures result == 0  # open: E-843
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e843_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

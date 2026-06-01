@@ -1,10 +1,22 @@
-# Catalog: E-735
-# Statement: Given any $n$ points in $\mathbb{R}^2$ when can one give positive weights to the points such that the sum of the weights of the points along every line containing at least two points is the same?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-735: Given any $n$ points in $\mathbb{R}^2$ when can one give positive weights to the points such that the sum of the weights of the points along every line containing at least two points is the same?
+# erdos_number: 735
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry
 
-def formal_target_e_735() -> int
+def erdos_e735_given_any_n_points_in_mathbb_r_2_when_ca() -> int
+  requires true
+  ensures result == 0  # open: E-735
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e735_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

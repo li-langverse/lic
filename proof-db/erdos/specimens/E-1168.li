@@ -1,10 +1,22 @@
-# Catalog: E-1168
-# Statement: Prove that\[\aleph_{\omega+1}\not\to (\aleph_{\omega+1}, 3,\ldots,3)_{\aleph_0}^2\]without assuming the generalised continuum hypothesis.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1168: Prove that\[\aleph_{\omega+1}\not\to (\aleph_{\omega+1}, 3,\ldots,3)_{\aleph_0}^2\]without assuming the generalised continuum hypothesis.
+# erdos_number: 1168
+# erdos_status: open
+# priority_tier: P2
+# tags: ramsey_theory, set_theory
 
-def formal_target_e_1168() -> int
+def erdos_e1168_prove_that_aleph_omega_1_not_to_aleph_om() -> int
+  requires true
+  ensures result == 0  # open: E-1168
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1168_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

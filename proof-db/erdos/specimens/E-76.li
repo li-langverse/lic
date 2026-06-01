@@ -1,10 +1,22 @@
-# Catalog: E-76
-# Statement: Can every infinite set of primes contain a subset whose reciprocals sum to infinity?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-76: Can every infinite set of primes contain a subset whose reciprocals sum to infinity?
+# erdos_number: 76
+# erdos_status: open
+# priority_tier: P2
+# tags: primes, series
 
-def formal_target_e_76() -> int
+def erdos_e76_can_every_infinite_set_of_primes_contain() -> int
+  requires true
+  ensures result == 0  # open: E-76
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e76_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

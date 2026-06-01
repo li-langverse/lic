@@ -1,10 +1,22 @@
-# Catalog: E-661
-# Statement: Are there, for all large $n$, some points $x_1,\ldots,x_n,y_1,\ldots,y_n\in \mathbb{R}^2$ such that the number of distinct distances $d(x_i,y_j)$ is\[o\left(\frac{n}{\sqrt{\log n}}\right)?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-661: Are there, for all large $n$, some points $x_1,\ldots,x_n,y_1,\ldots,y_n\in \mathbb{R}^2$ such that the number of distinct distances $d(x_i,y_j)$ is\[o\left(\frac{n}{\sqrt{\log n}}\right)?\]
+# erdos_number: 661
+# erdos_status: open
+# priority_tier: P2
+# tags: distances, geometry
 
-def formal_target_e_661() -> int
+def erdos_e661_are_there_for_all_large_n_some_points_x() -> int
+  requires true
+  ensures result == 0  # open: E-661
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e661_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

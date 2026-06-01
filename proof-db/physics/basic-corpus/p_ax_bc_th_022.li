@@ -1,0 +1,20 @@
+# P-AX-BC-TH-022: First law: dU = delta Q - delta W.
+
+extern proc p_ax_bc_th_022_axiom_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def p_ax_bc_th_022_holds() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,10 +1,24 @@
-# Catalog: E-110
-# Statement: Do there exist arbitrarily large sets of integers with no 4-term arithmetic progression?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-110: Do there exist arbitrarily large sets of integers with no 4-term arithmetic progression?
+# erdos_number: 110
+# erdos_status: open
+# priority_tier: P1
+# tags: combinatorics, ramsey_theory
+# context: Cap-set style problem: arbitrarily large sets without 4-term arithmetic progressions.
+# context: Related to Roth/Szemerédi and recent polynomial-method bounds..
 
-def formal_target_e_110() -> int
+def erdos_e110_do_there_exist_arbitrarily_large_sets_of() -> int
+  requires true
+  ensures result == 0  # open: E-110
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e110_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

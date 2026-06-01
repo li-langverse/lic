@@ -1,10 +1,22 @@
-# Catalog: E-415
-# Statement: For any $n$ let $F(n)$ be the largest $k$ such that any of the $k!$ possible ordering patterns appears in some sequence of $\phi(m+1),\ldots,\phi(m+k)$ with $m+k\leq n$. Is it true that\[F(n)=(c+o(1))\log\log\log n\]for some constant $c$? I
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-415: For any $n$ let $F(n)$ be the largest $k$ such that any of the $k!$ possible ordering patterns appears in some sequence of $\phi(m+1),\ldots,\phi(m+k)$ with $m+k\leq n$. Is it true that\[F(n)=(c+o(1))\log\log\log n\]for some constant $c$? Is the first pattern which fails to appear always\[\phi(m+1)>\phi(m+2)>\cdots >\phi(m+k)?\]Is it true that the 'natural' ordering which mimics what happens to $\phi(1),\ldots,\phi(k)$ is the most likely to appear?
+# erdos_number: 415
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_415() -> int
+def erdos_e415_for_any_n_let_f_n_be_the_largest_k_such() -> int
+  requires true
+  ensures result == 0  # open: E-415
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e415_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

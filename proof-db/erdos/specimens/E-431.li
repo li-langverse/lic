@@ -1,10 +1,22 @@
-# Catalog: E-431
-# Statement: Are there two infinite sets $A$ and $B$ such that $A+B$ agrees with the set of prime numbers up to finitely many exceptions?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-431: Are there two infinite sets $A$ and $B$ such that $A+B$ agrees with the set of prime numbers up to finitely many exceptions?
+# erdos_number: 431
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
 
-def formal_target_e_431() -> int
+def erdos_e431_are_there_two_infinite_sets_a_and_b_such() -> int
+  requires true
+  ensures result == 0  # open: E-431
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e431_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

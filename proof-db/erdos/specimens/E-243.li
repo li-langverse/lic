@@ -1,10 +1,22 @@
-# Catalog: E-243
-# Statement: Let $1\leq a_1<a_2<\cdots$ be a sequence of integers such that\[\lim_{n\to \infty}\frac{a_n}{a_{n-1}^2}=1\]and $\sum\frac{1}{a_n}\in \mathbb{Q}$. Then, for all sufficiently large $n\geq 1$,\[ a_n = a_{n-1}^2-a_{n-1}+1.\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-243: Let $1\leq a_1<a_2<\cdots$ be a sequence of integers such that\[\lim_{n\to \infty}\frac{a_n}{a_{n-1}^2}=1\]and $\sum\frac{1}{a_n}\in \mathbb{Q}$. Then, for all sufficiently large $n\geq 1$,\[ a_n = a_{n-1}^2-a_{n-1}+1.\]
+# erdos_number: 243
+# erdos_status: open
+# priority_tier: P2
+# tags: irrationality, number_theory
 
-def formal_target_e_243() -> int
+def erdos_e243_let_1_leq_a_1_a_2_cdots_be_a_sequence_of() -> int
+  requires true
+  ensures result == 0  # open: E-243
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e243_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-684
-# Statement: For $0\leq k\leq n$ write\[\binom{n}{k} = uv\]where the only primes dividing $u$ are in $[2,k]$ and the only primes dividing $v$ are in $(k,n]$. Let $f(n)$ be the smallest $k$ such that $u>n^2$. Give bounds for $f(n)$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-684: For $0\leq k\leq n$ write\[\binom{n}{k} = uv\]where the only primes dividing $u$ are in $[2,k]$ and the only primes dividing $v$ are in $(k,n]$. Let $f(n)$ be the smallest $k$ such that $u>n^2$. Give bounds for $f(n)$.
+# erdos_number: 684
+# erdos_status: open
+# priority_tier: P2
+# tags: binomial_coefficients, number_theory, primes
 
-def formal_target_e_684() -> int
+def erdos_e684_for_0_leq_k_leq_n_write_binom_n_k_uv_whe() -> int
+  requires true
+  ensures result == 0  # open: E-684
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e684_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

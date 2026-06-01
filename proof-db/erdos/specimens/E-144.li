@@ -1,10 +1,22 @@
-# Catalog: E-144
-# Statement: The density of integers which have two divisors $d_1,d_2$ such that $d_1<d_2<2d_1$ exists and is equal to $1$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-144: The density of integers which have two divisors $d_1,d_2$ such that $d_1<d_2<2d_1$ exists and is equal to $1$.
+# erdos_number: 144
+# erdos_status: proved
+# priority_tier: P2
+# tags: divisors, number_theory
 
-def formal_target_e_144() -> int
+def erdos_e144_the_density_of_integers_which_have_two_d() -> int
+  requires true
+  ensures result == 0  # open: E-144
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e144_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

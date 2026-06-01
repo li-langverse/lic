@@ -1,10 +1,22 @@
-# Catalog: E-122
-# Statement: For which number theoretic functions $f$ is it true that, for any $F(n)$ such that $F(n)/f(n)\to 0$ for almost all $n$, there are infinitely many $x$ such that\[\frac{\#\{ n\in \mathbb{N} : n+f(n)\in (x,x+F(x))\}}{F(x)}\to \infty?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-122: For which number theoretic functions $f$ is it true that, for any $F(n)$ such that $F(n)/f(n)\to 0$ for almost all $n$, there are infinitely many $x$ such that\[\frac{\#\{ n\in \mathbb{N} : n+f(n)\in (x,x+F(x))\}}{F(x)}\to \infty?\]
+# erdos_number: 122
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_122() -> int
+def erdos_e122_for_which_number_theoretic_functions_f_i() -> int
+  requires true
+  ensures result == 0  # open: E-122
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e122_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

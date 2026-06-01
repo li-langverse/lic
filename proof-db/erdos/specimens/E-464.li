@@ -1,10 +1,22 @@
-# Catalog: E-464
-# Statement: Let $A=\{n_1<n_2<\cdots\}\subset \mathbb{N}$ be a lacunary sequence (so there exists some $\epsilon>0$ with $n_{k+1}\geq (1+\epsilon)n_k$ for all $k$). Must there exist an irrational $\theta$ such that\[\{ \|\theta n_k\| : k\geq 1\}\]is not
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-464: Let $A=\{n_1<n_2<\cdots\}\subset \mathbb{N}$ be a lacunary sequence (so there exists some $\epsilon>0$ with $n_{k+1}\geq (1+\epsilon)n_k$ for all $k$). Must there exist an irrational $\theta$ such that\[\{ \|\theta n_k\| : k\geq 1\}\]is not dense in $[0,1]$ (where $\| x\|$ is the distance to the nearest integer)?
+# erdos_number: 464
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_464() -> int
+def erdos_e464_let_a_n_1_n_2_cdots_subset_mathbb_n_be_a() -> int
+  requires true
+  ensures result == 0  # open: E-464
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e464_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

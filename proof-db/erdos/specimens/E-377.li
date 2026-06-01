@@ -1,10 +1,22 @@
-# Catalog: E-377
-# Statement: Is there some absolute constant $C>0$ such that\[\sum_{p\leq n}1_{p\nmid \binom{2n}{n}}\frac{1}{p}\leq C\]for all $n$ (where the summation is restricted to primes $p\leq n$)?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-377: Is there some absolute constant $C>0$ such that\[\sum_{p\leq n}1_{p\nmid \binom{2n}{n}}\frac{1}{p}\leq C\]for all $n$ (where the summation is restricted to primes $p\leq n$)?
+# erdos_number: 377
+# erdos_status: open
+# priority_tier: P2
+# tags: binomial_coefficients, number_theory
 
-def formal_target_e_377() -> int
+def erdos_e377_is_there_some_absolute_constant_c_0_such() -> int
+  requires true
+  ensures result == 0  # open: E-377
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e377_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

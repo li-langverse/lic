@@ -1,10 +1,22 @@
-# Catalog: E-1077
-# Statement: We call a graph $D$-balanced (or $D$-almost-regular) if the maximum degree is at most $D$ times the minimum degree. Let $\epsilon,\alpha>0$ and $D$ and $n$ be sufficiently large. If $G$ is a graph on $n$ vertices with at least $n^{1+\alpha}
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1077: We call a graph $D$-balanced (or $D$-almost-regular) if the maximum degree is at most $D$ times the minimum degree. Let $\epsilon,\alpha>0$ and $D$ and $n$ be sufficiently large. If $G$ is a graph on $n$ vertices with at least $n^{1+\alpha}$ edges, then must $G$ contain a $D$-balanced subgraph on $m>n^{1-\alpha}$ vertices with at least $\epsilon m^{1+\alpha}$ edges?
+# erdos_number: 1077
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_1077() -> int
+def erdos_e1077_we_call_a_graph_d_balanced_or_d_almost_r() -> int
+  requires true
+  ensures result == 0  # open: E-1077
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1077_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

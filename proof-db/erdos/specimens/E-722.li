@@ -1,10 +1,22 @@
-# Catalog: E-722
-# Statement: Let $k>r$ and $n$ be sufficiently large in terms of $k$ and $r$. Does there always exist a block $r-(n,k,1)$ design (or Steiner system with parameters $(n,k,r)$), provided the trivial necessary divisibility conditions $\binom{k-i}{r-i}\mid 
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-722: Let $k>r$ and $n$ be sufficiently large in terms of $k$ and $r$. Does there always exist a block $r-(n,k,1)$ design (or Steiner system with parameters $(n,k,r)$), provided the trivial necessary divisibility conditions $\binom{k-i}{r-i}\mid \binom{n-i}{r-i}$ are satisfied for every $0\leq i<r$? That is, can one find a family of $\binom{n}{k}\binom{k}{r}^{-1}$ many subsets of $\{1,\ldots,n\}$, all of size $k$, such that any $A\subseteq \{1,\ldots,n\}$ of size $r$ is contained in exactly one set in the family?
+# erdos_number: 722
+# erdos_status: proved
+# priority_tier: P2
+# tags: combinatorics
 
-def formal_target_e_722() -> int
+def erdos_e722_let_k_r_and_n_be_sufficiently_large_in_t() -> int
+  requires true
+  ensures result == 0  # open: E-722
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e722_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

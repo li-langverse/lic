@@ -1,10 +1,22 @@
-# Catalog: E-525
-# Statement: Is it true that all except at most $o(2^n)$ many degree $n$ polynomials with $\pm 1$-valued coefficients $f(z)$ have $\lvert f(z)\rvert <1$ for some $\lvert z\rvert=1$? What is the behaviour of\[m(f)=\min_{\lvert z\rvert=1}\lvert f(z)\rvert
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-525: Is it true that all except at most $o(2^n)$ many degree $n$ polynomials with $\pm 1$-valued coefficients $f(z)$ have $\lvert f(z)\rvert <1$ for some $\lvert z\rvert=1$? What is the behaviour of\[m(f)=\min_{\lvert z\rvert=1}\lvert f(z)\rvert?\]
+# erdos_number: 525
+# erdos_status: proved
+# priority_tier: P2
+# tags: analysis, polynomials, probability
 
-def formal_target_e_525() -> int
+def erdos_e525_is_it_true_that_all_except_at_most_o_2_n() -> int
+  requires true
+  ensures result == 0  # open: E-525
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e525_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

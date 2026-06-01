@@ -1,10 +1,22 @@
-# Catalog: E-913
-# Statement: Are there infinitely many $n$ such that if\[n(n+1) = \prod_i p_i^{k_i}\]is the factorisation into distinct primes then all exponents $k_i$ are distinct?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-913: Are there infinitely many $n$ such that if\[n(n+1) = \prod_i p_i^{k_i}\]is the factorisation into distinct primes then all exponents $k_i$ are distinct?
+# erdos_number: 913
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_913() -> int
+def erdos_e913_are_there_infinitely_many_n_such_that_if() -> int
+  requires true
+  ensures result == 0  # open: E-913
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e913_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

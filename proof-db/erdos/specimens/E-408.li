@@ -1,10 +1,22 @@
-# Catalog: E-408
-# Statement: Let $\phi(n)$ be the Euler totient function and $\phi_k(n)$ be the iterated $\phi$ function, so that $\phi_1(n)=\phi(n)$ and $\phi_k(n)=\phi(\phi_{k-1}(n))$. Let\[f(n) = \min \{ k : \phi_k(n)=1\}.\]Does $f(n)/\log n$ have a distribution fun
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-408: Let $\phi(n)$ be the Euler totient function and $\phi_k(n)$ be the iterated $\phi$ function, so that $\phi_1(n)=\phi(n)$ and $\phi_k(n)=\phi(\phi_{k-1}(n))$. Let\[f(n) = \min \{ k : \phi_k(n)=1\}.\]Does $f(n)/\log n$ have a distribution function? Is $f(n)/\log n$ almost always constant? What can be said about the largest prime factor of $\phi_k(n)$ when, say, $k=\log\log n$?
+# erdos_number: 408
+# erdos_status: open
+# priority_tier: P2
+# tags: iterated_functions, number_theory
 
-def formal_target_e_408() -> int
+def erdos_e408_let_phi_n_be_the_euler_totient_function() -> int
+  requires true
+  ensures result == 0  # open: E-408
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e408_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

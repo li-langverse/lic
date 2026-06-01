@@ -1,10 +1,22 @@
-# Catalog: E-1095
-# Statement: Let $g(k)>k+1$ be the smallest $n$ such that all prime factors of $\binom{n}{k}$ are $>k$. Estimate $g(k)$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1095: Let $g(k)>k+1$ be the smallest $n$ such that all prime factors of $\binom{n}{k}$ are $>k$. Estimate $g(k)$.
+# erdos_number: 1095
+# erdos_status: open
+# priority_tier: P2
+# tags: binomial_coefficients, number_theory
 
-def formal_target_e_1095() -> int
+def erdos_e1095_let_g_k_k_1_be_the_smallest_n_such_that() -> int
+  requires true
+  ensures result == 0  # open: E-1095
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1095_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-83
-# Statement: Are there infinitely many n such that n!!+1 is prime (double factorial)?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-83: Are there infinitely many n such that n!!+1 is prime (double factorial)?
+# erdos_number: 83
+# erdos_status: open
+# priority_tier: P3
+# tags: primes, factorial
 
-def formal_target_e_83() -> int
+def erdos_e83_are_there_infinitely_many_n_such_that_n() -> int
+  requires true
+  ensures result == 0  # open: E-83
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e83_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

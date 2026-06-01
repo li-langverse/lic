@@ -1,10 +1,22 @@
-# Catalog: E-270
-# Statement: Let $f(n)\to \infty$ as $n\to \infty$. Is it true that\[\sum_{n\geq 1} \frac{1}{(n+1)\cdots (n+f(n))}\]is irrational?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-270: Let $f(n)\to \infty$ as $n\to \infty$. Is it true that\[\sum_{n\geq 1} \frac{1}{(n+1)\cdots (n+f(n))}\]is irrational?
+# erdos_number: 270
+# erdos_status: open
+# priority_tier: P2
+# tags: irrationality
 
-def formal_target_e_270() -> int
+def erdos_e270_let_f_n_to_infty_as_n_to_infty_is_it_tru() -> int
+  requires true
+  ensures result == 0  # open: E-270
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e270_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

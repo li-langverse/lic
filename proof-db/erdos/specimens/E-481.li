@@ -1,10 +1,22 @@
-# Catalog: E-481
-# Statement: Let $a_1,\ldots,a_r,b_1,\ldots,b_r\in \mathbb{N}$ such that $\sum_{i}\frac{1}{a_i}>1$. For any finite sequence of $n$ (not necessarily distinct) integers $A=(x_1,\ldots,x_n)$ let $T(A)$ denote the sequence of length $rn$ given by\[(a_ix_j+b
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-481: Let $a_1,\ldots,a_r,b_1,\ldots,b_r\in \mathbb{N}$ such that $\sum_{i}\frac{1}{a_i}>1$. For any finite sequence of $n$ (not necessarily distinct) integers $A=(x_1,\ldots,x_n)$ let $T(A)$ denote the sequence of length $rn$ given by\[(a_ix_j+b_i)_{1\leq j\leq n, 1\leq i\leq r}.\]Prove that, if $A_1=(1)$ and $A_{i+1}=T(A_i)$, then there must be some $A_k$ with repeated elements.
+# erdos_number: 481
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_481() -> int
+def erdos_e481_let_a_1_ldots_a_r_b_1_ldots_b_r_in_mathb() -> int
+  requires true
+  ensures result == 0  # open: E-481
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e481_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-960
-# Statement: Let $r,k\geq 2$ be fixed. Let $A\subset \mathbb{R}^2$ be a set of $n$ points with no $k$ points on a line. Determine the threshold $f_{r,k}(n)$ such that if there are at least $f_{r,k}(n)$ many ordinary lines (lines containing exactly two p
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-960: Let $r,k\geq 2$ be fixed. Let $A\subset \mathbb{R}^2$ be a set of $n$ points with no $k$ points on a line. Determine the threshold $f_{r,k}(n)$ such that if there are at least $f_{r,k}(n)$ many ordinary lines (lines containing exactly two points) then there is a set $A'\subseteq A$ of $r$ points such that all $\binom{r}{2}$ many lines determined by $A'$ are ordinary. Is it true that $f_{r,k}(n)=o(n^2)$, or perhaps even $\ll n$?
+# erdos_number: 960
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry
 
-def formal_target_e_960() -> int
+def erdos_e960_let_r_k_geq_2_be_fixed_let_a_subset_math() -> int
+  requires true
+  ensures result == 0  # open: E-960
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e960_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-1148
-# Statement: Can every large integer $n$ be written as $n=x^2+y^2-z^2$ with $\max(x^2,y^2,z^2)\leq n$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-1148: Can every large integer $n$ be written as $n=x^2+y^2-z^2$ with $\max(x^2,y^2,z^2)\leq n$?
+# erdos_number: 1148
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_1148() -> int
+def erdos_e1148_can_every_large_integer_n_be_written_as() -> int
+  requires true
+  ensures result == 0  # open: E-1148
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1148_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

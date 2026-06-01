@@ -1,10 +1,22 @@
-# Catalog: E-918
-# Statement: Is there a graph with $\aleph_2$ vertices and chromatic number $\aleph_2$ such that every subgraph on $\aleph_1$ vertices has chromatic number $\leq\aleph_0$? Is there a graph with $\aleph_{\omega+1}$ vertices and chromatic number $\aleph_1
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-918: Is there a graph with $\aleph_2$ vertices and chromatic number $\aleph_2$ such that every subgraph on $\aleph_1$ vertices has chromatic number $\leq\aleph_0$? Is there a graph with $\aleph_{\omega+1}$ vertices and chromatic number $\aleph_1$ such that every subgraph on $\aleph_\omega$ vertices has chromatic number $\leq\aleph_0$?
+# erdos_number: 918
+# erdos_status: open
+# priority_tier: P2
+# tags: chromatic_number, graph_theory
 
-def formal_target_e_918() -> int
+def erdos_e918_is_there_a_graph_with_aleph_2_vertices_a() -> int
+  requires true
+  ensures result == 0  # open: E-918
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e918_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

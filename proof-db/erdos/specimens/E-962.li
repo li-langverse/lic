@@ -1,10 +1,22 @@
-# Catalog: E-962
-# Statement: Let $k(n)$ be the maximal $k$ such that there exists $m\leq n$ such that each of the integers\[m+1,\ldots,m+k\]are divisible by at least one prime $>k$. Estimate $k(n)$ - in particular, is it true that\[\log k(n) \leq (\log n)^{1/2+o(1)}?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-962: Let $k(n)$ be the maximal $k$ such that there exists $m\leq n$ such that each of the integers\[m+1,\ldots,m+k\]are divisible by at least one prime $>k$. Estimate $k(n)$ - in particular, is it true that\[\log k(n) \leq (\log n)^{1/2+o(1)}?\]
+# erdos_number: 962
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_962() -> int
+def erdos_e962_let_k_n_be_the_maximal_k_such_that_there() -> int
+  requires true
+  ensures result == 0  # open: E-962
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e962_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

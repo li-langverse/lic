@@ -1,10 +1,22 @@
-# Catalog: E-1087
-# Statement: Let $f(n)$ be minimal such that every set of $n$ points in $\mathbb{R}^2$ contains at most $f(n)$ many sets of four points which are 'degenerate' in the sense that some pair are the same distance apart. Estimate $f(n)$ - in particular, is i
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1087: Let $f(n)$ be minimal such that every set of $n$ points in $\mathbb{R}^2$ contains at most $f(n)$ many sets of four points which are 'degenerate' in the sense that some pair are the same distance apart. Estimate $f(n)$ - in particular, is it true that $f(n)\leq n^{3+o(1)}$?
+# erdos_number: 1087
+# erdos_status: open
+# priority_tier: P2
+# tags: distances, geometry
 
-def formal_target_e_1087() -> int
+def erdos_e1087_let_f_n_be_minimal_such_that_every_set_o() -> int
+  requires true
+  ensures result == 0  # open: E-1087
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1087_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

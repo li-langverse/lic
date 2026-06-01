@@ -1,10 +1,22 @@
-# Catalog: E-404
-# Statement: For which integers $a\geq 1$ and primes $p$ is there a finite upper bound on those $k$ such that there are $a=a_1<\cdots<a_n$ with\[p^k \mid (a_1!+\cdots+a_n!)?\]If $f(a,p)$ is the greatest such $k$, how does this function behave? Is there 
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-404: For which integers $a\geq 1$ and primes $p$ is there a finite upper bound on those $k$ such that there are $a=a_1<\cdots<a_n$ with\[p^k \mid (a_1!+\cdots+a_n!)?\]If $f(a,p)$ is the greatest such $k$, how does this function behave? Is there a prime $p$ and an infinite sequence $a_1<a_2<\cdots$ such that if $p^{m_k}$ is the highest power of $p$ dividing $\sum_{i\leq k}a_i!$ then $m_k\to \infty$?
+# erdos_number: 404
+# erdos_status: open
+# priority_tier: P2
+# tags: factorials, number_theory
 
-def formal_target_e_404() -> int
+def erdos_e404_for_which_integers_a_geq_1_and_primes_p() -> int
+  requires true
+  ensures result == 0  # open: E-404
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e404_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-68
-# Statement: Can the positive integers be covered by finitely many residue classes with distinct moduli whose least common multiple is odd?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-68: Can the positive integers be covered by finitely many residue classes with distinct moduli whose least common multiple is odd?
+# erdos_number: 68
+# erdos_status: open
+# priority_tier: P1
+# tags: combinatorics, covering_systems
 
-def formal_target_e_68() -> int
+def erdos_e68_can_the_positive_integers_be_covered_by() -> int
+  requires true
+  ensures result == 0  # open: E-68
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e68_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-658
-# Statement: Let $\delta>0$ and $N$ be sufficiently large depending on $\delta$. Is it true that if $A\subseteq \{1,\ldots,N\}^2$ has $\lvert A\rvert \geq \delta N^2$ then $A$ must contain the vertices of a square?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-658: Let $\delta>0$ and $N$ be sufficiently large depending on $\delta$. Is it true that if $A\subseteq \{1,\ldots,N\}^2$ has $\lvert A\rvert \geq \delta N^2$ then $A$ must contain the vertices of a square?
+# erdos_number: 658
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_combinatorics
 
-def formal_target_e_658() -> int
+def erdos_e658_let_delta_0_and_n_be_sufficiently_large() -> int
+  requires true
+  ensures result == 0  # open: E-658
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e658_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

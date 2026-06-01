@@ -1,10 +1,24 @@
-# Catalog: E-77
-# Statement: If R(k) is the Ramsey number for K_k, what is the value of lim_{k->infty} R(k)^{1/k}?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-77: If R(k) is the Ramsey number for K_k, what is the value of lim_{k->infty} R(k)^{1/k}?
+# erdos_number: 77
+# erdos_status: open
+# priority_tier: P1
+# tags: combinatorics, ramsey_theory, graph_theory
+# context: Asymptotics of diagonal Ramsey numbers R(k): Erdős asked for the limit of R(k)^{1/k}.
+# context: Exponential lower and tower-type upper bounds are known..
 
-def formal_target_e_77() -> int
+def erdos_e77_if_r_k_is_the_ramsey_number_for_k_k_what() -> int
+  requires true
+  ensures result == 0  # open: E-77
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e77_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

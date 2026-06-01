@@ -1,10 +1,22 @@
-# Catalog: E-210
-# Statement: Let $f(n)$ be minimal such that the following holds. For any $n$ points in $\mathbb{R}^2$, not all on a line, there must be at least $f(n)$ many lines which contain exactly 2 points (called 'ordinary lines'). Does $f(n)\to \infty$? How fast
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-210: Let $f(n)$ be minimal such that the following holds. For any $n$ points in $\mathbb{R}^2$, not all on a line, there must be at least $f(n)$ many lines which contain exactly 2 points (called 'ordinary lines'). Does $f(n)\to \infty$? How fast?
+# erdos_number: 210
+# erdos_status: proved
+# priority_tier: P2
+# tags: geometry
 
-def formal_target_e_210() -> int
+def erdos_e210_let_f_n_be_minimal_such_that_the_followi() -> int
+  requires true
+  ensures result == 0  # open: E-210
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e210_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

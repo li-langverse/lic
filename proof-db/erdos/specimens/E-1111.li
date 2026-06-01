@@ -1,10 +1,22 @@
-# Catalog: E-1111
-# Statement: If $G$ is a finite graph and $A,B$ are disjoint sets of vertices then we call $A,B$ anticomplete if there are no edges between $A$ and $B$. If $t,c\geq 1$ then there exists $d\geq 1$ such that if $\chi(G)\geq d$ and $\omega(G)<t$ then there
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1111: If $G$ is a finite graph and $A,B$ are disjoint sets of vertices then we call $A,B$ anticomplete if there are no edges between $A$ and $B$. If $t,c\geq 1$ then there exists $d\geq 1$ such that if $\chi(G)\geq d$ and $\omega(G)<t$ then there are anticomplete sets $A,B$ with $\chi(A)\geq \chi(B)\geq c$.
+# erdos_number: 1111
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_1111() -> int
+def erdos_e1111_if_g_is_a_finite_graph_and_a_b_are_disjo() -> int
+  requires true
+  ensures result == 0  # open: E-1111
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1111_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

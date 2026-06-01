@@ -1,10 +1,22 @@
-# Catalog: E-746
-# Statement: Is it true that, almost surely, a random graph on $n$ vertices with $\geq (\tfrac{1}{2}+\epsilon)n\log n$ edges is Hamiltonian?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-746: Is it true that, almost surely, a random graph on $n$ vertices with $\geq (\tfrac{1}{2}+\epsilon)n\log n$ edges is Hamiltonian?
+# erdos_number: 746
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_746() -> int
+def erdos_e746_is_it_true_that_almost_surely_a_random_g() -> int
+  requires true
+  ensures result == 0  # open: E-746
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e746_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

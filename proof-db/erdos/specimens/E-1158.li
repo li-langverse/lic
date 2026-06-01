@@ -1,10 +1,22 @@
-# Catalog: E-1158
-# Statement: Let $K_{t}(r)$ be the complete $t$-partite $t$-uniform hypergraph with $r$ vertices in each class. Is it true that\[\mathrm{ex}_t(n,K_t(r)) \geq n^{t-r^{1-t}-o(1)}\]for all $t,r$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1158: Let $K_{t}(r)$ be the complete $t$-partite $t$-uniform hypergraph with $r$ vertices in each class. Is it true that\[\mathrm{ex}_t(n,K_t(r)) \geq n^{t-r^{1-t}-o(1)}\]for all $t,r$?
+# erdos_number: 1158
+# erdos_status: open
+# priority_tier: P2
+# tags: hypergraphs, turan_number
 
-def formal_target_e_1158() -> int
+def erdos_e1158_let_k_t_r_be_the_complete_t_partite_t_un() -> int
+  requires true
+  ensures result == 0  # open: E-1158
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1158_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

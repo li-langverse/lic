@@ -1,10 +1,22 @@
-# Catalog: E-791
-# Statement: Let $g(n)$ be minimal such that there exists $A\subseteq \{0,\ldots,n\}$ of size $g(n)$ with $\{0,\ldots,n\}\subseteq A+A$. Estimate $g(n)$. In particular is it true that $g(n)\sim 2n^{1/2}$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-791: Let $g(n)$ be minimal such that there exists $A\subseteq \{0,\ldots,n\}$ of size $g(n)$ with $\{0,\ldots,n\}\subseteq A+A$. Estimate $g(n)$. In particular is it true that $g(n)\sim 2n^{1/2}$?
+# erdos_number: 791
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics
 
-def formal_target_e_791() -> int
+def erdos_e791_let_g_n_be_minimal_such_that_there_exist() -> int
+  requires true
+  ensures result == 0  # open: E-791
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e791_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

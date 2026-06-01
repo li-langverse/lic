@@ -1,10 +1,22 @@
-# Catalog: E-348
-# Statement: For what values of $0\leq m<n$ is there a complete sequence $A=\{a_1\leq a_2\leq \cdots\}$ of integers such that $A$ remains complete after removing any $m$ elements, but $A$ is not complete after removing any $n$ elements?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-348: For what values of $0\leq m<n$ is there a complete sequence $A=\{a_1\leq a_2\leq \cdots\}$ of integers such that $A$ remains complete after removing any $m$ elements, but $A$ is not complete after removing any $n$ elements?
+# erdos_number: 348
+# erdos_status: open
+# priority_tier: P2
+# tags: complete_sequences, number_theory
 
-def formal_target_e_348() -> int
+def erdos_e348_for_what_values_of_0_leq_m_n_is_there_a() -> int
+  requires true
+  ensures result == 0  # open: E-348
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e348_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

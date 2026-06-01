@@ -1,10 +1,22 @@
-# Catalog: E-654
-# Statement: Let $f(n)$ be such that, given any $x_1,\ldots,x_n\in \mathbb{R}^2$ with no four points on a circle, there exists some $x_i$ with at least $f(n)$ many distinct distances to other $x_j$. Estimate $f(n)$ - in particular, is it true that\[f(n)
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-654: Let $f(n)$ be such that, given any $x_1,\ldots,x_n\in \mathbb{R}^2$ with no four points on a circle, there exists some $x_i$ with at least $f(n)$ many distinct distances to other $x_j$. Estimate $f(n)$ - in particular, is it true that\[f(n)>(1-o(1))n?\]Or at least\[f(n) > (1/3+c)n\]for some $c>0$, for all large $n$?
+# erdos_number: 654
+# erdos_status: open
+# priority_tier: P2
+# tags: distances, geometry
 
-def formal_target_e_654() -> int
+def erdos_e654_let_f_n_be_such_that_given_any_x_1_ldots() -> int
+  requires true
+  ensures result == 0  # open: E-654
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e654_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

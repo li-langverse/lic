@@ -1,10 +1,22 @@
-# Catalog: E-116
-# Statement: Let $p(z)=\prod_{i=1}^n (z-z_i)$ for $\lvert z_i\rvert \leq 1$. Is it true that\[\lvert\{ z: \lvert p(z)\rvert <1\}\rvert>n^{-O(1)}\](or perhaps even $>(\log n)^{-O(1)}$)?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-116: Let $p(z)=\prod_{i=1}^n (z-z_i)$ for $\lvert z_i\rvert \leq 1$. Is it true that\[\lvert\{ z: \lvert p(z)\rvert <1\}\rvert>n^{-O(1)}\](or perhaps even $>(\log n)^{-O(1)}$)?
+# erdos_number: 116
+# erdos_status: proved
+# priority_tier: P2
+# tags: analysis, polynomials
 
-def formal_target_e_116() -> int
+def erdos_e116_let_p_z_prod_i_1_n_z_z_i_for_lvert_z_i_r() -> int
+  requires true
+  ensures result == 0  # open: E-116
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e116_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

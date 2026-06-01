@@ -1,10 +1,22 @@
-# Catalog: E-1217
-# Statement: Let $A=\{a_1<a_2<\cdots\}$ be an infinite sequence of positive integers with positive lower logarithmic density. Must there exist a sequence $n_1<\cdots$ such that\[a_{n_i}\mid a_{n_{i+1}}\]for all $i\geq 1$ and\[\limsup_{x\to \infty}\frac{
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-1217: Let $A=\{a_1<a_2<\cdots\}$ be an infinite sequence of positive integers with positive lower logarithmic density. Must there exist a sequence $n_1<\cdots$ such that\[a_{n_i}\mid a_{n_{i+1}}\]for all $i\geq 1$ and\[\limsup_{x\to \infty}\frac{1}{\log\log x}\sum_{a_{n_i}<x}1 \geq \limsup_{x\to \infty} \frac{1}{\log\log x}\sum_{a_n<x}\frac{1}{a_n\log a_n}?\]
+# erdos_number: 1217
+# erdos_status: proved
+# priority_tier: P2
+# tags: divisors, number_theory, primitive_sets
 
-def formal_target_e_1217() -> int
+def erdos_e1217_let_a_a_1_a_2_cdots_be_an_infinite_seque() -> int
+  requires true
+  ensures result == 0  # open: E-1217
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1217_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

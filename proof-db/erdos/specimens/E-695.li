@@ -1,10 +1,22 @@
-# Catalog: E-695
-# Statement: Let $p_1<p_2<\cdots$ be a sequence of primes such that $p_{i+1}\equiv 1\pmod{p_i}$. Is it true that\[\lim_k p_k^{1/k}=\infty?\]Does there exist such a sequence with\[p_k \leq \exp(k(\log k)^{1+o(1)})?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-695: Let $p_1<p_2<\cdots$ be a sequence of primes such that $p_{i+1}\equiv 1\pmod{p_i}$. Is it true that\[\lim_k p_k^{1/k}=\infty?\]Does there exist such a sequence with\[p_k \leq \exp(k(\log k)^{1+o(1)})?\]
+# erdos_number: 695
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_695() -> int
+def erdos_e695_let_p_1_p_2_cdots_be_a_sequence_of_prime() -> int
+  requires true
+  ensures result == 0  # open: E-695
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e695_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

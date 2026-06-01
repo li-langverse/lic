@@ -1,10 +1,22 @@
-# Catalog: E-1106
-# Statement: Let $p(n)$ denote the partition function of $n$ and let $F(n)$ count the number of distinct prime factors of\[\prod_{1\leq k\leq n}p(k).\]Does $F(n)\to \infty$ with $n$? Is $F(n)>n$ for all sufficiently large $n$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1106: Let $p(n)$ denote the partition function of $n$ and let $F(n)$ count the number of distinct prime factors of\[\prod_{1\leq k\leq n}p(k).\]Does $F(n)\to \infty$ with $n$? Is $F(n)>n$ for all sufficiently large $n$?
+# erdos_number: 1106
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_1106() -> int
+def erdos_e1106_let_p_n_denote_the_partition_function_of() -> int
+  requires true
+  ensures result == 0  # open: E-1106
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1106_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

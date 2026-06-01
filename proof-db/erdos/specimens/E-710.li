@@ -1,10 +1,22 @@
-# Catalog: E-710
-# Statement: Let $f(n)$ be minimal such that in $(n,n+f(n))$ there exist distinct integers $a_1,\ldots,a_n$ such that $k\mid a_k$ for all $1\leq k\leq n$. Obtain an asymptotic formula for $f(n)$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-710: Let $f(n)$ be minimal such that in $(n,n+f(n))$ there exist distinct integers $a_1,\ldots,a_n$ such that $k\mid a_k$ for all $1\leq k\leq n$. Obtain an asymptotic formula for $f(n)$.
+# erdos_number: 710
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_710() -> int
+def erdos_e710_let_f_n_be_minimal_such_that_in_n_n_f_n() -> int
+  requires true
+  ensures result == 0  # open: E-710
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e710_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,0 +1,35 @@
+import render
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_render_version() < 6:
+    return 1
+  if render_ui_raster_version() != 1:
+    return 2
+  var chrome: RenderUiRasterResult = render_ui_raster_chrome_smoke_pure()
+  if chrome.cmd_count != paint_studio_shell_chrome_count():
+    return 3
+  if chrome.cpu_pixels <= 0:
+    return 4
+  if chrome.backend != render_ui_raster_backend_cpu():
+    return 5
+  if render_ui_raster_result_ok(chrome) != 1:
+    return 6
+  var panel: RenderUiRasterResult = render_ui_raster_cpu_panel_demo(1920.0, 1080.0)
+  if panel.cmd_count != 3:
+    return 7
+  if panel.cpu_pixels <= 0:
+    return 8
+  if render_ui_raster_result_ok(panel) != 1:
+    return 9
+  var empty: PaintFrame = paint_frame_new()
+  var idle: RenderUiRasterResult = render_ui_raster_pass_pure(800.0, 600.0, empty, 1)
+  if idle.backend != render_ui_raster_backend_none():
+    return 10
+  if idle.cpu_pixels != 0:
+    return 11
+  return 0

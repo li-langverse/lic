@@ -1,10 +1,22 @@
-# Catalog: E-727
-# Statement: Let $k\geq 2$. Does\[(n+k)!^2 \mid (2n)!\]for infinitely many $n$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-727: Let $k\geq 2$. Does\[(n+k)!^2 \mid (2n)!\]for infinitely many $n$?
+# erdos_number: 727
+# erdos_status: open
+# priority_tier: P2
+# tags: factorials, number_theory
 
-def formal_target_e_727() -> int
+def erdos_e727_let_k_geq_2_does_n_k_2_mid_2n_for_infini() -> int
+  requires true
+  ensures result == 0  # open: E-727
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e727_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

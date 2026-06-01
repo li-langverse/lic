@@ -1,20 +1,26 @@
-# Catalog: E-29
-# Statement: Infinitely many primes p with p+k also prime (fixed k)?
-# formalization_status: li_open
-# partial: proof-db/erdos/specimens/E-29-partial-at-least-one-prime.li
-# erdos_status (literature): open
+# E-29: Are there infinitely many primes p such that p+k is also prime for some fixed k (prime k-tuples generalization)?
+# erdos_number: 29
+# erdos_status: open
+# priority_tier: P0
+# tags: primes, prime_gaps
+# context: Prime k-tuple conjecture flavor: infinitely many primes p with p+k also prime for some fixed k>0.
+# context: Standard open problem in analytic number theory..
 
-def infinitely_many_primes_requires_at_least_one(count: int) -> int
-  requires count >= 1
-  ensures result >= 1
+def erdos_e29_are_there_infinitely_many_primes_p_such() -> int
+  requires true
+  ensures result == 0  # open: E-29
   decreases 0
 =
-  return count
+  return 0
 
-def formal_target_e_29() -> int
+extern proc erdos_e29_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var n: int = infinitely_many_primes_requires_at_least_one(2)
   return 0

@@ -1,10 +1,22 @@
-# Catalog: E-678
-# Statement: Let $M(n,k)=[n+1,\ldots,n+k]$ be the least common multiple of $\{n+1,\ldots,n+k\}$. Are there infinitely many $m,n$ and $k\geq 3$ with $m\geq n+k$ such that\[M(n,k)>M(m,k+1)?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-678: Let $M(n,k)=[n+1,\ldots,n+k]$ be the least common multiple of $\{n+1,\ldots,n+k\}$. Are there infinitely many $m,n$ and $k\geq 3$ with $m\geq n+k$ such that\[M(n,k)>M(m,k+1)?\]
+# erdos_number: 678
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_678() -> int
+def erdos_e678_let_m_n_k_n_1_ldots_n_k_be_the_least_com() -> int
+  requires true
+  ensures result == 0  # open: E-678
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e678_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

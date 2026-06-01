@@ -1,10 +1,22 @@
-# Catalog: E-1112
-# Statement: Let $1\leq d_1<d_2$ and $k\geq 3$. Does there exist an integer $r$ such that if $B=\{b_1<\cdots\}$ is a lacunary sequence of positive integers with $b_{i+1}\geq rb_i$ then there exists a sequence of positive integers $A=\{a_1<\cdots\}$ such
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1112: Let $1\leq d_1<d_2$ and $k\geq 3$. Does there exist an integer $r$ such that if $B=\{b_1<\cdots\}$ is a lacunary sequence of positive integers with $b_{i+1}\geq rb_i$ then there exists a sequence of positive integers $A=\{a_1<\cdots\}$ such that\[d_1\leq a_{i+1}-a_i\leq d_2\]for all $i\geq 1$ and $(kA)\cap B=\emptyset$, where $kA$ is the $k$-fold sumset?
+# erdos_number: 1112
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics
 
-def formal_target_e_1112() -> int
+def erdos_e1112_let_1_leq_d_1_d_2_and_k_geq_3_does_there() -> int
+  requires true
+  ensures result == 0  # open: E-1112
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1112_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

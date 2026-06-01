@@ -1,10 +1,22 @@
-# Catalog: E-834
-# Statement: Does there exist a $3$-critical $3$-uniform hypergraph in which every vertex has degree $\geq 7$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-834: Does there exist a $3$-critical $3$-uniform hypergraph in which every vertex has degree $\geq 7$?
+# erdos_number: 834
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, hypergraphs
 
-def formal_target_e_834() -> int
+def erdos_e834_does_there_exist_a_3_critical_3_uniform() -> int
+  requires true
+  ensures result == 0  # open: E-834
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e834_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-494
-# Statement: If $A\subset \mathbb{C}$ is a finite set and $k\geq 1$ then let\[A_k = \{ z_1+\cdots+z_k : z_i\in A\textrm{ distinct}\}.\]For $k>2$ does the multiset $A_k$ (together with the size of $A$) uniquely determine the set $A$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-494: If $A\subset \mathbb{C}$ is a finite set and $k\geq 1$ then let\[A_k = \{ z_1+\cdots+z_k : z_i\in A\textrm{ distinct}\}.\]For $k>2$ does the multiset $A_k$ (together with the size of $A$) uniquely determine the set $A$?
+# erdos_number: 494
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_combinatorics, analysis
 
-def formal_target_e_494() -> int
+def erdos_e494_if_a_subset_mathbb_c_is_a_finite_set_and() -> int
+  requires true
+  ensures result == 0  # open: E-494
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e494_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

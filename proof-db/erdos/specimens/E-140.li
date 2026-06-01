@@ -1,10 +1,22 @@
-# Catalog: E-140
-# Statement: Can one color the positive integers with c colors so that no monochromatic solution to x+y=z exists for fixed c?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-140: Can one color the positive integers with c colors so that no monochromatic solution to x+y=z exists for fixed c?
+# erdos_number: 140
+# erdos_status: open
+# priority_tier: P1
+# tags: combinatorics, ramsey_theory
 
-def formal_target_e_140() -> int
+def erdos_e140_can_one_color_the_positive_integers_with() -> int
+  requires true
+  ensures result == 0  # open: E-140
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e140_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

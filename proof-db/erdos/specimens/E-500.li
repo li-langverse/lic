@@ -1,10 +1,22 @@
-# Catalog: E-500
-# Statement: What is $\mathrm{ex}_3(n,K_4^3)$? That is, the largest number of $3$-edges which can placed on $n$ vertices so that there exists no $K_4^3$, a set of 4 vertices which is covered by all 4 possible $3$-edges.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-500: What is $\mathrm{ex}_3(n,K_4^3)$? That is, the largest number of $3$-edges which can placed on $n$ vertices so that there exists no $K_4^3$, a set of 4 vertices which is covered by all 4 possible $3$-edges.
+# erdos_number: 500
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, hypergraphs, turan_number
 
-def formal_target_e_500() -> int
+def erdos_e500_what_is_mathrm_ex_3_n_k_4_3_that_is_the() -> int
+  requires true
+  ensures result == 0  # open: E-500
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e500_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

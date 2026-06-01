@@ -1,10 +1,22 @@
-# Catalog: E-454
-# Statement: Let\[f(n) = \min_{i<n} (p_{n+i}+p_{n-i}),\]where $p_k$ is the $k$th prime. Is it true that\[\limsup_n (f(n)-2p_n)=\infty?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-454: Let\[f(n) = \min_{i<n} (p_{n+i}+p_{n-i}),\]where $p_k$ is the $k$th prime. Is it true that\[\limsup_n (f(n)-2p_n)=\infty?\]
+# erdos_number: 454
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
 
-def formal_target_e_454() -> int
+def erdos_e454_let_f_n_min_i_n_p_n_i_p_n_i_where_p_k_is() -> int
+  requires true
+  ensures result == 0  # open: E-454
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e454_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

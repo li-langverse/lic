@@ -1,10 +1,22 @@
-# Catalog: E-576
-# Statement: Let $Q_k$ be the $k$-dimensional hypercube graph (so that $Q_k$ has $2^k$ vertices and $k2^{k-1}$ edges). Determine the behaviour of\[\mathrm{ex}(n;Q_k).\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-576: Let $Q_k$ be the $k$-dimensional hypercube graph (so that $Q_k$ has $2^k$ vertices and $k2^{k-1}$ edges). Determine the behaviour of\[\mathrm{ex}(n;Q_k).\]
+# erdos_number: 576
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, turan_number
 
-def formal_target_e_576() -> int
+def erdos_e576_let_q_k_be_the_k_dimensional_hypercube_g() -> int
+  requires true
+  ensures result == 0  # open: E-576
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e576_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

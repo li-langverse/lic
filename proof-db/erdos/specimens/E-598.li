@@ -1,10 +1,22 @@
-# Catalog: E-598
-# Statement: Let $m$ be an infinite cardinal and $\kappa$ be the successor cardinal of $2^{\aleph_0}$. Can one colour the countable subsets of $m$ using $\kappa$ many colours so that every $X\subseteq m$ with $\lvert X\rvert=\kappa$ contains subsets of 
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-598: Let $m$ be an infinite cardinal and $\kappa$ be the successor cardinal of $2^{\aleph_0}$. Can one colour the countable subsets of $m$ using $\kappa$ many colours so that every $X\subseteq m$ with $\lvert X\rvert=\kappa$ contains subsets of all possible colours?
+# erdos_number: 598
+# erdos_status: open
+# priority_tier: P2
+# tags: ramsey_theory, set_theory
 
-def formal_target_e_598() -> int
+def erdos_e598_let_m_be_an_infinite_cardinal_and_kappa() -> int
+  requires true
+  ensures result == 0  # open: E-598
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e598_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

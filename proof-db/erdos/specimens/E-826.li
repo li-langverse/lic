@@ -1,10 +1,22 @@
-# Catalog: E-826
-# Statement: Are there infinitely many $n$ such that, for all $k\geq 1$,\[\tau(n+k)\ll k?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-826: Are there infinitely many $n$ such that, for all $k\geq 1$,\[\tau(n+k)\ll k?\]
+# erdos_number: 826
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_826() -> int
+def erdos_e826_are_there_infinitely_many_n_such_that_fo() -> int
+  requires true
+  ensures result == 0  # open: E-826
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e826_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-753
-# Statement: The list chromatic number $\chi_L(G)$ is defined to be the minimal $k$ such that for any assignment of a list of $k$ colours to each vertex of $G$ (perhaps different lists for different vertices) a colouring of each vertex by a colour on it
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-753: The list chromatic number $\chi_L(G)$ is defined to be the minimal $k$ such that for any assignment of a list of $k$ colours to each vertex of $G$ (perhaps different lists for different vertices) a colouring of each vertex by a colour on its list can be chosen such that adjacent vertices receive distinct colours. Does there exist some constant $c>0$ such that\[\chi_L(G)+\chi_L(G^c)> n^{1/2+c}\]for every graph $G$ on $n$ vertices (where $G^c$ is the complement of $G$)?
+# erdos_number: 753
+# erdos_status: open
+# priority_tier: P2
+# tags: chromatic_number, graph_theory
 
-def formal_target_e_753() -> int
+def erdos_e753_the_list_chromatic_number_chi_l_g_is_def() -> int
+  requires true
+  ensures result == 0  # open: E-753
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e753_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

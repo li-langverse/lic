@@ -1,10 +1,22 @@
-# Catalog: E-64
-# Statement: Does sum_{p prime} 1/(p log log p) diverge?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-64: Does sum_{p prime} 1/(p log log p) diverge?
+# erdos_number: 64
+# erdos_status: open
+# priority_tier: P2
+# tags: analytic_number_theory, primes
 
-def formal_target_e_64() -> int
+def erdos_e64_does_sum_p_prime_1_p_log_log_p_diverge() -> int
+  requires true
+  ensures result == 0  # open: E-64
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e64_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

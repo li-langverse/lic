@@ -1,10 +1,22 @@
-# Catalog: E-618
-# Statement: For a triangle-free graph $G$ let $h_2(G)$ be the smallest number of edges that need to be added to $G$ so that it has diameter $2$ and is still triangle-free. Is it true that if $G$ has maximum degree $o(n^{1/2})$ then $h(G)=o(n^2)$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-618: For a triangle-free graph $G$ let $h_2(G)$ be the smallest number of edges that need to be added to $G$ so that it has diameter $2$ and is still triangle-free. Is it true that if $G$ has maximum degree $o(n^{1/2})$ then $h(G)=o(n^2)$?
+# erdos_number: 618
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_618() -> int
+def erdos_e618_for_a_triangle_free_graph_g_let_h_2_g_be() -> int
+  requires true
+  ensures result == 0  # open: E-618
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e618_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

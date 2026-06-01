@@ -1,10 +1,22 @@
-# Catalog: E-712
-# Statement: Determine, for any $k>r>2$, the value of\[\frac{\mathrm{ex}_r(n,K_k^r)}{\binom{n}{r}},\]where $\mathrm{ex}_r(n,K_k^r)$ is the largest number of $r$-edges which can placed on $n$ vertices so that there exists no set of $k$ vertices which is 
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-712: Determine, for any $k>r>2$, the value of\[\frac{\mathrm{ex}_r(n,K_k^r)}{\binom{n}{r}},\]where $\mathrm{ex}_r(n,K_k^r)$ is the largest number of $r$-edges which can placed on $n$ vertices so that there exists no set of $k$ vertices which is covered by all $\binom{k}{r}$ possible $r$-edges.
+# erdos_number: 712
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, hypergraphs, turan_number
 
-def formal_target_e_712() -> int
+def erdos_e712_determine_for_any_k_r_2_the_value_of_fra() -> int
+  requires true
+  ensures result == 0  # open: E-712
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e712_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

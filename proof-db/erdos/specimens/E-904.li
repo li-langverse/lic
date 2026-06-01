@@ -1,10 +1,22 @@
-# Catalog: E-904
-# Statement: Let $r\geq 2$ and let $t_r(n)$ be the Turán number (the maximal number of edges in a graph on $n$ vertices with no $K_{r+1}$). If $G$ is a graph with $n$ vertices and $m\geq t_r(n)$ edges there exists a clique on $r$ vertices, say $x_1,\ldo
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-904: Let $r\geq 2$ and let $t_r(n)$ be the Turán number (the maximal number of edges in a graph on $n$ vertices with no $K_{r+1}$). If $G$ is a graph with $n$ vertices and $m\geq t_r(n)$ edges there exists a clique on $r$ vertices, say $x_1,\ldots,x_r$, such that\[d(x_1)+\cdots+d(x_r)\geq \frac{2rm}{n}.\]
+# erdos_number: 904
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_904() -> int
+def erdos_e904_let_r_geq_2_and_let_t_r_n_be_the_tur_n_n() -> int
+  requires true
+  ensures result == 0  # open: E-904
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e904_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

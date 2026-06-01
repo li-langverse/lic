@@ -1,10 +1,22 @@
-# Catalog: E-686
-# Statement: Can every integer $N\geq 2$ be written as\[N=\frac{\prod_{1\leq i\leq k}(m+i)}{\prod_{1\leq i\leq k}(n+i)}\]for some $k\geq 2$ and $m\geq n+k$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-686: Can every integer $N\geq 2$ be written as\[N=\frac{\prod_{1\leq i\leq k}(m+i)}{\prod_{1\leq i\leq k}(n+i)}\]for some $k\geq 2$ and $m\geq n+k$?
+# erdos_number: 686
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_686() -> int
+def erdos_e686_can_every_integer_n_geq_2_be_written_as() -> int
+  requires true
+  ensures result == 0  # open: E-686
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e686_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

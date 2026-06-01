@@ -1,10 +1,22 @@
-# Catalog: E-452
-# Statement: Let $\omega(n)$ count the number of distinct prime factors of $n$. What is the size of the largest interval $I\subseteq [x,2x]$ such that $\omega(n)>\log\log n$ for all $n\in I$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-452: Let $\omega(n)$ count the number of distinct prime factors of $n$. What is the size of the largest interval $I\subseteq [x,2x]$ such that $\omega(n)>\log\log n$ for all $n\in I$?
+# erdos_number: 452
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_452() -> int
+def erdos_e452_let_omega_n_count_the_number_of_distinct() -> int
+  requires true
+  ensures result == 0  # open: E-452
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e452_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-1164
-# Statement: Let $R_n$ be the maximal integer such that almost every random walk from the origin in $\mathbb{Z}^2$ visits every $x\in\mathbb{Z}^2$ with $\| x\|\leq R_n$ in at most $n$ steps. Is it true that\[\log R_n \asymp \sqrt{\log n}?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-1164: Let $R_n$ be the maximal integer such that almost every random walk from the origin in $\mathbb{Z}^2$ visits every $x\in\mathbb{Z}^2$ with $\| x\|\leq R_n$ in at most $n$ steps. Is it true that\[\log R_n \asymp \sqrt{\log n}?\]
+# erdos_number: 1164
+# erdos_status: proved
+# priority_tier: P2
+# tags: probability
 
-def formal_target_e_1164() -> int
+def erdos_e1164_let_r_n_be_the_maximal_integer_such_that() -> int
+  requires true
+  ensures result == 0  # open: E-1164
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1164_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

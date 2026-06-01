@@ -1,10 +1,22 @@
-# Catalog: E-73
-# Statement: Does the sum over primes p of 1/(p log p) vary slowly enough that partial sums determine convergence?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-73: Does the sum over primes p of 1/(p log p) vary slowly enough that partial sums determine convergence?
+# erdos_number: 73
+# erdos_status: open
+# priority_tier: P3
+# tags: analytic_number_theory, primes
 
-def formal_target_e_73() -> int
+def erdos_e73_does_the_sum_over_primes_p_of_1_p_log_p() -> int
+  requires true
+  ensures result == 0  # open: E-73
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e73_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

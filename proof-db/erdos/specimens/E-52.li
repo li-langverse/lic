@@ -1,27 +1,26 @@
-# Catalog: E-52
-# Statement: For finite A subset Z and every epsilon>0, is max(|A+A|,|AA|) >>_epsilon |A|^{2-epsilon}?
-# formalization_status: li_open
-# partial: proof-db/erdos/specimens/E-52-partial-sumset-card.li (CLM-E52-004)
-# erdos_status (literature): open — real-field variant disproved May 2026; Z variant open
+# E-52: For finite A subset Z and every epsilon>0, is max(|A+A|,|AA|) >>_epsilon |A|^{2-epsilon} (integer sum-product)?
+# erdos_number: 52
+# erdos_status: open
+# priority_tier: P0
+# tags: number_theory, additive_combinatorics, sum_product
+# context: Sum-product phenomenon for finite A⊂ℤ: max(|A+A|,|AA|) should exceed |A|^{2-ε} for every ε>0.
+# context: Central to additive combinatorics and expander heuristics..
 
-def sumset_cardinality_lower_bound(n: int) -> int
-  requires n >= 1
-  ensures result >= n
+def erdos_e52_for_finite_a_subset_z_and_every_epsilon() -> int
+  requires true
+  ensures result == 0  # open: E-52
   decreases 0
 =
-  return n
+  return 0
 
-def sum_product_formal_target(n: int) -> int
-  requires n >= 2
-  ensures result >= sumset_cardinality_lower_bound(n)
+extern proc erdos_e52_open_witness() -> int
+  requires true
+  ensures result == 0
   decreases 0
-=
-  return sumset_cardinality_lower_bound(n)
 
-def formal_target_e_52() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var k: int = sum_product_formal_target(5)
   return 0

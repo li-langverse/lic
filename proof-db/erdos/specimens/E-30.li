@@ -1,10 +1,22 @@
-# Catalog: E-30
-# Statement: Let $h(N)$ be the maximum size of a Sidon set in $\{1,\ldots,N\}$. Is it true that, for every $\epsilon>0$,\[h(N) = N^{1/2}+O_\epsilon(N^\epsilon)?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-30: Let $h(N)$ be the maximum size of a Sidon set in $\{1,\ldots,N\}$. Is it true that, for every $\epsilon>0$,\[h(N) = N^{1/2}+O_\epsilon(N^\epsilon)?\]
+# erdos_number: 30
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, number_theory, sidon_sets
 
-def formal_target_e_30() -> int
+def erdos_e30_let_h_n_be_the_maximum_size_of_a_sidon_s() -> int
+  requires true
+  ensures result == 0  # open: E-30
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e30_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

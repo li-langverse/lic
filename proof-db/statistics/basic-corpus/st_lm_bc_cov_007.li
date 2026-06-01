@@ -1,0 +1,15 @@
+# ST-LM-BC-COV-007: Covariance Cov(X,Y) = E[XY]-E[X]E[Y] (case 7).
+
+def covariance(exy: float, ex: float, ey: float) -> float
+  requires true
+  ensures result == exy - ex * ey
+  decreases 0
+=
+  return exy - ex * ey
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

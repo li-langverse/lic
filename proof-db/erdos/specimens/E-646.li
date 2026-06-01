@@ -1,10 +1,22 @@
-# Catalog: E-646
-# Statement: Let $p_1,\ldots,p_k$ be distinct primes. Are there infinitely many $n$ such that $n!$ is divisible by an even power of each of the $p_i$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-646: Let $p_1,\ldots,p_k$ be distinct primes. Are there infinitely many $n$ such that $n!$ is divisible by an even power of each of the $p_i$?
+# erdos_number: 646
+# erdos_status: proved
+# priority_tier: P2
+# tags: factorials, number_theory
 
-def formal_target_e_646() -> int
+def erdos_e646_let_p_1_ldots_p_k_be_distinct_primes_are() -> int
+  requires true
+  ensures result == 0  # open: E-646
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e646_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

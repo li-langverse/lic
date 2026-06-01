@@ -1,20 +1,26 @@
-# Catalog: E-20
-# Statement: Is f(n,k) < c_k^n for sunflower families (Erdős–Rado)?
-# formalization_status: li_open
-# partial: proof-db/erdos/specimens/E-20-partial-k1-sunflower.li
-# erdos_status (literature): open — Bloom Top 10; $1000 prize for k=3
+# E-20: Let f(n,k) be minimal such that every family of n-uniform sets of size >= f(n,k) contains a k-sunflower. Is f(n,k) < c_k^n for some constant c_k>0?
+# erdos_number: 20
+# erdos_status: open
+# priority_tier: P0
+# tags: combinatorics, sunflower
+# context: Hypergraph sunflower / uniform family extremal problem on Erdős–Rado type bounds f(n,k).
+# context: Listed among Bloom's top open Erdős problems with a $1000 prize for k=3..
 
-def sunflower_base_case_f(n: int) -> int
-  requires n >= 1
-  ensures result >= 1
+def erdos_e20_let_f_n_k_be_minimal_such_that_every_fam() -> int
+  requires true
+  ensures result == 0  # open: E-20
   decreases 0
 =
-  return 1
+  return 0
 
-def formal_target_e_20() -> int
+extern proc erdos_e20_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var f: int = sunflower_base_case_f(4)
   return 0

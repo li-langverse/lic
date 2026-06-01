@@ -1,10 +1,22 @@
-# Catalog: E-1173
-# Statement: Assume the generalised continuum hypothesis. Let\[f: \omega_{\omega+1}\to [\omega_{\omega+1}]^{\leq \aleph_\omega}\]be a set mapping such that\[\lvert f(\alpha)\cap f(\beta)\rvert <\aleph_\omega\]for all $\alpha\neq \beta$. Does there exist
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1173: Assume the generalised continuum hypothesis. Let\[f: \omega_{\omega+1}\to [\omega_{\omega+1}]^{\leq \aleph_\omega}\]be a set mapping such that\[\lvert f(\alpha)\cap f(\beta)\rvert <\aleph_\omega\]for all $\alpha\neq \beta$. Does there exist a free set of cardinality $\aleph_{\omega+1}$?
+# erdos_number: 1173
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics, set_theory
 
-def formal_target_e_1173() -> int
+def erdos_e1173_assume_the_generalised_continuum_hypothe() -> int
+  requires true
+  ensures result == 0  # open: E-1173
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1173_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

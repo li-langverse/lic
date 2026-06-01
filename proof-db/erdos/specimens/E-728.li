@@ -1,10 +1,22 @@
-# Catalog: E-728
-# Statement: Let $C>0$ and $\epsilon>0$ be sufficiently small. Are there infinitely many integers $a,b,n$ with $a\geq \epsilon n$ and $b\geq \epsilon n$ such that\[a! b! \mid n!(a+b-n)!\]and $a+b>n+C\log n$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-728: Let $C>0$ and $\epsilon>0$ be sufficiently small. Are there infinitely many integers $a,b,n$ with $a\geq \epsilon n$ and $b\geq \epsilon n$ such that\[a! b! \mid n!(a+b-n)!\]and $a+b>n+C\log n$?
+# erdos_number: 728
+# erdos_status: proved
+# priority_tier: P2
+# tags: factorials, number_theory
 
-def formal_target_e_728() -> int
+def erdos_e728_let_c_0_and_epsilon_0_be_sufficiently_sm() -> int
+  requires true
+  ensures result == 0  # open: E-728
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e728_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

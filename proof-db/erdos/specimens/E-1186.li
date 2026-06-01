@@ -1,10 +1,22 @@
-# Catalog: E-1186
-# Statement: Let $\delta_k$ be such that in any $2$-colouring of $\{1,\ldots,n\}$ there exist at least $(\delta_k+o(1))n^2$ many monochromatic $k$-term arithmetic progressions. Give reasonable bounds (or even an asymptotic formula) for $\delta_k$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1186: Let $\delta_k$ be such that in any $2$-colouring of $\{1,\ldots,n\}$ there exist at least $(\delta_k+o(1))n^2$ many monochromatic $k$-term arithmetic progressions. Give reasonable bounds (or even an asymptotic formula) for $\delta_k$.
+# erdos_number: 1186
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, arithmetic_progressions
 
-def formal_target_e_1186() -> int
+def erdos_e1186_let_delta_k_be_such_that_in_any_2_colour() -> int
+  requires true
+  ensures result == 0  # open: E-1186
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1186_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

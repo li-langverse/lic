@@ -1,10 +1,22 @@
-# Catalog: E-229
-# Statement: Let $(S_n)_{n\geq 1}$ be a sequence of sets of complex numbers, none of which have a finite limit point. Does there exist an entire transcendental function $f(z)$ such that, for all $n\geq 1$, there exists some $k_n\geq 0$ such that\[f^{(k_
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-229: Let $(S_n)_{n\geq 1}$ be a sequence of sets of complex numbers, none of which have a finite limit point. Does there exist an entire transcendental function $f(z)$ such that, for all $n\geq 1$, there exists some $k_n\geq 0$ such that\[f^{(k_n)}(z) = 0\textrm{ for all }z\in S_n?\]
+# erdos_number: 229
+# erdos_status: proved
+# priority_tier: P2
+# tags: analysis, iterated_functions
 
-def formal_target_e_229() -> int
+def erdos_e229_let_s_n_n_geq_1_be_a_sequence_of_sets_of() -> int
+  requires true
+  ensures result == 0  # open: E-229
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e229_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

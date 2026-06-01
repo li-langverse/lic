@@ -1,10 +1,22 @@
-# Catalog: E-784
-# Statement: Let $C>0$. Does there exist a $c>0$ (depending on $C$) such that, for all sufficiently large $x$, if $A\subseteq [1,x]$ has $\sum_{n\in A}\frac{1}{n}\leq C$ then\[\#\{ m\leq x : a\nmid m\textrm{ for all }a\in A\}\gg\frac{x}{(\log x)^c}?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-784: Let $C>0$. Does there exist a $c>0$ (depending on $C$) such that, for all sufficiently large $x$, if $A\subseteq [1,x]$ has $\sum_{n\in A}\frac{1}{n}\leq C$ then\[\#\{ m\leq x : a\nmid m\textrm{ for all }a\in A\}\gg\frac{x}{(\log x)^c}?\]
+# erdos_number: 784
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_784() -> int
+def erdos_e784_let_c_0_does_there_exist_a_c_0_depending() -> int
+  requires true
+  ensures result == 0  # open: E-784
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e784_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

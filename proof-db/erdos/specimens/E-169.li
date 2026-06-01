@@ -1,10 +1,22 @@
-# Catalog: E-169
-# Statement: Let $k\geq 3$ and $f(k)$ be the supremum of $\sum_{n\in A}\frac{1}{n}$ as $A$ ranges over all sets of positive integers which do not contain a $k$-term arithmetic progression. Estimate $f(k)$. Is\[\lim_{k\to \infty}\frac{f(k)}{\log W(k)}=\i
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-169: Let $k\geq 3$ and $f(k)$ be the supremum of $\sum_{n\in A}\frac{1}{n}$ as $A$ ranges over all sets of positive integers which do not contain a $k$-term arithmetic progression. Estimate $f(k)$. Is\[\lim_{k\to \infty}\frac{f(k)}{\log W(k)}=\infty\]where $W(k)$ is the van der Waerden number?
+# erdos_number: 169
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, arithmetic_progressions
 
-def formal_target_e_169() -> int
+def erdos_e169_let_k_geq_3_and_f_k_be_the_supremum_of_s() -> int
+  requires true
+  ensures result == 0  # open: E-169
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e169_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

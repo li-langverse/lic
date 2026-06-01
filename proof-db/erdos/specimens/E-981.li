@@ -1,10 +1,22 @@
-# Catalog: E-981
-# Statement: Let $\epsilon>0$ and $f_\epsilon(p)$ be the smallest integer $m$ such that $\sum_{n\leq N} \left(\frac{n}{p}\right)<\epsilon N$ for all $N\geq m$. Prove that\[\sum_{p<x}f_\epsilon(p)\sim c_\epsilon \frac{x}{\log x}\]for some $c_\epsilon>0$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-981: Let $\epsilon>0$ and $f_\epsilon(p)$ be the smallest integer $m$ such that $\sum_{n\leq N} \left(\frac{n}{p}\right)<\epsilon N$ for all $N\geq m$. Prove that\[\sum_{p<x}f_\epsilon(p)\sim c_\epsilon \frac{x}{\log x}\]for some $c_\epsilon>0$.
+# erdos_number: 981
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_981() -> int
+def erdos_e981_let_epsilon_0_and_f_epsilon_p_be_the_sma() -> int
+  requires true
+  ensures result == 0  # open: E-981
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e981_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-151
-# Statement: For a graph $G$ let $\tau(G)$ denote the minimal number of vertices that include at least one from each maximal clique of $G$ on at least two vertices (sometimes called the clique transversal number). Let $H(n)$ be maximal such that every t
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-151: For a graph $G$ let $\tau(G)$ denote the minimal number of vertices that include at least one from each maximal clique of $G$ on at least two vertices (sometimes called the clique transversal number). Let $H(n)$ be maximal such that every triangle-free graph on $n$ vertices contains an independent set on $H(n)$ vertices. If $G$ is a graph on $n$ vertices then is\[\tau(G)\leq n-H(n)?\]
+# erdos_number: 151
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_151() -> int
+def erdos_e151_for_a_graph_g_let_tau_g_denote_the_minim() -> int
+  requires true
+  ensures result == 0  # open: E-151
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e151_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

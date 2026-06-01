@@ -1,10 +1,22 @@
-# Catalog: E-566
-# Statement: Let $G$ be such that any subgraph on $k$ vertices has at most $2k-3$ edges. Is it true that, if $H$ has $m$ edges and no isolated vertices, then\[R(G,H)\ll m?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-566: Let $G$ be such that any subgraph on $k$ vertices has at most $2k-3$ edges. Is it true that, if $H$ has $m$ edges and no isolated vertices, then\[R(G,H)\ll m?\]
+# erdos_number: 566
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
 
-def formal_target_e_566() -> int
+def erdos_e566_let_g_be_such_that_any_subgraph_on_k_ver() -> int
+  requires true
+  ensures result == 0  # open: E-566
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e566_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

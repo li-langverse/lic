@@ -1,10 +1,22 @@
-# Catalog: E-111
-# Statement: If $G$ is a graph let $h_G(n)$ be defined such that any subgraph of $G$ on $n$ vertices can be made bipartite after deleting at most $h_G(n)$ edges. What is the behaviour of $h_G(n)$? Is it true that $h_G(n)/n\to \infty$ for every graph $G$
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-111: If $G$ is a graph let $h_G(n)$ be defined such that any subgraph of $G$ on $n$ vertices can be made bipartite after deleting at most $h_G(n)$ edges. What is the behaviour of $h_G(n)$? Is it true that $h_G(n)/n\to \infty$ for every graph $G$ with chromatic number $\aleph_1$?
+# erdos_number: 111
+# erdos_status: open
+# priority_tier: P2
+# tags: chromatic_number, graph_theory, set_theory
 
-def formal_target_e_111() -> int
+def erdos_e111_if_g_is_a_graph_let_h_g_n_be_defined_suc() -> int
+  requires true
+  ensures result == 0  # open: E-111
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e111_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

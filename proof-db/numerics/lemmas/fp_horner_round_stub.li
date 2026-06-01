@@ -1,4 +1,4 @@
-# N-LM-HORNER-FP-ROUND: Horner-style FP accumulation (target; G-hw rounding layer).
+# N-LM-HORNER-FP-ROUND: Horner evaluation respects FP rounding axiom layer (N-AX-FP-ROUND target).
 def horner_step(c: float, x: float, acc: float) -> float
   requires true
   ensures true

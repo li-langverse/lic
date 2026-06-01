@@ -1,10 +1,22 @@
-# Catalog: E-220
-# Statement: Let $n\geq 1$ and\[A=\{a_1<\cdots <a_{\phi(n)}\}=\{ 1\leq m<n : (m,n)=1\}.\]Is it true that\[ \sum_{1\leq k<\phi(n)}(a_{k+1}-a_k)^2 \ll \frac{n^2}{\phi(n)}?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-220: Let $n\geq 1$ and\[A=\{a_1<\cdots <a_{\phi(n)}\}=\{ 1\leq m<n : (m,n)=1\}.\]Is it true that\[ \sum_{1\leq k<\phi(n)}(a_{k+1}-a_k)^2 \ll \frac{n^2}{\phi(n)}?\]
+# erdos_number: 220
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_220() -> int
+def erdos_e220_let_n_geq_1_and_a_a_1_cdots_a_phi_n_1_le() -> int
+  requires true
+  ensures result == 0  # open: E-220
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e220_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

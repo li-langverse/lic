@@ -1,10 +1,22 @@
-# Catalog: E-987
-# Statement: Let $x_1,x_2,\ldots \in (0,1)$ be an infinite sequence and let\[A_k=\limsup_{n\to \infty}\left\lvert \sum_{j\leq n} e(kx_j)\right\rvert,\]where $e(x)=e^{2\pi ix}$. Is it true that\[\limsup_{k\to \infty} A_k=\infty?\]Is it possible for $A_k=
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-987: Let $x_1,x_2,\ldots \in (0,1)$ be an infinite sequence and let\[A_k=\limsup_{n\to \infty}\left\lvert \sum_{j\leq n} e(kx_j)\right\rvert,\]where $e(x)=e^{2\pi ix}$. Is it true that\[\limsup_{k\to \infty} A_k=\infty?\]Is it possible for $A_k=o(k)$?
+# erdos_number: 987
+# erdos_status: proved
+# priority_tier: P2
+# tags: analysis, discrepancy
 
-def formal_target_e_987() -> int
+def erdos_e987_let_x_1_x_2_ldots_in_0_1_be_an_infinite() -> int
+  requires true
+  ensures result == 0  # open: E-987
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e987_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

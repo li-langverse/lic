@@ -1,10 +1,22 @@
-# Catalog: E-40
-# Statement: For what functions $g(N)\to \infty$ is it true that\[\lvert A\cap \{1,\ldots,N\}\rvert \gg \frac{N^{1/2}}{g(N)}\]implies $\limsup 1_A\ast 1_A(n)=\infty$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-40: For what functions $g(N)\to \infty$ is it true that\[\lvert A\cap \{1,\ldots,N\}\rvert \gg \frac{N^{1/2}}{g(N)}\]implies $\limsup 1_A\ast 1_A(n)=\infty$?
+# erdos_number: 40
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_basis, number_theory
 
-def formal_target_e_40() -> int
+def erdos_e40_for_what_functions_g_n_to_infty_is_it_tr() -> int
+  requires true
+  ensures result == 0  # open: E-40
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e40_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

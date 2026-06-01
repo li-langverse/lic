@@ -1,10 +1,22 @@
-# Catalog: E-1035
-# Statement: Is there a constant $c>0$ such that every graph on $2^n$ vertices with minimum degree $>(1-c)2^n$ contains the $n$-dimensional hypercube $Q_n$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1035: Is there a constant $c>0$ such that every graph on $2^n$ vertices with minimum degree $>(1-c)2^n$ contains the $n$-dimensional hypercube $Q_n$?
+# erdos_number: 1035
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_1035() -> int
+def erdos_e1035_is_there_a_constant_c_0_such_that_every() -> int
+  requires true
+  ensures result == 0  # open: E-1035
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1035_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

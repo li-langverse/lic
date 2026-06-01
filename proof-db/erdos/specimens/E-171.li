@@ -1,10 +1,22 @@
-# Catalog: E-171
-# Statement: Is it true that for every $\epsilon>0$ and integer $t\geq 1$, if $N$ is sufficiently large and $A$ is a subset of $[t]^N$ of size at least $\epsilon t^N$ then $A$ must contain a combinatorial line $P$ (a set $P=\{p_1,\ldots,p_t\}$ where for
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-171: Is it true that for every $\epsilon>0$ and integer $t\geq 1$, if $N$ is sufficiently large and $A$ is a subset of $[t]^N$ of size at least $\epsilon t^N$ then $A$ must contain a combinatorial line $P$ (a set $P=\{p_1,\ldots,p_t\}$ where for each coordinate $1\leq j\leq t$ the $j$th coordinate of $p_i$ is either $i$ or constant).
+# erdos_number: 171
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_combinatorics, combinatorics
 
-def formal_target_e_171() -> int
+def erdos_e171_is_it_true_that_for_every_epsilon_0_and() -> int
+  requires true
+  ensures result == 0  # open: E-171
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e171_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

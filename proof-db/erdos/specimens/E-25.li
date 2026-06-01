@@ -1,21 +1,25 @@
-# Catalog: E-25
-# Statement: Are prime gaps o((log n)^2) infinitely often?
-# formalization_status: li_open
-# partial: proof-db/erdos/specimens/E-25-partial-gap-positive.li
-# erdos_status (literature): open
+# E-25: Are prime gaps o((log n)^2) infinitely often (better than trivial Cramer-type bounds)?
+# erdos_number: 25
+# erdos_status: target
+# priority_tier: P0
+# tags: primes, prime_gaps
+# context: Asks for infinitely often prime gaps smaller than any fixed power of log n beyond the trivial o((log n)^2) target; ties to Cramér-type heuristics and recent bounded-gap results..
 
-def consecutive_prime_gap_positive(p_next: int, p_curr: int) -> int
-  requires p_next > p_curr
-  requires p_curr >= 2
-  ensures result >= 1
+def erdos_e25_are_prime_gaps_o_log_n_2_infinitely_ofte() -> int
+  requires true
+  ensures result == 0  # open: E-25
   decreases 0
 =
-  return p_next - p_curr
+  return 0
 
-def formal_target_e_25() -> int
+extern proc erdos_e25_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var gap: int = consecutive_prime_gap_positive(5, 3)
   return 0

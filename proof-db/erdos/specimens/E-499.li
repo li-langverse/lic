@@ -1,10 +1,22 @@
-# Catalog: E-499
-# Statement: Let $M=(a_{ij})$ be a real $n\times n$ doubly stochastic matrix (i.e. the entries are non-negative and each column and row sums to $1$). Does there exist some $\sigma\in S_n$ such that\[\prod_{1\leq i\leq n}a_{i\sigma(i)}\geq n^{-n}?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-499: Let $M=(a_{ij})$ be a real $n\times n$ doubly stochastic matrix (i.e. the entries are non-negative and each column and row sums to $1$). Does there exist some $\sigma\in S_n$ such that\[\prod_{1\leq i\leq n}a_{i\sigma(i)}\geq n^{-n}?\]
+# erdos_number: 499
+# erdos_status: proved
+# priority_tier: P2
+# tags: combinatorics
 
-def formal_target_e_499() -> int
+def erdos_e499_let_m_a_ij_be_a_real_n_times_n_doubly_st() -> int
+  requires true
+  ensures result == 0  # open: E-499
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e499_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

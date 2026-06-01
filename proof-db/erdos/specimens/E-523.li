@@ -1,10 +1,22 @@
-# Catalog: E-523
-# Statement: Let $f(z)=\sum_{0\leq k\leq n} \epsilon_k z^k$ be a random polynomial, where $\epsilon_k\in \{-1,1\}$ independently uniformly at random for $0\leq k\leq n$. Does there exist some constant $C>0$ such that, almost surely,\[\max_{\lvert z\rver
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-523: Let $f(z)=\sum_{0\leq k\leq n} \epsilon_k z^k$ be a random polynomial, where $\epsilon_k\in \{-1,1\}$ independently uniformly at random for $0\leq k\leq n$. Does there exist some constant $C>0$ such that, almost surely,\[\max_{\lvert z\rvert=1}\left\lvert \sum_{k\leq n}\epsilon_k(t)z^k\right\rvert=(C+o(1))\sqrt{n\log n}?\]
+# erdos_number: 523
+# erdos_status: proved
+# priority_tier: P2
+# tags: analysis, polynomials, probability
 
-def formal_target_e_523() -> int
+def erdos_e523_let_f_z_sum_0_leq_k_leq_n_epsilon_k_z_k() -> int
+  requires true
+  ensures result == 0  # open: E-523
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e523_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

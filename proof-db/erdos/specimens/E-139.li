@@ -1,10 +1,22 @@
-# Catalog: E-139
-# Statement: Let $r_k(N)$ be the size of the largest subset of $\{1,\ldots,N\}$ which does not contain a non-trivial $k$-term arithmetic progression. Prove that $r_k(N)=o(N)$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-139: Let $r_k(N)$ be the size of the largest subset of $\{1,\ldots,N\}$ which does not contain a non-trivial $k$-term arithmetic progression. Prove that $r_k(N)=o(N)$.
+# erdos_number: 139
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_combinatorics, arithmetic_progressions
 
-def formal_target_e_139() -> int
+def erdos_e139_let_r_k_n_be_the_size_of_the_largest_sub() -> int
+  requires true
+  ensures result == 0  # open: E-139
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e139_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

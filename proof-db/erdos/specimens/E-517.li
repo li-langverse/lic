@@ -1,10 +1,22 @@
-# Catalog: E-517
-# Statement: Let $f(z)=\sum_{k=1}^\infty a_kz^{n_k}$ be an entire function (with $a_k\neq 0$ for all $k\geq 1$). Is it true that if $n_k/k\to \infty$ then $f(z)$ assumes every value infinitely often?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-517: Let $f(z)=\sum_{k=1}^\infty a_kz^{n_k}$ be an entire function (with $a_k\neq 0$ for all $k\geq 1$). Is it true that if $n_k/k\to \infty$ then $f(z)$ assumes every value infinitely often?
+# erdos_number: 517
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis
 
-def formal_target_e_517() -> int
+def erdos_e517_let_f_z_sum_k_1_infty_a_kz_n_k_be_an_ent() -> int
+  requires true
+  ensures result == 0  # open: E-517
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e517_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

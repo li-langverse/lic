@@ -1,10 +1,22 @@
-# Catalog: E-358
-# Statement: Let $A=\{a_1<\cdots\}$ be an infinite sequence of integers. Let $f(n)$ count the number of solutions to\[n=\sum_{u\leq i\leq v}a_i.\]Is there such an $A$ for which $f(n)\to \infty$ as $n\to \infty$? Or even where $f(n)\geq 2$ for all large 
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-358: Let $A=\{a_1<\cdots\}$ be an infinite sequence of integers. Let $f(n)$ count the number of solutions to\[n=\sum_{u\leq i\leq v}a_i.\]Is there such an $A$ for which $f(n)\to \infty$ as $n\to \infty$? Or even where $f(n)\geq 2$ for all large $n$?
+# erdos_number: 358
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_basis, number_theory, primes
 
-def formal_target_e_358() -> int
+def erdos_e358_let_a_a_1_cdots_be_an_infinite_sequence() -> int
+  requires true
+  ensures result == 0  # open: E-358
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e358_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

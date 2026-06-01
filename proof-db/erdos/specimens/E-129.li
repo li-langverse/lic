@@ -1,10 +1,22 @@
-# Catalog: E-129
-# Statement: Let $R(n;k,r)$ be the smallest $N$ such that if the edges of $K_N$ are $r$-coloured then there is a set of $n$ vertices which does not contain a copy of $K_k$ in at least one of the $r$ colours. Prove that there is a constant $C=C(r)>1$ suc
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-129: Let $R(n;k,r)$ be the smallest $N$ such that if the edges of $K_N$ are $r$-coloured then there is a set of $n$ vertices which does not contain a copy of $K_k$ in at least one of the $r$ colours. Prove that there is a constant $C=C(r)>1$ such that\[R(n;3,r) < C^{\sqrt{n}}.\]
+# erdos_number: 129
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
 
-def formal_target_e_129() -> int
+def erdos_e129_let_r_n_k_r_be_the_smallest_n_such_that() -> int
+  requires true
+  ensures result == 0  # open: E-129
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e129_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

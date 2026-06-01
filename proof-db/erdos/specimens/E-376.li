@@ -1,10 +1,22 @@
-# Catalog: E-376
-# Statement: Are there infinitely many $n$ such that $\binom{2n}{n}$ is coprime to $105$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-376: Are there infinitely many $n$ such that $\binom{2n}{n}$ is coprime to $105$?
+# erdos_number: 376
+# erdos_status: open
+# priority_tier: P2
+# tags: base_representations, binomial_coefficients, number_theory
 
-def formal_target_e_376() -> int
+def erdos_e376_are_there_infinitely_many_n_such_that_bi() -> int
+  requires true
+  ensures result == 0  # open: E-376
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e376_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-1175
-# Statement: Let $\kappa$ be an uncountable cardinal. Must there exist a cardinal $\lambda$ such that every graph with chromatic number $\lambda$ contains a triangle-free subgraph with chromatic number $\kappa$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1175: Let $\kappa$ be an uncountable cardinal. Must there exist a cardinal $\lambda$ such that every graph with chromatic number $\lambda$ contains a triangle-free subgraph with chromatic number $\kappa$?
+# erdos_number: 1175
+# erdos_status: open
+# priority_tier: P2
+# tags: chromatic_number, set_theory
 
-def formal_target_e_1175() -> int
+def erdos_e1175_let_kappa_be_an_uncountable_cardinal_mus() -> int
+  requires true
+  ensures result == 0  # open: E-1175
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1175_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,24 @@
-# Catalog: E-128
-# Statement: Is the number of primes less than x equal to Li(x) + O(sqrt(x) log x) (Riemann hypothesis consequence)?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-128: Is the number of primes less than x equal to Li(x) + O(sqrt(x) log x) (Riemann hypothesis consequence)?
+# erdos_number: 128
+# erdos_status: open
+# priority_tier: P0
+# tags: primes, zeta
+# context: Error term for π(x) vs Li(x) at Riemann-hypothesis strength.
+# context: Equivalent to RH in standard formulations; catalogued as an Erdős-flavored open target..
 
-def formal_target_e_128() -> int
+def erdos_e128_is_the_number_of_primes_less_than_x_equa() -> int
+  requires true
+  ensures result == 0  # open: E-128
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e128_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

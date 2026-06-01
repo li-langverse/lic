@@ -1,10 +1,22 @@
-# Catalog: E-416
-# Statement: Let $V(x)$ count the number of $n\leq x$ such that $\phi(m)=n$ is solvable. Does $V(2x)/V(x)\to 2$? Is there an asymptotic formula for $V(x)$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-416: Let $V(x)$ count the number of $n\leq x$ such that $\phi(m)=n$ is solvable. Does $V(2x)/V(x)\to 2$? Is there an asymptotic formula for $V(x)$?
+# erdos_number: 416
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_416() -> int
+def erdos_e416_let_v_x_count_the_number_of_n_leq_x_such() -> int
+  requires true
+  ensures result == 0  # open: E-416
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e416_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

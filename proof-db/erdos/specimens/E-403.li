@@ -1,10 +1,22 @@
-# Catalog: E-403
-# Statement: Does the equation\[2^m=a_1!+\cdots+a_k!\]with $a_1<a_2<\cdots <a_k$ have only finitely many solutions?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-403: Does the equation\[2^m=a_1!+\cdots+a_k!\]with $a_1<a_2<\cdots <a_k$ have only finitely many solutions?
+# erdos_number: 403
+# erdos_status: proved
+# priority_tier: P2
+# tags: factorials, number_theory
 
-def formal_target_e_403() -> int
+def erdos_e403_does_the_equation_2_m_a_1_cdots_a_k_with() -> int
+  requires true
+  ensures result == 0  # open: E-403
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e403_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

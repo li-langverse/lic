@@ -1,10 +1,22 @@
-# Catalog: E-871
-# Statement: Let $A$ be an additive basis of order $2$, and suppose $1_A\ast 1_A(n)\to \infty$ as $n\to \infty$. Can $A$ be partitioned into two disjoint additive bases of order $2$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-871: Let $A$ be an additive basis of order $2$, and suppose $1_A\ast 1_A(n)\to \infty$ as $n\to \infty$. Can $A$ be partitioned into two disjoint additive bases of order $2$?
+# erdos_number: 871
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_basis, number_theory
 
-def formal_target_e_871() -> int
+def erdos_e871_let_a_be_an_additive_basis_of_order_2_an() -> int
+  requires true
+  ensures result == 0  # open: E-871
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e871_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

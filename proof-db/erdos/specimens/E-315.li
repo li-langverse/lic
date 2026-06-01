@@ -1,10 +1,22 @@
-# Catalog: E-315
-# Statement: Let $u_1=1$ and $u_{n+1}=u_n(u_n+1)$, so that $\sum_{k\geq 1}\frac{1}{u_k+1}$ and $u_k=\lfloor c_0^{2^k}+1\rfloor$ for $k\geq 1$, where\[c_0=\lim u_n^{1/2^n}=1.264085\cdots.\]Let $a_1<a_2<\cdots $ be any other sequence with $\sum \frac{1}{a
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-315: Let $u_1=1$ and $u_{n+1}=u_n(u_n+1)$, so that $\sum_{k\geq 1}\frac{1}{u_k+1}$ and $u_k=\lfloor c_0^{2^k}+1\rfloor$ for $k\geq 1$, where\[c_0=\lim u_n^{1/2^n}=1.264085\cdots.\]Let $a_1<a_2<\cdots $ be any other sequence with $\sum \frac{1}{a_k}=1$. Is it true that\[\liminf a_n^{1/2^n}<c_0=1.264085\cdots?\]
+# erdos_number: 315
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory, unit_fractions
 
-def formal_target_e_315() -> int
+def erdos_e315_let_u_1_1_and_u_n_1_u_n_u_n_1_so_that_su() -> int
+  requires true
+  ensures result == 0  # open: E-315
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e315_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

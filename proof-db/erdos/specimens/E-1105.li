@@ -1,10 +1,22 @@
-# Catalog: E-1105
-# Statement: The anti-Ramsey number $\mathrm{AR}(n,G)$ is the maximum possible number of colours in which the edges of $K_n$ can be coloured without creating a rainbow copy of $G$ (i.e. one in which all edges have different colours). Let $C_k$ be the cy
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-1105: The anti-Ramsey number $\mathrm{AR}(n,G)$ is the maximum possible number of colours in which the edges of $K_n$ can be coloured without creating a rainbow copy of $G$ (i.e. one in which all edges have different colours). Let $C_k$ be the cycle on $k$ vertices. Is it true that\[\mathrm{AR}(n,C_k)=\left(\frac{k-2}{2}+\frac{1}{k-1}\right)n+O(1)?\]Let $P_k$ be the path on $k$ vertices and $\ell=\lfloor\frac{k-1}{2}\rfloor$. If $n\geq k\geq 5$ then is $\mathrm{AR}(n,P_k)$ equal to\[\max\left(\binom{k-2}{2}+1, \binom{\ell-1}{2}+(\ell-1)(n-\ell+1)+\epsilon\right)\]where $\epsilon=1$ if $k$ is odd and $\epsilon=2$ otherwise?
+# erdos_number: 1105
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
 
-def formal_target_e_1105() -> int
+def erdos_e1105_the_anti_ramsey_number_mathrm_ar_n_g_is() -> int
+  requires true
+  ensures result == 0  # open: E-1105
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1105_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-230
-# Statement: Let $P(z)=\sum_{1\leq k\leq n}a_kz^k$ for some $a_k\in \mathbb{C}$ with $\lvert a_k\rvert=1$ for $1\leq k\leq n$. Does there exist a constant $c>0$ such that, for $n\geq 2$, we have\[\max_{\lvert z\rvert=1}\lvert P(z)\rvert \geq (1+c)\sqrt{
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-230: Let $P(z)=\sum_{1\leq k\leq n}a_kz^k$ for some $a_k\in \mathbb{C}$ with $\lvert a_k\rvert=1$ for $1\leq k\leq n$. Does there exist a constant $c>0$ such that, for $n\geq 2$, we have\[\max_{\lvert z\rvert=1}\lvert P(z)\rvert \geq (1+c)\sqrt{n}?\]
+# erdos_number: 230
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis, polynomials
 
-def formal_target_e_230() -> int
+def erdos_e230_let_p_z_sum_1_leq_k_leq_n_a_kz_k_for_som() -> int
+  requires true
+  ensures result == 0  # open: E-230
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e230_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

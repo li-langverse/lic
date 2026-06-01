@@ -1,10 +1,22 @@
-# Catalog: E-1009
-# Statement: Is it true that, for every $c>0$, there exists $f(c)$ such that every graph on $n$ vertices with at least $\lfloor n^2/4\rfloor+k$ edges, where $k<c n$, contains at least $k-f(c)$ many edge disjoint triangles?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-1009: Is it true that, for every $c>0$, there exists $f(c)$ such that every graph on $n$ vertices with at least $\lfloor n^2/4\rfloor+k$ edges, where $k<c n$, contains at least $k-f(c)$ many edge disjoint triangles?
+# erdos_number: 1009
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_1009() -> int
+def erdos_e1009_is_it_true_that_for_every_c_0_there_exis() -> int
+  requires true
+  ensures result == 0  # open: E-1009
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1009_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

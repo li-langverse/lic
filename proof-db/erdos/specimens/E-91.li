@@ -1,10 +1,22 @@
-# Catalog: E-91
-# Statement: Are there arbitrarily long runs of consecutive composite integers?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-91: Are there arbitrarily long runs of consecutive composite integers?
+# erdos_number: 91
+# erdos_status: proved
+# priority_tier: P1
+# tags: primes, composites
 
-def formal_target_e_91() -> int
+def erdos_e91_are_there_arbitrarily_long_runs_of_conse() -> int
+  requires true
+  ensures result == 0  # open: E-91
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e91_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-1016
-# Statement: Let $h(n)$ be minimal such that there is a graph on $n$ vertices with $n+h(n)$ edges which contains a cycle on $k$ vertices, for all $3\leq k\leq n$. Estimate $h(n)$. In particular, is it true that\[h(n) \geq \log_2n+\log_*n-O(1),\]where $\
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1016: Let $h(n)$ be minimal such that there is a graph on $n$ vertices with $n+h(n)$ edges which contains a cycle on $k$ vertices, for all $3\leq k\leq n$. Estimate $h(n)$. In particular, is it true that\[h(n) \geq \log_2n+\log_*n-O(1),\]where $\log_*n$ is the iterated logarithmic function?
+# erdos_number: 1016
+# erdos_status: open
+# priority_tier: P2
+# tags: cycles, graph_theory
 
-def formal_target_e_1016() -> int
+def erdos_e1016_let_h_n_be_minimal_such_that_there_is_a() -> int
+  requires true
+  ensures result == 0  # open: E-1016
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1016_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

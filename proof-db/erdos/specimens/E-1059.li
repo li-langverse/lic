@@ -1,10 +1,22 @@
-# Catalog: E-1059
-# Statement: Are there infinitely many primes $p$ such that $p-k!$ is composite for each $k$ such that $1\leq k!<p$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1059: Are there infinitely many primes $p$ such that $p-k!$ is composite for each $k$ such that $1\leq k!<p$?
+# erdos_number: 1059
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
 
-def formal_target_e_1059() -> int
+def erdos_e1059_are_there_infinitely_many_primes_p_such() -> int
+  requires true
+  ensures result == 0  # open: E-1059
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1059_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

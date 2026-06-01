@@ -1,10 +1,22 @@
-# Catalog: E-459
-# Statement: Let $f(u)$ be the largest $v$ such that no $m\in (u,v)$ is composed entirely of primes dividing $uv$. Estimate $f(u)$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-459: Let $f(u)$ be the largest $v$ such that no $m\in (u,v)$ is composed entirely of primes dividing $uv$. Estimate $f(u)$.
+# erdos_number: 459
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
 
-def formal_target_e_459() -> int
+def erdos_e459_let_f_u_be_the_largest_v_such_that_no_m() -> int
+  requires true
+  ensures result == 0  # open: E-459
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e459_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

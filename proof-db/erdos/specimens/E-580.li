@@ -1,10 +1,22 @@
-# Catalog: E-580
-# Statement: Let $G$ be a graph on $n$ vertices such that at least $n/2$ vertices have degree at least $n/2$. Must $G$ contain every tree on at most $n/2$ vertices?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-580: Let $G$ be a graph on $n$ vertices such that at least $n/2$ vertices have degree at least $n/2$. Must $G$ contain every tree on at most $n/2$ vertices?
+# erdos_number: 580
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_580() -> int
+def erdos_e580_let_g_be_a_graph_on_n_vertices_such_that() -> int
+  requires true
+  ensures result == 0  # open: E-580
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e580_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

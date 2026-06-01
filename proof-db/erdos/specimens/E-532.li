@@ -1,10 +1,22 @@
-# Catalog: E-532
-# Statement: If $\mathbb{N}$ is 2-coloured then is there some infinite set $A\subseteq \mathbb{N}$ such that all finite subset sums\[ \sum_{n\in S}n\](as $S$ ranges over all non-empty finite subsets of $A$) are monochromatic?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-532: If $\mathbb{N}$ is 2-coloured then is there some infinite set $A\subseteq \mathbb{N}$ such that all finite subset sums\[ \sum_{n\in S}n\](as $S$ ranges over all non-empty finite subsets of $A$) are monochromatic?
+# erdos_number: 532
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory, ramsey_theory
 
-def formal_target_e_532() -> int
+def erdos_e532_if_mathbb_n_is_2_coloured_then_is_there() -> int
+  requires true
+  ensures result == 0  # open: E-532
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e532_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

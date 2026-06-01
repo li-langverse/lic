@@ -1,10 +1,22 @@
-# Catalog: E-539
-# Statement: Let $h(n)$ be such that, for any set $A\subseteq \mathbb{N}$ of size $n$, the set\[\left\{ \frac{a}{(a,b)}: a,b\in A\right\}\]has size at least $h(n)$. Estimate $h(n)$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-539: Let $h(n)$ be such that, for any set $A\subseteq \mathbb{N}$ of size $n$, the set\[\left\{ \frac{a}{(a,b)}: a,b\in A\right\}\]has size at least $h(n)$. Estimate $h(n)$.
+# erdos_number: 539
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_539() -> int
+def erdos_e539_let_h_n_be_such_that_for_any_set_a_subse() -> int
+  requires true
+  ensures result == 0  # open: E-539
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e539_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

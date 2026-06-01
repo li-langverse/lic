@@ -1,10 +1,24 @@
-# Catalog: E-47
-# Statement: Does the Collatz map n -> n/2 (even) or 3n+1 (odd) always reach 1 from every positive starting value?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): target
+# E-47: Does the Collatz map n -> n/2 (even) or 3n+1 (odd) always reach 1 from every positive starting value?
+# erdos_number: 47
+# erdos_status: target
+# priority_tier: P0
+# tags: dynamics, iterative
+# context: The Collatz (3n+1) conjecture: every positive integer eventually reaches 1 under the usual map.
+# context: One of the most famous open problems in recreational and arithmetic dynamics..
 
-def formal_target_e_47() -> int
+def erdos_e47_does_the_collatz_map_n_n_2_even_or_3n_1() -> int
+  requires true
+  ensures result == 0  # open: E-47
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e47_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

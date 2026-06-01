@@ -1,10 +1,22 @@
-# Catalog: E-455
-# Statement: Let $q_1<q_2<\cdots$ be a sequence of primes such that\[q_{n+1}-q_n\geq q_n-q_{n-1}.\]Must\[\lim_n \frac{q_n}{n^2}=\infty?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-455: Let $q_1<q_2<\cdots$ be a sequence of primes such that\[q_{n+1}-q_n\geq q_n-q_{n-1}.\]Must\[\lim_n \frac{q_n}{n^2}=\infty?\]
+# erdos_number: 455
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_455() -> int
+def erdos_e455_let_q_1_q_2_cdots_be_a_sequence_of_prime() -> int
+  requires true
+  ensures result == 0  # open: E-455
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e455_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

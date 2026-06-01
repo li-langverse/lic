@@ -1,10 +1,22 @@
-# Catalog: E-417
-# Statement: Let\[V'(x)=\#\{\phi(m) : 1\leq m\leq x\}\]and\[V(x)=\#\{\phi(m) \leq x : 1\leq m\}.\]Does $\lim V(x)/V'(x)$ exist? Is it $>1$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-417: Let\[V'(x)=\#\{\phi(m) : 1\leq m\leq x\}\]and\[V(x)=\#\{\phi(m) \leq x : 1\leq m\}.\]Does $\lim V(x)/V'(x)$ exist? Is it $>1$?
+# erdos_number: 417
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_417() -> int
+def erdos_e417_let_v_x_phi_m_1_leq_m_leq_x_and_v_x_phi() -> int
+  requires true
+  ensures result == 0  # open: E-417
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e417_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

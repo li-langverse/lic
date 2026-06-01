@@ -1,10 +1,22 @@
-# Catalog: E-951
-# Statement: Let $1<a_1<\cdots$ be a sequence of real numbers such that\[\left\lvert \prod_i a_i^{k_i}-\prod_j a_j^{\ell_j}\right\rvert \geq 1\]for every distinct pair of non-negative finitely supported integer tuples $k_i,\ell_j\geq 0$. Is it true that
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-951: Let $1<a_1<\cdots$ be a sequence of real numbers such that\[\left\lvert \prod_i a_i^{k_i}-\prod_j a_j^{\ell_j}\right\rvert \geq 1\]for every distinct pair of non-negative finitely supported integer tuples $k_i,\ell_j\geq 0$. Is it true that\[\#\{ a_i \leq x\} \leq \pi(x)?\]
+# erdos_number: 951
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_951() -> int
+def erdos_e951_let_1_a_1_cdots_be_a_sequence_of_real_nu() -> int
+  requires true
+  ensures result == 0  # open: E-951
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e951_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

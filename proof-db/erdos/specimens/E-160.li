@@ -1,10 +1,22 @@
-# Catalog: E-160
-# Statement: Let $h(N)$ be the smallest $k$ such that $\{1,\ldots,N\}$ can be coloured with $k$ colours so that every four-term arithmetic progression must contain at least three distinct colours. Estimate $h(N)$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-160: Let $h(N)$ be the smallest $k$ such that $\{1,\ldots,N\}$ can be coloured with $k$ colours so that every four-term arithmetic progression must contain at least three distinct colours. Estimate $h(N)$.
+# erdos_number: 160
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, arithmetic_progressions
 
-def formal_target_e_160() -> int
+def erdos_e160_let_h_n_be_the_smallest_k_such_that_1_ld() -> int
+  requires true
+  ensures result == 0  # open: E-160
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e160_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-309
-# Statement: Let $N\geq 1$. How many integers can be written as the sum of distinct unit fractions with denominators from $\{1,\ldots,N\}$? Are there $o(\log N)$ such integers?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-309: Let $N\geq 1$. How many integers can be written as the sum of distinct unit fractions with denominators from $\{1,\ldots,N\}$? Are there $o(\log N)$ such integers?
+# erdos_number: 309
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, unit_fractions
 
-def formal_target_e_309() -> int
+def erdos_e309_let_n_geq_1_how_many_integers_can_be_wri() -> int
+  requires true
+  ensures result == 0  # open: E-309
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e309_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

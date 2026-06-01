@@ -1,10 +1,22 @@
-# Catalog: E-163
-# Statement: For any $d\geq 1$ if $H$ is a graph such that every subgraph contains a vertex of degree at most $d$ then $R(H)\ll_d n$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-163: For any $d\geq 1$ if $H$ is a graph such that every subgraph contains a vertex of degree at most $d$ then $R(H)\ll_d n$.
+# erdos_number: 163
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
 
-def formal_target_e_163() -> int
+def erdos_e163_for_any_d_geq_1_if_h_is_a_graph_such_tha() -> int
+  requires true
+  ensures result == 0  # open: E-163
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e163_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

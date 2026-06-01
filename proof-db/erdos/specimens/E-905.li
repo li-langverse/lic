@@ -1,10 +1,22 @@
-# Catalog: E-905
-# Statement: Every graph with $n$ vertices and $>n^2/4$ edges contains an edge which is in at least $n/6$ triangles.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-905: Every graph with $n$ vertices and $>n^2/4$ edges contains an edge which is in at least $n/6$ triangles.
+# erdos_number: 905
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_905() -> int
+def erdos_e905_every_graph_with_n_vertices_and_n_2_4_ed() -> int
+  requires true
+  ensures result == 0  # open: E-905
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e905_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

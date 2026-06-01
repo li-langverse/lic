@@ -1,10 +1,22 @@
-# Catalog: E-203
-# Statement: Is there an integer $m\geq 1$ with $(m,6)=1$ such that none of $2^k3^\ell m+1$ are prime, for any $k,\ell\geq 0$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-203: Is there an integer $m\geq 1$ with $(m,6)=1$ such that none of $2^k3^\ell m+1$ are prime, for any $k,\ell\geq 0$?
+# erdos_number: 203
+# erdos_status: open
+# priority_tier: P2
+# tags: covering_systems, primes
 
-def formal_target_e_203() -> int
+def erdos_e203_is_there_an_integer_m_geq_1_with_m_6_1_s() -> int
+  requires true
+  ensures result == 0  # open: E-203
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e203_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

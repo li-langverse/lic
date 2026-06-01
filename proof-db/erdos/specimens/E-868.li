@@ -1,10 +1,22 @@
-# Catalog: E-868
-# Statement: If $A$ is an additive basis of order $2$, and $1_A\ast 1_A(n)\to \infty$ as $n\to \infty$, then must $A$ contain a minimal additive basis of order $2$? (i.e. such that deleting any element creates infinitely many $n\not\in A+A$) What if $1_
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-868: If $A$ is an additive basis of order $2$, and $1_A\ast 1_A(n)\to \infty$ as $n\to \infty$, then must $A$ contain a minimal additive basis of order $2$? (i.e. such that deleting any element creates infinitely many $n\not\in A+A$) What if $1_A\ast 1_A(n) >\epsilon \log n$ (for all large $n$, for arbitrary fixed $\epsilon>0$)?
+# erdos_number: 868
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_basis, number_theory
 
-def formal_target_e_868() -> int
+def erdos_e868_if_a_is_an_additive_basis_of_order_2_and() -> int
+  requires true
+  ensures result == 0  # open: E-868
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e868_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

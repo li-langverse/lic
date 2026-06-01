@@ -1,10 +1,24 @@
-# Catalog: E-89
-# Statement: Are there infinitely many prime gaps of size at least c*sqrt(p)*log p for some c>0 and large p?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-89: Are there infinitely many prime gaps of size at least c*sqrt(p)*log p for some c>0 and large p?
+# erdos_number: 89
+# erdos_status: open
+# priority_tier: P0
+# tags: primes, prime_gaps
+# context: Existence of very large prime gaps of size at least c√p log p infinitely often.
+# context: Connects to Cramér-type conjectures and recent explicit gap constructions..
 
-def formal_target_e_89() -> int
+def erdos_e89_are_there_infinitely_many_prime_gaps_of() -> int
+  requires true
+  ensures result == 0  # open: E-89
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e89_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

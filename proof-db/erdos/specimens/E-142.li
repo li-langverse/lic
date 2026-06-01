@@ -1,10 +1,22 @@
-# Catalog: E-142
-# Statement: Let $r_k(N)$ be the largest possible size of a subset of $\{1,\ldots,N\}$ that does not contain any non-trivial $k$-term arithmetic progression. Prove an asymptotic formula for $r_k(N)$.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-142: Let $r_k(N)$ be the largest possible size of a subset of $\{1,\ldots,N\}$ that does not contain any non-trivial $k$-term arithmetic progression. Prove an asymptotic formula for $r_k(N)$.
+# erdos_number: 142
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, arithmetic_progressions
 
-def formal_target_e_142() -> int
+def erdos_e142_let_r_k_n_be_the_largest_possible_size_o() -> int
+  requires true
+  ensures result == 0  # open: E-142
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e142_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

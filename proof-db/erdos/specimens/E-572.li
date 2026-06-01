@@ -1,10 +1,22 @@
-# Catalog: E-572
-# Statement: Show that for $k\geq 3$\[\mathrm{ex}(n;C_{2k})\gg n^{1+\frac{1}{k}}.\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-572: Show that for $k\geq 3$\[\mathrm{ex}(n;C_{2k})\gg n^{1+\frac{1}{k}}.\]
+# erdos_number: 572
+# erdos_status: open
+# priority_tier: P2
+# tags: cycles, graph_theory, turan_number
 
-def formal_target_e_572() -> int
+def erdos_e572_show_that_for_k_geq_3_mathrm_ex_n_c_2k_g() -> int
+  requires true
+  ensures result == 0  # open: E-572
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e572_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

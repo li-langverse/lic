@@ -1,10 +1,22 @@
-# Catalog: E-1216
-# Statement: A tournament is a complete directed graph. Let $f(n)$ be such that every tournament on $n$ vertices contains a transitive tournament on $f(n)$ vertices (i.e. one such that if $i\to j\to k$ then $i\to k$). Is it true that $f(n)=\lfloor \log_
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-1216: A tournament is a complete directed graph. Let $f(n)$ be such that every tournament on $n$ vertices contains a transitive tournament on $f(n)$ vertices (i.e. one such that if $i\to j\to k$ then $i\to k$). Is it true that $f(n)=\lfloor \log_2 n\rfloor +1$?
+# erdos_number: 1216
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
 
-def formal_target_e_1216() -> int
+def erdos_e1216_a_tournament_is_a_complete_directed_grap() -> int
+  requires true
+  ensures result == 0  # open: E-1216
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1216_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

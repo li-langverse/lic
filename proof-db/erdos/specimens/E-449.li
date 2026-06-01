@@ -1,10 +1,22 @@
-# Catalog: E-449
-# Statement: Let $r(n)$ count the number of $d_1,d_2$ such that $d_1\mid n$ and $d_2\mid n$ and $d_1<d_2<2d_1$. Is it true that, for every $\epsilon>0$,\[r(n) < \epsilon \tau(n)\]for almost all $n$, where $\tau(n)$ is the number of divisors of $n$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-449: Let $r(n)$ count the number of $d_1,d_2$ such that $d_1\mid n$ and $d_2\mid n$ and $d_1<d_2<2d_1$. Is it true that, for every $\epsilon>0$,\[r(n) < \epsilon \tau(n)\]for almost all $n$, where $\tau(n)$ is the number of divisors of $n$?
+# erdos_number: 449
+# erdos_status: open
+# priority_tier: P2
+# tags: divisors, number_theory
 
-def formal_target_e_449() -> int
+def erdos_e449_let_r_n_count_the_number_of_d_1_d_2_such() -> int
+  requires true
+  ensures result == 0  # open: E-449
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e449_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

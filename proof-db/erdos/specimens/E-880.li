@@ -1,10 +1,22 @@
-# Catalog: E-880
-# Statement: Let $A\subset\mathbb{N}$ be an additive basis of order $k$. Let $B=\{b_1<b_2<\cdots\}$ be the set of integers which are the sum of $k$ or fewer distinct $a\in A$. Is it true that $b_{n+1}-b_n=O(1)$? (Where the implied constant may depend on
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-880: Let $A\subset\mathbb{N}$ be an additive basis of order $k$. Let $B=\{b_1<b_2<\cdots\}$ be the set of integers which are the sum of $k$ or fewer distinct $a\in A$. Is it true that $b_{n+1}-b_n=O(1)$? (Where the implied constant may depend on both $A$ and $k$.)
+# erdos_number: 880
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_basis, number_theory
 
-def formal_target_e_880() -> int
+def erdos_e880_let_a_subset_mathbb_n_be_an_additive_bas() -> int
+  requires true
+  ensures result == 0  # open: E-880
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e880_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

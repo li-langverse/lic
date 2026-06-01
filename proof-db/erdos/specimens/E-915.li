@@ -1,10 +1,22 @@
-# Catalog: E-915
-# Statement: Let $G$ be a graph with $1+n(m-1)$ vertices and $1+n\binom{m}{2}$ edges. Must $G$ contain two points which are connected by $m$ disjoint paths?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-915: Let $G$ be a graph with $1+n(m-1)$ vertices and $1+n\binom{m}{2}$ edges. Must $G$ contain two points which are connected by $m$ disjoint paths?
+# erdos_number: 915
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_915() -> int
+def erdos_e915_let_g_be_a_graph_with_1_n_m_1_vertices_a() -> int
+  requires true
+  ensures result == 0  # open: E-915
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e915_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

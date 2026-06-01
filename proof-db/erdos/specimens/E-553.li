@@ -1,10 +1,22 @@
-# Catalog: E-553
-# Statement: Let $R(3,3,n)$ denote the smallest integer $m$ such that if we $3$-colour the edges of $K_m$ then there is either a monochromatic triangle in one of the first two colours or a monochromatic $K_n$ in the third colour. Define $R(3,n)$ similar
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-553: Let $R(3,3,n)$ denote the smallest integer $m$ such that if we $3$-colour the edges of $K_m$ then there is either a monochromatic triangle in one of the first two colours or a monochromatic $K_n$ in the third colour. Define $R(3,n)$ similarly but with two colours. Show that\[\frac{R(3,3,n)}{R(3,n)}\to \infty\]as $n\to \infty$.
+# erdos_number: 553
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
 
-def formal_target_e_553() -> int
+def erdos_e553_let_r_3_3_n_denote_the_smallest_integer() -> int
+  requires true
+  ensures result == 0  # open: E-553
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e553_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-492
-# Statement: Let $A=\{a_1<a_2<\cdots\}\subseteq \mathbb{N}$ be infinite such that $a_{i+1}/a_i\to 1$. For any $x\geq a_1$ let\[f(x) = \frac{x-a_i}{a_{i+1}-a_i}\in [0,1),\]where $x\in [a_i,a_{i+1})$. Is it true that, for almost all $\alpha$, the sequence
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-492: Let $A=\{a_1<a_2<\cdots\}\subseteq \mathbb{N}$ be infinite such that $a_{i+1}/a_i\to 1$. For any $x\geq a_1$ let\[f(x) = \frac{x-a_i}{a_{i+1}-a_i}\in [0,1),\]where $x\in [a_i,a_{i+1})$. Is it true that, for almost all $\alpha$, the sequence $f(\alpha n)$ is uniformly distributed in $[0,1)$?
+# erdos_number: 492
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_492() -> int
+def erdos_e492_let_a_a_1_a_2_cdots_subseteq_mathbb_n_be() -> int
+  requires true
+  ensures result == 0  # open: E-492
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e492_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

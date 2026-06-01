@@ -1,10 +1,22 @@
-# Catalog: E-266
-# Statement: Let $a_n$ be an infinite sequence of positive integers such that $\sum \frac{1}{a_n}$ converges. There exists some integer $t\geq 1$ such that\[\sum \frac{1}{a_n+t}\]is irrational.
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-266: Let $a_n$ be an infinite sequence of positive integers such that $\sum \frac{1}{a_n}$ converges. There exists some integer $t\geq 1$ such that\[\sum \frac{1}{a_n+t}\]is irrational.
+# erdos_number: 266
+# erdos_status: open
+# priority_tier: P2
+# tags: irrationality
 
-def formal_target_e_266() -> int
+def erdos_e266_let_a_n_be_an_infinite_sequence_of_posit() -> int
+  requires true
+  ensures result == 0  # open: E-266
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e266_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

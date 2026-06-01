@@ -1,10 +1,22 @@
-# Catalog: E-855
-# Statement: If $\pi(x)$ counts the number of primes in $[1,x]$ then is it true that (for large $x$ and $y$)\[\pi(x+y) \leq \pi(x)+\pi(y)?\]
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# E-855: If $\pi(x)$ counts the number of primes in $[1,x]$ then is it true that (for large $x$ and $y$)\[\pi(x+y) \leq \pi(x)+\pi(y)?\]
+# erdos_number: 855
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
 
-def formal_target_e_855() -> int
+def erdos_e855_if_pi_x_counts_the_number_of_primes_in_1() -> int
+  requires true
+  ensures result == 0  # open: E-855
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e855_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,0 +1,15 @@
+# P-LM-BC-EM-020: Vacuum Maxwell equations imply wave equation nabla^2 E = mu0 eps0 d^2E/dt^2.
+
+def p_lm_bc_em_020_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

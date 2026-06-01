@@ -1,10 +1,22 @@
-# Catalog: E-1096
-# Statement: Let $1<q<1+\epsilon$ and consider the set of numbers of the shape $\sum_{i\in S}q^i$ (for all finite $S$), ordered by size as $0=x_1<x_2<\cdots$. Is it true that, provided $\epsilon>0$ is sufficiently small, $x_{k+1}-x_k \to 0$?
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-1096: Let $1<q<1+\epsilon$ and consider the set of numbers of the shape $\sum_{i\in S}q^i$ (for all finite $S$), ordered by size as $0=x_1<x_2<\cdots$. Is it true that, provided $\epsilon>0$ is sufficiently small, $x_{k+1}-x_k \to 0$?
+# erdos_number: 1096
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_1096() -> int
+def erdos_e1096_let_1_q_1_epsilon_and_consider_the_set_o() -> int
+  requires true
+  ensures result == 0  # open: E-1096
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1096_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,10 +1,22 @@
-# Catalog: E-610
-# Statement: For a graph $G$ let $\tau(G)$ denote the minimal number of vertices that include at least one from each maximal clique of $G$ (aside from isolated vertices). This is sometimes called the clique transversal number. Estimate $\tau(G)$. In par
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-610: For a graph $G$ let $\tau(G)$ denote the minimal number of vertices that include at least one from each maximal clique of $G$ (aside from isolated vertices). This is sometimes called the clique transversal number. Estimate $\tau(G)$. In particular, is it true that if $G$ has $n$ vertices then\[\tau(G) \leq n-\omega(n)\sqrt{n}\]for some $\omega(n)\to \infty$, or even\[\tau(G) \leq n-c\sqrt{n\log n}\]for some absolute constant $c>0$?
+# erdos_number: 610
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
 
-def formal_target_e_610() -> int
+def erdos_e610_for_a_graph_g_let_tau_g_denote_the_minim() -> int
+  requires true
+  ensures result == 0  # open: E-610
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e610_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

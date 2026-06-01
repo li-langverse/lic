@@ -1,10 +1,22 @@
-# Catalog: E-248
-# Statement: Are there infinitely many $n$ such that, for all $k\geq 1$,\[ \omega(n+k) \ll k?\](Here $\omega(n)$ is the number of distinct prime divisors of $n$.)
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-248: Are there infinitely many $n$ such that, for all $k\geq 1$,\[ \omega(n+k) \ll k?\](Here $\omega(n)$ is the number of distinct prime divisors of $n$.)
+# erdos_number: 248
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
 
-def formal_target_e_248() -> int
+def erdos_e248_are_there_infinitely_many_n_such_that_fo() -> int
+  requires true
+  ensures result == 0  # open: E-248
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e248_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

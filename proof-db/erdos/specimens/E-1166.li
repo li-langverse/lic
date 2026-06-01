@@ -1,10 +1,22 @@
-# Catalog: E-1166
-# Statement: Given a random walk $s_0,s_1,\ldots$ in $\mathbb{Z}^2$, starting at the origin, let $f_k(x)$ count the number of $0\leq l\leq k$ such that $s_l=x$. Let\[F(k)=\{ x: f_k(x) = \max_y f_k(y)\}\]be the set of 'favourite values'. Is it true that\
-# formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): proved
+# E-1166: Given a random walk $s_0,s_1,\ldots$ in $\mathbb{Z}^2$, starting at the origin, let $f_k(x)$ count the number of $0\leq l\leq k$ such that $s_l=x$. Let\[F(k)=\{ x: f_k(x) = \max_y f_k(y)\}\]be the set of 'favourite values'. Is it true that\[\left\lvert \bigcup_{k\leq n}F(k)\right\rvert \leq (\log n)^{O(1)}\]almost surely, for all but finitely many $n$?
+# erdos_number: 1166
+# erdos_status: proved
+# priority_tier: P2
+# tags: probability
 
-def formal_target_e_1166() -> int
+def erdos_e1166_given_a_random_walk_s_0_s_1_ldots_in_mat() -> int
+  requires true
+  ensures result == 0  # open: E-1166
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1166_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

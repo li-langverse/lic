@@ -12,6 +12,8 @@ from typing import Any
 
 from httpd_m15 import ConfigError as M15ConfigError
 from httpd_m15 import validate_inference_require, validate_m15_limits
+from httpd_rng import ConfigError as RngConfigError
+from httpd_rng import validate_rng_config_raise
 
 
 class ConfigError(Exception):
@@ -222,7 +224,8 @@ def load_httpd_full(path: Path) -> HttpdConfig:
     try:
         validate_m15_limits(data)
         validate_inference_require(data)
-    except M15ConfigError as e:
+        validate_rng_config_raise(data)
+    except (M15ConfigError, RngConfigError) as e:
         raise ConfigError(str(e)) from e
     return HttpdConfig(
         listen=listen,

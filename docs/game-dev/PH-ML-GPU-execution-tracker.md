@@ -1,5 +1,5 @@
 
-| WP-LIG-01 | LIG_EMIT_* vendor emit progress | 12 | partial | lig-emit-vendor-stub.sh |
+| WP-LIG-01 | LIG_EMIT_* vendor emit progress | 12 | done | lig-emit-vendor-stub.sh |
 | WP-LLM-06 | GPU matmul via li_rt_lig_matmul_ready | 12 | partial | llm_safetensors_mmap.li |
 | WP-LLM-08 | li-httpd trusted route scaffold | 12 | partial | llm_trusted_httpd_route.li |
 | WP-LLM-09 | safetensors 64B/tensor mmap chunk | 12 | partial | llm_safetensors_mmap.li |

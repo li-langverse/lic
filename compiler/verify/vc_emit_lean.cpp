@@ -555,7 +555,6 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       out << ' ' << lean_ident(p.name);
     }
     out << '\n';
-    out << " h)\n";
   } else if (par_policy) {
     out << "/-! Phase 2f: P-par disjoint policy witness (**G-par**) -/\n";
     out << "theorem " << name << "_proved";

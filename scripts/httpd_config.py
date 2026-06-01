@@ -24,6 +24,8 @@ class ConfigError(Exception):
     pass
 
 
+UPSTREAM_BALANCE_MODES = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})
+
 ROUTE_KEY_RE = re.compile(
     r"^(?P<method>[A-Z]+)\s+(?P<path>/[^\s#]+)(?:\s+(?P<extras>.+))?$"
 )
@@ -127,6 +129,35 @@ def validate_routes(routes: list[CanonicalRoute]) -> None:
                 )
 
 
+def validate_upstream_balance(data: dict[str, Any]) -> None:
+    nested = data.get("upstreams")
+    if isinstance(nested, dict):
+        for pool_id, spec in nested.items():
+            if not isinstance(spec, dict):
+                continue
+            bal = spec.get("balance")
+            if bal is None:
+                continue
+            mode = str(bal).strip().lower()
+            if mode not in UPSTREAM_BALANCE_MODES:
+                raise ConfigError(
+                    f"upstreams.{pool_id}.balance must be one of "
+                    f"{sorted(UPSTREAM_BALANCE_MODES)} (got {bal!r})"
+                )
+    for key, val in data.items():
+        if not key.startswith("upstreams.") or not isinstance(val, dict):
+            continue
+        pool_id = key.split(".", 1)[1]
+        bal = val.get("balance")
+        if bal is None:
+            continue
+        mode = str(bal).strip().lower()
+        if mode not in UPSTREAM_BALANCE_MODES:
+            raise ConfigError(
+                f"{key}.balance must be one of {sorted(UPSTREAM_BALANCE_MODES)} (got {bal!r})"
+            )
+
+
 def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
     raw = data.get("upstreams")
     if raw is None:
@@ -219,6 +250,7 @@ def load_httpd_full(path: Path) -> HttpdConfig:
         max_body = str(limits["max_body"])
     routes = desugar_config(data)
     validate_routes(routes)
+    validate_upstream_balance(data)
     upstreams = parse_upstreams(data)
     for r in routes:
         if r.action.startswith("proxy:"):

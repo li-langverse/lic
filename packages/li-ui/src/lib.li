@@ -231,6 +231,14 @@ def studio_typography_heading_px() -> float
 =
   return 14.0
 
+def studio_typography_glyph_line_height_px() -> float
+  requires true
+  ensures result >= studio_typography_body_px()
+  ensures result == 14.0
+  decreases 0
+=
+  return 14.0
+
 # [radius] docs/design/studio-design-tokens.toml
 def studio_radius_sm_px() -> float
   requires true

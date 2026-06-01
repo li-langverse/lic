@@ -31,6 +31,11 @@ if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
       break
     fi
   done
+  # Fallback for isolated clones that vendor only the minimal benchmarks layout
+  # (results + competitive) inside the lic repo.
+  if [[ -z "${BENCHMARKS_ROOT:-}" ]] && [[ -d "$_lic/benchmarks/results" ]] && [[ -d "$_lic/benchmarks/competitive" ]]; then
+    BENCHMARKS_ROOT="$(cd "$_lic/benchmarks" && pwd)"
+  fi
 fi
 
 # Fallback: walk up parent dirs (handles isolated clones under data/workspaces/...).
@@ -66,16 +71,30 @@ if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
   fi
 fi
 
-if [[ -z "${BENCHMARKS_ROOT:-}" || ! -f "${BENCHMARKS_ROOT}/harness/bench.py" ]]; then
-  echo "benchmarks-env: clone li-langverse/benchmarks sibling and set BENCHMARKS_ROOT" >&2
-  echo "  expected: \$LIC_ROOT/../benchmarks/harness/bench.py (or set LI_LANGVERSE_ROOT/LANGVERSE)" >&2
+if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
+  echo "benchmarks-env: set BENCHMARKS_ROOT to a benchmarks checkout" >&2
+  echo "  expected sibling: \$LIC_ROOT/../benchmarks/harness/bench.py (or set LI_LANGVERSE_ROOT/LANGVERSE)" >&2
+  echo "  or in-repo:      \$LIC_ROOT/benchmarks/{results,competitive}" >&2
+  return 1 2>/dev/null || exit 1
+fi
+
+if [[ ! -f "${BENCHMARKS_ROOT}/harness/bench.py" ]] \
+  && [[ ! -d "${BENCHMARKS_ROOT}/results" || ! -d "${BENCHMARKS_ROOT}/competitive" ]]
+then
+  echo "benchmarks-env: BENCHMARKS_ROOT is missing harness and in-repo layout" >&2
+  echo "  got: $BENCHMARKS_ROOT" >&2
   return 1 2>/dev/null || exit 1
 fi
 
 export BENCHMARKS_ROOT
 export LI_BENCHMARKS_ROOT="${LI_BENCHMARKS_ROOT:-$BENCHMARKS_ROOT}"
-export HARNESS="${HARNESS:-$BENCHMARKS_ROOT/harness}"
 export BENCHMARKS_RESULTS="${BENCHMARKS_RESULTS:-$BENCHMARKS_ROOT/results}"
-export BENCHMARKS_WORKLOADS="${BENCHMARKS_WORKLOADS:-$BENCHMARKS_ROOT/benchmarks/workloads}"
-export BENCHMARKS_COMPETITIVE="${BENCHMARKS_COMPETITIVE:-$BENCHMARKS_WORKLOADS/competitive}"
+
+if [[ -f "${BENCHMARKS_ROOT}/harness/bench.py" ]]; then
+  export HARNESS="${HARNESS:-$BENCHMARKS_ROOT/harness}"
+  export BENCHMARKS_WORKLOADS="${BENCHMARKS_WORKLOADS:-$BENCHMARKS_ROOT/benchmarks/workloads}"
+  export BENCHMARKS_COMPETITIVE="${BENCHMARKS_COMPETITIVE:-$BENCHMARKS_WORKLOADS/competitive}"
+else
+  export BENCHMARKS_COMPETITIVE="${BENCHMARKS_COMPETITIVE:-$BENCHMARKS_ROOT/competitive}"
+fi
 mkdir -p "$BENCHMARKS_RESULTS"

@@ -27,6 +27,23 @@ if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
   done
 fi
 
+if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
+  _lic="$(_benchmarks_env_lic_root)"
+  _cache="$_lic/.cache/li-benchmarks"
+  if [[ ! -f "$_cache/harness/bench.py" ]]; then
+    mkdir -p "$(dirname "$_cache")"
+    if [[ -d "$_cache/.git" ]]; then
+      (cd "$_cache" && git fetch --depth 1 origin main >/dev/null 2>&1 || true)
+      (cd "$_cache" && git checkout -f origin/main >/dev/null 2>&1 || true)
+    else
+      git clone --depth 1 https://github.com/li-langverse/benchmarks.git "$_cache" >/dev/null 2>&1 || true
+    fi
+  fi
+  if [[ -f "$_cache/harness/bench.py" ]]; then
+    BENCHMARKS_ROOT="$(cd "$_cache" && pwd)"
+  fi
+fi
+
 if [[ -z "${BENCHMARKS_ROOT:-}" || ! -f "${BENCHMARKS_ROOT}/harness/bench.py" ]]; then
   echo "benchmarks-env: clone li-langverse/benchmarks sibling and set BENCHMARKS_ROOT" >&2
   echo "  expected: \$LIC_ROOT/../benchmarks/harness/bench.py" >&2

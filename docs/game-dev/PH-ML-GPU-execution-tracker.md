@@ -102,7 +102,7 @@
 | WP-LLM-06 | GPU matmul hint (honest stub) | 10 | partial | llm_forward_gpu_matmul_hint |
 | WP-LLM-07 | HF import CLI + doc | 10 | partial | lillm-import.sh |
 | WP-RL-06 | IPC multiprocess scaffold | 10 | partial | env_pool_ipc_scaffold.li |
-| WP-RL-07 | SB3 SubprocVecEnv driver | 10 | partial | bench_ph_ml_competitor_sb3_vecenv.py |
+| WP-RL-07 | SB3 SubprocVecEnv driver | 10 | done | bench_ph_ml_competitor_sb3_vecenv.py |
 | WP-ML-16 | NumPy MLP competitor | 10 | done | bench_ph_ml_competitor_numpy_mlp.py |
 | WP-ML-17 | C++ MLP competitor | 10 | done | bench_ph_ml_competitor_cpp_openmp_mlp.py |
 | WP-ML-18 | ml_matmul perf v6 lanes=8 max_dim=32 | 10 | done | ml_matmul_general.li |

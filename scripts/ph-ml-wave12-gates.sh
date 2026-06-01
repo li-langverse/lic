@@ -28,7 +28,7 @@ run_in_wsl() {
       fi
     done
   fi
-  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_WAVE12_ROOT='$wsl_root' PH_ML_WAVE12_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' LIC=./build-wsl/compiler/lic/lic && source scripts/ph-ml-wave12-gates.sh"
+  wsl.exe bash -lc "cd '$wsl_root' && PH_ML_WAVE12_ROOT='$wsl_root' PH_ML_WAVE12_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' LIC=./build-wsl/compiler/lic/lic bash scripts/ph-ml-wave12-gates.sh"
 }
 
 lic_bin_for_smokes() {

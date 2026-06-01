@@ -94,6 +94,11 @@ def collect_route_hosts(data: dict[str, Any]) -> set[str]:
     server = data.get("server") or {}
     if isinstance(server, dict) and server.get("host"):
         hosts.add(str(server["host"]).strip().lower())
+    sites_raw = data.get("site")
+    if isinstance(sites_raw, list):
+        for site in sites_raw:
+            if isinstance(site, dict) and site.get("host"):
+                hosts.add(str(site["host"]).strip().lower())
     routes = data.get("routes")
     if isinstance(routes, dict):
         for key in routes:
@@ -212,9 +217,12 @@ def validate_tls_config(data: dict[str, Any], cfg_path: Path | None = None) -> T
     has_tls_table = isinstance(server.get("tls"), dict)
     if not has_tls_shorthand and not has_tls_table:
         if is_public_listen(listen):
-            raise ConfigError(
-                "public server.listen requires server.tls mode (manual | self_signed | lets_encrypt)"
-            )
+            _, port = parse_listen_host_port(listen)
+            if port in (443, 8443):
+                raise ConfigError(
+                    "public HTTPS listen requires server.tls mode (manual | self_signed | lets_encrypt)"
+                )
+            return None
         return None
 
     profile = normalize_tls_block(data)

@@ -19,6 +19,9 @@ ROUTE_KEY_RE = re.compile(
     r"^(?P<method>[A-Z]+)\s+(?P<path>/[^\s#]+)(?:\s+(?P<extras>.+))?$"
 )
 HEADER_EXTRA_RE = re.compile(r"^([a-zA-Z0-9_-]+)=([^\s]+)$")
+ALLOWED_UPSTREAM_BALANCE = frozenset(
+    {"round_robin", "least_conn", "ip_hash", "cookie"}
+)
 
 
 @dataclass
@@ -131,6 +134,14 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
         peers = spec.get("peers")
         if not isinstance(peers, list) or not peers:
             raise ConfigError(f"[upstreams.{upstream_id}] peers required")
+        balance = spec.get("balance")
+        if balance is not None:
+            bal = str(balance).strip()
+            if bal not in ALLOWED_UPSTREAM_BALANCE:
+                raise ConfigError(
+                    f"[upstreams.{upstream_id}] unknown balance {bal!r} "
+                    f"(allowed: {', '.join(sorted(ALLOWED_UPSTREAM_BALANCE))})"
+                )
         out[str(upstream_id)] = [str(p).strip() for p in peers]
     for key, val in data.items():
         if not key.startswith("upstreams.") or not isinstance(val, dict):
@@ -138,6 +149,14 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
         pool_id = key.split(".", 1)[1]
         peers = val.get("peers")
         if isinstance(peers, list) and peers:
+            balance = val.get("balance")
+            if balance is not None:
+                bal = str(balance).strip()
+                if bal not in ALLOWED_UPSTREAM_BALANCE:
+                    raise ConfigError(
+                        f"[upstreams.{pool_id}] unknown balance {bal!r} "
+                        f"(allowed: {', '.join(sorted(ALLOWED_UPSTREAM_BALANCE))})"
+                    )
             out[pool_id] = [str(p).strip() for p in peers]
     return out
 

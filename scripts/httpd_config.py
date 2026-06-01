@@ -284,8 +284,11 @@ def load_httpd_full(path: Path) -> HttpdConfig:
 def explain(routes: list[CanonicalRoute]) -> str:
     lines = ["# canonical routes (desugared)"]
     for r in routes:
+        parts: list[str] = [f"require={req}" for req in r.requires]
         hdr = " ".join(f"{k}={v}" for k, v in sorted(r.headers.items()))
-        extra = f" [{hdr}]" if hdr else ""
+        if hdr:
+            parts.append(hdr)
+        extra = f" [{' '.join(parts)}]" if parts else ""
         lines.append(
             f"[[routes]]\n"
             f'name = "{r.name}"\n'

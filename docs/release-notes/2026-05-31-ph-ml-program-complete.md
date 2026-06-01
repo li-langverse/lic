@@ -32,7 +32,9 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
-**Agent verification (2026-06-01):** latest run `code_implementer-1780274694421` — `ph-ml-program-complete-gates.sh` exit 0 (~115s); studio-ui swapchain/wgpu CI legs exit 0 locally; PR [#676](https://github.com/li-langverse/lic/pull/676) — CI green, await human `merge-approved`.
+**Agent verification (2026-06-01):** latest run `code_implementer-1780278582087` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~106s); PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green (build-and-test linux/macos/windows, studio-ui native capture), await human `merge-approved`.
+
+**Prior run `code_implementer-1780274694421`:** exit 0 (~115s); studio-ui swapchain/wgpu CI legs exit 0 locally.
 
 **Prior run `code_implementer-1780273535258`:** exit 0 (~144s); T1–T8 unchanged; `ratio_vs_li` 0.001014.
 

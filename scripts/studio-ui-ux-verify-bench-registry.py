@@ -23,9 +23,16 @@ def load_toml(path: Path) -> dict:
     return tomllib.loads(path.read_text(encoding="utf-8"))
 
 
+def rel_to_root(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def main() -> None:
     if not REGISTRY.is_file():
-        fail(f"missing {REGISTRY.relative_to(ROOT)}")
+        fail(f"missing {rel_to_root(REGISTRY)}")
 
     reg = load_toml(REGISTRY)
     meta = reg.get("meta") or {}

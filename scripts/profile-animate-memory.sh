@@ -19,6 +19,7 @@ python3 - "$ROOT" "$LATEST_JSON" "$REGISTRY" <<'PY'
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys

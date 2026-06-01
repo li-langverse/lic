@@ -250,12 +250,17 @@ def bench_render_fps_hook() -> dict:
         native_pixels = bool(stub_probe.get("native_pixels"))
         wgpu_surface_ok = bool(stub_probe.get("surface_ok"))
     env_host = os.environ.get("LIG_HOST_PRESENT", "") == "1"
+    readback_on = os.environ.get("LIG_WGPU_READBACK", "") == "1"
     if env_host and status == "simulate" and host_probe.get("probe_run_ok"):
         native_pixels = bool(host_probe.get("native_pixels"))
         wgpu_surface_ok = bool(host_probe.get("surface_ok"))
         if native_pixels and wgpu_surface_ok:
             smoke_status = "paint_blit_host"
             status = "host_present"
+    if readback_on and wgpu_surface_ok:
+        smoke_status = "readback_pass"
+        if status == "simulate":
+            status = "native"
     out = {
         "fps_target": target,
         "fps_estimated": fps_est,

@@ -190,8 +190,35 @@ def load_httpd_sites(path: Path) -> list[HttpdConfig]:
     return out
 
 
+def _validate_m15_profile(data: dict[str, Any]) -> None:
+    from httpd_m15 import (
+        ConfigError as M15Error,
+        validate_inference_require,
+        validate_m15_limits,
+        validate_route_match,
+    )
+
+    try:
+        validate_m15_limits(data)
+        validate_inference_require(data)
+        validate_route_match(data)
+    except M15Error as e:
+        raise ConfigError(str(e)) from e
+
+
+def _validate_tls_profile(data: dict[str, Any], path: Path) -> None:
+    from httpd_tls import ConfigError as TlsError, validate_tls_config
+
+    try:
+        validate_tls_config(data, path)
+    except TlsError as e:
+        raise ConfigError(str(e)) from e
+
+
 def load_httpd_full(path: Path) -> HttpdConfig:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
+    _validate_m15_profile(data)
+    _validate_tls_profile(data, path)
     if data.get("site") is not None:
         sites = load_httpd_sites(path)
         if len(sites) != 1:
@@ -248,6 +275,14 @@ def main() -> int:
         print("usage: httpd_config.py <config.toml> [--explain]", file=sys.stderr)
         return 2
     path = Path(sys.argv[1])
+    data = tomllib.loads(path.read_text(encoding="utf-8"))
+    from httpd_leak_censor import ConfigError as LeakCensorError, validate_leak_censor
+
+    try:
+        for warning in validate_leak_censor(data, path):
+            print(warning, file=sys.stderr)
+    except LeakCensorError as e:
+        raise ConfigError(str(e)) from e
     routes = load_httpd_config(path)
     if "--explain" in sys.argv:
         print(explain(routes), end="")

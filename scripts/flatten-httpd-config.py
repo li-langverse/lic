@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Flatten validated li-httpd.toml to httpd.runtime.conf for C loader.
 
 Usage:
@@ -9,22 +9,16 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
-from urllib.parse import urlparse
 
 try:
     import tomllib
 except ModuleNotFoundError:
     import tomli as tomllib  # type: ignore
 
-from httpd_config import (
-    ConfigError,
-    HttpdConfig,
-    load_httpd_config,
-    load_httpd_full,
-    load_httpd_sites,
-)
+from httpd_config import ConfigError, load_httpd_config
 from httpd_leak_censor import (
     PATTERN_IDS,
     generated_paths_for_config,
@@ -45,54 +39,14 @@ def parse_listen(raw: str) -> int:
     return int(raw)
 
 
-def peer_host_port(url: str) -> tuple[str, int]:
-    u = urlparse(url.strip())
-    if u.scheme not in ("http", "https"):
-        raise ValueError(f"peer URL must be http(s): {url!r}")
-    host = u.hostname or "127.0.0.1"
-    if not u.port:
-        raise ValueError(f"peer URL must include explicit port: {url!r}")
-    return host, int(u.port)
+def peer_port(url: str) -> int:
+    m = re.match(r"https?://[^:]+:(\d+)", url.strip())
+    if not m:
+        raise ValueError(f"peer URL must be loopback with port: {url!r}")
+    return int(m.group(1))
 
 
-def route_pool_id(action: str) -> str:
-    if action.startswith("proxy:"):
-        return action.split(":", 1)[1]
-    return ""
-
-
-def emit_route_line(r, vhost: str) -> str:
-    kind = r.path_kind if r.path_kind in ("exact", "prefix", "prefix_strip") else "prefix"
-    action = "proxy" if r.action.startswith("proxy:") else "static"
-    pool = route_pool_id(r.action)
-    v = vhost or ""
-    rrps = getattr(r, "rate_limit_rps", 0)
-    rburst = getattr(r, "rate_limit_burst", 0)
-    if rrps > 0:
-        burst = rburst if rburst > 0 else rrps
-        return f"route={r.method}|{r.path}|{kind}|{action}|{pool}|{v}|{rrps}|{burst}"
-    return f"route={r.method}|{r.path}|{kind}|{action}|{pool}|{v}"
-
-
-def flatten_site_routes(site: HttpdConfig, lines: list[str]) -> bool:
-    proxy_any = False
-    for r in site.routes:
-        if r.action.startswith("proxy:"):
-            proxy_any = True
-        lines.append(emit_route_line(r, site.host))
-    return proxy_any
-
-
-def flatten_upstreams(upstreams: dict[str, list[str]], lines: list[str]) -> None:
-    for pool_id, peers in upstreams.items():
-        lines.append(f"upstream_pool={pool_id}")
-        for peer in peers:
-            host, port = peer_host_port(peer)
-            lines.append(f"upstream_peer={pool_id}|{host}|{port}")
-
-
-def flatten(cfg_path: Path) -> list[str]:
-    load_httpd_config(cfg_path)
+def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
     data = tomllib.loads(cfg_path.read_text(encoding="utf-8"))
     lines: list[str] = []
     server = data.get("server") or {}
@@ -105,6 +59,13 @@ def flatten(cfg_path: Path) -> list[str]:
         if not rp.is_absolute():
             rp = (cfg_path.parent / rp).resolve()
         lines.append(f"document_root={rp}")
+    workers = server.get("workers")
+    if workers is not None:
+        w = str(workers).strip().lower()
+        if w in ("auto", ""):
+            lines.append("workers=auto")
+        else:
+            lines.append(f"workers={int(workers)}")
 
     auth = data.get("auth") or {}
     if isinstance(auth, dict):
@@ -128,34 +89,73 @@ def flatten(cfg_path: Path) -> list[str]:
             s = str(ft).strip().rstrip("s")
             if s.isdigit():
                 lines.append(f"health_fail_timeout_sec={int(s)}")
+        active = health.get("active")
+        if isinstance(active, dict) and active.get("path"):
+            path = str(active["path"]).strip()
+            if path.startswith("/"):
+                lines.append("health_active=1")
+                lines.append(f"health_active_path={path}")
+                iv = active.get("interval") or active.get("interval_sec") or "5s"
+                s = str(iv).strip().rstrip("s")
+                if s.isdigit():
+                    lines.append(f"health_active_interval_sec={int(s)}")
 
     limits = data.get("limits") or {}
     if limits.get("rate_limit_rps") is not None:
         lines.append(f"rate_limit_rps={int(limits['rate_limit_rps'])}")
     if limits.get("rate_limit_burst") is not None:
         lines.append(f"rate_limit_burst={int(limits['rate_limit_burst'])}")
+    if limits.get("stream_idle_timeout") is not None:
+        lines.append(f"stream_idle_timeout_sec={parse_duration(limits['stream_idle_timeout'], 'limits.stream_idle_timeout')}")
+    if limits.get("stream_max_duration") is not None:
+        lines.append(f"stream_max_duration_sec={parse_duration(limits['stream_max_duration'], 'limits.stream_max_duration')}")
+    if limits.get("concurrent_streams") is not None:
+        lines.append(f"concurrent_streams={int(limits['concurrent_streams'])}")
 
-    upstreams: dict[str, list[str]] = {}
+    routes = load_httpd_config(cfg_path)
     proxy_any = False
+    for r in routes:
+        kind = r.path_kind if r.path_kind in ("exact", "prefix", "prefix_strip") else "prefix"
+        action = "proxy" if r.action.startswith("proxy:") else "static"
+        if action == "proxy":
+            proxy_any = True
+        rps = int(getattr(r, "rate_limit_rps", 0) or 0)
+        if rps > 0:
+            burst = int(getattr(r, "rate_limit_burst", 0) or 0)
+            if burst <= 0:
+                burst = rps
+            lines.append(f"route={r.method}|{r.path}|{kind}|{action}|{rps}|{burst}")
+        else:
+            lines.append(f"route={r.method}|{r.path}|{kind}|{action}")
+        for req in getattr(r, "requires", []):
+            lines.append(f"route_require={r.method}|{r.path}|{req}")
 
-    if data.get("site") is not None:
-        sites = load_httpd_sites(cfg_path)
-        for site in sites:
-            if not listen and site.listen:
-                lines.append(f"listen_port={parse_listen(site.listen)}")
-            upstreams = {**upstreams, **site.upstreams}
-            if flatten_site_routes(site, lines):
-                proxy_any = True
-    else:
-        full = load_httpd_full(cfg_path)
-        upstreams = full.upstreams
-        vhost = full.host
-        for r in full.routes:
-            if r.action.startswith("proxy:"):
-                proxy_any = True
-            lines.append(emit_route_line(r, vhost))
+    def flatten_upstream_pool(pool_id: str, val: dict) -> None:
+        for peer in val.get("peers") or []:
+            p = peer_port(str(peer))
+            pool_ports[pool_id] = p
+            lines.append(f"upstream_peer={p}")
+        bal = val.get("balance")
+        if bal is not None and str(bal).strip():
+            lines.append(f"upstream_balance={str(bal).strip()}")
 
-    flatten_upstreams(upstreams, lines)
+    pool_ports: dict[str, int] = {}
+    nested = data.get("upstreams") or {}
+    if isinstance(nested, dict):
+        for pool_id, val in nested.items():
+            if isinstance(val, dict):
+                flatten_upstream_pool(str(pool_id), val)
+
+    for key, val in data.items():
+        if key.startswith("upstreams.") and isinstance(val, dict):
+            pool_id = key.split(".", 1)[1]
+            flatten_upstream_pool(pool_id, val)
+
+    for _hdr, model, pool in validate_route_match(data):
+        port = pool_ports.get(pool)
+        if port is None:
+            raise ValueError(f"route.match proxy {pool!r} has no peer port")
+        lines.append(f"model_match={model}|{port}")
 
     if proxy_any and not any(l.startswith("upstream_peer=") for l in lines):
         lines.append("proxy_all=1")
@@ -163,12 +163,41 @@ def flatten(cfg_path: Path) -> list[str]:
     lc = data.get("leak_censor") or {}
     if isinstance(lc, dict) and leak_censor_enabled(data):
         lines.append("leak_censor_enabled=1")
+        on_detect = str(lc.get("on_detect") or "redact")
+        if on_detect in ("block_502", "abort_stream"):
+            lines.append(f"leak_censor_on_detect={on_detect}")
+        json_block = lc.get("json") if isinstance(lc.get("json"), dict) else data.get("leak_censor.json") or {}
+        if not isinstance(json_block, dict):
+            json_block = {}
+        user_paths = json_block.get("deny_paths") or []
+        include_gen = json_block.get("include_generated", False)
+        include_gen = str(include_gen).lower() not in ("0", "false", "no")
+        gen_paths, gen_hdrs = generated_paths_for_config(cfg_path.parent, include_gen)
+        for p in list(dict.fromkeys([*(str(x) for x in user_paths), *gen_paths])):
+            lines.append(f"leak_censor_deny_path={p}")
+        pat_block = lc.get("patterns") if isinstance(lc.get("patterns"), dict) else data.get("leak_censor.patterns") or {}
+        if isinstance(pat_block, dict):
+            for pid in pat_block.get("allow") or []:
+                if str(pid) in PATTERN_IDS:
+                    lines.append(f"leak_censor_pattern={pid}")
+        hdr_block = lc.get("headers") if isinstance(lc.get("headers"), dict) else data.get("leak_censor.headers") or {}
+        if isinstance(hdr_block, dict):
+            for name in hdr_block.get("deny_names") or []:
+                lines.append(f"leak_censor_deny_header={name}")
+        for name in gen_hdrs:
+            lines.append(f"leak_censor_deny_header={name}")
     else:
         lines.append("leak_censor_enabled=0")
+
     try:
         lines.extend(tls_flatten_lines(data, cfg_path))
     except TlsError as e:
         raise ConfigError(str(e)) from e
+    if cert_dir is not None:
+        for i, line in enumerate(lines):
+            if line.startswith("tls_cert_dir="):
+                lines[i] = f"tls_cert_dir={cert_dir.resolve()}"
+                break
     try:
         lines.extend(m2_flatten_lines(data, cfg_path))
     except M2Error as e:
@@ -179,17 +208,25 @@ def flatten(cfg_path: Path) -> list[str]:
         raise ConfigError(str(e)) from e
 
     return lines
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description="flatten li-httpd.toml to runtime.conf")
     p.add_argument("config", type=Path)
     p.add_argument("-o", "--output", type=Path, required=True)
+    p.add_argument(
+        "--cert-dir",
+        type=Path,
+        default=None,
+        help="Override tls_cert_dir (e.g. setup-tls-httpd.py -o output)",
+    )
     args = p.parse_args()
     if not args.config.is_file():
         print(f"flatten-httpd-config: missing {args.config}", file=sys.stderr)
         return 1
     try:
-        lines = flatten(args.config)
-    except (ConfigError, M15Error, M2Error, M3Error, TlsError, ValueError) as e:
+        lines = flatten(args.config, cert_dir=args.cert_dir)
+    except (ConfigError, M15Error, M2Error, TlsError, ValueError) as e:
         print(f"flatten-httpd-config: {e}", file=sys.stderr)
         return 1
     if not any(l.startswith("listen_port=") for l in lines):

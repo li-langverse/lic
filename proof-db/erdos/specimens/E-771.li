@@ -1,0 +1,24 @@
+# E-771: Let $f(n)$ be maximal such that, for every $m\geq 1$, there exists some $S\subseteq \{1,\ldots,n\}$ with $\lvert S\rvert=f(n)$ such that $m\neq \sum_{a\in A}a$ for all $A\subseteq S$. Is it true that\[f(n) = \left(\frac{1}{2}+o(1)\right)\frac{n}{\log n}?\]
+# erdos_number: 771
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e771_let_f_n_be_maximal_such_that_for_every_m() -> int
+  requires true
+  ensures result == 0  # open: E-771
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e771_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

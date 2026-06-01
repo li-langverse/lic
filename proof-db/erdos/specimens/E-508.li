@@ -1,0 +1,24 @@
+# E-508: What is the chromatic number of the plane? That is, what is the smallest number of colours required to colour $\mathbb{R}^2$ such that no two points of the same colour are distance $1$ apart?
+# erdos_number: 508
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry, ramsey_theory
+
+def erdos_e508_what_is_the_chromatic_number_of_the_plan() -> int
+  requires true
+  ensures result == 0  # open: E-508
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e508_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

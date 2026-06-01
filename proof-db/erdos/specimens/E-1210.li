@@ -1,0 +1,24 @@
+# E-1210: Let $A\subseteq [1,n)$ be a set of integers such that $(a,b)=1$ for all distinct $a,b\in A$. Is it true that\[\sum_{a\in A}\frac{1}{n-a}\leq \sum_{p<n}\frac{1}{p}+O(1)?\]
+# erdos_number: 1210
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e1210_let_a_subseteq_1_n_be_a_set_of_integers() -> int
+  requires true
+  ensures result == 0  # open: E-1210
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1210_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

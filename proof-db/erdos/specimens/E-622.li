@@ -1,0 +1,24 @@
+# E-622: Let $G$ be a regular graph with $2n$ vertices and degree $n+1$. Must $G$ have $\gg 2^{2n}$ subsets that are spanned by a cycle?
+# erdos_number: 622
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e622_let_g_be_a_regular_graph_with_2n_vertice() -> int
+  requires true
+  ensures result == 0  # open: E-622
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e622_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

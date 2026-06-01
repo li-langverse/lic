@@ -1,0 +1,24 @@
+# E-45: Are there infinitely many n such that the least prime factor of n!+1 exceeds n^{1+epsilon} for some fixed epsilon>0?
+# erdos_number: 45
+# erdos_status: open
+# priority_tier: P3
+# tags: primes, factorial
+
+def erdos_e45_are_there_infinitely_many_n_such_that_th() -> int
+  requires true
+  ensures result == 0  # open: E-45
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e45_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

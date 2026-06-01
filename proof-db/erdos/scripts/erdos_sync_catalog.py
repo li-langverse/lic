@@ -57,6 +57,9 @@ def row_to_entry(row: dict[str, Any], commit: str) -> dict[str, Any]:
     url = row.get("external_url")
     if url:
         entry["external_url"] = url
+    specimen = row.get("li_specimen")
+    if specimen:
+        entry["li_specimen"] = specimen
     return entry
 
 
@@ -91,6 +94,7 @@ def render_catalog(entries: list[dict[str, Any]], version: int = 1) -> str:
             "lean_module",
             "register_source",
             "external_url",
+            "li_specimen",
             "last_verified_lic_commit",
         ):
             if key in e:

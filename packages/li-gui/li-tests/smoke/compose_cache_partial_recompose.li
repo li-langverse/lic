@@ -1,0 +1,66 @@
+import gui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if gui_reactive_version() != 3:
+    return 1
+  if compose_cache_version() != 1:
+    return 2
+  if compose_cache_region_count() != 6:
+    return 3
+  var inv: ComposeInvalidation = compose_invalidation_new()
+  var graph: ComposeDepGraph = compose_dep_graph_new()
+  var cache: ComposeCache = compose_cache_new()
+  var task: StoreInt = store_int_new(reactive_store_id_agent_task(), 0)
+  var palette: StoreInt = store_int_new(reactive_store_id_palette_open(), 0)
+  var mode: StoreInt = store_int_new(reactive_store_id_shell_mode(), 0)
+  var tick: StoreFloat = store_float_new(reactive_store_id_timeline_tick(), 0.0)
+  store_int_set_with_deps(task, 1, inv, graph)
+  store_int_set_with_deps(palette, 0, inv, graph)
+  store_int_set_with_deps(mode, 1, inv, graph)
+  store_float_set_with_deps(tick, 0.1, inv, graph)
+  var warm: int = compose_cache_tally_partial(cache, graph, task.generation, palette.generation, mode.generation, tick.generation)
+  if warm != compose_cache_region_count():
+    return 4
+  if cache.recompose_count != compose_cache_region_count():
+    return 5
+  compose_dep_clear_region(graph, compose_region_id_agent())
+  compose_dep_clear_region(graph, compose_region_id_palette())
+  compose_dep_clear_region(graph, compose_region_id_dock())
+  compose_dep_clear_region(graph, compose_region_id_inspector())
+  compose_dep_clear_region(graph, compose_region_id_timeline())
+  compose_dep_clear_region(graph, compose_region_id_viewport_hud())
+  store_int_clear_dirty(task, inv)
+  store_int_clear_dirty(palette, inv)
+  store_int_clear_dirty(mode, inv)
+  var idle: int = compose_cache_tally_partial(cache, graph, task.generation, palette.generation, mode.generation, tick.generation)
+  if idle != 0:
+    return 6
+  if cache.recompose_count != 0:
+    return 7
+  if cache.skip_count != compose_cache_region_count():
+    return 8
+  store_int_set_with_deps(task, 2, inv, graph)
+  if compose_cache_dirty_region_count(graph) != 1:
+    return 9
+  var partial: int = compose_cache_tally_partial(cache, graph, task.generation, palette.generation, mode.generation, tick.generation)
+  if partial != 1:
+    return 10
+  if cache.recompose_count != 1:
+    return 11
+  if cache.skip_count != compose_cache_region_count() - 1:
+    return 12
+  store_int_set_with_deps(mode, 2, inv, graph)
+  if compose_cache_dirty_region_count(graph) != 4:
+    return 13
+  var mode_partial: int = compose_cache_tally_partial(cache, graph, task.generation, palette.generation, mode.generation, tick.generation)
+  if mode_partial != 4:
+    return 14
+  if cache.recompose_count != 4:
+    return 15
+  if cache.skip_count != 2:
+    return 16
+  return 0

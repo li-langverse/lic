@@ -1,0 +1,24 @@
+# E-561: Let $\hat{R}(G)$ denote the size Ramsey number, the minimal number of edges $m$ such that there is a graph $H$ with $m$ edges such that in any $2$-colouring of the edges of $H$ there is a monochromatic copy of $G$. Let $F_1$ and $F_2$ be the union of stars. More precisely, let $F_1=\cup_{i\leq s} K_{1,n_i}$ and $F_2=\cup_{j\leq t} K_{1,m_j}$ with $n_1\geq \cdots \geq n_s\geq 1$ and $m_1\geq \cdots \geq m_t\geq 1$. Prove that\[\hat{R}(F_1,F_2) = \sum_{2\leq k\leq s+t}l_k\]where\[l_k=\max\{n_i+m_j-1 : i+j=k\}.\]
+# erdos_number: 561
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e561_let_hat_r_g_denote_the_size_ramsey_numbe() -> int
+  requires true
+  ensures result == 0  # open: E-561
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e561_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

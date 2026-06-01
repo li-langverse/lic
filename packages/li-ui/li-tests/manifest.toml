@@ -20,6 +20,36 @@ note = "T-PKG-li-ui-studio-shell-layout-paint-ir"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/paint_studio_shell_chrome.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-paint-cmd-round-gradient-ops"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_typography_tokens.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-studio-typography-radius-tokens"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/font_atlas_inter_mono.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-font-atlas-inter-mono-wsg-w3"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/icon_atlas_dock_tokens.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-icon-atlas-dock-tokens-wsg-w3"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/paint_cmds_ext_phase3.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-paint-cmd-glyphs-clip-image-wsg-w3"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_palette_search.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-ui-studio-palette-fuzzy-search"

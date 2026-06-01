@@ -1,0 +1,36 @@
+import gui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gui_version() < 10:
+    return 1
+  if gui_inspector_pilot_version() != 1:
+    return 2
+  var pilot: InspectorPilotWidget = inspector_pilot_new(1, 280.0, 640.0)
+  if pilot.has_selection != 1:
+    return 3
+  var layout: InspectorPilotLayoutResult = inspector_pilot_layout(pilot, 1000.0, 80.0, 280.0, 640.0)
+  if layout.fields_layout.child_count != 4:
+    return 4
+  if layout.header_layout.bounds.h != gui_inspector_pilot_header_h_px():
+    return 5
+  var label0: Rect = inspector_pilot_field_label_rect(layout, 0)
+  var value0: Rect = inspector_pilot_field_value_rect(layout, 0)
+  if label0.w <= 0.0:
+    return 6
+  if value0.w <= 0.0:
+    return 7
+  var frame: PaintFrame = paint_frame_new()
+  inspector_pilot_paint(pilot, layout, frame)
+  if frame.cmd_count != inspector_pilot_paint_cmds(1):
+    return 8
+  var empty_pilot: InspectorPilotWidget = inspector_pilot_new(0, 280.0, 640.0)
+  var empty_layout: InspectorPilotLayoutResult = inspector_pilot_layout(empty_pilot, 1000.0, 80.0, 280.0, 640.0)
+  var empty_frame: PaintFrame = paint_frame_new()
+  inspector_pilot_paint(empty_pilot, empty_layout, empty_frame)
+  if empty_frame.cmd_count != inspector_pilot_paint_cmds(0):
+    return 9
+  return 0

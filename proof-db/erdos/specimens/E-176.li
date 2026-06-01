@@ -1,0 +1,24 @@
+# E-176: Let $N(k,\ell)$ be the minimal $N$ such that for any $f:\{1,\ldots,N\}\to\{-1,1\}$ there must exist a $k$-term arithmetic progression $P$ such that\[ \left\lvert \sum_{n\in P}f(n)\right\rvert\geq \ell.\]Find good upper bounds for $N(k,\ell)$. Is it true that for any $c>0$ there exists some $C>1$ such that\[N(k,ck)\leq C^k?\]What about\[N(k,2)\leq C^k\]or\[N(k,\sqrt{k})\leq C^k?\]
+# erdos_number: 176
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, arithmetic_progressions, discrepancy
+
+def erdos_e176_let_n_k_ell_be_the_minimal_n_such_that_f() -> int
+  requires true
+  ensures result == 0  # open: E-176
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e176_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

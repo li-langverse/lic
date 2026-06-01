@@ -1,0 +1,24 @@
+# E-719: Let $\mathrm{ex}_r(n;K_{r+1}^r)$ be the maximum number of $r$-edges that can be placed on $n$ vertices without forming a $K_{r+1}^r$ (the $r$-uniform complete graph on $r+1$ vertices). Is every $r$-hypergraph $G$ on $n$ vertices the union of at most $\mathrm{ex}_{r}(n;K_{r+1}^r)$ many copies of $K_r^r$ and $K_{r+1}^r$, no two of which share a $K_r^r$?
+# erdos_number: 719
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, hypergraphs
+
+def erdos_e719_let_mathrm_ex_r_n_k_r_1_r_be_the_maximum() -> int
+  requires true
+  ensures result == 0  # open: E-719
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e719_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

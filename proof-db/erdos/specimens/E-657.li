@@ -1,0 +1,24 @@
+# E-657: Is it true that if $A\subset \mathbb{R}^2$ is a set of $n$ points such that every subset of $3$ points determines $3$ distinct distances (i.e. $A$ has no isosceles triangles) then $A$ must determine at least $f(n)n$ distinct distances, for some $f(n)\to \infty$?
+# erdos_number: 657
+# erdos_status: open
+# priority_tier: P2
+# tags: distances, geometry
+
+def erdos_e657_is_it_true_that_if_a_subset_mathbb_r_2_i() -> int
+  requires true
+  ensures result == 0  # open: E-657
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e657_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

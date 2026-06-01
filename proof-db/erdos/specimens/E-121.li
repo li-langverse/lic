@@ -1,0 +1,24 @@
+# E-121: Let $F_{k}(N)$ be the size of the largest $A\subseteq \{1,\ldots,N\}$ such that the product of no $k$ many distinct elements of $A$ is a square. Is $F_5(N)=(1-o(1))N$? More generally, is $F_{2k+1}(N)=(1-o(1))N$?
+# erdos_number: 121
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, squares
+
+def erdos_e121_let_f_k_n_be_the_size_of_the_largest_a_s() -> int
+  requires true
+  ensures result == 0  # open: E-121
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e121_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

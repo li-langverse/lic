@@ -1,0 +1,24 @@
+# E-751: Let $G$ be a graph with chromatic number $\chi(G)=4$. If $m_1<m_2<\cdots$ are the lengths of the cycles in $G$ then can $\min(m_{i+1}-m_i)$ be arbitrarily large? Can this happen if the girth of $G$ is large?
+# erdos_number: 751
+# erdos_status: open
+# priority_tier: P2
+# tags: chromatic_number, graph_theory
+
+def erdos_e751_let_g_be_a_graph_with_chromatic_number_c() -> int
+  requires true
+  ensures result == 0  # open: E-751
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e751_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,24 @@
+# E-939: Let $r\geq 2$. An $r$-powerful number $n$ is one such that if $p\mid n$ then $p^r\mid n$. If $r\geq 4$ then can the sum of $r-2$ coprime $r$-powerful numbers ever be itself $r$-powerful? Are there at most finitely many such solutions? Are there infinitely many triples of coprime $3$-powerful numbers $a,b,c$ such that $a+b=c$?
+# erdos_number: 939
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, powerful
+
+def erdos_e939_let_r_geq_2_an_r_powerful_number_n_is_on() -> int
+  requires true
+  ensures result == 0  # open: E-939
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e939_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

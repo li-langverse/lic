@@ -1,0 +1,51 @@
+import gui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gui_version() < 9:
+    return 1
+  if gui_focus_model_version() != 1:
+    return 2
+  var constraints: LayoutConstraints = layout_constraints_loose(420.0, 240.0)
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  var btn_a: WidgetNode = widget_node_button(4.0)
+  widget_node_set_tab_index(btn_a, 20)
+  var btn_b: WidgetNode = widget_node_button(6.0)
+  widget_node_set_tab_index(btn_b, 10)
+  var input: WidgetNode = widget_node_text_input(6.0)
+  widget_node_set_tab_index(input, 30)
+  var flex_row: FlexLayout = flex_layout_row(8.0, 3, btn_a, btn_b, input, spacer)
+  var row_layout: FlexLayoutResult = flex_layout_layout(flex_row, constraints, 0.0, 0.0)
+  var state: EventDispatcherState = event_dispatcher_state_new()
+  var first: int = focus_model_roving_next(flex_row, row_layout, state)
+  if first != 1:
+    return 3
+  if state.focus_index != 1:
+    return 4
+  var second: int = focus_model_roving_next(flex_row, row_layout, state)
+  if second != 0:
+    return 6
+  if state.focus_index != 0:
+    return 7
+  var third: int = focus_model_roving_next(flex_row, row_layout, state)
+  if third != 2:
+    return 8
+  var tab_back: EventDispatchResult = event_dispatcher_handle_tab_key(flex_row, row_layout, state, 1)
+  if tab_back.handled != 1:
+    return 9
+  if tab_back.target_index != 0:
+    return 10
+  var frame: PaintFrame = paint_frame_new()
+  var before: int = frame.cmd_count
+  flex_layout_paint(flex_row, frame, row_layout)
+  focus_model_paint_flex_focus_rings(flex_row, row_layout, frame)
+  if frame.cmd_count <= before:
+    return 11
+  if frame.last_kind != paint_op_stroke_rect():
+    return 12
+  if frame.last_color.r != studio_color_focus_ring().r:
+    return 13
+  return 0

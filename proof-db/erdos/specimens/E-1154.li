@@ -1,0 +1,24 @@
+# E-1154: Does there exist, for every $\alpha \in [0,1]$, a ring or field in $\mathbb{R}$ with Hausdorff dimension $\alpha$?
+# erdos_number: 1154
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis
+
+def erdos_e1154_does_there_exist_for_every_alpha_in_0_1() -> int
+  requires true
+  ensures result == 0  # open: E-1154
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1154_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

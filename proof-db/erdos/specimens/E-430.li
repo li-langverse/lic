@@ -1,0 +1,24 @@
+# E-430: Fix some integer $n$ and define a decreasing sequence in $[1,n)$ by $a_1=n-1$ and, for $k\geq 2$, letting $a_k$ be the greatest integer in $[1,a_{k-1})$ such that all of the prime factors of $a_k$ are $>n-a_k$. Is it true that, for sufficiently large $n$, not all of this sequence can be prime?
+# erdos_number: 430
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e430_fix_some_integer_n_and_define_a_decreasi() -> int
+  requires true
+  ensures result == 0  # open: E-430
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e430_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

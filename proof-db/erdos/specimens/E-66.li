@@ -1,0 +1,24 @@
+# E-66: Are there infinitely many n such that n + phi(n) is prime?
+# erdos_number: 66
+# erdos_status: open
+# priority_tier: P2
+# tags: primes, totient
+
+def erdos_e66_are_there_infinitely_many_n_such_that_n() -> int
+  requires true
+  ensures result == 0  # open: E-66
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e66_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

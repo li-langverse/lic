@@ -1,0 +1,24 @@
+# E-873: Let $A=\{a_1<a_2<\cdots\}\subseteq \mathbb{N}$ and let $F(A,X,k)$ count the number of $i$ such that\[[a_i,a_{i+1},\ldots,a_{i+k-1}] < X,\]where the left-hand side is the least common multiple. Is it true that, for every $\epsilon >0$, there exists some $k$ such that\[F(A,X,k)<X^\epsilon?\]
+# erdos_number: 873
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e873_let_a_a_1_a_2_cdots_subseteq_mathbb_n_an() -> int
+  requires true
+  ensures result == 0  # open: E-873
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e873_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

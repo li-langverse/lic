@@ -1,0 +1,24 @@
+# E-505: Is every set of diameter $1$ in $\mathbb{R}^n$ the union of at most $n+1$ sets of diameter $<1$?
+# erdos_number: 505
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry
+
+def erdos_e505_is_every_set_of_diameter_1_in_mathbb_r_n() -> int
+  requires true
+  ensures result == 0  # open: E-505
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e505_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

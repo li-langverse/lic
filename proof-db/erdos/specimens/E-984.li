@@ -1,0 +1,24 @@
+# E-984: Can $\mathbb{N}$ be $2$-coloured such that if\[\{a,a+d,\ldots,a+(k-1)d\}\]is a $k$-term monochromatic arithmetic progression then $k\ll_\epsilon a^\epsilon$ for all $\epsilon>0$?
+# erdos_number: 984
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_combinatorics, arithmetic_progressions
+
+def erdos_e984_can_mathbb_n_be_2_coloured_such_that_if() -> int
+  requires true
+  ensures result == 0  # open: E-984
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e984_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

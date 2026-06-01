@@ -1,0 +1,24 @@
+# E-474: Under what set theoretic assumptions is it true that $\mathbb{R}^2$ can be $3$-coloured such that, for every uncountable $A\subseteq \mathbb{R}^2$, $A^2$ contains a pair of each colour?
+# erdos_number: 474
+# erdos_status: open
+# priority_tier: P2
+# tags: ramsey_theory, set_theory
+
+def erdos_e474_under_what_set_theoretic_assumptions_is() -> int
+  requires true
+  ensures result == 0  # open: E-474
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e474_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

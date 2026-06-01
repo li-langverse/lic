@@ -1,0 +1,24 @@
+# E-1010: Let $t<\lfloor n/2\rfloor$. Does every graph on $n$ vertices with $\lfloor n^2/4\rfloor+t$ edges contain at least $t\lfloor n/2\rfloor$ triangles?
+# erdos_number: 1010
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e1010_let_t_lfloor_n_2_rfloor_does_every_graph() -> int
+  requires true
+  ensures result == 0  # open: E-1010
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1010_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

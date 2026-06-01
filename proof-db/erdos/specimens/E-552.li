@@ -1,0 +1,24 @@
+# E-552: Determine the Ramsey number\[R(C_4,S_n),\]where $S_n=K_{1,n}$ is the star on $n+1$ vertices. In particular, is it true that, for any $c>0$, there are infinitely many $n$ such that\[R(C_4,S_n)\leq n+\sqrt{n}-c?\]
+# erdos_number: 552
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e552_determine_the_ramsey_number_r_c_4_s_n_wh() -> int
+  requires true
+  ensures result == 0  # open: E-552
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e552_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

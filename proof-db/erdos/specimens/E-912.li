@@ -1,0 +1,24 @@
+# E-912: If\[n! = \prod_i p_i^{k_i}\]is the factorisation into distinct primes then let $h(n)$ count the number of distinct exponents $k_i$. Prove that there exists some $c>0$ such that\[h(n) \sim c \left(\frac{n}{\log n}\right)^{1/2}\]as $n\to \infty$.
+# erdos_number: 912
+# erdos_status: open
+# priority_tier: P2
+# tags: factorials, number_theory
+
+def erdos_e912_if_n_prod_i_p_i_k_i_is_the_factorisation() -> int
+  requires true
+  ensures result == 0  # open: E-912
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e912_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

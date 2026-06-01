@@ -1,0 +1,24 @@
+# E-341: Let $A=\{a_1<\cdots<a_k\}$ be a finite set of positive integers and extend it to an infinite sequence $\overline{A}=\{a_1<a_2<\cdots \}$ by defining $a_{n+1}$ for $n\geq k$ to be the least integer exceeding $a_n$ which is not of the form $a_i+a_j$ with $i,j\leq n$. Is it true that the sequence of differences $a_{m+1}-a_m$ is eventually periodic?
+# erdos_number: 341
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e341_let_a_a_1_cdots_a_k_be_a_finite_set_of_p() -> int
+  requires true
+  ensures result == 0  # open: E-341
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e341_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

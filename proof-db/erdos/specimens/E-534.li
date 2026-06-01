@@ -1,0 +1,24 @@
+# E-534: What is the largest possible subset $A\subseteq\{1,\ldots,N\}$ which contains $N$ such that $\mathrm{gcd}(a,b)>1$ for all $a\neq b\in A$?
+# erdos_number: 534
+# erdos_status: open
+# priority_tier: P2
+# tags: intersecting_family, number_theory
+
+def erdos_e534_what_is_the_largest_possible_subset_a_su() -> int
+  requires true
+  ensures result == 0  # open: E-534
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e534_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

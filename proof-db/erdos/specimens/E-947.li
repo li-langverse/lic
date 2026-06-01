@@ -1,0 +1,24 @@
+# E-947: There is no exact covering system - that is, a finite collection of congruence classes $a_i\pmod{n_i}$ with distinct $n_i$ such that every integer satisfies exactly one of these congruence classes.
+# erdos_number: 947
+# erdos_status: proved
+# priority_tier: P2
+# tags: covering_systems, number_theory
+
+def erdos_e947_there_is_no_exact_covering_system_that_i() -> int
+  requires true
+  ensures result == 0  # open: E-947
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e947_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

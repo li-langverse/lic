@@ -1,0 +1,24 @@
+# E-550: Let $m_1\leq\cdots\leq m_k$ and $n$ be sufficiently large. If $T$ is a tree on $n$ vertices and $G$ is the complete multipartite graph with vertex class sizes $m_1,\ldots,m_k$ then prove that\[R(T,G)\leq (\chi(G)-1)(R(T,K_{m_1,m_2})-1)+m_1.\]
+# erdos_number: 550
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e550_let_m_1_leq_cdots_leq_m_k_and_n_be_suffi() -> int
+  requires true
+  ensures result == 0  # open: E-550
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e550_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

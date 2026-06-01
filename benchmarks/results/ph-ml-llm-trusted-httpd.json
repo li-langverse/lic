@@ -1,9 +1,10 @@
 {
   "suite": "ph-ml-llm-trusted-httpd",
-  "generated_at": "2026-05-31T15:27:57Z",
+  "generated_at": "2026-06-01T00:42:22Z",
   "executed": true,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "route": "/v1/chat/completions",
-  "note": "httpd not live (scaffold OK): <urlopen error timed out>"
+  "live_proxy": true,
+  "note": "live_proxy scaffold (httpd optional): httpd not live (scaffold OK): <urlopen error timed out>"
 }

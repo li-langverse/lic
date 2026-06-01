@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-06-01T00:43:33Z",
+  "suite": "ph-ml-lkir-matmul-32",
+  "workload_size": 32,
+  "smoke": "packages\\li-ml\\li-tests\\smoke\\ml_matmul_32_lkir.li",
+  "compile_ok": false,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "executed": false,
+  "cpu_sec": null,
+  "ratio_vs_li": 1.0,
+  "numpy_cpu_sec": 2e-06,
+  "numpy_executed": true,
+  "note": "lic unavailable; numpy-only ratio placeholder"
+}

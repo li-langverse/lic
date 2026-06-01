@@ -1172,6 +1172,16 @@ def sim_rl_env_ipc_fork_os_ready() -> int
     return 0
   return 1
 
+def sim_rl_env_li_process_fork_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_rl_env_ipc_fork_os_ready() != 1:
+    return 0
+  return 1
+
 def sim_rl_env_ipc_multiprocessing_ready() -> int
   requires true
   ensures result >= 0

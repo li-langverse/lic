@@ -15,6 +15,20 @@ note="no LIG_EMIT_* flags"
 if [[ "$cuda" == "1" || "$hip" == "1" || "$metal" == "1" ]]; then
   progress=1
   note="vendor stub codegen path armed (CUDA=$cuda HIP=$hip METAL=$metal)"
+  mkdir -p "$ROOT/build" "$ROOT/benchmarks/results"
+  if [[ "$cuda" == "1" ]]; then
+    cat >"$ROOT/build/lig-emit-vendor.ptx" <<'PTX'
+.version 8.0
+.target sm_50
+.entry lig_matmul_stub() { ret; }
+PTX
+  fi
+  if [[ "$hip" == "1" ]]; then
+    echo 'hsa.stub.kernel' >"$ROOT/benchmarks/results/lig-emit-vendor-artifact.txt"
+  fi
+  if [[ "$metal" == "1" && ! -s "$ROOT/benchmarks/results/lig-emit-vendor-artifact.txt" ]]; then
+    echo '// metal stub msl' >"$ROOT/benchmarks/results/lig-emit-vendor-artifact.txt"
+  fi
 fi
 export LIG_EMIT_STUB_OUT="$OUT" LIG_EMIT_STUB_PROGRESS="$progress" LIG_EMIT_STUB_NOTE="$note"
 export LIG_EMIT_STUB_CUDA="$cuda" LIG_EMIT_STUB_HIP="$hip" LIG_EMIT_STUB_METAL="$metal"

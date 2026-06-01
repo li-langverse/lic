@@ -1,4 +1,5 @@
 import bytes
+import ml
 
 # li-llm (PH-LLM): native LLM inference - tokenizer, loader, forward, generate.
 extern proc li_rt_lig_matmul_ready() -> int
@@ -74,6 +75,26 @@ def llm_bytes_eq(a: str, b: str) -> int raises IO, Alloc
     if bytes_byte_at(left, i) != bytes_byte_at(right, i):
       return 0
     i = i + 1
+  return 1
+
+def llm_path_ends_with(path: str, suffix: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var p: bytes = path
+  var s: bytes = suffix
+  var pl: int = bytes_len(p)
+  var sl: int = bytes_len(s)
+  if pl < sl or sl <= 0:
+    return 0
+  var off: int = pl - sl
+  var j: int = 0
+  while j < sl:
+    if bytes_byte_at(p, off + j) != bytes_byte_at(s, j):
+      return 0
+    j = j + 1
   return 1
 
 def li_llm_version() -> int
@@ -383,8 +404,14 @@ def llm_path_format_tag(path: str) -> int raises IO, Alloc
   var p1: str = path
   if llm_bytes_eq(p1, "fixtures/model.safetensors") == 1:
     return llm_format_safetensors()
+  var p1b: str = path
+  if llm_path_ends_with(p1b, ".safetensors") == 1:
+    return llm_format_safetensors()
   var p2: str = path
   if llm_bytes_eq(p2, "fixtures/model.gguf") == 1:
+    return llm_format_gguf()
+  var p2b: str = path
+  if llm_path_ends_with(p2b, ".gguf") == 1:
     return llm_format_gguf()
   return llm_format_none()
 
@@ -490,7 +517,7 @@ def llm_safetensors_mmap_byte_at(path: str, tensor_index: int, byte_off: int) ->
   decreases byte_off
 =
   var p0: str = path
-  if llm_bytes_eq(p0, "fixtures/model.safetensors") != 1:
+  if llm_path_format_tag(p0) != llm_format_safetensors():
     return 0
   var base: int = tensor_index * 17 + byte_off * 3
   var v: int = base % 256
@@ -511,7 +538,7 @@ def llm_safetensors_tensor_bytes_mmap(path: str, tensor_index: int) -> int raise
     return 0
   if tensor_index >= hdr.tensors_loaded:
     return 0
-  var p_mmap: str = "fixtures/model.safetensors"
+  var p_mmap: str = path
   var off: int = 0
   var sum: int = 0
   var chunk: int = llm_safetensors_mmap_chunk_size()
@@ -543,6 +570,34 @@ def llm_matmul_indirect_bridge(hidden: float, weight: float) -> int
   decreases 0
 =
   return llm_transformer_matmul_contrib(hidden, weight)
+
+def llm_ml_import_bridge() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_version() < 1:
+    return 0
+  if ml_lig_matmul_run_auto() != 0:
+    return 0
+  return 1
+
+def llm_weights_file_mmap(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 16384
+  decreases 0
+=
+  var tag: int = llm_path_format_tag(path)
+  if tag == llm_format_safetensors():
+    return llm_safetensors_tensor_bytes_mmap(path, 0)
+  if tag == llm_format_gguf():
+    var w: LlmModelWeights = llm_load_weights(path)
+    if w.loaded != 1:
+      return 0
+    return llm_safetensors_mmap_chunk_size()
+  return 0
 
 def llm_gpu_lkir_matmul_progress() -> int
   requires true

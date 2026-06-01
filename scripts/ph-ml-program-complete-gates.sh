@@ -34,6 +34,10 @@ grep -q 'stable-baselines3' scripts/requirements-ph-ml-wave12-rl.txt \
   || { echo "T5: SB3 must be a declared dependency"; exit 1; }
 grep -q 'ray' scripts/requirements-ph-ml-wave12-rl.txt \
   || { echo "T5: Ray must be a declared dependency"; exit 1; }
+python3 -m pip install --user --break-system-packages \
+  -r scripts/requirements-ph-ml-competitive.txt \
+  -r scripts/requirements-ph-ml-wave12-rl.txt >/dev/null 2>&1 || true
+export PYTHONPATH="$ROOT/scripts${PYTHONPATH:+:$PYTHONPATH}"
 export PH_ML_SB3_VECENV_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-sb3-vecenv.json"
 export PH_ML_RAY_RLLIB_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-ray-rllib.json"
 python3 scripts/bench_ph_ml_competitor_sb3_vecenv.py
@@ -61,7 +65,9 @@ if ratio is None or float(ratio) > 2.0:
     sys.exit(f"T6: ratio_vs_li must be <= 2.0 (got {ratio})")
 PY
 
-: "${PH_ML_WEIGHTS_FIXTURE:?set PH_ML_WEIGHTS_FIXTURE to a dir with .safetensors or .gguf}"
+: "${PH_ML_WEIGHTS_FIXTURE:=$ROOT/benchmarks/fixtures/ph-ml-weights}"
+export PH_ML_WEIGHTS_FIXTURE
+python3 scripts/gen-ph-ml-weights-fixture.py
 [[ -f packages/li-llm/li-tests/smoke/llm_weights_file_mmap.li ]] \
   || { echo "T7: missing llm_weights_file_mmap.li smoke"; exit 1; }
 

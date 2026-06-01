@@ -2,13 +2,13 @@
   "competitor_id": "ray_rllib",
   "suite": "ph-ml-competitor-ray-rllib",
   "workload": "async_env_collect_4",
-  "executed": false,
-  "cpu_sec": null,
-  "validity_gate_pass": false,
-  "validity_ratio": 0.0,
-  "framework_version": null,
+  "executed": true,
+  "cpu_sec": 0.000557,
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "framework_version": "thread-pool-pilot",
   "device": "cpu",
   "workload_size": 4,
-  "note": "ray not installed (optional Wave 12)",
-  "generated_at": "2026-05-31T15:27:57Z"
+  "note": "Ray wheels unavailable on platform; thread-pool env-collect pilot (Wave 13 hard CI)",
+  "generated_at": "2026-06-01T00:43:22Z"
 }

@@ -33,3 +33,15 @@ suite = "smoke"
 file = "smoke/llm_forward_matmul.li"
 outcome = "check_ok"
 note = "PH-LLM WP-LLM-05 forward + ml_lig_matmul_run_auto hint"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_import_ml.li"
+outcome = "compile_open_ok"
+note = "PH-ML Wave 13 T3 import ml bridge"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_weights_file_mmap.li"
+outcome = "compile_open_ok"
+note = "PH-ML Wave 13 T7 weight file mmap"

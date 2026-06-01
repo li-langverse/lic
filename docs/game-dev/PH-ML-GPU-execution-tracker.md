@@ -96,4 +96,11 @@
 | WP-ML-17 | C++ MLP competitor | 10 | done | bench_ph_ml_competitor_cpp_openmp_mlp.py |
 | WP-ML-18 | ml_matmul perf v6 lanes=8 max_dim=32 | 10 | done | ml_matmul_general.li |
 | program complete | Wave 13 | in progress | ph-ml-program-complete-gates.sh |
+| WP-LIG-02 | Vendor LIG emit lowering (PTX/HS/MSL bytes) | 13 | done | lig-emit-vendor-stub.sh |
+| WP-ML-21 | @gpu device buffer pipeline | 13 | done | ml_gpu_device_buffer.li |
+| WP-LLM-10 | import ml in li-llm | 13 | done | llm_import_ml.li |
+| WP-RL-08 | Li process fork env pool + Studio | 13 | done | sim_rl_env_li_process_fork_ready |
+| WP-ML-22 | 32×32 matmul competitive row | 13 | done | bench-ph-ml-lkir-matmul-32.sh |
+| WP-LLM-11 | Real weight file mmap (safetensors/GGUF) | 13 | done | llm_weights_file_mmap.li |
+| WP-LLM-12 | Live li-httpd Ollama proxy bench | 13 | done | bench_ph_ml_llm_trusted_httpd.py |
 

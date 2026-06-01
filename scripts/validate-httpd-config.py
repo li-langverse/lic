@@ -11,6 +11,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from httpd_config import ConfigError, load_httpd_config, load_httpd_sites
+from httpd_rng import validate_rng_config
 
 try:
     import tomllib
@@ -143,6 +144,8 @@ def validate(cfg: dict, allow_hosts: frozenset[str]) -> list[str]:
                                 f"site {i} route {key!r} references unknown upstream {pool!r}"
                             )
 
+    rng_errs, _ = validate_rng_config(cfg)
+    errs.extend(rng_errs)
     return errs
 
 

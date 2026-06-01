@@ -10,6 +10,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from httpd_m15 import ConfigError as M15ConfigError
+from httpd_m15 import validate_inference_require, validate_m15_limits
+
 
 class ConfigError(Exception):
     pass
@@ -286,6 +289,11 @@ def load_httpd_full(path: Path) -> HttpdConfig:
             uid = r.action.split(":", 1)[1]
             if uid not in upstreams:
                 raise ConfigError(f"unknown upstream {uid!r} for route {r.name}")
+    try:
+        validate_m15_limits(data)
+        validate_inference_require(data)
+    except M15ConfigError as e:
+        raise ConfigError(str(e)) from e
     return HttpdConfig(
         listen=listen,
         host=host,

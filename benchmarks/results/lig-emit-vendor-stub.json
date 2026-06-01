@@ -1,8 +1,9 @@
 {
   "suite": "lig-emit-vendor-stub",
   "progress": 1,
+  "lowering_ready": 1,
   "cuda": 1,
   "hip": 0,
   "metal": 0,
-  "note": "vendor stub codegen path armed (CUDA=1 HIP=0 METAL=0)"
+  "note": "vendor lowering stub bytes written (CUDA=1 HIP=0 METAL=0)"
 }

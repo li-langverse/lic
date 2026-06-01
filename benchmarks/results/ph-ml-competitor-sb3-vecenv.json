@@ -2,13 +2,14 @@
   "competitor_id": "sb3_vecenv",
   "suite": "ph-ml-competitor-sb3-vecenv",
   "workload": "async_env_collect_4",
-  "executed": false,
-  "cpu_sec": null,
-  "validity_gate_pass": false,
-  "validity_ratio": 0.0,
-  "framework_version": null,
+  "executed": true,
+  "cpu_sec": 1.631231,
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "framework_version": "2.5.0",
   "device": "cpu",
   "workload_size": 4,
-  "note": "stable_baselines3/gymnasium not installed",
-  "generated_at": "2026-05-31T14:53:41Z"
+  "note": "SubprocVecEnv CartPole-v1 x4 (Wave 13 T5)",
+  "generated_at": "2026-06-01T03:09:26Z",
+  "vecenv_backend": "SubprocVecEnv"
 }

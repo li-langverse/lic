@@ -46,7 +46,12 @@ class HttpdConfig:
 
 
 def slug_route_name(method: str, path: str) -> str:
-    s = f"{method.lower()}_{path.strip('/')}".replace("/", "_").replace("*", "wild")
+    slug_path = path
+    if slug_path.endswith("/**"):
+        slug_path = f"{slug_path[:-3]}_rest"
+    elif slug_path.endswith("/*"):
+        slug_path = f"{slug_path[:-2]}_wild"
+    s = f"{method.lower()}_{slug_path.strip('/')}".replace("/", "_").replace("*", "wild")
     s = re.sub(r"[^a-z0-9_]+", "_", s).strip("_")
     return s or "route"
 

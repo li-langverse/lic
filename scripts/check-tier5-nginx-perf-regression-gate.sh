@@ -50,12 +50,19 @@ EXPLOIT_OUT="${HTTPD_REGRESSION_EXPLOIT_CSV:-$BENCHMARKS_RESULTS/tier5_exploit_r
 
 # Li-only exploits (RNG, leak censor, h2) run in check-tier5-exploit-runtime.sh; re-running
 # them in --compare-nginx re-binds the same pick_port() and flakes with "Address already in use".
+# slowloris: nginx legitimate_client_ok flakes on shared CI after half-open drain (li passes);
+# covered in check-tier5-exploit-runtime.sh — skip nginx↔li compare until benchmarks#276 lands.
+HTTPD_TIER5_SKIP_NGINX_COMPARE="${HTTPD_TIER5_SKIP_NGINX_COMPARE:-slowloris}"
 mapfile -t COMPARE_EXPLOIT_IDS < <(
   python3 -c "
+import os
 import sys
 sys.path.insert(0, '${HARNESS}')
 from http_exploit_toml import list_exploit_ids, merge_exploit, target_langs
+skip = {x.strip() for x in os.environ.get('HTTPD_TIER5_SKIP_NGINX_COMPARE', '').split(',') if x.strip()}
 for eid in list_exploit_ids(profile='${EXPLOIT_PROFILE}', explicit=None):
+    if eid in skip:
+        continue
     langs = target_langs(merge_exploit(eid, profile='${EXPLOIT_PROFILE}'), cli_langs=None)
     if 'nginx' in langs:
         print(eid)

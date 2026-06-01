@@ -3,4 +3,4 @@
 PR: https://github.com/li-langverse/lic/pull/698
 Branch: cursor/proof-explorer-compiler-gaps
 Gate: scripts/proof-explorer-phase9-completion-gate.sh exit 0 (with lic built; dot4 BUG-C-01 PASS)
-Signed: 2026-06-02 (code_implementer agent run 1780302840849; squashed CI-churn log commits)
+Signed: 2026-06-01 (code_implementer agent run 1780311718826; TLS `_i` wrappers fix li-httpd link on PR #698)

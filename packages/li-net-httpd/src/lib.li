@@ -752,7 +752,12 @@ def proxy_accept_batch(epfd: var int, listen_fd: var int) raises Net, Alloc, IO 
         if tls_ok < 0:
           tls_hs_done = 0
         if tls_ok == 1:
-          tls_hs_done = 0
+          var spin: int = httpd_tls_handshake_spin_i(slot, conn, 512)
+          if spin == 0:
+            tls_ok = 0
+            tls_hs_done = 1
+          if spin < 0:
+            tls_ok = -1
       if tls_ok < 0:
         tcp_close(conn)
         httpd_slot_free(slot)

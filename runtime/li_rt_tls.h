@@ -30,6 +30,8 @@ void httpd_tls_global_shutdown(void);
 int32_t httpd_tls_handshake_begin(int32_t slot, int32_t fd);
 int32_t httpd_tls_handshake_continue(int32_t slot);
 int32_t httpd_tls_handshake_pending(int32_t slot);
+/* Spin accept with poll until done (max_rounds) or still want_io. */
+int32_t httpd_tls_handshake_spin(int32_t slot, int32_t fd, int32_t max_rounds);
 
 /* Non-blocking TLS accept after TCP accept; sets slot proto. Returns 0 ok, -1 fail. */
 int32_t httpd_tls_handshake_slot(int32_t slot, int32_t fd);

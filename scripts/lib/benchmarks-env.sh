@@ -19,7 +19,13 @@ _benchmarks_env_lic_root() {
 
 if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
   _lic="$(_benchmarks_env_lic_root)"
-  for _c in "$_lic/../benchmarks" "$_lic/../li-langverse/benchmarks"; do
+  # Prefer explicit org roots when available (used by other swarm scripts).
+  for _c in \
+    "${LI_LANGVERSE_ROOT:-}/benchmarks" \
+    "${LANGVERSE:-}/benchmarks" \
+    "$_lic/../benchmarks" \
+    "$_lic/../li-langverse/benchmarks"
+  do
     if [[ -f "$_c/harness/bench.py" ]]; then
       BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
       break
@@ -27,6 +33,22 @@ if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
   done
 fi
 
+# Fallback: walk up parent dirs (handles isolated clones under data/workspaces/...).
+if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
+  _here="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+  _p="$_here"
+  for _i in 1 2 3 4 5 6 7 8 9 10; do
+    for _c in "$_p/benchmarks" "$_p/li-langverse/benchmarks"; do
+      if [[ -f "$_c/harness/bench.py" ]]; then
+        BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
+        break 2
+      fi
+    done
+    _p="$(cd "$_p/.." && pwd)"
+  done
+fi
+
+# Last resort: populate a local cache (useful for CI runners without sibling checkouts).
 if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
   _lic="$(_benchmarks_env_lic_root)"
   _cache="$_lic/.cache/li-benchmarks"
@@ -46,7 +68,7 @@ fi
 
 if [[ -z "${BENCHMARKS_ROOT:-}" || ! -f "${BENCHMARKS_ROOT}/harness/bench.py" ]]; then
   echo "benchmarks-env: clone li-langverse/benchmarks sibling and set BENCHMARKS_ROOT" >&2
-  echo "  expected: \$LIC_ROOT/../benchmarks/harness/bench.py" >&2
+  echo "  expected: \$LIC_ROOT/../benchmarks/harness/bench.py (or set LI_LANGVERSE_ROOT/LANGVERSE)" >&2
   return 1 2>/dev/null || exit 1
 fi
 

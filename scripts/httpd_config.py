@@ -19,6 +19,7 @@ ROUTE_KEY_RE = re.compile(
     r"^(?P<method>[A-Z]+)\s+(?P<path>/[^\s#]+)(?:\s+(?P<extras>.+))?$"
 )
 HEADER_EXTRA_RE = re.compile(r"^([a-zA-Z0-9_-]+)=([^\s]+)$")
+UPSTREAM_BALANCE_ALLOW = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})
 
 ROUTE_REQUIRE_ALLOW = frozenset({"traceparent", "websocket"})
 UPSTREAM_BALANCE_ALLOW = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})

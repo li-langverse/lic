@@ -19,5 +19,13 @@
   "problem_source": "compiler_gap_audit",
   "priority_tier": "P0",
   "dot4_pr": 696,
-  "open_bug_c": 11
+  "open_bug_c": 6,
+  "regression_open": [
+    "BUG-C-02",
+    "BUG-C-04",
+    "BUG-C-05",
+    "BUG-C-06",
+    "BUG-C-08",
+    "BUG-C-12"
+  ]
 }

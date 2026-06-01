@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 1290,
-    "covered": 1290,
+    "total": 1533,
+    "covered": 1533,
     "pct_overall": 100.0,
     "T0_pct": 100.0,
     "T1_pct": 100.0,
@@ -64,6 +64,456 @@
       "covered": true,
       "reason": "li_specimen stub",
       "li_specimen": "proof-db/chemistry/specimens/CHEM-AX-SCF-ENERGY-MODEL.li"
+    },
+    {
+      "entry_id": "CHEM-AX-BC-AX-005",
+      "field": "chemistry",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_ax_bc_ax_005.li"
+    },
+    {
+      "entry_id": "CHEM-AX-BC-AX-010",
+      "field": "chemistry",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_ax_bc_ax_010.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-EQ-003",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_eq_003.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-EQ-008",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_eq_008.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-IG-001",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_ig_001.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-IG-006",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_ig_006.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-RX-002",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_rx_002.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-RX-007",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_rx_007.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-TH-004",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_th_004.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-TH-009",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_th_009.li"
+    },
+    {
+      "entry_id": "CHEM-AX-BC-AX-015",
+      "field": "chemistry",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_ax_bc_ax_015.li"
+    },
+    {
+      "entry_id": "CHEM-AX-BC-AX-020",
+      "field": "chemistry",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_ax_bc_ax_020.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-EQ-013",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_eq_013.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-EQ-018",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_eq_018.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-IG-011",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_ig_011.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-IG-016",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_ig_016.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-RX-012",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_rx_012.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-RX-017",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_rx_017.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-TH-014",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_th_014.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-TH-019",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_th_019.li"
+    },
+    {
+      "entry_id": "CHEM-AX-BC-AX-025",
+      "field": "chemistry",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_ax_bc_ax_025.li"
+    },
+    {
+      "entry_id": "CHEM-AX-BC-AX-030",
+      "field": "chemistry",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_ax_bc_ax_030.li"
+    },
+    {
+      "entry_id": "CHEM-AX-BC-AX-035",
+      "field": "chemistry",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_ax_bc_ax_035.li"
+    },
+    {
+      "entry_id": "CHEM-AX-BC-AX-040",
+      "field": "chemistry",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_ax_bc_ax_040.li"
+    },
+    {
+      "entry_id": "CHEM-AX-BC-AX-045",
+      "field": "chemistry",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_ax_bc_ax_045.li"
+    },
+    {
+      "entry_id": "CHEM-AX-BC-AX-050",
+      "field": "chemistry",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_ax_bc_ax_050.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-EQ-023",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_eq_023.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-EQ-028",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_eq_028.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-EQ-033",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_eq_033.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-EQ-038",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_eq_038.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-EQ-043",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_eq_043.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-EQ-048",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_eq_048.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-IG-021",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_ig_021.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-IG-026",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_ig_026.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-IG-031",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_ig_031.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-IG-036",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_ig_036.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-IG-041",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_ig_041.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-IG-046",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_ig_046.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-RX-022",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_rx_022.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-RX-027",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_rx_027.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-RX-032",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_rx_032.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-RX-037",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_rx_037.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-RX-042",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_rx_042.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-RX-047",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_rx_047.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-TH-024",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_th_024.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-TH-029",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_th_029.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-TH-034",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_th_034.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-TH-039",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_th_039.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-TH-044",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_th_044.li"
+    },
+    {
+      "entry_id": "CHEM-LM-BC-TH-049",
+      "field": "chemistry",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/chemistry/basic-corpus/chem_lm_bc_th_049.li"
     },
     {
       "entry_id": "CHEM-LM-SCF-ENERGY-DECREASE",
@@ -145,6 +595,456 @@
       "covered": true,
       "reason": "li_specimen stub",
       "li_specimen": "proof-db/discrete/lemmas/int_ring_stub.li"
+    },
+    {
+      "entry_id": "D-AX-BC-LOG-005",
+      "field": "discrete",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_ax_bc_log_005.li"
+    },
+    {
+      "entry_id": "D-AX-BC-LOG-010",
+      "field": "discrete",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_ax_bc_log_010.li"
+    },
+    {
+      "entry_id": "D-LM-BC-CMB-002",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_cmb_002.li"
+    },
+    {
+      "entry_id": "D-LM-BC-CMB-007",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_cmb_007.li"
+    },
+    {
+      "entry_id": "D-LM-BC-IND-001",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_ind_001.li"
+    },
+    {
+      "entry_id": "D-LM-BC-IND-006",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_ind_006.li"
+    },
+    {
+      "entry_id": "D-LM-BC-NT-003",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_nt_003.li"
+    },
+    {
+      "entry_id": "D-LM-BC-NT-008",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_nt_008.li"
+    },
+    {
+      "entry_id": "D-LM-BC-REC-004",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_rec_004.li"
+    },
+    {
+      "entry_id": "D-LM-BC-REC-009",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_rec_009.li"
+    },
+    {
+      "entry_id": "D-AX-BC-LOG-015",
+      "field": "discrete",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_ax_bc_log_015.li"
+    },
+    {
+      "entry_id": "D-AX-BC-LOG-020",
+      "field": "discrete",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_ax_bc_log_020.li"
+    },
+    {
+      "entry_id": "D-LM-BC-CMB-012",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_cmb_012.li"
+    },
+    {
+      "entry_id": "D-LM-BC-CMB-017",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_cmb_017.li"
+    },
+    {
+      "entry_id": "D-LM-BC-IND-011",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_ind_011.li"
+    },
+    {
+      "entry_id": "D-LM-BC-IND-016",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_ind_016.li"
+    },
+    {
+      "entry_id": "D-LM-BC-NT-013",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_nt_013.li"
+    },
+    {
+      "entry_id": "D-LM-BC-NT-018",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_nt_018.li"
+    },
+    {
+      "entry_id": "D-LM-BC-REC-014",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_rec_014.li"
+    },
+    {
+      "entry_id": "D-LM-BC-REC-019",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_rec_019.li"
+    },
+    {
+      "entry_id": "D-AX-BC-LOG-025",
+      "field": "discrete",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_ax_bc_log_025.li"
+    },
+    {
+      "entry_id": "D-AX-BC-LOG-030",
+      "field": "discrete",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_ax_bc_log_030.li"
+    },
+    {
+      "entry_id": "D-AX-BC-LOG-035",
+      "field": "discrete",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_ax_bc_log_035.li"
+    },
+    {
+      "entry_id": "D-AX-BC-LOG-040",
+      "field": "discrete",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_ax_bc_log_040.li"
+    },
+    {
+      "entry_id": "D-AX-BC-LOG-045",
+      "field": "discrete",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_ax_bc_log_045.li"
+    },
+    {
+      "entry_id": "D-AX-BC-LOG-050",
+      "field": "discrete",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_ax_bc_log_050.li"
+    },
+    {
+      "entry_id": "D-LM-BC-CMB-022",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_cmb_022.li"
+    },
+    {
+      "entry_id": "D-LM-BC-CMB-027",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_cmb_027.li"
+    },
+    {
+      "entry_id": "D-LM-BC-CMB-032",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_cmb_032.li"
+    },
+    {
+      "entry_id": "D-LM-BC-CMB-037",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_cmb_037.li"
+    },
+    {
+      "entry_id": "D-LM-BC-CMB-042",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_cmb_042.li"
+    },
+    {
+      "entry_id": "D-LM-BC-CMB-047",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_cmb_047.li"
+    },
+    {
+      "entry_id": "D-LM-BC-IND-021",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_ind_021.li"
+    },
+    {
+      "entry_id": "D-LM-BC-IND-026",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_ind_026.li"
+    },
+    {
+      "entry_id": "D-LM-BC-IND-031",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_ind_031.li"
+    },
+    {
+      "entry_id": "D-LM-BC-IND-036",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_ind_036.li"
+    },
+    {
+      "entry_id": "D-LM-BC-IND-041",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_ind_041.li"
+    },
+    {
+      "entry_id": "D-LM-BC-IND-046",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_ind_046.li"
+    },
+    {
+      "entry_id": "D-LM-BC-NT-023",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_nt_023.li"
+    },
+    {
+      "entry_id": "D-LM-BC-NT-028",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_nt_028.li"
+    },
+    {
+      "entry_id": "D-LM-BC-NT-033",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_nt_033.li"
+    },
+    {
+      "entry_id": "D-LM-BC-NT-038",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_nt_038.li"
+    },
+    {
+      "entry_id": "D-LM-BC-NT-043",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_nt_043.li"
+    },
+    {
+      "entry_id": "D-LM-BC-NT-048",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_nt_048.li"
+    },
+    {
+      "entry_id": "D-LM-BC-REC-024",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_rec_024.li"
+    },
+    {
+      "entry_id": "D-LM-BC-REC-029",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_rec_029.li"
+    },
+    {
+      "entry_id": "D-LM-BC-REC-034",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_rec_034.li"
+    },
+    {
+      "entry_id": "D-LM-BC-REC-039",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_rec_039.li"
+    },
+    {
+      "entry_id": "D-LM-BC-REC-044",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_rec_044.li"
+    },
+    {
+      "entry_id": "D-LM-BC-REC-049",
+      "field": "discrete",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/discrete/basic-corpus/d_lm_bc_rec_049.li"
     },
     {
       "entry_id": "D-LM-ADD-ASSOC-INT",
@@ -11145,22 +12045,454 @@
       "li_specimen": "proof-db/erdos/specimens/E-1217.li"
     },
     {
-      "entry_id": "GT-AX-SIMPLE-GRAPH",
+      "entry_id": "GT-AX-BC-GR-005",
       "field": "graph",
-      "proof_status": "target",
+      "proof_status": "axiomatic",
       "tranche": "OTHER",
       "covered": true,
-      "reason": "li_specimen stub",
-      "li_specimen": "proof-db/graph/specimens/GT-AX-SIMPLE-GRAPH.li"
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_ax_bc_gr_005.li"
     },
     {
-      "entry_id": "GT-LM-HANDSHAKING",
+      "entry_id": "GT-AX-BC-GR-010",
       "field": "graph",
-      "proof_status": "target",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_ax_bc_gr_010.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-COL-004",
+      "field": "graph",
+      "proof_status": "open",
       "tranche": "OTHER",
       "covered": true,
       "reason": "li_specimen stub",
-      "li_specimen": "proof-db/graph/specimens/GT-LM-HANDSHAKING.li"
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_col_004.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-COL-009",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_col_009.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-CON-003",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_con_003.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-CON-008",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_con_008.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-HS-001",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_hs_001.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-HS-006",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_hs_006.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-TR-002",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_tr_002.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-TR-007",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_tr_007.li"
+    },
+    {
+      "entry_id": "GT-AX-BC-GR-015",
+      "field": "graph",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_ax_bc_gr_015.li"
+    },
+    {
+      "entry_id": "GT-AX-BC-GR-020",
+      "field": "graph",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_ax_bc_gr_020.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-COL-014",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_col_014.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-COL-019",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_col_019.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-CON-013",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_con_013.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-CON-018",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_con_018.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-HS-011",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_hs_011.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-HS-016",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_hs_016.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-TR-012",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_tr_012.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-TR-017",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_tr_017.li"
+    },
+    {
+      "entry_id": "GT-AX-BC-GR-025",
+      "field": "graph",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_ax_bc_gr_025.li"
+    },
+    {
+      "entry_id": "GT-AX-BC-GR-030",
+      "field": "graph",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_ax_bc_gr_030.li"
+    },
+    {
+      "entry_id": "GT-AX-BC-GR-035",
+      "field": "graph",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_ax_bc_gr_035.li"
+    },
+    {
+      "entry_id": "GT-AX-BC-GR-040",
+      "field": "graph",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_ax_bc_gr_040.li"
+    },
+    {
+      "entry_id": "GT-AX-BC-GR-045",
+      "field": "graph",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_ax_bc_gr_045.li"
+    },
+    {
+      "entry_id": "GT-AX-BC-GR-050",
+      "field": "graph",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_ax_bc_gr_050.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-COL-024",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_col_024.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-COL-029",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_col_029.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-COL-034",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_col_034.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-COL-039",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_col_039.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-COL-044",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_col_044.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-COL-049",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_col_049.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-CON-023",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_con_023.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-CON-028",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_con_028.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-CON-033",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_con_033.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-CON-038",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_con_038.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-CON-043",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_con_043.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-CON-048",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_con_048.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-HS-021",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_hs_021.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-HS-026",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_hs_026.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-HS-031",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_hs_031.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-HS-036",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_hs_036.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-HS-041",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_hs_041.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-HS-046",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_hs_046.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-TR-022",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_tr_022.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-TR-027",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_tr_027.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-TR-032",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_tr_032.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-TR-037",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_tr_037.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-TR-042",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_tr_042.li"
+    },
+    {
+      "entry_id": "GT-LM-BC-TR-047",
+      "field": "graph",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/graph/basic-corpus/gt_lm_bc_tr_047.li"
     },
     {
       "entry_id": "GT-LM-TREE-EDGES",
@@ -11505,6 +12837,456 @@
       "li_specimen": "proof-db/numerics/lemmas/fp_horner_round_stub.li"
     },
     {
+      "entry_id": "P-AX-BC-MEC-001",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_mec_001.li"
+    },
+    {
+      "entry_id": "P-AX-BC-MEC-002",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_mec_002.li"
+    },
+    {
+      "entry_id": "P-AX-BC-MEC-003",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_mec_003.li"
+    },
+    {
+      "entry_id": "P-AX-BC-MEC-007",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_mec_007.li"
+    },
+    {
+      "entry_id": "P-LM-BC-MEC-004",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_mec_004.li"
+    },
+    {
+      "entry_id": "P-LM-BC-MEC-005",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_mec_005.li"
+    },
+    {
+      "entry_id": "P-LM-BC-MEC-006",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_mec_006.li"
+    },
+    {
+      "entry_id": "P-LM-BC-MEC-008",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_mec_008.li"
+    },
+    {
+      "entry_id": "P-LM-BC-MEC-009",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_mec_009.li"
+    },
+    {
+      "entry_id": "P-LM-BC-MEC-010",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_mec_010.li"
+    },
+    {
+      "entry_id": "P-AX-BC-EM-011",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_em_011.li"
+    },
+    {
+      "entry_id": "P-AX-BC-EM-012",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_em_012.li"
+    },
+    {
+      "entry_id": "P-AX-BC-EM-013",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_em_013.li"
+    },
+    {
+      "entry_id": "P-AX-BC-EM-014",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_em_014.li"
+    },
+    {
+      "entry_id": "P-AX-BC-EM-019",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_em_019.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EM-015",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_em_015.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EM-016",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_em_016.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EM-017",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_em_017.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EM-018",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_em_018.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EM-020",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_em_020.li"
+    },
+    {
+      "entry_id": "P-AX-BC-TH-021",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_th_021.li"
+    },
+    {
+      "entry_id": "P-AX-BC-TH-022",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_th_022.li"
+    },
+    {
+      "entry_id": "P-AX-BC-TH-023",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_th_023.li"
+    },
+    {
+      "entry_id": "P-AX-BC-TH-024",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_th_024.li"
+    },
+    {
+      "entry_id": "P-AX-BC-TH-030",
+      "field": "physics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/physics/basic-corpus/p_ax_bc_th_030.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EX-041",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_ex_041.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EX-042",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_ex_042.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EX-043",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_ex_043.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EX-044",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_ex_044.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EX-045",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_ex_045.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EX-046",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_ex_046.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EX-047",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_ex_047.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EX-048",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_ex_048.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EX-049",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_ex_049.li"
+    },
+    {
+      "entry_id": "P-LM-BC-EX-050",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_ex_050.li"
+    },
+    {
+      "entry_id": "P-LM-BC-TH-025",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_th_025.li"
+    },
+    {
+      "entry_id": "P-LM-BC-TH-026",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_th_026.li"
+    },
+    {
+      "entry_id": "P-LM-BC-TH-027",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_th_027.li"
+    },
+    {
+      "entry_id": "P-LM-BC-TH-028",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_th_028.li"
+    },
+    {
+      "entry_id": "P-LM-BC-TH-029",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_th_029.li"
+    },
+    {
+      "entry_id": "P-LM-BC-WV-031",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_wv_031.li"
+    },
+    {
+      "entry_id": "P-LM-BC-WV-032",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_wv_032.li"
+    },
+    {
+      "entry_id": "P-LM-BC-WV-033",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_wv_033.li"
+    },
+    {
+      "entry_id": "P-LM-BC-WV-034",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_wv_034.li"
+    },
+    {
+      "entry_id": "P-LM-BC-WV-035",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_wv_035.li"
+    },
+    {
+      "entry_id": "P-LM-BC-WV-036",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_wv_036.li"
+    },
+    {
+      "entry_id": "P-LM-BC-WV-037",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_wv_037.li"
+    },
+    {
+      "entry_id": "P-LM-BC-WV-038",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_wv_038.li"
+    },
+    {
+      "entry_id": "P-LM-BC-WV-039",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_wv_039.li"
+    },
+    {
+      "entry_id": "P-LM-BC-WV-040",
+      "field": "physics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/physics/basic-corpus/p_lm_bc_wv_040.li"
+    },
+    {
       "entry_id": "P-AX-CONS-001",
       "field": "physics",
       "proof_status": "open",
@@ -11568,49 +13350,454 @@
       "li_specimen": "proof-db/physics/specimens/P-LM-CONS-001.li"
     },
     {
-      "entry_id": "P-AX-MECH-001",
-      "field": "physics",
+      "entry_id": "ST-AX-BC-EX-002",
+      "field": "statistics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_ax_bc_ex_002.li"
+    },
+    {
+      "entry_id": "ST-AX-BC-PR-001",
+      "field": "statistics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_ax_bc_pr_001.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-BER-009",
+      "field": "statistics",
       "proof_status": "open",
       "tranche": "OTHER",
       "covered": true,
       "reason": "li_specimen stub",
-      "li_specimen": "proof-db/physics/specimens/P-AX-MECH-001.li"
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_ber_009.li"
     },
     {
-      "entry_id": "P-AX-MECH-002",
-      "field": "physics",
+      "entry_id": "ST-LM-BC-BN-006",
+      "field": "statistics",
       "proof_status": "open",
       "tranche": "OTHER",
       "covered": true,
       "reason": "li_specimen stub",
-      "li_specimen": "proof-db/physics/specimens/P-AX-MECH-002.li"
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_bn_006.li"
     },
     {
-      "entry_id": "P-AX-MECH-003",
-      "field": "physics",
+      "entry_id": "ST-LM-BC-CH-004",
+      "field": "statistics",
       "proof_status": "open",
       "tranche": "OTHER",
       "covered": true,
       "reason": "li_specimen stub",
-      "li_specimen": "proof-db/physics/specimens/P-AX-MECH-003.li"
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_ch_004.li"
     },
     {
-      "entry_id": "ST-AX-PROB-FINITE",
+      "entry_id": "ST-LM-BC-CLT-005",
       "field": "statistics",
       "proof_status": "target",
       "tranche": "OTHER",
       "covered": true,
       "reason": "li_specimen stub",
-      "li_specimen": "proof-db/statistics/specimens/ST-AX-PROB-FINITE.li"
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_clt_005.li"
     },
     {
-      "entry_id": "ST-AX-EXPECT-LINEAR",
+      "entry_id": "ST-LM-BC-COV-007",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_cov_007.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-GAU-010",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_gau_010.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-MGF-008",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_mgf_008.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-VR-003",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_vr_003.li"
+    },
+    {
+      "entry_id": "ST-AX-BC-EX-012",
+      "field": "statistics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_ax_bc_ex_012.li"
+    },
+    {
+      "entry_id": "ST-AX-BC-PR-011",
+      "field": "statistics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_ax_bc_pr_011.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-BER-019",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_ber_019.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-BN-016",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_bn_016.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-CH-014",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_ch_014.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-CLT-015",
       "field": "statistics",
       "proof_status": "target",
       "tranche": "OTHER",
       "covered": true,
       "reason": "li_specimen stub",
-      "li_specimen": "proof-db/statistics/specimens/ST-AX-EXPECT-LINEAR.li"
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_clt_015.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-COV-017",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_cov_017.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-GAU-020",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_gau_020.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-MGF-018",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_mgf_018.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-VR-013",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_vr_013.li"
+    },
+    {
+      "entry_id": "ST-AX-BC-EX-022",
+      "field": "statistics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_ax_bc_ex_022.li"
+    },
+    {
+      "entry_id": "ST-AX-BC-EX-032",
+      "field": "statistics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_ax_bc_ex_032.li"
+    },
+    {
+      "entry_id": "ST-AX-BC-EX-042",
+      "field": "statistics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_ax_bc_ex_042.li"
+    },
+    {
+      "entry_id": "ST-AX-BC-PR-021",
+      "field": "statistics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_ax_bc_pr_021.li"
+    },
+    {
+      "entry_id": "ST-AX-BC-PR-031",
+      "field": "statistics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_ax_bc_pr_031.li"
+    },
+    {
+      "entry_id": "ST-AX-BC-PR-041",
+      "field": "statistics",
+      "proof_status": "axiomatic",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "axiomatic+lean_module",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_ax_bc_pr_041.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-BER-029",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_ber_029.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-BER-039",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_ber_039.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-BER-049",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_ber_049.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-BN-026",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_bn_026.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-BN-036",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_bn_036.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-BN-046",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_bn_046.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-CH-024",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_ch_024.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-CH-034",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_ch_034.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-CH-044",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_ch_044.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-CLT-025",
+      "field": "statistics",
+      "proof_status": "target",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_clt_025.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-CLT-035",
+      "field": "statistics",
+      "proof_status": "target",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_clt_035.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-CLT-045",
+      "field": "statistics",
+      "proof_status": "target",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_clt_045.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-COV-027",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_cov_027.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-COV-037",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_cov_037.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-COV-047",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_cov_047.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-GAU-030",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_gau_030.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-GAU-040",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_gau_040.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-GAU-050",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_gau_050.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-MGF-028",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_mgf_028.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-MGF-038",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_mgf_038.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-MGF-048",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_mgf_048.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-VR-023",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_vr_023.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-VR-033",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_vr_033.li"
+    },
+    {
+      "entry_id": "ST-LM-BC-VR-043",
+      "field": "statistics",
+      "proof_status": "open",
+      "tranche": "OTHER",
+      "covered": true,
+      "reason": "li_specimen stub",
+      "li_specimen": "proof-db/statistics/basic-corpus/st_lm_bc_vr_043.li"
     },
     {
       "entry_id": "ST-LM-SAMPLE-MEAN-UNBIASED",

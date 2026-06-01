@@ -1,9 +1,16 @@
 # P-AX-BC-TH-021: Zeroth law: thermal equilibrium is transitive.
 
-extern proc proof_db_p_ax_bc_th_021() -> int
+extern proc p_ax_bc_th_021_axiom_witness() -> int
   requires true
   ensures result == 0
   decreases 0
+
+def p_ax_bc_th_021_holds() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
 
 def main() -> int
   requires true

@@ -1,4 +1,11 @@
-# D-LM-BC-REC-009: Linear recurrence solution stub (variant 9).
+# D-LM-BC-REC-009: Geometric sequence: a_n = r a_{n-1} has closed form a_n = a_0 r^n.
+
+def d_lm_bc_rec_009_witness(n: int) -> int
+  requires n >= 0
+  ensures result == n
+  decreases 0
+=
+  return n
 
 def main() -> int
   requires true

@@ -30,7 +30,7 @@ def _physics() -> list[dict]:
         ("P-AX-BC-TH-021", "axiom", "thermodynamics", "Zeroth law: thermal equilibrium is transitive."),
         ("P-AX-BC-TH-022", "axiom", "thermodynamics", "First law: dU = delta Q - delta W."),
         ("P-AX-BC-TH-023", "axiom", "thermodynamics", "Second law: entropy of isolated system non-decreasing."),
-        ("P-AX-BC-TH-024", "axiom", "thermodynamics", "Ideal gas PV = n R T."),
+        ("P-AX-BC-TH-024", "axiom", "thermodynamics", "Joule law stub: ideal gas internal energy depends only on temperature T."),
         ("P-LM-BC-TH-025", "lemma", "thermodynamics", "Carnot efficiency upper bound 1 - T_c/T_h."),
         ("P-LM-BC-TH-026", "lemma", "thermodynamics", "Equipartition: average energy (1/2) kT per quadratic dof."),
         ("P-LM-BC-TH-027", "lemma", "thermodynamics", "Heat capacity at constant volume definition C_V."),
@@ -75,25 +75,56 @@ def _physics() -> list[dict]:
     return rows
 
 
-def _stats() -> list[dict]:
+def _stats_stmt(n: int, tpl_idx: int) -> tuple[str, str, str]:
+    """Return (eid_prefix_pattern, kind, statement) for stats entry n (1..50)."""
     templates = [
-        ("ST-AX-BC-PR-{:03d}", "axiom", "Kolmogorov probability axioms on finite space (variant {})."),
-        ("ST-AX-BC-EX-{:03d}", "axiom", "Expectation linearity E[aX+bY] = aE[X]+bE[Y] (case {})."),
-        ("ST-LM-BC-VR-{:03d}", "lemma", "Variance Var(X) = E[X^2] - E[X]^2 (case {})."),
-        ("ST-LM-BC-CH-{:03d}", "lemma", "Chebyshev inequality P(|X-mu|>=k sigma) <= 1/k^2 (case {})."),
-        ("ST-LM-BC-CLT-{:03d}", "lemma", "Central limit theorem statement (normalized sum, case {})."),
-        ("ST-LM-BC-BN-{:03d}", "lemma", "Bayes theorem P(A|B) = P(B|A)P(A)/P(B) (case {})."),
-        ("ST-LM-BC-COV-{:03d}", "lemma", "Covariance Cov(X,Y) = E[XY]-E[X]E[Y] (case {})."),
-        ("ST-LM-BC-MGF-{:03d}", "lemma", "MGF moment generating function definition (case {})."),
-        ("ST-LM-BC-BER-{:03d}", "lemma", "Bernoulli distribution mean p variance p(1-p) (case {})."),
-        ("ST-LM-BC-GAU-{:03d}", "lemma", "Normal distribution density stub (case {})."),
+        ("ST-AX-BC-PR-{:03d}", "axiom"),
+        ("ST-AX-BC-EX-{:03d}", "axiom"),
+        ("ST-LM-BC-VR-{:03d}", "lemma"),
+        ("ST-LM-BC-CH-{:03d}", "lemma"),
+        ("ST-LM-BC-CLT-{:03d}", "lemma"),
+        ("ST-LM-BC-BN-{:03d}", "lemma"),
+        ("ST-LM-BC-COV-{:03d}", "lemma"),
+        ("ST-LM-BC-MGF-{:03d}", "lemma"),
+        ("ST-LM-BC-BER-{:03d}", "lemma"),
+        ("ST-LM-BC-GAU-{:03d}", "lemma"),
     ]
+    eid_tpl, kind = templates[tpl_idx]
+    eid = eid_tpl.format(n)
+    if tpl_idx == 0:
+        if n == 1:
+            stmt = (
+                "Kolmogorov axioms on finite Omega: (K1) P(A)>=0; (K2) P(Omega)=1; "
+                "(K3) P(A u B)=P(A)+P(B) for disjoint A,B."
+            )
+        else:
+            stmt = f"Kolmogorov consequence (variant {n}): P(empty)=0 and P(A^c)=1-P(A) on finite Omega."
+    elif tpl_idx == 1:
+        stmt = f"Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case {n})."
+    elif tpl_idx == 5:
+        stmt = f"Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case {n})."
+    elif tpl_idx == 2:
+        stmt = f"Variance Var(X) = E[X^2] - E[X]^2 (case {n})."
+    elif tpl_idx == 3:
+        stmt = f"Chebyshev inequality P(|X-mu|>=k sigma) <= 1/k^2 (case {n})."
+    elif tpl_idx == 4:
+        stmt = f"Central limit theorem statement (normalized sum, case {n})."
+    elif tpl_idx == 6:
+        stmt = f"Covariance Cov(X,Y) = E[XY]-E[X]E[Y] (case {n})."
+    elif tpl_idx == 7:
+        stmt = f"MGF moment generating function definition (case {n})."
+    elif tpl_idx == 8:
+        stmt = f"Bernoulli distribution mean p variance p(1-p) (case {n})."
+    else:
+        stmt = f"Normal distribution density stub (case {n})."
+    return eid, kind, stmt
+
+
+def _stats() -> list[dict]:
     rows: list[dict] = []
     for n in range(1, 51):
-        tpl = templates[(n - 1) % len(templates)]
-        eid = tpl[0].format(n)
-        kind = tpl[1]
-        stmt = tpl[2].format(n)
+        tpl_idx = (n - 1) % 10
+        eid, kind, stmt = _stats_stmt(n, tpl_idx)
         rows.append(
             {
                 "id": eid,
@@ -169,7 +200,7 @@ def _chemistry() -> list[dict]:
     topics = [
         ("CHEM-LM-BC-IG", "lemma", "Ideal gas law PV=nRT (form {})."),
         ("CHEM-LM-BC-RX", "lemma", "Rate law first order -dA/dt = k A (form {})."),
-        ("CHEM-LM-BC-EQ", "lemma", "Equilibrium constant K = products/reactants (form {})."),
+        ("CHEM-LM-BC-EQ", "lemma", "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form {})."),
         ("CHEM-LM-BC-TH", "lemma", "Gibbs free energy Delta G = Delta H - T Delta S (form {})."),
         ("CHEM-AX-BC-AX", "axiom", "Conservation of mass in closed reaction (form {})."),
     ]
@@ -192,6 +223,26 @@ def _chemistry() -> list[dict]:
     return rows
 
 
+def _apply_destub(plan: list[dict]) -> list[dict]:
+    import importlib.util
+    from pathlib import Path
+
+    lookup_path = (
+        Path(__file__).resolve().parents[2]
+        / "docs/verification/basic-corpus/destub_statements.py"
+    )
+    spec = importlib.util.spec_from_file_location("destub_statements", lookup_path)
+    if spec is None or spec.loader is None:
+        return plan
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    for row in plan:
+        repl = mod.destub_statement(row["id"], row["statement"], row.get("domain"))
+        if repl:
+            row["statement"] = repl
+    return plan
+
+
 def build_plan() -> list[dict]:
     plan: list[dict] = []
     plan.extend(_physics())
@@ -199,7 +250,7 @@ def build_plan() -> list[dict]:
     plan.extend(_discrete())
     plan.extend(_graph())
     plan.extend(_chemistry())
-    return plan
+    return _apply_destub(plan)
 
 
 PLAN: list[dict] = build_plan()

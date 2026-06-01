@@ -3,31 +3,30 @@
 set -euo pipefail
 ROOT="${PH_ML_WAVE12_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
-# shellcheck source=lib/benchmarks-env.sh
-source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1
 
+_wsl_path_u() {
+  wsl.exe wslpath -u "$1" 2>/dev/null | tr -d '\r\n'
+}
+
 run_in_wsl() {
   local wsl_root wsl_bench
-  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '
-')"
+  wsl_root="$(_wsl_path_u "$ROOT")"
   wsl_bench=""
   if [[ -n "${BENCHMARKS_ROOT:-}" ]]; then
-    wsl_bench="$(wsl.exe wslpath -u "$BENCHMARKS_ROOT" 2>/dev/null | tr -d '
-')" || wsl_bench=""
+    wsl_bench="$(_wsl_path_u "$BENCHMARKS_ROOT")" || wsl_bench=""
   fi
   if [[ -z "$wsl_bench" ]]; then
     for _c in "$ROOT/../benchmarks" "$ROOT/../../benchmarks" "$ROOT/../../../../../benchmarks"; do
       if [[ -f "$_c/harness/bench.py" ]]; then
-        wsl_bench="$(wsl.exe wslpath -u "$(cd "$_c" && pwd)" 2>/dev/null | tr -d '
-')" || wsl_bench=""
+        wsl_bench="$(_wsl_path_u "$(cd "$_c" && pwd)")" || wsl_bench=""
         break
       fi
     done
   fi
-  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_WAVE12_ROOT='$wsl_root' PH_ML_WAVE12_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' LIC=./build-wsl/compiler/lic/lic && source scripts/ph-ml-wave12-gates.sh"
+  wsl.exe bash -lc "cd '$wsl_root' && PH_ML_WAVE12_ROOT='$wsl_root' PH_ML_WAVE12_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' LIC=./build-wsl/compiler/lic/lic bash scripts/ph-ml-wave12-gates.sh"
 }
 
 lic_bin_for_smokes() {
@@ -68,8 +67,7 @@ lic_check_smokes() {
 }
 
 if [[ "${PH_ML_WAVE12_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] && command -v wsl.exe >/dev/null 2>&1; then
-  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '
-')"
+  wsl_root="$(_wsl_path_u "$ROOT")"
   if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
     run_in_wsl
     exit $?
@@ -115,17 +113,8 @@ PY
 
 export PH_ML_SB3_VECENV_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-sb3-vecenv.json"
 python3 scripts/bench_ph_ml_competitor_sb3_vecenv.py
-python3 - <<'PY'
-import json, sys
-from pathlib import Path
-try:
-    import stable_baselines3  # noqa: F401
-except ImportError:
-    sys.exit(0)
-d = json.loads(Path("benchmarks/results/ph-ml-competitor-sb3-vecenv.json").read_text())
-if not d.get("executed"):
-    sys.exit("SB3 must be executed when stable-baselines3 installed")
-PY
+export PH_ML_GATE_COMPETITOR_CHECK=sb3
+python3 scripts/lib/ph_ml_gate_competitor_honesty.py
 
 export PH_ML_TENSORFLOW_CPU_MATMUL_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-tensorflow-cpu-matmul.json"
 python3 scripts/bench_ph_ml_competitor_tensorflow_cpu_matmul.py || true

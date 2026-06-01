@@ -32,4 +32,22 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
-**Agent verification (2026-05-31):** runs `code_implementer-1780246266094`, `1780246278249`, `1780246897084` — program-complete gate exit 0 on Windows host (WSL delegation for matmul-32); PR [#676](https://github.com/li-langverse/lic/pull/676) all CI checks green.
+**Agent verification (2026-06-01):** latest run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green, await human `merge-approved`.
+
+**Prior run `code_implementer-1780279881936`:** `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~116s); `ratio_vs_li` 0.0044 (T6), `live_proxy` true (T8).
+
+**Prior run `code_implementer-1780279148925`:** exit 0 (~113s); all CI green (build-and-test linux/macos/windows, studio-ui native capture).
+
+**Prior run `code_implementer-1780278582087`:** `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~106s).
+
+**Prior run `code_implementer-1780274694421`:** exit 0 (~115s); studio-ui swapchain/wgpu CI legs exit 0 locally.
+
+**Prior run `code_implementer-1780273535258`:** exit 0 (~144s); T1–T8 unchanged; `ratio_vs_li` 0.001014.
+
+**Prior run `code_implementer-1780272858157`:** exit 0 (~116s); T1–T8 unchanged.
+
+**Prior run `code_implementer-1780272693434`:** `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); bench spot-check (`ratio_vs_li` 0.000804).
+
+**Prior run `code_implementer-1780272305121`:** exit 0 (~111s); studio-ui gate fix (`verify-wgpu-swapchain` after bench).
+
+**Prior run `code_implementer-1780271725006`:** exit 0 (~157s); bench spot-check (`ratio_vs_li` 0.001007).

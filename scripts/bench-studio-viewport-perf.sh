@@ -48,9 +48,14 @@ gate_defs = {g["id"]: g for g in registry.get("gate") or [] if isinstance(g, dic
 tier_defs = {t["id"]: t for t in registry.get("particle_tier") or [] if isinstance(t, dict) and "id" in t}
 memory_defs = {m["id"]: m for m in registry.get("memory") or [] if isinstance(m, dict) and "id" in m}
 
+try:
+    registry_rel = str(registry_path.relative_to(root))
+except ValueError:
+    registry_rel = str(registry_path)
+
 report = {
     "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-    "registry_path": str(registry_path.relative_to(root)),
+    "registry_path": registry_rel,
     "registry_schema": meta.get("schema", "li_studio_ui_bench_v1"),
     "registry_version": meta.get("version", 0),
     "load_ms": None,

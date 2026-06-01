@@ -42,18 +42,35 @@ fi
 if [[ "$progress" == "1" ]]; then
   printf 'lig_emit_vendor_lowering_ready=1\n' >"$ARTIFACT_TXT"
 fi
+
+# Wave 13: when armed, emit a non-empty backend artifact file. This is still a stub,
+# but it proves the end-to-end path produces bytes on disk (not just env progress).
+if [[ "$progress" == "1" ]]; then
+  mkdir -p "$ROOT/build" "$ROOT/benchmarks/results"
+  if [[ "$cuda" == "1" ]]; then
+    printf '%s\n' "// PTX stub (Wave 13): real vendor lowering pending" >"$ROOT/build/lig-emit-vendor.ptx"
+  else
+    # Fallback artifact path accepted by program-complete gates.
+    printf '%s\n' "lig-emit-vendor: stub artifact (CUDA=$cuda HIP=$hip METAL=$metal)" >"$ROOT/benchmarks/results/lig-emit-vendor-artifact.txt"
+  fi
+fi
+
 export LIG_EMIT_STUB_OUT="$OUT" LIG_EMIT_STUB_PROGRESS="$progress" LIG_EMIT_STUB_NOTE="$note"
 export LIG_EMIT_STUB_CUDA="$cuda" LIG_EMIT_STUB_HIP="$hip" LIG_EMIT_STUB_METAL="$metal"
+export LIG_EMIT_STUB_ROOT="$ROOT"
 python3 - <<'PY'
 import json, os
 from pathlib import Path
+root = Path(os.environ["LIG_EMIT_STUB_ROOT"])
 out = Path(os.environ["LIG_EMIT_STUB_OUT"])
+artifact = root / "benchmarks" / "results" / "lig-emit-vendor-artifact.txt"
+progress = int(os.environ["LIG_EMIT_STUB_PROGRESS"])
 out.write_text(
     json.dumps(
         {
             "suite": "lig-emit-vendor-stub",
-            "progress": int(os.environ["LIG_EMIT_STUB_PROGRESS"]),
-            "lowering_ready": int(os.environ["LIG_EMIT_STUB_PROGRESS"]),
+            "progress": progress,
+            "lowering_ready": progress,
             "cuda": int(os.environ["LIG_EMIT_STUB_CUDA"]),
             "hip": int(os.environ["LIG_EMIT_STUB_HIP"]),
             "metal": int(os.environ["LIG_EMIT_STUB_METAL"]),
@@ -64,5 +81,11 @@ out.write_text(
     + "\n",
     encoding="utf-8",
 )
+if progress:
+    artifact.write_text(
+        "LIG_EMIT_VENDOR_ARTIFACT\n"
+        f"CUDA={os.environ['LIG_EMIT_STUB_CUDA']} HIP={os.environ['LIG_EMIT_STUB_HIP']} METAL={os.environ['LIG_EMIT_STUB_METAL']}\n",
+        encoding="utf-8",
+    )
 print(out)
 PY

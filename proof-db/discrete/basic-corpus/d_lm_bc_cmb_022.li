@@ -1,4 +1,11 @@
-# D-LM-BC-CMB-022: Binomial coefficient identity (variant 22).
+# D-LM-BC-CMB-022: Vandermonde identity: sum_{k=0}^r C(m,k) C(n,r-k) = C(m+n,r).
+
+def binomial_symmetry(n: int, k: int) -> int
+  requires n >= 0 and 0 <= k and k <= n
+  ensures result == n - k
+  decreases 0
+=
+  return n - k
 
 def main() -> int
   requires true

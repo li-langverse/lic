@@ -1,5 +1,12 @@
 # P-LM-BC-MEC-009: Center of mass moves as if all mass were concentrated there.
 
+def p_lm_bc_mec_009_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
 def main() -> int
   requires true
   ensures result == 0

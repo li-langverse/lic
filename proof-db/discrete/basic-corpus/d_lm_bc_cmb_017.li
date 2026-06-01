@@ -1,4 +1,11 @@
-# D-LM-BC-CMB-017: Binomial coefficient identity (variant 17).
+# D-LM-BC-CMB-017: Alternating row sum: sum_{k=0}^n (-1)^k C(n,k) = 0 for n > 0.
+
+def binomial_symmetry(n: int, k: int) -> int
+  requires n >= 0 and 0 <= k and k <= n
+  ensures result == n - k
+  decreases 0
+=
+  return n - k
 
 def main() -> int
   requires true

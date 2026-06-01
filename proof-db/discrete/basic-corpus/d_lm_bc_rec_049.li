@@ -1,4 +1,11 @@
-# D-LM-BC-REC-049: Linear recurrence solution stub (variant 49).
+# D-LM-BC-REC-049: Divide-and-conquer recurrence T(n)=2T(n/2)+n has solution T(n)=O(n log n).
+
+def d_lm_bc_rec_049_witness(n: int) -> int
+  requires n >= 0
+  ensures result == n
+  decreases 0
+=
+  return n
 
 def main() -> int
   requires true

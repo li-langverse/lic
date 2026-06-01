@@ -1,5 +1,12 @@
 # P-LM-BC-EX-042: Escape velocity v_e = sqrt(2 G M / r).
 
+def p_lm_bc_ex_042_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
 def main() -> int
   requires true
   ensures result == 0

@@ -34,6 +34,7 @@ if [[ "${PH_ML_PROGRAM_COMPLETE_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/com
 fi
 
 # shellcheck source=lib/benchmarks-env.sh
+export BENCHMARKS_ALLOW_NO_HARNESS=1
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"

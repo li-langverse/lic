@@ -2,13 +2,15 @@
 # Studio viewport / particle / load benchmarks — writes JSON for plan loop + competitive registry.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
 OUT_DIR="${STUDIO_UI_UX_BENCH_DIR:-$ROOT/data/studio-ui-ux-plan-loop}"
-mkdir -p "$OUT_DIR" "$ROOT/benchmarks/results"
+mkdir -p "$OUT_DIR"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="$OUT_DIR/bench-${STAMP}.json"
 LATEST="$OUT_DIR/latest-bench.json"
-COMPETITIVE="$ROOT/benchmarks/results/bench-studio-viewport-perf.json"
-REGISTRY="$ROOT/benchmarks/competitive/studio-ui.toml"
+COMPETITIVE="$BENCHMARKS_RESULTS/bench-studio-viewport-perf.json"
+REGISTRY="$BENCHMARKS_COMPETITIVE/studio-ui.toml"
 
 python3 - "$ROOT" "$OUT" "$LATEST" "$COMPETITIVE" "$REGISTRY" <<'PY'
 import json
@@ -50,7 +52,9 @@ memory_defs = {m["id"]: m for m in registry.get("memory") or [] if isinstance(m,
 
 report = {
     "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-    "registry_path": str(registry_path.relative_to(root)),
+    "registry_path": str(registry_path.relative_to(root))
+    if str(registry_path).startswith(str(root))
+    else str(registry_path),
     "registry_schema": meta.get("schema", "li_studio_ui_bench_v1"),
     "registry_version": meta.get("version", 0),
     "load_ms": None,

@@ -3,7 +3,6 @@
 set -euo pipefail
 ROOT="${PH_ML_PROGRAM_COMPLETE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
-
 run_in_wsl() {
   local wsl_root wsl_bench
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
@@ -23,7 +22,7 @@ run_in_wsl() {
   if [[ -n "${PH_ML_WEIGHTS_FIXTURE:-}" ]]; then
     wsl_weights="$(wsl.exe wslpath -u "$PH_ML_WEIGHTS_FIXTURE" 2>/dev/null | tr -d '\r\n')" || wsl_weights=""
   fi
-  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_PROGRAM_COMPLETE_ROOT='$wsl_root' PH_ML_PROGRAM_COMPLETE_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' BENCHMARKS_RESULTS='$wsl_root/benchmarks/results' PH_ML_WEIGHTS_FIXTURE='${wsl_weights:-$wsl_root/benchmarks/fixtures/ph-ml-weights}' && bash scripts/ph-ml-program-complete-gates.sh"
+  wsl.exe bash -lc "cd '$wsl_root' && PH_ML_PROGRAM_COMPLETE_ROOT='$wsl_root' PH_ML_PROGRAM_COMPLETE_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' BENCHMARKS_RESULTS='$wsl_root/benchmarks/results' PH_ML_WEIGHTS_FIXTURE='${wsl_weights:-$wsl_root/benchmarks/fixtures/ph-ml-weights}' bash scripts/ph-ml-program-complete-gates.sh"
 }
 
 if [[ "${PH_ML_PROGRAM_COMPLETE_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] && command -v wsl.exe >/dev/null 2>&1; then

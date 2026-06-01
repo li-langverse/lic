@@ -3,8 +3,6 @@
 set -euo pipefail
 ROOT="${PH_ML_WAVE12_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
-# shellcheck source=lib/benchmarks-env.sh
-source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1

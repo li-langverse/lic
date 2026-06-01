@@ -31,16 +31,19 @@ if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
       BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
       break
     fi
-    # "Lite" fallback: lic vendors a minimal benchmarks tree (results + some workloads)
-    # used by gates that only need BENCHMARKS_RESULTS paths.
-    if [[ -d "$_c/results" && -d "$_c/competitive" ]]; then
+    # "Lite" fallback: in-repo results + competitive only when harness is present too.
+    # Without harness, prefer cloning li-langverse/benchmarks (studio-ui gates need animate_md).
+    if [[ -d "$_c/results" && -d "$_c/competitive" && -f "$_c/harness/bench.py" ]]; then
       BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
       break
     fi
   done
   # Fallback for isolated clones that vendor only the minimal benchmarks layout
   # (results + competitive) inside the lic repo.
-  if [[ -z "${BENCHMARKS_ROOT:-}" ]] && [[ -d "$_lic/benchmarks/results" ]] && [[ -d "$_lic/benchmarks/competitive" ]]; then
+  if [[ -z "${BENCHMARKS_ROOT:-}" ]] \
+    && [[ -d "$_lic/benchmarks/results" ]] \
+    && [[ -d "$_lic/benchmarks/competitive" ]] \
+    && [[ -f "$_lic/benchmarks/harness/bench.py" ]]; then
     BENCHMARKS_ROOT="$(cd "$_lic/benchmarks" && pwd)"
   fi
 fi

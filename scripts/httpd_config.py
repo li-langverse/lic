@@ -10,10 +10,21 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from httpd_m15 import ConfigError as M15ConfigError
+from httpd_m15 import validate_inference_require, validate_m15_limits
+from httpd_leak_censor import ConfigError as LeakConfigError
+from httpd_leak_censor import validate_leak_censor
+from httpd_tls import ConfigError as TlsConfigError
+from httpd_tls import validate_tls_config
+from httpd_rng import ConfigError as RngConfigError
+from httpd_rng import validate_rng_config_raise
+
 
 class ConfigError(Exception):
     pass
 
+
+UPSTREAM_BALANCE_MODES = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})
 
 ROUTE_KEY_RE = re.compile(
     r"^(?P<method>[A-Z]+)\s+(?P<path>/[^\s#]+)(?:\s+(?P<extras>.+))?$"
@@ -43,7 +54,12 @@ class HttpdConfig:
 
 
 def slug_route_name(method: str, path: str) -> str:
-    s = f"{method.lower()}_{path.strip('/')}".replace("/", "_").replace("*", "wild")
+    slug_path = path
+    if path.endswith("/**"):
+        slug_path = f"{path[:-3]}_rest"
+    elif path.endswith("/*"):
+        slug_path = f"{path[:-2]}_wild"
+    s = f"{method.lower()}_{slug_path.strip('/')}".replace("/", "_").replace("*", "wild")
     s = re.sub(r"[^a-z0-9_]+", "_", s).strip("_")
     return s or "route"
 
@@ -116,6 +132,35 @@ def validate_routes(routes: list[CanonicalRoute]) -> None:
                 raise ConfigError(
                     f"overlapping routes at same priority: {a.name} vs {b.name}"
                 )
+
+
+def validate_upstream_balance(data: dict[str, Any]) -> None:
+    nested = data.get("upstreams")
+    if isinstance(nested, dict):
+        for pool_id, spec in nested.items():
+            if not isinstance(spec, dict):
+                continue
+            bal = spec.get("balance")
+            if bal is None:
+                continue
+            mode = str(bal).strip().lower()
+            if mode not in UPSTREAM_BALANCE_MODES:
+                raise ConfigError(
+                    f"upstreams.{pool_id}.balance must be one of "
+                    f"{sorted(UPSTREAM_BALANCE_MODES)} (got {bal!r})"
+                )
+    for key, val in data.items():
+        if not key.startswith("upstreams.") or not isinstance(val, dict):
+            continue
+        pool_id = key.split(".", 1)[1]
+        bal = val.get("balance")
+        if bal is None:
+            continue
+        mode = str(bal).strip().lower()
+        if mode not in UPSTREAM_BALANCE_MODES:
+            raise ConfigError(
+                f"{key}.balance must be one of {sorted(UPSTREAM_BALANCE_MODES)} (got {bal!r})"
+            )
 
 
 def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
@@ -210,12 +255,22 @@ def load_httpd_full(path: Path) -> HttpdConfig:
         max_body = str(limits["max_body"])
     routes = desugar_config(data)
     validate_routes(routes)
+    validate_upstream_balance(data)
     upstreams = parse_upstreams(data)
     for r in routes:
         if r.action.startswith("proxy:"):
             uid = r.action.split(":", 1)[1]
             if uid not in upstreams:
                 raise ConfigError(f"unknown upstream {uid!r} for route {r.name}")
+    try:
+        validate_tls_config(data, path)
+        validate_m15_limits(data)
+        validate_inference_require(data)
+        validate_rng_config_raise(data)
+        for warn in validate_leak_censor(data, path):
+            print(warn, file=sys.stderr)
+    except (M15ConfigError, RngConfigError, LeakConfigError, TlsConfigError) as e:
+        raise ConfigError(str(e)) from e
     return HttpdConfig(
         listen=listen,
         host=host,

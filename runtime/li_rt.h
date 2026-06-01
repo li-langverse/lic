@@ -180,6 +180,7 @@ void httpd_client_force_close_i(int32_t epfd, int32_t slot);
 int32_t httpd_fork_workers_i(void);
 int32_t httpd_config_workers_i(void);
 int32_t httpd_config_listen_port_i(void);
+int32_t httpd_config_listen_port_http_i(void);
 intptr_t httpd_config_doc_root_i(void);
 intptr_t net_lit_loopback_i(void);
 int32_t httpd_slot_alloc(int32_t fd);

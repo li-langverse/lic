@@ -701,6 +701,11 @@ extern proc httpd_config_listen_port_i() -> int
   ensures true
   decreases 0
 
+extern proc httpd_config_listen_port_http_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
 extern proc httpd_config_doc_root_i() -> ptr
   requires true
   ensures true

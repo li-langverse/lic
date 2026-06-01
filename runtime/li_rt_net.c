@@ -297,6 +297,7 @@ static int g_lb_mode = 0;
 #define HTTPD_LB_MODE_IP_HASH 2
 #define HTTPD_LB_MODE_COOKIE 3
 static int32_t g_config_listen_port = 0;
+static int32_t g_config_listen_port_http = 0;
 static int32_t g_config_workers = 1; /* 0 = auto (CPU count); overridden by LI_HTTPD_WORKERS */
 static int g_httpd_workers_forked = 0;
 static int g_httpd_epfd = -1;
@@ -5078,6 +5079,7 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   }
   httpd_clear_upstream_peers_i();
   g_config_listen_port = 0;
+  g_config_listen_port_http = 0;
   g_config_workers = 1;
   g_doc_root_len = 0;
   g_proxy_all = 0;
@@ -5143,6 +5145,8 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
     trim_line(val);
     if (strcmp(key, "listen_port") == 0) {
       g_config_listen_port = (int32_t)atoi(val);
+    } else if (strcmp(key, "listen_port_http") == 0) {
+      g_config_listen_port_http = (int32_t)atoi(val);
     } else if (strcmp(key, "workers") == 0) {
       if (strcmp(val, "auto") == 0) {
         g_config_workers = 0;
@@ -5376,6 +5380,48 @@ int32_t httpd_tls_enabled_i(void) {
 }
 
 int32_t httpd_tls_handshake_slot_i(int32_t slot, int32_t fd) { return httpd_tls_handshake_slot(slot, fd); }
+int32_t httpd_tls_handshake_begin_i(int32_t slot, int32_t fd) { return httpd_tls_handshake_begin(slot, fd); }
+int32_t httpd_tls_handshake_continue_i(int32_t slot) { return httpd_tls_handshake_continue(slot); }
+int32_t httpd_tls_handshake_pending_i(int32_t slot) { return httpd_tls_handshake_pending(slot); }
+int32_t httpd_tls_handshake_spin_i(int32_t slot, int32_t fd, int32_t max_rounds) {
+  return httpd_tls_handshake_spin(slot, fd, max_rounds);
+}
+int32_t httpd_epoll_add_client_tls_i(int32_t epfd, int32_t conn, int32_t slot) {
+  if (epfd < 0 || conn < 0 || slot < 0) {
+    return -1;
+  }
+#ifdef __linux__
+  struct epoll_event cev;
+  cev.events = EPOLLIN | EPOLLET;
+  if (httpd_tls_handshake_pending(slot)) {
+    cev.events |= EPOLLOUT;
+  }
+  cev.data.u64 = HTTPD_EPOLL_CLIENT_TAG | (uint64_t)(uint32_t)slot;
+  g_slots[slot].proxy_client_epoll_events = cev.events;
+  return epoll_ctl((int)epfd, EPOLL_CTL_ADD, conn, &cev) < 0 ? -1 : 0;
+#else
+  (void)slot;
+  return epoll_ctl_add_i(epfd, conn);
+#endif
+}
+
+int32_t httpd_pure_li_tls_i(void) { return httpd_pure_li_tls_enabled(); }
+
+int32_t httpd_pure_tls_slot_active_i(int32_t slot) { return httpd_pure_tls_slot_active(slot); }
+
+int32_t httpd_pure_tls_attach_i(int32_t slot, int32_t conn) { return httpd_pure_tls_attach(slot, conn); }
+
+int32_t httpd_pure_tls_poll_i(int32_t slot) { return httpd_pure_tls_poll(slot); }
+
+int32_t httpd_pure_tls_read_app_i(int32_t slot, int32_t max_bytes) {
+  return (int32_t)httpd_pure_tls_read_app(slot, max_bytes);
+}
+
+int32_t httpd_pure_tls_write_app_i(int32_t slot, int32_t len) {
+  return (int32_t)httpd_pure_tls_write_app(slot, len);
+}
+
+int32_t httpd_pure_tls_alpn_i(int32_t slot) { return httpd_pure_tls_alpn(slot); }
 
 int32_t httpd_tls_slot_h2_i(int32_t slot) { return httpd_tls_slot_proto(slot) == 2 ? 1 : 0; }
 
@@ -5429,6 +5475,8 @@ int32_t li_rt_httpd_leak_scrub(const char* data, int32_t len, intptr_t out_buf, 
 }
 
 int32_t httpd_config_listen_port_i(void) { return g_config_listen_port; }
+
+int32_t httpd_config_listen_port_http_i(void) { return g_config_listen_port_http; }
 
 intptr_t httpd_config_doc_root_i(void) { return g_doc_root_len ? iptr(g_doc_root) : 0; }
 

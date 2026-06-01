@@ -19,6 +19,7 @@ ROUTE_KEY_RE = re.compile(
     r"^(?P<method>[A-Z]+)\s+(?P<path>/[^\s#]+)(?:\s+(?P<extras>.+))?$"
 )
 HEADER_EXTRA_RE = re.compile(r"^([a-zA-Z0-9_-]+)=([^\s]+)$")
+UPSTREAM_BALANCE_MODES = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})
 
 
 @dataclass
@@ -131,6 +132,18 @@ def validate_routes(routes: list[CanonicalRoute]) -> None:
                 )
 
 
+def _validate_upstream_balance(upstream_id: str, spec: dict[str, Any]) -> None:
+    bal = spec.get("balance")
+    if bal is None:
+        return
+    mode = str(bal).strip().lower()
+    if mode not in UPSTREAM_BALANCE_MODES:
+        raise ConfigError(
+            f"[upstreams.{upstream_id}] balance must be one of "
+            f"{sorted(UPSTREAM_BALANCE_MODES)} (got {bal!r})"
+        )
+
+
 def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
     raw = data.get("upstreams")
     if raw is None:
@@ -141,6 +154,7 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
     for upstream_id, spec in raw.items():
         if not isinstance(spec, dict):
             raise ConfigError(f"[upstreams.{upstream_id}] must be a table")
+        _validate_upstream_balance(str(upstream_id), spec)
         peers = spec.get("peers")
         if not isinstance(peers, list) or not peers:
             raise ConfigError(f"[upstreams.{upstream_id}] peers required")
@@ -149,6 +163,7 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
         if not key.startswith("upstreams.") or not isinstance(val, dict):
             continue
         pool_id = key.split(".", 1)[1]
+        _validate_upstream_balance(pool_id, val)
         peers = val.get("peers")
         if isinstance(peers, list) and peers:
             out[pool_id] = [str(p).strip() for p in peers]
@@ -191,6 +206,16 @@ def _apply_tls_validation(data: dict[str, Any], path: Path) -> None:
         raise ConfigError(str(e)) from e
 
 
+def _apply_rng_validation(data: dict[str, Any]) -> list[str]:
+    from httpd_rng import ConfigError as RngError
+    from httpd_rng import validate_rng_config_raise
+
+    try:
+        return validate_rng_config_raise(data)
+    except RngError as e:
+        raise ConfigError(str(e)) from e
+
+
 def load_httpd_config(path: Path) -> list[CanonicalRoute]:
     return load_httpd_full(path).routes
 
@@ -199,6 +224,7 @@ def load_httpd_sites(path: Path) -> list[HttpdConfig]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     _apply_m15_validation(data)
     _apply_tls_validation(data, path)
+    rng_warnings = _apply_rng_validation(data)
     sites_raw = data.get("site")
     if sites_raw is None:
         return [load_httpd_full(path)]
@@ -236,6 +262,7 @@ def load_httpd_sites(path: Path) -> list[HttpdConfig]:
                 max_body=max_body,
                 upstreams=upstreams,
                 routes=routes,
+                warnings=list(rng_warnings),
             )
         )
     return out
@@ -245,6 +272,7 @@ def load_httpd_full(path: Path) -> HttpdConfig:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     _apply_m15_validation(data)
     _apply_tls_validation(data, path)
+    rng_warnings = _apply_rng_validation(data)
     if data.get("site") is not None:
         sites = load_httpd_sites(path)
         if len(sites) != 1:
@@ -269,7 +297,7 @@ def load_httpd_full(path: Path) -> HttpdConfig:
             uid = r.action.split(":", 1)[1]
             if uid not in upstreams:
                 raise ConfigError(f"unknown upstream {uid!r} for route {r.name}")
-    warnings = _apply_leak_censor_validation(data, path)
+    warnings = list(rng_warnings) + _apply_leak_censor_validation(data, path)
     return HttpdConfig(
         listen=listen,
         host=host,

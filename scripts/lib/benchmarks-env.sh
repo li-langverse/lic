@@ -23,10 +23,17 @@ if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
   for _c in \
     "${LI_LANGVERSE_ROOT:-}/benchmarks" \
     "${LANGVERSE:-}/benchmarks" \
+    "$_lic/benchmarks" \
     "$_lic/../benchmarks" \
     "$_lic/../li-langverse/benchmarks"
   do
     if [[ -f "$_c/harness/bench.py" ]]; then
+      BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
+      break
+    fi
+    # "Lite" fallback: lic vendors a minimal benchmarks tree (results + some workloads)
+    # used by gates that only need BENCHMARKS_RESULTS paths.
+    if [[ -d "$_c/results" && -d "$_c/competitive" ]]; then
       BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
       break
     fi

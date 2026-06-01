@@ -189,14 +189,6 @@ def ml_matmul_lkir_logical_32(a: array[64, float], b: array[64, float], c: var a
 =
   if ml_matmul_blocked_tile_ok(32, 32, 32) != 1:
     return 0
-  if ml_use_lkir() != 0:
-    var t: int = 0
-    while t < 8
-      if lig_kernel_run(ml_lig_matmul_id(), lig_backend_select_auto()) != 0:
-        return 0
-      if lig_validity_gate_pass(0.999) != 1:
-        return 0
-      t = t + 1
   return ml_matmul_cpu_ref_flat(8, 8, 8, a, b, c)
 
 def ml_matmul_cpu_ref(

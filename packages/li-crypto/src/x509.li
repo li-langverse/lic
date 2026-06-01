@@ -1,0 +1,137 @@
+# x509 — Ed25519 SPKI subset (M1b).
+
+import asn1
+
+def crypto_x509_ed25519_pubkey_golden_byte(i: int) -> int
+  requires 0 <= i and i < 32
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 3
+  if i == 1:
+    return 161
+  if i == 2:
+    return 7
+  if i == 3:
+    return 191
+  if i == 4:
+    return 243
+  if i == 5:
+    return 206
+  if i == 6:
+    return 16
+  if i == 7:
+    return 190
+  if i == 8:
+    return 29
+  if i == 9:
+    return 112
+  if i == 10:
+    return 221
+  if i == 11:
+    return 24
+  if i == 12:
+    return 231
+  if i == 13:
+    return 75
+  if i == 14:
+    return 192
+  if i == 15:
+    return 153
+  if i == 16:
+    return 103
+  if i == 17:
+    return 228
+  if i == 18:
+    return 214
+  if i == 19:
+    return 48
+  if i == 20:
+    return 155
+  if i == 21:
+    return 165
+  if i == 22:
+    return 13
+  if i == 23:
+    return 95
+  if i == 24:
+    return 29
+  if i == 25:
+    return 220
+  if i == 26:
+    return 134
+  if i == 27:
+    return 100
+  if i == 28:
+    return 18
+  if i == 29:
+    return 85
+  if i == 30:
+    return 49
+  if i == 31:
+    return 184
+  return 0
+
+def crypto_x509_tbs_spki_off() -> int
+  requires true
+  ensures result >= -1
+  decreases 0
+=
+  var kind: int = 1
+  if crypto_asn1_tag(kind, 0) != 48:
+    return -1
+  var tbs_off: int = crypto_asn1_hdr_len(kind, 0)
+  if crypto_asn1_tag(kind, tbs_off) != 48:
+    return -1
+  var pos: int = tbs_off + crypto_asn1_hdr_len(kind, tbs_off)
+  var tbs_end: int = pos + crypto_asn1_len(kind, tbs_off)
+  var spki_off: int = -1
+  while pos < tbs_end
+    if crypto_asn1_tag(kind, pos) == 48:
+      spki_off = pos
+    pos = pos + crypto_asn1_hdr_len(kind, pos) + crypto_asn1_len(kind, pos)
+  return spki_off
+
+def crypto_x509_spki_off() -> int
+  requires true
+  ensures result >= -1
+  decreases 0
+=
+  var kind: int = 1
+  var off: int = crypto_x509_tbs_spki_off()
+  if off < 0:
+    return -1
+  var spki_body: int = off + crypto_asn1_hdr_len(kind, off)
+  if crypto_asn1_tag(kind, spki_body) != 48:
+    return -1
+  var alg_end: int = spki_body + crypto_asn1_hdr_len(kind, spki_body) + crypto_asn1_len(kind, spki_body)
+  if crypto_asn1_tag(kind, alg_end) != 3:
+    return -1
+  if crypto_asn1_len(kind, alg_end) != 33:
+    return -1
+  if crypto_asn1_der_byte(kind, alg_end + crypto_asn1_hdr_len(kind, alg_end)) != 0:
+    return -1
+  return alg_end + crypto_asn1_hdr_len(kind, alg_end) + 1
+
+def crypto_x509_ed25519_pubkey_byte(idx: int) -> int
+  requires 0 <= idx and idx < 32
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  var base: int = crypto_x509_spki_off()
+  if base < 0:
+    return 0
+  return crypto_asn1_der_byte(1, base + idx)
+
+def crypto_x509_ed25519_selftest() -> int
+  requires true
+  ensures result >= 0
+  decreases 32
+=
+  var i: int = 0
+  while i < 32
+    if crypto_x509_ed25519_pubkey_byte(i) != crypto_x509_ed25519_pubkey_golden_byte(i):
+      return i + 100
+    i = i + 1
+  return 0

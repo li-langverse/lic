@@ -1,0 +1,1646 @@
+# pem_golden — PEM wire + DER golden bytes (M1b).
+
+def crypto_pem_pkcs8_wire_byte(i: int) -> int
+  requires 0 <= i and i < 119
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 45
+  if i == 1:
+    return 45
+  if i == 2:
+    return 45
+  if i == 3:
+    return 45
+  if i == 4:
+    return 45
+  if i == 5:
+    return 66
+  if i == 6:
+    return 69
+  if i == 7:
+    return 71
+  if i == 8:
+    return 73
+  if i == 9:
+    return 78
+  if i == 10:
+    return 32
+  if i == 11:
+    return 80
+  if i == 12:
+    return 82
+  if i == 13:
+    return 73
+  if i == 14:
+    return 86
+  if i == 15:
+    return 65
+  if i == 16:
+    return 84
+  if i == 17:
+    return 69
+  if i == 18:
+    return 32
+  if i == 19:
+    return 75
+  if i == 20:
+    return 69
+  if i == 21:
+    return 89
+  if i == 22:
+    return 45
+  if i == 23:
+    return 45
+  if i == 24:
+    return 45
+  if i == 25:
+    return 45
+  if i == 26:
+    return 45
+  if i == 27:
+    return 10
+  if i == 28:
+    return 77
+  if i == 29:
+    return 67
+  if i == 30:
+    return 52
+  if i == 31:
+    return 67
+  if i == 32:
+    return 65
+  if i == 33:
+    return 81
+  if i == 34:
+    return 65
+  if i == 35:
+    return 119
+  if i == 36:
+    return 66
+  if i == 37:
+    return 81
+  if i == 38:
+    return 89
+  if i == 39:
+    return 68
+  if i == 40:
+    return 75
+  if i == 41:
+    return 50
+  if i == 42:
+    return 86
+  if i == 43:
+    return 119
+  if i == 44:
+    return 66
+  if i == 45:
+    return 67
+  if i == 46:
+    return 73
+  if i == 47:
+    return 69
+  if i == 48:
+    return 73
+  if i == 49:
+    return 65
+  if i == 50:
+    return 65
+  if i == 51:
+    return 66
+  if i == 52:
+    return 65
+  if i == 53:
+    return 103
+  if i == 54:
+    return 77
+  if i == 55:
+    return 69
+  if i == 56:
+    return 66
+  if i == 57:
+    return 81
+  if i == 58:
+    return 89
+  if i == 59:
+    return 72
+  if i == 60:
+    return 67
+  if i == 61:
+    return 65
+  if i == 62:
+    return 107
+  if i == 63:
+    return 75
+  if i == 64:
+    return 67
+  if i == 65:
+    return 119
+  if i == 66:
+    return 119
+  if i == 67:
+    return 78
+  if i == 68:
+    return 68
+  if i == 69:
+    return 103
+  if i == 70:
+    return 56
+  if i == 71:
+    return 81
+  if i == 72:
+    return 69
+  if i == 73:
+    return 82
+  if i == 74:
+    return 73
+  if i == 75:
+    return 84
+  if i == 76:
+    return 70
+  if i == 77:
+    return 66
+  if i == 78:
+    return 85
+  if i == 79:
+    return 87
+  if i == 80:
+    return 70
+  if i == 81:
+    return 120
+  if i == 82:
+    return 103
+  if i == 83:
+    return 90
+  if i == 84:
+    return 71
+  if i == 85:
+    return 104
+  if i == 86:
+    return 115
+  if i == 87:
+    return 99
+  if i == 88:
+    return 72
+  if i == 89:
+    return 82
+  if i == 90:
+    return 52
+  if i == 91:
+    return 102
+  if i == 92:
+    return 10
+  if i == 93:
+    return 45
+  if i == 94:
+    return 45
+  if i == 95:
+    return 45
+  if i == 96:
+    return 45
+  if i == 97:
+    return 45
+  if i == 98:
+    return 69
+  if i == 99:
+    return 78
+  if i == 100:
+    return 68
+  if i == 101:
+    return 32
+  if i == 102:
+    return 80
+  if i == 103:
+    return 82
+  if i == 104:
+    return 73
+  if i == 105:
+    return 86
+  if i == 106:
+    return 65
+  if i == 107:
+    return 84
+  if i == 108:
+    return 69
+  if i == 109:
+    return 32
+  if i == 110:
+    return 75
+  if i == 111:
+    return 69
+  if i == 112:
+    return 89
+  if i == 113:
+    return 45
+  if i == 114:
+    return 45
+  if i == 115:
+    return 45
+  if i == 116:
+    return 45
+  if i == 117:
+    return 45
+  if i == 118:
+    return 10
+  return 0
+
+def crypto_pem_cert_wire_byte(i: int) -> int
+  requires 0 <= i and i < 371
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 45
+  if i == 1:
+    return 45
+  if i == 2:
+    return 45
+  if i == 3:
+    return 45
+  if i == 4:
+    return 45
+  if i == 5:
+    return 66
+  if i == 6:
+    return 69
+  if i == 7:
+    return 71
+  if i == 8:
+    return 73
+  if i == 9:
+    return 78
+  if i == 10:
+    return 32
+  if i == 11:
+    return 67
+  if i == 12:
+    return 69
+  if i == 13:
+    return 82
+  if i == 14:
+    return 84
+  if i == 15:
+    return 73
+  if i == 16:
+    return 70
+  if i == 17:
+    return 73
+  if i == 18:
+    return 67
+  if i == 19:
+    return 65
+  if i == 20:
+    return 84
+  if i == 21:
+    return 69
+  if i == 22:
+    return 45
+  if i == 23:
+    return 45
+  if i == 24:
+    return 45
+  if i == 25:
+    return 45
+  if i == 26:
+    return 45
+  if i == 27:
+    return 10
+  if i == 28:
+    return 77
+  if i == 29:
+    return 73
+  if i == 30:
+    return 72
+  if i == 31:
+    return 109
+  if i == 32:
+    return 77
+  if i == 33:
+    return 73
+  if i == 34:
+    return 71
+  if i == 35:
+    return 90
+  if i == 36:
+    return 111
+  if i == 37:
+    return 65
+  if i == 38:
+    return 77
+  if i == 39:
+    return 67
+  if i == 40:
+    return 65
+  if i == 41:
+    return 81
+  if i == 42:
+    return 73
+  if i == 43:
+    return 67
+  if i == 44:
+    return 65
+  if i == 45:
+    return 81
+  if i == 46:
+    return 69
+  if i == 47:
+    return 119
+  if i == 48:
+    return 66
+  if i == 49:
+    return 81
+  if i == 50:
+    return 89
+  if i == 51:
+    return 68
+  if i == 52:
+    return 75
+  if i == 53:
+    return 50
+  if i == 54:
+    return 86
+  if i == 55:
+    return 119
+  if i == 56:
+    return 77
+  if i == 57:
+    return 66
+  if i == 58:
+    return 48
+  if i == 59:
+    return 120
+  if i == 60:
+    return 71
+  if i == 61:
+    return 122
+  if i == 62:
+    return 65
+  if i == 63:
+    return 90
+  if i == 64:
+    return 66
+  if i == 65:
+    return 103
+  if i == 66:
+    return 78
+  if i == 67:
+    return 86
+  if i == 68:
+    return 66
+  if i == 69:
+    return 65
+  if i == 70:
+    return 77
+  if i == 71:
+    return 77
+  if i == 72:
+    return 69
+  if i == 73:
+    return 110
+  if i == 74:
+    return 66
+  if i == 75:
+    return 49
+  if i == 76:
+    return 99
+  if i == 77:
+    return 109
+  if i == 78:
+    return 85
+  if i == 79:
+    return 116
+  if i == 80:
+    return 98
+  if i == 81:
+    return 71
+  if i == 82:
+    return 107
+  if i == 83:
+    return 116
+  if i == 84:
+    return 97
+  if i == 85:
+    return 72
+  if i == 86:
+    return 82
+  if i == 87:
+    return 48
+  if i == 88:
+    return 99
+  if i == 89:
+    return 72
+  if i == 90:
+    return 77
+  if i == 91:
+    return 116
+  if i == 92:
+    return 10
+  if i == 93:
+    return 100
+  if i == 94:
+    return 71
+  if i == 95:
+    return 86
+  if i == 96:
+    return 122
+  if i == 97:
+    return 100
+  if i == 98:
+    return 68
+  if i == 99:
+    return 65
+  if i == 100:
+    return 101
+  if i == 101:
+    return 70
+  if i == 102:
+    return 119
+  if i == 103:
+    return 48
+  if i == 104:
+    return 121
+  if i == 105:
+    return 78
+  if i == 106:
+    return 68
+  if i == 107:
+    return 65
+  if i == 108:
+    return 120
+  if i == 109:
+    return 77
+  if i == 110:
+    return 68
+  if i == 111:
+    return 69
+  if i == 112:
+    return 119
+  if i == 113:
+    return 77
+  if i == 114:
+    return 68
+  if i == 115:
+    return 65
+  if i == 116:
+    return 119
+  if i == 117:
+    return 77
+  if i == 118:
+    return 68
+  if i == 119:
+    return 66
+  if i == 120:
+    return 97
+  if i == 121:
+    return 70
+  if i == 122:
+    return 119
+  if i == 123:
+    return 48
+  if i == 124:
+    return 122
+  if i == 125:
+    return 78
+  if i == 126:
+    return 68
+  if i == 127:
+    return 65
+  if i == 128:
+    return 120
+  if i == 129:
+    return 77
+  if i == 130:
+    return 68
+  if i == 131:
+    return 69
+  if i == 132:
+    return 119
+  if i == 133:
+    return 77
+  if i == 134:
+    return 68
+  if i == 135:
+    return 65
+  if i == 136:
+    return 119
+  if i == 137:
+    return 77
+  if i == 138:
+    return 68
+  if i == 139:
+    return 66
+  if i == 140:
+    return 97
+  if i == 141:
+    return 77
+  if i == 142:
+    return 66
+  if i == 143:
+    return 48
+  if i == 144:
+    return 120
+  if i == 145:
+    return 71
+  if i == 146:
+    return 122
+  if i == 147:
+    return 65
+  if i == 148:
+    return 90
+  if i == 149:
+    return 66
+  if i == 150:
+    return 103
+  if i == 151:
+    return 78
+  if i == 152:
+    return 86
+  if i == 153:
+    return 66
+  if i == 154:
+    return 65
+  if i == 155:
+    return 77
+  if i == 156:
+    return 77
+  if i == 157:
+    return 10
+  if i == 158:
+    return 69
+  if i == 159:
+    return 110
+  if i == 160:
+    return 66
+  if i == 161:
+    return 49
+  if i == 162:
+    return 99
+  if i == 163:
+    return 109
+  if i == 164:
+    return 85
+  if i == 165:
+    return 116
+  if i == 166:
+    return 98
+  if i == 167:
+    return 71
+  if i == 168:
+    return 107
+  if i == 169:
+    return 116
+  if i == 170:
+    return 97
+  if i == 171:
+    return 72
+  if i == 172:
+    return 82
+  if i == 173:
+    return 48
+  if i == 174:
+    return 99
+  if i == 175:
+    return 72
+  if i == 176:
+    return 77
+  if i == 177:
+    return 116
+  if i == 178:
+    return 100
+  if i == 179:
+    return 71
+  if i == 180:
+    return 86
+  if i == 181:
+    return 122
+  if i == 182:
+    return 100
+  if i == 183:
+    return 68
+  if i == 184:
+    return 65
+  if i == 185:
+    return 113
+  if i == 186:
+    return 77
+  if i == 187:
+    return 65
+  if i == 188:
+    return 85
+  if i == 189:
+    return 71
+  if i == 190:
+    return 65
+  if i == 191:
+    return 121
+  if i == 192:
+    return 116
+  if i == 193:
+    return 108
+  if i == 194:
+    return 99
+  if i == 195:
+    return 65
+  if i == 196:
+    return 77
+  if i == 197:
+    return 104
+  if i == 198:
+    return 65
+  if i == 199:
+    return 65
+  if i == 200:
+    return 79
+  if i == 201:
+    return 104
+  if i == 202:
+    return 66
+  if i == 203:
+    return 55
+  if i == 204:
+    return 47
+  if i == 205:
+    return 122
+  if i == 206:
+    return 122
+  if i == 207:
+    return 104
+  if i == 208:
+    return 67
+  if i == 209:
+    return 43
+  if i == 210:
+    return 72
+  if i == 211:
+    return 88
+  if i == 212:
+    return 68
+  if i == 213:
+    return 100
+  if i == 214:
+    return 71
+  if i == 215:
+    return 79
+  if i == 216:
+    return 100
+  if i == 217:
+    return 76
+  if i == 218:
+    return 119
+  if i == 219:
+    return 74
+  if i == 220:
+    return 108
+  if i == 221:
+    return 110
+  if i == 222:
+    return 10
+  if i == 223:
+    return 53
+  if i == 224:
+    return 78
+  if i == 225:
+    return 89
+  if i == 226:
+    return 119
+  if i == 227:
+    return 109
+  if i == 228:
+    return 54
+  if i == 229:
+    return 85
+  if i == 230:
+    return 78
+  if i == 231:
+    return 88
+  if i == 232:
+    return 120
+  if i == 233:
+    return 51
+  if i == 234:
+    return 99
+  if i == 235:
+    return 104
+  if i == 236:
+    return 109
+  if i == 237:
+    return 81
+  if i == 238:
+    return 83
+  if i == 239:
+    return 86
+  if i == 240:
+    return 84
+  if i == 241:
+    return 71
+  if i == 242:
+    return 52
+  if i == 243:
+    return 77
+  if i == 244:
+    return 65
+  if i == 245:
+    return 85
+  if i == 246:
+    return 71
+  if i == 247:
+    return 65
+  if i == 248:
+    return 121
+  if i == 249:
+    return 116
+  if i == 250:
+    return 108
+  if i == 251:
+    return 99
+  if i == 252:
+    return 65
+  if i == 253:
+    return 78
+  if i == 254:
+    return 66
+  if i == 255:
+    return 65
+  if i == 256:
+    return 77
+  if i == 257:
+    return 49
+  if i == 258:
+    return 72
+  if i == 259:
+    return 97
+  if i == 260:
+    return 47
+  if i == 261:
+    return 105
+  if i == 262:
+    return 69
+  if i == 263:
+    return 71
+  if i == 264:
+    return 120
+  if i == 265:
+    return 49
+  if i == 266:
+    return 112
+  if i == 267:
+    return 48
+  if i == 268:
+    return 82
+  if i == 269:
+    return 119
+  if i == 270:
+    return 70
+  if i == 271:
+    return 109
+  if i == 272:
+    return 108
+  if i == 273:
+    return 102
+  if i == 274:
+    return 53
+  if i == 275:
+    return 108
+  if i == 276:
+    return 49
+  if i == 277:
+    return 122
+  if i == 278:
+    return 106
+  if i == 279:
+    return 70
+  if i == 280:
+    return 74
+  if i == 281:
+    return 54
+  if i == 282:
+    return 54
+  if i == 283:
+    return 82
+  if i == 284:
+    return 116
+  if i == 285:
+    return 54
+  if i == 286:
+    return 82
+  if i == 287:
+    return 10
+  if i == 288:
+    return 81
+  if i == 289:
+    return 52
+  if i == 290:
+    return 49
+  if i == 291:
+    return 82
+  if i == 292:
+    return 84
+  if i == 293:
+    return 74
+  if i == 294:
+    return 103
+  if i == 295:
+    return 53
+  if i == 296:
+    return 85
+  if i == 297:
+    return 88
+  if i == 298:
+    return 115
+  if i == 299:
+    return 50
+  if i == 300:
+    return 102
+  if i == 301:
+    return 55
+  if i == 302:
+    return 115
+  if i == 303:
+    return 75
+  if i == 304:
+    return 86
+  if i == 305:
+    return 111
+  if i == 306:
+    return 54
+  if i == 307:
+    return 108
+  if i == 308:
+    return 97
+  if i == 309:
+    return 54
+  if i == 310:
+    return 88
+  if i == 311:
+    return 43
+  if i == 312:
+    return 82
+  if i == 313:
+    return 121
+  if i == 314:
+    return 106
+  if i == 315:
+    return 117
+  if i == 316:
+    return 43
+  if i == 317:
+    return 116
+  if i == 318:
+    return 78
+  if i == 319:
+    return 49
+  if i == 320:
+    return 80
+  if i == 321:
+    return 101
+  if i == 322:
+    return 85
+  if i == 323:
+    return 116
+  if i == 324:
+    return 87
+  if i == 325:
+    return 105
+  if i == 326:
+    return 81
+  if i == 327:
+    return 68
+  if i == 328:
+    return 105
+  if i == 329:
+    return 110
+  if i == 330:
+    return 67
+  if i == 331:
+    return 71
+  if i == 332:
+    return 50
+  if i == 333:
+    return 76
+  if i == 334:
+    return 90
+  if i == 335:
+    return 51
+  if i == 336:
+    return 86
+  if i == 337:
+    return 121
+  if i == 338:
+    return 101
+  if i == 339:
+    return 57
+  if i == 340:
+    return 87
+  if i == 341:
+    return 81
+  if i == 342:
+    return 119
+  if i == 343:
+    return 61
+  if i == 344:
+    return 10
+  if i == 345:
+    return 45
+  if i == 346:
+    return 45
+  if i == 347:
+    return 45
+  if i == 348:
+    return 45
+  if i == 349:
+    return 45
+  if i == 350:
+    return 69
+  if i == 351:
+    return 78
+  if i == 352:
+    return 68
+  if i == 353:
+    return 32
+  if i == 354:
+    return 67
+  if i == 355:
+    return 69
+  if i == 356:
+    return 82
+  if i == 357:
+    return 84
+  if i == 358:
+    return 73
+  if i == 359:
+    return 70
+  if i == 360:
+    return 73
+  if i == 361:
+    return 67
+  if i == 362:
+    return 65
+  if i == 363:
+    return 84
+  if i == 364:
+    return 69
+  if i == 365:
+    return 45
+  if i == 366:
+    return 45
+  if i == 367:
+    return 45
+  if i == 368:
+    return 45
+  if i == 369:
+    return 45
+  if i == 370:
+    return 10
+  return 0
+
+def crypto_pem_pkcs8_der_golden_byte(i: int) -> int
+  requires 0 <= i and i < 48
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 48
+  if i == 1:
+    return 46
+  if i == 2:
+    return 2
+  if i == 3:
+    return 1
+  if i == 4:
+    return 0
+  if i == 5:
+    return 48
+  if i == 6:
+    return 5
+  if i == 7:
+    return 6
+  if i == 8:
+    return 3
+  if i == 9:
+    return 43
+  if i == 10:
+    return 101
+  if i == 11:
+    return 112
+  if i == 12:
+    return 4
+  if i == 13:
+    return 34
+  if i == 14:
+    return 4
+  if i == 15:
+    return 32
+  if i == 16:
+    return 0
+  if i == 17:
+    return 1
+  if i == 18:
+    return 2
+  if i == 19:
+    return 3
+  if i == 20:
+    return 4
+  if i == 21:
+    return 5
+  if i == 22:
+    return 6
+  if i == 23:
+    return 7
+  if i == 24:
+    return 8
+  if i == 25:
+    return 9
+  if i == 26:
+    return 10
+  if i == 27:
+    return 11
+  if i == 28:
+    return 12
+  if i == 29:
+    return 13
+  if i == 30:
+    return 14
+  if i == 31:
+    return 15
+  if i == 32:
+    return 16
+  if i == 33:
+    return 17
+  if i == 34:
+    return 18
+  if i == 35:
+    return 19
+  if i == 36:
+    return 20
+  if i == 37:
+    return 21
+  if i == 38:
+    return 22
+  if i == 39:
+    return 23
+  if i == 40:
+    return 24
+  if i == 41:
+    return 25
+  if i == 42:
+    return 26
+  if i == 43:
+    return 27
+  if i == 44:
+    return 28
+  if i == 45:
+    return 29
+  if i == 46:
+    return 30
+  if i == 47:
+    return 31
+  return 0
+
+def crypto_pem_cert_der_golden_byte(i: int) -> int
+  requires 0 <= i and i < 233
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 48
+  if i == 1:
+    return 129
+  if i == 2:
+    return 230
+  if i == 3:
+    return 48
+  if i == 4:
+    return 129
+  if i == 5:
+    return 153
+  if i == 6:
+    return 160
+  if i == 7:
+    return 3
+  if i == 8:
+    return 2
+  if i == 9:
+    return 1
+  if i == 10:
+    return 2
+  if i == 11:
+    return 2
+  if i == 12:
+    return 1
+  if i == 13:
+    return 1
+  if i == 14:
+    return 48
+  if i == 15:
+    return 5
+  if i == 16:
+    return 6
+  if i == 17:
+    return 3
+  if i == 18:
+    return 43
+  if i == 19:
+    return 101
+  if i == 20:
+    return 112
+  if i == 21:
+    return 48
+  if i == 22:
+    return 29
+  if i == 23:
+    return 49
+  if i == 24:
+    return 27
+  if i == 25:
+    return 48
+  if i == 26:
+    return 25
+  if i == 27:
+    return 6
+  if i == 28:
+    return 3
+  if i == 29:
+    return 85
+  if i == 30:
+    return 4
+  if i == 31:
+    return 3
+  if i == 32:
+    return 12
+  if i == 33:
+    return 18
+  if i == 34:
+    return 112
+  if i == 35:
+    return 117
+  if i == 36:
+    return 114
+  if i == 37:
+    return 101
+  if i == 38:
+    return 45
+  if i == 39:
+    return 108
+  if i == 40:
+    return 105
+  if i == 41:
+    return 45
+  if i == 42:
+    return 104
+  if i == 43:
+    return 116
+  if i == 44:
+    return 116
+  if i == 45:
+    return 112
+  if i == 46:
+    return 115
+  if i == 47:
+    return 45
+  if i == 48:
+    return 116
+  if i == 49:
+    return 101
+  if i == 50:
+    return 115
+  if i == 51:
+    return 116
+  if i == 52:
+    return 48
+  if i == 53:
+    return 30
+  if i == 54:
+    return 23
+  if i == 55:
+    return 13
+  if i == 56:
+    return 50
+  if i == 57:
+    return 52
+  if i == 58:
+    return 48
+  if i == 59:
+    return 49
+  if i == 60:
+    return 48
+  if i == 61:
+    return 49
+  if i == 62:
+    return 48
+  if i == 63:
+    return 48
+  if i == 64:
+    return 48
+  if i == 65:
+    return 48
+  if i == 66:
+    return 48
+  if i == 67:
+    return 48
+  if i == 68:
+    return 90
+  if i == 69:
+    return 23
+  if i == 70:
+    return 13
+  if i == 71:
+    return 51
+  if i == 72:
+    return 52
+  if i == 73:
+    return 48
+  if i == 74:
+    return 49
+  if i == 75:
+    return 48
+  if i == 76:
+    return 49
+  if i == 77:
+    return 48
+  if i == 78:
+    return 48
+  if i == 79:
+    return 48
+  if i == 80:
+    return 48
+  if i == 81:
+    return 48
+  if i == 82:
+    return 48
+  if i == 83:
+    return 90
+  if i == 84:
+    return 48
+  if i == 85:
+    return 29
+  if i == 86:
+    return 49
+  if i == 87:
+    return 27
+  if i == 88:
+    return 48
+  if i == 89:
+    return 25
+  if i == 90:
+    return 6
+  if i == 91:
+    return 3
+  if i == 92:
+    return 85
+  if i == 93:
+    return 4
+  if i == 94:
+    return 3
+  if i == 95:
+    return 12
+  if i == 96:
+    return 18
+  if i == 97:
+    return 112
+  if i == 98:
+    return 117
+  if i == 99:
+    return 114
+  if i == 100:
+    return 101
+  if i == 101:
+    return 45
+  if i == 102:
+    return 108
+  if i == 103:
+    return 105
+  if i == 104:
+    return 45
+  if i == 105:
+    return 104
+  if i == 106:
+    return 116
+  if i == 107:
+    return 116
+  if i == 108:
+    return 112
+  if i == 109:
+    return 115
+  if i == 110:
+    return 45
+  if i == 111:
+    return 116
+  if i == 112:
+    return 101
+  if i == 113:
+    return 115
+  if i == 114:
+    return 116
+  if i == 115:
+    return 48
+  if i == 116:
+    return 42
+  if i == 117:
+    return 48
+  if i == 118:
+    return 5
+  if i == 119:
+    return 6
+  if i == 120:
+    return 3
+  if i == 121:
+    return 43
+  if i == 122:
+    return 101
+  if i == 123:
+    return 112
+  if i == 124:
+    return 3
+  if i == 125:
+    return 33
+  if i == 126:
+    return 0
+  if i == 127:
+    return 3
+  if i == 128:
+    return 161
+  if i == 129:
+    return 7
+  if i == 130:
+    return 191
+  if i == 131:
+    return 243
+  if i == 132:
+    return 206
+  if i == 133:
+    return 16
+  if i == 134:
+    return 190
+  if i == 135:
+    return 29
+  if i == 136:
+    return 112
+  if i == 137:
+    return 221
+  if i == 138:
+    return 24
+  if i == 139:
+    return 231
+  if i == 140:
+    return 75
+  if i == 141:
+    return 192
+  if i == 142:
+    return 153
+  if i == 143:
+    return 103
+  if i == 144:
+    return 228
+  if i == 145:
+    return 214
+  if i == 146:
+    return 48
+  if i == 147:
+    return 155
+  if i == 148:
+    return 165
+  if i == 149:
+    return 13
+  if i == 150:
+    return 95
+  if i == 151:
+    return 29
+  if i == 152:
+    return 220
+  if i == 153:
+    return 134
+  if i == 154:
+    return 100
+  if i == 155:
+    return 18
+  if i == 156:
+    return 85
+  if i == 157:
+    return 49
+  if i == 158:
+    return 184
+  if i == 159:
+    return 48
+  if i == 160:
+    return 5
+  if i == 161:
+    return 6
+  if i == 162:
+    return 3
+  if i == 163:
+    return 43
+  if i == 164:
+    return 101
+  if i == 165:
+    return 112
+  if i == 166:
+    return 3
+  if i == 167:
+    return 65
+  if i == 168:
+    return 0
+  if i == 169:
+    return 205
+  if i == 170:
+    return 71
+  if i == 171:
+    return 107
+  if i == 172:
+    return 248
+  if i == 173:
+    return 132
+  if i == 174:
+    return 27
+  if i == 175:
+    return 29
+  if i == 176:
+    return 105
+  if i == 177:
+    return 209
+  if i == 178:
+    return 28
+  if i == 179:
+    return 5
+  if i == 180:
+    return 154
+  if i == 181:
+    return 87
+  if i == 182:
+    return 249
+  if i == 183:
+    return 151
+  if i == 184:
+    return 92
+  if i == 185:
+    return 227
+  if i == 186:
+    return 20
+  if i == 187:
+    return 158
+  if i == 188:
+    return 186
+  if i == 189:
+    return 70
+  if i == 190:
+    return 222
+  if i == 191:
+    return 145
+  if i == 192:
+    return 67
+  if i == 193:
+    return 141
+  if i == 194:
+    return 81
+  if i == 195:
+    return 76
+  if i == 196:
+    return 152
+  if i == 197:
+    return 57
+  if i == 198:
+    return 81
+  if i == 199:
+    return 123
+  if i == 200:
+    return 54
+  if i == 201:
+    return 127
+  if i == 202:
+    return 187
+  if i == 203:
+    return 10
+  if i == 204:
+    return 86
+  if i == 205:
+    return 142
+  if i == 206:
+    return 165
+  if i == 207:
+    return 107
+  if i == 208:
+    return 165
+  if i == 209:
+    return 254
+  if i == 210:
+    return 71
+  if i == 211:
+    return 40
+  if i == 212:
+    return 238
+  if i == 213:
+    return 250
+  if i == 214:
+    return 211
+  if i == 215:
+    return 117
+  if i == 216:
+    return 61
+  if i == 217:
+    return 229
+  if i == 218:
+    return 45
+  if i == 219:
+    return 90
+  if i == 220:
+    return 36
+  if i == 221:
+    return 3
+  if i == 222:
+    return 138
+  if i == 223:
+    return 112
+  if i == 224:
+    return 134
+  if i == 225:
+    return 216
+  if i == 226:
+    return 182
+  if i == 227:
+    return 119
+  if i == 228:
+    return 87
+  if i == 229:
+    return 39
+  if i == 230:
+    return 189
+  if i == 231:
+    return 89
+  if i == 232:
+    return 12
+  return 0
+
+def crypto_pem_pkcs8_wire_len() -> int
+  requires true
+  ensures result == 119
+  decreases 0
+=
+  return 119
+
+def crypto_pem_cert_wire_len() -> int
+  requires true
+  ensures result == 371
+  decreases 0
+=
+  return 371
+
+def crypto_pem_pkcs8_b64_start() -> int
+  requires true
+  ensures result == 28
+  decreases 0
+=
+  return 28
+
+def crypto_pem_pkcs8_b64_end() -> int
+  requires true
+  ensures result == 92
+  decreases 0
+=
+  return 92
+
+def crypto_pem_cert_b64_start() -> int
+  requires true
+  ensures result == 28
+  decreases 0
+=
+  return 28
+
+def crypto_pem_cert_b64_end() -> int
+  requires true
+  ensures result == 344
+  decreases 0
+=
+  return 344
+
+def crypto_pem_pkcs8_der_len() -> int
+  requires true
+  ensures result == 48
+  decreases 0
+=
+  return 48
+
+def crypto_pem_cert_der_len() -> int
+  requires true
+  ensures result == 233
+  decreases 0
+=
+  return 233
+
+def crypto_pem_wire_byte(kind: int, i: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= i
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if kind == 0:
+    return crypto_pem_pkcs8_wire_byte(i)
+  return crypto_pem_cert_wire_byte(i)
+
+def crypto_pem_wire_len(kind: int) -> int
+  requires kind == 0 or kind == 1
+  ensures result > 0
+  decreases 0
+=
+  if kind == 0:
+    return crypto_pem_pkcs8_wire_len()
+  return crypto_pem_cert_wire_len()

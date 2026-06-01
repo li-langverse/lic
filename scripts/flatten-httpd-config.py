@@ -132,6 +132,9 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
             lines.append(f"route={r.method}|{r.path}|{kind}|{action}")
         for req in getattr(r, "requires", []):
             lines.append(f"route_require={r.method}|{r.path}|{req}")
+        req_hdr = r.headers.get("require")
+        if req_hdr:
+            lines.append(f"route_require={r.method}|{r.path}|{req_hdr}")
 
     def flatten_upstream_pool(pool_id: str, val: dict) -> None:
         for peer in val.get("peers") or []:

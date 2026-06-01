@@ -2,3 +2,5 @@
 *.sh text eol=lf
 scripts/studio-ui-ux-* text eol=lf
 deploy/studio-demo/** text eol=lf
+deploy/studio-demo/**/*.png -text
+deploy/studio-demo/screenshots/**/*.png -text

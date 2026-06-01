@@ -14,6 +14,8 @@ from httpd_m15 import ConfigError as M15ConfigError
 from httpd_m15 import validate_inference_require, validate_m15_limits
 from httpd_leak_censor import ConfigError as LeakConfigError
 from httpd_leak_censor import validate_leak_censor
+from httpd_tls import ConfigError as TlsConfigError
+from httpd_tls import validate_tls_config
 from httpd_rng import ConfigError as RngConfigError
 from httpd_rng import validate_rng_config_raise
 
@@ -224,12 +226,13 @@ def load_httpd_full(path: Path) -> HttpdConfig:
             if uid not in upstreams:
                 raise ConfigError(f"unknown upstream {uid!r} for route {r.name}")
     try:
+        validate_tls_config(data, path)
         validate_m15_limits(data)
         validate_inference_require(data)
         validate_rng_config_raise(data)
         for warn in validate_leak_censor(data, path):
             print(warn, file=sys.stderr)
-    except (M15ConfigError, RngConfigError, LeakConfigError) as e:
+    except (M15ConfigError, RngConfigError, LeakConfigError, TlsConfigError) as e:
         raise ConfigError(str(e)) from e
     return HttpdConfig(
         listen=listen,

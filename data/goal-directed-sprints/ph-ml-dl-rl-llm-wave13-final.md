@@ -29,7 +29,7 @@
 | T6 | **DONE** — `ml_matmul_lkir_logical_32`, `bench-ph-ml-lkir-matmul-32.sh` |
 | T7 | **DONE** — `llm_weights_file_mmap.li`, `prepare_ph_ml_weights_fixture.py`, `PH_ML_WEIGHTS_FIXTURE` on-disk weights |
 | T8 | **DONE** — `bench_ph_ml_llm_trusted_httpd.py` live proxy (`live_proxy: true`) |
-| **Completion gate** | **DONE** — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (2026-06-01, runs include `1780271667398`, `1780271725006`, `1780272693434`, `1780272858157`, `1780273028985`, `1780273404021`, `1780273535258`, `1780273652037`, `1780274114250`, `1780274332301` — `ratio_vs_li` ≤0.000983, SB3/Ray `executed:true`, `live_proxy:true`); PR [#676](https://github.com/li-langverse/lic/pull/676) — CI green, await human merge |
+| **Completion gate** | **DONE** — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (2026-06-01, runs include `1780271667398`, `1780271725006`, `1780272693434`, `1780272858157`, `1780273028985`, `1780273404021`, `1780273535258`, `1780273652037`, `1780274114250`, `1780274332301`, `1780274694421` — `ratio_vs_li` ≤2.0, SB3/Ray `executed:true`, `live_proxy:true`); PR [#676](https://github.com/li-langverse/lic/pull/676) — CI green, await human merge |
 
 ## Agent rules
 

@@ -234,10 +234,20 @@ def _validate_tls_profile(data: dict[str, Any], path: Path) -> None:
         raise ConfigError(str(e)) from e
 
 
+def _validate_rng_profile(data: dict[str, Any]) -> list[str]:
+    from httpd_rng import ConfigError as RngError, validate_rng_config_raise
+
+    try:
+        return validate_rng_config_raise(data)
+    except RngError as e:
+        raise ConfigError(str(e)) from e
+
+
 def load_httpd_full(path: Path) -> HttpdConfig:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     _validate_m15_profile(data)
     _validate_tls_profile(data, path)
+    _validate_rng_profile(data)
     if data.get("site") is not None:
         sites = load_httpd_sites(path)
         if len(sites) != 1:
@@ -302,6 +312,8 @@ def main() -> int:
             print(warning, file=sys.stderr)
     except LeakCensorError as e:
         raise ConfigError(str(e)) from e
+    for warning in _validate_rng_profile(data):
+        print(warning, file=sys.stderr)
     routes = load_httpd_config(path)
     if "--explain" in sys.argv:
         print(explain(routes), end="")

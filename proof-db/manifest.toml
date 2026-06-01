@@ -14,11 +14,11 @@ entries = ["numerics-axioms.toml", "numerics-lemmas.toml"]
 
 [[catalog_slices]]
 field = "discrete"
-entries = ["discrete-axioms.toml", "discrete-lemmas.toml"]
+entries = ["discrete-axioms.toml", "discrete-lemmas.toml", "discrete-basic-corpus.toml"]
 
 [[catalog_slices]]
 field = "statistics"
-entries = ["statistics-axioms.toml", "statistics-lemmas.toml"]
+entries = ["statistics-axioms.toml", "statistics-lemmas.toml", "statistics-basic-corpus.toml"]
 
 [[catalog_slices]]
 field = "ml"
@@ -26,7 +26,7 @@ entries = ["ml-axioms.toml", "ml-lemmas.toml"]
 
 [[catalog_slices]]
 field = "graph"
-entries = ["graph-axioms.toml", "graph-lemmas.toml"]
+entries = ["graph-axioms.toml", "graph-lemmas.toml", "graph-basic-corpus.toml"]
 
 [[catalog_slices]]
 field = "erdos"
@@ -34,7 +34,7 @@ entries = ["erdos-register.toml"]
 
 [[catalog_slices]]
 field = "chemistry"
-entries = ["chemistry-axioms.toml", "chemistry-lemmas.toml"]
+entries = ["chemistry-axioms.toml", "chemistry-lemmas.toml", "chemistry-basic-corpus.toml"]
 
 [[catalog_slices]]
 field = "biology"
@@ -57,3 +57,7 @@ path = "lemmas/P-linalg-dot4-int-loop-open.toml"
 
 [[includes]]
 path = "lemmas/G-lean-autovc-strict.toml"
+
+[[catalog_slices]]
+field = "physics"
+entries = ["physics-basic-corpus.toml"]

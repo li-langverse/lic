@@ -58,6 +58,7 @@ TokenKind Lexer::keyword_kind(std::string_view text) const {
   if (text == "false") return TokenKind::KwFalse;
   if (text == "and") return TokenKind::KwAnd;
   if (text == "or") return TokenKind::KwOr;
+  if (text == "xor") return TokenKind::KwXor;
   if (text == "not") return TokenKind::KwNot;
   if (text == "is") return TokenKind::KwIs;
   if (text == "requires") return TokenKind::KwRequires;
@@ -463,6 +464,8 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
         }
         continue;
       case '@': single(TokenKind::At); continue;
+      case '^': single(TokenKind::Caret); continue;
+      case '~': single(TokenKind::Tilde); continue;
       case '|': single(TokenKind::Pipe); continue;
       case '+':
         single(TokenKind::Plus);
@@ -506,7 +509,10 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
         }
         continue;
       case '<':
-        if (peek() == '=') {
+        if (peek() == '<') {
+          advance();
+          single(TokenKind::Shl);
+        } else if (peek() == '=') {
           advance();
           single(TokenKind::Le);
         } else {
@@ -514,7 +520,10 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
         }
         continue;
       case '>':
-        if (peek() == '=') {
+        if (peek() == '>') {
+          advance();
+          single(TokenKind::Shr);
+        } else if (peek() == '=') {
           advance();
           single(TokenKind::Ge);
         } else {

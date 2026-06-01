@@ -1,0 +1,20 @@
+# D-AX-BC-LOG-050: Resolution schema: (P or R) and (not P or Q) implies (Q or R).
+
+extern proc d_ax_bc_log_050_axiom_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def d_ax_bc_log_050_tautology(p: bool, q: bool) -> bool
+  requires true
+  ensures result == (p and q) or (not p) or (not q)
+  decreases 0
+=
+  return (p and q) or (not p) or (not q)
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

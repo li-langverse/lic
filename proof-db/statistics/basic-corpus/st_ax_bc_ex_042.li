@@ -1,0 +1,21 @@
+# ST-AX-BC-EX-042: Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 42).
+# Expectation linearity: E[aX + bY] = a E[X] + b E[Y] on finite spaces.
+
+def expectation_linear(a: float, b: float, ex: float, ey: float) -> float
+  requires true
+  ensures result == a * ex + b * ey
+  decreases 0
+=
+  return a * ex + b * ey
+
+extern proc st_ax_bc_ex_042_axiom_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -5,10 +5,38 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 13
   decreases 0
 =
-  return 4
+  return 13
+
+def gui_inspector_pilot_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gui_focus_model_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gui_widget_protocol_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def gui_base_widgets_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
 
 def gui_panel_switch_budget_ms() -> float
   requires true
@@ -240,10 +268,10 @@ def studio_key_binding_digit_inspector() -> int
 
 def studio_key_binding_digit_timeline() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 def studio_key_binding_digit_agent() -> int
   requires true
@@ -490,3 +518,3175 @@ def gui_studio_shell_frame(w: float, h: float) -> PaintFrame
   var frame: PaintFrame = paint_frame_new()
   gui_paint_studio_shell_chrome(frame, layout)
   return frame
+
+# --- Phase 1 (W1): Widget protocol — measure, layout, paint, handle_event ---
+
+def widget_kind_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def widget_kind_label() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def widget_kind_button() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def widget_kind_panel() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def widget_kind_spacer() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def widget_kind_text_input() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def widget_event_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def widget_event_pointer_down() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def widget_event_pointer_up() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def widget_event_key_focus() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def widget_event_key_tab() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def widget_event_key_shift_tab() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def widget_tab_index_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+type LayoutConstraints = object
+  public min_w: float
+  public max_w: float
+  public min_h: float
+  public max_h: float
+
+type WidgetSize = object
+  public w: float
+  public h: float
+
+type WidgetNode = object
+  public kind: int
+  public label_chars: float
+  public min_w: float
+  public min_h: float
+  public focused: int
+  public enabled: int
+  public tab_index: int
+
+type WidgetLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+
+type WidgetEvent = object
+  public kind: int
+  public x: float
+  public y: float
+
+type WidgetEventResult = object
+  public handled: int
+  public wants_focus: int
+
+def layout_constraints_loose(max_w: float, max_h: float) -> LayoutConstraints
+  requires max_w > 0.0
+  requires max_h > 0.0
+  ensures result.max_w == max_w
+  ensures result.max_h == max_h
+  decreases 0
+=
+  var c: LayoutConstraints
+  c.min_w = 0.0
+  c.max_w = max_w
+  c.min_h = 0.0
+  c.max_h = max_h
+  return c
+
+def gui_widget_pad_x_px() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def gui_widget_pad_y_px() -> float
+  requires true
+  ensures result == 4.0
+  decreases 0
+=
+  return 4.0
+
+def gui_widget_button_min_w_px() -> float
+  requires true
+  ensures result == 74.0
+  decreases 0
+=
+  return 74.0
+
+def gui_widget_button_min_h_px() -> float
+  requires true
+  ensures result == 28.0
+  decreases 0
+=
+  return 28.0
+
+def gui_widget_label_char_w_px() -> float
+  requires true
+  ensures result == 7.0
+  decreases 0
+=
+  return 7.0
+
+def gui_widget_text_input_min_w_px() -> float
+  requires true
+  ensures result == 120.0
+  decreases 0
+=
+  return 120.0
+
+def gui_widget_text_input_min_h_px() -> float
+  requires true
+  ensures result == 28.0
+  decreases 0
+=
+  return 28.0
+
+def widget_node_label(label_chars: float) -> WidgetNode
+  requires label_chars >= 0.0
+  ensures result.kind == widget_kind_label()
+  ensures result.label_chars == label_chars
+  ensures result.enabled == 1
+  decreases 0
+=
+  var n: WidgetNode
+  n.kind = widget_kind_label()
+  n.label_chars = label_chars
+  n.min_w = 0.0
+  n.min_h = 0.0
+  n.focused = 0
+  n.enabled = 1
+  n.tab_index = widget_tab_index_none()
+  return n
+
+def widget_node_button(label_chars: float) -> WidgetNode
+  requires label_chars >= 0.0
+  ensures result.kind == widget_kind_button()
+  ensures result.label_chars == label_chars
+  ensures result.enabled == 1
+  decreases 0
+=
+  var n: WidgetNode
+  n.kind = widget_kind_button()
+  n.label_chars = label_chars
+  n.min_w = gui_widget_button_min_w_px()
+  n.min_h = gui_widget_button_min_h_px()
+  n.focused = 0
+  n.enabled = 1
+  n.tab_index = widget_tab_index_none()
+  return n
+
+def widget_node_panel(min_w: float, min_h: float) -> WidgetNode
+  requires min_w >= 0.0
+  requires min_h >= 0.0
+  ensures result.kind == widget_kind_panel()
+  ensures result.min_w == min_w
+  ensures result.min_h == min_h
+  decreases 0
+=
+  var n: WidgetNode
+  n.kind = widget_kind_panel()
+  n.label_chars = 0.0
+  n.min_w = min_w
+  n.min_h = min_h
+  n.focused = 0
+  n.enabled = 1
+  n.tab_index = widget_tab_index_none()
+  return n
+
+def widget_node_spacer(w: float, h: float) -> WidgetNode
+  requires w >= 0.0
+  requires h >= 0.0
+  ensures result.kind == widget_kind_spacer()
+  ensures result.min_w == w
+  ensures result.min_h == h
+  decreases 0
+=
+  var n: WidgetNode
+  n.kind = widget_kind_spacer()
+  n.label_chars = 0.0
+  n.min_w = w
+  n.min_h = h
+  n.focused = 0
+  n.enabled = 1
+  n.tab_index = widget_tab_index_none()
+  return n
+
+def widget_node_text_input(text_chars: float) -> WidgetNode
+  requires text_chars >= 0.0
+  ensures result.kind == widget_kind_text_input()
+  ensures result.label_chars == text_chars
+  ensures result.min_w == gui_widget_text_input_min_w_px()
+  ensures result.min_h == gui_widget_text_input_min_h_px()
+  ensures result.enabled == 1
+  decreases 0
+=
+  var n: WidgetNode
+  n.kind = widget_kind_text_input()
+  n.label_chars = text_chars
+  n.min_w = gui_widget_text_input_min_w_px()
+  n.min_h = gui_widget_text_input_min_h_px()
+  n.focused = 0
+  n.enabled = 1
+  n.tab_index = widget_tab_index_none()
+  return n
+
+def widget_node_set_tab_index(node: var WidgetNode, tab_index: int) -> unit
+  requires tab_index >= 0
+  ensures node.tab_index == tab_index
+  decreases 0
+=
+  node.tab_index = tab_index
+
+def widget_clamp_size(w: float, h: float, constraints: LayoutConstraints) -> WidgetSize
+  requires w >= 0.0
+  requires h >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases 0
+=
+  var out: WidgetSize
+  out.w = w
+  out.h = h
+  if out.w < constraints.min_w:
+    out.w = constraints.min_w
+  if out.h < constraints.min_h:
+    out.h = constraints.min_h
+  if out.w > constraints.max_w:
+    out.w = constraints.max_w
+  if out.h > constraints.max_h:
+    out.h = constraints.max_h
+  return out
+
+def widget_measure(node: WidgetNode, constraints: LayoutConstraints) -> WidgetSize
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_text_input()
+  requires node.label_chars >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases node.kind
+=
+  var pad_x: float = gui_widget_pad_x_px()
+  var pad_y: float = gui_widget_pad_y_px()
+  if node.kind == widget_kind_label():
+    var text_w: float = node.label_chars * gui_widget_label_char_w_px()
+    var text_h: float = studio_typography_body_px()
+    return widget_clamp_size(text_w + (pad_x * 2.0), text_h + (pad_y * 2.0), constraints)
+  if node.kind == widget_kind_button():
+    var btn_w: float = node.min_w
+    var btn_h: float = node.min_h
+    if node.label_chars > 0.0:
+      var label_w: float = node.label_chars * gui_widget_label_char_w_px() + (pad_x * 2.0)
+      if label_w > btn_w:
+        btn_w = label_w
+    return widget_clamp_size(btn_w, btn_h, constraints)
+  if node.kind == widget_kind_text_input():
+    var input_w: float = node.min_w
+    var input_h: float = node.min_h
+    if node.label_chars > 0.0:
+      var text_w: float = node.label_chars * gui_widget_label_char_w_px() + (pad_x * 2.0)
+      if text_w > input_w:
+        input_w = text_w
+    return widget_clamp_size(input_w, input_h, constraints)
+  if node.kind == widget_kind_panel():
+    var panel_w: float = node.min_w
+    var panel_h: float = node.min_h
+    if panel_w < constraints.max_w:
+      panel_w = constraints.max_w
+    if panel_h < constraints.max_h:
+      panel_h = constraints.max_h
+    return widget_clamp_size(panel_w, panel_h, constraints)
+  if node.kind == widget_kind_spacer():
+    return widget_clamp_size(node.min_w, node.min_h, constraints)
+  var zero: WidgetSize
+  zero.w = 0.0
+  zero.h = 0.0
+  return zero
+
+def widget_layout(node: WidgetNode, constraints: LayoutConstraints, x: float, y: float) -> WidgetLayoutResult
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_text_input()
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  ensures result.size.w == result.bounds.w
+  ensures result.size.h == result.bounds.h
+  decreases node.kind
+=
+  var measured: WidgetSize = widget_measure(node, constraints)
+  var out: WidgetLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  return out
+
+def widget_paint_monospace_chars(node: WidgetNode, frame: var PaintFrame, layout: WidgetLayoutResult, color: Color) -> unit
+  requires node.label_chars >= 0.0
+  requires frame.cmd_count >= 0
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases 0
+=
+  var chars_left: float = node.label_chars
+  var pad_x: float = gui_widget_pad_x_px()
+  var pad_y: float = gui_widget_pad_y_px()
+  var char_w: float = gui_widget_label_char_w_px()
+  var char_h: float = studio_typography_body_px()
+  var cursor_x: float = layout.bounds.x + pad_x
+  var cursor_y: float = layout.bounds.y + pad_y
+  while chars_left > 0.0:
+    var glyph: Rect = rect_make(cursor_x, cursor_y, char_w - 1.0, char_h - 2.0)
+    var cmd: PaintCmd = paint_cmd_fill(glyph, color)
+    paint_frame_push(frame, cmd)
+    cursor_x = cursor_x + char_w
+    chars_left = chars_left - 1.0
+
+def widget_paint(node: WidgetNode, frame: var PaintFrame, layout: WidgetLayoutResult) -> unit
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_text_input()
+  requires frame.cmd_count >= 0
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases node.kind
+=
+  if node.kind == widget_kind_label():
+    var cmd: PaintCmd = paint_cmd_fill(layout.bounds, studio_color_text_muted())
+    paint_frame_push(frame, cmd)
+  if node.kind == widget_kind_button():
+    paint_frame_push_accent_chip(frame, layout.bounds, studio_color_accent_cyan())
+  if node.kind == widget_kind_text_input():
+    paint_frame_push_elevated_panel(frame, layout.bounds)
+    widget_paint_monospace_chars(node, frame, layout, studio_color_text_primary())
+  if node.kind == widget_kind_panel():
+    paint_frame_push_elevated_panel(frame, layout.bounds)
+  if node.kind == widget_kind_spacer():
+    return
+  if node.focused == 1:
+    studio_paint_focus_ring(frame, layout.bounds)
+
+def widget_hit_test(layout: WidgetLayoutResult, px: float, py: float) -> int
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return rect_contains(layout.bounds, px, py)
+
+def widget_handle_event(node: var WidgetNode, layout: WidgetLayoutResult, event: WidgetEvent) -> WidgetEventResult
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_text_input()
+  requires event.kind >= widget_event_none()
+  requires event.kind <= widget_event_key_shift_tab()
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases event.kind
+=
+  var out: WidgetEventResult
+  out.handled = 0
+  out.wants_focus = 0
+  if node.enabled != 1:
+    return out
+  if event.kind == widget_event_pointer_down():
+    if widget_hit_test(layout, event.x, event.y) == 1:
+      out.handled = 1
+      if node.kind == widget_kind_button():
+        out.wants_focus = 1
+        node.focused = 1
+      if node.kind == widget_kind_text_input():
+        out.wants_focus = 1
+        node.focused = 1
+    return out
+  if event.kind == widget_event_key_focus():
+    out.handled = 1
+    out.wants_focus = 1
+    node.focused = 1
+    return out
+  return out
+
+# --- Phase 1 (W1): Layout engines — Flex, Grid, Padding, Scroll ---
+
+def gui_layout_engine_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def layout_engine_max_children() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def flex_direction_row() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def flex_direction_column() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def layout_float_max(a: float, b: float) -> float
+  requires true
+  ensures result >= a
+  ensures result >= b
+  decreases 0
+=
+  if a >= b:
+    return a
+  return b
+
+def layout_float_min(a: float, b: float) -> float
+  requires true
+  ensures result <= a
+  ensures result <= b
+  decreases 0
+=
+  if a <= b:
+    return a
+  return b
+
+def layout_int_as_float(v: int) -> float
+  requires v >= 0
+  requires v <= layout_engine_max_children()
+  ensures result >= 0.0
+  decreases v
+=
+  if v <= 0:
+    return 0.0
+  if v == 1:
+    return 1.0
+  if v == 2:
+    return 2.0
+  if v == 3:
+    return 3.0
+  if v == 4:
+    return 4.0
+  return 4.0
+
+type FlexLayout = object
+  public direction: int
+  public gap: float
+  public child_count: int
+  public children: array[4, WidgetNode]
+
+type FlexLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+  public child_count: int
+  public child_layouts: array[4, WidgetLayoutResult]
+
+type GridLayout = object
+  public rows: int
+  public cols: int
+  public gap: float
+  public child_count: int
+  public children: array[4, WidgetNode]
+
+type GridLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+  public rows: int
+  public cols: int
+  public cell_w: float
+  public cell_h: float
+  public child_count: int
+  public child_layouts: array[4, WidgetLayoutResult]
+
+type PaddingLayout = object
+  public pad_left: float
+  public pad_top: float
+  public pad_right: float
+  public pad_bottom: float
+  public child: WidgetNode
+
+type PaddingLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+  public inner_bounds: Rect
+  public child_layout: WidgetLayoutResult
+
+type ScrollLayout = object
+  public scroll_x: float
+  public scroll_y: float
+  public child: WidgetNode
+
+type ScrollLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+  public clip_bounds: Rect
+  public scroll_x: float
+  public scroll_y: float
+  public child_layout: WidgetLayoutResult
+
+def flex_layout_empty() -> FlexLayout
+  requires true
+  ensures result.child_count == 0
+  ensures result.gap >= 0.0
+  decreases 0
+=
+  var f: FlexLayout
+  f.direction = flex_direction_row()
+  f.gap = 0.0
+  f.child_count = 0
+  return f
+
+def flex_layout_row(gap: float, child_count: int, c0: WidgetNode, c1: WidgetNode, c2: WidgetNode, c3: WidgetNode) -> FlexLayout
+  requires gap >= 0.0
+  requires child_count >= 0
+  requires child_count <= layout_engine_max_children()
+  ensures result.direction == flex_direction_row()
+  ensures result.gap == gap
+  ensures result.child_count == child_count
+  decreases child_count
+=
+  var f: FlexLayout
+  f.direction = flex_direction_row()
+  f.gap = gap
+  f.child_count = child_count
+  f.children[0] = c0
+  f.children[1] = c1
+  f.children[2] = c2
+  f.children[3] = c3
+  return f
+
+def flex_layout_column(gap: float, child_count: int, c0: WidgetNode, c1: WidgetNode, c2: WidgetNode, c3: WidgetNode) -> FlexLayout
+  requires gap >= 0.0
+  requires child_count >= 0
+  requires child_count <= layout_engine_max_children()
+  ensures result.direction == flex_direction_column()
+  ensures result.gap == gap
+  ensures result.child_count == child_count
+  decreases child_count
+=
+  var f: FlexLayout
+  f.direction = flex_direction_column()
+  f.gap = gap
+  f.child_count = child_count
+  f.children[0] = c0
+  f.children[1] = c1
+  f.children[2] = c2
+  f.children[3] = c3
+  return f
+
+def flex_layout_measure(spec: FlexLayout, constraints: LayoutConstraints) -> WidgetSize
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires spec.gap >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases spec.child_count
+=
+  var total_w: float = 0.0
+  var total_h: float = 0.0
+  var max_w: float = 0.0
+  var max_h: float = 0.0
+  var idx: int = 0
+  var first: int = 1
+  while idx < spec.child_count
+    var child_size: WidgetSize = widget_measure(spec.children[idx], constraints)
+    if spec.direction == flex_direction_row():
+      if first == 0:
+        total_w = total_w + spec.gap
+      first = 0
+      total_w = total_w + child_size.w
+      max_h = layout_float_max(max_h, child_size.h)
+    if spec.direction == flex_direction_column():
+      if first == 0:
+        total_h = total_h + spec.gap
+      first = 0
+      total_h = total_h + child_size.h
+      max_w = layout_float_max(max_w, child_size.w)
+    idx = idx + 1
+  if spec.direction == flex_direction_row():
+    return widget_clamp_size(total_w, max_h, constraints)
+  return widget_clamp_size(max_w, total_h, constraints)
+
+def flex_layout_layout(spec: FlexLayout, constraints: LayoutConstraints, x: float, y: float) -> FlexLayoutResult
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires spec.gap >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  ensures result.child_count == spec.child_count
+  decreases spec.child_count
+=
+  var measured: WidgetSize = flex_layout_measure(spec, constraints)
+  var out: FlexLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  out.child_count = spec.child_count
+  var cursor_x: float = x
+  var cursor_y: float = y
+  var idx: int = 0
+  var first: int = 1
+  while idx < spec.child_count
+    var child: WidgetNode = spec.children[idx]
+    var child_layout: WidgetLayoutResult = widget_layout(child, constraints, cursor_x, cursor_y)
+    out.child_layouts[idx] = child_layout
+    if spec.direction == flex_direction_row():
+      if first == 0:
+        cursor_x = cursor_x + spec.gap
+      first = 0
+      cursor_x = cursor_x + child_layout.size.w
+    if spec.direction == flex_direction_column():
+      if first == 0:
+        cursor_y = cursor_y + spec.gap
+      first = 0
+      cursor_y = cursor_y + child_layout.size.h
+    idx = idx + 1
+  return out
+
+def grid_layout_new(rows: int, cols: int, gap: float, child_count: int, c0: WidgetNode, c1: WidgetNode, c2: WidgetNode, c3: WidgetNode) -> GridLayout
+  requires rows >= 1
+  requires cols >= 1
+  requires gap >= 0.0
+  requires child_count >= 0
+  requires child_count <= layout_engine_max_children()
+  ensures result.rows == rows
+  ensures result.cols == cols
+  ensures result.child_count == child_count
+  decreases child_count
+=
+  var g: GridLayout
+  g.rows = rows
+  g.cols = cols
+  g.gap = gap
+  g.child_count = child_count
+  g.children[0] = c0
+  g.children[1] = c1
+  g.children[2] = c2
+  g.children[3] = c3
+  return g
+
+def grid_layout_measure(spec: GridLayout, constraints: LayoutConstraints) -> WidgetSize
+  requires spec.rows >= 1
+  requires spec.cols >= 1
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires spec.gap >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases spec.rows + spec.cols
+=
+  var gap_w: float = spec.gap * layout_int_as_float(spec.cols - 1)
+  var gap_h: float = spec.gap * layout_int_as_float(spec.rows - 1)
+  var inner_w: float = constraints.max_w - gap_w
+  var inner_h: float = constraints.max_h - gap_h
+  if inner_w < 0.0:
+    inner_w = 0.0
+  if inner_h < 0.0:
+    inner_h = 0.0
+  var cell_w: float = inner_w / layout_int_as_float(spec.cols)
+  var cell_h: float = inner_h / layout_int_as_float(spec.rows)
+  var cell_constraints: LayoutConstraints = layout_constraints_loose(cell_w, cell_h)
+  var max_cell_w: float = 0.0
+  var max_cell_h: float = 0.0
+  var idx: int = 0
+  while idx < spec.child_count
+    var child_size: WidgetSize = widget_measure(spec.children[idx], cell_constraints)
+    max_cell_w = layout_float_max(max_cell_w, child_size.w)
+    max_cell_h = layout_float_max(max_cell_h, child_size.h)
+    idx = idx + 1
+  var grid_w: float = (max_cell_w * layout_int_as_float(spec.cols)) + gap_w
+  var grid_h: float = (max_cell_h * layout_int_as_float(spec.rows)) + gap_h
+  return widget_clamp_size(grid_w, grid_h, constraints)
+
+def grid_layout_layout(spec: GridLayout, constraints: LayoutConstraints, x: float, y: float) -> GridLayoutResult
+  requires spec.rows >= 1
+  requires spec.cols >= 1
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires spec.gap >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  ensures result.rows == spec.rows
+  ensures result.cols == spec.cols
+  ensures result.child_count == spec.child_count
+  decreases spec.child_count
+=
+  var measured: WidgetSize = grid_layout_measure(spec, constraints)
+  var gap_w: float = spec.gap * layout_int_as_float(spec.cols - 1)
+  var gap_h: float = spec.gap * layout_int_as_float(spec.rows - 1)
+  var inner_w: float = measured.w - gap_w
+  var inner_h: float = measured.h - gap_h
+  if inner_w < 0.0:
+    inner_w = 0.0
+  if inner_h < 0.0:
+    inner_h = 0.0
+  var cell_w: float = inner_w / layout_int_as_float(spec.cols)
+  var cell_h: float = inner_h / layout_int_as_float(spec.rows)
+  var out: GridLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  out.rows = spec.rows
+  out.cols = spec.cols
+  out.cell_w = cell_w
+  out.cell_h = cell_h
+  out.child_count = spec.child_count
+  var idx: int = 0
+  while idx < spec.child_count
+    var row: int = idx / spec.cols
+    var col: int = idx - (row * spec.cols)
+    var cell_x: float = x + (layout_int_as_float(col) * (cell_w + spec.gap))
+    var cell_y: float = y + (layout_int_as_float(row) * (cell_h + spec.gap))
+    var cell_constraints: LayoutConstraints = layout_constraints_loose(cell_w, cell_h)
+    var child_layout: WidgetLayoutResult = widget_layout(spec.children[idx], cell_constraints, cell_x, cell_y)
+    out.child_layouts[idx] = child_layout
+    idx = idx + 1
+  return out
+
+def padding_layout_new(pad_left: float, pad_top: float, pad_right: float, pad_bottom: float, child: WidgetNode) -> PaddingLayout
+  requires pad_left >= 0.0
+  requires pad_top >= 0.0
+  requires pad_right >= 0.0
+  requires pad_bottom >= 0.0
+  ensures result.pad_left == pad_left
+  ensures result.pad_top == pad_top
+  decreases 0
+=
+  var p: PaddingLayout
+  p.pad_left = pad_left
+  p.pad_top = pad_top
+  p.pad_right = pad_right
+  p.pad_bottom = pad_bottom
+  p.child = child
+  return p
+
+def padding_layout_inner_constraints(spec: PaddingLayout, constraints: LayoutConstraints) -> LayoutConstraints
+  requires spec.pad_left >= 0.0
+  requires spec.pad_top >= 0.0
+  requires spec.pad_right >= 0.0
+  requires spec.pad_bottom >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.max_w >= 0.0
+  ensures result.max_h >= 0.0
+  decreases 0
+=
+  var inner_w: float = constraints.max_w - spec.pad_left - spec.pad_right
+  var inner_h: float = constraints.max_h - spec.pad_top - spec.pad_bottom
+  if inner_w < 0.0:
+    inner_w = 0.0
+  if inner_h < 0.0:
+    inner_h = 0.0
+  return layout_constraints_loose(inner_w, inner_h)
+
+def padding_layout_measure(spec: PaddingLayout, constraints: LayoutConstraints) -> WidgetSize
+  requires spec.pad_left >= 0.0
+  requires spec.pad_top >= 0.0
+  requires spec.pad_right >= 0.0
+  requires spec.pad_bottom >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases 0
+=
+  var inner: LayoutConstraints = padding_layout_inner_constraints(spec, constraints)
+  var child_size: WidgetSize = widget_measure(spec.child, inner)
+  var total_w: float = child_size.w + spec.pad_left + spec.pad_right
+  var total_h: float = child_size.h + spec.pad_top + spec.pad_bottom
+  return widget_clamp_size(total_w, total_h, constraints)
+
+def padding_layout_layout(spec: PaddingLayout, constraints: LayoutConstraints, x: float, y: float) -> PaddingLayoutResult
+  requires spec.pad_left >= 0.0
+  requires spec.pad_top >= 0.0
+  requires spec.pad_right >= 0.0
+  requires spec.pad_bottom >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  ensures result.inner_bounds.x == x + spec.pad_left
+  ensures result.inner_bounds.y == y + spec.pad_top
+  decreases 0
+=
+  var measured: WidgetSize = padding_layout_measure(spec, constraints)
+  var inner: LayoutConstraints = padding_layout_inner_constraints(spec, constraints)
+  var out: PaddingLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  out.inner_bounds = rect_make(x + spec.pad_left, y + spec.pad_top, inner.max_w, inner.max_h)
+  out.child_layout = widget_layout(spec.child, inner, out.inner_bounds.x, out.inner_bounds.y)
+  return out
+
+def scroll_layout_new(scroll_x: float, scroll_y: float, child: WidgetNode) -> ScrollLayout
+  requires scroll_x >= 0.0
+  requires scroll_y >= 0.0
+  ensures result.scroll_x == scroll_x
+  ensures result.scroll_y == scroll_y
+  decreases 0
+=
+  var s: ScrollLayout
+  s.scroll_x = scroll_x
+  s.scroll_y = scroll_y
+  s.child = child
+  return s
+
+def scroll_layout_measure(spec: ScrollLayout, constraints: LayoutConstraints) -> WidgetSize
+  requires spec.scroll_x >= 0.0
+  requires spec.scroll_y >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases 0
+=
+  return widget_clamp_size(constraints.max_w, constraints.max_h, constraints)
+
+def scroll_layout_layout(spec: ScrollLayout, constraints: LayoutConstraints, x: float, y: float) -> ScrollLayoutResult
+  requires spec.scroll_x >= 0.0
+  requires spec.scroll_y >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  ensures result.clip_bounds.x == x
+  ensures result.clip_bounds.y == y
+  ensures result.scroll_x == spec.scroll_x
+  ensures result.scroll_y == spec.scroll_y
+  decreases 0
+=
+  var measured: WidgetSize = scroll_layout_measure(spec, constraints)
+  var out: ScrollLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  out.clip_bounds = rect_make(x, y, measured.w, measured.h)
+  out.scroll_x = spec.scroll_x
+  out.scroll_y = spec.scroll_y
+  var child_x: float = x - spec.scroll_x
+  var child_y: float = y - spec.scroll_y
+  var loose: LayoutConstraints = layout_constraints_loose(constraints.max_w * 2.0, constraints.max_h * 2.0)
+  out.child_layout = widget_layout(spec.child, loose, child_x, child_y)
+  return out
+
+# --- Phase 1 (W1): Base widgets — ScrollArea composite ---
+
+type ScrollAreaWidget = object
+  public viewport_w: float
+  public viewport_h: float
+  public scroll_x: float
+  public scroll_y: float
+  public child: WidgetNode
+
+type ScrollAreaLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+  public inner: ScrollLayoutResult
+
+def scroll_area_new(viewport_w: float, viewport_h: float, scroll_x: float, scroll_y: float, child: WidgetNode) -> ScrollAreaWidget
+  requires viewport_w > 0.0
+  requires viewport_h > 0.0
+  requires scroll_x >= 0.0
+  requires scroll_y >= 0.0
+  ensures result.viewport_w == viewport_w
+  ensures result.viewport_h == viewport_h
+  ensures result.scroll_x == scroll_x
+  ensures result.scroll_y == scroll_y
+  decreases 0
+=
+  var s: ScrollAreaWidget
+  s.viewport_w = viewport_w
+  s.viewport_h = viewport_h
+  s.scroll_x = scroll_x
+  s.scroll_y = scroll_y
+  s.child = child
+  return s
+
+def scroll_area_measure(spec: ScrollAreaWidget, constraints: LayoutConstraints) -> WidgetSize
+  requires spec.viewport_w > 0.0
+  requires spec.viewport_h > 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases 0
+=
+  var w: float = spec.viewport_w
+  var h: float = spec.viewport_h
+  if w > constraints.max_w:
+    w = constraints.max_w
+  if h > constraints.max_h:
+    h = constraints.max_h
+  return widget_clamp_size(w, h, constraints)
+
+def scroll_area_layout(spec: ScrollAreaWidget, constraints: LayoutConstraints, x: float, y: float) -> ScrollAreaLayoutResult
+  requires spec.viewport_w > 0.0
+  requires spec.viewport_h > 0.0
+  requires spec.scroll_x >= 0.0
+  requires spec.scroll_y >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  decreases 0
+=
+  var measured: WidgetSize = scroll_area_measure(spec, constraints)
+  var out: ScrollAreaLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  var scroll: ScrollLayout = scroll_layout_new(spec.scroll_x, spec.scroll_y, spec.child)
+  var inner_constraints: LayoutConstraints = layout_constraints_loose(measured.w, measured.h)
+  out.inner = scroll_layout_layout(scroll, inner_constraints, x, y)
+  return out
+
+def scroll_area_paint(spec: ScrollAreaWidget, frame: var PaintFrame, layout: ScrollAreaLayoutResult) -> unit
+  requires frame.cmd_count >= 0
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases 0
+=
+  paint_frame_push_elevated_panel(frame, layout.bounds)
+  widget_paint(spec.child, frame, layout.inner.child_layout)
+
+def scroll_area_hit_test(layout: ScrollAreaLayoutResult, px: float, py: float) -> int
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return rect_contains(layout.bounds, px, py)
+
+def scroll_area_handle_event(spec: var ScrollAreaWidget, layout: ScrollAreaLayoutResult, event: WidgetEvent) -> WidgetEventResult
+  requires event.kind >= widget_event_none()
+  requires event.kind <= widget_event_key_shift_tab()
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases event.kind
+=
+  var out: WidgetEventResult
+  out.handled = 0
+  out.wants_focus = 0
+  if scroll_area_hit_test(layout, event.x, event.y) != 1:
+    return out
+  var child_event: WidgetEvent
+  child_event.kind = event.kind
+  child_event.x = event.x + spec.scroll_x
+  child_event.y = event.y + spec.scroll_y
+  return widget_handle_event(spec.child, layout.inner.child_layout, child_event)
+
+def flex_layout_paint(spec: FlexLayout, frame: var PaintFrame, layout: FlexLayoutResult) -> unit
+  requires spec.child_count == layout.child_count
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases spec.child_count
+=
+  var idx: int = 0
+  while idx < spec.child_count
+    widget_paint(spec.children[idx], frame, layout.child_layouts[idx])
+    idx = idx + 1
+
+# --- Phase 1 (W1): EventDispatcher — hit-test tree + focus manager ---
+
+def gui_event_dispatcher_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def event_dispatcher_hit_none() -> int
+  requires true
+  ensures result == layout_engine_max_children()
+  decreases 0
+=
+  return layout_engine_max_children()
+
+type EventDispatcherState = object
+  public focus_active: int
+  public focus_index: int
+  public last_hit_index: int
+
+type EventDispatchResult = object
+  public handled: int
+  public target_index: int
+  public wants_focus: int
+
+def event_dispatcher_state_new() -> EventDispatcherState
+  requires true
+  ensures result.focus_active == 0
+  ensures result.focus_index == 0
+  ensures result.last_hit_index == event_dispatcher_hit_none()
+  decreases 0
+=
+  var s: EventDispatcherState
+  s.focus_active = 0
+  s.focus_index = 0
+  s.last_hit_index = event_dispatcher_hit_none()
+  return s
+
+def widget_node_accepts_focus(node: WidgetNode) -> int
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_text_input()
+  ensures result >= 0
+  ensures result <= 1
+  decreases node.kind
+=
+  if node.enabled != 1:
+    return 0
+  if node.kind == widget_kind_button():
+    return 1
+  if node.kind == widget_kind_text_input():
+    return 1
+  return 0
+
+def event_dispatcher_clear_focus(spec: var FlexLayout) -> unit
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  ensures spec.child_count == old(spec.child_count)
+  decreases spec.child_count
+=
+  if spec.child_count > 0:
+    spec.children[0].focused = 0
+  if spec.child_count > 1:
+    spec.children[1].focused = 0
+  if spec.child_count > 2:
+    spec.children[2].focused = 0
+  if spec.child_count > 3:
+    spec.children[3].focused = 0
+
+def flex_layout_accepts_focus_at(spec: FlexLayout, index: int) -> int
+  requires index >= 0
+  requires index <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases index
+=
+  if index == 0:
+    return widget_node_accepts_focus(spec.children[0])
+  if index == 1:
+    return widget_node_accepts_focus(spec.children[1])
+  if index == 2:
+    return widget_node_accepts_focus(spec.children[2])
+  if index == 3:
+    return widget_node_accepts_focus(spec.children[3])
+  return 0
+
+def flex_layout_handle_event_at(spec: var FlexLayout, layout: FlexLayoutResult, index: int, event: WidgetEvent) -> WidgetEventResult
+  requires spec.child_count == layout.child_count
+  requires index >= 0
+  requires index <= 3
+  requires event.kind >= widget_event_none()
+  requires event.kind <= widget_event_key_shift_tab()
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases index
+=
+  if index == 0:
+    return widget_handle_event(spec.children[0], layout.child_layouts[0], event)
+  if index == 1:
+    return widget_handle_event(spec.children[1], layout.child_layouts[1], event)
+  if index == 2:
+    return widget_handle_event(spec.children[2], layout.child_layouts[2], event)
+  if index == 3:
+    return widget_handle_event(spec.children[3], layout.child_layouts[3], event)
+  var empty: WidgetEventResult
+  empty.handled = 0
+  empty.wants_focus = 0
+  return empty
+
+def event_dispatcher_hit_test_flex(spec: FlexLayout, layout: FlexLayoutResult, px: float, py: float) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  ensures result >= 0
+  ensures result <= layout_engine_max_children()
+  decreases spec.child_count
+=
+  if spec.child_count > 3:
+    if widget_hit_test(layout.child_layouts[3], px, py) == 1:
+      return 3
+  if spec.child_count > 2:
+    if widget_hit_test(layout.child_layouts[2], px, py) == 1:
+      return 2
+  if spec.child_count > 1:
+    if widget_hit_test(layout.child_layouts[1], px, py) == 1:
+      return 1
+  if spec.child_count > 0:
+    if widget_hit_test(layout.child_layouts[0], px, py) == 1:
+      return 0
+  return event_dispatcher_hit_none()
+
+def event_dispatcher_pointer_down(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState, px: float, py: float) -> EventDispatchResult
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.target_index >= 0
+  ensures result.target_index <= layout_engine_max_children()
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases spec.child_count
+=
+  var out: EventDispatchResult
+  out.handled = 0
+  out.target_index = event_dispatcher_hit_none()
+  out.wants_focus = 0
+  var hit: int = event_dispatcher_hit_test_flex(spec, layout, px, py)
+  state.last_hit_index = hit
+  if hit == event_dispatcher_hit_none():
+    event_dispatcher_clear_focus(spec)
+    state.focus_active = 0
+    return out
+  event_dispatcher_clear_focus(spec)
+  var event: WidgetEvent
+  event.kind = widget_event_pointer_down()
+  event.x = px
+  event.y = py
+  var child_result: WidgetEventResult
+  child_result.handled = 0
+  child_result.wants_focus = 0
+  if hit == 0:
+    child_result = flex_layout_handle_event_at(spec, layout, 0, event)
+  if hit == 1:
+    child_result = flex_layout_handle_event_at(spec, layout, 1, event)
+  if hit == 2:
+    child_result = flex_layout_handle_event_at(spec, layout, 2, event)
+  if hit == 3:
+    child_result = flex_layout_handle_event_at(spec, layout, 3, event)
+  out.target_index = hit
+  out.handled = child_result.handled
+  out.wants_focus = child_result.wants_focus
+  if child_result.wants_focus == 1:
+    state.focus_active = 1
+    state.focus_index = hit
+  return out
+
+def event_dispatcher_focus_child(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState, index: int) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  requires index < spec.child_count
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= 1
+  ensures state.focus_active == result
+  decreases index
+=
+  if flex_layout_accepts_focus_at(spec, index) != 1:
+    return 0
+  event_dispatcher_clear_focus(spec)
+  var event: WidgetEvent
+  event.kind = widget_event_key_focus()
+  event.x = 0.0
+  event.y = 0.0
+  var child_result: WidgetEventResult
+  child_result.handled = 0
+  child_result.wants_focus = 0
+  if index == 0:
+    child_result = flex_layout_handle_event_at(spec, layout, 0, event)
+  if index == 1:
+    child_result = flex_layout_handle_event_at(spec, layout, 1, event)
+  if index == 2:
+    child_result = flex_layout_handle_event_at(spec, layout, 2, event)
+  if index == 3:
+    child_result = flex_layout_handle_event_at(spec, layout, 3, event)
+  if child_result.wants_focus == 1:
+    state.focus_active = 1
+    state.focus_index = index
+    return 1
+  return 0
+
+def event_dispatcher_focus_next(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= layout_engine_max_children()
+  decreases spec.child_count
+=
+  if spec.child_count <= 0:
+    return event_dispatcher_hit_none()
+  var start: int = 0
+  if state.focus_active == 1:
+    start = state.focus_index + 1
+  if start <= 0:
+    if spec.child_count > 0:
+      if event_dispatcher_focus_child(spec, layout, state, 0) == 1:
+        return 0
+  if start <= 1:
+    if spec.child_count > 1:
+      if event_dispatcher_focus_child(spec, layout, state, 1) == 1:
+        return 1
+  if start <= 2:
+    if spec.child_count > 2:
+      if event_dispatcher_focus_child(spec, layout, state, 2) == 1:
+        return 2
+  if start <= 3:
+    if spec.child_count > 3:
+      if event_dispatcher_focus_child(spec, layout, state, 3) == 1:
+        return 3
+  if start > 0:
+    if spec.child_count > 0:
+      if event_dispatcher_focus_child(spec, layout, state, 0) == 1:
+        return 0
+  if start > 1:
+    if spec.child_count > 1:
+      if event_dispatcher_focus_child(spec, layout, state, 1) == 1:
+        return 1
+  if start > 2:
+    if spec.child_count > 2:
+      if event_dispatcher_focus_child(spec, layout, state, 2) == 1:
+        return 2
+  return event_dispatcher_hit_none()
+
+def event_dispatcher_focus_prev(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= layout_engine_max_children()
+  decreases spec.child_count
+=
+  if spec.child_count <= 0:
+    return event_dispatcher_hit_none()
+  var start: int = spec.child_count - 1
+  if state.focus_active == 1:
+    start = state.focus_index - 1
+  if start >= 3:
+    if spec.child_count > 3:
+      if event_dispatcher_focus_child(spec, layout, state, 3) == 1:
+        return 3
+  if start >= 2:
+    if spec.child_count > 2:
+      if event_dispatcher_focus_child(spec, layout, state, 2) == 1:
+        return 2
+  if start >= 1:
+    if spec.child_count > 1:
+      if event_dispatcher_focus_child(spec, layout, state, 1) == 1:
+        return 1
+  if start >= 0:
+    if spec.child_count > 0:
+      if event_dispatcher_focus_child(spec, layout, state, 0) == 1:
+        return 0
+  if start < 3:
+    if spec.child_count > 3:
+      if event_dispatcher_focus_child(spec, layout, state, 3) == 1:
+        return 3
+  if start < 2:
+    if spec.child_count > 2:
+      if event_dispatcher_focus_child(spec, layout, state, 2) == 1:
+        return 2
+  if start < 1:
+    if spec.child_count > 1:
+      if event_dispatcher_focus_child(spec, layout, state, 1) == 1:
+        return 1
+  return event_dispatcher_hit_none()
+
+def event_dispatcher_dispatch_key_focus(spec: var FlexLayout, layout: FlexLayoutResult, state: EventDispatcherState) -> EventDispatchResult
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.target_index >= 0
+  ensures result.target_index <= layout_engine_max_children()
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases state.focus_active
+=
+  var out: EventDispatchResult
+  out.handled = 0
+  out.target_index = event_dispatcher_hit_none()
+  out.wants_focus = 0
+  if state.focus_active != 1:
+    return out
+  if state.focus_index < 0:
+    return out
+  if state.focus_index >= spec.child_count:
+    return out
+  var event: WidgetEvent
+  event.kind = widget_event_key_focus()
+  event.x = 0.0
+  event.y = 0.0
+  var child_result: WidgetEventResult
+  child_result.handled = 0
+  child_result.wants_focus = 0
+  if state.focus_index == 0:
+    child_result = flex_layout_handle_event_at(spec, layout, 0, event)
+  if state.focus_index == 1:
+    child_result = flex_layout_handle_event_at(spec, layout, 1, event)
+  if state.focus_index == 2:
+    child_result = flex_layout_handle_event_at(spec, layout, 2, event)
+  if state.focus_index == 3:
+    child_result = flex_layout_handle_event_at(spec, layout, 3, event)
+  out.target_index = state.focus_index
+  out.handled = child_result.handled
+  out.wants_focus = child_result.wants_focus
+  return out
+
+# --- Phase 1 (W1): Focus model — roving tabindex + studio_paint_focus_ring integration ---
+
+def flex_layout_child_tab_index(spec: FlexLayout, index: int) -> int
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  ensures result >= 0
+  decreases index
+=
+  if index == 0:
+    var child0: WidgetNode = spec.children[0]
+    return child0.tab_index
+  if index == 1:
+    var child1: WidgetNode = spec.children[1]
+    return child1.tab_index
+  if index == 2:
+    var child2: WidgetNode = spec.children[2]
+    return child2.tab_index
+  if index == 3:
+    var child3: WidgetNode = spec.children[3]
+    return child3.tab_index
+  return widget_tab_index_none()
+
+def flex_layout_child_is_focused(spec: FlexLayout, index: int) -> int
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases index
+=
+  if index == 0:
+    var child0: WidgetNode = spec.children[0]
+    return child0.focused
+  if index == 1:
+    var child1: WidgetNode = spec.children[1]
+    return child1.focused
+  if index == 2:
+    var child2: WidgetNode = spec.children[2]
+    return child2.focused
+  if index == 3:
+    var child3: WidgetNode = spec.children[3]
+    return child3.focused
+  return 0
+
+def focus_model_child_order_key(spec: FlexLayout, index: int) -> int
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  ensures result >= 0
+  decreases index
+=
+  var tab: int = flex_layout_child_tab_index(spec, index)
+  if tab > widget_tab_index_none():
+    return tab
+  return (index + 1) * 100
+
+def focus_model_roving_focus_child(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState, index: int) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  requires index < spec.child_count
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases index
+=
+  return event_dispatcher_focus_child(spec, layout, state, index)
+
+def focus_model_roving_next(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= layout_engine_max_children()
+  decreases spec.child_count
+=
+  if spec.child_count <= 0:
+    return event_dispatcher_hit_none()
+  var cur_key: int = 0
+  if state.focus_active == 1:
+    cur_key = focus_model_child_order_key(spec, state.focus_index)
+  var best_idx: int = event_dispatcher_hit_none()
+  var best_key: int = 999999
+  if spec.child_count > 0:
+    if flex_layout_accepts_focus_at(spec, 0) == 1:
+      var key0: int = focus_model_child_order_key(spec, 0)
+      if state.focus_active != 1:
+        if key0 < best_key:
+          best_key = key0
+          best_idx = 0
+      if state.focus_active == 1:
+        if key0 > cur_key:
+          if key0 < best_key:
+            best_key = key0
+            best_idx = 0
+  if spec.child_count > 1:
+    if flex_layout_accepts_focus_at(spec, 1) == 1:
+      var key1: int = focus_model_child_order_key(spec, 1)
+      if state.focus_active != 1:
+        if key1 < best_key:
+          best_key = key1
+          best_idx = 1
+      if state.focus_active == 1:
+        if key1 > cur_key:
+          if key1 < best_key:
+            best_key = key1
+            best_idx = 1
+  if spec.child_count > 2:
+    if flex_layout_accepts_focus_at(spec, 2) == 1:
+      var key2: int = focus_model_child_order_key(spec, 2)
+      if state.focus_active != 1:
+        if key2 < best_key:
+          best_key = key2
+          best_idx = 2
+      if state.focus_active == 1:
+        if key2 > cur_key:
+          if key2 < best_key:
+            best_key = key2
+            best_idx = 2
+  if spec.child_count > 3:
+    if flex_layout_accepts_focus_at(spec, 3) == 1:
+      var key3: int = focus_model_child_order_key(spec, 3)
+      if state.focus_active != 1:
+        if key3 < best_key:
+          best_key = key3
+          best_idx = 3
+      if state.focus_active == 1:
+        if key3 > cur_key:
+          if key3 < best_key:
+            best_key = key3
+            best_idx = 3
+  if best_idx != event_dispatcher_hit_none():
+    if focus_model_roving_focus_child(spec, layout, state, best_idx) == 1:
+      return best_idx
+  best_idx = event_dispatcher_hit_none()
+  best_key = 999999
+  if spec.child_count > 0:
+    if flex_layout_accepts_focus_at(spec, 0) == 1:
+      var wrap0: int = focus_model_child_order_key(spec, 0)
+      if wrap0 < best_key:
+        best_key = wrap0
+        best_idx = 0
+  if spec.child_count > 1:
+    if flex_layout_accepts_focus_at(spec, 1) == 1:
+      var wrap1: int = focus_model_child_order_key(spec, 1)
+      if wrap1 < best_key:
+        best_key = wrap1
+        best_idx = 1
+  if spec.child_count > 2:
+    if flex_layout_accepts_focus_at(spec, 2) == 1:
+      var wrap2: int = focus_model_child_order_key(spec, 2)
+      if wrap2 < best_key:
+        best_key = wrap2
+        best_idx = 2
+  if spec.child_count > 3:
+    if flex_layout_accepts_focus_at(spec, 3) == 1:
+      var wrap3: int = focus_model_child_order_key(spec, 3)
+      if wrap3 < best_key:
+        best_key = wrap3
+        best_idx = 3
+  if best_idx != event_dispatcher_hit_none():
+    if focus_model_roving_focus_child(spec, layout, state, best_idx) == 1:
+      return best_idx
+  return event_dispatcher_hit_none()
+
+def focus_model_roving_prev(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= layout_engine_max_children()
+  decreases spec.child_count
+=
+  if spec.child_count <= 0:
+    return event_dispatcher_hit_none()
+  var cur_key: int = 999999
+  if state.focus_active == 1:
+    cur_key = focus_model_child_order_key(spec, state.focus_index)
+  var best_idx: int = event_dispatcher_hit_none()
+  var best_key: int = 0
+  if spec.child_count > 3:
+    if flex_layout_accepts_focus_at(spec, 3) == 1:
+      var key3: int = focus_model_child_order_key(spec, 3)
+      if state.focus_active != 1:
+        if key3 > best_key:
+          best_key = key3
+          best_idx = 3
+      if state.focus_active == 1:
+        if key3 < cur_key:
+          if key3 > best_key:
+            best_key = key3
+            best_idx = 3
+  if spec.child_count > 2:
+    if flex_layout_accepts_focus_at(spec, 2) == 1:
+      var key2: int = focus_model_child_order_key(spec, 2)
+      if state.focus_active != 1:
+        if key2 > best_key:
+          best_key = key2
+          best_idx = 2
+      if state.focus_active == 1:
+        if key2 < cur_key:
+          if key2 > best_key:
+            best_key = key2
+            best_idx = 2
+  if spec.child_count > 1:
+    if flex_layout_accepts_focus_at(spec, 1) == 1:
+      var key1: int = focus_model_child_order_key(spec, 1)
+      if state.focus_active != 1:
+        if key1 > best_key:
+          best_key = key1
+          best_idx = 1
+      if state.focus_active == 1:
+        if key1 < cur_key:
+          if key1 > best_key:
+            best_key = key1
+            best_idx = 1
+  if spec.child_count > 0:
+    if flex_layout_accepts_focus_at(spec, 0) == 1:
+      var key0: int = focus_model_child_order_key(spec, 0)
+      if state.focus_active != 1:
+        if key0 > best_key:
+          best_key = key0
+          best_idx = 0
+      if state.focus_active == 1:
+        if key0 < cur_key:
+          if key0 > best_key:
+            best_key = key0
+            best_idx = 0
+  if best_idx != event_dispatcher_hit_none():
+    if focus_model_roving_focus_child(spec, layout, state, best_idx) == 1:
+      return best_idx
+  best_idx = event_dispatcher_hit_none()
+  best_key = 0
+  if spec.child_count > 3:
+    if flex_layout_accepts_focus_at(spec, 3) == 1:
+      var wrap3: int = focus_model_child_order_key(spec, 3)
+      if wrap3 > best_key:
+        best_key = wrap3
+        best_idx = 3
+  if spec.child_count > 2:
+    if flex_layout_accepts_focus_at(spec, 2) == 1:
+      var wrap2: int = focus_model_child_order_key(spec, 2)
+      if wrap2 > best_key:
+        best_key = wrap2
+        best_idx = 2
+  if spec.child_count > 1:
+    if flex_layout_accepts_focus_at(spec, 1) == 1:
+      var wrap1: int = focus_model_child_order_key(spec, 1)
+      if wrap1 > best_key:
+        best_key = wrap1
+        best_idx = 1
+  if spec.child_count > 0:
+    if flex_layout_accepts_focus_at(spec, 0) == 1:
+      var wrap0: int = focus_model_child_order_key(spec, 0)
+      if wrap0 > best_key:
+        best_key = wrap0
+        best_idx = 0
+  if best_idx != event_dispatcher_hit_none():
+    if focus_model_roving_focus_child(spec, layout, state, best_idx) == 1:
+      return best_idx
+  return event_dispatcher_hit_none()
+
+def focus_model_paint_focus_ring_for_child(spec: FlexLayout, layout: FlexLayoutResult, frame: var PaintFrame, index: int) -> unit
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  requires index < spec.child_count
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases index
+=
+  if index == 0:
+    if flex_layout_child_is_focused(spec, 0) == 1:
+      var layout0: WidgetLayoutResult = layout.child_layouts[0]
+      studio_paint_focus_ring(frame, layout0.bounds)
+  if index == 1:
+    if flex_layout_child_is_focused(spec, 1) == 1:
+      var layout1: WidgetLayoutResult = layout.child_layouts[1]
+      studio_paint_focus_ring(frame, layout1.bounds)
+  if index == 2:
+    if flex_layout_child_is_focused(spec, 2) == 1:
+      var layout2: WidgetLayoutResult = layout.child_layouts[2]
+      studio_paint_focus_ring(frame, layout2.bounds)
+  if index == 3:
+    if flex_layout_child_is_focused(spec, 3) == 1:
+      var layout3: WidgetLayoutResult = layout.child_layouts[3]
+      studio_paint_focus_ring(frame, layout3.bounds)
+
+def focus_model_paint_flex_focus_rings(spec: FlexLayout, layout: FlexLayoutResult, frame: var PaintFrame) -> unit
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases spec.child_count
+=
+  if spec.child_count > 0:
+    focus_model_paint_focus_ring_for_child(spec, layout, frame, 0)
+  if spec.child_count > 1:
+    focus_model_paint_focus_ring_for_child(spec, layout, frame, 1)
+  if spec.child_count > 2:
+    focus_model_paint_focus_ring_for_child(spec, layout, frame, 2)
+  if spec.child_count > 3:
+    focus_model_paint_focus_ring_for_child(spec, layout, frame, 3)
+
+def event_dispatcher_handle_tab_key(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState, shift_pressed: int) -> EventDispatchResult
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  requires shift_pressed >= 0
+  requires shift_pressed <= 1
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.target_index >= 0
+  ensures result.target_index <= layout_engine_max_children()
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases shift_pressed
+=
+  var out: EventDispatchResult
+  out.handled = 0
+  out.target_index = event_dispatcher_hit_none()
+  out.wants_focus = 0
+  var moved: int = event_dispatcher_hit_none()
+  if shift_pressed == 1:
+    moved = focus_model_roving_prev(spec, layout, state)
+  if shift_pressed != 1:
+    moved = focus_model_roving_next(spec, layout, state)
+  if moved == event_dispatcher_hit_none():
+    return out
+  out.handled = 1
+  out.target_index = moved
+  out.wants_focus = 1
+  return out
+
+# --- Phase 1 (W1): Inspector region Widget tree pilot ---
+
+def gui_inspector_pilot_header_h_px() -> float
+  requires true
+  ensures result == 32.0
+  decreases 0
+=
+  return 32.0
+
+def gui_inspector_pilot_label_w_px() -> float
+  requires true
+  ensures result == 96.0
+  decreases 0
+=
+  return 96.0
+
+def gui_inspector_pilot_section_gap_px() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def gui_inspector_pilot_hint_box_h_px() -> float
+  requires true
+  ensures result == 72.0
+  decreases 0
+=
+  return 72.0
+
+type InspectorPilotWidget = object
+  public has_selection: int
+  public header: WidgetNode
+  public fields: GridLayout
+  public empty_hints: FlexLayout
+
+type InspectorPilotLayoutResult = object
+  public bounds: Rect
+  public has_selection: int
+  public header_layout: WidgetLayoutResult
+  public fields_layout: GridLayoutResult
+  public hints_layout: FlexLayoutResult
+
+def inspector_pilot_header_node(insp_w: float) -> WidgetNode
+  requires insp_w > 0.0
+  ensures result.kind == widget_kind_panel()
+  decreases 0
+=
+  return widget_node_panel(insp_w, gui_inspector_pilot_header_h_px())
+
+def inspector_pilot_selected_fields(insp_w: float) -> GridLayout
+  requires insp_w >= gui_inspector_pilot_label_w_px()
+  ensures result.child_count == 4
+  ensures result.rows == 2
+  ensures result.cols == 2
+  decreases 0
+=
+  var label0: WidgetNode = widget_node_label(8.0)
+  var input0: WidgetNode = widget_node_text_input(6.0)
+  widget_node_set_tab_index(input0, 1)
+  var label1: WidgetNode = widget_node_label(6.0)
+  var input1: WidgetNode = widget_node_text_input(6.0)
+  widget_node_set_tab_index(input1, 2)
+  return grid_layout_new(2, 2, gui_inspector_pilot_section_gap_px(), 4, label0, input0, label1, input1)
+
+def inspector_pilot_empty_hints(insp_w: float) -> FlexLayout
+  requires insp_w > 24.0
+  ensures result.child_count == 3
+  ensures result.direction == flex_direction_column()
+  decreases 0
+=
+  var hint1: WidgetNode = widget_node_label(18.0)
+  var hint2: WidgetNode = widget_node_label(22.0)
+  var hint_box: WidgetNode = widget_node_panel(insp_w - 24.0, gui_inspector_pilot_hint_box_h_px())
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  return flex_layout_column(gui_inspector_pilot_section_gap_px(), 3, hint1, hint2, hint_box, spacer)
+
+def inspector_pilot_new(has_selection: int, insp_w: float, insp_h: float) -> InspectorPilotWidget
+  requires has_selection >= 0
+  requires has_selection <= 1
+  requires insp_w > 0.0
+  requires insp_h > gui_inspector_pilot_header_h_px()
+  ensures result.has_selection == has_selection
+  decreases has_selection
+=
+  var out: InspectorPilotWidget
+  out.has_selection = has_selection
+  out.header = inspector_pilot_header_node(insp_w)
+  out.fields = inspector_pilot_selected_fields(insp_w)
+  out.empty_hints = inspector_pilot_empty_hints(insp_w)
+  return out
+
+def inspector_pilot_body_constraints(insp_w: float, insp_h: float) -> LayoutConstraints
+  requires insp_w > 0.0
+  requires insp_h > gui_inspector_pilot_header_h_px()
+  ensures result.max_w == insp_w
+  decreases 0
+=
+  var body_h: float = insp_h - gui_inspector_pilot_header_h_px() - gui_inspector_pilot_section_gap_px()
+  if body_h < 0.0:
+    body_h = 0.0
+  return layout_constraints_loose(insp_w, body_h)
+
+def inspector_pilot_layout(spec: InspectorPilotWidget, insp_x: float, insp_y: float, insp_w: float, insp_h: float) -> InspectorPilotLayoutResult
+  requires insp_w > 0.0
+  requires insp_h > gui_inspector_pilot_header_h_px()
+  requires spec.has_selection >= 0
+  requires spec.has_selection <= 1
+  ensures result.bounds.w == insp_w
+  ensures result.bounds.h == insp_h
+  ensures result.has_selection == spec.has_selection
+  decreases spec.has_selection
+=
+  var out: InspectorPilotLayoutResult
+  out.has_selection = spec.has_selection
+  out.bounds = rect_make(insp_x, insp_y, insp_w, insp_h)
+  var header_constraints: LayoutConstraints = layout_constraints_loose(insp_w, gui_inspector_pilot_header_h_px())
+  out.header_layout = widget_layout(spec.header, header_constraints, insp_x, insp_y)
+  var body_y: float = insp_y + out.header_layout.bounds.h + gui_inspector_pilot_section_gap_px()
+  var body: LayoutConstraints = inspector_pilot_body_constraints(insp_w, insp_h)
+  if spec.has_selection == 1:
+    out.fields_layout = grid_layout_layout(spec.fields, body, insp_x, body_y)
+  if spec.has_selection == 0:
+    out.hints_layout = flex_layout_layout(spec.empty_hints, body, insp_x, body_y)
+  return out
+
+def grid_layout_paint(spec: GridLayout, frame: var PaintFrame, layout: GridLayoutResult) -> unit
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases spec.child_count
+=
+  var idx: int = 0
+  while idx < spec.child_count
+    widget_paint(spec.children[idx], frame, layout.child_layouts[idx])
+    idx = idx + 1
+
+def inspector_pilot_paint_cmds(has_selection: int) -> int
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result >= 4
+  ensures result <= 24
+  decreases has_selection
+=
+  if has_selection == 0:
+    return 4
+  return 19
+
+def inspector_pilot_paint(spec: InspectorPilotWidget, layout: InspectorPilotLayoutResult, frame: var PaintFrame) -> unit
+  requires spec.has_selection == layout.has_selection
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == old(frame.cmd_count) + inspector_pilot_paint_cmds(spec.has_selection)
+  decreases spec.has_selection
+=
+  if spec.has_selection == 0:
+    paint_frame_push_elevated_panel(frame, layout.bounds)
+    flex_layout_paint(spec.empty_hints, frame, layout.hints_layout)
+    return
+  paint_frame_push(frame, paint_cmd_fill_gradient(layout.bounds, studio_color_bg_primary(), studio_color_bg_elevated()))
+  paint_frame_push(frame, paint_cmd_stroke_round(layout.bounds, studio_color_accent_violet(), 1.0, studio_default_panel_radius_px()))
+  widget_paint(spec.header, frame, layout.header_layout)
+  grid_layout_paint(spec.fields, frame, layout.fields_layout)
+
+def inspector_pilot_field_label_rect(layout: InspectorPilotLayoutResult, row: int) -> Rect
+  requires layout.has_selection == 1
+  requires row >= 0
+  requires row <= 1
+  ensures result.w >= 0.0
+  decreases row
+=
+  if row == 0:
+    var layout0: WidgetLayoutResult = layout.fields_layout.child_layouts[0]
+    return layout0.bounds
+  var layout2: WidgetLayoutResult = layout.fields_layout.child_layouts[2]
+  return layout2.bounds
+
+def inspector_pilot_field_value_rect(layout: InspectorPilotLayoutResult, row: int) -> Rect
+  requires layout.has_selection == 1
+  requires row >= 0
+  requires row <= 1
+  ensures result.w >= 0.0
+  decreases row
+=
+  if row == 0:
+    var layout1: WidgetLayoutResult = layout.fields_layout.child_layouts[1]
+    return layout1.bounds
+  var layout3: WidgetLayoutResult = layout.fields_layout.child_layouts[3]
+  return layout3.bounds
+
+def inspector_pilot_empty_hint_rect(layout: InspectorPilotLayoutResult, line: int) -> Rect
+  requires layout.has_selection == 0
+  requires line >= 0
+  requires line <= 1
+  ensures result.w >= 0.0
+  decreases line
+=
+  if line == 0:
+    var layout0: WidgetLayoutResult = layout.hints_layout.child_layouts[0]
+    return layout0.bounds
+  var layout1: WidgetLayoutResult = layout.hints_layout.child_layouts[1]
+  return layout1.bounds
+
+def inspector_pilot_empty_hint_box_rect(layout: InspectorPilotLayoutResult) -> Rect
+  requires layout.has_selection == 0
+  ensures result.w >= 0.0
+  decreases 0
+=
+  var layout2: WidgetLayoutResult = layout.hints_layout.child_layouts[2]
+  return layout2.bounds
+
+# --- Phase 4 (W4): Shell Widget tree — all regions + reactive store params ---
+
+def gui_shell_widget_tree_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def shell_widget_tree_region_count() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def shell_widget_tree_region_dock() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def shell_widget_tree_region_outliner() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def shell_widget_tree_region_topbar() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def shell_widget_tree_region_viewport() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def shell_widget_tree_region_timeline() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def shell_widget_tree_region_inspector() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def shell_widget_tree_region_agent() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def shell_widget_tree_region_palette() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+def shell_widget_tree_dock_gap_px() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def shell_widget_tree_timeline_track_h_px() -> float
+  requires true
+  ensures result == 24.0
+  decreases 0
+=
+  return 24.0
+
+type ShellWidgetTreeParams = object
+  public active_dock_slot: int
+  public has_selection: int
+  public scene_entity_count: int
+  public palette_open: int
+  public agent_task_state: int
+  public playhead_pct: float
+  public shell_mode: int
+
+type ShellWidgetTree = object
+  public params: ShellWidgetTreeParams
+  public dock: FlexLayout
+  public outliner: FlexLayout
+  public topbar: WidgetNode
+  public viewport: WidgetNode
+  public timeline: FlexLayout
+  public inspector: InspectorPilotWidget
+  public agent_strip: FlexLayout
+  public palette_overlay: FlexLayout
+  public region_count: int
+
+type ShellWidgetTreeLayout = object
+  public shell_bounds: Rect
+  public dock_layout: FlexLayoutResult
+  public outliner_layout: FlexLayoutResult
+  public topbar_layout: WidgetLayoutResult
+  public viewport_layout: WidgetLayoutResult
+  public timeline_layout: FlexLayoutResult
+  public inspector_layout: InspectorPilotLayoutResult
+  public agent_layout: FlexLayoutResult
+  public palette_layout: FlexLayoutResult
+  public region_count: int
+
+def shell_widget_tree_dock_flex() -> FlexLayout
+  requires true
+  ensures result.child_count == 4
+  ensures result.direction == flex_direction_column()
+  decreases 0
+=
+  var slot0: WidgetNode = widget_node_button(4.0)
+  var slot1: WidgetNode = widget_node_button(4.0)
+  var slot2: WidgetNode = widget_node_button(4.0)
+  var slot3: WidgetNode = widget_node_button(4.0)
+  return flex_layout_column(shell_widget_tree_dock_gap_px(), 4, slot0, slot1, slot2, slot3)
+
+def shell_widget_tree_outliner_flex() -> FlexLayout
+  requires true
+  ensures result.child_count == 3
+  ensures result.direction == flex_direction_column()
+  decreases 0
+=
+  var row0: WidgetNode = widget_node_label(10.0)
+  var row1: WidgetNode = widget_node_label(12.0)
+  var row2: WidgetNode = widget_node_label(8.0)
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  return flex_layout_column(4.0, 3, row0, row1, row2, spacer)
+
+def shell_widget_tree_timeline_flex() -> FlexLayout
+  requires true
+  ensures result.child_count == 2
+  ensures result.direction == flex_direction_row()
+  decreases 0
+=
+  var play_btn: WidgetNode = widget_node_button(4.0)
+  widget_node_set_tab_index(play_btn, 3)
+  var track: WidgetNode = widget_node_panel(120.0, shell_widget_tree_timeline_track_h_px())
+  var spacer0: WidgetNode = widget_node_spacer(0.0, 0.0)
+  var spacer1: WidgetNode = widget_node_spacer(0.0, 0.0)
+  return flex_layout_row(8.0, 2, play_btn, track, spacer0, spacer1)
+
+def shell_widget_tree_agent_flex(task_state: int) -> FlexLayout
+  requires task_state >= 0
+  requires task_state <= 4
+  ensures result.child_count == 3
+  ensures result.direction == flex_direction_row()
+  decreases task_state
+=
+  var status: WidgetNode = widget_node_label(14.0)
+  var cancel: WidgetNode = widget_node_button(6.0)
+  widget_node_set_tab_index(cancel, 4)
+  var trace: WidgetNode = widget_node_panel(80.0, 20.0)
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  if task_state == 0:
+    cancel = widget_node_spacer(0.0, 0.0)
+  return flex_layout_row(8.0, 3, status, cancel, trace, spacer)
+
+def shell_widget_tree_palette_flex() -> FlexLayout
+  requires true
+  ensures result.child_count == 2
+  ensures result.direction == flex_direction_column()
+  decreases 0
+=
+  var query: WidgetNode = widget_node_text_input(16.0)
+  widget_node_set_tab_index(query, 5)
+  var row0: WidgetNode = widget_node_label(18.0)
+  var row1: WidgetNode = widget_node_label(16.0)
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  return flex_layout_column(6.0, 2, query, row0, row1, spacer)
+
+def shell_widget_tree_params_from_stores(agent_task: StoreInt, palette_open: StoreInt, shell_mode: StoreInt, timeline_tick: StoreFloat, active_dock: int, has_selection: int, scene_count: int) -> ShellWidgetTreeParams
+  requires active_dock >= 0
+  requires active_dock < 5
+  requires has_selection >= 0
+  requires has_selection <= 1
+  requires scene_count >= 0
+  ensures result.active_dock_slot == active_dock
+  ensures result.has_selection == has_selection
+  ensures result.agent_task_state == store_int_get(agent_task)
+  ensures result.palette_open == store_int_get(palette_open)
+  ensures result.shell_mode == store_int_get(shell_mode)
+  ensures result.playhead_pct == store_float_get(timeline_tick)
+  decreases active_dock
+=
+  var out: ShellWidgetTreeParams
+  out.active_dock_slot = active_dock
+  out.has_selection = has_selection
+  out.scene_entity_count = scene_count
+  out.palette_open = store_int_get(palette_open)
+  out.agent_task_state = store_int_get(agent_task)
+  out.playhead_pct = store_float_get(timeline_tick)
+  out.shell_mode = store_int_get(shell_mode)
+  return out
+
+def shell_widget_tree_new(params: ShellWidgetTreeParams, insp_w: float, insp_h: float) -> ShellWidgetTree
+  requires insp_w > 0.0
+  requires insp_h > gui_inspector_pilot_header_h_px()
+  requires params.active_dock_slot >= 0
+  requires params.active_dock_slot < 5
+  requires params.has_selection >= 0
+  requires params.has_selection <= 1
+  ensures result.region_count == shell_widget_tree_region_count()
+  ensures result.params.active_dock_slot == params.active_dock_slot
+  ensures result.inspector.has_selection == params.has_selection
+  decreases params.active_dock_slot
+=
+  var out: ShellWidgetTree
+  out.params = params
+  out.dock = shell_widget_tree_dock_flex()
+  out.outliner = shell_widget_tree_outliner_flex()
+  out.topbar = widget_node_panel(640.0, 48.0)
+  out.viewport = widget_node_panel(insp_w, insp_h)
+  out.timeline = shell_widget_tree_timeline_flex()
+  out.inspector = inspector_pilot_new(params.has_selection, insp_w, insp_h)
+  out.agent_strip = shell_widget_tree_agent_flex(params.agent_task_state)
+  out.palette_overlay = shell_widget_tree_palette_flex()
+  out.region_count = shell_widget_tree_region_count()
+  return out
+
+def shell_widget_tree_layout(tree: ShellWidgetTree, lay: StudioShellLayout) -> ShellWidgetTreeLayout
+  requires lay.viewport_w > 0.0
+  requires lay.viewport_h > 0.0
+  requires lay.dock.w > 0.0
+  requires lay.inspector.w > 0.0
+  requires lay.inspector.h > gui_inspector_pilot_header_h_px()
+  ensures result.region_count == shell_widget_tree_region_count()
+  ensures result.shell_bounds.w == lay.viewport_w
+  ensures result.inspector_layout.bounds.w == lay.inspector.w
+  decreases tree.region_count
+=
+  var out: ShellWidgetTreeLayout
+  out.shell_bounds = rect_make(0.0, 0.0, lay.viewport_w, lay.viewport_h)
+  var dock_c: LayoutConstraints = layout_constraints_loose(lay.dock.w, lay.dock.h)
+  out.dock_layout = flex_layout_layout(tree.dock, dock_c, lay.dock.x, lay.dock.y)
+  var outliner_c: LayoutConstraints = layout_constraints_loose(lay.dock.w, lay.dock.h * 0.45)
+  var outliner_y: float = lay.dock.y + lay.dock.h * 0.55
+  out.outliner_layout = flex_layout_layout(tree.outliner, outliner_c, lay.dock.x, outliner_y)
+  var top_c: LayoutConstraints = layout_constraints_loose(lay.topbar.w, lay.topbar.h)
+  out.topbar_layout = widget_layout(tree.topbar, top_c, lay.topbar.x, lay.topbar.y)
+  var vp_c: LayoutConstraints = layout_constraints_loose(lay.viewport.w, lay.viewport.h)
+  out.viewport_layout = widget_layout(tree.viewport, vp_c, lay.viewport.x, lay.viewport.y)
+  var tl_c: LayoutConstraints = layout_constraints_loose(lay.timeline.w, lay.timeline.h)
+  out.timeline_layout = flex_layout_layout(tree.timeline, tl_c, lay.timeline.x, lay.timeline.y)
+  out.inspector_layout = inspector_pilot_layout(tree.inspector, lay.inspector.x, lay.inspector.y, lay.inspector.w, lay.inspector.h)
+  var agent_c: LayoutConstraints = layout_constraints_loose(lay.agent_strip.w, lay.agent_strip.h)
+  out.agent_layout = flex_layout_layout(tree.agent_strip, agent_c, lay.agent_strip.x, lay.agent_strip.y)
+  var pal_c: LayoutConstraints = layout_constraints_loose(lay.viewport_w * 0.42, lay.viewport_h * 0.36)
+  var pal_x: float = lay.viewport_w * 0.29
+  var pal_y: float = lay.topbar.h + 24.0
+  out.palette_layout = flex_layout_layout(tree.palette_overlay, pal_c, pal_x, pal_y)
+  out.region_count = shell_widget_tree_region_count()
+  return out
+
+def shell_widget_tree_paint_region_cmds(has_palette: int) -> int
+  requires has_palette >= 0
+  requires has_palette <= 1
+  ensures result >= 8
+  decreases has_palette
+=
+  var n: int = 8
+  if has_palette == 1:
+    n = n + 2
+  return n
+
+def shell_widget_tree_paint(tree: ShellWidgetTree, layout: ShellWidgetTreeLayout, frame: var PaintFrame) -> unit
+  requires frame.cmd_count >= 0
+  requires layout.region_count == shell_widget_tree_region_count()
+  ensures frame.cmd_count == old(frame.cmd_count) + shell_widget_tree_paint_region_cmds(tree.params.palette_open)
+  decreases tree.region_count
+=
+  flex_layout_paint(tree.dock, frame, layout.dock_layout)
+  flex_layout_paint(tree.outliner, frame, layout.outliner_layout)
+  widget_paint(tree.topbar, frame, layout.topbar_layout)
+  widget_paint(tree.viewport, frame, layout.viewport_layout)
+  flex_layout_paint(tree.timeline, frame, layout.timeline_layout)
+  inspector_pilot_paint(tree.inspector, layout.inspector_layout, frame)
+  flex_layout_paint(tree.agent_strip, frame, layout.agent_layout)
+  if tree.params.palette_open == 1:
+    flex_layout_paint(tree.palette_overlay, frame, layout.palette_layout)
+
+def shell_widget_tree_region_laid_out(layout: ShellWidgetTreeLayout, region_id: int) -> int
+  requires region_id >= shell_widget_tree_region_dock()
+  requires region_id <= shell_widget_tree_region_palette()
+  ensures result >= 0
+  ensures result <= 1
+  decreases region_id
+=
+  if region_id == shell_widget_tree_region_dock():
+    if layout.dock_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_outliner():
+    if layout.outliner_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_topbar():
+    if layout.topbar_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_viewport():
+    if layout.viewport_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_timeline():
+    if layout.timeline_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_inspector():
+    if layout.inspector_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_agent():
+    if layout.agent_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_palette():
+    if layout.palette_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  return 0
+
+def shell_widget_tree_all_regions_laid_out(layout: ShellWidgetTreeLayout) -> int
+  requires layout.region_count == shell_widget_tree_region_count()
+  ensures result >= 0
+  ensures result <= 1
+  decreases layout.region_count
+=
+  var ok: int = 1
+  var rid: int = shell_widget_tree_region_dock()
+  while rid <= shell_widget_tree_region_agent()
+    if shell_widget_tree_region_laid_out(layout, rid) != 1:
+      ok = 0
+    rid = rid + 1
+  return ok
+
+# Phase 2 — Reactive compose primitives (Function layer).
+# Canonical split: src/reactive.li (mirrored here for `import gui`).
+
+def gui_reactive_version() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def reactive_store_max_id() -> int
+  requires true
+  ensures result == 15
+  decreases 0
+=
+  return 15
+
+def reactive_derived_max_id() -> int
+  requires true
+  ensures result == 15
+  decreases 0
+=
+  return 15
+
+def reactive_store_id_agent_task() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def reactive_store_id_palette_open() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def reactive_store_id_shell_mode() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def reactive_store_id_timeline_tick() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+type StoreInt = object
+  public store_id: int
+  public value: int
+  public generation: int
+  public dirty: int
+
+type DerivedInt = object
+  public derived_id: int
+  public source_store_id: int
+  public value: int
+  public generation: int
+  public dirty: int
+
+type StoreFloat = object
+  public store_id: int
+  public value: float
+  public generation: int
+  public dirty: int
+
+type DerivedFloat = object
+  public derived_id: int
+  public source_store_id: int
+  public value: float
+  public generation: int
+  public dirty: int
+
+type ComposeInvalidation = object
+  public tick: int
+  public dirty_store_count: int
+  public dirty_derived_count: int
+
+def compose_invalidation_new() -> ComposeInvalidation
+  requires true
+  ensures result.dirty_store_count == 0
+  ensures result.dirty_derived_count == 0
+  ensures result.tick == 0
+  decreases 0
+=
+  var inv: ComposeInvalidation
+  inv.tick = 0
+  inv.dirty_store_count = 0
+  inv.dirty_derived_count = 0
+  return inv
+
+def store_int_new(store_id: int, initial: int) -> StoreInt
+  requires store_id >= 0
+  requires store_id <= reactive_store_max_id()
+  ensures result.store_id == store_id
+  ensures result.value == initial
+  ensures result.generation == 0
+  ensures result.dirty == 0
+  decreases 0
+=
+  var s: StoreInt
+  s.store_id = store_id
+  s.value = initial
+  s.generation = 0
+  s.dirty = 0
+  return s
+
+def store_int_get(store: StoreInt) -> int
+  requires true
+  ensures result == store.value
+  decreases 0
+=
+  return store.value
+
+def store_int_is_dirty(store: StoreInt) -> int
+  requires store.dirty >= 0
+  requires store.dirty <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return store.dirty
+
+def store_int_clear_dirty(store: var StoreInt, inv: var ComposeInvalidation) -> unit
+  requires store.dirty >= 0
+  requires store.dirty <= 1
+  requires inv.dirty_store_count >= 0
+  ensures store.dirty == 0
+  decreases 0
+=
+  if store.dirty == 1:
+    if inv.dirty_store_count > 0:
+      inv.dirty_store_count = inv.dirty_store_count - 1
+  store.dirty = 0
+
+def store_int_set(store: var StoreInt, value: int, inv: var ComposeInvalidation) -> unit
+  requires store.store_id >= 0
+  requires store.store_id <= reactive_store_max_id()
+  requires store.dirty >= 0
+  requires store.dirty <= 1
+  requires inv.dirty_store_count >= 0
+  ensures store.value == value
+  ensures store.dirty == 1
+  ensures store.generation == old(store.generation) + 1
+  decreases 0
+=
+  if store.value != value:
+    store.value = value
+  if store.dirty == 0:
+    inv.dirty_store_count = inv.dirty_store_count + 1
+  store.dirty = 1
+  store.generation = store.generation + 1
+  inv.tick = inv.tick + 1
+
+def derived_int_new(derived_id: int, source_store_id: int, initial: int) -> DerivedInt
+  requires derived_id >= 0
+  requires derived_id <= reactive_derived_max_id()
+  requires source_store_id >= 0
+  requires source_store_id <= reactive_store_max_id()
+  ensures result.derived_id == derived_id
+  ensures result.source_store_id == source_store_id
+  ensures result.value == initial
+  ensures result.generation == 0
+  ensures result.dirty == 0
+  decreases 0
+=
+  var d: DerivedInt
+  d.derived_id = derived_id
+  d.source_store_id = source_store_id
+  d.value = initial
+  d.generation = 0
+  d.dirty = 0
+  return d
+
+def derived_int_get(derived: DerivedInt) -> int
+  requires true
+  ensures result == derived.value
+  decreases 0
+=
+  return derived.value
+
+def derived_int_is_dirty(derived: DerivedInt) -> int
+  requires derived.dirty >= 0
+  requires derived.dirty <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return derived.dirty
+
+def derived_int_mark_dirty(derived: var DerivedInt, inv: var ComposeInvalidation) -> unit
+  requires derived.dirty >= 0
+  requires derived.dirty <= 1
+  requires inv.dirty_derived_count >= 0
+  ensures derived.dirty == 1
+  decreases 0
+=
+  if derived.dirty == 0:
+    inv.dirty_derived_count = inv.dirty_derived_count + 1
+  derived.dirty = 1
+
+def derived_int_clear_dirty(derived: var DerivedInt, inv: var ComposeInvalidation) -> unit
+  requires derived.dirty >= 0
+  requires derived.dirty <= 1
+  requires inv.dirty_derived_count >= 0
+  ensures derived.dirty == 0
+  decreases 0
+=
+  if derived.dirty == 1:
+    if inv.dirty_derived_count > 0:
+      inv.dirty_derived_count = inv.dirty_derived_count - 1
+  derived.dirty = 0
+
+def reactive_propagate_store_int(source: StoreInt, derived: var DerivedInt, inv: var ComposeInvalidation) -> unit
+  requires source.store_id == derived.source_store_id
+  requires source.dirty >= 0
+  requires source.dirty <= 1
+  ensures derived.dirty >= old(derived.dirty)
+  decreases 0
+=
+  if source.dirty == 1:
+    derived_int_mark_dirty(derived, inv)
+
+def derived_int_sync_value(derived: var DerivedInt, source: StoreInt, new_value: int, inv: var ComposeInvalidation) -> unit
+  requires source.store_id == derived.source_store_id
+  requires source.dirty >= 0
+  requires source.dirty <= 1
+  ensures derived.value == new_value
+  ensures derived.generation == source.generation
+  decreases 0
+=
+  reactive_propagate_store_int(source, derived, inv)
+  if source.dirty == 1:
+    derived.value = new_value
+    derived.generation = source.generation
+    derived_int_mark_dirty(derived, inv)
+
+def compose_invalidation_any_dirty(inv: ComposeInvalidation) -> int
+  requires inv.dirty_store_count >= 0
+  requires inv.dirty_derived_count >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if inv.dirty_store_count > 0:
+    return 1
+  if inv.dirty_derived_count > 0:
+    return 1
+  return 0
+
+def store_float_new(store_id: int, initial: float) -> StoreFloat
+  requires store_id >= 0
+  requires store_id <= reactive_store_max_id()
+  ensures result.store_id == store_id
+  ensures result.value == initial
+  ensures result.generation == 0
+  ensures result.dirty == 0
+  decreases 0
+=
+  var s: StoreFloat
+  s.store_id = store_id
+  s.value = initial
+  s.generation = 0
+  s.dirty = 0
+  return s
+
+def store_float_get(store: StoreFloat) -> float
+  requires true
+  ensures result == store.value
+  decreases 0
+=
+  return store.value
+
+def store_float_set(store: var StoreFloat, value: float, inv: var ComposeInvalidation) -> unit
+  requires store.store_id >= 0
+  requires store.store_id <= reactive_store_max_id()
+  requires store.dirty >= 0
+  requires store.dirty <= 1
+  requires inv.dirty_store_count >= 0
+  ensures store.value == value
+  ensures store.dirty == 1
+  ensures store.generation == old(store.generation) + 1
+  decreases 0
+=
+  if store.value != value:
+    store.value = value
+  if store.dirty == 0:
+    inv.dirty_store_count = inv.dirty_store_count + 1
+  store.dirty = 1
+  store.generation = store.generation + 1
+  inv.tick = inv.tick + 1
+
+def derived_float_new(derived_id: int, source_store_id: int, initial: float) -> DerivedFloat
+  requires derived_id >= 0
+  requires derived_id <= reactive_derived_max_id()
+  requires source_store_id >= 0
+  requires source_store_id <= reactive_store_max_id()
+  ensures result.derived_id == derived_id
+  ensures result.source_store_id == source_store_id
+  ensures result.value == initial
+  ensures result.generation == 0
+  ensures result.dirty == 0
+  decreases 0
+=
+  var d: DerivedFloat
+  d.derived_id = derived_id
+  d.source_store_id = source_store_id
+  d.value = initial
+  d.generation = 0
+  d.dirty = 0
+  return d
+
+def derived_float_sync_value(derived: var DerivedFloat, source: StoreFloat, new_value: float, inv: var ComposeInvalidation) -> unit
+  requires source.store_id == derived.source_store_id
+  requires source.dirty >= 0
+  requires source.dirty <= 1
+  ensures derived.value == new_value
+  ensures derived.generation == source.generation
+  decreases 0
+=
+  if source.dirty == 1:
+    if derived.dirty == 0:
+      inv.dirty_derived_count = inv.dirty_derived_count + 1
+    derived.dirty = 1
+  if source.dirty == 1:
+    derived.value = new_value
+    derived.generation = source.generation
+
+def derived_int_from_agent_task_state(task_state: int) -> int
+  requires task_state >= 0
+  requires task_state <= 4
+  ensures result >= 0
+  ensures result <= 100
+  decreases task_state
+=
+  if task_state == 0:
+    return 0
+  if task_state == 1:
+    return 25
+  if task_state == 2:
+    return 50
+  if task_state == 3:
+    return 75
+  return 100
+
+def derived_int_sync_agent_progress(derived: var DerivedInt, task_store: StoreInt, inv: var ComposeInvalidation) -> unit
+  requires task_store.store_id >= 0
+  requires task_store.store_id <= reactive_store_max_id()
+  requires task_store.value >= 0
+  requires task_store.value <= 4
+  ensures derived.source_store_id == task_store.store_id
+  decreases task_store.value
+=
+  var pct: int = derived_int_from_agent_task_state(task_store.value)
+  derived_int_sync_value(derived, task_store, pct, inv)
+
+# Phase 2 — Convention-based Function → Layout dependency graph (ComposePlan table).
+# Static edges until compiler @compose dependency analysis lands.
+
+def compose_dep_plan_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def compose_region_max() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def compose_region_id_agent() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def compose_region_id_palette() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def compose_region_id_dock() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def compose_region_id_inspector() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def compose_region_id_timeline() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def compose_region_id_viewport_hud() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def compose_dep_plan_edge_count() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def compose_dep_plan_store_at(edge_idx: int) -> int
+  requires edge_idx >= 0
+  requires edge_idx <= 5
+  ensures result >= 0
+  ensures result <= reactive_store_max_id()
+  decreases edge_idx
+=
+  if edge_idx == 0:
+    return reactive_store_id_agent_task()
+  if edge_idx == 1:
+    return reactive_store_id_palette_open()
+  if edge_idx == 2:
+    return reactive_store_id_shell_mode()
+  if edge_idx == 3:
+    return reactive_store_id_shell_mode()
+  if edge_idx == 4:
+    return reactive_store_id_shell_mode()
+  if edge_idx == 5:
+    return reactive_store_id_timeline_tick()
+  return reactive_store_id_agent_task()
+
+def compose_dep_plan_region_at(edge_idx: int) -> int
+  requires edge_idx >= 0
+  requires edge_idx <= 5
+  ensures result >= 0
+  ensures result <= compose_region_max()
+  decreases edge_idx
+=
+  if edge_idx == 0:
+    return compose_region_id_agent()
+  if edge_idx == 1:
+    return compose_region_id_palette()
+  if edge_idx == 2:
+    return compose_region_id_dock()
+  if edge_idx == 3:
+    return compose_region_id_inspector()
+  if edge_idx == 4:
+    return compose_region_id_viewport_hud()
+  if edge_idx == 5:
+    return compose_region_id_timeline()
+  return compose_region_id_agent()
+
+type ComposeDepGraph = object
+  public agent_dirty: int
+  public palette_dirty: int
+  public dock_dirty: int
+  public inspector_dirty: int
+  public timeline_dirty: int
+  public viewport_hud_dirty: int
+  public tick: int
+
+def compose_dep_graph_new() -> ComposeDepGraph
+  requires true
+  ensures result.tick == 0
+  ensures result.agent_dirty == 0
+  ensures result.palette_dirty == 0
+  ensures result.dock_dirty == 0
+  ensures result.inspector_dirty == 0
+  ensures result.timeline_dirty == 0
+  ensures result.viewport_hud_dirty == 0
+  decreases 0
+=
+  var g: ComposeDepGraph
+  g.agent_dirty = 0
+  g.palette_dirty = 0
+  g.dock_dirty = 0
+  g.inspector_dirty = 0
+  g.timeline_dirty = 0
+  g.viewport_hud_dirty = 0
+  g.tick = 0
+  return g
+
+def compose_dep_mark_region(graph: var ComposeDepGraph, region_id: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures compose_dep_region_is_dirty(graph, region_id) == 1
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    graph.agent_dirty = 1
+  if region_id == compose_region_id_palette():
+    graph.palette_dirty = 1
+  if region_id == compose_region_id_dock():
+    graph.dock_dirty = 1
+  if region_id == compose_region_id_inspector():
+    graph.inspector_dirty = 1
+  if region_id == compose_region_id_timeline():
+    graph.timeline_dirty = 1
+  if region_id == compose_region_id_viewport_hud():
+    graph.viewport_hud_dirty = 1
+
+def compose_dep_region_is_dirty(graph: ComposeDepGraph, region_id: int) -> int
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures result >= 0
+  ensures result <= 1
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    if graph.agent_dirty == 1:
+      return 1
+  if region_id == compose_region_id_palette():
+    if graph.palette_dirty == 1:
+      return 1
+  if region_id == compose_region_id_dock():
+    if graph.dock_dirty == 1:
+      return 1
+  if region_id == compose_region_id_inspector():
+    if graph.inspector_dirty == 1:
+      return 1
+  if region_id == compose_region_id_timeline():
+    if graph.timeline_dirty == 1:
+      return 1
+  if region_id == compose_region_id_viewport_hud():
+    if graph.viewport_hud_dirty == 1:
+      return 1
+  return 0
+
+def compose_dep_clear_region(graph: var ComposeDepGraph, region_id: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures compose_dep_region_is_dirty(graph, region_id) == 0
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    graph.agent_dirty = 0
+  if region_id == compose_region_id_palette():
+    graph.palette_dirty = 0
+  if region_id == compose_region_id_dock():
+    graph.dock_dirty = 0
+  if region_id == compose_region_id_inspector():
+    graph.inspector_dirty = 0
+  if region_id == compose_region_id_timeline():
+    graph.timeline_dirty = 0
+  if region_id == compose_region_id_viewport_hud():
+    graph.viewport_hud_dirty = 0
+
+def compose_dep_any_region_dirty(graph: ComposeDepGraph) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if graph.agent_dirty == 1:
+    return 1
+  if graph.palette_dirty == 1:
+    return 1
+  if graph.dock_dirty == 1:
+    return 1
+  if graph.inspector_dirty == 1:
+    return 1
+  if graph.timeline_dirty == 1:
+    return 1
+  if graph.viewport_hud_dirty == 1:
+    return 1
+  return 0
+
+def compose_dep_invalidate_store(graph: var ComposeDepGraph, store_id: int) -> unit
+  requires store_id >= 0
+  requires store_id <= reactive_store_max_id()
+  ensures graph.tick == old(graph.tick) + 1
+  decreases store_id
+=
+  if store_id == reactive_store_id_agent_task():
+    compose_dep_mark_region(graph, compose_region_id_agent())
+  if store_id == reactive_store_id_palette_open():
+    compose_dep_mark_region(graph, compose_region_id_palette())
+  if store_id == reactive_store_id_shell_mode():
+    compose_dep_mark_region(graph, compose_region_id_dock())
+    compose_dep_mark_region(graph, compose_region_id_inspector())
+    compose_dep_mark_region(graph, compose_region_id_viewport_hud())
+  if store_id == reactive_store_id_timeline_tick():
+    compose_dep_mark_region(graph, compose_region_id_timeline())
+  graph.tick = graph.tick + 1
+
+def store_int_set_with_deps(store: var StoreInt, value: int, inv: var ComposeInvalidation, graph: var ComposeDepGraph) -> unit
+  requires store.store_id >= 0
+  requires store.store_id <= reactive_store_max_id()
+  ensures store.value == value
+  ensures store.dirty == 1
+  decreases value
+=
+  store_int_set(store, value, inv)
+  compose_dep_invalidate_store(graph, store.store_id)
+
+def store_float_set_with_deps(store: var StoreFloat, value: float, inv: var ComposeInvalidation, graph: var ComposeDepGraph) -> unit
+  requires store.store_id >= 0
+  requires store.store_id <= reactive_store_max_id()
+  ensures store.value == value
+  ensures store.dirty == 1
+  decreases 0
+=
+  store_float_set(store, value, inv)
+  compose_dep_invalidate_store(graph, store.store_id)
+
+# Phase 2 — ComposeCache: per-subtree store-generation snapshots for partial re-compose.
+
+def compose_cache_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def compose_cache_region_count() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def compose_cache_gen_unset() -> int
+  requires true
+  ensures result == -1
+  decreases 0
+=
+  return -1
+
+type ComposeCache = object
+  public agent_gen: int
+  public palette_gen: int
+  public dock_gen: int
+  public inspector_gen: int
+  public timeline_gen: int
+  public viewport_hud_gen: int
+  public recompose_count: int
+  public skip_count: int
+  public frame_tick: int
+
+def compose_cache_new() -> ComposeCache
+  requires true
+  ensures result.agent_gen == compose_cache_gen_unset()
+  ensures result.palette_gen == compose_cache_gen_unset()
+  ensures result.dock_gen == compose_cache_gen_unset()
+  ensures result.inspector_gen == compose_cache_gen_unset()
+  ensures result.timeline_gen == compose_cache_gen_unset()
+  ensures result.viewport_hud_gen == compose_cache_gen_unset()
+  ensures result.recompose_count == 0
+  ensures result.skip_count == 0
+  ensures result.frame_tick == 0
+  decreases 0
+=
+  var c: ComposeCache
+  c.agent_gen = compose_cache_gen_unset()
+  c.palette_gen = compose_cache_gen_unset()
+  c.dock_gen = compose_cache_gen_unset()
+  c.inspector_gen = compose_cache_gen_unset()
+  c.timeline_gen = compose_cache_gen_unset()
+  c.viewport_hud_gen = compose_cache_gen_unset()
+  c.recompose_count = 0
+  c.skip_count = 0
+  c.frame_tick = 0
+  return c
+
+def compose_cache_begin_frame(cache: var ComposeCache) -> unit
+  requires true
+  ensures cache.recompose_count == 0
+  ensures cache.skip_count == 0
+  ensures cache.frame_tick == old(cache.frame_tick) + 1
+  decreases 0
+=
+  cache.recompose_count = 0
+  cache.skip_count = 0
+  cache.frame_tick = cache.frame_tick + 1
+
+def compose_cache_region_gen(cache: ComposeCache, region_id: int) -> int
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures result >= compose_cache_gen_unset()
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    return cache.agent_gen
+  if region_id == compose_region_id_palette():
+    return cache.palette_gen
+  if region_id == compose_region_id_dock():
+    return cache.dock_gen
+  if region_id == compose_region_id_inspector():
+    return cache.inspector_gen
+  if region_id == compose_region_id_timeline():
+    return cache.timeline_gen
+  if region_id == compose_region_id_viewport_hud():
+    return cache.viewport_hud_gen
+  return compose_cache_gen_unset()
+
+def compose_cache_set_region_gen(cache: var ComposeCache, region_id: int, store_gen: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  requires store_gen >= 0
+  ensures compose_cache_region_gen(cache, region_id) == store_gen
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    cache.agent_gen = store_gen
+  if region_id == compose_region_id_palette():
+    cache.palette_gen = store_gen
+  if region_id == compose_region_id_dock():
+    cache.dock_gen = store_gen
+  if region_id == compose_region_id_inspector():
+    cache.inspector_gen = store_gen
+  if region_id == compose_region_id_timeline():
+    cache.timeline_gen = store_gen
+  if region_id == compose_region_id_viewport_hud():
+    cache.viewport_hud_gen = store_gen
+
+def compose_cache_invalidate_region(cache: var ComposeCache, region_id: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures compose_cache_region_gen(cache, region_id) == compose_cache_gen_unset()
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    cache.agent_gen = compose_cache_gen_unset()
+  if region_id == compose_region_id_palette():
+    cache.palette_gen = compose_cache_gen_unset()
+  if region_id == compose_region_id_dock():
+    cache.dock_gen = compose_cache_gen_unset()
+  if region_id == compose_region_id_inspector():
+    cache.inspector_gen = compose_cache_gen_unset()
+  if region_id == compose_region_id_timeline():
+    cache.timeline_gen = compose_cache_gen_unset()
+  if region_id == compose_region_id_viewport_hud():
+    cache.viewport_hud_gen = compose_cache_gen_unset()
+
+def compose_cache_should_recompose(cache: ComposeCache, graph: ComposeDepGraph, region_id: int, store_gen: int) -> int
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  requires store_gen >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases region_id
+=
+  if compose_dep_region_is_dirty(graph, region_id) == 1:
+    return 1
+  var cached: int = compose_cache_region_gen(cache, region_id)
+  if cached == compose_cache_gen_unset():
+    return 1
+  if cached != store_gen:
+    return 1
+  return 0
+
+def compose_cache_note_recomposed(cache: var ComposeCache, region_id: int, store_gen: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  requires store_gen >= 0
+  ensures cache.recompose_count == old(cache.recompose_count) + 1
+  ensures compose_cache_region_gen(cache, region_id) == store_gen
+  decreases region_id
+=
+  compose_cache_set_region_gen(cache, region_id, store_gen)
+  cache.recompose_count = cache.recompose_count + 1
+
+def compose_cache_note_skipped(cache: var ComposeCache, region_id: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures cache.skip_count == old(cache.skip_count) + 1
+  decreases region_id
+=
+  cache.skip_count = cache.skip_count + 1
+
+def compose_cache_dirty_region_count(graph: ComposeDepGraph) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= compose_cache_region_count()
+  decreases 0
+=
+  var n: int = 0
+  if compose_dep_region_is_dirty(graph, compose_region_id_agent()) == 1:
+    n = n + 1
+  if compose_dep_region_is_dirty(graph, compose_region_id_palette()) == 1:
+    n = n + 1
+  if compose_dep_region_is_dirty(graph, compose_region_id_dock()) == 1:
+    n = n + 1
+  if compose_dep_region_is_dirty(graph, compose_region_id_inspector()) == 1:
+    n = n + 1
+  if compose_dep_region_is_dirty(graph, compose_region_id_timeline()) == 1:
+    n = n + 1
+  if compose_dep_region_is_dirty(graph, compose_region_id_viewport_hud()) == 1:
+    n = n + 1
+  return n
+
+def compose_cache_tally_partial(cache: var ComposeCache, graph: ComposeDepGraph, agent_gen: int, palette_gen: int, mode_gen: int, timeline_gen: int) -> int
+  requires agent_gen >= 0
+  requires palette_gen >= 0
+  requires mode_gen >= 0
+  requires timeline_gen >= 0
+  ensures cache.recompose_count + cache.skip_count == compose_cache_region_count()
+  ensures result >= 0
+  ensures result <= compose_cache_region_count()
+  decreases agent_gen
+=
+  compose_cache_begin_frame(cache)
+  var need: int = 0
+  if compose_cache_should_recompose(cache, graph, compose_region_id_agent(), agent_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_agent(), agent_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_agent(), agent_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_agent())
+  if compose_cache_should_recompose(cache, graph, compose_region_id_palette(), palette_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_palette(), palette_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_palette(), palette_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_palette())
+  if compose_cache_should_recompose(cache, graph, compose_region_id_dock(), mode_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_dock(), mode_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_dock(), mode_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_dock())
+  if compose_cache_should_recompose(cache, graph, compose_region_id_inspector(), mode_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_inspector(), mode_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_inspector(), mode_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_inspector())
+  if compose_cache_should_recompose(cache, graph, compose_region_id_timeline(), timeline_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_timeline(), timeline_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_timeline(), timeline_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_timeline())
+  if compose_cache_should_recompose(cache, graph, compose_region_id_viewport_hud(), mode_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_viewport_hud(), mode_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_viewport_hud(), mode_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_viewport_hud())
+  return need

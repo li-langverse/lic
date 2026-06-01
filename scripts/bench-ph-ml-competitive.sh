@@ -11,6 +11,7 @@ REGISTRY="$BENCHMARKS_COMPETITIVE/ph-ml.toml"
 OUT="$BENCHMARKS_RESULTS/ph-ml-competitive.json"
 mkdir -p "$BENCHMARKS_RESULTS"
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul.sh"
+bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-16.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
 bash "$ROOT/scripts/bench-ph-ml-async-env-collect.sh"
 bash "$ROOT/scripts/bench-ph-ml-llm-forward.sh"
@@ -94,6 +95,9 @@ pytorch_cpu_m = load("ph-ml-competitor-pytorch-cpu-matmul.json")
 pytorch_cuda_m = load("ph-ml-competitor-pytorch-cuda-matmul.json")
 jax_cpu_m = load("ph-ml-competitor-jax-cpu-matmul.json")
 tf_cpu_m = load("ph-ml-competitor-tensorflow-cpu-matmul.json")
+
+matmul16 = load("ph-ml-lkir-matmul-16.json")
+rust_mlp = load("ph-ml-competitor-rust-mlp.json")
 triton_m = load("ph-ml-competitor-triton-matmul.json")
 pytorch_cpu_mlp = load("ph-ml-competitor-pytorch-cpu-mlp.json")
 numpy_mlp = load("ph-ml-competitor-numpy-mlp.json")

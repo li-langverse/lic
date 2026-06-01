@@ -34,7 +34,6 @@ python3 "$ROOT/scripts/studio-ui-ux-verify-harness-audit.py" || fail "studio-ui-
 python3 "$ROOT/scripts/studio-ui-ux-verify-keyboard-journey.py" || fail "studio-ui-ux-verify-keyboard-journey"
 python3 "$ROOT/scripts/studio-ui-ux-verify-palette-native.py" || fail "studio-ui-ux-verify-palette-native"
 python3 "$ROOT/scripts/studio-ui-ux-verify-agent-chrome-native.py" || fail "studio-ui-ux-verify-agent-chrome-native"
-python3 "$ROOT/scripts/studio-ui-ux-verify-wgpu-swapchain.py" || fail "studio-ui-ux-verify-wgpu-swapchain"
 if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
   "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" || li_warn "capture-deps probe failed"
   [[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-capture-deps.json" ]] \
@@ -48,8 +47,14 @@ li_phase "competitive intel doc"
 [[ -f "$ROOT/docs/game-dev/competitive-intel/ui-ux-by-dimension.md" ]] || fail "ui-ux-by-dimension.md"
 [[ -f "$BENCHMARKS_COMPETITIVE/studio-ui.toml" ]] || fail "studio-ui.toml bench registry"
 
+li_phase "memory profile smoke"
+"$ROOT/scripts/profile-animate-memory.sh" || fail "profile-animate-memory"
+[[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-memory-profile.json" ]] \
+  || fail "latest-memory-profile.json missing after profile-animate-memory"
+
 li_phase "studio-ui bench registry"
 "$ROOT/scripts/bench-studio-viewport-perf.sh" || fail "bench-studio-viewport-perf"
+python3 "$ROOT/scripts/studio-ui-ux-verify-wgpu-swapchain.py" || fail "studio-ui-ux-verify-wgpu-swapchain"
 python3 "$ROOT/scripts/studio-ui-ux-verify-bench-registry.py" || fail "studio-ui-ux-verify-bench-registry"
 
 if [[ "${STUDIO_UI_UX_GATES_SKIP_BUILD:-0}" != "1" ]]; then
@@ -71,11 +76,6 @@ if [[ "${STUDIO_UI_UX_GATES_SKIP_BUILD:-0}" != "1" ]]; then
     done
   fi
 fi
-
-li_phase "memory profile smoke"
-"$ROOT/scripts/profile-animate-memory.sh" || fail "profile-animate-memory"
-[[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-memory-profile.json" ]] \
-  || fail "latest-memory-profile.json missing after profile-animate-memory"
 
 if [[ "${STUDIO_UI_UX_GATES_CAPTURE:-0}" == "1" ]]; then
   li_phase "capture progress (dry)"

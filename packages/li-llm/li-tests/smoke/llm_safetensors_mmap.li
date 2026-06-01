@@ -1,0 +1,20 @@
+import llm
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if llm_safetensors_mmap_chunk_size() != 64:
+    return 1
+  var p0: str = "fixtures/model.safetensors"
+  var b0: int = llm_safetensors_tensor_bytes_mmap(p0, 0)
+  if b0 <= 0:
+    return 2
+  var p1: str = "fixtures/model.safetensors"
+  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold(p1)
+  if hdr.tensor_bytes_read != 128:
+    return 3
+  if llm_gpu_lkir_matmul_progress() < 1:
+    return 4
+  return 0

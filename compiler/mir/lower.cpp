@@ -590,6 +590,23 @@ const TypeExpr* unwrap_refinement_type(const TypeExpr* ty) {
   return ty;
 }
 
+const TypeAlias* object_alias_for_named_type(const Module& module, const TypeExpr& te);
+
+const TypeExpr* fixed_object_array_elem(const Module& module, const TypeExpr* ut,
+                                        std::int64_t* out_size) {
+  if (!ut || ut->kind != TypeKind::Array || ut->array_size <= 0 || !ut->elem) {
+    return nullptr;
+  }
+  const TypeExpr* el = unwrap_refinement_type(ut->elem.get());
+  if (!el || !object_alias_for_named_type(module, *el)) {
+    return nullptr;
+  }
+  if (out_size) {
+    *out_size = ut->array_size;
+  }
+  return el;
+}
+
 const TypeAlias* object_alias_for_named_type(const Module& module, const TypeExpr& te) {
   if (te.kind != TypeKind::Named) {
     return nullptr;
@@ -678,7 +695,19 @@ void emit_object_slots_r(const Module& module, const TypeExpr& te, const std::st
     if (object_alias_for_named_type(module, *fld.type)) {
       emit_object_slots_r(module, *fld.type, sub, out, float_names, i64_locals);
     } else {
-      emit_scalar_object_slot(*fld.type, sub, out, float_names, i64_locals);
+      std::int64_t obj_arr_n = 0;
+      const TypeExpr* obj_arr_el =
+          fld.type ? fixed_object_array_elem(module, unwrap_refinement_type(fld.type.get()),
+                                             &obj_arr_n)
+                   : nullptr;
+      if (obj_arr_el && obj_arr_n > 0) {
+        for (std::int64_t i = 0; i < obj_arr_n; ++i) {
+          emit_object_slots_r(module, *obj_arr_el, sub + "_" + std::to_string(i), out, float_names,
+                              i64_locals);
+        }
+      } else {
+        emit_scalar_object_slot(*fld.type, sub, out, float_names, i64_locals);
+      }
     }
   });
 }
@@ -740,6 +769,16 @@ void emit_copy_object_slots_r(const Module& module, const TypeExpr& te, const st
     } else {
       const TypeExpr* ut = unwrap_refinement_type(fld.type.get());
       if (!ut) {
+        return;
+      }
+      std::int64_t obj_arr_n = 0;
+      const TypeExpr* obj_arr_el = fixed_object_array_elem(module, ut, &obj_arr_n);
+      if (obj_arr_el && obj_arr_n > 0) {
+        for (std::int64_t i = 0; i < obj_arr_n; ++i) {
+          const std::string si = s_sub + "_" + std::to_string(i);
+          const std::string di = d_sub + "_" + std::to_string(i);
+          emit_copy_object_slots_r(module, *obj_arr_el, si, di, out, float_names, i64_locals);
+        }
         return;
       }
       if (ut->kind == TypeKind::Array) {
@@ -833,6 +872,14 @@ void collect_object_return_layout_r(const Module& module, const TypeExpr& te,
             mp.is_float = iflt;
             mp.fixed_array_elems = ut->array_size;
             out.push_back(std::move(mp));
+            return;
+          }
+        }
+        std::int64_t obj_arr_n = 0;
+        const TypeExpr* obj_arr_el = fixed_object_array_elem(module, ut, &obj_arr_n);
+        if (obj_arr_el && obj_arr_n > 0) {
+          for (std::int64_t i = 0; i < obj_arr_n; ++i) {
+            collect_object_return_layout_r(module, *obj_arr_el, sub + "_" + std::to_string(i), out);
           }
         }
         return;
@@ -853,9 +900,17 @@ void collect_object_return_layout_r(const Module& module, const TypeExpr& te,
 std::string mir_field_slot_for_expr(const Expr& e) {
   const Expr* cur = &e;
   std::vector<std::string> fields_rev;
-  while (cur && cur->kind == Expr::Kind::FieldAccess) {
-    fields_rev.push_back(cur->field_name);
-    cur = cur->base.get();
+  while (cur) {
+    if (cur->kind == Expr::Kind::FieldAccess) {
+      fields_rev.push_back(cur->field_name);
+      cur = cur->base.get();
+    } else if (cur->kind == Expr::Kind::Index && cur->index &&
+               cur->index->kind == Expr::Kind::IntLit) {
+      fields_rev.push_back(std::to_string(cur->index->int_value));
+      cur = cur->base.get();
+    } else {
+      break;
+    }
   }
   if (!cur || cur->kind != Expr::Kind::Ident) {
     return {};
@@ -897,6 +952,15 @@ void append_mir_params_for_object_type(const Module& module, const TypeExpr& te,
             mp.is_float = iflt;
             mp.fixed_array_elems = ut->array_size;
             out_params.push_back(std::move(mp));
+            return;
+          }
+        }
+        std::int64_t obj_arr_n = 0;
+        const TypeExpr* obj_arr_el = fixed_object_array_elem(module, ut, &obj_arr_n);
+        if (obj_arr_el && obj_arr_n > 0) {
+          for (std::int64_t i = 0; i < obj_arr_n; ++i) {
+            append_mir_params_for_object_type(module, *obj_arr_el, sub + "_" + std::to_string(i),
+                                              out_params);
           }
         }
         return;
@@ -929,9 +993,18 @@ void push_mir_args_for_object_value_r(const Module& module, const TypeExpr& te,
     if (object_alias_for_named_type(module, *fld.type)) {
       push_mir_args_for_object_value_r(module, *fld.type, sub, args_out);
     } else {
+      const TypeExpr* ut = unwrap_refinement_type(fld.type.get());
+      std::int64_t obj_arr_n = 0;
+      const TypeExpr* obj_arr_el = ut ? fixed_object_array_elem(module, ut, &obj_arr_n) : nullptr;
+      if (obj_arr_el && obj_arr_n > 0) {
+        for (std::int64_t i = 0; i < obj_arr_n; ++i) {
+          push_mir_args_for_object_value_r(module, *obj_arr_el, sub + "_" + std::to_string(i),
+                                           args_out);
+        }
+        return;
+      }
       MirArg ma;
       ma.ident = sub;
-      const TypeExpr* ut = unwrap_refinement_type(fld.type.get());
       if (ut && ut->kind == TypeKind::Array && ut->array_size > 0) {
         ma.is_array_ident = true;
       }
@@ -950,6 +1023,21 @@ void push_mir_args_for_object_value(const Module& module, const TypeExpr& param_
     if (prefix.empty()) {
       return;
     }
+  } else if (arg.kind == Expr::Kind::Index && arg.index && arg.base &&
+             arg.index->kind == Expr::Kind::IntLit) {
+    if (arg.base->kind == Expr::Kind::FieldAccess) {
+      prefix = mir_field_slot_for_expr(*arg.base);
+    } else if (arg.base->kind == Expr::Kind::Ident) {
+      prefix = std::string("__li_o_") + arg.base->ident;
+    }
+    if (!prefix.empty()) {
+      prefix += "_" + std::to_string(arg.index->int_value);
+    }
+    if (prefix.empty()) {
+      return;
+    }
+    push_mir_args_for_object_value_r(module, param_ty, prefix, args_out);
+    return;
   } else {
     return;
   }
@@ -1165,6 +1253,20 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
     }
     case Expr::Kind::Ident:
       return e.ident;
+    case Expr::Kind::UnaryBitNot: {
+      if (!e.operand) {
+        return fresh_temp();
+      }
+      const std::string op =
+          lower_expr_to(*e.operand, module, out, float_names, simd_names, i64_locals);
+      const std::string dest = fresh_temp();
+      MirInsn ins;
+      ins.op = MirOp::UnaryBitNotInt;
+      ins.ident = dest;
+      ins.lhs_ident = op;
+      out.push_back(std::move(ins));
+      return dest;
+    }
     case Expr::Kind::Await: {
       if (!e.operand) {
         return fresh_temp();

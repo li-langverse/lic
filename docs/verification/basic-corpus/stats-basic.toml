@@ -1,0 +1,405 @@
+# Phase-8 basic corpus plan — field "statistics"
+version = 1
+field = "statistics"
+target_count = 50
+last_verified_lic_commit = "708c67b8"
+
+[[planned]]
+id = "ST-AX-BC-PR-001"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "probability"
+statement = "Kolmogorov axioms on finite Omega: (K1) P(A)>=0; (K2) P(Omega)=1; (K3) P(A u B)=P(A)+P(B) for disjoint A,B."
+
+[[planned]]
+id = "ST-AX-BC-EX-002"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "probability"
+statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 2)."
+
+[[planned]]
+id = "ST-LM-BC-VR-003"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "probability"
+statement = "Variance Var(X) = E[X^2] - E[X]^2 (case 3)."
+
+[[planned]]
+id = "ST-LM-BC-CH-004"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "probability"
+statement = "Chebyshev inequality P(|X-mu|>=k sigma) <= 1/k^2 (case 4)."
+
+[[planned]]
+id = "ST-LM-BC-CLT-005"
+kind = "lemma"
+tranche = 1
+proof_status = "target"
+domain = "probability"
+statement = "Central limit theorem statement (normalized sum, case 5)."
+
+[[planned]]
+id = "ST-LM-BC-BN-006"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "probability"
+statement = "Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 6)."
+
+[[planned]]
+id = "ST-LM-BC-COV-007"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "probability"
+statement = "Covariance Cov(X,Y) = E[XY]-E[X]E[Y] (case 7)."
+
+[[planned]]
+id = "ST-LM-BC-MGF-008"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "probability"
+statement = "MGF moment generating function definition (case 8)."
+
+[[planned]]
+id = "ST-LM-BC-BER-009"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "probability"
+statement = "Bernoulli distribution mean p variance p(1-p) (case 9)."
+
+[[planned]]
+id = "ST-LM-BC-GAU-010"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "probability"
+statement = "Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2))."
+
+[[planned]]
+id = "ST-AX-BC-PR-011"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "probability"
+statement = "Boole inequality (finite): P(A union B) <= P(A)+P(B)."
+
+[[planned]]
+id = "ST-AX-BC-EX-012"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "probability"
+statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 12)."
+
+[[planned]]
+id = "ST-LM-BC-VR-013"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "probability"
+statement = "Variance Var(X) = E[X^2] - E[X]^2 (case 13)."
+
+[[planned]]
+id = "ST-LM-BC-CH-014"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "probability"
+statement = "Chebyshev inequality P(|X-mu|>=k sigma) <= 1/k^2 (case 14)."
+
+[[planned]]
+id = "ST-LM-BC-CLT-015"
+kind = "lemma"
+tranche = 2
+proof_status = "target"
+domain = "probability"
+statement = "Central limit theorem statement (normalized sum, case 15)."
+
+[[planned]]
+id = "ST-LM-BC-BN-016"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "probability"
+statement = "Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 16)."
+
+[[planned]]
+id = "ST-LM-BC-COV-017"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "probability"
+statement = "Covariance Cov(X,Y) = E[XY]-E[X]E[Y] (case 17)."
+
+[[planned]]
+id = "ST-LM-BC-MGF-018"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "probability"
+statement = "MGF moment generating function definition (case 18)."
+
+[[planned]]
+id = "ST-LM-BC-BER-019"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "probability"
+statement = "Bernoulli distribution mean p variance p(1-p) (case 19)."
+
+[[planned]]
+id = "ST-LM-BC-GAU-020"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "probability"
+statement = "Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2))."
+
+[[planned]]
+id = "ST-AX-BC-PR-021"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "probability"
+statement = "Inclusion-exclusion (two events): P(A union B)=P(A)+P(B)-P(A intersect B)."
+
+[[planned]]
+id = "ST-AX-BC-EX-022"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "probability"
+statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 22)."
+
+[[planned]]
+id = "ST-LM-BC-VR-023"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Variance Var(X) = E[X^2] - E[X]^2 (case 23)."
+
+[[planned]]
+id = "ST-LM-BC-CH-024"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Chebyshev inequality P(|X-mu|>=k sigma) <= 1/k^2 (case 24)."
+
+[[planned]]
+id = "ST-LM-BC-CLT-025"
+kind = "lemma"
+tranche = 3
+proof_status = "target"
+domain = "probability"
+statement = "Central limit theorem statement (normalized sum, case 25)."
+
+[[planned]]
+id = "ST-LM-BC-BN-026"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 26)."
+
+[[planned]]
+id = "ST-LM-BC-COV-027"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Covariance Cov(X,Y) = E[XY]-E[X]E[Y] (case 27)."
+
+[[planned]]
+id = "ST-LM-BC-MGF-028"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "MGF moment generating function definition (case 28)."
+
+[[planned]]
+id = "ST-LM-BC-BER-029"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Bernoulli distribution mean p variance p(1-p) (case 29)."
+
+[[planned]]
+id = "ST-LM-BC-GAU-030"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2))."
+
+[[planned]]
+id = "ST-AX-BC-PR-031"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "probability"
+statement = "Non-negativity: P(A) >= 0 for all events A."
+
+[[planned]]
+id = "ST-AX-BC-EX-032"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "probability"
+statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 32)."
+
+[[planned]]
+id = "ST-LM-BC-VR-033"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Variance Var(X) = E[X^2] - E[X]^2 (case 33)."
+
+[[planned]]
+id = "ST-LM-BC-CH-034"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Chebyshev inequality P(|X-mu|>=k sigma) <= 1/k^2 (case 34)."
+
+[[planned]]
+id = "ST-LM-BC-CLT-035"
+kind = "lemma"
+tranche = 3
+proof_status = "target"
+domain = "probability"
+statement = "Central limit theorem statement (normalized sum, case 35)."
+
+[[planned]]
+id = "ST-LM-BC-BN-036"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 36)."
+
+[[planned]]
+id = "ST-LM-BC-COV-037"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Covariance Cov(X,Y) = E[XY]-E[X]E[Y] (case 37)."
+
+[[planned]]
+id = "ST-LM-BC-MGF-038"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "MGF moment generating function definition (case 38)."
+
+[[planned]]
+id = "ST-LM-BC-BER-039"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Bernoulli distribution mean p variance p(1-p) (case 39)."
+
+[[planned]]
+id = "ST-LM-BC-GAU-040"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2))."
+
+[[planned]]
+id = "ST-AX-BC-PR-041"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "probability"
+statement = "Disjoint additivity: P(A u B)=P(A)+P(B) when A and B disjoint."
+
+[[planned]]
+id = "ST-AX-BC-EX-042"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "probability"
+statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 42)."
+
+[[planned]]
+id = "ST-LM-BC-VR-043"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Variance Var(X) = E[X^2] - E[X]^2 (case 43)."
+
+[[planned]]
+id = "ST-LM-BC-CH-044"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Chebyshev inequality P(|X-mu|>=k sigma) <= 1/k^2 (case 44)."
+
+[[planned]]
+id = "ST-LM-BC-CLT-045"
+kind = "lemma"
+tranche = 3
+proof_status = "target"
+domain = "probability"
+statement = "Central limit theorem statement (normalized sum, case 45)."
+
+[[planned]]
+id = "ST-LM-BC-BN-046"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 46)."
+
+[[planned]]
+id = "ST-LM-BC-COV-047"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Covariance Cov(X,Y) = E[XY]-E[X]E[Y] (case 47)."
+
+[[planned]]
+id = "ST-LM-BC-MGF-048"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "MGF moment generating function definition (case 48)."
+
+[[planned]]
+id = "ST-LM-BC-BER-049"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Bernoulli distribution mean p variance p(1-p) (case 49)."
+
+[[planned]]
+id = "ST-LM-BC-GAU-050"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "probability"
+statement = "Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2))."

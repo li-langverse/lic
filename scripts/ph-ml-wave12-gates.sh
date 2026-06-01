@@ -113,17 +113,8 @@ PY
 
 export PH_ML_SB3_VECENV_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-sb3-vecenv.json"
 python3 scripts/bench_ph_ml_competitor_sb3_vecenv.py
-python3 - <<'PY'
-import json, sys
-from pathlib import Path
-try:
-    import stable_baselines3  # noqa: F401
-except ImportError:
-    sys.exit(0)
-d = json.loads(Path("benchmarks/results/ph-ml-competitor-sb3-vecenv.json").read_text())
-if not d.get("executed"):
-    sys.exit("SB3 must be executed when stable-baselines3 installed")
-PY
+export PH_ML_GATE_COMPETITOR_CHECK=sb3
+python3 scripts/lib/ph_ml_gate_competitor_honesty.py
 
 export PH_ML_TENSORFLOW_CPU_MATMUL_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-tensorflow-cpu-matmul.json"
 python3 scripts/bench_ph_ml_competitor_tensorflow_cpu_matmul.py || true

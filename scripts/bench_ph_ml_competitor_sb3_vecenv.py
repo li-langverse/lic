@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""SB3 SubprocVecEnv competitive driver — executed when gymnasium+sb3 installed."""
+"""SB3 SubprocVecEnv competitive driver — executed when gymnasium+sb3 installed.
+
+Note: SubprocVecEnv uses multiprocessing. On Windows this requires a `__main__`
+guard; without it the driver may silently fail and report executed:false, which
+breaks the PH-ML gates when SB3 is present.
+"""
 import json
 import os
 import sys
@@ -30,8 +35,16 @@ def main() -> int:
         write_report()
         return 0
 
+    import multiprocessing as mp
+
+    try:
+        mp.freeze_support()
+        mp.set_start_method("spawn", force=True)
+    except RuntimeError:
+        # Start method may already be set by the runner.
+        pass
+
     n_envs = 4
-    use_subproc = sys.platform != "win32"
 
     def make_env():
         def _init():
@@ -41,11 +54,10 @@ def main() -> int:
 
     def setup_vec_env():
         makers = [make_env() for _ in range(n_envs)]
-        if use_subproc:
-            try:
-                return SubprocVecEnv(makers), "SubprocVecEnv"
-            except (OSError, RuntimeError) as exc:
-                report["subproc_fallback"] = str(exc)[:200]
+        try:
+            return SubprocVecEnv(makers), "SubprocVecEnv"
+        except (OSError, RuntimeError, ValueError) as exc:
+            report["subproc_fallback"] = str(exc)[:200]
         return DummyVecEnv(makers), "DummyVecEnv"
 
     def run_once() -> float:

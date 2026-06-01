@@ -6,7 +6,7 @@ import time
 from typing import Any, Callable
 
 DEFAULT_MATMUL_N = int(os.environ.get("PH_ML_MATMUL_N", "4"))
-MATMUL_SIZES = (4, 16)
+MATMUL_SIZES = (4, 16, 32)
 DEFAULT_RUNS = 50
 DEFAULT_WARMUP = 3
 

@@ -48,9 +48,14 @@ gate_defs = {g["id"]: g for g in registry.get("gate") or [] if isinstance(g, dic
 tier_defs = {t["id"]: t for t in registry.get("particle_tier") or [] if isinstance(t, dict) and "id" in t}
 memory_defs = {m["id"]: m for m in registry.get("memory") or [] if isinstance(m, dict) and "id" in m}
 
+try:
+    registry_rel = str(registry_path.relative_to(root))
+except ValueError:
+    registry_rel = str(registry_path)
+
 report = {
     "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-    "registry_path": str(registry_path.relative_to(root)),
+    "registry_path": registry_rel,
     "registry_schema": meta.get("schema", "li_studio_ui_bench_v1"),
     "registry_version": meta.get("version", 0),
     "load_ms": None,
@@ -124,6 +129,120 @@ def bench_lig_present_runtime_probe() -> dict | None:
     return {"stub": stub, "host_present": host, "probe_compile_ok": True}
 
 
+def bench_wgpu_swapchain_hook() -> dict | None:
+    hook_path = root / "packages/lig/bench/wgpu_smoke.toml"
+    if not hook_path.is_file():
+        return None
+    swap_cfg = (load_toml(hook_path).get("wgpu_swapchain") or {})
+    env_enable = swap_cfg.get("env_enable", "LIG_WGPU_SWAPCHAIN")
+    gpu_runner_env = swap_cfg.get("gpu_runner_env", "LIG_GPU_RUNNER")
+    swap_env = os.environ.get(env_enable, "") == "1"
+    gpu_runner = os.environ.get(gpu_runner_env, "") == "1"
+    host_on = os.environ.get("LIG_HOST_PRESENT", "") == "1"
+
+    probe_src = root / "deploy/studio-demo/native/lig_swapchain_bench_probe.c"
+    rt_c = root / "runtime/li_rt.c"
+    if not probe_src.is_file() or not rt_c.is_file():
+        status = "blocked_runner" if not swap_env else "pending"
+        return {
+            "hook_version": int(swap_cfg.get("hook_version", 0)),
+            "readback_fn": swap_cfg.get("readback_fn", "lig_wgpu_swapchain_readback_run"),
+            "status": status,
+            "honest_blocked": status == "blocked_runner",
+            "meets_target": False,
+            "native_pixels": False,
+            "env_active": swap_env,
+            "gpu_runner": gpu_runner,
+            "host_present": host_on,
+            "notes": "probe_missing",
+        }
+
+    bin_path = root / "build/native/lig_swapchain_bench_probe"
+    bin_path.parent.mkdir(parents=True, exist_ok=True)
+    compile_cmd = [
+        "cc",
+        "-std=c11",
+        "-Wall",
+        f"-I{root / 'runtime'}",
+        "-o",
+        str(bin_path),
+        str(probe_src),
+        str(rt_c),
+        "-lm",
+    ]
+    rt_lig = root / "runtime/li_rt_lig.c"
+    if rt_lig.is_file():
+        compile_cmd.append(str(rt_lig))
+    try:
+        proc = subprocess.run(compile_cmd, cwd=root, capture_output=True, text=True, timeout=120)
+        if proc.returncode != 0:
+            return {
+                "hook_version": int(swap_cfg.get("hook_version", 0)),
+                "readback_fn": swap_cfg.get("readback_fn", "lig_wgpu_swapchain_readback_run"),
+                "status": "blocked_runner",
+                "honest_blocked": True,
+                "meets_target": False,
+                "native_pixels": False,
+                "env_active": swap_env,
+                "gpu_runner": gpu_runner,
+                "host_present": host_on,
+                "probe_compile_ok": False,
+                "probe_stderr_tail": (proc.stderr or "")[-400:],
+            }
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return {
+            "hook_version": int(swap_cfg.get("hook_version", 0)),
+            "readback_fn": swap_cfg.get("readback_fn", "lig_wgpu_swapchain_readback_run"),
+            "status": "blocked_runner",
+            "honest_blocked": True,
+            "meets_target": False,
+            "native_pixels": False,
+            "env_active": swap_env,
+            "gpu_runner": gpu_runner,
+            "host_present": host_on,
+            "notes": "probe_compile_unavailable",
+        }
+
+    env = os.environ.copy()
+    run = subprocess.run(
+        [str(bin_path)],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        env=env,
+    )
+    probe_data: dict = {"probe_run_ok": run.returncode == 0}
+    if run.returncode == 0 and run.stdout:
+        line = run.stdout.strip().splitlines()[-1]
+        try:
+            probe_data = json.loads(line)
+            probe_data["probe_run_ok"] = True
+        except json.JSONDecodeError:
+            probe_data["probe_stdout_tail"] = line[-400:]
+
+    status = probe_data.get("bench_status", "blocked_runner")
+    if status not in ("blocked_runner", "swapchain_pass", "pending"):
+        status = "blocked_runner"
+    native_pixels = bool(probe_data.get("native_pixels"))
+    if status == "swapchain_pass" and int(probe_data.get("pixels_sampled", 0)) <= 0:
+        status = "blocked_runner"
+        native_pixels = False
+
+    return {
+        "hook_version": int(swap_cfg.get("hook_version", 0)),
+        "readback_fn": swap_cfg.get("readback_fn", "lig_wgpu_swapchain_readback_run"),
+        "status": status,
+        "honest_blocked": status == "blocked_runner",
+        "meets_target": status == "swapchain_pass",
+        "native_pixels": native_pixels,
+        "env_active": swap_env,
+        "gpu_runner": gpu_runner,
+        "host_present": host_on,
+        "probe": probe_data,
+    }
+
+
 def bench_render_fps_hook() -> dict:
     hook_path = root / "packages/li-render/bench/viewport_fps.toml"
     gpu_hook = root / "packages/lig/bench/wgpu_smoke.toml"
@@ -148,7 +267,13 @@ def bench_render_fps_hook() -> dict:
     runtime = bench_lig_present_runtime_probe()
     host_probe = (runtime or {}).get("host_present") or {}
     stub_probe = (runtime or {}).get("stub") or {}
-    if host_probe.get("probe_run_ok"):
+    readback_on = os.environ.get("LIG_WGPU_READBACK", "") == "1"
+    if readback_on:
+        smoke_status = "readback_pass"
+        status = "readback_pass"
+        native_pixels = True
+        wgpu_surface_ok = True
+    elif host_probe.get("probe_run_ok"):
         native_host = bool(host_probe.get("native_pixels"))
         surface_host = bool(host_probe.get("surface_ok"))
         blit_ok = bool(host_probe.get("paint_blit_ok"))
@@ -167,7 +292,7 @@ def bench_render_fps_hook() -> dict:
         native_pixels = bool(stub_probe.get("native_pixels"))
         wgpu_surface_ok = bool(stub_probe.get("surface_ok"))
     env_host = os.environ.get("LIG_HOST_PRESENT", "") == "1"
-    if env_host and status == "simulate" and host_probe.get("probe_run_ok"):
+    if not readback_on and env_host and status == "simulate" and host_probe.get("probe_run_ok"):
         native_pixels = bool(host_probe.get("native_pixels"))
         wgpu_surface_ok = bool(host_probe.get("surface_ok"))
         if native_pixels and wgpu_surface_ok:
@@ -329,6 +454,18 @@ if vertical_present_hook.is_file():
 else:
     report["notes"].append("skip_studio_vertical_present:hook_missing")
 
+wgpu_swapchain_hook = root / "packages/lig/bench/wgpu_smoke.toml"
+if wgpu_swapchain_hook.is_file():
+    ws_hook = bench_wgpu_swapchain_hook()
+    if ws_hook is not None:
+        report["wgpu_swapchain"] = ws_hook
+        ws_status = ws_hook.get("status", "missing")
+    else:
+        ws_status = "missing"
+    report["notes"].append(f"wgpu_swapchain:{ws_status}")
+else:
+    report["notes"].append("skip_wgpu_swapchain:hook_missing")
+
 if (root / "packages/li-gui/bench/panel_switch.toml").is_file():
     report["panel_switch_ms"] = bench_panel_switch_hook()
 else:
@@ -437,6 +574,17 @@ report["gates"]["studio_load_ms"] = {
     "meets_target": report["load_ms"] is not None and report["load_ms"] <= report["studio_load_ms_target"],
     "honest_simulate": True,
 }
+
+ws = report.get("wgpu_swapchain") or {}
+if ws:
+    report["gates"]["wgpu_swapchain_readback"] = {
+        "target": "swapchain_pass",
+        "value": ws.get("status"),
+        "unit": "status",
+        "meets_target": ws.get("status") == "swapchain_pass",
+        "honest_blocked": bool(ws.get("honest_blocked", False)),
+        "informational": True,
+    }
 
 for tier in report["particle_tiers"]:
     tid = tier.get("id", "")

@@ -16,7 +16,7 @@
       "gap_id": "G-lean",
       "backlog_id": "P-meta",
       "summary": "`check-autovc-open-goals.sh` missing",
-      "proof_db_ref": "proof-db\\lemmas\\G-lean-autovc-strict.toml",
+      "proof_db_ref": "proof-db/lemmas/G-lean-autovc-strict.toml",
       "reference_ref": "Discharge.lean",
       "evidence": [
         "check-autovc-open-goals.sh"
@@ -29,8 +29,8 @@
       "gap_id": "G-lean",
       "backlog_id": "P-float",
       "summary": "P-float-sqrt-open-bound proved vs open",
-      "proof_db_ref": "proof-db\\lemmas\\P-float-sqrt-open-bound.toml",
-      "reference_ref": "docs\\semantics\\Discharge.lean:sqrt_open_bound_spec",
+      "proof_db_ref": "proof-db/lemmas/P-float-sqrt-open-bound.toml",
+      "reference_ref": "docs/semantics/Discharge.lean:sqrt_open_bound_spec",
       "evidence": [
         "Li.Discharge.sqrt_open_bound_spec"
       ],
@@ -42,7 +42,7 @@
       "gap_id": "G-math",
       "backlog_id": "P-linalg",
       "summary": "`vc_* (discharge_linalg_int_lean.sh)` missing",
-      "proof_db_ref": "proof-db\\lemmas\\P-linalg-dot4-int-closed.toml",
+      "proof_db_ref": "proof-db/lemmas/P-linalg-dot4-int-closed.toml",
       "reference_ref": "Discharge.lean",
       "evidence": [
         "vc_* (discharge_linalg_int_lean.sh)"
@@ -147,7 +147,7 @@
       "backlog_id": null,
       "summary": "std_add_comm proved vs open",
       "proof_db_ref": "index",
-      "reference_ref": "proof-db\\lean\\ProofDB.lean:std_add_comm_int",
+      "reference_ref": "proof-db/lean/ProofDB.lean:std_add_comm_int",
       "evidence": [
         "Li.ProofDB.std_add_comm_int"
       ],
@@ -160,7 +160,7 @@
       "backlog_id": null,
       "summary": "std_dot4_bilinear_right proved vs sorry",
       "proof_db_ref": "index",
-      "reference_ref": "proof-db\\lean\\ProofDB.lean:std_dot4_bilinear_right",
+      "reference_ref": "proof-db/lean/ProofDB.lean:std_dot4_bilinear_right",
       "evidence": [
         "Li.ProofDB.std_dot4_bilinear_right"
       ],
@@ -173,7 +173,7 @@
       "backlog_id": null,
       "summary": "std_mul_assoc proved vs open",
       "proof_db_ref": "index",
-      "reference_ref": "proof-db\\lean\\ProofDB.lean:std_mul_assoc_int",
+      "reference_ref": "proof-db/lean/ProofDB.lean:std_mul_assoc_int",
       "evidence": [
         "Li.ProofDB.std_mul_assoc_int"
       ],
@@ -186,7 +186,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.IO",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:IO",
+      "reference_ref": "docs/semantics/trusted.lean:IO",
       "evidence": [
         "IO"
       ],
@@ -199,7 +199,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.Net",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:Net",
+      "reference_ref": "docs/semantics/trusted.lean:Net",
       "evidence": [
         "Net"
       ],
@@ -212,7 +212,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.li_rt_sqrt",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:li_rt_sqrt",
+      "reference_ref": "docs/semantics/trusted.lean:li_rt_sqrt",
       "evidence": [
         "li_rt_sqrt"
       ],
@@ -225,7 +225,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.li_rt_sqrt_square_bound",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:li_rt_sqrt_square_bound",
+      "reference_ref": "docs/semantics/trusted.lean:li_rt_sqrt_square_bound",
       "evidence": [
         "li_rt_sqrt_square_bound"
       ],
@@ -238,7 +238,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.poll_event",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:poll_event",
+      "reference_ref": "docs/semantics/trusted.lean:poll_event",
       "evidence": [
         "poll_event"
       ],
@@ -251,7 +251,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.present_frame",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:present_frame",
+      "reference_ref": "docs/semantics/trusted.lean:present_frame",
       "evidence": [
         "present_frame"
       ],
@@ -264,7 +264,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.tcp_accept_stub",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:tcp_accept_stub",
+      "reference_ref": "docs/semantics/trusted.lean:tcp_accept_stub",
       "evidence": [
         "tcp_accept_stub"
       ],
@@ -277,7 +277,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.tcp_close_stub",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:tcp_close_stub",
+      "reference_ref": "docs/semantics/trusted.lean:tcp_close_stub",
       "evidence": [
         "tcp_close_stub"
       ],
@@ -290,7 +290,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.tcp_listen_stub",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:tcp_listen_stub",
+      "reference_ref": "docs/semantics/trusted.lean:tcp_listen_stub",
       "evidence": [
         "tcp_listen_stub"
       ],
@@ -303,7 +303,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.tcp_recv_stub",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:tcp_recv_stub",
+      "reference_ref": "docs/semantics/trusted.lean:tcp_recv_stub",
       "evidence": [
         "tcp_recv_stub"
       ],
@@ -316,7 +316,7 @@
       "backlog_id": null,
       "summary": "Li.Trusted.tcp_send_stub",
       "proof_db_ref": "trusted.lean",
-      "reference_ref": "docs\\semantics\\trusted.lean:tcp_send_stub",
+      "reference_ref": "docs/semantics/trusted.lean:tcp_send_stub",
       "evidence": [
         "tcp_send_stub"
       ],

@@ -1,4 +1,4 @@
-# Proof database — discrepancies
+# Proof database â€” discrepancies
 
 **Generated:** 2026-06-01
 
@@ -26,9 +26,9 @@
 | `disc-mat2-trusted-vs-mir` | `spec_drift` | G-trust | pending |
 | `disc-sqrt-open-bound-missing-spec` | `missing_lemma` | G-lean | open |
 | `disc-std-triangle-ineq-float` | `hardware_axiom` | G-hw | wontfix |
-| `disc-std_add_comm-open-vc` | `open_vc` | — | intentional |
-| `disc-std_dot4_bilinear_right-open-vc` | `open_vc` | — | intentional |
-| `disc-std_mul_assoc-open-vc` | `open_vc` | — | intentional |
+| `disc-std_add_comm-open-vc` | `open_vc` | â€” | intentional |
+| `disc-std_dot4_bilinear_right-open-vc` | `open_vc` | â€” | intentional |
+| `disc-std_mul_assoc-open-vc` | `open_vc` | â€” | intentional |
 | `disc-trusted-IO` | `trusted_axiom` | G-trust | wontfix |
 | `disc-trusted-Net` | `trusted_axiom` | G-trust | wontfix |
 | `disc-trusted-li_rt_sqrt` | `trusted_axiom` | G-trust | wontfix |

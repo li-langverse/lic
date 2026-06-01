@@ -24,6 +24,8 @@ done
 test -f docs/superpowers/plans/proof-explorer-phase9-compiler-gaps.md || fail=1
 test -f data/goal-directed-sprints/proof-explorer-phase9-compiler-gaps.md || fail=1
 test -f docs/reports/compiler-audit/README.md || fail=1
+bash scripts/proof-explorer-gates/wp-destub-proc-specimens.sh || fail=1
+test -f data/proof-explorer-loop/wp-cg-compiler-gaps.signoff || fail=1
 
 if [[ "$fail" -ne 0 ]]; then
   echo "proof-explorer-phase9-completion-gate: INCOMPLETE"

@@ -19,7 +19,7 @@ for sample in \
   rm -f "$AUTOVC"
   "$LIC" build "$sample" -o /dev/null
   test -f "$AUTOVC"
-  grep -qE 'Phase 2f: (return expression matches ensures|fixed-bound dot loop witness|prelude dot)|Li\.Discharge\.mat2_at2' \
+  grep -qE 'Phase 2f: (return expression matches ensures|fixed-bound dot loop witness|P-loop dot4|prelude dot)|Li\.Discharge\.(mat2_at2|dot4)' \
     "$AUTOVC" || {
     echo "discharge_linalg_int_lean: missing witness marker in $sample"
     exit 1

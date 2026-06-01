@@ -1,0 +1,26 @@
+import studio
+import render
+
+# wsg-w4-headless-golden — Li CPU raster digest matches golden (no C paint_fb mirror).
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_studio_version() < 38:
+    return 1
+  if studio_headless_golden_version() != 1:
+    return 2
+  if studio_headless_golden_match(studio_profile_game(), 0, 320, 180) != 1:
+    return 3
+  if studio_headless_golden_match(studio_profile_sim_scientific(), 1, 320, 180) != 1:
+    return 4
+  var compose: StudioShellCompose = studio_vertical_demo_compose(studio_profile_game(), 0, 0)
+  var frame: PaintFrame = paint_frame_new()
+  studio_paint_shell_chrome(frame, compose)
+  var raster: RenderUiRasterResult = render_ui_raster_cpu_pass(frame, compose.layout.viewport_w, compose.layout.viewport_h)
+  if raster.backend != render_ui_raster_backend_cpu():
+    return 5
+  if raster.cpu_pixels <= 0:
+    return 6
+  return 0

@@ -1,0 +1,24 @@
+# E-1150: Does there exist a constant $c>0$ such that, for all large $n$ and all polynomials $P$ of degree $n$ with coefficients $\pm 1$,\[\max_{\lvert z\rvert=1}\lvert P(z)\rvert > (1+c)\sqrt{n}?\]
+# erdos_number: 1150
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis, polynomials
+
+def erdos_e1150_does_there_exist_a_constant_c_0_such_tha() -> int
+  requires true
+  ensures result == 0  # open: E-1150
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1150_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

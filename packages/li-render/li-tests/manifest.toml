@@ -27,3 +27,15 @@ suite = "smoke"
 file = "smoke/native_pixels_honesty.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-render-native-pixels-honesty WP-UX-14"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ui_raster_pass.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-render-ui-raster-pass wsg-w3-ui-raster"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/wgpu_viewport_swapchain.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-render-wgpu-viewport-swapchain wsg-w3-wgpu-viewport-pixels"

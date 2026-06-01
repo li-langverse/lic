@@ -1,0 +1,24 @@
+# E-1028: Let\[H(n)=\min_f \max_{X\subseteq \{1,\ldots,n\}} \left\lvert \sum_{x\neq y\in X} f(x,y)\right\rvert,\]where $f$ ranges over all functions $f:X^2\to \{-1,1\}$. Estimate $H(n)$.
+# erdos_number: 1028
+# erdos_status: open
+# priority_tier: P2
+# tags: discrepancy, graph_theory
+
+def erdos_e1028_let_h_n_min_f_max_x_subseteq_1_ldots_n_l() -> int
+  requires true
+  ensures result == 0  # open: E-1028
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1028_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

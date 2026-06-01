@@ -1,0 +1,24 @@
+# E-104: Given $n$ points in $\mathbb{R}^2$ the number of distinct unit circles containing at least three points is $o(n^2)$.
+# erdos_number: 104
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry
+
+def erdos_e104_given_n_points_in_mathbb_r_2_the_number() -> int
+  requires true
+  ensures result == 0  # open: E-104
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e104_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

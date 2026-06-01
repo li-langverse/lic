@@ -1,4 +1,12 @@
-# ST-LM-BC-BN-006: Bayes theorem P(A|B) = P(B|A)P(A)/P(B) (case 6).
+# ST-LM-BC-BN-006: Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 6).
+# Requires P(B) > 0 for conditioning event B.
+
+def bayes_posterior(p_a: float, p_b_given_a: float, p_b: float) -> float
+  requires p_b > 0.0
+  ensures result == (p_b_given_a * p_a) / p_b
+  decreases 0
+=
+  return (p_b_given_a * p_a) / p_b
 
 def main() -> int
   requires true

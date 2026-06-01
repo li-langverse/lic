@@ -1,0 +1,24 @@
+# E-914: Let $r\geq 2$ and $m\geq 1$. Every graph with $rm$ vertices and minimum degree at least $m(r-1)$ contains $m$ vertex disjoint copies of $K_r$.
+# erdos_number: 914
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e914_let_r_geq_2_and_m_geq_1_every_graph_with() -> int
+  requires true
+  ensures result == 0  # open: E-914
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e914_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

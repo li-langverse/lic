@@ -1,0 +1,24 @@
+# E-242: For every $n>2$ there exist distinct integers $1\leq x<y<z$ such that\[\frac{4}{n} = \frac{1}{x}+\frac{1}{y}+\frac{1}{z}.\]
+# erdos_number: 242
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, unit_fractions
+
+def erdos_e242_for_every_n_2_there_exist_distinct_integ() -> int
+  requires true
+  ensures result == 0  # open: E-242
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e242_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

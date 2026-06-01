@@ -1,0 +1,24 @@
+# E-1063: Let $k\geq 2$ and define $n_k\geq 2k$ to be the least value of $n$ such that $n-i$ divides $\binom{n}{k}$ for all but one $0\leq i<k$. Estimate $n_k$.
+# erdos_number: 1063
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e1063_let_k_geq_2_and_define_n_k_geq_2k_to_be() -> int
+  requires true
+  ensures result == 0  # open: E-1063
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1063_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

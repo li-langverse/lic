@@ -1,0 +1,24 @@
+# E-368: How large is the largest prime factor of $n(n+1)$?
+# erdos_number: 368
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e368_how_large_is_the_largest_prime_factor_of() -> int
+  requires true
+  ensures result == 0  # open: E-368
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e368_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

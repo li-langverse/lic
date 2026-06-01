@@ -1,0 +1,24 @@
+# E-940: Let $r\geq 3$. A number $n$ is $r$-powerful if for every prime $p$ which divides $n$ we have $p^r\mid n$. Are there infinitely many integers which are not the sum of at most $r$ many $r$-powerful numbers? Does the set of integers which are the sum of at most $r$ $r$-powerful numbers have density $0$?
+# erdos_number: 940
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, powerful
+
+def erdos_e940_let_r_geq_3_a_number_n_is_r_powerful_if() -> int
+  requires true
+  ensures result == 0  # open: E-940
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e940_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,5 +1,12 @@
 # CHEM-LM-BC-IG-016: Ideal gas law PV=nRT (form 16).
 
+def ideal_gas_pv(n: float, r: float, t: float) -> float
+  requires n >= 0.0 and r > 0.0 and t > 0.0
+  ensures result > 0.0
+  decreases 0
+=
+  return n * r * t
+
 def main() -> int
   requires true
   ensures result == 0

@@ -18,6 +18,12 @@ note = "T-PKG-li-studio-inspector-fields UX-03"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_inspector_widget_pilot.li"
+outcome = "check_ok"
+note = "T-PKG-li-studio-inspector-widget-pilot W1"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_compose_panels.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-compose-panels"
@@ -192,6 +198,30 @@ note = "T-PKG-li-studio-shell-demo-present-loop PH-HW WP3"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_present_loop_raster.li"
+outcome = "check_ok"
+note = "T-PKG-li-studio-present-loop-raster wsg-w4-present-loop"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_c_host_slim.li"
+outcome = "check_ok"
+note = "T-PKG-li-studio-c-host-slim wsg-w4-c-host-slim I/O-only present host"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_windows_native_present.li"
+outcome = "check_ok"
+note = "wsg-w5-windows-native: Windows SDL present host, no WSL requirement"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_macos_wgpu_present.li"
+outcome = "check_ok"
+note = "wsg-w5-macos-wgpu: macOS aarch64 wgpu/Metal surface (PH-HW WP3)"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_shell_demo_pattern_tick.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-shell-demo-pattern-tick STUDIO_DEMO_LOOP_TICK base"
@@ -298,6 +328,48 @@ suite = "smoke"
 file = "smoke/studio_interaction_modes.li"
 outcome = "check_ok"
 note = "WP-UX-15: Studio interaction mode FSM on StudioShellCompose"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_reactive_shell_sync.li"
+outcome = "check_ok"
+note = "W2: reactive shell store migration — agent FSM, palette, mode, timeline playhead"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_compose_cache_partial.li"
+outcome = "check_ok"
+note = "W2: ComposeCache dirty flags + partial re-compose on shell regions"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_shell_widget_tree.li"
+outcome = "check_ok"
+note = "W4: all shell regions on Widget tree + reactive store sync"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_route_table.li"
+outcome = "check_ok"
+note = "W4: StudioRoute table for verticals/modes formalized (wsg-w4-route-table)"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_headless_golden.li"
+outcome = "check_ok"
+note = "W4: headless Li CPU raster golden digest (wsg-w4-headless-golden)"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_headless_golden_capture.li"
+outcome = "check_ok"
+note = "W4: headless PPM capture without C paint_fb (wsg-w4-headless-golden)"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_vertical_capture_ppm.li"
+outcome = "check_ok"
+note = "W4: vertical capture PPM Li raster path (wsg-w4-headless-golden)"
 
 [[tests]]
 suite = "smoke"

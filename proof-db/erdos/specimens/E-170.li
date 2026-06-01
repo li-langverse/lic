@@ -1,0 +1,24 @@
+# E-170: Let $F(N)$ be the smallest possible size of $A\subset \{0,1,\ldots,N\}$ such that $\{0,1,\ldots,N\}\subset A-A$. Find the value of\[\lim_{N\to \infty}\frac{F(N)}{N^{1/2}}.\]
+# erdos_number: 170
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics
+
+def erdos_e170_let_f_n_be_the_smallest_possible_size_of() -> int
+  requires true
+  ensures result == 0  # open: E-170
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e170_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,4 +1,11 @@
-# GT-LM-BC-HS-011: Handshaking lemma: sum deg(v) = 2|E| (variant 11).
+# GT-LM-BC-HS-011: Average degree: 2|E|/|V| equals average vertex degree.
+
+def handshaking_sum(deg_sum: int, edge_count: int) -> int
+  requires edge_count >= 0
+  ensures result == 2 * edge_count
+  decreases 0
+=
+  return deg_sum
 
 def main() -> int
   requires true

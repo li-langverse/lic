@@ -1,4 +1,11 @@
-# P-LM-BC-EM-018: Poynting vector S = E x H (stub).
+# P-LM-BC-EM-018: Poynting vector S = E x H gives electromagnetic energy flux density.
+
+def p_lm_bc_em_018_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
 
 def main() -> int
   requires true

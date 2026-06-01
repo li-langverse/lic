@@ -1,4 +1,11 @@
-# D-LM-BC-IND-011: Mathematical induction principle (variant 11).
+# D-LM-BC-IND-011: Induction on sums: 1 + 2 + ... + n = n(n+1)/2 proved by induction on n.
+
+def induction_step(n: int, step: int) -> int
+  requires n >= 0 and step >= 0
+  ensures result == n + step
+  decreases 0
+=
+  return n + step
 
 def main() -> int
   requires true

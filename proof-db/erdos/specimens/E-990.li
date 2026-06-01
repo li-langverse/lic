@@ -1,0 +1,24 @@
+# E-990: Let $f=a_0+\cdots+a_dx^d\in \mathbb{C}[x]$ be a polynomial. Is it true that, if $f$ has roots $z_1,\ldots,z_d$ with corresponding arguments $\theta_1,\ldots,\theta_d\in [0,2\pi]$, then for all intervals $I\subseteq [0,2\pi]$\[\left\lvert (\# \theta_i \in I) - \frac{\lvert I\rvert}{2\pi}d\right\rvert \ll \left(n\log M\right)^{1/2},\]where $n$ is the number of non-zero coefficients of $f$ and\[M=\frac{\lvert a_0\rvert+\cdots +\lvert a_d\rvert}{(\lvert a_0\rvert\lvert a_d\rvert)^{1/2}}.\]
+# erdos_number: 990
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis
+
+def erdos_e990_let_f_a_0_cdots_a_dx_d_in_mathbb_c_x_be() -> int
+  requires true
+  ensures result == 0  # open: E-990
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e990_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

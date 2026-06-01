@@ -1,0 +1,24 @@
+# E-818: Let $A$ be a finite set of integers such that $\lvert A+A\rvert \ll \lvert A\rvert$. Is it true that\[\lvert AA\rvert \gg \frac{\lvert A\rvert^2}{(\log \lvert A\rvert)^C}\]for some constant $C>0$?
+# erdos_number: 818
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_combinatorics
+
+def erdos_e818_let_a_be_a_finite_set_of_integers_such_t() -> int
+  requires true
+  ensures result == 0  # open: E-818
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e818_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

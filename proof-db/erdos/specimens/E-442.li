@@ -1,0 +1,24 @@
+# E-442: Is it true that if $A\subseteq\mathbb{N}$ is such that\[\frac{1}{\log\log x}\sum_{n\in A\cap [1,x)}\frac{1}{n}\to \infty\]then\[\left(\sum_{n\in A\cap [1,x)}\frac{1}{n}\right)^{-2} \sum_{\substack{a,b\in A\cap (1,x]\\ a<b}}\frac{1}{\mathrm{lcm}(a,b)}\to \infty?\]
+# erdos_number: 442
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e442_is_it_true_that_if_a_subseteq_mathbb_n_i() -> int
+  requires true
+  ensures result == 0  # open: E-442
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e442_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

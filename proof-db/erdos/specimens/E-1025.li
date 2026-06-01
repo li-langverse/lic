@@ -1,0 +1,24 @@
+# E-1025: Let $f$ be a function from all pairs of elements in $\{1,\ldots,n\}$ to $\{1,\ldots,n\}$ such that $f(x,y)\neq x$ and $\neq y$ for all $x,y$. We call $X\subseteq \{1,\ldots,n\}$ independent if whenever $x,y\in X$ we have $f(x,y)\not\in X$. Let $g(n)$ be such that, in every function $f$, there is an independent set of size at least $g(n)$. Estimate $g(n)$.
+# erdos_number: 1025
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics
+
+def erdos_e1025_let_f_be_a_function_from_all_pairs_of_el() -> int
+  requires true
+  ensures result == 0  # open: E-1025
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1025_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

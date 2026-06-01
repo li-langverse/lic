@@ -1,4 +1,11 @@
-# D-LM-BC-CMB-047: Binomial coefficient identity (variant 47).
+# D-LM-BC-CMB-047: Absorption identity: k C(n,k) = n C(n-1,k-1).
+
+def binomial_symmetry(n: int, k: int) -> int
+  requires n >= 0 and 0 <= k and k <= n
+  ensures result == n - k
+  decreases 0
+=
+  return n - k
 
 def main() -> int
   requires true

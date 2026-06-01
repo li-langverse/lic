@@ -1,0 +1,24 @@
+# E-1208: For $d\geq 2$ let $F_d(n)$ be minimal such that every set of $n$ points in $\mathbb{R}^d$ contains a set of $F_d(n)$ points with distinct distances. Estimate $F_d(n)$ for fixed $d$ as $n\to \infty$.
+# erdos_number: 1208
+# erdos_status: open
+# priority_tier: P2
+# tags: distances, geometry
+
+def erdos_e1208_for_d_geq_2_let_f_d_n_be_minimal_such_th() -> int
+  requires true
+  ensures result == 0  # open: E-1208
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1208_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

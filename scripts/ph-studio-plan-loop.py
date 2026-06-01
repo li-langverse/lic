@@ -38,7 +38,7 @@ def load_plan_todos() -> list[dict]:
 
 def load_state() -> dict:
     if STATE_FILE.is_file():
-        return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+        return json.loads(STATE_FILE.read_text(encoding="utf-8-sig"))
     return {"completed_ids": [], "pending_ids": [], "history": [], "iterations": 0}
 
 

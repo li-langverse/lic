@@ -1,0 +1,24 @@
+# E-1060: Let $f(n)$ count the number of solutions to $k\sigma(k)=n$, where $\sigma(k)$ is the sum of divisors of $k$. Is it true that $f(n)\leq n^{o(\frac{1}{\log\log n})}$? Perhaps even $\leq (\log n)^{O(1)}$?
+# erdos_number: 1060
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e1060_let_f_n_count_the_number_of_solutions_to() -> int
+  requires true
+  ensures result == 0  # open: E-1060
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1060_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

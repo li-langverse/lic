@@ -1,0 +1,24 @@
+# E-806: Let $A\subseteq \{1,\ldots,n\}$ with $\lvert A\rvert \leq n^{1/2}$. Must there exist some $B\subset\mathbb{Z}$ with $\lvert B\rvert=o(n^{1/2})$ such that $A\subseteq B+B$?
+# erdos_number: 806
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_combinatorics
+
+def erdos_e806_let_a_subseteq_1_ldots_n_with_lvert_a_rv() -> int
+  requires true
+  ensures result == 0  # open: E-806
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e806_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

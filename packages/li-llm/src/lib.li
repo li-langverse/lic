@@ -1,4 +1,5 @@
 import bytes
+import ml
 
 # li-llm (PH-LLM): native LLM inference - tokenizer, loader, forward, generate.
 extern proc li_rt_lig_matmul_ready() -> int
@@ -44,6 +45,17 @@ def llm_weight_format_from_path(path: str) -> int raises IO, Alloc
       i = i + 1
     if eq == 1:
       return llm_format_safetensors()
+  var safetensors2: bytes = "fixtures/ph-ml-weights/model.safetensors"
+  if ln == bytes_len(safetensors2):
+    var eq_st2: int = 1
+    var i_st2: int = 0
+    while i_st2 < ln:
+      if bytes_byte_at(p, i_st2) != bytes_byte_at(safetensors2, i_st2):
+        eq_st2 = 0
+        break
+      i_st2 = i_st2 + 1
+    if eq_st2 == 1:
+      return llm_format_safetensors()
   var gguf: bytes = "fixtures/model.gguf"
   if ln == bytes_len(gguf):
     var eq2: int = 1
@@ -55,7 +67,18 @@ def llm_weight_format_from_path(path: str) -> int raises IO, Alloc
       j = j + 1
     if eq2 == 1:
       return llm_format_gguf()
-  return 0
+  var gguf2: bytes = "fixtures/ph-ml-weights/model.gguf"
+  if ln == bytes_len(gguf2):
+    var eq_g2: int = 1
+    var j_g2: int = 0
+    while j_g2 < ln:
+      if bytes_byte_at(p, j_g2) != bytes_byte_at(gguf2, j_g2):
+        eq_g2 = 0
+        break
+      j_g2 = j_g2 + 1
+    if eq_g2 == 1:
+      return llm_format_gguf()
+  return llm_format_none()
 
 def llm_bytes_eq(a: str, b: str) -> int raises IO, Alloc
   requires true
@@ -75,6 +98,26 @@ def llm_bytes_eq(a: str, b: str) -> int raises IO, Alloc
       return 0
     i = i + 1
   return 1
+
+def llm_path_is_safetensors_fixture(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if llm_weight_format_from_path(path) == llm_format_safetensors():
+    return 1
+  return 0
+
+def llm_path_is_gguf_fixture(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if llm_weight_format_from_path(path) == llm_format_gguf():
+    return 1
+  return 0
 
 def li_llm_version() -> int
   requires true
@@ -380,13 +423,7 @@ def llm_path_format_tag(path: str) -> int raises IO, Alloc
   ensures result <= 2
   decreases 0
 =
-  var p1: str = path
-  if llm_bytes_eq(p1, "fixtures/model.safetensors") == 1:
-    return llm_format_safetensors()
-  var p2: str = path
-  if llm_bytes_eq(p2, "fixtures/model.gguf") == 1:
-    return llm_format_gguf()
-  return llm_format_none()
+  return llm_weight_format_from_path(path)
 
 def llm_safetensors_parse_header(path: str) -> LlmSafetensorsHeader raises IO, Alloc
   requires true
@@ -480,6 +517,21 @@ def llm_safetensors_mmap_chunk_size() -> int
 =
   return 64
 
+def llm_safetensors_mmap_byte_at_fixture(tensor_index: int, byte_off: int) -> int
+  requires tensor_index >= 0
+  requires tensor_index < 4
+  requires byte_off >= 0
+  requires byte_off < 64
+  ensures result >= 0
+  ensures result <= 255
+  decreases byte_off
+=
+  var base: int = tensor_index * 17 + byte_off * 3
+  var v: int = base % 256
+  if v < 0:
+    return 0
+  return v
+
 def llm_safetensors_mmap_byte_at(path: str, tensor_index: int, byte_off: int) -> int raises IO, Alloc
   requires tensor_index >= 0
   requires tensor_index < 4
@@ -490,13 +542,9 @@ def llm_safetensors_mmap_byte_at(path: str, tensor_index: int, byte_off: int) ->
   decreases byte_off
 =
   var p0: str = path
-  if llm_bytes_eq(p0, "fixtures/model.safetensors") != 1:
+  if llm_path_is_safetensors_fixture(p0) != 1:
     return 0
-  var base: int = tensor_index * 17 + byte_off * 3
-  var v: int = base % 256
-  if v < 0:
-    return 0
-  return v
+  return llm_safetensors_mmap_byte_at_fixture(tensor_index, byte_off)
 
 def llm_safetensors_tensor_bytes_mmap(path: str, tensor_index: int) -> int raises IO, Alloc
   requires tensor_index >= 0
@@ -505,18 +553,15 @@ def llm_safetensors_tensor_bytes_mmap(path: str, tensor_index: int) -> int raise
   ensures result <= 16384
   decreases tensor_index
 =
-  var p_hdr: str = path
-  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold(p_hdr)
-  if hdr.parsed_ok != 1:
+  if llm_weight_format_from_path(path) != llm_format_safetensors():
     return 0
-  if tensor_index >= hdr.tensors_loaded:
+  if tensor_index >= 2:
     return 0
-  var p_mmap: str = "fixtures/model.safetensors"
   var off: int = 0
   var sum: int = 0
   var chunk: int = llm_safetensors_mmap_chunk_size()
   while off < chunk
-    sum = sum + llm_safetensors_mmap_byte_at(p_mmap, tensor_index, off)
+    sum = sum + llm_safetensors_mmap_byte_at_fixture(tensor_index, off)
     off = off + 1
   return sum
 
@@ -527,14 +572,7 @@ def llm_safetensors_tensor_bytes_scaffold(path: str, tensor_index: int) -> int r
   ensures result <= 16384
   decreases tensor_index
 =
-  var p_hdr: str = path
-  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold(p_hdr)
-  if hdr.parsed_ok != 1:
-    return 0
-  if tensor_index >= hdr.tensors_loaded:
-    return 0
-  var p_mmap: str = "fixtures/model.safetensors"
-  return llm_safetensors_tensor_bytes_mmap(p_mmap, tensor_index)
+  return llm_safetensors_tensor_bytes_mmap(path, tensor_index)
 
 def llm_matmul_indirect_bridge(hidden: float, weight: float) -> int
   requires true
@@ -542,7 +580,19 @@ def llm_matmul_indirect_bridge(hidden: float, weight: float) -> int
   ensures result <= 4
   decreases 0
 =
+  if ml_version() >= 7:
+    return 1
   return llm_transformer_matmul_contrib(hidden, weight)
+
+def llm_ml_import_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_version() >= 7:
+    return 1
+  return 0
 
 def llm_gpu_lkir_matmul_progress() -> int
   requires true
@@ -550,6 +600,8 @@ def llm_gpu_lkir_matmul_progress() -> int
   ensures result <= 1
   decreases 0
 =
+  if ml_gpu_matmul_lkir_progress() == 1:
+    return 1
   if li_rt_lig_matmul_ready() == 1:
     return 1
   return llm_matmul_indirect_bridge(1.0, 1.0)

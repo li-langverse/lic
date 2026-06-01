@@ -1,0 +1,24 @@
+# E-822: Does the set of integers of the form $n+\phi(n)$ have positive (lower) density?
+# erdos_number: 822
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e822_does_the_set_of_integers_of_the_form_n_p() -> int
+  requires true
+  ensures result == 0  # open: E-822
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e822_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

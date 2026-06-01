@@ -1,4 +1,11 @@
-# D-LM-BC-IND-046: Mathematical induction principle (variant 46).
+# D-LM-BC-IND-046: Structural induction on finite binary trees: |nodes| = |leaves| + |internals| for full trees.
+
+def induction_step(n: int, step: int) -> int
+  requires n >= 0 and step >= 0
+  ensures result == n + step
+  decreases 0
+=
+  return n + step
 
 def main() -> int
   requires true

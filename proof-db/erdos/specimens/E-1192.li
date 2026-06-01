@@ -1,0 +1,24 @@
+# E-1192: For $A\subset \mathbb{N}$ let $f_r(n)$ count the number of solutions to $n=a_1+\cdots+a_r$ with $a_i\in A$. Does there exist, for all $r\geq 2$, a basis $A$ of order $r$ (so that $f_r(n)>0$ for all large $n$) such that\[\sum_{n\leq x}f_r(n)^2 \ll x\]for all $x$?
+# erdos_number: 1192
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_basis, additive_combinatorics
+
+def erdos_e1192_for_a_subset_mathbb_n_let_f_r_n_count_th() -> int
+  requires true
+  ensures result == 0  # open: E-1192
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1192_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

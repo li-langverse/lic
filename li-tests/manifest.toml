@@ -205,6 +205,13 @@ suite = "compile_ok"
 file = "compile_ok/int_ne_literal.li"
 outcome = "compile_ok"
 
+
+[[tests]]
+suite = "compile_ok"
+file = "compile_ok/bitwise_ops.li"
+outcome = "compile_ok"
+note = "native integer bitwise and/or/xor/shifts/~"
+
 [[tests]]
 suite = "compile_ok"
 file = "compile_ok/volatile_sink_no_io.li"
@@ -1292,6 +1299,11 @@ suite = "encapsulation"
 file = "objects/object_mixed_param_pass.li"
 outcome = "verify_open_ok"
 note = "open VC until 2f full (Lean gate on devbox)"
+[[tests]]
+suite = "encapsulation"
+file = "objects/object_array_of_object_param_pass.li"
+outcome = "verify_open_ok"
+note = "array[N, object] fields expanded on object param/call ABI"
 [[tests]]
 suite = "encapsulation"
 file = "encapsulation/import_parse.li"

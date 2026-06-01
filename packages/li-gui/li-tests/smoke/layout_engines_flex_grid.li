@@ -1,0 +1,70 @@
+import gui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gui_version() < 8:
+    return 1
+  if gui_layout_engine_version() != 1:
+    return 2
+  var constraints: LayoutConstraints = layout_constraints_loose(320.0, 240.0)
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  var btn_a: WidgetNode = widget_node_button(4.0)
+  var btn_b: WidgetNode = widget_node_button(6.0)
+  var label: WidgetNode = widget_node_label(8.0)
+  var flex_row: FlexLayout = flex_layout_row(8.0, 2, btn_a, btn_b, spacer, spacer)
+  var row_size: WidgetSize = flex_layout_measure(flex_row, constraints)
+  var row_layout: FlexLayoutResult = flex_layout_layout(flex_row, constraints, 0.0, 0.0)
+  if row_layout.child_count != 2:
+    return 3
+  var row0: WidgetLayoutResult = row_layout.child_layouts[0]
+  var row1: WidgetLayoutResult = row_layout.child_layouts[1]
+  if row0.bounds.x != 0.0:
+    return 4
+  if row1.bounds.x <= row0.bounds.x:
+    return 5
+  if row_size.w <= row0.bounds.w:
+    return 6
+  var flex_col: FlexLayout = flex_layout_column(4.0, 2, label, btn_a, spacer, spacer)
+  var col_layout: FlexLayoutResult = flex_layout_layout(flex_col, constraints, 16.0, 16.0)
+  var col0: WidgetLayoutResult = col_layout.child_layouts[0]
+  var col1: WidgetLayoutResult = col_layout.child_layouts[1]
+  if col1.bounds.y <= col0.bounds.y:
+    return 7
+  var grid: GridLayout = grid_layout_new(2, 2, 4.0, 4, btn_a, btn_b, label, btn_a)
+  var grid_layout: GridLayoutResult = grid_layout_layout(grid, constraints, 8.0, 8.0)
+  if grid_layout.rows != 2:
+    return 8
+  if grid_layout.cols != 2:
+    return 9
+  var g0: WidgetLayoutResult = grid_layout.child_layouts[0]
+  var g1: WidgetLayoutResult = grid_layout.child_layouts[1]
+  var g2: WidgetLayoutResult = grid_layout.child_layouts[2]
+  if g1.bounds.x <= g0.bounds.x:
+    return 10
+  if g2.bounds.y <= g0.bounds.y:
+    return 11
+  var pad: PaddingLayout = padding_layout_new(12.0, 8.0, 12.0, 8.0, btn_a)
+  var pad_layout: PaddingLayoutResult = padding_layout_layout(pad, constraints, 0.0, 0.0)
+  if pad_layout.inner_bounds.x != 12.0:
+    return 12
+  if pad_layout.inner_bounds.y != 8.0:
+    return 13
+  if pad_layout.child_layout.bounds.x != pad_layout.inner_bounds.x:
+    return 14
+  var scroll: ScrollLayout = scroll_layout_new(16.0, 24.0, label)
+  var scroll_layout: ScrollLayoutResult = scroll_layout_layout(scroll, constraints, 4.0, 4.0)
+  if scroll_layout.clip_bounds.w != 320.0:
+    return 15
+  if scroll_layout.child_layout.bounds.x != -12.0:
+    return 16
+  if scroll_layout.child_layout.bounds.y != -20.0:
+    return 17
+  var frame: PaintFrame = paint_frame_new()
+  var before: int = frame.cmd_count
+  flex_layout_paint(flex_row, frame, row_layout)
+  if frame.cmd_count <= before:
+    return 18
+  return 0

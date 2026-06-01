@@ -1,0 +1,24 @@
+# E-1086: Let $g(n)$ be minimal such that any set of $n$ points in $\mathbb{R}^2$ contains the vertices of at most $g(n)$ many triangles with the same area. Estimate $g(n)$.
+# erdos_number: 1086
+# erdos_status: open
+# priority_tier: P2
+# tags: distances, geometry
+
+def erdos_e1086_let_g_n_be_minimal_such_that_any_set_of() -> int
+  requires true
+  ensures result == 0  # open: E-1086
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1086_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

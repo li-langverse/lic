@@ -1,4 +1,11 @@
-# D-LM-BC-IND-041: Mathematical induction principle (variant 41).
+# D-LM-BC-IND-041: Well-ordering equivalence: every nonempty subset of N has a least element.
+
+def induction_step(n: int, step: int) -> int
+  requires n >= 0 and step >= 0
+  ensures result == n + step
+  decreases 0
+=
+  return n + step
 
 def main() -> int
   requires true

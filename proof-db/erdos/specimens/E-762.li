@@ -1,0 +1,24 @@
+# E-762: The cochromatic number of $G$, denoted by $\zeta(G)$, is the minimum number of colours needed to colour the vertices of $G$ such that each colour class induces either a complete graph or empty graph. Is it true that if $G$ has no $K_5$ and $\zeta(G)\geq 4$ then $\chi(G) \leq \zeta(G)+2$?
+# erdos_number: 762
+# erdos_status: open
+# priority_tier: P2
+# tags: chromatic_number, graph_theory
+
+def erdos_e762_the_cochromatic_number_of_g_denoted_by_z() -> int
+  requires true
+  ensures result == 0  # open: E-762
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e762_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

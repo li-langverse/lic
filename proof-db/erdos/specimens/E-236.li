@@ -1,0 +1,24 @@
+# E-236: Let $f(n)$ count the number of solutions to $n=p+2^k$ for prime $p$ and $k\geq 0$. Is it true that $f(n)=o(\log n)$?
+# erdos_number: 236
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
+
+def erdos_e236_let_f_n_count_the_number_of_solutions_to() -> int
+  requires true
+  ensures result == 0  # open: E-236
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e236_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

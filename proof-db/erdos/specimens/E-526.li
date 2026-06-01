@@ -1,0 +1,24 @@
+# E-526: Let $a_n\geq 0$ with $a_n\to 0$ and $\sum a_n=\infty$. Find a necessary and sufficient condition on the $a_n$ such that, if we choose (independently and uniformly) random arcs on the unit circle of length $a_n$, then all the circle is covered with probability $1$.
+# erdos_number: 526
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry, probability
+
+def erdos_e526_let_a_n_geq_0_with_a_n_to_0_and_sum_a_n() -> int
+  requires true
+  ensures result == 0  # open: E-526
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e526_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

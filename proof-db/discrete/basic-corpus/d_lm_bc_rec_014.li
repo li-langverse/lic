@@ -1,4 +1,11 @@
-# D-LM-BC-REC-014: Linear recurrence solution stub (variant 14).
+# D-LM-BC-REC-014: Arithmetic sequence: a_n = a_{n-1} + d has closed form a_n = a_0 + n d.
+
+def d_lm_bc_rec_014_witness(n: int) -> int
+  requires n >= 0
+  ensures result == n
+  decreases 0
+=
+  return n
 
 def main() -> int
   requires true

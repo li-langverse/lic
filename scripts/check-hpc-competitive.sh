@@ -17,7 +17,7 @@ WARN_DAYS="${LI_HPC_COMPETITIVE_REVIEW_DAYS:-90}"
 li_phase "HPC competitive registry"
 [[ -f "$REGISTRY" ]] || { li_fail "missing $REGISTRY"; exit 1; }
 
-export REGISTRY CSV WARN_DAYS STRICT
+export REGISTRY CSV WARN_DAYS STRICT BENCHMARKS_ROOT
 python3 - <<'PY'
 from __future__ import annotations
 
@@ -94,9 +94,10 @@ if csv_path.is_file():
                 langs_in_csv.add(row.get("lang", ""))
     missing = sorted(bench_langs - langs_in_csv)
     if missing:
+        bench_root = os.environ.get("BENCHMARKS_ROOT", "")
         warnings.append(
             f"latest.csv missing lang rows for bench ecosystems: {', '.join(missing)} "
-            f"(run: {os.environ.get('BENCHMARKS_ROOT', 'benchmarks')}/scripts/run-bench.sh --tier 12)"
+            f"(run: {bench_root}/scripts/run-bench.sh --tier 12)"
         )
 else:
     warnings.append(f"no CSV at {csv_path} — column check skipped")

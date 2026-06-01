@@ -1,0 +1,24 @@
+# E-1169: Is it true that, for all finite $k<\omega$,\[\omega_1^2 \not\to (\omega_1^2, 3)^2?\]
+# erdos_number: 1169
+# erdos_status: open
+# priority_tier: P2
+# tags: ramsey_theory, set_theory
+
+def erdos_e1169_is_it_true_that_for_all_finite_k_omega_o() -> int
+  requires true
+  ensures result == 0  # open: E-1169
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1169_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

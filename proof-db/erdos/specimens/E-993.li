@@ -1,0 +1,24 @@
+# E-993: The independent set sequence of any tree or forest is unimodal. In other words, if $i_k(G)$ counts the number of independent sets of vertices of size $k$ in a graph $G$, and $T$ is any tree or forest, then for some $m\geq 0$ $$i_{0}(T)\leq i_{1}(T)\leq\cdots\leq i_{m}(T)\geq i_{m+1}(T)\geq i_{m+2}(T)\geq\cdots.$$
+# erdos_number: 993
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e993_the_independent_set_sequence_of_any_tree() -> int
+  requires true
+  ensures result == 0  # open: E-993
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e993_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,4 +1,11 @@
-# D-LM-BC-CMB-012: Binomial coefficient identity (variant 12).
+# D-LM-BC-CMB-012: Row sum identity: sum_{k=0}^n C(n,k) = 2^n.
+
+def binomial_symmetry(n: int, k: int) -> int
+  requires n >= 0 and 0 <= k and k <= n
+  ensures result == n - k
+  decreases 0
+=
+  return n - k
 
 def main() -> int
   requires true

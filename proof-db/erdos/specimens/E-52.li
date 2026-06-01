@@ -1,0 +1,26 @@
+# E-52: For finite A subset Z and every epsilon>0, is max(|A+A|,|AA|) >>_epsilon |A|^{2-epsilon} (integer sum-product)?
+# erdos_number: 52
+# erdos_status: open
+# priority_tier: P0
+# tags: number_theory, additive_combinatorics, sum_product
+# context: Sum-product phenomenon for finite A⊂ℤ: max(|A+A|,|AA|) should exceed |A|^{2-ε} for every ε>0.
+# context: Central to additive combinatorics and expander heuristics..
+
+def erdos_e52_for_finite_a_subset_z_and_every_epsilon() -> int
+  requires true
+  ensures result == 0  # open: E-52
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e52_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

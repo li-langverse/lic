@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 import sys
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -30,6 +30,7 @@ class CanonicalRoute:
     action: str
     headers: dict[str, str]
     priority: int
+    requires: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -40,10 +41,17 @@ class HttpdConfig:
     max_body: str | None
     upstreams: dict[str, list[str]]
     routes: list[CanonicalRoute]
+    warnings: list[str] = field(default_factory=list)
 
 
 def slug_route_name(method: str, path: str) -> str:
-    s = f"{method.lower()}_{path.strip('/')}".replace("/", "_").replace("*", "wild")
+    # Mirror runtime/li_rt_httpd.c slug_route_name (/** → _rest, /* → _wild).
+    slug_path = path
+    if path.endswith("/**"):
+        slug_path = f"{path[:-3]}_rest"
+    elif path.endswith("/*"):
+        slug_path = f"{path[:-2]}_wild"
+    s = f"{method.lower()}_{slug_path.strip('/')}".replace("/", "_").replace("*", "wild")
     s = re.sub(r"[^a-z0-9_]+", "_", s).strip("_")
     return s or "route"
 
@@ -64,8 +72,12 @@ def parse_route_key(key: str, action: str, priority: int) -> CanonicalRoute:
     raw_path = m.group("path")
     extras = (m.group("extras") or "").strip()
     headers: dict[str, str] = {}
+    requires: list[str] = []
     if extras:
         for part in extras.split():
+            if part.startswith("require="):
+                requires.append(part.split("=", 1)[1])
+                continue
             hm = HEADER_EXTRA_RE.match(part)
             if not hm:
                 raise ConfigError(f"invalid route extra: {part!r} in {key!r}")
@@ -81,6 +93,7 @@ def parse_route_key(key: str, action: str, priority: int) -> CanonicalRoute:
         action=str(action).strip().strip('"'),
         headers=headers,
         priority=priority,
+        requires=requires,
     )
 
 
@@ -142,12 +155,50 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
     return out
 
 
+def _apply_m15_validation(data: dict[str, Any]) -> None:
+    from httpd_m15 import ConfigError as M15Error
+    from httpd_m15 import (
+        validate_inference_require,
+        validate_m15_limits,
+        validate_route_match,
+    )
+
+    try:
+        validate_m15_limits(data)
+        validate_inference_require(data)
+        validate_route_match(data)
+    except M15Error as e:
+        raise ConfigError(str(e)) from e
+
+
+def _apply_leak_censor_validation(data: dict[str, Any], path: Path) -> list[str]:
+    from httpd_leak_censor import ConfigError as LCError
+    from httpd_leak_censor import validate_leak_censor
+
+    try:
+        return validate_leak_censor(data, path)
+    except LCError as e:
+        raise ConfigError(str(e)) from e
+
+
+def _apply_tls_validation(data: dict[str, Any], path: Path) -> None:
+    from httpd_tls import ConfigError as TlsError
+    from httpd_tls import validate_tls_config
+
+    try:
+        validate_tls_config(data, path)
+    except TlsError as e:
+        raise ConfigError(str(e)) from e
+
+
 def load_httpd_config(path: Path) -> list[CanonicalRoute]:
     return load_httpd_full(path).routes
 
 
 def load_httpd_sites(path: Path) -> list[HttpdConfig]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
+    _apply_m15_validation(data)
+    _apply_tls_validation(data, path)
     sites_raw = data.get("site")
     if sites_raw is None:
         return [load_httpd_full(path)]
@@ -192,6 +243,8 @@ def load_httpd_sites(path: Path) -> list[HttpdConfig]:
 
 def load_httpd_full(path: Path) -> HttpdConfig:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
+    _apply_m15_validation(data)
+    _apply_tls_validation(data, path)
     if data.get("site") is not None:
         sites = load_httpd_sites(path)
         if len(sites) != 1:
@@ -216,6 +269,7 @@ def load_httpd_full(path: Path) -> HttpdConfig:
             uid = r.action.split(":", 1)[1]
             if uid not in upstreams:
                 raise ConfigError(f"unknown upstream {uid!r} for route {r.name}")
+    warnings = _apply_leak_censor_validation(data, path)
     return HttpdConfig(
         listen=listen,
         host=host,
@@ -223,6 +277,7 @@ def load_httpd_full(path: Path) -> HttpdConfig:
         max_body=max_body,
         upstreams=upstreams,
         routes=routes,
+        warnings=warnings,
     )
 
 
@@ -248,11 +303,13 @@ def main() -> int:
         print("usage: httpd_config.py <config.toml> [--explain]", file=sys.stderr)
         return 2
     path = Path(sys.argv[1])
-    routes = load_httpd_config(path)
+    cfg = load_httpd_full(path)
+    for w in cfg.warnings:
+        print(w, file=sys.stderr)
     if "--explain" in sys.argv:
-        print(explain(routes), end="")
+        print(explain(cfg.routes), end="")
     else:
-        print(f"OK: {len(routes)} routes")
+        print(f"OK: {len(cfg.routes)} routes")
     return 0
 
 

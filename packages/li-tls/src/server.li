@@ -1,0 +1,109 @@
+# server — TLS 1.3 server poll API (M3 httpd integration).
+
+import alpn
+
+extern proc httpd_pure_tls_slot_active_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_attach_i(slot: var int, conn: var int) -> int
+  requires 0 <= slot
+  requires conn >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_poll_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_read_app_i(slot: var int, max_bytes: int) -> int
+  requires 0 <= slot
+  requires max_bytes > 0
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_write_app_i(slot: var int, len: int) -> int
+  requires 0 <= slot
+  requires len >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_alpn_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+def tls_poll_want_read() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def tls_poll_handshake_done() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def tls_server_slot_active(slot: int) raises IO -> int
+  requires 0 <= slot
+  ensures 0 <= result and result <= 1
+  decreases 0
+=
+  var s: int = slot
+  return httpd_pure_tls_slot_active_i(s)
+
+def tls_server_attach(slot: var int, conn: var int) raises IO -> int
+  requires 0 <= slot
+  requires conn >= 0
+  ensures -1 <= result and result <= 0
+  decreases 0
+=
+  return httpd_pure_tls_attach_i(slot, conn)
+
+def tls_server_poll(slot: var int) raises IO -> int
+  requires 0 <= slot
+  ensures -1 <= result and result <= 2
+  decreases 0
+=
+  return httpd_pure_tls_poll_i(slot)
+
+def tls_server_read_app(slot: var int, max_bytes: int) raises IO -> int
+  requires 0 <= slot
+  requires max_bytes > 0
+  ensures -1 <= result
+  decreases 0
+=
+  return httpd_pure_tls_read_app_i(slot, max_bytes)
+
+def tls_server_write_app(slot: var int, len: int) raises IO -> int
+  requires 0 <= slot
+  requires len >= 0
+  ensures -1 <= result
+  decreases 0
+=
+  return httpd_pure_tls_write_app_i(slot, len)
+
+def tls_server_alpn(slot: var int) raises IO -> int
+  requires 0 <= slot
+  ensures 0 <= result and result <= 2
+  decreases 0
+=
+  return httpd_pure_tls_alpn_i(slot)
+
+def tls_server_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if tls_poll_want_read() != 0:
+    return 1
+  if tls_poll_handshake_done() != 1:
+    return 2
+  if tls_alpn_pick(tls_alpn_h2()) != tls_alpn_h2():
+    return 3
+  return 0

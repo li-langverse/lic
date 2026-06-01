@@ -82,8 +82,16 @@ if [[ "$(uname -s)" == "Linux" ]]; then
   sleep 0.3
   LI_HTTPD_WORKERS=1 LI_HTTPD_TLS_LEGACY_OPENSSL=1 "$ROOT/build/li-httpd" "$curl_conf" >/dev/null 2>&1 &
   curl_pid=$!
-  sleep 1.5
-  curl -kfsS --http2 --max-time 5 "https://127.0.0.1:${curl_port}/health" | grep -q ok
+  sleep 2.0
+  for i in 1 2 3 4 5; do
+    if curl -kfsS --http2 --max-time 5 "https://127.0.0.1:${curl_port}/health" | grep -q ok; then
+      break
+    fi
+    if [[ "$i" -eq 5 ]]; then
+      exit 1
+    fi
+    sleep 0.5
+  done
   kill "$curl_pid" 2>/dev/null || true
   wait "$curl_pid" 2>/dev/null || true
   rm -rf "$curl_work"

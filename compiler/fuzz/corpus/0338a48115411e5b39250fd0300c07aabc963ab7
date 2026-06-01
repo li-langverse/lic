@@ -1,8 +1,0 @@
-@cpu
-@parallel(disjointpu
-@praallel(%isjo 0
-=
-  rt_row)
-proc () -> int
-  requireset truurn 0p
-r

@@ -1,0 +1,24 @@
+# E-359: Let $a_1<a_2<\cdots$ be an infinite sequence of integers such that $a_1=n$ and $a_{i+1}$ is the least integer which is not a sum of consecutive earlier $a_j$s. What can be said about the density of this sequence? In particular, in the case $n=1$, can one prove that $a_k/k\to \infty$ and $a_k/k^{1+c}\to 0$ for any $c>0$?
+# erdos_number: 359
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e359_let_a_1_a_2_cdots_be_an_infinite_sequenc() -> int
+  requires true
+  ensures result == 0  # open: E-359
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e359_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

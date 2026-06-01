@@ -1,0 +1,24 @@
+# E-1110: Let $p>q\geq 2$ be two coprime integers. We call $n$ representable if it is the sum of integers of the form $p^kq^l$, none of which divide each other. If $\{p,q\}\neq \{2,3\}$ then what can be said about the density of non-representable numbers? Are there infinitely many coprime non-representable numbers?
+# erdos_number: 1110
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e1110_let_p_q_geq_2_be_two_coprime_integers_we() -> int
+  requires true
+  ensures result == 0  # open: E-1110
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1110_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -30,10 +30,10 @@ type UiFrame = object
   public viewport_h: float
 def li_std_ui_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 7
   decreases 0
 =
-  return 3
+  return 7
 
 def li_std_ui_studio_composables_version() -> int
   requires true
@@ -160,6 +160,112 @@ def studio_color_border() -> Color
 =
   return color_rgb(0.188, 0.212, 0.239, 1.0)
 
+def studio_color_text_primary() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.902, 0.929, 0.953, 1.0)
+
+def studio_color_text_muted() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.545, 0.580, 0.620, 1.0)
+
+def studio_color_accent_rose() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(1.0, 0.361, 0.478, 1.0)
+
+def studio_color_viewport_grid() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.129, 0.149, 0.176, 1.0)
+
+# [typography] docs/design/studio-design-tokens.toml — font families; bitmap atlas in font_atlas.li (Phase 3)
+def studio_typography_ui_family_len() -> int
+  requires true
+  ensures result == 28
+  decreases 0
+=
+  return 28
+
+def studio_typography_mono_family_len() -> int
+  requires true
+  ensures result == 23
+  decreases 0
+=
+  return 23
+
+def studio_typography_dock_label_px() -> float
+  requires true
+  ensures result == 9.0
+  decreases 0
+=
+  return 9.0
+
+def studio_typography_caption_px() -> float
+  requires true
+  ensures result == 11.0
+  decreases 0
+=
+  return 11.0
+
+def studio_typography_body_px() -> float
+  requires true
+  ensures result == 12.0
+  decreases 0
+=
+  return 12.0
+
+def studio_typography_heading_px() -> float
+  requires true
+  ensures result == 14.0
+  decreases 0
+=
+  return 14.0
+
+# [radius] docs/design/studio-design-tokens.toml
+def studio_radius_sm_px() -> float
+  requires true
+  ensures result == 4.0
+  decreases 0
+=
+  return 4.0
+
+def studio_radius_md_px() -> float
+  requires true
+  ensures result == 6.0
+  decreases 0
+=
+  return 6.0
+
+def studio_radius_lg_px() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def studio_radius_pill_px() -> float
+  requires true
+  ensures result == 999.0
+  decreases 0
+=
+  return 999.0
+
+def studio_default_panel_radius_px() -> float
+  requires true
+  ensures result == studio_radius_md_px()
+  decreases 0
+=
+  return studio_radius_md_px()
 
 # UX-10 — focus_ring in docs/design/studio-design-tokens.toml (#3dd6ff)
 def studio_color_focus_ring() -> Color
@@ -457,6 +563,20 @@ def studio_inspector_width_px() -> float
   decreases 0
 =
   return 320.0
+
+def studio_outliner_width_px() -> float
+  requires true
+  ensures result == 200.0
+  decreases 0
+=
+  return 200.0
+
+def studio_hover_transition_ms() -> float
+  requires true
+  ensures result == 200.0
+  decreases 0
+=
+  return 200.0
 
 def studio_panel_transition_ms() -> float
   requires true
@@ -1176,11 +1296,88 @@ def paint_op_viewport_grid() -> int
 =
   return 3
 
+def paint_op_fill_round_rect() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def paint_op_stroke_round_rect() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def paint_op_fill_gradient() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def paint_op_clip_push() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+def paint_op_clip_pop() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def paint_op_draw_glyphs() -> int
+  requires true
+  ensures result == 9
+  decreases 0
+=
+  return 9
+
+def paint_op_draw_image() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+def paint_op_kind_max() -> int
+  requires true
+  ensures result == paint_op_draw_image()
+  decreases 0
+=
+  return paint_op_draw_image()
+
 type PaintCmd = object
   public kind: int
   public rect: Rect
   public color: Color
   public stroke_px: float
+  public radius_px: float
+  public color_b: Color
+  public face_id: int
+  public codepoint: int
+  public glyph_count: int
+  public image_id: int
+  public src_rect: Rect
+
+def paint_cmd_ext_zero(c: var PaintCmd) -> unit
+  requires true
+  ensures c.face_id == 0
+  ensures c.codepoint == 0
+  ensures c.glyph_count == 0
+  ensures c.image_id == 0
+  decreases 0
+=
+  c.face_id = 0
+  c.codepoint = 0
+  c.glyph_count = 0
+  c.image_id = 0
+  c.src_rect = rect_make(0.0, 0.0, 0.0, 0.0)
 
 type PaintFrame = object
   public cmd_count: int
@@ -1202,8 +1399,8 @@ def paint_frame_new() -> PaintFrame
 
 def paint_frame_push(frame: var PaintFrame, cmd: PaintCmd) -> unit
   requires frame.cmd_count >= 0
-  requires cmd.kind >= 1
-  requires cmd.kind <= 3
+  requires cmd.kind >= paint_op_fill_rect()
+  requires cmd.kind <= paint_op_kind_max()
   ensures frame.cmd_count == old(frame.cmd_count) + 1
   decreases 0
 =
@@ -1223,6 +1420,9 @@ def paint_cmd_fill(rect: Rect, color: Color) -> PaintCmd
   c.rect = rect
   c.color = color
   c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
   return c
 
 def paint_cmd_stroke(rect: Rect, color: Color, stroke_px: float) -> PaintCmd
@@ -1237,6 +1437,64 @@ def paint_cmd_stroke(rect: Rect, color: Color, stroke_px: float) -> PaintCmd
   c.rect = rect
   c.color = color
   c.stroke_px = stroke_px
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
+  return c
+
+def paint_cmd_fill_round(rect: Rect, color: Color, radius_px: float) -> PaintCmd
+  requires rect.w >= 0.0
+  requires rect.h >= 0.0
+  requires radius_px >= 0.0
+  ensures result.kind == paint_op_fill_round_rect()
+  ensures result.radius_px == radius_px
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = paint_op_fill_round_rect()
+  c.rect = rect
+  c.color = color
+  c.stroke_px = 0.0
+  c.radius_px = radius_px
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
+  return c
+
+def paint_cmd_stroke_round(rect: Rect, color: Color, stroke_px: float, radius_px: float) -> PaintCmd
+  requires rect.w >= 0.0
+  requires rect.h >= 0.0
+  requires stroke_px >= 0.0
+  requires radius_px >= 0.0
+  ensures result.kind == paint_op_stroke_round_rect()
+  ensures result.radius_px == radius_px
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = paint_op_stroke_round_rect()
+  c.rect = rect
+  c.color = color
+  c.stroke_px = stroke_px
+  c.radius_px = radius_px
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
+  return c
+
+def paint_cmd_fill_gradient(rect: Rect, color_top: Color, color_bottom: Color) -> PaintCmd
+  requires rect.w >= 0.0
+  requires rect.h >= 0.0
+  ensures result.kind == paint_op_fill_gradient()
+  ensures result.color == color_top
+  ensures result.color_b == color_bottom
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = paint_op_fill_gradient()
+  c.rect = rect
+  c.color = color_top
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_bottom
+  paint_cmd_ext_zero(c)
   return c
 
 def paint_cmd_viewport_grid(rect: Rect) -> PaintCmd
@@ -1250,7 +1508,240 @@ def paint_cmd_viewport_grid(rect: Rect) -> PaintCmd
   c.rect = rect
   c.color = studio_color_accent_cyan()
   c.stroke_px = 1.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
   return c
+
+# BEGIN paint-cmds-ext (scripts/sync-paint-cmds-ext.py)
+# Mirrored for `import ui` — edit src/paint_cmds_ext.li + re-run sync.
+
+# Phase 3 — PaintCmd builders (clip, glyphs, image). Mirrored into lib.li for `import ui`.
+# Opcodes 7–10 and paint_op_kind_max live in lib.li before PaintCmd type.
+
+def paint_image_id_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def paint_image_id_studio_logo() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def paint_image_id_dock_icon() -> int
+  requires true
+  ensures result == paint_image_id_dock_scene()
+  decreases 0
+=
+  return paint_image_id_dock_scene()
+
+def paint_image_id_dock_scene() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def paint_image_id_dock_assets() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def paint_image_id_dock_sim() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def paint_image_id_dock_timeline() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def paint_image_id_dock_settings() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def paint_image_id_max() -> int
+  requires true
+  ensures result == paint_image_id_dock_settings()
+  decreases 0
+=
+  return paint_image_id_dock_settings()
+
+def paint_cmd_clip_push(clip_rect: Rect) -> PaintCmd
+  requires clip_rect.w >= 0.0
+  requires clip_rect.h >= 0.0
+  ensures result.kind == paint_op_clip_push()
+  ensures result.rect == clip_rect
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = paint_op_clip_push()
+  c.rect = clip_rect
+  c.color = studio_color_bg_primary()
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
+  return c
+
+def paint_cmd_clip_pop() -> PaintCmd
+  requires true
+  ensures result.kind == paint_op_clip_pop()
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = paint_op_clip_pop()
+  c.rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  c.color = studio_color_bg_primary()
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
+  return c
+
+def paint_cmd_draw_glyph(dest: Rect, face_id: int, codepoint: int, color: Color) -> PaintCmd
+  requires dest.w >= 0.0
+  requires dest.h >= 0.0
+  requires face_id == font_face_inter() or face_id == font_face_ui_mono()
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  ensures result.kind == paint_op_draw_glyphs()
+  ensures result.rect == dest
+  ensures result.color == color
+  ensures result.face_id == face_id
+  ensures result.codepoint == codepoint
+  ensures result.glyph_count == 1
+  decreases codepoint
+=
+  var c: PaintCmd
+  c.kind = paint_op_draw_glyphs()
+  c.rect = dest
+  c.color = color
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.face_id = face_id
+  c.codepoint = codepoint
+  c.glyph_count = 1
+  c.image_id = 0
+  c.src_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  return c
+
+def paint_cmd_draw_glyphs_run(dest: Rect, face_id: int, color: Color, first_codepoint: int, glyph_count: int) -> PaintCmd
+  requires dest.w >= 0.0
+  requires dest.h >= 0.0
+  requires face_id == font_face_inter() or face_id == font_face_ui_mono()
+  requires glyph_count >= 1
+  requires glyph_count <= 32
+  requires font_atlas_codepoint_supported(first_codepoint) == 1
+  ensures result.kind == paint_op_draw_glyphs()
+  ensures result.rect == dest
+  ensures result.color == color
+  ensures result.face_id == face_id
+  ensures result.codepoint == first_codepoint
+  ensures result.glyph_count == glyph_count
+  decreases glyph_count
+=
+  var c: PaintCmd
+  c.kind = paint_op_draw_glyphs()
+  c.rect = dest
+  c.color = color
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.face_id = face_id
+  c.codepoint = first_codepoint
+  c.glyph_count = glyph_count
+  c.image_id = 0
+  c.src_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  return c
+
+def paint_cmd_draw_image(dest: Rect, image_id: int, src: Rect, tint: Color) -> PaintCmd
+  requires dest.w >= 0.0
+  requires dest.h >= 0.0
+  requires src.w >= 0.0
+  requires src.h >= 0.0
+  requires image_id >= paint_image_id_none()
+  requires image_id <= paint_image_id_max()
+  ensures result.kind == paint_op_draw_image()
+  ensures result.rect == dest
+  ensures result.src_rect == src
+  ensures result.image_id == image_id
+  ensures result.color == tint
+  decreases image_id
+=
+  var c: PaintCmd
+  c.kind = paint_op_draw_image()
+  c.rect = dest
+  c.color = tint
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.face_id = 0
+  c.codepoint = 0
+  c.glyph_count = 0
+  c.image_id = image_id
+  c.src_rect = src
+  return c
+
+def paint_frame_push_clip_scope(frame: var PaintFrame, clip_rect: Rect) -> unit
+  requires frame.cmd_count >= 0
+  requires clip_rect.w >= 0.0
+  requires clip_rect.h >= 0.0
+  ensures frame.cmd_count == old(frame.cmd_count) + 1
+  ensures frame.last_kind == paint_op_clip_push()
+  decreases 0
+=
+  paint_frame_push(frame, paint_cmd_clip_push(clip_rect))
+
+def paint_frame_pop_clip_scope(frame: var PaintFrame) -> unit
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == old(frame.cmd_count) + 1
+  ensures frame.last_kind == paint_op_clip_pop()
+  decreases 0
+=
+  paint_frame_push(frame, paint_cmd_clip_pop())
+# END paint-cmds-ext
+
+def paint_frame_push_elevated_panel(frame: var PaintFrame, rect: Rect) -> unit
+  requires frame.cmd_count >= 0
+  requires rect.w >= 0.0
+  requires rect.h >= 0.0
+  ensures frame.cmd_count == old(frame.cmd_count) + 2
+  ensures frame.last_kind == paint_op_stroke_round_rect()
+  decreases 0
+=
+  var grad: PaintCmd = paint_cmd_fill_gradient(rect, studio_color_bg_primary(), studio_color_bg_elevated())
+  paint_frame_push(frame, grad)
+  var border: PaintCmd = paint_cmd_stroke_round(rect, studio_color_border(), 1.0, studio_default_panel_radius_px())
+  paint_frame_push(frame, border)
+
+def paint_frame_push_accent_chip(frame: var PaintFrame, rect: Rect, accent: Color) -> unit
+  requires frame.cmd_count >= 0
+  requires rect.w >= 0.0
+  requires rect.h >= 0.0
+  ensures frame.cmd_count == old(frame.cmd_count) + 2
+  ensures frame.last_kind == paint_op_stroke_round_rect()
+  decreases 0
+=
+  var fill: PaintCmd = paint_cmd_fill_round(rect, accent, studio_radius_sm_px())
+  paint_frame_push(frame, fill)
+  var ring: PaintCmd = paint_cmd_stroke_round(rect, studio_color_border(), 1.0, studio_radius_sm_px())
+  paint_frame_push(frame, ring)
 
 def paint_studio_shell_chrome(frame: var PaintFrame, layout: var StudioShellLayout) -> unit
   requires frame.cmd_count >= 0
@@ -1277,3 +1768,5470 @@ def paint_studio_shell_chrome_with_palette_count(palette_open: int) -> int
   decreases palette_open
 =
   return paint_studio_shell_chrome_count() + paint_studio_palette_count(palette_open)
+# BEGIN font-atlas-generated (scripts/build-font-atlas.py)
+# Mirrored for `import ui` — edit src/font_atlas.li + regenerate.
+# Phase 3 — Font atlas (Inter UI + ui-monospace bitmap @ build time).
+# Canonical split: src/font_atlas.li + font_atlas_data.li (mirrored into lib.li for `import ui`).
+
+def font_atlas_int_as_float(v: int) -> float
+  requires v >= 0
+  requires v <= 16
+  ensures result >= 0.0
+  decreases v
+=
+  if v <= 0:
+    return 0.0
+  if v == 1:
+    return 1.0
+  if v == 2:
+    return 2.0
+  if v == 3:
+    return 3.0
+  if v == 4:
+    return 4.0
+  if v == 5:
+    return 5.0
+  if v == 6:
+    return 6.0
+  if v == 7:
+    return 7.0
+  if v == 8:
+    return 8.0
+  if v == 9:
+    return 9.0
+  if v == 10:
+    return 10.0
+  if v == 11:
+    return 11.0
+  if v == 12:
+    return 12.0
+  if v == 13:
+    return 13.0
+  if v == 14:
+    return 14.0
+  if v == 15:
+    return 15.0
+  return 16.0
+
+def font_atlas_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def font_atlas_build_format_bitmap() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def font_atlas_build_format_sdf() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def font_face_inter() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def font_face_ui_mono() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def font_atlas_first_codepoint() -> int
+  requires true
+  ensures result == 32
+  decreases 0
+=
+  return 32
+
+def font_atlas_last_codepoint() -> int
+  requires true
+  ensures result == 126
+  decreases 0
+=
+  return 126
+
+def font_atlas_glyph_slot_count() -> int
+  requires true
+  ensures result == 95
+  decreases 0
+=
+  return 95
+
+def font_atlas_ui_cols() -> int
+  requires true
+  ensures result == 16
+  decreases 0
+=
+  return 16
+
+def font_atlas_ui_rows() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def font_atlas_ui_cell_w() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def font_atlas_ui_cell_h() -> float
+  requires true
+  ensures result == 12.0
+  decreases 0
+=
+  return 12.0
+
+def font_atlas_mono_cell_w() -> float
+  requires true
+  ensures result == 7.0
+  decreases 0
+=
+  return 7.0
+
+def font_atlas_mono_cell_h() -> float
+  requires true
+  ensures result == 11.0
+  decreases 0
+=
+  return 11.0
+
+def font_atlas_inter_family_token_len() -> int
+  requires true
+  ensures result == studio_typography_ui_family_len()
+  decreases 0
+=
+  return studio_typography_ui_family_len()
+
+def font_atlas_mono_family_token_len() -> int
+  requires true
+  ensures result == studio_typography_mono_family_len()
+  decreases 0
+=
+  return studio_typography_mono_family_len()
+
+type FontGlyphMetrics = object
+  public codepoint: int
+  public atlas_x: float
+  public atlas_y: float
+  public glyph_w: float
+  public glyph_h: float
+  public advance_px: float
+  public bearing_x: float
+  public bearing_y: float
+
+type FontAtlasFace = object
+  public face_id: int
+  public format_id: int
+  public atlas_w: float
+  public atlas_h: float
+  public cell_w: float
+  public cell_h: float
+  public cols: int
+  public rows: int
+  public line_height_px: float
+  public ascent_px: float
+  public descent_px: float
+
+def font_atlas_codepoint_supported(codepoint: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if codepoint < font_atlas_first_codepoint():
+    return 0
+  if codepoint > font_atlas_last_codepoint():
+    return 0
+  return 1
+
+def font_atlas_glyph_index(codepoint: int) -> int
+  requires codepoint >= font_atlas_first_codepoint()
+  requires codepoint <= font_atlas_last_codepoint()
+  ensures result >= 0
+  ensures result < font_atlas_glyph_slot_count()
+  decreases codepoint
+=
+  return codepoint - font_atlas_first_codepoint()
+
+def font_atlas_face_inter_new() -> FontAtlasFace
+  requires true
+  ensures result.face_id == font_face_inter()
+  ensures result.format_id == font_atlas_build_format_bitmap()
+  ensures result.cols == font_atlas_ui_cols()
+  ensures result.rows == font_atlas_ui_rows()
+  decreases 0
+=
+  var f: FontAtlasFace
+  f.face_id = font_face_inter()
+  f.format_id = font_atlas_build_format_bitmap()
+  f.cols = font_atlas_ui_cols()
+  f.rows = font_atlas_ui_rows()
+  f.cell_w = font_atlas_ui_cell_w()
+  f.cell_h = font_atlas_ui_cell_h()
+  f.atlas_w = 128.0
+  f.atlas_h = 72.0
+  f.line_height_px = studio_typography_body_px()
+  f.ascent_px = 10.0
+  f.descent_px = 2.0
+  return f
+
+def font_atlas_face_mono_new() -> FontAtlasFace
+  requires true
+  ensures result.face_id == font_face_ui_mono()
+  ensures result.format_id == font_atlas_build_format_bitmap()
+  ensures result.cols == font_atlas_ui_cols()
+  ensures result.rows == font_atlas_ui_rows()
+  decreases 0
+=
+  var f: FontAtlasFace
+  f.face_id = font_face_ui_mono()
+  f.format_id = font_atlas_build_format_bitmap()
+  f.cols = font_atlas_ui_cols()
+  f.rows = font_atlas_ui_rows()
+  f.cell_w = font_atlas_mono_cell_w()
+  f.cell_h = font_atlas_mono_cell_h()
+  f.atlas_w = 112.0
+  f.atlas_h = 66.0
+  f.line_height_px = studio_typography_caption_px()
+  f.ascent_px = 9.0
+  f.descent_px = 2.0
+  return f
+
+def font_atlas_face_new(face_id: int) -> FontAtlasFace
+  requires face_id == font_face_inter() or face_id == font_face_ui_mono()
+  ensures result.face_id == face_id
+  decreases face_id
+=
+  if face_id == font_face_ui_mono():
+    return font_atlas_face_mono_new()
+  return font_atlas_face_inter_new()
+
+def font_atlas_glyph_advance_px(face: FontAtlasFace, codepoint: int) -> float
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result > 0.0
+  decreases codepoint
+=
+  if face.face_id == font_face_ui_mono():
+    return face.cell_w
+  if codepoint == 32:
+    return 4.0
+  if codepoint >= 65 and codepoint <= 90:
+    return 7.0
+  if codepoint >= 97 and codepoint <= 122:
+    return 6.0
+  return 6.0
+
+def font_atlas_glyph_metrics(face: FontAtlasFace, codepoint: int) -> FontGlyphMetrics
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result.codepoint == codepoint
+  ensures result.glyph_w == face.cell_w
+  ensures result.glyph_h == face.cell_h
+  decreases codepoint
+=
+  var idx: int = font_atlas_glyph_index(codepoint)
+  var col: int = idx % face.cols
+  var row: int = idx / face.cols
+  var m: FontGlyphMetrics
+  m.codepoint = codepoint
+  m.atlas_x = font_atlas_int_as_float(col) * face.cell_w
+  m.atlas_y = font_atlas_int_as_float(row) * face.cell_h
+  m.glyph_w = face.cell_w
+  m.glyph_h = face.cell_h
+  m.advance_px = font_atlas_glyph_advance_px(face, codepoint)
+  m.bearing_x = 0.0
+  m.bearing_y = face.ascent_px - face.cell_h
+  return m
+
+def font_atlas_bitmap_row(face: FontAtlasFace, glyph_index: int, row: int) -> int
+  requires glyph_index >= 0
+  requires glyph_index < font_atlas_glyph_slot_count()
+  requires row >= 0
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= 0
+  decreases glyph_index
+=
+  if face.face_id == font_face_ui_mono():
+    return font_atlas_data_mono_row(glyph_index, row)
+  return font_atlas_data_ui_row(glyph_index, row)
+
+def font_atlas_row_pixel_opaque(row_bits: int, cell_w: int, px: int) -> int
+  requires cell_w >= 1
+  requires px >= 0
+  requires px < cell_w
+  ensures result >= 0
+  ensures result <= 1
+  decreases px
+=
+  var bit_pos: int = cell_w - 1 - px
+  var shifted: int = row_bits
+  var pos: int = 0
+  while pos < bit_pos:
+    shifted = shifted / 2
+    pos = pos + 1
+  if shifted / 2 != shifted / 2:
+    return 1
+  return 0
+
+def font_atlas_sample_alpha(face: FontAtlasFace, codepoint: int, px: int, py: int) -> int
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  requires px >= 0
+  requires py >= 0
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= 0
+  ensures result <= 1
+  decreases codepoint
+=
+  var cell_w_int: int = 8
+  var cell_h_int: int = 12
+  if face.face_id == font_face_ui_mono():
+    cell_w_int = 7
+    cell_h_int = 11
+  if px >= cell_w_int:
+    return 0
+  if py >= cell_h_int:
+    return 0
+  var idx: int = font_atlas_glyph_index(codepoint)
+  var row_bits: int = font_atlas_bitmap_row(face, idx, py)
+  return font_atlas_row_pixel_opaque(row_bits, cell_w_int, px)
+
+def font_atlas_has_ink(face: FontAtlasFace, codepoint: int) -> int
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= 0
+  ensures result <= 1
+  decreases codepoint
+=
+  var cell_w_int: int = 8
+  var cell_h_int: int = 12
+  if face.face_id == font_face_ui_mono():
+    cell_w_int = 7
+    cell_h_int = 11
+  var py: int = 0
+  while py < cell_h_int:
+    var px: int = 0
+    while px < cell_w_int:
+      if font_atlas_sample_alpha(face, codepoint, px, py) == 1:
+        return 1
+      px = px + 1
+    py = py + 1
+  return 0
+
+# Generated by scripts/build-font-atlas.py — do not edit by hand.
+# Bitmap atlas: Inter (UI proportional) + ui-monospace (fixed cell) @ build time.
+
+def font_atlas_data_ui_row(glyph_index: int, row: int) -> int
+  requires glyph_index >= 0
+  requires glyph_index < font_atlas_glyph_slot_count()
+  requires row >= 0
+  requires row < 12
+  ensures result >= 0
+  decreases glyph_index
+=
+  if glyph_index == 0:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 1:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 16
+    if row == 3:
+      return 16
+    if row == 4:
+      return 16
+    if row == 5:
+      return 16
+    if row == 6:
+      return 16
+    if row == 7:
+      return 0
+    if row == 8:
+      return 16
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 2:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 40
+    if row == 3:
+      return 40
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 3:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 40
+    if row == 3:
+      return 124
+    if row == 4:
+      return 40
+    if row == 5:
+      return 124
+    if row == 6:
+      return 40
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 4:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 56
+    if row == 5:
+      return 68
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 5:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 68
+    if row == 3:
+      return 8
+    if row == 4:
+      return 16
+    if row == 5:
+      return 32
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 6:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 56
+    if row == 5:
+      return 80
+    if row == 6:
+      return 40
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 7:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 16
+    if row == 3:
+      return 16
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 8:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 8
+    if row == 3:
+      return 16
+    if row == 4:
+      return 16
+    if row == 5:
+      return 16
+    if row == 6:
+      return 8
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 9:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 32
+    if row == 3:
+      return 16
+    if row == 4:
+      return 16
+    if row == 5:
+      return 16
+    if row == 6:
+      return 32
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 10:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 16
+    if row == 4:
+      return 124
+    if row == 5:
+      return 16
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 11:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 16
+    if row == 4:
+      return 56
+    if row == 5:
+      return 16
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 12:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 16
+    if row == 7:
+      return 16
+    if row == 8:
+      return 32
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 13:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 0
+    if row == 4:
+      return 56
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 14:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 16
+    if row == 8:
+      return 16
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 15:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 4
+    if row == 3:
+      return 8
+    if row == 4:
+      return 16
+    if row == 5:
+      return 32
+    if row == 6:
+      return 64
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 16:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 68
+    if row == 5:
+      return 68
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 17:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 16
+    if row == 3:
+      return 48
+    if row == 4:
+      return 16
+    if row == 5:
+      return 16
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 18:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 4
+    if row == 4:
+      return 56
+    if row == 5:
+      return 64
+    if row == 6:
+      return 124
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 19:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 4
+    if row == 4:
+      return 24
+    if row == 5:
+      return 4
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 20:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 8
+    if row == 3:
+      return 24
+    if row == 4:
+      return 40
+    if row == 5:
+      return 124
+    if row == 6:
+      return 8
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 21:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 124
+    if row == 3:
+      return 64
+    if row == 4:
+      return 120
+    if row == 5:
+      return 4
+    if row == 6:
+      return 120
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 22:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 64
+    if row == 4:
+      return 120
+    if row == 5:
+      return 68
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 23:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 124
+    if row == 3:
+      return 4
+    if row == 4:
+      return 8
+    if row == 5:
+      return 16
+    if row == 6:
+      return 16
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 24:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 56
+    if row == 5:
+      return 68
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 25:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 60
+    if row == 5:
+      return 4
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 26:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 16
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 16
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 27:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 16
+    if row == 4:
+      return 0
+    if row == 5:
+      return 16
+    if row == 6:
+      return 16
+    if row == 7:
+      return 32
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 28:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 8
+    if row == 3:
+      return 16
+    if row == 4:
+      return 32
+    if row == 5:
+      return 16
+    if row == 6:
+      return 8
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 29:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 56
+    if row == 4:
+      return 0
+    if row == 5:
+      return 56
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 30:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 32
+    if row == 3:
+      return 16
+    if row == 4:
+      return 8
+    if row == 5:
+      return 16
+    if row == 6:
+      return 32
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 31:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 8
+    if row == 5:
+      return 16
+    if row == 6:
+      return 0
+    if row == 7:
+      return 16
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 32:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 92
+    if row == 5:
+      return 84
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 33:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 68
+    if row == 5:
+      return 124
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 34:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 120
+    if row == 3:
+      return 68
+    if row == 4:
+      return 120
+    if row == 5:
+      return 68
+    if row == 6:
+      return 120
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 35:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 64
+    if row == 5:
+      return 68
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 36:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 120
+    if row == 3:
+      return 68
+    if row == 4:
+      return 68
+    if row == 5:
+      return 68
+    if row == 6:
+      return 120
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 37:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 124
+    if row == 3:
+      return 64
+    if row == 4:
+      return 120
+    if row == 5:
+      return 64
+    if row == 6:
+      return 124
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 38:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 124
+    if row == 3:
+      return 64
+    if row == 4:
+      return 120
+    if row == 5:
+      return 64
+    if row == 6:
+      return 64
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 39:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 64
+    if row == 4:
+      return 92
+    if row == 5:
+      return 68
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 40:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 68
+    if row == 3:
+      return 68
+    if row == 4:
+      return 124
+    if row == 5:
+      return 68
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 41:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 16
+    if row == 4:
+      return 16
+    if row == 5:
+      return 16
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 42:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 28
+    if row == 3:
+      return 8
+    if row == 4:
+      return 8
+    if row == 5:
+      return 72
+    if row == 6:
+      return 48
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 43:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 68
+    if row == 3:
+      return 72
+    if row == 4:
+      return 112
+    if row == 5:
+      return 72
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 44:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 64
+    if row == 3:
+      return 64
+    if row == 4:
+      return 64
+    if row == 5:
+      return 64
+    if row == 6:
+      return 124
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 45:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 68
+    if row == 3:
+      return 108
+    if row == 4:
+      return 84
+    if row == 5:
+      return 68
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 46:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 68
+    if row == 3:
+      return 100
+    if row == 4:
+      return 84
+    if row == 5:
+      return 76
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 47:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 68
+    if row == 5:
+      return 68
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 48:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 120
+    if row == 3:
+      return 68
+    if row == 4:
+      return 120
+    if row == 5:
+      return 64
+    if row == 6:
+      return 64
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 49:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 68
+    if row == 4:
+      return 68
+    if row == 5:
+      return 84
+    if row == 6:
+      return 52
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 50:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 120
+    if row == 3:
+      return 68
+    if row == 4:
+      return 120
+    if row == 5:
+      return 80
+    if row == 6:
+      return 72
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 51:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 64
+    if row == 4:
+      return 56
+    if row == 5:
+      return 4
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 52:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 124
+    if row == 3:
+      return 16
+    if row == 4:
+      return 16
+    if row == 5:
+      return 16
+    if row == 6:
+      return 16
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 53:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 68
+    if row == 3:
+      return 68
+    if row == 4:
+      return 68
+    if row == 5:
+      return 68
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 54:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 68
+    if row == 3:
+      return 68
+    if row == 4:
+      return 68
+    if row == 5:
+      return 40
+    if row == 6:
+      return 16
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 55:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 68
+    if row == 3:
+      return 68
+    if row == 4:
+      return 84
+    if row == 5:
+      return 84
+    if row == 6:
+      return 40
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 56:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 68
+    if row == 3:
+      return 40
+    if row == 4:
+      return 16
+    if row == 5:
+      return 40
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 57:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 68
+    if row == 3:
+      return 68
+    if row == 4:
+      return 40
+    if row == 5:
+      return 16
+    if row == 6:
+      return 16
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 58:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 124
+    if row == 3:
+      return 8
+    if row == 4:
+      return 16
+    if row == 5:
+      return 32
+    if row == 6:
+      return 124
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 59:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 32
+    if row == 4:
+      return 32
+    if row == 5:
+      return 32
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 60:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 64
+    if row == 3:
+      return 32
+    if row == 4:
+      return 16
+    if row == 5:
+      return 8
+    if row == 6:
+      return 4
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 61:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 56
+    if row == 3:
+      return 8
+    if row == 4:
+      return 8
+    if row == 5:
+      return 8
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 62:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 16
+    if row == 3:
+      return 40
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 63:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 0
+    if row == 4:
+      return 124
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 64:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 32
+    if row == 3:
+      return 16
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 65:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 56
+    if row == 4:
+      return 4
+    if row == 5:
+      return 60
+    if row == 6:
+      return 60
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 66:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 64
+    if row == 3:
+      return 64
+    if row == 4:
+      return 120
+    if row == 5:
+      return 68
+    if row == 6:
+      return 120
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 67:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 56
+    if row == 4:
+      return 64
+    if row == 5:
+      return 64
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 68:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 4
+    if row == 3:
+      return 4
+    if row == 4:
+      return 60
+    if row == 5:
+      return 68
+    if row == 6:
+      return 60
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 69:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 56
+    if row == 4:
+      return 124
+    if row == 5:
+      return 64
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 70:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 24
+    if row == 3:
+      return 32
+    if row == 4:
+      return 112
+    if row == 5:
+      return 32
+    if row == 6:
+      return 32
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 71:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 60
+    if row == 4:
+      return 68
+    if row == 5:
+      return 60
+    if row == 6:
+      return 4
+    if row == 7:
+      return 56
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 72:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 64
+    if row == 3:
+      return 64
+    if row == 4:
+      return 88
+    if row == 5:
+      return 100
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 73:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 16
+    if row == 3:
+      return 0
+    if row == 4:
+      return 48
+    if row == 5:
+      return 16
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 74:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 8
+    if row == 3:
+      return 0
+    if row == 4:
+      return 24
+    if row == 5:
+      return 8
+    if row == 6:
+      return 72
+    if row == 7:
+      return 48
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 75:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 64
+    if row == 3:
+      return 72
+    if row == 4:
+      return 112
+    if row == 5:
+      return 72
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 76:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 48
+    if row == 3:
+      return 16
+    if row == 4:
+      return 16
+    if row == 5:
+      return 16
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 77:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 104
+    if row == 4:
+      return 84
+    if row == 5:
+      return 84
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 78:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 88
+    if row == 4:
+      return 100
+    if row == 5:
+      return 68
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 79:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 56
+    if row == 4:
+      return 68
+    if row == 5:
+      return 68
+    if row == 6:
+      return 56
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 80:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 120
+    if row == 4:
+      return 68
+    if row == 5:
+      return 120
+    if row == 6:
+      return 64
+    if row == 7:
+      return 64
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 81:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 60
+    if row == 4:
+      return 68
+    if row == 5:
+      return 60
+    if row == 6:
+      return 4
+    if row == 7:
+      return 4
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 82:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 88
+    if row == 4:
+      return 100
+    if row == 5:
+      return 64
+    if row == 6:
+      return 64
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 83:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 56
+    if row == 4:
+      return 64
+    if row == 5:
+      return 56
+    if row == 6:
+      return 4
+    if row == 7:
+      return 120
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 84:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 32
+    if row == 3:
+      return 112
+    if row == 4:
+      return 32
+    if row == 5:
+      return 32
+    if row == 6:
+      return 24
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 85:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 68
+    if row == 4:
+      return 68
+    if row == 5:
+      return 76
+    if row == 6:
+      return 52
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 86:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 68
+    if row == 4:
+      return 68
+    if row == 5:
+      return 40
+    if row == 6:
+      return 16
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 87:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 68
+    if row == 4:
+      return 84
+    if row == 5:
+      return 84
+    if row == 6:
+      return 40
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 88:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 68
+    if row == 4:
+      return 40
+    if row == 5:
+      return 16
+    if row == 6:
+      return 68
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 89:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 68
+    if row == 4:
+      return 68
+    if row == 5:
+      return 60
+    if row == 6:
+      return 4
+    if row == 7:
+      return 56
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 90:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 124
+    if row == 4:
+      return 8
+    if row == 5:
+      return 16
+    if row == 6:
+      return 124
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 91:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 8
+    if row == 3:
+      return 16
+    if row == 4:
+      return 32
+    if row == 5:
+      return 16
+    if row == 6:
+      return 8
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 92:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 16
+    if row == 3:
+      return 16
+    if row == 4:
+      return 16
+    if row == 5:
+      return 16
+    if row == 6:
+      return 16
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 93:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 32
+    if row == 3:
+      return 16
+    if row == 4:
+      return 8
+    if row == 5:
+      return 16
+    if row == 6:
+      return 32
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  if glyph_index == 94:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 32
+    if row == 3:
+      return 84
+    if row == 4:
+      return 8
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    if row == 11:
+      return 0
+    return 0
+  return 0
+
+def font_atlas_data_mono_row(glyph_index: int, row: int) -> int
+  requires glyph_index >= 0
+  requires glyph_index < font_atlas_glyph_slot_count()
+  requires row >= 0
+  requires row < 11
+  ensures result >= 0
+  decreases glyph_index
+=
+  if glyph_index == 0:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 1:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 8
+    if row == 2:
+      return 8
+    if row == 3:
+      return 8
+    if row == 4:
+      return 8
+    if row == 5:
+      return 8
+    if row == 6:
+      return 0
+    if row == 7:
+      return 8
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 2:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 20
+    if row == 2:
+      return 20
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 3:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 20
+    if row == 2:
+      return 62
+    if row == 3:
+      return 20
+    if row == 4:
+      return 62
+    if row == 5:
+      return 20
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 4:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 28
+    if row == 4:
+      return 34
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 5:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 34
+    if row == 2:
+      return 4
+    if row == 3:
+      return 8
+    if row == 4:
+      return 16
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 6:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 28
+    if row == 4:
+      return 40
+    if row == 5:
+      return 20
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 7:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 8
+    if row == 2:
+      return 8
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 8:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 4
+    if row == 2:
+      return 8
+    if row == 3:
+      return 8
+    if row == 4:
+      return 8
+    if row == 5:
+      return 4
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 9:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 16
+    if row == 2:
+      return 8
+    if row == 3:
+      return 8
+    if row == 4:
+      return 8
+    if row == 5:
+      return 16
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 10:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 8
+    if row == 3:
+      return 62
+    if row == 4:
+      return 8
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 11:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 8
+    if row == 3:
+      return 28
+    if row == 4:
+      return 8
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 12:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 8
+    if row == 6:
+      return 8
+    if row == 7:
+      return 16
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 13:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 28
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 14:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 8
+    if row == 7:
+      return 8
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 15:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 2
+    if row == 2:
+      return 4
+    if row == 3:
+      return 8
+    if row == 4:
+      return 16
+    if row == 5:
+      return 32
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 16:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 34
+    if row == 4:
+      return 34
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 17:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 8
+    if row == 2:
+      return 24
+    if row == 3:
+      return 8
+    if row == 4:
+      return 8
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 18:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 2
+    if row == 3:
+      return 28
+    if row == 4:
+      return 32
+    if row == 5:
+      return 62
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 19:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 2
+    if row == 3:
+      return 12
+    if row == 4:
+      return 2
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 20:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 4
+    if row == 2:
+      return 12
+    if row == 3:
+      return 20
+    if row == 4:
+      return 62
+    if row == 5:
+      return 4
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 21:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 62
+    if row == 2:
+      return 32
+    if row == 3:
+      return 60
+    if row == 4:
+      return 2
+    if row == 5:
+      return 60
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 22:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 32
+    if row == 3:
+      return 60
+    if row == 4:
+      return 34
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 23:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 62
+    if row == 2:
+      return 2
+    if row == 3:
+      return 4
+    if row == 4:
+      return 8
+    if row == 5:
+      return 8
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 24:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 28
+    if row == 4:
+      return 34
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 25:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 30
+    if row == 4:
+      return 2
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 26:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 8
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 8
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 27:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 8
+    if row == 3:
+      return 0
+    if row == 4:
+      return 8
+    if row == 5:
+      return 8
+    if row == 6:
+      return 16
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 28:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 4
+    if row == 2:
+      return 8
+    if row == 3:
+      return 16
+    if row == 4:
+      return 8
+    if row == 5:
+      return 4
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 29:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 28
+    if row == 3:
+      return 0
+    if row == 4:
+      return 28
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 30:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 16
+    if row == 2:
+      return 8
+    if row == 3:
+      return 4
+    if row == 4:
+      return 8
+    if row == 5:
+      return 16
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 31:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 4
+    if row == 4:
+      return 8
+    if row == 5:
+      return 0
+    if row == 6:
+      return 8
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 32:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 46
+    if row == 4:
+      return 42
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 33:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 34
+    if row == 4:
+      return 62
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 34:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 60
+    if row == 2:
+      return 34
+    if row == 3:
+      return 60
+    if row == 4:
+      return 34
+    if row == 5:
+      return 60
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 35:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 32
+    if row == 4:
+      return 34
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 36:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 60
+    if row == 2:
+      return 34
+    if row == 3:
+      return 34
+    if row == 4:
+      return 34
+    if row == 5:
+      return 60
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 37:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 62
+    if row == 2:
+      return 32
+    if row == 3:
+      return 60
+    if row == 4:
+      return 32
+    if row == 5:
+      return 62
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 38:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 62
+    if row == 2:
+      return 32
+    if row == 3:
+      return 60
+    if row == 4:
+      return 32
+    if row == 5:
+      return 32
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 39:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 32
+    if row == 3:
+      return 46
+    if row == 4:
+      return 34
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 40:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 34
+    if row == 2:
+      return 34
+    if row == 3:
+      return 62
+    if row == 4:
+      return 34
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 41:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 8
+    if row == 3:
+      return 8
+    if row == 4:
+      return 8
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 42:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 14
+    if row == 2:
+      return 4
+    if row == 3:
+      return 4
+    if row == 4:
+      return 36
+    if row == 5:
+      return 24
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 43:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 34
+    if row == 2:
+      return 36
+    if row == 3:
+      return 56
+    if row == 4:
+      return 36
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 44:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 32
+    if row == 2:
+      return 32
+    if row == 3:
+      return 32
+    if row == 4:
+      return 32
+    if row == 5:
+      return 62
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 45:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 34
+    if row == 2:
+      return 54
+    if row == 3:
+      return 42
+    if row == 4:
+      return 34
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 46:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 34
+    if row == 2:
+      return 50
+    if row == 3:
+      return 42
+    if row == 4:
+      return 38
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 47:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 34
+    if row == 4:
+      return 34
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 48:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 60
+    if row == 2:
+      return 34
+    if row == 3:
+      return 60
+    if row == 4:
+      return 32
+    if row == 5:
+      return 32
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 49:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 34
+    if row == 3:
+      return 34
+    if row == 4:
+      return 42
+    if row == 5:
+      return 26
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 50:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 60
+    if row == 2:
+      return 34
+    if row == 3:
+      return 60
+    if row == 4:
+      return 40
+    if row == 5:
+      return 36
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 51:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 32
+    if row == 3:
+      return 28
+    if row == 4:
+      return 2
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 52:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 62
+    if row == 2:
+      return 8
+    if row == 3:
+      return 8
+    if row == 4:
+      return 8
+    if row == 5:
+      return 8
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 53:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 34
+    if row == 2:
+      return 34
+    if row == 3:
+      return 34
+    if row == 4:
+      return 34
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 54:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 34
+    if row == 2:
+      return 34
+    if row == 3:
+      return 34
+    if row == 4:
+      return 20
+    if row == 5:
+      return 8
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 55:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 34
+    if row == 2:
+      return 34
+    if row == 3:
+      return 42
+    if row == 4:
+      return 42
+    if row == 5:
+      return 20
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 56:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 34
+    if row == 2:
+      return 20
+    if row == 3:
+      return 8
+    if row == 4:
+      return 20
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 57:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 34
+    if row == 2:
+      return 34
+    if row == 3:
+      return 20
+    if row == 4:
+      return 8
+    if row == 5:
+      return 8
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 58:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 62
+    if row == 2:
+      return 4
+    if row == 3:
+      return 8
+    if row == 4:
+      return 16
+    if row == 5:
+      return 62
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 59:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 16
+    if row == 3:
+      return 16
+    if row == 4:
+      return 16
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 60:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 32
+    if row == 2:
+      return 16
+    if row == 3:
+      return 8
+    if row == 4:
+      return 4
+    if row == 5:
+      return 2
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 61:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 28
+    if row == 2:
+      return 4
+    if row == 3:
+      return 4
+    if row == 4:
+      return 4
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 62:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 8
+    if row == 2:
+      return 20
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 63:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 0
+    if row == 3:
+      return 62
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 64:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 16
+    if row == 2:
+      return 8
+    if row == 3:
+      return 0
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 65:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 28
+    if row == 3:
+      return 2
+    if row == 4:
+      return 30
+    if row == 5:
+      return 30
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 66:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 32
+    if row == 2:
+      return 32
+    if row == 3:
+      return 60
+    if row == 4:
+      return 34
+    if row == 5:
+      return 60
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 67:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 28
+    if row == 3:
+      return 32
+    if row == 4:
+      return 32
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 68:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 2
+    if row == 2:
+      return 2
+    if row == 3:
+      return 30
+    if row == 4:
+      return 34
+    if row == 5:
+      return 30
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 69:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 28
+    if row == 3:
+      return 62
+    if row == 4:
+      return 32
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 70:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 12
+    if row == 2:
+      return 16
+    if row == 3:
+      return 56
+    if row == 4:
+      return 16
+    if row == 5:
+      return 16
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 71:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 30
+    if row == 3:
+      return 34
+    if row == 4:
+      return 30
+    if row == 5:
+      return 2
+    if row == 6:
+      return 28
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 72:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 32
+    if row == 2:
+      return 32
+    if row == 3:
+      return 44
+    if row == 4:
+      return 50
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 73:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 8
+    if row == 2:
+      return 0
+    if row == 3:
+      return 24
+    if row == 4:
+      return 8
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 74:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 4
+    if row == 2:
+      return 0
+    if row == 3:
+      return 12
+    if row == 4:
+      return 4
+    if row == 5:
+      return 36
+    if row == 6:
+      return 24
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 75:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 32
+    if row == 2:
+      return 36
+    if row == 3:
+      return 56
+    if row == 4:
+      return 36
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 76:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 24
+    if row == 2:
+      return 8
+    if row == 3:
+      return 8
+    if row == 4:
+      return 8
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 77:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 52
+    if row == 3:
+      return 42
+    if row == 4:
+      return 42
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 78:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 44
+    if row == 3:
+      return 50
+    if row == 4:
+      return 34
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 79:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 28
+    if row == 3:
+      return 34
+    if row == 4:
+      return 34
+    if row == 5:
+      return 28
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 80:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 60
+    if row == 3:
+      return 34
+    if row == 4:
+      return 60
+    if row == 5:
+      return 32
+    if row == 6:
+      return 32
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 81:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 30
+    if row == 3:
+      return 34
+    if row == 4:
+      return 30
+    if row == 5:
+      return 2
+    if row == 6:
+      return 2
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 82:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 44
+    if row == 3:
+      return 50
+    if row == 4:
+      return 32
+    if row == 5:
+      return 32
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 83:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 28
+    if row == 3:
+      return 32
+    if row == 4:
+      return 28
+    if row == 5:
+      return 2
+    if row == 6:
+      return 60
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 84:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 16
+    if row == 2:
+      return 56
+    if row == 3:
+      return 16
+    if row == 4:
+      return 16
+    if row == 5:
+      return 12
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 85:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 34
+    if row == 3:
+      return 34
+    if row == 4:
+      return 38
+    if row == 5:
+      return 26
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 86:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 34
+    if row == 3:
+      return 34
+    if row == 4:
+      return 20
+    if row == 5:
+      return 8
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 87:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 34
+    if row == 3:
+      return 42
+    if row == 4:
+      return 42
+    if row == 5:
+      return 20
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 88:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 34
+    if row == 3:
+      return 20
+    if row == 4:
+      return 8
+    if row == 5:
+      return 34
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 89:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 34
+    if row == 3:
+      return 34
+    if row == 4:
+      return 30
+    if row == 5:
+      return 2
+    if row == 6:
+      return 28
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 90:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 0
+    if row == 2:
+      return 62
+    if row == 3:
+      return 4
+    if row == 4:
+      return 8
+    if row == 5:
+      return 62
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 91:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 4
+    if row == 2:
+      return 8
+    if row == 3:
+      return 16
+    if row == 4:
+      return 8
+    if row == 5:
+      return 4
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 92:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 8
+    if row == 2:
+      return 8
+    if row == 3:
+      return 8
+    if row == 4:
+      return 8
+    if row == 5:
+      return 8
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 93:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 16
+    if row == 2:
+      return 8
+    if row == 3:
+      return 4
+    if row == 4:
+      return 8
+    if row == 5:
+      return 16
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  if glyph_index == 94:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 16
+    if row == 2:
+      return 42
+    if row == 3:
+      return 4
+    if row == 4:
+      return 0
+    if row == 5:
+      return 0
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+    if row == 8:
+      return 0
+    if row == 9:
+      return 0
+    if row == 10:
+      return 0
+    return 0
+  return 0
+
+def font_atlas_data_checksum() -> int
+  requires true
+  ensures result == 73305437
+  decreases 0
+=
+  return 73305437
+# END font-atlas-generated
+# BEGIN icon-atlas-generated (scripts/build-icon-atlas.py)
+# Mirrored for `import ui` — edit src/icon_atlas.li + regenerate.
+# Phase 3 — UI icon atlas (SVG-derived bitmap @ build time; token-named slots).
+# Canonical split: src/icon_atlas.li + icon_atlas_data.li (mirrored into lib.li for `import ui`).
+
+def icon_atlas_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def icon_atlas_cell_px() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def icon_atlas_slot_count() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def studio_icon_token_count() -> int
+  requires true
+  ensures result == icon_atlas_slot_count()
+  decreases 0
+=
+  return icon_atlas_slot_count()
+
+def studio_icon_token_id_dock_scene() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_icon_token_id_dock_assets() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_icon_token_id_dock_sim() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_icon_token_id_dock_timeline() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_icon_token_id_dock_settings() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_icon_token_name_len(token_id: int) -> int
+  requires token_id >= 0
+  requires token_id < studio_icon_token_count()
+  ensures result >= 8
+  ensures result <= 14
+  decreases token_id
+=
+  if token_id == studio_icon_token_id_dock_scene():
+    return 10
+  if token_id == studio_icon_token_id_dock_assets():
+    return 11
+  if token_id == studio_icon_token_id_dock_sim():
+    return 8
+  if token_id == studio_icon_token_id_dock_timeline():
+    return 13
+  if token_id == studio_icon_token_id_dock_settings():
+    return 13
+  return 13
+
+def studio_icon_token_image_id(token_id: int) -> int
+  requires token_id >= 0
+  requires token_id < studio_icon_token_count()
+  ensures result >= paint_image_id_dock_scene()
+  ensures result <= paint_image_id_max()
+  decreases token_id
+=
+  if token_id == studio_icon_token_id_dock_scene():
+    return paint_image_id_dock_scene()
+  if token_id == studio_icon_token_id_dock_assets():
+    return paint_image_id_dock_assets()
+  if token_id == studio_icon_token_id_dock_sim():
+    return paint_image_id_dock_sim()
+  if token_id == studio_icon_token_id_dock_timeline():
+    return paint_image_id_dock_timeline()
+  return paint_image_id_dock_settings()
+
+def icon_atlas_slot_for_image_id(image_id: int) -> int
+  requires image_id >= paint_image_id_dock_scene()
+  requires image_id <= paint_image_id_max()
+  ensures result >= 0
+  ensures result < icon_atlas_slot_count()
+  decreases image_id
+=
+  return image_id - paint_image_id_dock_scene()
+
+def icon_atlas_image_for_dock_slot(slot: int) -> int
+  requires slot >= 0
+  requires slot < icon_atlas_slot_count()
+  ensures result >= paint_image_id_dock_scene()
+  ensures result <= paint_image_id_max()
+  decreases slot
+=
+  return studio_icon_token_image_id(slot)
+
+def icon_atlas_int_as_float(v: int) -> float
+  requires v >= 0
+  requires v <= 8
+  ensures result >= 0.0
+  decreases v
+=
+  if v <= 0:
+    return 0.0
+  if v == 1:
+    return 1.0
+  if v == 2:
+    return 2.0
+  if v == 3:
+    return 3.0
+  if v == 4:
+    return 4.0
+  if v == 5:
+    return 5.0
+  if v == 6:
+    return 6.0
+  if v == 7:
+    return 7.0
+  return 8.0
+
+def icon_atlas_src_rect(image_id: int) -> Rect
+  requires image_id >= paint_image_id_dock_scene()
+  requires image_id <= paint_image_id_max()
+  ensures result.w == icon_atlas_int_as_float(icon_atlas_cell_px())
+  ensures result.h == icon_atlas_int_as_float(icon_atlas_cell_px())
+  decreases image_id
+=
+  var slot: int = icon_atlas_slot_for_image_id(image_id)
+  var cell: float = icon_atlas_int_as_float(icon_atlas_cell_px())
+  var x: float = icon_atlas_int_as_float(slot) * cell
+  return rect_make(x, 0.0, cell, cell)
+
+def icon_atlas_row_pixel_opaque(row_bits: int, px: int) -> int
+  requires px >= 0
+  requires px < 8
+  ensures result >= 0
+  ensures result <= 1
+  decreases px
+=
+  var mask: int = 128
+  var shift: int = px
+  if shift == 1:
+    mask = 64
+  if shift == 2:
+    mask = 32
+  if shift == 3:
+    mask = 16
+  if shift == 4:
+    mask = 8
+  if shift == 5:
+    mask = 4
+  if shift == 6:
+    mask = 2
+  if shift == 7:
+    mask = 1
+  if row_bits >= mask:
+    return 1
+  return 0
+
+def icon_atlas_sample_opaque(image_id: int, px: int, py: int) -> int
+  requires image_id >= paint_image_id_dock_scene()
+  requires image_id <= paint_image_id_max()
+  requires px >= 0
+  requires px < icon_atlas_cell_px()
+  requires py >= 0
+  requires py < icon_atlas_cell_px()
+  ensures result >= 0
+  ensures result <= 1
+  decreases py
+=
+  var slot: int = icon_atlas_slot_for_image_id(image_id)
+  var row_bits: int = icon_atlas_data_row(slot, py)
+  return icon_atlas_row_pixel_opaque(row_bits, px)
+
+def icon_atlas_has_ink(image_id: int) -> int
+  requires image_id >= paint_image_id_dock_scene()
+  requires image_id <= paint_image_id_max()
+  ensures result >= 0
+  ensures result <= 1
+  decreases image_id
+=
+  var py: int = 0
+  while py < icon_atlas_cell_px():
+    var px: int = 0
+    while px < icon_atlas_cell_px():
+      if icon_atlas_sample_opaque(image_id, px, py) == 1:
+        return 1
+      px = px + 1
+    py = py + 1
+  return 0
+
+# Generated by scripts/build-icon-atlas.py — do not edit by hand.
+def icon_atlas_data_row(slot: int, row: int) -> int
+  requires slot >= 0
+  requires slot < icon_atlas_slot_count()
+  requires row >= 0
+  requires row < icon_atlas_cell_px()
+  ensures result >= 0
+  ensures result <= 255
+  decreases slot
+=
+  if slot == 0:
+    if row == 0:
+      return 60
+    if row == 1:
+      return 126
+    if row == 2:
+      return 231
+    if row == 3:
+      return 231
+    if row == 4:
+      return 231
+    if row == 5:
+      return 231
+    if row == 6:
+      return 126
+    if row == 7:
+      return 60
+  if slot == 1:
+    if row == 0:
+      return 0
+    if row == 1:
+      return 60
+    if row == 2:
+      return 126
+    if row == 3:
+      return 126
+    if row == 4:
+      return 126
+    if row == 5:
+      return 126
+    if row == 6:
+      return 126
+    if row == 7:
+      return 60
+  if slot == 2:
+    if row == 0:
+      return 24
+    if row == 1:
+      return 24
+    if row == 2:
+      return 24
+    if row == 3:
+      return 24
+    if row == 4:
+      return 126
+    if row == 5:
+      return 255
+    if row == 6:
+      return 0
+    if row == 7:
+      return 0
+  if slot == 3:
+    if row == 0:
+      return 60
+    if row == 1:
+      return 126
+    if row == 2:
+      return 102
+    if row == 3:
+      return 102
+    if row == 4:
+      return 102
+    if row == 5:
+      return 126
+    if row == 6:
+      return 60
+    if row == 7:
+      return 0
+  if slot == 4:
+    if row == 0:
+      return 24
+    if row == 1:
+      return 60
+    if row == 2:
+      return 126
+    if row == 3:
+      return 255
+    if row == 4:
+      return 126
+    if row == 5:
+      return 60
+    if row == 6:
+      return 24
+    if row == 7:
+      return 0
+  return 0
+
+def icon_atlas_data_checksum() -> int
+  requires true
+  ensures result == 2138295166
+  decreases 0
+=
+  return 2138295166
+# END icon-atlas-generated

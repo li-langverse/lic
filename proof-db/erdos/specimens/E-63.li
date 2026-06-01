@@ -1,0 +1,24 @@
+# E-63: Are there infinitely many Carmichael numbers (composite n with a^{n-1} = 1 mod n for all a coprime to n)?
+# erdos_number: 63
+# erdos_status: open
+# priority_tier: P1
+# tags: primes, pseudoprimes
+
+def erdos_e63_are_there_infinitely_many_carmichael_num() -> int
+  requires true
+  ensures result == 0  # open: E-63
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e63_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

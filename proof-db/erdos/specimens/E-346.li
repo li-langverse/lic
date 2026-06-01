@@ -1,0 +1,24 @@
+# E-346: Let $A=\{1\leq a_1< a_2<\cdots\}$ be a set of integers such that $A\backslash B$ is complete for any finite subset $B$ and $A\backslash B$ is not complete for any infinite subset $B$. (Here 'complete' means all sufficiently large integers can be written as a sum of distinct members of the sequence.) Is it true that if $a_{n+1}/a_n \geq 1+\epsilon$ for some $\epsilon>0$ and all $n$ then\[\lim_n \frac{a_{n+1}}{a_n}=\frac{1+\sqrt{5}}{2}?\]
+# erdos_number: 346
+# erdos_status: open
+# priority_tier: P2
+# tags: complete_sequences, number_theory
+
+def erdos_e346_let_a_1_leq_a_1_a_2_cdots_be_a_set_of_in() -> int
+  requires true
+  ensures result == 0  # open: E-346
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e346_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

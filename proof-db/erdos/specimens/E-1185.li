@@ -1,0 +1,24 @@
+# E-1185: Let $\delta>0$ and $k\geq 3$. Is it true that there exists $m\geq 1$ (depending only on $\delta$ and $k$) such that, for all large $N$, if $A,B\subseteq \{1,\ldots,N\}$ with $\lvert A\rvert \geq \delta N$ and $\lvert B\rvert \geq m$ then there is a non-trivial $k$-term arithmetic progression in $A$ whose common difference is in $B-B$?
+# erdos_number: 1185
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, arithmetic_progressions
+
+def erdos_e1185_let_delta_0_and_k_geq_3_is_it_true_that() -> int
+  requires true
+  ensures result == 0  # open: E-1185
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1185_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

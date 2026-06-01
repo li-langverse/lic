@@ -45,3 +45,15 @@ suite = "smoke"
 file = "smoke/ml_matmul_16_flat.li"
 outcome = "compile_open_ok"
 note = "PH-ML Wave 6 WP-ML-11"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_gpu_lkir_launch.li"
+outcome = "compile_open_ok"
+note = "PH-ML Wave 12 WP-ML-05 @gpu LKIR launch"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_gpu_device_buffer.li"
+outcome = "compile_open_ok"
+note = "PH-ML Wave 13 T2 @gpu device buffer pipeline"

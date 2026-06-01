@@ -1,0 +1,24 @@
+# E-530: Let $\ell(N)$ be maximal such that in any finite set $A\subset \mathbb{R}$ of size $N$ there exists a Sidon subset $S$ of size $\ell(N)$ (i.e. the only solutions to $a+b=c+d$ in $S$ are the trivial ones). Determine the order of $\ell(N)$. In particular, is it true that $\ell(N)\sim N^{1/2}$?
+# erdos_number: 530
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, sidon_sets
+
+def erdos_e530_let_ell_n_be_maximal_such_that_in_any_fi() -> int
+  requires true
+  ensures result == 0  # open: E-530
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e530_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

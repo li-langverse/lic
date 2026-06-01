@@ -1,0 +1,24 @@
+# E-318: Let $A\subseteq \mathbb{N}$ be an infinite arithmetic progression and $f:A\to \{-1,1\}$ be a non-constant function. Must there exist a finite non-empty $S\subset A$ such that\[\sum_{n\in S}\frac{f(n)}{n}=0?\]What about if $A$ is an arbitrary set of positive density? What if $A$ is the set of squares excluding $1$?
+# erdos_number: 318
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, unit_fractions
+
+def erdos_e318_let_a_subseteq_mathbb_n_be_an_infinite_a() -> int
+  requires true
+  ensures result == 0  # open: E-318
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e318_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

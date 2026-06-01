@@ -1,0 +1,24 @@
+# E-801: If $G$ is a graph on $n$ vertices containing no independent set on $>n^{1/2}$ vertices then there is a set of $\leq n^{1/2}$ vertices containing $\gg n^{1/2}\log n$ edges.
+# erdos_number: 801
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e801_if_g_is_a_graph_on_n_vertices_containing() -> int
+  requires true
+  ensures result == 0  # open: E-801
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e801_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

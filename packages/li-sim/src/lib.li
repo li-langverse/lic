@@ -1316,3 +1316,58 @@ def sim_rl_tick_stub(detail: int) -> int
   if sim_rl_session_env_pool_step(sess, dt) != sim_status_ok():
     return 0
   return 1
+
+def sim_rl_env_li_process_fork_mode_label() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def sim_rl_env_li_process_fork_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_rl_env_li_process_fork_mode_label() != 5:
+    return 0
+  if sim_rl_env_ipc_fork_os_ready() != 1:
+    return 0
+  return 1
+
+def env_pool_stub_step_li_process_fork(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
+  requires pool.pool_size > 0
+  requires pool.pool_size <= 32
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases pool.pool_size
+=
+  if sim_rl_env_li_process_fork_ready() != 1:
+    return sim_status_invalid_dt()
+  return env_pool_stub_step_fork_ipc(pool, session, dt)
+
+def sim_rl_session_env_pool_step_li_fork(session: var SimSessionStub, dt: float) -> int
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  if session.env_pool_size <= 0:
+    sim_session_env_pool_init(session)
+  var steps_before: int = session.env_pool_steps_emitted
+  var pool: EnvPoolStub = sim_session_env_pool_load(session)
+  if env_pool_stub_step_li_process_fork(pool, session, dt) != sim_status_ok():
+    return sim_status_invalid_dt()
+  sim_session_env_pool_store(session, pool)
+  var psz: int = session.env_pool_size
+  if session.env_pool_steps_emitted != steps_before + psz:
+    return sim_status_invalid_dt()
+  if session.env_pool_total_reward <= 0.0:
+    return sim_status_invalid_dt()
+  if sim_session_replay_last_tick(session) != session.tick:
+    return sim_status_invalid_dt()
+  return sim_status_ok()

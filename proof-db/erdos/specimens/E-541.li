@@ -1,0 +1,24 @@
+# E-541: Let $a_1,\ldots,a_p$ be (not necessarily distinct) residues modulo $p$, such that there exists some $r$ so that if $S\subseteq [p]$ is non-empty and\[\sum_{i\in S}a_i\equiv 0\pmod{p}\]then $\lvert S\rvert=r$. Must there be at most two distinct residues amongst the $a_i$?
+# erdos_number: 541
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e541_let_a_1_ldots_a_p_be_not_necessarily_dis() -> int
+  requires true
+  ensures result == 0  # open: E-541
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e541_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

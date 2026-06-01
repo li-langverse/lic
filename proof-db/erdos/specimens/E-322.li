@@ -1,0 +1,24 @@
+# E-322: Let $k\geq 3$ and $A\subset \mathbb{N}$ be the set of $k$th powers. What is the order of growth of $1_A^{(k)}(n)$, i.e. the number of representations of $n$ as the sum of $k$ many $k$th powers? Does there exist some $c>0$ and infinitely many $n$ such that\[1_A^{(k)}(n) >n^c?\]
+# erdos_number: 322
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, powers
+
+def erdos_e322_let_k_geq_3_and_a_subset_mathbb_n_be_the() -> int
+  requires true
+  ensures result == 0  # open: E-322
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e322_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

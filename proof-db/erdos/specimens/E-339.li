@@ -1,0 +1,24 @@
+# E-339: Let $A\subseteq \mathbb{N}$ be a basis of order $r$. Must the set of integers representable as the sum of exactly $r$ distinct elements from $A$ have positive lower density?
+# erdos_number: 339
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_basis, number_theory
+
+def erdos_e339_let_a_subseteq_mathbb_n_be_a_basis_of_or() -> int
+  requires true
+  ensures result == 0  # open: E-339
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e339_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

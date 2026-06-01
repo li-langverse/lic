@@ -1301,6 +1301,11 @@ outcome = "verify_open_ok"
 note = "open VC until 2f full (Lean gate on devbox)"
 [[tests]]
 suite = "encapsulation"
+file = "objects/object_array_of_object_param_pass.li"
+outcome = "verify_open_ok"
+note = "array[N, object] fields expanded on object param/call ABI"
+[[tests]]
+suite = "encapsulation"
 file = "encapsulation/import_parse.li"
 outcome = "verify_ok"
 

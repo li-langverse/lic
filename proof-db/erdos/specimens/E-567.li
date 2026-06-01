@@ -1,0 +1,24 @@
+# E-567: Let $G$ be either $Q_3$ or $K_{3,3}$ or $H_5$ (the last formed by adding two vertex-disjoint chords to $C_5$). Is it true that, if $H$ has $m$ edges and no isolated vertices, then\[R(G,H)\ll m?\]
+# erdos_number: 567
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e567_let_g_be_either_q_3_or_k_3_3_or_h_5_the() -> int
+  requires true
+  ensures result == 0  # open: E-567
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e567_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

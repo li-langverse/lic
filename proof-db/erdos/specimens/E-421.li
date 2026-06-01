@@ -1,0 +1,24 @@
+# E-421: Is there a sequence $1\leq d_1<d_2<\cdots$ with density $1$ such that all products $\prod_{u\leq i\leq v}d_i$ are distinct?
+# erdos_number: 421
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e421_is_there_a_sequence_1_leq_d_1_d_2_cdots() -> int
+  requires true
+  ensures result == 0  # open: E-421
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e421_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,24 @@
+# E-175: Show that, for any $n\geq 5$, the binomial coefficient $\binom{2n}{n}$ is not squarefree.
+# erdos_number: 175
+# erdos_status: proved
+# priority_tier: P2
+# tags: binomial_coefficients, number_theory
+
+def erdos_e175_show_that_for_any_n_geq_5_the_binomial_c() -> int
+  requires true
+  ensures result == 0  # open: E-175
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e175_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

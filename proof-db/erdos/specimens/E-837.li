@@ -1,0 +1,24 @@
+# E-837: Let $k\geq 2$ and $A_k\subseteq [0,1]$ be the set of $\alpha$ such that there exists some $\beta(\alpha)>\alpha$ with the property that, if $G_1,G_2,\ldots$ is a sequence of $k$-uniform hypergraphs with\[\liminf \frac{e(G_n)}{\binom{\lvert G_n\rvert}{k}} >\alpha\]then there exist subgraphs $H_n\subseteq G_n$ such that $\lvert H_n\rvert \to \infty$ and\[\liminf \frac{e(H_n)}{\binom{\lvert H_n\rvert}{k}} >\beta,\]and further that this property does not necessarily hold if $>\alpha$ is replaced by $\geq \alpha$. What is $A_3$?
+# erdos_number: 837
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, hypergraphs
+
+def erdos_e837_let_k_geq_2_and_a_k_subseteq_0_1_be_the() -> int
+  requires true
+  ensures result == 0  # open: E-837
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e837_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

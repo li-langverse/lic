@@ -1,0 +1,24 @@
+# E-353: Let $A\subseteq \mathbb{R}^2$ be a measurable set with infinite measure. Must $A$ contain the vertices of an isosceles trapezoid of area $1$? What about an isosceles triangle, or a right-angled triangle, or a cyclic quadrilateral, or a polygon with congruent sides?
+# erdos_number: 353
+# erdos_status: proved
+# priority_tier: P2
+# tags: geometry
+
+def erdos_e353_let_a_subseteq_mathbb_r_2_be_a_measurabl() -> int
+  requires true
+  ensures result == 0  # open: E-353
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e353_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

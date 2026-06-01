@@ -1,0 +1,24 @@
+# E-835: Does there exist a $k>2$ such that the $k$-sized subsets of $\{1,\ldots,2k\}$ can be coloured with $k+1$ colours such that for every $A\subset \{1,\ldots,2k\}$ with $\lvert A\rvert=k+1$ all $k+1$ colours appear among the $k$-sized subsets of $A$?
+# erdos_number: 835
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, hypergraphs
+
+def erdos_e835_does_there_exist_a_k_2_such_that_the_k_s() -> int
+  requires true
+  ensures result == 0  # open: E-835
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e835_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

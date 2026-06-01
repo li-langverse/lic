@@ -19,6 +19,7 @@
 - `li-tests/objects/object_array_return_call.li` — callee returns object whose only field is `array[2, int]`.
 - `li-tests/objects/object_mixed_scalar_array_return.li` — struct return with `int`, `array[2, int]`, `int` fields (ordering vs layout).
 - `li-tests/objects/object_mixed_param_pass.li` — expanded `Mixed` object parameter (scalar + `array[2,int]`) passed to callee.
+- `li-tests/objects/object_array_of_object_param_pass.li` — `array[N, object]` field expansion for li-gui `FlexLayout`-style ABIs (2026-05-31).
 - `li-tests/manifest.toml` — register `object_mixed_param_pass.li`.
 
 ## Not changed

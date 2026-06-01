@@ -1,0 +1,24 @@
+# E-1074: Let $S$ be the set of all $m\geq 1$ such that there exists a prime $p\not\equiv 1\pmod{m}$ such that $m!+1\equiv 0\pmod{p}$. Does\[\lim \frac{\lvert S\cap [1,x]\rvert}{x}\]exist? What is it? Similarly, if $P$ is the set of all primes $p$ such that there exists an $m$ with $p\not\equiv 1\pmod{m}$ such that $m!+1\equiv 0\pmod{p}$, then does\[\lim \frac{\lvert P\cap [1,x]\rvert}{\pi(x)}\]exist? What is it?
+# erdos_number: 1074
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e1074_let_s_be_the_set_of_all_m_geq_1_such_tha() -> int
+  requires true
+  ensures result == 0  # open: E-1074
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1074_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -17,6 +17,20 @@
 | **T7** | Full safetensors/GGUF from real weight files | mmap/GGUF smokes against `PH_ML_WEIGHTS_FIXTURE` on disk |
 | **T8** | Ollama / live li-httpd proxy wiring | `bench_ph_ml_llm_trusted_httpd.py` with `live_proxy: true` |
 
+## Status
+
+| Tranche | Status |
+|---------|--------|
+| T1 | **DONE** — `lig_emit_vendor_lowering_ready`, PTX stub bytes |
+| T2 | **DONE** — `ml_gpu_device_buffer_pipeline`, `ml_gpu_device_buffer.li` smoke |
+| T3 | **DONE** — `import ml` in li-llm + `llm_import_ml.li` smoke |
+| T4 | **DONE** — `sim_rl_env_li_process_fork_ready`, Studio hook, `env_pool_li_process_fork.li` |
+| T5 | **DONE** — SB3/Ray deps + benches `executed:true` (DummyVecEnv / Ray core fallback) |
+| T6 | **DONE** — `ml_matmul_lkir_logical_32`, `bench-ph-ml-lkir-matmul-32.sh` |
+| T7 | **DONE** — `llm_weights_file_mmap.li`, `prepare_ph_ml_weights_fixture.py`, `PH_ML_WEIGHTS_FIXTURE` on-disk weights |
+| T8 | **DONE** — `bench_ph_ml_llm_trusted_httpd.py` live proxy (`live_proxy: true`) |
+| **Completion gate** | **DONE** — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (2026-06-01, latest `1780280189367` — `ratio_vs_li` 0.001065, SB3/Ray `executed:true`, `live_proxy:true`; prior runs `1780277785410` … `1780279881936`); PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green; await human merge |
+
 ## Agent rules
 
 - One PR per tranche when possible; merge to `main` when CI green.

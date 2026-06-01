@@ -1,0 +1,24 @@
+# E-607: For a set of $n$ points $P\subset \mathbb{R}^2$ let $\ell_1,\ldots,\ell_m$ be the lines determined by $P$, and let $A=\{\lvert \ell_1\cap P\rvert,\ldots,\lvert \ell_m\cap P\rvert\}$. Let $F(n)$ count the number of possible sets $A$ that can be constructed this way. Is it true that\[F(n) \leq \exp(O(\sqrt{n}))?\]
+# erdos_number: 607
+# erdos_status: proved
+# priority_tier: P2
+# tags: geometry
+
+def erdos_e607_for_a_set_of_n_points_p_subset_mathbb_r() -> int
+  requires true
+  ensures result == 0  # open: E-607
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e607_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

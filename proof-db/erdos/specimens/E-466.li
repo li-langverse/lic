@@ -1,0 +1,24 @@
+# E-466: Let $N(X,\delta)$ denote the maximum number of points $P_1,\ldots,P_n$ which can be chosen in a circle of radius $X$ such that\[\| \lvert P_i-P_j\rvert \| \geq \delta\]for all $1\leq i<j\leq n$. (Here $\|x\|$ is the distance from $x$ to the nearest integer.) Is there some $\delta>0$ such that\[\lim_{x\to \infty}N(X,\delta)=\infty?\]
+# erdos_number: 466
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e466_let_n_x_delta_denote_the_maximum_number() -> int
+  requires true
+  ensures result == 0  # open: E-466
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e466_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

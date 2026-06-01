@@ -1,0 +1,56 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_version() < 7:
+    return 1
+  if paint_op_kind_max() != paint_op_draw_image():
+    return 2
+  if paint_op_clip_push() != 7:
+    return 3
+  if paint_op_clip_pop() != 8:
+    return 4
+  if paint_op_draw_glyphs() != 9:
+    return 5
+  if paint_op_draw_image() != 10:
+    return 6
+  var panel: Rect = rect_make(8.0, 8.0, 120.0, 40.0)
+  var clip: PaintCmd = paint_cmd_clip_push(panel)
+  if clip.kind != paint_op_clip_push():
+    return 7
+  var pop: PaintCmd = paint_cmd_clip_pop()
+  if pop.kind != paint_op_clip_pop():
+    return 8
+  var glyph_dest: Rect = rect_make(16.0, 16.0, 8.0, 12.0)
+  var glyph: PaintCmd = paint_cmd_draw_glyph(glyph_dest, font_face_inter(), 65, studio_color_text_primary())
+  if glyph.kind != paint_op_draw_glyphs():
+    return 9
+  if glyph.codepoint != 65:
+    return 10
+  if glyph.glyph_count != 1:
+    return 11
+  var run_dest: Rect = rect_make(32.0, 16.0, 48.0, 12.0)
+  var run: PaintCmd = paint_cmd_draw_glyphs_run(run_dest, font_face_inter(), studio_color_text_primary(), 72, 3)
+  if run.glyph_count != 3:
+    return 12
+  if run.codepoint != 72:
+    return 13
+  var src: Rect = rect_make(0.0, 0.0, 16.0, 16.0)
+  var img: PaintCmd = paint_cmd_draw_image(panel, paint_image_id_studio_logo(), src, studio_color_text_primary())
+  if img.kind != paint_op_draw_image():
+    return 14
+  if img.image_id != paint_image_id_studio_logo():
+    return 15
+  var frame: PaintFrame = paint_frame_new()
+  paint_frame_push_clip_scope(frame, panel)
+  paint_frame_push(frame, glyph)
+  paint_frame_push(frame, img)
+  paint_frame_pop_clip_scope(frame)
+  if frame.cmd_count != 4:
+    return 16
+  if frame.last_kind != paint_op_clip_pop():
+    return 17
+  return 0

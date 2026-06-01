@@ -1,0 +1,24 @@
+# E-149: The strong chromatic index of a graph $G$, denoted by $\mathrm{sq}(G)$, is the minimum $k$ such that the edges of $G$ can be partitioned into $k$ sets of 'strongly independent' edges, that is, such that the subgraph of $G$ induced by each set is the union of vertex-disjoint edges. Is it true that, for any graph $G$ with maximum degree $\Delta$,\[\mathrm{sq}(G)\leq\frac{5}{4}\Delta^2?\]
+# erdos_number: 149
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e149_the_strong_chromatic_index_of_a_graph_g() -> int
+  requires true
+  ensures result == 0  # open: E-149
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e149_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,24 @@
+# E-632: A graph is $(a,b)$-choosable if for any assignment of a list of $a$ colours to each of its vertices there is a subset of $b$ colours from each list such that the subsets of adjacent vertices are disjoint. If $G$ is $(a,b)$-choosable then $G$ is $(am,bm)$-choosable for every integer $m\geq 1$.
+# erdos_number: 632
+# erdos_status: open
+# priority_tier: P2
+# tags: chromatic_number, graph_theory
+
+def erdos_e632_a_graph_is_a_b_choosable_if_for_any_assi() -> int
+  requires true
+  ensures result == 0  # open: E-632
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e632_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

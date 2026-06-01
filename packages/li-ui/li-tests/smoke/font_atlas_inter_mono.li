@@ -1,0 +1,57 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_version() < 6:
+    return 1
+  if font_atlas_version() != 1:
+    return 2
+  if font_atlas_build_format_bitmap() != 0:
+    return 3
+  if font_atlas_inter_family_token_len() != studio_typography_ui_family_len():
+    return 4
+  if font_atlas_mono_family_token_len() != studio_typography_mono_family_len():
+    return 5
+  if font_atlas_data_checksum() <= 0:
+    return 6
+  var inter: FontAtlasFace = font_atlas_face_new(font_face_inter())
+  if inter.format_id != font_atlas_build_format_bitmap():
+    return 7
+  if inter.atlas_w != 128.0:
+    return 8
+  if inter.atlas_h != 72.0:
+    return 9
+  var mono: FontAtlasFace = font_atlas_face_new(font_face_ui_mono())
+  if mono.cell_w != font_atlas_mono_cell_w():
+    return 10
+  if font_atlas_codepoint_supported(32) != 1:
+    return 11
+  if font_atlas_codepoint_supported(126) != 1:
+    return 12
+  if font_atlas_codepoint_supported(31) != 0:
+    return 13
+  var metrics_a: FontGlyphMetrics = font_atlas_glyph_metrics(inter, 65)
+  if metrics_a.codepoint != 65:
+    return 14
+  if metrics_a.advance_px <= 0.0:
+    return 15
+  if metrics_a.atlas_x < 0.0:
+    return 16
+  var metrics_space: FontGlyphMetrics = font_atlas_glyph_metrics(inter, 32)
+  if metrics_space.advance_px != 4.0:
+    return 17
+  var mono_m: FontGlyphMetrics = font_atlas_glyph_metrics(mono, 109)
+  if mono_m.advance_px != font_atlas_mono_cell_w():
+    return 18
+  if font_atlas_has_ink(inter, 65) != 1:
+    return 19
+  if font_atlas_has_ink(inter, 32) != 0:
+    return 20
+  if font_atlas_has_ink(mono, 109) != 1:
+    return 21
+  if font_atlas_sample_alpha(inter, 65, 0, 0) != 0:
+    return 22
+  return 0

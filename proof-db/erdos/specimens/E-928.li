@@ -1,0 +1,24 @@
+# E-928: Let $\alpha,\beta\in (0,1)$ and let $P(n)$ denote the largest prime divisor of $n$. Does the density of integers $n$ such that $P(n)<n^{\alpha}$ and $P(n+1)<(n+1)^\beta$ exist?
+# erdos_number: 928
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e928_let_alpha_beta_in_0_1_and_let_p_n_denote() -> int
+  requires true
+  ensures result == 0  # open: E-928
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e928_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

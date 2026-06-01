@@ -1,0 +1,24 @@
+# E-468: For any $n$ let $D_n$ be the set of sums of the shape $d_1,d_1+d_2,d_1+d_2+d_3,\ldots$ where $1<d_1<d_2<\cdots$ are the divisors of $n$. What is the size of $D_n\backslash \cup_{m<n}D_m$? If $f(N)$ is the minimal $n$ such that $N\in D_n$ then is it true that $f(N)=o(N)$? Perhaps just for almost all $N$?
+# erdos_number: 468
+# erdos_status: open
+# priority_tier: P2
+# tags: divisors, number_theory
+
+def erdos_e468_for_any_n_let_d_n_be_the_set_of_sums_of() -> int
+  requires true
+  ensures result == 0  # open: E-468
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e468_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

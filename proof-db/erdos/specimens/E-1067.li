@@ -1,0 +1,24 @@
+# E-1067: Does every graph with chromatic number $\aleph_1$ contain an infinitely connected subgraph with chromatic number $\aleph_1$?
+# erdos_number: 1067
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, set_theory
+
+def erdos_e1067_does_every_graph_with_chromatic_number_a() -> int
+  requires true
+  ensures result == 0  # open: E-1067
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1067_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

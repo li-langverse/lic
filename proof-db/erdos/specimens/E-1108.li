@@ -1,0 +1,24 @@
+# E-1108: Let\[A = \left\{ \sum_{n\in S}n! : S\subset \mathbb{N}\textrm{ finite}\right\}.\]If $k\geq 2$, then does $A$ contain only finitely many $k$th powers? Does it contain only finitely many powerful numbers?
+# erdos_number: 1108
+# erdos_status: open
+# priority_tier: P2
+# tags: factorials, number_theory
+
+def erdos_e1108_let_a_left_sum_n_in_s_n_s_subset_mathbb() -> int
+  requires true
+  ensures result == 0  # open: E-1108
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1108_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

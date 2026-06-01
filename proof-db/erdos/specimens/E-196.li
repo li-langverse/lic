@@ -1,0 +1,24 @@
+# E-196: Must every permutation of $\mathbb{N}$ contain a monotone 4-term arithmetic progression? In other words, given a permutation $x$ of $\mathbb{N}$ must there be indices with either $i<j<k<l$ or $i>j>k>l$ such that $x_i,x_j,x_k,x_l$ are an arithmetic progression?
+# erdos_number: 196
+# erdos_status: open
+# priority_tier: P2
+# tags: arithmetic_progressions
+
+def erdos_e196_must_every_permutation_of_mathbb_n_conta() -> int
+  requires true
+  ensures result == 0  # open: E-196
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e196_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

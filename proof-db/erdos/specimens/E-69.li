@@ -1,0 +1,26 @@
+# E-69: Are there infinitely many consecutive prime gaps strictly larger than log p for the smaller prime p?
+# erdos_number: 69
+# erdos_status: open
+# priority_tier: P0
+# tags: primes, prime_gaps
+# context: Infinitely many consecutive prime gaps strictly larger than log p for the smaller prime p.
+# context: Tests fine structure of gap distribution beyond average spacing..
+
+def erdos_e69_are_there_infinitely_many_consecutive_pr() -> int
+  requires true
+  ensures result == 0  # open: E-69
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e69_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

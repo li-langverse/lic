@@ -1,0 +1,24 @@
+# E-615: Does there exist some constant $c>0$ such that if $G$ is a graph with $n$ vertices and $\geq (1/8-c)n^2$ edges then $G$ must contain either a $K_4$ or an independent set on at least $n/\log n$ vertices?
+# erdos_number: 615
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e615_does_there_exist_some_constant_c_0_such() -> int
+  requires true
+  ensures result == 0  # open: E-615
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e615_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

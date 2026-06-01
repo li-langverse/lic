@@ -1,0 +1,24 @@
+# E-889: For $k\geq 0$ and $n\geq 1$ let $v(n,k)$ count the prime factors of $n+k$ which do not divide $n+i$ for $0\leq i<k$. Equivalently, $v(n,k)$ counts the number of prime factors of $n+k$ which are $>k$. Is it true that\[v_0(n)=\max_{k\geq 0}v(n,k)\to \infty\]as $n\to \infty$?
+# erdos_number: 889
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e889_for_k_geq_0_and_n_geq_1_let_v_n_k_count() -> int
+  requires true
+  ensures result == 0  # open: E-889
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e889_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

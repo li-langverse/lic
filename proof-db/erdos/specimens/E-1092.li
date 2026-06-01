@@ -1,0 +1,24 @@
+# E-1092: Let $f_r(n)$ be maximal such that, if a graph $G$ has the property that every subgraph $H$ on $m$ vertices is the union of a graph with chromatic number $\leq r$ and a graph with $\leq f_r(m)$ edges, then $G$ has chromatic number $\leq r+1$. Is it true that $f_2(n) \gg n$? More generally, is $f_r(n)\gg_r n$?
+# erdos_number: 1092
+# erdos_status: open
+# priority_tier: P2
+# tags: chromatic_number, graph_theory
+
+def erdos_e1092_let_f_r_n_be_maximal_such_that_if_a_grap() -> int
+  requires true
+  ensures result == 0  # open: E-1092
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1092_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

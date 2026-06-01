@@ -1,0 +1,24 @@
+# E-386: Let $2\leq k\leq n-2$. Can $\binom{n}{k}$ be the product of consecutive primes infinitely often? For example\[\binom{21}{2}=2\cdot 3\cdot 5\cdot 7.\]
+# erdos_number: 386
+# erdos_status: open
+# priority_tier: P2
+# tags: binomial_coefficients, number_theory
+
+def erdos_e386_let_2_leq_k_leq_n_2_can_binom_n_k_be_the() -> int
+  requires true
+  ensures result == 0  # open: E-386
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e386_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

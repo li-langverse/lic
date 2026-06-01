@@ -1,0 +1,24 @@
+# E-754: Let $f(n)$ be maximal such that there exists a set $A$ of $n$ points in $\mathbb{R}^4$ in which every $x\in A$ has at least $f(n)$ points in $A$ equidistant from $x$. Is it true that $f(n)\leq \frac{n}{2}+O(1)$?
+# erdos_number: 754
+# erdos_status: proved
+# priority_tier: P2
+# tags: distances, geometry
+
+def erdos_e754_let_f_n_be_maximal_such_that_there_exist() -> int
+  requires true
+  ensures result == 0  # open: E-754
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e754_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

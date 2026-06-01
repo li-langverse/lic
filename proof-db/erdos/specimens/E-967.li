@@ -1,0 +1,24 @@
+# E-967: Let $1<a_1<\cdots $ be a sequence of integers such that $\sum\frac{1}{a_i}<\infty$. Is it true that, for every $t\in \mathbb{R}$,\[1+\sum_{k}\frac{1}{a_k^{1+it}}\neq 0?\]
+# erdos_number: 967
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis, number_theory
+
+def erdos_e967_let_1_a_1_cdots_be_a_sequence_of_integer() -> int
+  requires true
+  ensures result == 0  # open: E-967
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e967_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

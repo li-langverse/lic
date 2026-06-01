@@ -1,0 +1,24 @@
+# E-146: If $H$ is bipartite and is $r$-degenerate, that is, every induced subgraph of $H$ has minimum degree $\leq r$, then\[\mathrm{ex}(n;H) \ll n^{2-1/r}.\]
+# erdos_number: 146
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, turan_number
+
+def erdos_e146_if_h_is_bipartite_and_is_r_degenerate_th() -> int
+  requires true
+  ensures result == 0  # open: E-146
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e146_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

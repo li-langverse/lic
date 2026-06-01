@@ -1,0 +1,24 @@
+# E-440: Let $A=\{a_1<a_2<\cdots\}\subseteq \mathbb{N}$ be infinite and let $A(x)$ count the number of indices for which $\mathrm{lcm}(a_i,a_{i+1})\leq x$. Is it true that $A(x) \ll x^{1/2}$? How large can\[\liminf \frac{A(x)}{x^{1/2}}\]be?
+# erdos_number: 440
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e440_let_a_a_1_a_2_cdots_subseteq_mathbb_n_be() -> int
+  requires true
+  ensures result == 0  # open: E-440
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e440_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

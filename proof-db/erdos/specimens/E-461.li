@@ -1,0 +1,24 @@
+# E-461: Let $s_t(n)$ be the $t$-smooth component of $n$ - that is, the product of all primes $p$ (with multiplicity) dividing $n$ such that $p<t$. Let $f(n,t)$ count the number of distinct possible values for $s_t(m)$ for $m\in [n+1,n+t]$. Is it true that\[f(n,t)\gg t\](uniformly, for all $t$ and $n$)?
+# erdos_number: 461
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
+
+def erdos_e461_let_s_t_n_be_the_t_smooth_component_of_n() -> int
+  requires true
+  ensures result == 0  # open: E-461
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e461_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

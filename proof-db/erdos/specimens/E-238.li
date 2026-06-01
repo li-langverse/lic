@@ -1,0 +1,24 @@
+# E-238: Let $c_1,c_2>0$. Is it true that, for any sufficiently large $x$, there exist more than $c_1\log x$ many consecutive primes $\leq x$ such that the difference between any two is $>c_2$?
+# erdos_number: 238
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
+
+def erdos_e238_let_c_1_c_2_0_is_it_true_that_for_any_su() -> int
+  requires true
+  ensures result == 0  # open: E-238
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e238_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

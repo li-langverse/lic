@@ -1,0 +1,24 @@
+# E-696: Let $h(n)$ be the largest $\ell$ such that there is a sequence of primes $p_1<\cdots < p_\ell$ all dividing $n$ with $p_{i+1}\equiv 1\pmod{p_i}$. Let $H(n)$ be the largest $u$ such that there is a sequence of integers $d_1<\cdots < d_u$ all dividing $n$ with $d_{i+1}\equiv 1\pmod{d_i}$. Estimate $h(n)$ and $H(n)$. Is it true that $H(n)/h(n)\to \infty$ for almost all $n$?
+# erdos_number: 696
+# erdos_status: open
+# priority_tier: P2
+# tags: divisors, number_theory
+
+def erdos_e696_let_h_n_be_the_largest_ell_such_that_the() -> int
+  requires true
+  ensures result == 0  # open: E-696
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e696_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,24 @@
+# E-7: Is there a distinct covering system all of whose moduli are odd?
+# erdos_number: 7
+# erdos_status: open
+# priority_tier: P2
+# tags: covering_systems, number_theory
+
+def erdos_e7_is_there_a_distinct_covering_system_all() -> int
+  requires true
+  ensures result == 0  # open: E-7
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e7_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

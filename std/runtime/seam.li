@@ -598,6 +598,28 @@ extern proc httpd_tls_handshake_slot_i(slot: var int, fd: var int) -> int
   ensures true
   decreases 0
 
+extern proc httpd_tls_handshake_begin_i(slot: var int, fd: var int) -> int
+  requires 0 <= slot
+  requires fd >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_tls_handshake_continue_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_tls_handshake_pending_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_epoll_add_client_tls_i(epfd: var int, conn: var int, slot: var int) -> int
+  requires epfd >= 0
+  requires conn >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
 
 extern proc httpd_pure_li_tls_i() -> int
   requires true

@@ -26,6 +26,11 @@ int32_t httpd_tls_global_init_paths(const char* cert_dir, const char* manual_cer
 
 void httpd_tls_global_shutdown(void);
 
+/* 0=done, 1=want_io, -1=error */
+int32_t httpd_tls_handshake_begin(int32_t slot, int32_t fd);
+int32_t httpd_tls_handshake_continue(int32_t slot);
+int32_t httpd_tls_handshake_pending(int32_t slot);
+
 /* Non-blocking TLS accept after TCP accept; sets slot proto. Returns 0 ok, -1 fail. */
 int32_t httpd_tls_handshake_slot(int32_t slot, int32_t fd);
 

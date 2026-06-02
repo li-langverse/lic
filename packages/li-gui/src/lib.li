@@ -889,6 +889,14 @@ def widget_layout(node: WidgetNode, constraints: LayoutConstraints, x: float, y:
   out.bounds = rect_make(x, y, measured.w, measured.h)
   return out
 
+def widget_label_codepoint_at(index: int) -> int
+  requires index >= 0
+  ensures font_atlas_codepoint_supported(result) == 1
+  decreases index
+=
+  var slot: int = index % 26
+  return 65 + slot
+
 def widget_paint_monospace_chars(node: WidgetNode, frame: var PaintFrame, layout: WidgetLayoutResult, color: Color) -> unit
   requires node.label_chars >= 0.0
   requires frame.cmd_count >= 0
@@ -901,15 +909,17 @@ def widget_paint_monospace_chars(node: WidgetNode, frame: var PaintFrame, layout
   var pad_x: float = gui_widget_pad_x_px()
   var pad_y: float = gui_widget_pad_y_px()
   var char_w: float = gui_widget_label_char_w_px()
-  var char_h: float = studio_typography_body_px()
+  var char_h: float = studio_typography_glyph_line_height_px()
   var cursor_x: float = layout.bounds.x + pad_x
   var cursor_y: float = layout.bounds.y + pad_y
+  var char_index: int = 0
   while chars_left > 0.0:
-    var glyph: Rect = rect_make(cursor_x, cursor_y, char_w - 1.0, char_h - 2.0)
-    var cmd: PaintCmd = paint_cmd_fill(glyph, color)
-    paint_frame_push(frame, cmd)
+    var cp: int = widget_label_codepoint_at(char_index)
+    var glyph_rect: Rect = rect_make(cursor_x, cursor_y, char_w, char_h)
+    paint_frame_push(frame, paint_cmd_draw_glyph(glyph_rect, font_face_inter(), cp, color))
     cursor_x = cursor_x + char_w
     chars_left = chars_left - 1.0
+    char_index = char_index + 1
 
 def widget_paint(node: WidgetNode, frame: var PaintFrame, layout: WidgetLayoutResult) -> unit
   requires node.kind >= widget_kind_none()
@@ -921,8 +931,8 @@ def widget_paint(node: WidgetNode, frame: var PaintFrame, layout: WidgetLayoutRe
   decreases node.kind
 =
   if node.kind == widget_kind_label():
-    var cmd: PaintCmd = paint_cmd_fill(layout.bounds, studio_color_text_muted())
-    paint_frame_push(frame, cmd)
+    if node.label_chars > 0.0:
+      widget_paint_monospace_chars(node, frame, layout, studio_color_text_muted())
   if node.kind == widget_kind_button():
     paint_frame_push_accent_chip(frame, layout.bounds, studio_color_accent_cyan())
   if node.kind == widget_kind_text_input():

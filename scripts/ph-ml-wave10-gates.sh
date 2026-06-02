@@ -67,10 +67,11 @@ if [[ "${PH_ML_WAVE10_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
 fi
 
 LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="./build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
+# Prefer native builds; fall back to build-wsl only when native is absent.
+if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="./build/compiler/lic/lic"
+elif [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+  LIC="./build-wsl/compiler/lic/lic"
 elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
   LIC="$ROOT/build/compiler/lic/lic.exe"
 fi

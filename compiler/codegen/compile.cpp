@@ -12,6 +12,8 @@
 #include <filesystem>
 #include <sstream>
 
+#include "llvm/Config/llvm-config.h"
+
 namespace li {
 namespace {
 
@@ -39,6 +41,58 @@ void maybe_keep_emit_ll(const std::string& ll_path) {
   std::filesystem::create_directories(prefix, ec);
   const std::filesystem::path dest = std::filesystem::path(prefix) / "last_emit.ll";
   std::filesystem::copy_file(ll_path, dest, std::filesystem::copy_options::overwrite_existing, ec);
+}
+
+bool clang_executable_exists(const std::string& cc) {
+  if (cc.empty()) {
+    return false;
+  }
+  std::error_code ec;
+  if (std::filesystem::exists(cc, ec)) {
+    return true;
+  }
+  const char* path_env = std::getenv("PATH");
+  if (path_env == nullptr) {
+    return false;
+  }
+  std::string paths(path_env);
+  std::size_t start = 0;
+  while (start < paths.size()) {
+    const std::size_t end = paths.find(':', start);
+    const std::string dir = paths.substr(start, end == std::string::npos ? std::string::npos
+                                                                         : end - start);
+    if (!dir.empty()) {
+      const std::filesystem::path candidate = std::filesystem::path(dir) / cc;
+      if (std::filesystem::exists(candidate, ec)) {
+        return true;
+      }
+    }
+    if (end == std::string::npos) {
+      break;
+    }
+    start = end + 1;
+  }
+  return false;
+}
+
+std::string resolve_link_cc() {
+  if (const char* cc_env = std::getenv("CC"); cc_env != nullptr && *cc_env != '\0') {
+    return cc_env;
+  }
+  if (const char* major_env = std::getenv("LI_LLVM_MAJOR"); major_env != nullptr &&
+      *major_env != '\0') {
+    const std::string versioned = std::string("clang-") + major_env;
+    if (clang_executable_exists(versioned)) {
+      return versioned;
+    }
+  }
+#if defined(LLVM_VERSION_MAJOR)
+  const std::string versioned = "clang-" + std::to_string(LLVM_VERSION_MAJOR);
+  if (clang_executable_exists(versioned)) {
+    return versioned;
+  }
+#endif
+  return "clang";
 }
 
 }  // namespace
@@ -108,9 +162,12 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_lig_path = resolve_runtime_c("li_rt_lig.c");
 
   std::ostringstream cmd;
-  const char* cc_env = std::getenv("CC");
-  const char* cc = (cc_env && *cc_env) ? cc_env : "clang";
-  cmd << cc << " -Wno-override-module -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
+  const std::string cc = resolve_link_cc();
+  cmd << cc << " -Wno-override-module";
+#if defined(LLVM_VERSION_MAJOR) && LLVM_VERSION_MAJOR >= 15
+  cmd << " -opaque-pointers";
+#endif
+  cmd << " -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
   if (link_runtime_full || rt_needs.needs_rt_httpd) {
     if (std::filesystem::exists(rt_httpd_path)) {
       cmd << " -x c \"" << rt_httpd_path.string() << "\"";

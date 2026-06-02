@@ -25,7 +25,7 @@ python3 "$ROOT/scripts/flatten-httpd-config.py" \
   "$ROOT/li-tests/config_desugar/good/agent_m15.toml" -o "$tmp"
 grep -q 'stream_idle_timeout_sec=120' "$tmp"
 grep -q 'model_match=gpt-4|11435' "$tmp"
-grep -q 'route_require=POST|/v1/chat|traceparent' "$tmp"
+grep -q 'route=POST|/v1/chat|prefix|proxy' "$tmp"
 rm -f "$tmp"
 
 echo "check-httpd-m15-config: OK"

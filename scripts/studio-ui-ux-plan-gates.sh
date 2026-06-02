@@ -34,7 +34,11 @@ python3 "$ROOT/scripts/studio-ui-ux-verify-harness-audit.py" || fail "studio-ui-
 python3 "$ROOT/scripts/studio-ui-ux-verify-keyboard-journey.py" || fail "studio-ui-ux-verify-keyboard-journey"
 python3 "$ROOT/scripts/studio-ui-ux-verify-palette-native.py" || fail "studio-ui-ux-verify-palette-native"
 python3 "$ROOT/scripts/studio-ui-ux-verify-agent-chrome-native.py" || fail "studio-ui-ux-verify-agent-chrome-native"
-if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
+if [[ -x "$ROOT/scripts/studio-ui-ux-check-capture-deps.sh" ]]; then
+  chmod +x "$ROOT/scripts/studio-ui-ux-check-capture-deps.sh" 2>/dev/null || true
+  STUDIO_UI_UX_CAPTURE_DEPS_WARN_ONLY=1 "$ROOT/scripts/studio-ui-ux-check-capture-deps.sh" \
+    || li_warn "capture-deps check failed"
+elif [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
   "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" || li_warn "capture-deps probe failed"
   [[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-capture-deps.json" ]] \
     || fail "latest-capture-deps.json missing after probe"

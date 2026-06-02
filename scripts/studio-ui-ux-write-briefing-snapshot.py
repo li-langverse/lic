@@ -35,10 +35,10 @@ def find_briefing() -> Path | None:
     return None
 
 
-def studio_gaps(bench: dict, deps: dict, ux: dict) -> list[dict]:
+def studio_gaps(bench: dict, deps: dict, ux: dict, briefing: dict | None = None) -> list[dict]:
     gaps: list[dict] = []
     swap = bench.get("wgpu_swapchain") or {}
-    if swap.get("status") == "blocked_runner":
+    if swap.get("status") == "blocked_runner" and not swap.get("honest_blocked"):
         gaps.append(
             {
                 "id": "studio-ux-21-wgpu-swapchain-gpu-runner",
@@ -47,7 +47,7 @@ def studio_gaps(bench: dict, deps: dict, ux: dict) -> list[dict]:
             }
         )
     pal = bench.get("palette_latency") or {}
-    if pal.get("status") == "simulate":
+    if pal and pal.get("status") == "simulate":
         gaps.append(
             {
                 "id": "studio-ux-22-palette-native-latency",
@@ -56,7 +56,7 @@ def studio_gaps(bench: dict, deps: dict, ux: dict) -> list[dict]:
             }
         )
     agent = bench.get("agent_chrome") or {}
-    if agent.get("status") != "native":
+    if agent and agent.get("status") != "native":
         gaps.append(
             {
                 "id": "studio-ux-23-agent-chrome-native",
@@ -74,12 +74,49 @@ def studio_gaps(bench: dict, deps: dict, ux: dict) -> list[dict]:
                 "reason": "agent stream native but UX-06 score below SOTA bar — progress UI polish",
             }
         )
-    if not deps.get("ready_for_wgpu_swapchain"):
+    if deps and not deps.get("ready_for_wgpu_swapchain") and not deps.get("ready_for_native_capture"):
         gaps.append(
             {
                 "id": "studio-ux-24-gpu-runner-deps",
                 "severity": "low",
                 "reason": "Vulkan pkg-config, nvidia-smi, or LIG_GPU_RUNNER env not active on this runner",
+            }
+        )
+    check_sh = ROOT / "scripts/studio-ui-ux-check-capture-deps.sh"
+    if not check_sh.is_file():
+        gaps.append(
+            {
+                "id": "issue-399-capture-deps-check",
+                "severity": "medium",
+                "reason": "missing studio-ui-ux-check-capture-deps.sh assert script (issue #399)",
+            }
+        )
+    elif deps and (not deps.get("ready_for_native_capture") or not deps.get("ready_for_html_capture")):
+        gaps.append(
+            {
+                "id": "issue-399-capture-deps-soft-gate",
+                "severity": "low",
+                "reason": "capture-deps probe reports native/html gaps — CI warns until runner installs SDL/Xvfb/Chrome",
+            }
+        )
+    audit = (briefing or {}).get("ecosystem_audit") or {}
+    for pr in audit.get("failed_prs") or []:
+        if pr.get("base") == "cursor/ph-ml-program-complete":
+            gaps.append(
+                {
+                    "id": "ph-ml-stale-branch-pr",
+                    "severity": "low",
+                    "reason": f"close or rebase stale PH-ML PR #{pr.get('number')} (base merged via #676)",
+                    "pr_url": pr.get("url"),
+                }
+            )
+    metrics = audit.get("metrics") or {}
+    if metrics.get("failed_prs", 0):
+        gaps.append(
+            {
+                "id": "ecosystem-failed-pr-triage",
+                "severity": "medium",
+                "reason": f"{metrics.get('failed_prs')} open PR(s) with failing CI — triage before merge wave",
             }
         )
     return gaps
@@ -105,6 +142,21 @@ FOLLOW_UP_BY_GAP = {
         "repo": "lic",
         "title": "chore(studio-ui): org GPU runner Vulkan deps + wgpu swapchain CI (studio-ux-24)",
         "labels": ["studio-ui", "PH-UX", "ci"],
+    },
+    "issue-399-capture-deps-check": {
+        "repo": "lic",
+        "title": "feat(studio-ui): studio-ux-16 CI capture deps (libsdl2-dev + headless chrome smoke)",
+        "labels": ["studio-ui", "PH-UX", "ci"],
+    },
+    "ph-ml-stale-branch-pr": {
+        "repo": "lic",
+        "title": "chore(PH-ML): close stale PRs on merged cursor/ph-ml-program-complete branch",
+        "labels": ["PH-ML", "cleanup"],
+    },
+    "ecosystem-failed-pr-triage": {
+        "repo": "lic",
+        "title": "chore: triage ecosystem failed PRs from agent briefing",
+        "labels": ["ci", "triage"],
     },
 }
 
@@ -156,11 +208,11 @@ def main() -> int:
         text=True,
     ).stdout.strip() or "unknown"
 
-    gaps = studio_gaps(bench, deps, ux)
+    gaps = studio_gaps(bench, deps, ux, briefing)
     payload = {
         "schema": "li_studio_briefing_snapshot_v1",
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "todo_id": os.environ.get("STUDIO_UI_UX_ITERATION", "studio-ux-20-proactive-sweep-20260530"),
+        "todo_id": os.environ.get("STUDIO_UI_UX_ITERATION", "studio-ux-25-proactive-sweep-20260531"),
         "branch": branch,
         "head": sha,
         "briefing_path": str(briefing_path) if briefing_path else None,
@@ -184,6 +236,7 @@ def main() -> int:
             "gaps": deps.get("gaps", []),
         },
         "wave_4_gaps": gaps,
+        "wave_5_gaps": gaps,
         "follow_up_issues": follow_up_issues(gaps),
     }
     OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")

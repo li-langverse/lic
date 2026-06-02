@@ -566,35 +566,3 @@ ssize_t httpd_tls_write_slot(int32_t slot, const void* buf, size_t len) {
   }
   return (ssize_t)off;
 }
-
-int32_t httpd_pure_li_tls_i(void) { return httpd_pure_li_tls_enabled(); }
-
-int32_t httpd_pure_tls_slot_active_i(int32_t slot) { return httpd_pure_tls_slot_active(slot); }
-
-int32_t httpd_pure_tls_attach_i(int32_t slot, int32_t conn) { return httpd_pure_tls_attach(slot, conn); }
-
-int32_t httpd_pure_tls_poll_i(int32_t slot) { return httpd_pure_tls_poll(slot); }
-
-int32_t httpd_pure_tls_read_app_i(int32_t slot, int max_bytes) {
-  ssize_t n = httpd_pure_tls_read_app(slot, max_bytes);
-  if (n < 0) {
-    return -1;
-  }
-  if (n > INT32_MAX) {
-    return INT32_MAX;
-  }
-  return (int32_t)n;
-}
-
-int32_t httpd_pure_tls_write_app_i(int32_t slot, int len) {
-  ssize_t n = httpd_pure_tls_write_app(slot, len);
-  if (n < 0) {
-    return -1;
-  }
-  if (n > INT32_MAX) {
-    return INT32_MAX;
-  }
-  return (int32_t)n;
-}
-
-int32_t httpd_pure_tls_alpn_i(int32_t slot) { return httpd_pure_tls_alpn(slot); }

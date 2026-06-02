@@ -7,6 +7,13 @@ export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1
 
+is_wsl() {
+  [[ -n "${WSL_INTEROP:-}" ]] && return 0
+  [[ -n "${WSL_DISTRO_NAME:-}" ]] && return 0
+  [[ -r /proc/version ]] && grep -qiE '(microsoft|wsl)' /proc/version && return 0
+  return 1
+}
+
 _wsl_path_u() {
   wsl.exe wslpath -u "$1" 2>/dev/null | tr -d '\r\n'
 }
@@ -75,12 +82,18 @@ if [[ "${PH_ML_WAVE12_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
 fi
 
 LIC="${LIC:-}"
-# Prefer native builds in the current environment; fall back to build-wsl.
+# Prefer native builds in the current environment.
+# On native Linux (non-WSL), never try to execute build-wsl binaries (they may be built against a newer glibc).
+if ! is_wsl && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
+  bash "$ROOT/scripts/build.sh"
+fi
+
+# Select LIC binary (native first; WSL fallback only inside WSL).
 if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="./build/compiler/lic/lic"
 elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
   LIC="$ROOT/build/compiler/lic/lic.exe"
-elif [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+elif is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="./build-wsl/compiler/lic/lic"
 fi
 

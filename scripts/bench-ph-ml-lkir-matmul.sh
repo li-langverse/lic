@@ -6,10 +6,10 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
-LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
-if [[ ! -x "$LIC" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-fi
+# shellcheck source=lib/ph-ml-lic.sh
+source "$ROOT/scripts/lib/ph-ml-lic.sh"
+export LIC
+LIC="$(ph_ml_resolve_lic "$ROOT" 2>/dev/null)" || LIC="$($ROOT/scripts/resolve-lic.sh)"
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_matmul_lkir_parity.li"
 mkdir -p "$BENCHMARKS_RESULTS"

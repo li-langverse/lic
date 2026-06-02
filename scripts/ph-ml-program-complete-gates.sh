@@ -6,7 +6,6 @@ cd "$ROOT"
 export BENCHMARKS_ALLOW_NO_HARNESS=1
 
 # shellcheck source=lib/benchmarks-env.sh
-export BENCHMARKS_ALLOW_NO_HARNESS=1
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"

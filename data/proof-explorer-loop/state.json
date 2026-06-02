@@ -1,15 +1,31 @@
 {
   "sprint": "proof-explorer-program",
-  "phase": 3,
-  "started": "2026-05-31",
-  "completed_wps": ["wp-k8", "wp0", "wp1", "wp2", "wp3", "wp4", "wp5", "wp6", "tier-b"],
-  "current_wp": "wp-ra",
-  "branch": "cursor/proof-explorer-phase3",
-  "research_problem_id": "E-52",
-  "claim_count": 12,
-  "review_round": 1,
+  "phase": 9,
+  "started": "2026-06-01",
+  "completed_wps": [
+    "wp-cg-01",
+    "wp-cg-02",
+    "wp-cg-03",
+    "wp-cg-04",
+    "wp-cg-05",
+    "wp-cg-06"
+  ],
   "current_wp": "complete",
+  "branch": "cursor/proof-explorer-compiler-gaps",
+  "research_problem_id": null,
+  "claim_count": 0,
+  "review_round": 0,
   "loop_sleep_sec": 300,
-  "problem_source": "erdos_register",
-  "priority_tier": "P0"
+  "problem_source": "compiler_gap_audit",
+  "priority_tier": "P0",
+  "dot4_pr": 696,
+  "open_bug_c": 6,
+  "regression_open": [
+    "BUG-C-02",
+    "BUG-C-04",
+    "BUG-C-05",
+    "BUG-C-06",
+    "BUG-C-08",
+    "BUG-C-12"
+  ]
 }

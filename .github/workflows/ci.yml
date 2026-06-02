@@ -111,7 +111,7 @@ jobs:
             echo "LLVM_DIR=$(llvm-config --cmakedir)" >> "$GITHUB_ENV"
             exit 0
           fi
-          found="$(find '/c/Program Files' '/c/Program Files (x86)' -iname LLVMConfig.cmake 2>/dev/null | head -1)"
+          found="$(find '/c/Program Files' '/c/Program Files (x86)' -iname LLVMConfig.cmake 2>/dev/null | head -1 || true)"
           if [[ -n "$found" ]]; then
             echo "LLVM_DIR=$(dirname "$found")" >> "$GITHUB_ENV"
             exit 0

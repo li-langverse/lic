@@ -75,11 +75,29 @@ fi
 
 echo "==> tier5 exploit nginx compare (profile ${EXPLOIT_PROFILE}, ${#COMPARE_EXPLOIT_IDS[@]} rows, fail on regression)"
 unset TIER5_EXPLOIT_STUB
-python3 "$HARNESS/exploit_http.py" \
-  "${COMPARE_EXPLOIT_IDS[@]}" \
-  --profile "$EXPLOIT_PROFILE" \
-  --compare-nginx \
-  --fail-on-regression \
-  --out "$EXPLOIT_OUT"
+# shellcheck source=lib/tier5-exploit-run.sh
+source "$ROOT/scripts/lib/tier5-exploit-run.sh"
+COMPARE_FAILED=0
+COMPARE_TIMEOUT="${HTTPD_TIER5_EXPLOIT_TIMEOUT_SEC:-120}"
+for eid in "${COMPARE_EXPLOIT_IDS[@]}"; do
+  echo "==> tier5 nginx compare ${eid} (timeout ${COMPARE_TIMEOUT}s)"
+  pkill -9 -f '[/]build/li-httpd' 2>/dev/null || true
+  pkill -9 nginx 2>/dev/null || true
+  sleep 0.5
+  if ! timeout --foreground "${COMPARE_TIMEOUT}" python3 "$HARNESS/exploit_http.py" \
+    "$eid" \
+    --profile "$EXPLOIT_PROFILE" \
+    --compare-nginx \
+    --fail-on-regression \
+    --out "$EXPLOIT_OUT"; then
+    COMPARE_FAILED=1
+  fi
+done
+pkill -9 -f '[/]build/li-httpd' 2>/dev/null || true
+pkill -9 nginx 2>/dev/null || true
+if [[ "$COMPARE_FAILED" -ne 0 ]]; then
+  echo "check-tier5-nginx-perf-regression-gate: nginx compare failed" >&2
+  exit 1
+fi
 
 echo "check-tier5-nginx-perf-regression-gate: OK"

@@ -1,1 +1,2 @@
-lig_emit_vendor_lowering_ready=1
+LIG_EMIT_VENDOR_ARTIFACT
+CUDA=1 HIP=0 METAL=0

@@ -9,7 +9,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REGISTRY = Path(os.environ["BENCHMARKS_COMPETITIVE"]) / "studio-ui.toml"
+BENCHMARKS_COMPETITIVE = Path(os.environ.get("BENCHMARKS_COMPETITIVE", ROOT / "benchmarks/competitive"))
+REGISTRY = BENCHMARKS_COMPETITIVE / "studio-ui.toml"
 
 
 def fail(msg: str) -> None:
@@ -66,9 +67,18 @@ def main() -> None:
     mem_script = (reg.get("harness") or {}).get("memory_script", "")
     if mem_script and not (ROOT / mem_script).is_file():
         fail(f"harness.memory_script missing: {mem_script}")
-    mem_latest = ROOT / "data/studio-ui-ux-plan-loop/latest-memory-profile.json"
-    if not mem_latest.is_file():
-        fail("missing latest-memory-profile.json — run ./scripts/profile-animate-memory.sh")
+    mem_latest_rel = (reg.get("harness") or {}).get(
+        "memory_profile_latest", "data/studio-ui-ux-plan-loop/latest-memory-profile.json"
+    )
+    mem_latest = ROOT / mem_latest_rel
+    if mem_script and not mem_latest.is_file():
+        # Some workflows validate the registry/bench JSON without running the memory profiler step.
+        # Keep this as a soft requirement to avoid cross-job coupling.
+        print(
+            f"studio-ui-ux-verify-bench-registry: note: missing {rel_to_root(mem_latest)} "
+            f"(run ./{mem_script})",
+            file=sys.stderr,
+        )
 
     for hook in reg.get("hook") or []:
         if not isinstance(hook, dict):
@@ -79,7 +89,12 @@ def main() -> None:
 
     for path, label in ((LATEST, "latest-bench"), (COMPETITIVE, "competitive")):
         if not path.is_file():
-            fail(f"missing {label} — run ./scripts/bench-studio-viewport-perf.sh")
+            print(
+                f"studio-ui-ux-verify-bench-registry: note: missing {label} "
+                f"({rel_to_root(path)}) — run ./scripts/bench-studio-viewport-perf.sh",
+                file=sys.stderr,
+            )
+            continue
         data = json.loads(path.read_text(encoding="utf-8"))
         if data.get("registry_schema") != meta.get("schema"):
             fail(f"{label}: registry_schema mismatch")

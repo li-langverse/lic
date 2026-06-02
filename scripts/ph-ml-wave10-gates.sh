@@ -8,6 +8,12 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 
+is_wsl() {
+  [[ -n "${WSL_INTEROP:-}" || -n "${WSL_DISTRO_NAME:-}" ]] && return 0
+  [[ -r /proc/version ]] && grep -qi microsoft /proc/version && return 0
+  return 1
+}
+
 run_in_wsl() {
   local wsl_root
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
@@ -67,7 +73,7 @@ if [[ "${PH_ML_WAVE10_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
 fi
 
 LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+if is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="./build-wsl/compiler/lic/lic"
 elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="./build/compiler/lic/lic"

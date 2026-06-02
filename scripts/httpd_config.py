@@ -47,14 +47,16 @@ class HttpdConfig:
     max_body: str | None
     upstreams: dict[str, list[str]]
     routes: list[CanonicalRoute]
+    warnings: list[str] = field(default_factory=list)
 
 
 def slug_route_name(method: str, path: str) -> str:
+    # Mirror runtime/li_rt_httpd.c slug_route_name (/** → _rest, /* → _wild).
     slug_path = path
     if path.endswith("/**"):
-        slug_path = path[:-3] + "_rest"
+        slug_path = f"{path[:-3]}_rest"
     elif path.endswith("/*"):
-        slug_path = path[:-2] + "_wild"
+        slug_path = f"{path[:-2]}_wild"
     s = f"{method.lower()}_{slug_path.strip('/')}".replace("/", "_").replace("*", "wild")
     s = re.sub(r"[^a-z0-9_]+", "_", s).strip("_")
     return s or "route"
@@ -197,7 +199,7 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
     return out
 
 
-def _run_config_oracle_validators(data: dict[str, Any], path: Path) -> None:
+def _run_config_oracle_validators(data: dict[str, Any], path: Path) -> list[str]:
     from httpd_leak_censor import ConfigError as LeakError
     from httpd_leak_censor import validate_leak_censor
     from httpd_m15 import ConfigError as M15Error
@@ -211,19 +213,19 @@ def _run_config_oracle_validators(data: dict[str, Any], path: Path) -> None:
     from httpd_tls import ConfigError as TlsError
     from httpd_tls import validate_tls_config
 
+    warnings: list[str] = []
     try:
         validate_m15_limits(data)
         validate_route_match(data)
         validate_inference_require(data)
-        for warn in validate_leak_censor(data, path):
-            print(f"warning: {warn}", file=sys.stderr)
+        warnings.extend(validate_leak_censor(data, path))
         validate_tls_config(data, path)
         validate_m2_config(data, path)
         validate_m3_config(data, path)
-        for warn in validate_rng_config_raise(data):
-            print(f"warning: {warn}", file=sys.stderr)
+        warnings.extend(validate_rng_config_raise(data))
     except (M15Error, LeakError, TlsError, M2Error, M3Error, RngError) as e:
         raise ConfigError(str(e)) from e
+    return warnings
 
 
 def load_httpd_config(path: Path) -> list[CanonicalRoute]:
@@ -310,12 +312,14 @@ def _validate_rng_profile(data: dict[str, Any]) -> list[str]:
 
 def load_httpd_full(path: Path) -> HttpdConfig:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
-    _run_config_oracle_validators(data, path)
+    warnings = _run_config_oracle_validators(data, path)
     if data.get("site") is not None:
         sites = load_httpd_sites(path)
         if len(sites) != 1:
             raise ConfigError("use load_httpd_sites() for multi-site profiles")
-        return sites[0]
+        site = sites[0]
+        site.warnings = warnings
+        return site
     server = data.get("server") or {}
     if not isinstance(server, dict):
         raise ConfigError("[server] must be a table")
@@ -342,6 +346,7 @@ def load_httpd_full(path: Path) -> HttpdConfig:
         max_body=max_body,
         upstreams=upstreams,
         routes=routes,
+        warnings=warnings,
     )
 
 
@@ -368,21 +373,13 @@ def main() -> int:
         print("usage: httpd_config.py <config.toml> [--explain]", file=sys.stderr)
         return 2
     path = Path(sys.argv[1])
-    data = tomllib.loads(path.read_text(encoding="utf-8"))
-    from httpd_leak_censor import ConfigError as LeakCensorError, validate_leak_censor
-
-    try:
-        for warning in validate_leak_censor(data, path):
-            print(warning, file=sys.stderr)
-    except LeakCensorError as e:
-        raise ConfigError(str(e)) from e
-    for warning in _validate_rng_profile(data):
-        print(warning, file=sys.stderr)
-    routes = load_httpd_config(path)
+    cfg = load_httpd_full(path)
+    for w in cfg.warnings:
+        print(w, file=sys.stderr)
     if "--explain" in sys.argv:
-        print(explain(routes), end="")
+        print(explain(cfg.routes), end="")
     else:
-        print(f"OK: {len(routes)} routes")
+        print(f"OK: {len(cfg.routes)} routes")
     return 0
 
 

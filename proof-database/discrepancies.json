@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-05-25",
+  "generated": "2026-06-01",
   "taxonomy": [
     "missing_lemma",
     "open_vc",
@@ -8,18 +8,44 @@
     "trusted_axiom",
     "hardware_axiom"
   ],
-  "count": 15,
+  "count": 24,
   "discrepancies": [
     {
-      "id": "disc-P-float-sqrt-open-bound-missing-lean",
+      "id": "disc-G-lean-autovc-strict-missing-lean",
       "kind": "missing_lemma",
       "gap_id": "G-lean",
-      "backlog_id": "P-float",
-      "summary": "`Li.Discharge.sqrt_open_bound_spec` missing",
-      "proof_db_ref": "proof-db/lemmas/P-float-sqrt-open-bound.toml",
+      "backlog_id": "P-meta",
+      "summary": "`check-autovc-open-goals.sh` missing",
+      "proof_db_ref": "proof-db/lemmas/G-lean-autovc-strict.toml",
       "reference_ref": "Discharge.lean",
       "evidence": [
+        "check-autovc-open-goals.sh"
+      ],
+      "resolution": "open"
+    },
+    {
+      "id": "disc-P-float-sqrt-open-bound-open-vc",
+      "kind": "open_vc",
+      "gap_id": "G-lean",
+      "backlog_id": "P-float",
+      "summary": "P-float-sqrt-open-bound proved vs open",
+      "proof_db_ref": "proof-db/lemmas/P-float-sqrt-open-bound.toml",
+      "reference_ref": "docs/semantics/Discharge.lean:sqrt_open_bound_spec",
+      "evidence": [
         "Li.Discharge.sqrt_open_bound_spec"
+      ],
+      "resolution": "intentional"
+    },
+    {
+      "id": "disc-P-linalg-dot4-int-closed-missing-lean",
+      "kind": "missing_lemma",
+      "gap_id": "G-math",
+      "backlog_id": "P-linalg",
+      "summary": "`vc_* (discharge_linalg_int_lean.sh)` missing",
+      "proof_db_ref": "proof-db/lemmas/P-linalg-dot4-int-closed.toml",
+      "reference_ref": "Discharge.lean",
+      "evidence": [
+        "vc_* (discharge_linalg_int_lean.sh)"
       ],
       "resolution": "open"
     },
@@ -128,6 +154,19 @@
       "resolution": "intentional"
     },
     {
+      "id": "disc-std_dot4_bilinear_right-open-vc",
+      "kind": "open_vc",
+      "gap_id": null,
+      "backlog_id": null,
+      "summary": "std_dot4_bilinear_right proved vs sorry",
+      "proof_db_ref": "index",
+      "reference_ref": "proof-db/lean/ProofDB.lean:std_dot4_bilinear_right",
+      "evidence": [
+        "Li.ProofDB.std_dot4_bilinear_right"
+      ],
+      "resolution": "intentional"
+    },
+    {
       "id": "disc-std_mul_assoc-open-vc",
       "kind": "open_vc",
       "gap_id": null,
@@ -167,6 +206,32 @@
       "resolution": "wontfix"
     },
     {
+      "id": "disc-trusted-li_rt_sqrt",
+      "kind": "trusted_axiom",
+      "gap_id": "G-trust",
+      "backlog_id": null,
+      "summary": "Li.Trusted.li_rt_sqrt",
+      "proof_db_ref": "trusted.lean",
+      "reference_ref": "docs/semantics/trusted.lean:li_rt_sqrt",
+      "evidence": [
+        "li_rt_sqrt"
+      ],
+      "resolution": "wontfix"
+    },
+    {
+      "id": "disc-trusted-li_rt_sqrt_square_bound",
+      "kind": "trusted_axiom",
+      "gap_id": "G-trust",
+      "backlog_id": null,
+      "summary": "Li.Trusted.li_rt_sqrt_square_bound",
+      "proof_db_ref": "trusted.lean",
+      "reference_ref": "docs/semantics/trusted.lean:li_rt_sqrt_square_bound",
+      "evidence": [
+        "li_rt_sqrt_square_bound"
+      ],
+      "resolution": "wontfix"
+    },
+    {
       "id": "disc-trusted-poll_event",
       "kind": "trusted_axiom",
       "gap_id": "G-trust",
@@ -202,6 +267,58 @@
       "reference_ref": "docs/semantics/trusted.lean:tcp_accept_stub",
       "evidence": [
         "tcp_accept_stub"
+      ],
+      "resolution": "wontfix"
+    },
+    {
+      "id": "disc-trusted-tcp_close_stub",
+      "kind": "trusted_axiom",
+      "gap_id": "G-trust",
+      "backlog_id": null,
+      "summary": "Li.Trusted.tcp_close_stub",
+      "proof_db_ref": "trusted.lean",
+      "reference_ref": "docs/semantics/trusted.lean:tcp_close_stub",
+      "evidence": [
+        "tcp_close_stub"
+      ],
+      "resolution": "wontfix"
+    },
+    {
+      "id": "disc-trusted-tcp_listen_stub",
+      "kind": "trusted_axiom",
+      "gap_id": "G-trust",
+      "backlog_id": null,
+      "summary": "Li.Trusted.tcp_listen_stub",
+      "proof_db_ref": "trusted.lean",
+      "reference_ref": "docs/semantics/trusted.lean:tcp_listen_stub",
+      "evidence": [
+        "tcp_listen_stub"
+      ],
+      "resolution": "wontfix"
+    },
+    {
+      "id": "disc-trusted-tcp_recv_stub",
+      "kind": "trusted_axiom",
+      "gap_id": "G-trust",
+      "backlog_id": null,
+      "summary": "Li.Trusted.tcp_recv_stub",
+      "proof_db_ref": "trusted.lean",
+      "reference_ref": "docs/semantics/trusted.lean:tcp_recv_stub",
+      "evidence": [
+        "tcp_recv_stub"
+      ],
+      "resolution": "wontfix"
+    },
+    {
+      "id": "disc-trusted-tcp_send_stub",
+      "kind": "trusted_axiom",
+      "gap_id": "G-trust",
+      "backlog_id": null,
+      "summary": "Li.Trusted.tcp_send_stub",
+      "proof_db_ref": "trusted.lean",
+      "reference_ref": "docs/semantics/trusted.lean:tcp_send_stub",
+      "evidence": [
+        "tcp_send_stub"
       ],
       "resolution": "wontfix"
     }

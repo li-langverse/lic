@@ -42,7 +42,13 @@ echo "==> tier5 exploit runtime (live li-httpd)"
 
 # Runtime phase starts li-httpd per exploit; ensure listeners are gone before nginx↔li compare.
 pkill -9 -f '[/]build/li-httpd' 2>/dev/null || true
+pkill -9 -f 'li-httpd' 2>/dev/null || true
 pkill -9 nginx 2>/dev/null || true
+if command -v fuser >/dev/null 2>&1; then
+  for p in $(seq 19080 19280); do
+    fuser -k "${p}/tcp" 2>/dev/null || true
+  done
+fi
 sleep 3
 
 EXPLOIT_PROFILE="${HTTPD_REGRESSION_EXPLOIT_PROFILE:-pr}"

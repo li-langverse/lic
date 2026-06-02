@@ -53,6 +53,9 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
     listen = server.get("listen")
     if listen:
         lines.append(f"listen_port={parse_listen(str(listen))}")
+    listen_http = server.get("listen_http")
+    if listen_http:
+        lines.append(f"listen_port_http={parse_listen(str(listen_http))}")
     root = server.get("document_root")
     if root:
         rp = Path(str(root))
@@ -129,6 +132,9 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
             lines.append(f"route={r.method}|{r.path}|{kind}|{action}")
         for req in getattr(r, "requires", []):
             lines.append(f"route_require={r.method}|{r.path}|{req}")
+        req_hdr = r.headers.get("require")
+        if req_hdr:
+            lines.append(f"route_require={r.method}|{r.path}|{req_hdr}")
 
     def flatten_upstream_pool(pool_id: str, val: dict) -> None:
         for peer in val.get("peers") or []:

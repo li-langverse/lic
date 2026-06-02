@@ -47,7 +47,12 @@ class HttpdConfig:
 
 
 def slug_route_name(method: str, path: str) -> str:
-    s = f"{method.lower()}_{path.strip('/')}".replace("/", "_").replace("*", "wild")
+    slug_path = path
+    if path.endswith("/**"):
+        slug_path = path[:-3] + "_rest"
+    elif path.endswith("/*"):
+        slug_path = path[:-2] + "_wild"
+    s = f"{method.lower()}_{slug_path.strip('/')}".replace("/", "_").replace("*", "wild")
     s = re.sub(r"[^a-z0-9_]+", "_", s).strip("_")
     return s or "route"
 
@@ -290,8 +295,9 @@ def load_httpd_full(path: Path) -> HttpdConfig:
 def explain(routes: list[CanonicalRoute]) -> str:
     lines = ["# canonical routes (desugared)"]
     for r in routes:
-        hdr = " ".join(f"{k}={v}" for k, v in sorted(r.headers.items()))
-        extra = f" [{hdr}]" if hdr else ""
+        parts: list[str] = [f"require={req}" for req in r.requires]
+        parts.extend(f"{k}={v}" for k, v in sorted(r.headers.items()))
+        extra = f" [{' '.join(parts)}]" if parts else ""
         lines.append(
             f"[[routes]]\n"
             f'name = "{r.name}"\n'

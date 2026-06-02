@@ -32,7 +32,9 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
-**Agent verification (2026-06-01):** latest run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green, await human `merge-approved`.
+**Agent verification (2026-06-02):** run `code_implementer-1780429576826` — native Linux (non-WSL) `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~125s) after `./scripts/build.sh`; `ratio_vs_li` 0.000126 (T6), SB3/Ray `executed:true` (T5), `live_proxy:true` (T8); PR [#709](https://github.com/li-langverse/lic/pull/709) prefers native `build/compiler/lic/lic` over incompatible `build-wsl` on native Linux.
+
+**Agent verification (2026-06-01):** run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green, await human `merge-approved`.
 
 **Prior run `code_implementer-1780279881936`:** `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~116s); `ratio_vs_li` 0.0044 (T6), `live_proxy` true (T8).
 

@@ -21,6 +21,7 @@ ROUTE_KEY_RE = re.compile(
 HEADER_EXTRA_RE = re.compile(r"^([a-zA-Z0-9_-]+)=([^\s]+)$")
 
 ROUTE_REQUIRE_ALLOW = frozenset({"traceparent", "websocket"})
+UPSTREAM_BALANCE_ALLOW = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})
 
 
 @dataclass
@@ -132,6 +133,20 @@ def validate_routes(routes: list[CanonicalRoute]) -> None:
                 )
 
 
+def _validate_upstream_balance(spec: dict[str, Any], pool_id: str) -> None:
+    bal = spec.get("balance")
+    if bal is None:
+        return
+    bal_s = str(bal).strip()
+    if not bal_s:
+        return
+    if bal_s not in UPSTREAM_BALANCE_ALLOW:
+        allowed = ", ".join(sorted(UPSTREAM_BALANCE_ALLOW))
+        raise ConfigError(
+            f"[upstreams.{pool_id}] unsupported balance={bal_s!r} (allowed: {allowed})"
+        )
+
+
 def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
     raw = data.get("upstreams")
     if raw is None:
@@ -142,6 +157,7 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
     for upstream_id, spec in raw.items():
         if not isinstance(spec, dict):
             raise ConfigError(f"[upstreams.{upstream_id}] must be a table")
+        _validate_upstream_balance(spec, str(upstream_id))
         peers = spec.get("peers")
         if not isinstance(peers, list) or not peers:
             raise ConfigError(f"[upstreams.{upstream_id}] peers required")
@@ -150,6 +166,7 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
         if not key.startswith("upstreams.") or not isinstance(val, dict):
             continue
         pool_id = key.split(".", 1)[1]
+        _validate_upstream_balance(val, pool_id)
         peers = val.get("peers")
         if isinstance(peers, list) and peers:
             out[pool_id] = [str(p).strip() for p in peers]

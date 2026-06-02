@@ -19,29 +19,27 @@ _benchmarks_env_lic_root() {
 
 if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
   _lic="$(_benchmarks_env_lic_root)"
-  # Prefer explicit org roots when available (used by other swarm scripts).
+  # Full harness checkouts first (CI tier-0 needs scripts/run-bench.sh).
   for _c in \
     "${LI_LANGVERSE_ROOT:-}/benchmarks" \
     "${LANGVERSE:-}/benchmarks" \
-    "$_lic/benchmarks" \
     "$_lic/../benchmarks" \
-    "$_lic/../li-langverse/benchmarks"
+    "$_lic/../li-langverse/benchmarks" \
+    "$_lic/benchmarks"
   do
     if [[ -f "$_c/harness/bench.py" ]]; then
       BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
       break
     fi
-    # "Lite" fallback: lic vendors a minimal benchmarks tree (results + some workloads)
-    # used by gates that only need BENCHMARKS_RESULTS paths.
-    if [[ -d "$_c/results" && -d "$_c/competitive" ]]; then
-      BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
-      break
-    fi
   done
-  # Fallback for isolated clones that vendor only the minimal benchmarks layout
-  # (results + competitive) inside the lic repo.
-  if [[ -z "${BENCHMARKS_ROOT:-}" ]] && [[ -d "$_lic/benchmarks/results" ]] && [[ -d "$_lic/benchmarks/competitive" ]]; then
-    BENCHMARKS_ROOT="$(cd "$_lic/benchmarks" && pwd)"
+  # Lite fallback: in-repo results/competitive only (PH-ML gates; no run-bench.sh).
+  if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
+    for _c in "$_lic/benchmarks"; do
+      if [[ -d "$_c/results" && -d "$_c/competitive" ]]; then
+        BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
+        break
+      fi
+    done
   fi
 fi
 
@@ -94,6 +92,7 @@ then
 fi
 
 export BENCHMARKS_ROOT
+export LIC_ROOT="${LIC_ROOT:-$(_benchmarks_env_lic_root)}"
 export LI_BENCHMARKS_ROOT="${LI_BENCHMARKS_ROOT:-$BENCHMARKS_ROOT}"
 if [[ -z "${HARNESS:-}" ]] && [[ -d "$BENCHMARKS_ROOT/harness" ]]; then
   HARNESS="$BENCHMARKS_ROOT/harness"

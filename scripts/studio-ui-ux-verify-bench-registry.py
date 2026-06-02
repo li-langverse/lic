@@ -48,7 +48,13 @@ def main() -> None:
         "output_competitive", "benchmarks/results/bench-studio-viewport-perf.json"
     )
     LATEST = ROOT / latest_rel
-    COMPETITIVE = ROOT / competitive_rel
+    bench_results = os.environ.get("BENCHMARKS_RESULTS")
+    if bench_results:
+        COMPETITIVE = Path(bench_results) / Path(competitive_rel).name
+    else:
+        COMPETITIVE = ROOT / competitive_rel
+    if not COMPETITIVE.is_file() and (ROOT / competitive_rel).is_file():
+        COMPETITIVE = ROOT / competitive_rel
 
     gate_ids = {g["id"] for g in reg.get("gate") or [] if isinstance(g, dict) and "id" in g}
     for required in ("viewport_fps", "panel_switch_ms", "studio_load_ms"):

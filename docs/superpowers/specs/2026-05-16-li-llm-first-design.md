@@ -52,6 +52,25 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 - `.cursor/rules/li-llm-first.mdc` — token cost checklist for new syntax/docs.
 - Agent skill: `.cursor/skills/agent-diagnose-fix-li/SKILL.md`.
 
+### TUI accessibility export contract (agent + harness)
+
+Terminal UIs consumed by agents and CI must expose **both** a human-readable plain export and a machine JSON row. Implementation lives in `li-cursor-agents/ux-harness` (adapters + fixtures); this spec is the cross-repo contract Li docs reference.
+
+| Artifact | Path (per target) | Purpose |
+|----------|-------------------|---------|
+| **Plain frame** | `artifacts/<target>/frame.txt` | UTF-8 terminal snapshot after render; one screen per audit step. Agents grep this instead of replaying ANSI. |
+| **Plain a11y** | `artifacts/<target>/a11y.txt` | Role/name/label lines derived from the frame (no color codes). Mirrors axe “name” checks for TUI. |
+| **JSON audit row** | `ui-audit.json` (run root) | One object per target: `id`, `status` (`pass` \| `fail` \| `skip`), `surface: "tui"`, `plain_export` (path to `frame.txt`), `a11y_export` (path to `a11y.txt`), optional `error` string. |
+
+**Environment flags (deterministic CI):**
+
+- `CI=1` or `UX_HARNESS=1` — fixtures must not block on `read` or TTY input; emit fixed frames (see [li-cursor-agents#30](https://github.com/li-langverse/li-cursor-agents/issues/30)).
+- `NO_COLOR=1` — plain export must not depend on ANSI color for meaning.
+
+**Harness command:** `python3 ux-harness/run_audit.py --target <id> --mode ui` completes in under 5s for non-interactive targets; row must appear in `ui-audit.json`.
+
+**Li repo obligations:** document targets in [gui-ux-quality-handoff](../../ecosystem/gui-ux-quality-handoff.md); do not claim WCAG closure from TUI plain export alone (chrome a11y remains Studio/native — [WORLD-STUDIO-MASTER-PLAN](../game-dev/WORLD-STUDIO-MASTER-PLAN.md) PH-UX UX-10).
+
 ## Learned from (survey sketch)
 
 | System | Takeaway for Li |

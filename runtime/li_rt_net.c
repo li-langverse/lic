@@ -5413,11 +5413,11 @@ int32_t httpd_pure_tls_attach_i(int32_t slot, int32_t conn) { return httpd_pure_
 
 int32_t httpd_pure_tls_poll_i(int32_t slot) { return httpd_pure_tls_poll(slot); }
 
-int32_t httpd_pure_tls_read_app_i(int32_t slot, int max_bytes) {
+int32_t httpd_pure_tls_read_app_i(int32_t slot, int32_t max_bytes) {
   return (int32_t)httpd_pure_tls_read_app(slot, max_bytes);
 }
 
-int32_t httpd_pure_tls_write_app_i(int32_t slot, int len) {
+int32_t httpd_pure_tls_write_app_i(int32_t slot, int32_t len) {
   return (int32_t)httpd_pure_tls_write_app(slot, len);
 }
 

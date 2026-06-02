@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
+# shellcheck source=lib/is-wsl.sh
+source "$ROOT/scripts/lib/is-wsl.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 
@@ -36,7 +38,7 @@ if [[ "${PH_ML_MATMUL32_INNER:-0}" != "1" ]] \
 fi
 
 LIC="${LIC:-}"
-if [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+if is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="$ROOT/build-wsl/compiler/lic/lic"
 elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="$ROOT/build/compiler/lic/lic"

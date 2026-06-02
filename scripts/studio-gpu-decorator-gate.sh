@@ -2,6 +2,8 @@
 # Studio GPU decorator sprint completion gate (native or WSL build-wsl).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/is-wsl.sh
+source "$ROOT/scripts/lib/is-wsl.sh"
 cd "$ROOT"
 
 run_gate() {
@@ -14,7 +16,7 @@ if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   run_gate
   exit 0
 fi
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+if is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   run_gate
   exit 0
 fi

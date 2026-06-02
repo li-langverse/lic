@@ -5,6 +5,8 @@ ROOT="${PH_ML_WAVE11_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}
 cd "$ROOT"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
+# shellcheck source=lib/is-wsl.sh
+source "$ROOT/scripts/lib/is-wsl.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 
@@ -63,7 +65,7 @@ if [[ "${PH_ML_WAVE11_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
 fi
 
 LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+if is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="./build-wsl/compiler/lic/lic"
 elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="./build/compiler/lic/lic"

@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
+# shellcheck source=lib/is-wsl.sh
+source "$ROOT/scripts/lib/is-wsl.sh"
 li_detect_compilers 2>/dev/null || true
 export LI_REPO_ROOT="$ROOT"
 
@@ -14,7 +16,7 @@ if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="$ROOT/build/compiler/lic/lic"
 elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
   LIC="$ROOT/build/compiler/lic/lic.exe"
-elif [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+elif is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="$ROOT/build-wsl/compiler/lic/lic"
 elif [[ -x "$ROOT/scripts/resolve-lic.sh" ]]; then
   LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null)" || true

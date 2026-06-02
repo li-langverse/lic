@@ -2,10 +2,12 @@
 # Run World Studio plan-loop lic check smokes (Linux/WSL or native lic on PATH).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/is-wsl.sh
+source "$ROOT/scripts/lib/is-wsl.sh"
 LIC="${LIC:-}"
 if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="$ROOT/build/compiler/lic/lic"
-elif [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+elif is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="$ROOT/build-wsl/compiler/lic/lic"
 elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
   LIC="$ROOT/build/compiler/lic/lic.exe"

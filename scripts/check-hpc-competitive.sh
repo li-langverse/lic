@@ -94,10 +94,10 @@ if csv_path.is_file():
                 langs_in_csv.add(row.get("lang", ""))
     missing = sorted(bench_langs - langs_in_csv)
     if missing:
-        bench_root = os.environ.get("BENCHMARKS_ROOT", "")
+        br = os.environ.get("BENCHMARKS_ROOT", "benchmarks")
         warnings.append(
             f"latest.csv missing lang rows for bench ecosystems: {', '.join(missing)} "
-            f"(run: {bench_root}/scripts/run-bench.sh --tier 12)"
+            f"(run: {br}/scripts/run-bench.sh --tier 12)"
         )
 else:
     warnings.append(f"no CSV at {csv_path} — column check skipped")

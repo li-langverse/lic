@@ -45,6 +45,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Checkout benchmarks sibling
+        env:
+          # benchmarks#302: slowloris nginx flake retry (until merged to main)
+          BENCHMARKS_REF: fix/tier5-slowloris-nginx-flake-retry
         run: |
           chmod +x scripts/checkout-ecosystem-siblings.sh
           ./scripts/checkout-ecosystem-siblings.sh

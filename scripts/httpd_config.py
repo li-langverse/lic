@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 import sys
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +23,9 @@ ALLOWED_UPSTREAM_BALANCE = frozenset(
     {"round_robin", "least_conn", "ip_hash", "cookie"}
 )
 
+ROUTE_REQUIRE_ALLOW = frozenset({"traceparent", "websocket"})
+UPSTREAM_BALANCE_ALLOW = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})
+
 
 @dataclass
 class CanonicalRoute:
@@ -33,6 +36,7 @@ class CanonicalRoute:
     action: str
     headers: dict[str, str]
     priority: int
+    requires: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -47,10 +51,10 @@ class HttpdConfig:
 
 def slug_route_name(method: str, path: str) -> str:
     slug_path = path
-    if slug_path.endswith("/**"):
-        slug_path = f"{slug_path[:-3]}_rest"
-    elif slug_path.endswith("/*"):
-        slug_path = f"{slug_path[:-2]}_wild"
+    if path.endswith("/**"):
+        slug_path = path[:-3] + "_rest"
+    elif path.endswith("/*"):
+        slug_path = path[:-2] + "_wild"
     s = f"{method.lower()}_{slug_path.strip('/')}".replace("/", "_").replace("*", "wild")
     s = re.sub(r"[^a-z0-9_]+", "_", s).strip("_")
     return s or "route"
@@ -72,8 +76,18 @@ def parse_route_key(key: str, action: str, priority: int) -> CanonicalRoute:
     raw_path = m.group("path")
     extras = (m.group("extras") or "").strip()
     headers: dict[str, str] = {}
+    requires: list[str] = []
     if extras:
         for part in extras.split():
+            req_m = re.match(r"^require=([a-z0-9_-]+)$", part)
+            if req_m:
+                req_name = req_m.group(1).lower()
+                if req_name not in ROUTE_REQUIRE_ALLOW:
+                    raise ConfigError(
+                        f"unsupported require={req_name!r} in {key!r} (allowed: {sorted(ROUTE_REQUIRE_ALLOW)})"
+                    )
+                requires.append(req_name)
+                continue
             hm = HEADER_EXTRA_RE.match(part)
             if not hm:
                 raise ConfigError(f"invalid route extra: {part!r} in {key!r}")
@@ -89,6 +103,7 @@ def parse_route_key(key: str, action: str, priority: int) -> CanonicalRoute:
         action=str(action).strip().strip('"'),
         headers=headers,
         priority=priority,
+        requires=requires,
     )
 
 
@@ -126,6 +141,20 @@ def validate_routes(routes: list[CanonicalRoute]) -> None:
                 )
 
 
+def _validate_upstream_balance(spec: dict[str, Any], pool_id: str) -> None:
+    bal = spec.get("balance")
+    if bal is None:
+        return
+    bal_s = str(bal).strip()
+    if not bal_s:
+        return
+    if bal_s not in UPSTREAM_BALANCE_ALLOW:
+        allowed = ", ".join(sorted(UPSTREAM_BALANCE_ALLOW))
+        raise ConfigError(
+            f"[upstreams.{pool_id}] unsupported balance={bal_s!r} (allowed: {allowed})"
+        )
+
+
 def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
     raw = data.get("upstreams")
     if raw is None:
@@ -136,6 +165,7 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
     for upstream_id, spec in raw.items():
         if not isinstance(spec, dict):
             raise ConfigError(f"[upstreams.{upstream_id}] must be a table")
+        _validate_upstream_balance(spec, str(upstream_id))
         peers = spec.get("peers")
         if not isinstance(peers, list) or not peers:
             raise ConfigError(f"[upstreams.{upstream_id}] peers required")
@@ -152,6 +182,7 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
         if not key.startswith("upstreams.") or not isinstance(val, dict):
             continue
         pool_id = key.split(".", 1)[1]
+        _validate_upstream_balance(val, pool_id)
         peers = val.get("peers")
         if isinstance(peers, list) and peers:
             balance = val.get("balance")
@@ -164,6 +195,35 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
                     )
             out[pool_id] = [str(p).strip() for p in peers]
     return out
+
+
+def _run_config_oracle_validators(data: dict[str, Any], path: Path) -> None:
+    from httpd_leak_censor import ConfigError as LeakError
+    from httpd_leak_censor import validate_leak_censor
+    from httpd_m15 import ConfigError as M15Error
+    from httpd_m15 import validate_inference_require, validate_m15_limits, validate_route_match
+    from httpd_m2 import ConfigError as M2Error
+    from httpd_m2 import validate_m2_config
+    from httpd_m3 import ConfigError as M3Error
+    from httpd_m3 import validate_m3_config
+    from httpd_rng import ConfigError as RngError
+    from httpd_rng import validate_rng_config_raise
+    from httpd_tls import ConfigError as TlsError
+    from httpd_tls import validate_tls_config
+
+    try:
+        validate_m15_limits(data)
+        validate_route_match(data)
+        validate_inference_require(data)
+        for warn in validate_leak_censor(data, path):
+            print(f"warning: {warn}", file=sys.stderr)
+        validate_tls_config(data, path)
+        validate_m2_config(data, path)
+        validate_m3_config(data, path)
+        for warn in validate_rng_config_raise(data):
+            print(f"warning: {warn}", file=sys.stderr)
+    except (M15Error, LeakError, TlsError, M2Error, M3Error, RngError) as e:
+        raise ConfigError(str(e)) from e
 
 
 def load_httpd_config(path: Path) -> list[CanonicalRoute]:
@@ -250,9 +310,7 @@ def _validate_rng_profile(data: dict[str, Any]) -> list[str]:
 
 def load_httpd_full(path: Path) -> HttpdConfig:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
-    _validate_m15_profile(data)
-    _validate_tls_profile(data, path)
-    _validate_rng_profile(data)
+    _run_config_oracle_validators(data, path)
     if data.get("site") is not None:
         sites = load_httpd_sites(path)
         if len(sites) != 1:
@@ -290,8 +348,9 @@ def load_httpd_full(path: Path) -> HttpdConfig:
 def explain(routes: list[CanonicalRoute]) -> str:
     lines = ["# canonical routes (desugared)"]
     for r in routes:
-        hdr = " ".join(f"{k}={v}" for k, v in sorted(r.headers.items()))
-        extra = f" [{hdr}]" if hdr else ""
+        parts: list[str] = [f"require={req}" for req in r.requires]
+        parts.extend(f"{k}={v}" for k, v in sorted(r.headers.items()))
+        extra = f" [{' '.join(parts)}]" if parts else ""
         lines.append(
             f"[[routes]]\n"
             f'name = "{r.name}"\n'

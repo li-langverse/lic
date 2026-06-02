@@ -5,10 +5,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
-LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
-if [[ ! -x "$LIC" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-fi
+# shellcheck source=lib/lic-ph-ml-bin.sh
+source "$ROOT/scripts/lib/lic-ph-ml-bin.sh"
+LIC="${LIC:-$(lic_ph_ml_bin "$ROOT" 2>/dev/null || "$ROOT/scripts/resolve-lic.sh")}"
 OUT="$BENCHMARKS_RESULTS/ph-ml-llm-forward.json"
 SMOKE="$ROOT/packages/li-llm/li-tests/smoke/llm_forward.li"
 mkdir -p "$BENCHMARKS_RESULTS"

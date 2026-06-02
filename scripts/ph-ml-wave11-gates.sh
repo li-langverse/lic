@@ -16,12 +16,12 @@ run_in_wsl() {
 
 lic_bin_for_smokes() {
   local lic="$1"
-  if [[ "$lic" == "$ROOT/build-wsl/compiler/lic/lic" ]] && [[ -x "./build-wsl/compiler/lic/lic" ]]; then
-    echo "./build-wsl/compiler/lic/lic"
-    return
-  fi
   if [[ "$lic" == "$ROOT/build/compiler/lic/lic" ]] && [[ -x "./build/compiler/lic/lic" ]]; then
     echo "./build/compiler/lic/lic"
+    return
+  fi
+  if [[ "$lic" == "$ROOT/build-wsl/compiler/lic/lic" ]] && [[ -x "./build-wsl/compiler/lic/lic" ]]; then
+    echo "./build-wsl/compiler/lic/lic"
     return
   fi
   echo "$lic"
@@ -62,16 +62,14 @@ if [[ "${PH_ML_WAVE11_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="./build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="./build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
+# shellcheck source=lib/lic-ph-ml-bin.sh
+source "$ROOT/scripts/lib/lic-ph-ml-bin.sh"
+if [[ -z "${LIC:-}" ]]; then
+  LIC="$(lic_ph_ml_bin "$ROOT")" \
+    || { echo "ph-ml-wave11-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }
 fi
+[[ -x "$LIC" ]] || { echo "ph-ml-wave11-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL): LIC not executable: $LIC"; exit 1; }
 
-[[ -x "$LIC" ]] || { echo "ph-ml-wave11-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }
 
 grep -q 'Wave 11' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 11"; exit 1; }
 grep -q 'llm_safetensors_tensor_bytes_scaffold' packages/li-llm/src/lib.li || { echo "li-llm missing byte tensor scaffold"; exit 1; }

@@ -2,13 +2,15 @@
 # Studio viewport / particle / load benchmarks — writes JSON for plan loop + competitive registry.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
 OUT_DIR="${STUDIO_UI_UX_BENCH_DIR:-$ROOT/data/studio-ui-ux-plan-loop}"
-mkdir -p "$OUT_DIR" "$ROOT/benchmarks/results"
+mkdir -p "$OUT_DIR"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="$OUT_DIR/bench-${STAMP}.json"
 LATEST="$OUT_DIR/latest-bench.json"
-COMPETITIVE="$ROOT/benchmarks/results/bench-studio-viewport-perf.json"
-REGISTRY="$ROOT/benchmarks/competitive/studio-ui.toml"
+COMPETITIVE="$BENCHMARKS_RESULTS/bench-studio-viewport-perf.json"
+REGISTRY="$BENCHMARKS_COMPETITIVE/studio-ui.toml"
 
 python3 - "$ROOT" "$OUT" "$LATEST" "$COMPETITIVE" "$REGISTRY" <<'PY'
 import json
@@ -228,7 +230,6 @@ def bench_wgpu_swapchain_hook() -> dict | None:
     if status == "swapchain_pass" and int(probe_data.get("pixels_sampled", 0)) <= 0:
         status = "blocked_runner"
         native_pixels = False
-
     return {
         "hook_version": int(swap_cfg.get("hook_version", 0)),
         "readback_fn": swap_cfg.get("readback_fn", "lig_wgpu_swapchain_readback_run"),
@@ -298,6 +299,10 @@ def bench_render_fps_hook() -> dict:
         if native_pixels and wgpu_surface_ok:
             smoke_status = "paint_blit_host"
             status = "host_present"
+    if readback_on and wgpu_surface_ok:
+        smoke_status = "readback_pass"
+        if status == "simulate":
+            status = "native"
     out = {
         "fps_target": target,
         "fps_estimated": fps_est,
@@ -471,6 +476,13 @@ if (root / "packages/li-gui/bench/panel_switch.toml").is_file():
 else:
     report["notes"].append("skip_panel_switch:hook_missing")
 
+wgpu_hook = root / "packages/lig/bench/wgpu_smoke.toml"
+if wgpu_hook.is_file():
+    report["wgpu_swapchain"] = bench_wgpu_swapchain_hook()
+    report["notes"].append(f"wgpu_swapchain:{report['wgpu_swapchain'].get('status', 'unknown')}")
+else:
+    report["notes"].append("skip_wgpu_swapchain:hook_missing")
+
 scene_hook = root / "packages/li-scene/bench/particle_tiers.toml"
 if scene_hook.is_file():
     report["particle_tiers"] = bench_scene_particle_tiers()
@@ -556,6 +568,15 @@ report["gates"]["viewport_fps"] = {
     "unit": "fps",
     "meets_target": bool(vf.get("meets_target", False)),
     "honest_simulate": bool(vf.get("honest_simulate", vf.get("status") == "simulate")),
+}
+
+ws = report.get("wgpu_swapchain") or {}
+report["gates"]["wgpu_swapchain_readback"] = {
+    "target": "swapchain_pass",
+    "value": ws.get("status"),
+    "unit": "status",
+    "meets_target": bool(ws.get("meets_target", False)),
+    "honest_blocked": bool(ws.get("honest_blocked", ws.get("status") == "blocked_runner")),
 }
 
 ps = report.get("panel_switch_ms") or {}

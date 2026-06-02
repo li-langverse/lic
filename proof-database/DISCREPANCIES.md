@@ -1,6 +1,6 @@
 # Proof database — discrepancies
 
-**Generated:** 2026-06-01
+**Generated:** 2026-06-02
 
 ## Taxonomy
 

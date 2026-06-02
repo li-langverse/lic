@@ -3558,6 +3558,7 @@ type StudioShellCompose = object
   public viewport_menu: StudioViewportMenuCompose
   public agent: StudioAgentChromeCompose
   public palette: StudioCommandPaletteCompose
+  public gpu_fail: StudioGpuFailCompose
   public panel: GuiPanelState
   public scene_entity_count: int
   public loading: StudioShellLoadingState
@@ -6557,6 +6558,18 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   var lay_ag: StudioShellLayout = lay
   out.agent = studio_compose_agent_chrome(lay_ag, studio_agent_task_idle(), studio_agent_context_none())
   out.palette = studio_compose_palette(lay.viewport_w, lay.viewport_h, studio_palette_closed_flag())
+  var gf_profile: StudioGpuFailCompose = studio_compose_gpu_fail(lay.viewport, studio_gpu_state_ok())
+  out.gpu_fail.gpu_state = gf_profile.gpu_state
+  out.gpu_fail.strip_rect.x = gf_profile.strip_rect.x
+  out.gpu_fail.strip_rect.y = gf_profile.strip_rect.y
+  out.gpu_fail.strip_rect.w = gf_profile.strip_rect.w
+  out.gpu_fail.strip_rect.h = gf_profile.strip_rect.h
+  out.gpu_fail.retry_rect.x = gf_profile.retry_rect.x
+  out.gpu_fail.retry_rect.y = gf_profile.retry_rect.y
+  out.gpu_fail.retry_rect.w = gf_profile.retry_rect.w
+  out.gpu_fail.retry_rect.h = gf_profile.retry_rect.h
+  out.gpu_fail.retry_visible = gf_profile.retry_visible
+  out.gpu_fail.retry_latency_ms = gf_profile.retry_latency_ms
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
   out.world_checkpoint = studio_world_checkpoint_empty()
@@ -6612,6 +6625,18 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
   out.viewport_error = studio_compose_viewport_error_overlay(out.layout, studio_viewport_error_none())
   out.agent = studio_compose_agent_chrome(out.layout, studio_agent_task_idle(), studio_agent_context_none())
   out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, studio_palette_closed_flag())
+  var gf_shell: StudioGpuFailCompose = studio_compose_gpu_fail(out.layout.viewport, studio_gpu_state_ok())
+  out.gpu_fail.gpu_state = gf_shell.gpu_state
+  out.gpu_fail.strip_rect.x = gf_shell.strip_rect.x
+  out.gpu_fail.strip_rect.y = gf_shell.strip_rect.y
+  out.gpu_fail.strip_rect.w = gf_shell.strip_rect.w
+  out.gpu_fail.strip_rect.h = gf_shell.strip_rect.h
+  out.gpu_fail.retry_rect.x = gf_shell.retry_rect.x
+  out.gpu_fail.retry_rect.y = gf_shell.retry_rect.y
+  out.gpu_fail.retry_rect.w = gf_shell.retry_rect.w
+  out.gpu_fail.retry_rect.h = gf_shell.retry_rect.h
+  out.gpu_fail.retry_visible = gf_shell.retry_visible
+  out.gpu_fail.retry_latency_ms = gf_shell.retry_latency_ms
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
   out.world_checkpoint = studio_world_checkpoint_empty()
@@ -6658,6 +6683,34 @@ def studio_compose_shell_palette(w: float, h: float, active_dock_slot: int, has_
   var out: StudioShellCompose = studio_compose_shell(w, h, slot_shell, has_selection, 0)
   out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, palette_open)
   studio_reactive_resync_palette(out)
+  return out
+
+def studio_compose_shell_gpu_fail(w: float, h: float, active_dock_slot: int, has_selection: int, gpu_state: int) -> StudioShellCompose
+  requires w > 0.0
+  requires h > 0.0
+  requires active_dock_slot >= 0
+  requires active_dock_slot < studio_dock_slot_count()
+  requires has_selection >= 0
+  requires has_selection <= 1
+  requires gpu_state >= studio_gpu_state_ok()
+  requires gpu_state <= studio_gpu_state_fail()
+  ensures result.gpu_fail.gpu_state == gpu_state
+  decreases gpu_state
+=
+  var slot_shell: int = active_dock_slot
+  var out: StudioShellCompose = studio_compose_shell(w, h, slot_shell, has_selection, 0)
+  var gf_fail: StudioGpuFailCompose = studio_compose_gpu_fail(out.layout.viewport, gpu_state)
+  out.gpu_fail.gpu_state = gf_fail.gpu_state
+  out.gpu_fail.strip_rect.x = gf_fail.strip_rect.x
+  out.gpu_fail.strip_rect.y = gf_fail.strip_rect.y
+  out.gpu_fail.strip_rect.w = gf_fail.strip_rect.w
+  out.gpu_fail.strip_rect.h = gf_fail.strip_rect.h
+  out.gpu_fail.retry_rect.x = gf_fail.retry_rect.x
+  out.gpu_fail.retry_rect.y = gf_fail.retry_rect.y
+  out.gpu_fail.retry_rect.w = gf_fail.retry_rect.w
+  out.gpu_fail.retry_rect.h = gf_fail.retry_rect.h
+  out.gpu_fail.retry_visible = gf_fail.retry_visible
+  out.gpu_fail.retry_latency_ms = gf_fail.retry_latency_ms
   return out
 
 def studio_compose_shell_agent(w: float, h: float, active_dock_slot: int, has_selection: int, scene_entity_count: int, task_state: int) -> StudioShellCompose
@@ -7174,6 +7227,30 @@ def studio_paint_palette_overlay(frame: var PaintFrame, palette: StudioCommandPa
   decreases palette.is_open
 =
   paint_studio_palette(frame, palette)
+
+def studio_paint_gpu_fail_overlay(frame: var PaintFrame, gpu_fail: StudioGpuFailCompose) -> unit
+  requires frame.cmd_count >= 0
+  requires gpu_fail.gpu_state >= studio_gpu_state_ok()
+  requires gpu_fail.gpu_state <= studio_gpu_state_fail()
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_gpu_fail_cmds(gpu_fail.gpu_state)
+  decreases gpu_fail.gpu_state
+=
+  paint_studio_gpu_fail(frame, gpu_fail)
+
+def studio_gpu_fail_shell_ok(compose: StudioShellCompose) -> int
+  requires compose.gpu_fail.gpu_state >= studio_gpu_state_ok()
+  requires compose.gpu_fail.gpu_state <= studio_gpu_state_fail()
+  ensures result >= 0
+  ensures result <= 1
+  decreases compose.gpu_fail.gpu_state
+=
+  if compose.gpu_fail.gpu_state != studio_gpu_state_fail():
+    return 0
+  if compose.gpu_fail.retry_visible != 1:
+    return 0
+  if compose.gpu_fail.retry_latency_ms > studio_gpu_fail_retry_budget_ms():
+    return 0
+  return 1
 
 def studio_shell_frame(w: float, h: float) -> PaintFrame
   requires w > 0.0

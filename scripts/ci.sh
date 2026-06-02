@@ -76,7 +76,8 @@ chmod +x "$ROOT/scripts/patch-benchmarks-tier0-paths.sh"
 "$ROOT/scripts/patch-benchmarks-tier0-paths.sh"
 
 li_phase "tier 0 physics (strict stability)"
-"$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 0
+chmod +x "$BENCHMARKS_ROOT/scripts/run-bench.sh" 2>/dev/null || true
+bash "$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 0
 
 li_phase "race_shared_memory"
 "$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" race_shared_memory

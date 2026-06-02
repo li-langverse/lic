@@ -1,0 +1,24 @@
+# E-457: Is there some $\epsilon>0$ such that there are infinitely many $n$ where all primes $p\leq (2+\epsilon)\log n$ divide\[\prod_{1\leq i\leq \log n}(n+i)?\]
+# erdos_number: 457
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e457_is_there_some_epsilon_0_such_that_there() -> int
+  requires true
+  ensures result == 0  # open: E-457
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e457_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

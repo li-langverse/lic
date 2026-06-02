@@ -1,0 +1,24 @@
+# E-172: Is it true that in any finite colouring of $\mathbb{N}$ there exist arbitrarily large finite $A$ such that all sums and products of distinct elements in $A$ are the same colour?
+# erdos_number: 172
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, ramsey_theory
+
+def erdos_e172_is_it_true_that_in_any_finite_colouring() -> int
+  requires true
+  ensures result == 0  # open: E-172
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e172_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

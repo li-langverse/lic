@@ -1,0 +1,24 @@
+# E-262: Suppose $a_1<a_2<\cdots$ is a sequence of integers such that for all integer sequences $t_n$ with $t_n\geq 1$ the sum\[\sum_{n=1}^\infty \frac{1}{t_na_n}\]is irrational. How slowly can $a_n$ grow?
+# erdos_number: 262
+# erdos_status: open
+# priority_tier: P2
+# tags: irrationality
+
+def erdos_e262_suppose_a_1_a_2_cdots_is_a_sequence_of_i() -> int
+  requires true
+  ensures result == 0  # open: E-262
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e262_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,24 @@
+# E-846: Let $A\subset \mathbb{R}^2$ be an infinite set for which there exists some $\epsilon>0$ such that in any subset of $A$ of size $n$ there are always at least $\epsilon n$ with no three on a line. Is it true that $A$ is the union of a finite number of sets where no three are on a line?
+# erdos_number: 846
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry
+
+def erdos_e846_let_a_subset_mathbb_r_2_be_an_infinite_s() -> int
+  requires true
+  ensures result == 0  # open: E-846
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e846_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

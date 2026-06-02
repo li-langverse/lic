@@ -1,0 +1,24 @@
+# E-1198: If $\mathbb{N}$ is $2$-coloured then must there exist an infinite set $A=\{a_1<\cdots\}$ such that all expressions of the shape\[\prod_{i\in S_1}a_i+\cdots+\prod_{i\in S_k}a_i,\]for disjoint $S_1,\ldots,S_k$ (excluding the trivial expressions $a_i$) are the same colour?
+# erdos_number: 1198
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, ramsey_theory
+
+def erdos_e1198_if_mathbb_n_is_2_coloured_then_must_ther() -> int
+  requires true
+  ensures result == 0  # open: E-1198
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1198_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

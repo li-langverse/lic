@@ -1,0 +1,24 @@
+# E-405: Let $p$ be an odd prime. Is it true that the equation\[(p-1)!+a^{p-1}=p^k\]has only finitely many solutions?
+# erdos_number: 405
+# erdos_status: proved
+# priority_tier: P2
+# tags: factorials, number_theory
+
+def erdos_e405_let_p_be_an_odd_prime_is_it_true_that_th() -> int
+  requires true
+  ensures result == 0  # open: E-405
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e405_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

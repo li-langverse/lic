@@ -1,0 +1,24 @@
+# E-1124: Can a square and a circle of the same area be decomposed into a finite number of congruent parts?
+# erdos_number: 1124
+# erdos_status: proved
+# priority_tier: P2
+# tags: geometry
+
+def erdos_e1124_can_a_square_and_a_circle_of_the_same_ar() -> int
+  requires true
+  ensures result == 0  # open: E-1124
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1124_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,24 @@
+# E-1064: Prove that $\phi(n)>\phi(n-\phi(n))$ for almost all $n$, but that $\phi(n)<\phi(n-\phi(n))$ for infinitely many $n$, where $\phi$ is Euler's totient function.
+# erdos_number: 1064
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e1064_prove_that_phi_n_phi_n_phi_n_for_almost() -> int
+  requires true
+  ensures result == 0  # open: E-1064
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1064_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

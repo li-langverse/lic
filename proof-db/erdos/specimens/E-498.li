@@ -1,0 +1,24 @@
+# E-498: Let $z_1,\ldots,z_n\in\mathbb{C}$ with $1\leq \lvert z_i\rvert$ for $1\leq i\leq n$. Let $D$ be an arbitrary disc of radius $1$. Is it true that the number of sums of the shape\[\sum_{i=1}^n\epsilon_iz_i \textrm{ for }\epsilon_i\in \{-1,1\}\]which lie in $D$ is at most $\binom{n}{\lfloor n/2\rfloor}$?
+# erdos_number: 498
+# erdos_status: proved
+# priority_tier: P2
+# tags: analysis, combinatorics
+
+def erdos_e498_let_z_1_ldots_z_n_in_mathbb_c_with_1_leq() -> int
+  requires true
+  ensures result == 0  # open: E-498
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e498_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

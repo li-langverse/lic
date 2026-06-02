@@ -1,0 +1,24 @@
+# E-75: Is the density of amicable numbers zero among the positive integers?
+# erdos_number: 75
+# erdos_status: open
+# priority_tier: P3
+# tags: number_theory, divisors
+
+def erdos_e75_is_the_density_of_amicable_numbers_zero() -> int
+  requires true
+  ensures result == 0  # open: E-75
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e75_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

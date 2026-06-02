@@ -1,0 +1,24 @@
+# E-776: Let $r\geq 2$ and $A_1,\ldots,A_m\subseteq \{1,\ldots,n\}$ be such that $A_i\not\subseteq A_j$ for all $i\neq j$ and for any $t$ if there exists some $i$ with $\lvert A_i\rvert=t$ then there must exist at least $r$ sets of that size. How large must $n$ be (as a function of $r$) to ensure that there is such a family which achieves $n-3$ distinct sizes of sets?
+# erdos_number: 776
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics
+
+def erdos_e776_let_r_geq_2_and_a_1_ldots_a_m_subseteq_1() -> int
+  requires true
+  ensures result == 0  # open: E-776
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e776_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

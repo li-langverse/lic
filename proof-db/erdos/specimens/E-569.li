@@ -1,0 +1,24 @@
+# E-569: Let $k\geq 1$. What is the best possible $c_k$ such that\[R(C_{2k+1},H)\leq c_k m\]for any graph $H$ on $m$ edges without isolated vertices?
+# erdos_number: 569
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e569_let_k_geq_1_what_is_the_best_possible_c() -> int
+  requires true
+  ensures result == 0  # open: E-569
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e569_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

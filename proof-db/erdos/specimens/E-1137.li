@@ -1,0 +1,24 @@
+# E-1137: Let $d_n=p_{n+1}-p_n$, where $p_n$ denotes the $n$th prime. Is it true that\[\frac{\max_{n<x}d_{n}d_{n-1}}{(\max_{n<x}d_n)^2}\to 0\]as $x\to \infty$?
+# erdos_number: 1137
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
+
+def erdos_e1137_let_d_n_p_n_1_p_n_where_p_n_denotes_the() -> int
+  requires true
+  ensures result == 0  # open: E-1137
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1137_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,24 @@
+# E-516: Let $f(z)=\sum_{k\geq 1}a_k z^{n_k}$ be an entire function of finite order such that $\lim n_k/k=\infty$. Let $M(r)=\max_{\lvert z\rvert=r}\lvert f(z)\rvert$ and $m(r)=\min_{\lvert z\rvert=r}\lvert f(z)\rvert$. Is it true that\[\limsup\frac{\log m(r)}{\log M(r)}=1?\]
+# erdos_number: 516
+# erdos_status: proved
+# priority_tier: P2
+# tags: analysis
+
+def erdos_e516_let_f_z_sum_k_geq_1_a_k_z_n_k_be_an_enti() -> int
+  requires true
+  ensures result == 0  # open: E-516
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e516_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

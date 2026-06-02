@@ -1,0 +1,24 @@
+# E-1126: If\[f(x+y)=f(x)+f(y)\]for almost all $x,y\in \mathbb{R}$ then there exists a function $g$ such that\[g(x+y)=g(x)+g(y)\]for all $x,y\in\mathbb{R}$ such that $f(x)=g(x)$ for almost all $x$.
+# erdos_number: 1126
+# erdos_status: proved
+# priority_tier: P2
+# tags: analysis
+
+def erdos_e1126_if_f_x_y_f_x_f_y_for_almost_all_x_y_in_m() -> int
+  requires true
+  ensures result == 0  # open: E-1126
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1126_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

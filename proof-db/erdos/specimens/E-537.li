@@ -1,0 +1,24 @@
+# E-537: Let $\epsilon>0$ and $N$ be sufficiently large. If $A\subseteq \{1,\ldots,N\}$ has $\lvert A\rvert \geq \epsilon N$ then must there exist $a_1,a_2,a_3\in A$ and distinct primes $p_1,p_2,p_3$ such that\[a_1p_1=a_2p_2=a_3p_3?\]
+# erdos_number: 537
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e537_let_epsilon_0_and_n_be_sufficiently_larg() -> int
+  requires true
+  ensures result == 0  # open: E-537
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e537_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,24 @@
+# E-923: Is it true that, for every $k$, there is some $f(k)$ such that if $G$ has chromatic number $\geq f(k)$ then $G$ contains a triangle-free subgraph with chromatic number $\geq k$?
+# erdos_number: 923
+# erdos_status: proved
+# priority_tier: P2
+# tags: chromatic_number, graph_theory
+
+def erdos_e923_is_it_true_that_for_every_k_there_is_som() -> int
+  requires true
+  ensures result == 0  # open: E-923
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e923_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

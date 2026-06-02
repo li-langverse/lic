@@ -1,0 +1,39 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_version() < 5:
+    return 1
+  if studio_typography_dock_label_px() != 9.0:
+    return 2
+  if studio_typography_body_px() != 12.0:
+    return 3
+  if studio_typography_heading_px() != 14.0:
+    return 4
+  if studio_radius_md_px() != studio_default_panel_radius_px():
+    return 5
+  if studio_radius_sm_px() >= studio_radius_md_px():
+    return 6
+  if studio_radius_md_px() >= studio_radius_lg_px():
+    return 7
+  var panel: Rect = rect_make(0.0, 0.0, 80.0, 32.0)
+  var fill_round: PaintCmd = paint_cmd_fill_round(panel, studio_color_text_primary(), studio_default_panel_radius_px())
+  if fill_round.radius_px != 6.0:
+    return 8
+  if fill_round.color.r < 0.8:
+    return 9
+  var muted: Color = studio_color_text_muted()
+  if muted.r != studio_color_agent_idle().r:
+    return 10
+  if studio_typography_ui_family_len() != 28:
+    return 11
+  if studio_typography_mono_family_len() != 23:
+    return 12
+  if studio_outliner_width_px() != 200.0:
+    return 13
+  if studio_hover_transition_ms() != 200.0:
+    return 14
+  return 0

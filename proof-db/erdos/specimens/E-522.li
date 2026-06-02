@@ -1,0 +1,24 @@
+# E-522: Let $f(z)=\sum_{0\leq k\leq n} \epsilon_k z^k$ be a random polynomial, where $\epsilon_k\in \{-1,1\}$ independently uniformly at random for $0\leq k\leq n$. Is it true that, if $R_n$ is the number of roots of $f(z)$ in $\{ z\in \mathbb{C} : \lvert z\rvert \leq 1\}$, then\[\frac{R_n}{n/2}\to 1\]almost surely?
+# erdos_number: 522
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis, polynomials, probability
+
+def erdos_e522_let_f_z_sum_0_leq_k_leq_n_epsilon_k_z_k() -> int
+  requires true
+  ensures result == 0  # open: E-522
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e522_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

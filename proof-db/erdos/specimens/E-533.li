@@ -1,0 +1,24 @@
+# E-533: Let $\delta>0$. If $n$ is sufficiently large and $G$ is a graph on $n$ vertices with no $K_5$ and at least $\delta n^2$ edges then $G$ contains a set of $\gg_\delta n$ vertices containing no triangle.
+# erdos_number: 533
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e533_let_delta_0_if_n_is_sufficiently_large_a() -> int
+  requires true
+  ensures result == 0  # open: E-533
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e533_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

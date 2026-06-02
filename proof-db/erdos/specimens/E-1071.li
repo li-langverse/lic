@@ -1,0 +1,24 @@
+# E-1071: Is there a finite set of unit line segments (rotated and translated copies of $(0,1)$) in the unit square, no two of which intersect, which are maximal with respect to this property? Is there a region $R$ with a maximal set of disjoint unit line segments that is countably infinite?
+# erdos_number: 1071
+# erdos_status: proved
+# priority_tier: P2
+# tags: geometry
+
+def erdos_e1071_is_there_a_finite_set_of_unit_line_segme() -> int
+  requires true
+  ensures result == 0  # open: E-1071
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1071_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

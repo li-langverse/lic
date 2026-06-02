@@ -1,0 +1,24 @@
+# E-135: Does every graph with average degree at least 4 contain a cycle of length at most 4?
+# erdos_number: 135
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, extremal
+
+def erdos_e135_does_every_graph_with_average_degree_at() -> int
+  requires true
+  ensures result == 0  # open: E-135
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e135_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

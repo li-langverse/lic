@@ -1,0 +1,24 @@
+# E-423: Let $a_1=1$ and $a_2=2$ and for $k\geq 3$ choose $a_k$ to be the least integer $>a_{k-1}$ which is the sum of at least two consecutive terms of the sequence. What is the asymptotic behaviour of this sequence?
+# erdos_number: 423
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e423_let_a_1_1_and_a_2_2_and_for_k_geq_3_choo() -> int
+  requires true
+  ensures result == 0  # open: E-423
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e423_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

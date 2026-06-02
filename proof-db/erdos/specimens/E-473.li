@@ -1,0 +1,24 @@
+# E-473: Is there a permutation $a_1,a_2,\ldots$ of the positive integers such that $a_k+a_{k+1}$ is always prime?
+# erdos_number: 473
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e473_is_there_a_permutation_a_1_a_2_ldots_of() -> int
+  requires true
+  ensures result == 0  # open: E-473
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e473_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

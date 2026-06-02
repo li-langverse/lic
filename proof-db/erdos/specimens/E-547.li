@@ -1,0 +1,24 @@
+# E-547: If $T$ is a tree on $n$ vertices then\[R(T) \leq 2n-2.\]
+# erdos_number: 547
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e547_if_t_is_a_tree_on_n_vertices_then_r_t_le() -> int
+  requires true
+  ensures result == 0  # open: E-547
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e547_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

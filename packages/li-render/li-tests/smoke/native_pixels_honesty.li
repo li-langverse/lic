@@ -12,12 +12,18 @@ def main() -> int
     return 2
   if lig_native_pixel_source_honest_product(lig_native_pixel_source_wgpu_draw_list()) != 1:
     return 3
-  if lig_native_pixel_source_honest_product(lig_native_pixel_source_none()) != 0:
+  if lig_native_pixel_source_honest_product(lig_native_pixel_source_wgpu_swapchain()) != 1:
     return 4
-  if lig_native_pixel_source_is_wgpu_path(lig_native_pixel_source_wgpu_readback()) != 1:
+  if lig_native_pixel_source_honest_product(lig_native_pixel_source_none()) != 0:
     return 5
-  if render_viewport_native_pixels_honest(1, lig_native_pixel_source_wgpu_draw_list()) != 1:
+  if lig_native_pixel_source_is_wgpu_path(lig_native_pixel_source_wgpu_readback()) != 1:
     return 6
-  if render_viewport_native_pixels_honest(1, lig_native_pixel_source_none()) != 0:
+  if lig_native_pixel_source_is_wgpu_path(lig_native_pixel_source_wgpu_swapchain()) != 1:
     return 7
+  if render_viewport_native_pixels_honest(1, lig_native_pixel_source_wgpu_draw_list()) != 1:
+    return 8
+  if render_viewport_native_pixels_honest(1, lig_native_pixel_source_wgpu_swapchain()) != 1:
+    return 9
+  if render_viewport_native_pixels_honest(1, lig_native_pixel_source_none()) != 0:
+    return 10
   return 0

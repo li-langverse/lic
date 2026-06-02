@@ -125,6 +125,9 @@ const char* bytes_push_byte(const char* buf, int32_t byte);
 int32_t net_byte_at(const char* b, int32_t off);
 int32_t net_atoi(const char* s);
 
+/* OS CSPRNG trusted seam (li_rt_rng.c — getrandom / arc4random_buf). */
+int32_t li_rt_rng_fill_bytes(intptr_t out_buf, int32_t n);
+
 intptr_t tcp_recv_i(int32_t conn, int32_t max);
 int32_t tcp_send_i(int32_t conn, intptr_t data);
 intptr_t li_rt_argv_i(int32_t index);
@@ -167,6 +170,10 @@ int32_t epoll_wait_tagged_timeout_ms_i(int32_t epfd, intptr_t events, int32_t ma
 int32_t httpd_load_runtime_config_i(intptr_t path);
 int32_t httpd_tls_enabled_i(void);
 int32_t httpd_tls_handshake_slot_i(int32_t slot, int32_t fd);
+int32_t httpd_tls_handshake_begin_i(int32_t slot, int32_t fd);
+int32_t httpd_tls_handshake_continue_i(int32_t slot);
+int32_t httpd_tls_handshake_pending_i(int32_t slot);
+int32_t httpd_tls_handshake_spin_i(int32_t slot, int32_t fd, int32_t max_rounds);
 int32_t httpd_tls_slot_h2_i(int32_t slot);
 int32_t httpd_h2_serve_slot_i(int32_t epfd, int32_t slot);
 void httpd_client_force_close_i(int32_t epfd, int32_t slot);
@@ -259,6 +266,7 @@ int32_t li_rt_lig_present_blit_rgba8(int32_t viewport_w, int32_t viewport_h, int
 int32_t li_rt_lig_wgpu_readback_active(void);
 int32_t li_rt_lig_wgpu_readback_stub(int32_t viewport_w, int32_t viewport_h, int32_t profile_id, int32_t paint_cmd_count, int32_t tag_h_px);
 int32_t li_rt_lig_wgpu_draw_list_submit(int32_t viewport_w, int32_t viewport_h, int32_t cmd_count, int32_t pbr_tag);
+int32_t li_rt_lig_wgpu_ui_raster_stub(int32_t viewport_w, int32_t viewport_h, int32_t paint_cmd_count, int32_t profile_id);
 int32_t li_rt_lig_wgpu_swapchain_create(int32_t viewport_w, int32_t viewport_h);
 int32_t li_rt_lig_wgpu_present_frame(int32_t swapchain_ok);
 int32_t li_rt_studio_shell_input_pointer_down(void);
@@ -272,6 +280,8 @@ int32_t li_rt_studio_demo_profile_from_env(void);
 int32_t li_rt_studio_demo_frames_from_env(void);
 int32_t li_rt_studio_demo_loop_tick_from_env(void);
 int32_t li_rt_studio_bench_mode_from_env(void);
+int32_t li_rt_studio_route_from_name(const char* name);
+int32_t li_rt_studio_route_from_env(void);
 
 int32_t li_rt_studio_ai_patch_kind(const char* patch);
 

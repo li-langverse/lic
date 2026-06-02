@@ -1,0 +1,24 @@
+# E-687: Let $Y(x)$ be the maximal $y$ such that there exists a choice of congruence classes $a_p$ for all primes $p\leq x$ such that every integer in $[1,y]$ is congruent to at least one of the $a_p\pmod{p}$. Give good estimates for $Y(x)$. In particular, can one prove that $Y(x)=o(x^2)$ or even $Y(x)\ll x^{1+o(1)}$?
+# erdos_number: 687
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e687_let_y_x_be_the_maximal_y_such_that_there() -> int
+  requires true
+  ensures result == 0  # open: E-687
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e687_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

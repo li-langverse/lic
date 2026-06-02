@@ -1,0 +1,26 @@
+# E-42: Are there infinitely many n such that n and n+2 are both products of exactly two primes (Chen-type twin)?
+# erdos_number: 42
+# erdos_status: open
+# priority_tier: P0
+# tags: primes, almost_prime
+# context: Twin semiprime problem: infinitely many n such that n and n+2 are each products of exactly two primes.
+# context: Connects to sieve methods and almost-prime pairs..
+
+def erdos_e42_are_there_infinitely_many_n_such_that_n() -> int
+  requires true
+  ensures result == 0  # open: E-42
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e42_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

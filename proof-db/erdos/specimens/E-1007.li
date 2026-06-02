@@ -1,0 +1,24 @@
+# E-1007: The dimension of a graph $G$ is the minimal $n$ such that $G$ can be embedded in $\mathbb{R}^n$ such that every edge of $G$ is a unit line segment. What is the smallest number of edges in a graph with dimension $4$?
+# erdos_number: 1007
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e1007_the_dimension_of_a_graph_g_is_the_minima() -> int
+  requires true
+  ensures result == 0  # open: E-1007
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1007_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

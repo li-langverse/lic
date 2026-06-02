@@ -1,0 +1,24 @@
+# E-193: Let $S\subseteq \mathbb{Z}^3$ be a finite set and let $A=\{a_1,a_2,\ldots,\}\subset \mathbb{Z}^3$ be an infinite $S$-walk, so that $a_{i+1}-a_i\in S$ for all $i$. Must $A$ contain three collinear points?
+# erdos_number: 193
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry
+
+def erdos_e193_let_s_subseteq_mathbb_z_3_be_a_finite_se() -> int
+  requires true
+  ensures result == 0  # open: E-193
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e193_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

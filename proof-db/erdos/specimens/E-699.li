@@ -1,0 +1,24 @@
+# E-699: Is it true that for every $1\leq i<j\leq n/2$ there exists some prime $p\geq i$ such that\[p\mid \textrm{gcd}\left(\binom{n}{i}, \binom{n}{j}\right)?\]
+# erdos_number: 699
+# erdos_status: open
+# priority_tier: P2
+# tags: binomial_coefficients, number_theory
+
+def erdos_e699_is_it_true_that_for_every_1_leq_i_j_leq() -> int
+  requires true
+  ensures result == 0  # open: E-699
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e699_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

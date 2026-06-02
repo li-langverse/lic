@@ -1,0 +1,24 @@
+# E-833: Does there exist an absolute constant $c>0$ such that, for all $r\geq 2$, in any $r$-uniform hypergraph with chromatic number $3$ there is a vertex contained in at least $(1+c)^r$ many edges?
+# erdos_number: 833
+# erdos_status: proved
+# priority_tier: P2
+# tags: chromatic_number, graph_theory, hypergraphs
+
+def erdos_e833_does_there_exist_an_absolute_constant_c() -> int
+  requires true
+  ensures result == 0  # open: E-833
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e833_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

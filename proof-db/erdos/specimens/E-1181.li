@@ -1,0 +1,24 @@
+# E-1181: Let $q(n,k)$ denote the least prime which does not divide $\prod_{1\leq i\leq k}(n+i)$. Is it true that there exists some $c>0$ such that, for all large $n$,\[q(n,\log n)<(1-c)(\log n)^2?\]
+# erdos_number: 1181
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e1181_let_q_n_k_denote_the_least_prime_which_d() -> int
+  requires true
+  ensures result == 0  # open: E-1181
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1181_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

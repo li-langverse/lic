@@ -1,0 +1,32 @@
+# Multi-pool upstream + vhost routing (WP1 example)
+# Flatten: python3 scripts/flatten-httpd-config.py packages/li-net-httpd/examples/multi_pool_vhost.toml -o /tmp/httpd.runtime.conf
+
+[server]
+listen = ":8443"
+document_root = "./public"
+
+[limits]
+max_body = "1m"
+max_header = "16k"
+
+[upstreams.app]
+peers = ["http://127.0.0.1:3001"]
+
+[upstreams.api]
+peers = ["http://127.0.0.1:3002", "http://127.0.0.1:3003"]
+
+[[site]]
+host = "app.example.com"
+listen = ":8443"
+
+[site.routes]
+"GET /index.html" = "static"
+"GET /api/*" = "proxy:app"
+
+[[site]]
+host = "api.example.com"
+listen = ":8443"
+
+[site.routes]
+"GET /health" = "static"
+"POST /v1/*" = "proxy:api"

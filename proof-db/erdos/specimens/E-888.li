@@ -1,0 +1,24 @@
+# E-888: What is the size of the largest $A\subseteq \{1,\ldots,n\}$ such that if $a\leq b\leq c\leq d\in A$ are such that $abcd$ is a square then $ad=bc$?
+# erdos_number: 888
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, squares
+
+def erdos_e888_what_is_the_size_of_the_largest_a_subset() -> int
+  requires true
+  ensures result == 0  # open: E-888
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e888_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

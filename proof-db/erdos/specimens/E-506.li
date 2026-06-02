@@ -1,0 +1,24 @@
+# E-506: What is the minimum number of circles determined by any $n$ points in $\mathbb{R}^2$, not all on a circle?
+# erdos_number: 506
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry
+
+def erdos_e506_what_is_the_minimum_number_of_circles_de() -> int
+  requires true
+  ensures result == 0  # open: E-506
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e506_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

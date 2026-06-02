@@ -4,6 +4,9 @@
 
 ### Added
 
+- **W4 StudioRoute table** — `StudioRoute`, `studio_route_lookup`, `studio_shell_apply_route`, `studio_compose_shell_route`, `studio_route_resolve_startup`; env `STUDIO_ROUTE` + profile/bench fallback; smoke `studio_route_table.li`; `li_std_studio_version` → 37.
+- **W4 present loop Li rasterizer** — `studio_shell_present_raster_pass`, `studio_shell_present_raster_and_blit`; `studio_vertical_demo_frame` runs `render_ui_raster_pass` before `lig_present_blit_paint_summary`; smoke `studio_present_loop_raster.li`; `li_std_studio_version` → 35.
+- **W2 ComposeCache on reactive shell** — `ComposeCache` on `StudioReactiveShell`; partial flush via store-generation cache hits; `studio_reactive_cache_tally`; smoke `studio_compose_cache_partial.li`; `li_std_studio_version` → 34.
 - **WP-PUB-03 publish_bundle reproducibility manifest** — `studio_publish_bundle`, `studio_publish_bundle_three_click_flow` (Select → lic build proof → Export zip manifest); MCP `publish_bundle` writes manifest contract after proof pass; smoke `studio_publish_bundle.li`; `li_std_studio_version` → 31.
 - **WP-PUB-02 studio.publish.table scientific export** — `studio_publish_table`, `studio_publish_table_from_viz_tick`, `studio_publish_table_three_click_flow` (Select → lic build proof → Export); HDF5/CSV contract from sim.viz pipeline rows; smoke `studio_publish_table.li`; `li_std_studio_version` → 30.
 - **WP-PUB-01 studio.publish.figure vector export** — `studio_publish_figure`, `studio_publish_three_click_flow` (Select → lic build proof → Export); SVG/PDF/300+dpi PNG contract with journal templates; smoke `studio_publish_figure.li`; `li_std_studio_version` → 29.

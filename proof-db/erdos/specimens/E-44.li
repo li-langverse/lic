@@ -1,0 +1,24 @@
+# E-44: Are there infinitely many n such that n!+1 is prime?
+# erdos_number: 44
+# erdos_status: open
+# priority_tier: P2
+# tags: primes, factorial
+
+def erdos_e44_are_there_infinitely_many_n_such_that_n() -> int
+  requires true
+  ensures result == 0  # open: E-44
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e44_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

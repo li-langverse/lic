@@ -1,0 +1,26 @@
+# E-61: For any graph H, is there c=c(H)>0 such that every n-vertex H-free graph contains a clique or independent set on at least n^c vertices (Erdős–Hajnal)?
+# erdos_number: 61
+# erdos_status: open
+# priority_tier: P0
+# tags: graph_theory, extremal
+# context: Turán-type extremal question: every large H-free graph should contain a large clique.
+# context: Relates Ramsey numbers and the Erdős–Stone theorem program..
+
+def erdos_e61_for_any_graph_h_is_there_c_c_h_0_such_th() -> int
+  requires true
+  ensures result == 0  # open: E-61
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e61_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

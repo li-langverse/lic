@@ -1,0 +1,24 @@
+# E-1115: Let $f(z)$ be an entire function of finite order, and let $\Gamma$ be a rectifiable path on which $f(z)\to \infty$. Let $\ell(r)$ be the length of $\Gamma$ in the disc $\lvert z\rvert<r$. Find a path for which $\ell(r)$ grows as slowly as possible, and estimate $\ell(r)$ in terms of $M(r)=\max_{\lvert z\rvert=r}\lvert f(z)\rvert$. In particular, can such a path $\Gamma$ be found for which $\ell(r)\ll r$?
+# erdos_number: 1115
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis
+
+def erdos_e1115_let_f_z_be_an_entire_function_of_finite() -> int
+  requires true
+  ensures result == 0  # open: E-1115
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1115_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,24 @@
+# E-27: An $\epsilon$-almost covering system is a set of congruences $a_i\pmod{n_i}$ for distinct moduli $n_1<\ldots<n_k$ such that the density of those integers which satisfy none of them is $\leq \epsilon$. Is there a constant $C>1$ such that for every $\epsilon>0$ and $N\geq 1$ there is an $\epsilon$-almost covering system with $N\leq n_1<\cdots <n_k\leq CN$?
+# erdos_number: 27
+# erdos_status: open
+# priority_tier: P2
+# tags: covering_systems, number_theory
+
+def erdos_e27_an_epsilon_almost_covering_system_is_a_s() -> int
+  requires true
+  ensures result == 0  # open: E-27
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e27_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

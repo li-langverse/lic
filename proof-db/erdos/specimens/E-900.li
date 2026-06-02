@@ -1,0 +1,24 @@
+# E-900: There is a function $f:(1/2,\infty)\to \mathbb{R}$ such that $f(c)\to 0$ as $c\to 1/2$ and $f(c)\to 1$ as $c\to \infty$ and every random graph with $n$ vertices and $cn$ edges has (with high probability) a path of length at least $f(c)n$.
+# erdos_number: 900
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e900_there_is_a_function_f_1_2_infty_to_mathb() -> int
+  requires true
+  ensures result == 0  # open: E-900
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e900_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

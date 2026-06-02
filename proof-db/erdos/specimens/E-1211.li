@@ -1,0 +1,24 @@
+# E-1211: Let $\mathbb{N}=A\cup B$ where $A$ and $B$ are disjoint. Let $S(A)$ be those integers which are the sum of finitely many distinct elements of $A$, and similarly for $S(B)$. If\[\overline{\delta}(X)=\limsup_{x\to \infty}\frac{1}{\log x}\sum_{\substack{n\in X\\ n<x}}\frac{1}{n}\]is the upper logarithmic density of $X$ then how large must\[\max(\overline{\delta}(S(A)),\overline{\delta}(S(B)))\]be?
+# erdos_number: 1211
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, ramsey_theory
+
+def erdos_e1211_let_mathbb_n_a_cup_b_where_a_and_b_are_d() -> int
+  requires true
+  ensures result == 0  # open: E-1211
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1211_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

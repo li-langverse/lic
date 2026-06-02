@@ -36,13 +36,7 @@ if [[ "${PH_ML_MATMUL32_INNER:-0}" != "1" ]] \
 fi
 
 LIC="${LIC:-}"
-if [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-elif [[ -z "$LIC" ]]; then
+if [[ -z "$LIC" ]]; then
   LIC="$($ROOT/scripts/resolve-lic.sh)"
 fi
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul-32.json"

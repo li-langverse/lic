@@ -1,0 +1,24 @@
+# E-327: Suppose $A\subseteq \{1,\ldots,N\}$ is such that if $a,b\in A$ and $a\neq b$ then $a+b\nmid ab$. Can $A$ be 'substantially more' than the odd numbers? What if $a,b\in A$ with $a\neq b$ implies $a+b\nmid 2ab$? Must $\lvert A\rvert=o(N)$?
+# erdos_number: 327
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, unit_fractions
+
+def erdos_e327_suppose_a_subseteq_1_ldots_n_is_such_tha() -> int
+  requires true
+  ensures result == 0  # open: E-327
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e327_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

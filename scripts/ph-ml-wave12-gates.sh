@@ -6,6 +6,8 @@ cd "$ROOT"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1
+# shellcheck source=lib/ph-ml-lic.sh
+source "$ROOT/scripts/lib/ph-ml-lic.sh"
 
 _wsl_path_u() {
   wsl.exe wslpath -u "$1" 2>/dev/null | tr -d '\r\n'
@@ -74,16 +76,8 @@ if [[ "${PH_ML_WAVE12_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="./build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="./build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-fi
-
-[[ -x "$LIC" ]] || { echo "ph-ml-wave12-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }
+LIC="$(ph_ml_resolve_lic "$ROOT")" \
+  || { echo "ph-ml-wave12-gates: build lic (./scripts/build.sh or build-wsl in WSL)"; exit 1; }
 
 grep -q 'Wave 12' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 12"; exit 1; }
 grep -q 'ml_gpu_lkir_launch_pipeline' packages/li-ml/src/lib.li || { echo "li-ml missing launch pipeline"; exit 1; }

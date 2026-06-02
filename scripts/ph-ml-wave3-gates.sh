@@ -3,6 +3,8 @@
 set -euo pipefail
 ROOT="${PH_ML_WAVE3_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
+# shellcheck source=lib/ph-ml-lic.sh
+source "$ROOT/scripts/lib/ph-ml-lic.sh"
 
 run_in_wsl() {
   local wsl_root
@@ -51,16 +53,8 @@ if [[ "${PH_ML_WAVE3_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/l
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="./build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="./build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-fi
-
-[[ -x "$LIC" ]] || { echo "ph-ml-wave3-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }
+LIC="$(ph_ml_resolve_lic "$ROOT")" \
+  || { echo "ph-ml-wave3-gates: build lic (./scripts/build.sh or build-wsl in WSL)"; exit 1; }
 
 grep -q 'JobGraph' docs/game-dev/specs/ml-async-parallel-rfc.md || { echo "RFC missing JobGraph"; exit 1; }
 grep -q 'Wave 3' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 3"; exit 1; }

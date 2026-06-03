@@ -14,9 +14,9 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <windows.h>
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -102,6 +102,38 @@ static inline int li_rt_httpd_cpu_count(void) {
 #ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL 0
 #endif
+#ifndef MSG_DONTWAIT
+#define MSG_DONTWAIT 0
+#endif
+
+/* Winsock setsockopt expects const char* option values. */
+#define LI_RT_WINSOCK_SETSOCKOPT(s, level, optname, optval, optlen) \
+  setsockopt((s), (level), (optname), (const char*)(optval), (int)(optlen))
+#undef setsockopt
+static inline int setsockopt(SOCKET s, int level, int optname, const void* optval, int optlen) {
+  return LI_RT_WINSOCK_SETSOCKOPT(s, level, optname, optval, optlen);
+}
+
+static inline void* memmem(const void* haystack, size_t haystacklen, const void* needle, size_t needlelen) {
+  if (needlelen == 0) {
+    return (void*)haystack;
+  }
+  if (haystacklen < needlelen) {
+    return NULL;
+  }
+  const unsigned char* h = (const unsigned char*)haystack;
+  const unsigned char* n = (const unsigned char*)needle;
+  for (size_t i = 0; i + needlelen <= haystacklen; i++) {
+    if (memcmp(h + i, n, needlelen) == 0) {
+      return (void*)(h + i);
+    }
+  }
+  return NULL;
+}
+
+static inline struct tm* gmtime_r(const time_t* t, struct tm* out) {
+  return gmtime_s(out, t) == 0 ? out : NULL;
+}
 
 static inline void li_rt_winsock_ensure(void) {
   static int ready;

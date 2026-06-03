@@ -411,11 +411,11 @@ void httpd_tls_global_shutdown(void) {
   g_tls_wanted = 0;
   g_tls_ready = 0;
   if (g_ssl_lib) {
-    dlclose(g_ssl_lib);
+    li_rt_dlclose(g_ssl_lib);
     g_ssl_lib = NULL;
   }
   if (g_crypto_lib) {
-    dlclose(g_crypto_lib);
+    li_rt_dlclose(g_crypto_lib);
     g_crypto_lib = NULL;
   }
 }

@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
+# shellcheck source=lib/resolve-runnable-lic.sh
+source "$ROOT/scripts/lib/resolve-runnable-lic.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 
@@ -22,11 +24,12 @@ run_in_wsl() {
       fi
     done
   fi
-  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_MATMUL32_INNER=1 BENCHMARKS_ROOT='${wsl_bench}' LIC=./build-wsl/compiler/lic/lic CC=clang-22 CXX=clang++-22 && bash scripts/bench-ph-ml-lkir-matmul-32.sh"
+  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_MATMUL32_INNER=1 BENCHMARKS_ROOT='${wsl_bench}' CC=clang-22 CXX=clang++-22 && bash scripts/bench-ph-ml-lkir-matmul-32.sh"
 }
 
 if [[ "${PH_ML_MATMUL32_INNER:-0}" != "1" ]] \
-  && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] \
+  && ! lic_is_runnable "$ROOT/build/compiler/lic/lic" \
+  && ! lic_is_runnable "$ROOT/build/compiler/lic/lic.exe" \
   && command -v wsl.exe >/dev/null 2>&1; then
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
   if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
@@ -36,15 +39,10 @@ if [[ "${PH_ML_MATMUL32_INNER:-0}" != "1" ]] \
 fi
 
 LIC="${LIC:-}"
-if [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-elif [[ -z "$LIC" ]]; then
-  LIC="$($ROOT/scripts/resolve-lic.sh)"
+if [[ -z "$LIC" ]]; then
+  LIC="$(resolve_runnable_lic "$ROOT")"
 fi
+lic_is_runnable "$LIC" || { echo "bench-ph-ml-lkir-matmul-32: no runnable lic"; exit 1; }
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul-32.json"
 NUMPY_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-matmul-32.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_matmul_32_lkir.li"

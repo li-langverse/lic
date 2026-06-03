@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/is-wsl.sh
+source "$ROOT/scripts/lib/is-wsl.sh"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 
@@ -8,7 +10,7 @@ LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
 if [[ ! -x "$LIC" && -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="$ROOT/build/compiler/lic/lic"
 fi
-if [[ ! -x "$LIC" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+if [[ ! -x "$LIC" ]] && is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="$ROOT/build-wsl/compiler/lic/lic"
 fi
 if [[ -x "$LIC" ]]; then

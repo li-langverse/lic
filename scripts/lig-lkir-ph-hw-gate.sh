@@ -2,6 +2,8 @@
 # PH-HW lig/LKIR sprint completion gate (native or WSL build-wsl).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/is-wsl.sh
+source "$ROOT/scripts/lib/is-wsl.sh"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 
@@ -45,7 +47,7 @@ if [[ -x "$LIC" ]]; then
   run_gate "$LIC"
   exit 0
 fi
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+if is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   run_gate "$ROOT/build-wsl/compiler/lic/lic"
   exit 0
 fi

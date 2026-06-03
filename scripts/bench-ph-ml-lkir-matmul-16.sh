@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/is-wsl.sh
+source "$ROOT/scripts/lib/is-wsl.sh"
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 source "$ROOT/scripts/lib/li-ui.sh"
 LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
-[[ -x "$ROOT/build-wsl/compiler/lic/lic" ]] && LIC="$ROOT/build-wsl/compiler/lic/lic"
+is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]] && LIC="$ROOT/build-wsl/compiler/lic/lic"
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul-16.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_matmul_16_lkir.li"
 mkdir -p "$BENCHMARKS_RESULTS"

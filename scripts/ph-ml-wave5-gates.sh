@@ -3,6 +3,8 @@
 set -euo pipefail
 ROOT="${PH_ML_WAVE5_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
+# shellcheck source=lib/is-wsl.sh
+source "$ROOT/scripts/lib/is-wsl.sh"
 
 run_in_wsl() {
   local wsl_root
@@ -55,7 +57,7 @@ if [[ "${PH_ML_WAVE5_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/l
 fi
 
 LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+if is_wsl && [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="./build-wsl/compiler/lic/lic"
 elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="./build/compiler/lic/lic"

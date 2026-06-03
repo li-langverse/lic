@@ -11,10 +11,6 @@ def erdos_e856_let_k_geq_3_and_f_k_n_be_the_maximum_val() -> int
 =
   return 0
 
-extern proc erdos_e856_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

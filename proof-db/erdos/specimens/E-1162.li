@@ -11,10 +11,6 @@ def erdos_e1162_give_an_asymptotic_formula_for_the_numbe() -> int
 =
   return 0
 
-extern proc erdos_e1162_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

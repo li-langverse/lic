@@ -11,10 +11,6 @@ def erdos_e1155_construct_a_random_graph_on_n_vertices_i() -> int
 =
   return 0
 
-extern proc erdos_e1155_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e221_is_there_a_set_a_subset_mathbb_n_such_th() -> int
 =
   return 0
 
-extern proc erdos_e221_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

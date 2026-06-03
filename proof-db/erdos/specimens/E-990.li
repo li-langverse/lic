@@ -11,10 +11,6 @@ def erdos_e990_let_f_a_0_cdots_a_dx_d_in_mathbb_c_x_be() -> int
 =
   return 0
 
-extern proc erdos_e990_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

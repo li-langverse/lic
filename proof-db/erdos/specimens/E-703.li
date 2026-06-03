@@ -11,10 +11,6 @@ def erdos_e703_let_r_geq_1_and_define_t_n_r_to_be_maxim() -> int
 =
   return 0
 
-extern proc erdos_e703_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

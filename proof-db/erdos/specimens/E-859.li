@@ -11,10 +11,6 @@ def erdos_e859_let_t_geq_1_and_let_d_t_be_the_density_o() -> int
 =
   return 0
 
-extern proc erdos_e859_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

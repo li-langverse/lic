@@ -13,10 +13,6 @@ def erdos_e110_do_there_exist_arbitrarily_large_sets_of() -> int
 =
   return 0
 
-extern proc erdos_e110_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

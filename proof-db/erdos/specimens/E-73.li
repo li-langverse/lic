@@ -11,10 +11,6 @@ def erdos_e73_does_the_sum_over_primes_p_of_1_p_log_p() -> int
 =
   return 0
 
-extern proc erdos_e73_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

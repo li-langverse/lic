@@ -11,10 +11,6 @@ def erdos_e678_let_m_n_k_n_1_ldots_n_k_be_the_least_com() -> int
 =
   return 0
 
-extern proc erdos_e678_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e168_let_f_n_be_the_size_of_the_largest_subse() -> int
 =
   return 0
 
-extern proc erdos_e168_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

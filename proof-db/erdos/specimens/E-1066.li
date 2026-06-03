@@ -11,10 +11,6 @@ def erdos_e1066_let_g_be_a_graph_given_by_n_points_in_ma() -> int
 =
   return 0
 
-extern proc erdos_e1066_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

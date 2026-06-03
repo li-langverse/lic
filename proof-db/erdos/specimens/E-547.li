@@ -11,10 +11,6 @@ def erdos_e547_if_t_is_a_tree_on_n_vertices_then_r_t_le() -> int
 =
   return 0
 
-extern proc erdos_e547_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

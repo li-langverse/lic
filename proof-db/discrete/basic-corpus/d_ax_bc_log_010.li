@@ -1,9 +1,13 @@
 # D-AX-BC-LOG-010: Identity: P implies P.
 
-extern proc d_ax_bc_log_010_axiom_witness() -> int
+def d_ax_bc_log_010_axiom_witness()-> int
   requires true
   ensures result == 0
   decreases 0
+
+=
+
+  return 0
 
 def d_ax_bc_log_010_tautology(p: bool, q: bool) -> bool
   requires true

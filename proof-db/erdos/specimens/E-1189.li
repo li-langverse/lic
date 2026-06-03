@@ -11,10 +11,6 @@ def erdos_e1189_call_a_set_of_distinct_integers_1_n_1_cd() -> int
 =
   return 0
 
-extern proc erdos_e1189_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e694_let_f_max_n_be_the_largest_m_such_that_p() -> int
 =
   return 0
 
-extern proc erdos_e694_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e317_is_there_some_constant_c_0_such_that_for() -> int
 =
   return 0
 
-extern proc erdos_e317_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

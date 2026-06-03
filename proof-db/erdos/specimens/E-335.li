@@ -11,10 +11,6 @@ def erdos_e335_let_d_a_denote_the_density_of_a_subseteq() -> int
 =
   return 0
 
-extern proc erdos_e335_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

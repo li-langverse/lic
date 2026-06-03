@@ -11,10 +11,6 @@ def erdos_e601_for_which_limit_ordinals_alpha_is_it_tru() -> int
 =
   return 0
 
-extern proc erdos_e601_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

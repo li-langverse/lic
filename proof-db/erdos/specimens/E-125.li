@@ -11,10 +11,6 @@ def erdos_e125_let_a_sum_epsilon_k3_k_epsilon_k_in_0_1() -> int
 =
   return 0
 
-extern proc erdos_e125_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

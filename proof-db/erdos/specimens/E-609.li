@@ -11,10 +11,6 @@ def erdos_e609_let_f_n_be_the_minimal_m_such_that_if_th() -> int
 =
   return 0
 
-extern proc erdos_e609_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

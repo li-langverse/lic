@@ -11,10 +11,6 @@ def erdos_e562_let_r_r_n_denote_the_r_uniform_hypergrap() -> int
 =
   return 0
 
-extern proc erdos_e562_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

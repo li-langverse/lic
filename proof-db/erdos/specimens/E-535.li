@@ -11,10 +11,6 @@ def erdos_e535_let_r_geq_3_and_let_f_r_n_denote_the_siz() -> int
 =
   return 0
 
-extern proc erdos_e535_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

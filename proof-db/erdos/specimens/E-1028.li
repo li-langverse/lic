@@ -11,10 +11,6 @@ def erdos_e1028_let_h_n_min_f_max_x_subseteq_1_ldots_n_l() -> int
 =
   return 0
 
-extern proc erdos_e1028_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

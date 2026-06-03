@@ -11,10 +11,6 @@ def erdos_e541_let_a_1_ldots_a_p_be_not_necessarily_dis() -> int
 =
   return 0
 
-extern proc erdos_e541_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

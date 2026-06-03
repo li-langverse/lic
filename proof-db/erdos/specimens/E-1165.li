@@ -11,10 +11,6 @@ def erdos_e1165_given_a_random_walk_s_0_s_1_ldots_in_mat() -> int
 =
   return 0
 
-extern proc erdos_e1165_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e1037_let_g_be_a_graph_on_n_vertices_in_which() -> int
 =
   return 0
 
-extern proc erdos_e1037_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

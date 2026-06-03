@@ -11,10 +11,6 @@ def erdos_e1216_a_tournament_is_a_complete_directed_grap() -> int
 =
   return 0
 
-extern proc erdos_e1216_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

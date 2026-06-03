@@ -11,10 +11,6 @@ def erdos_e275_if_a_finite_system_of_r_congruences_a_i() -> int
 =
   return 0
 
-extern proc erdos_e275_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e1083_let_d_geq_3_and_let_f_d_n_be_the_minimal() -> int
 =
   return 0
 
-extern proc erdos_e1083_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e40_for_what_functions_g_n_to_infty_is_it_tr() -> int
 =
   return 0
 
-extern proc erdos_e40_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e1124_can_a_square_and_a_circle_of_the_same_ar() -> int
 =
   return 0
 
-extern proc erdos_e1124_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

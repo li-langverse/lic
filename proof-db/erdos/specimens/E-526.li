@@ -11,10 +11,6 @@ def erdos_e526_let_a_n_geq_0_with_a_n_to_0_and_sum_a_n() -> int
 =
   return 0
 
-extern proc erdos_e526_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

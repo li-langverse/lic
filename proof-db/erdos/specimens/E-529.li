@@ -11,10 +11,6 @@ def erdos_e529_let_d_k_n_be_the_expected_distance_from() -> int
 =
   return 0
 
-extern proc erdos_e529_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

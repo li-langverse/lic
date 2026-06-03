@@ -11,10 +11,6 @@ def erdos_e748_let_f_n_count_the_number_of_sum_free_a_s() -> int
 =
   return 0
 
-extern proc erdos_e748_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

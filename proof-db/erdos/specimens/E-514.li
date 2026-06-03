@@ -11,10 +11,6 @@ def erdos_e514_let_f_z_be_an_entire_transcendental_func() -> int
 =
   return 0
 
-extern proc erdos_e514_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

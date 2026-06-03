@@ -11,10 +11,6 @@ def erdos_e924_let_k_geq_2_and_l_geq_3_is_there_a_graph() -> int
 =
   return 0
 
-extern proc erdos_e924_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

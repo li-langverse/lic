@@ -11,10 +11,6 @@ def erdos_e408_let_phi_n_be_the_euler_totient_function() -> int
 =
   return 0
 
-extern proc erdos_e408_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e367_let_b_2_n_be_the_2_full_part_of_n_that_i() -> int
 =
   return 0
 
-extern proc erdos_e367_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

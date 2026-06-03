@@ -11,10 +11,6 @@ def erdos_e1111_if_g_is_a_finite_graph_and_a_b_are_disjo() -> int
 =
   return 0
 
-extern proc erdos_e1111_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e695_let_p_1_p_2_cdots_be_a_sequence_of_prime() -> int
 =
   return 0
 
-extern proc erdos_e695_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

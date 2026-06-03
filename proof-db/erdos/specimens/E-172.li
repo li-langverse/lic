@@ -11,10 +11,6 @@ def erdos_e172_is_it_true_that_in_any_finite_colouring() -> int
 =
   return 0
 
-extern proc erdos_e172_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

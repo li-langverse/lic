@@ -11,10 +11,6 @@ def erdos_e1038_determine_the_infimum_and_supremum_of_lv() -> int
 =
   return 0
 
-extern proc erdos_e1038_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

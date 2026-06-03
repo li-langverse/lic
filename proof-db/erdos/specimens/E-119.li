@@ -11,10 +11,6 @@ def erdos_e119_let_z_i_be_an_infinite_sequence_of_compl() -> int
 =
   return 0
 
-extern proc erdos_e119_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

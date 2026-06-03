@@ -11,10 +11,6 @@ def erdos_e1186_let_delta_k_be_such_that_in_any_2_colour() -> int
 =
   return 0
 
-extern proc erdos_e1186_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

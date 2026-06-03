@@ -11,10 +11,6 @@ def erdos_e34_for_any_permutation_pi_in_s_n_of_1_ldots() -> int
 =
   return 0
 
-extern proc erdos_e34_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

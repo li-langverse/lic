@@ -11,10 +11,6 @@ def erdos_e454_let_f_n_min_i_n_p_n_i_p_n_i_where_p_k_is() -> int
 =
   return 0
 
-extern proc erdos_e454_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

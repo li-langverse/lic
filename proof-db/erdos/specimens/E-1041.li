@@ -11,10 +11,6 @@ def erdos_e1041_let_f_z_prod_i_1_n_z_z_i_in_mathbb_c_z_w() -> int
 =
   return 0
 
-extern proc erdos_e1041_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

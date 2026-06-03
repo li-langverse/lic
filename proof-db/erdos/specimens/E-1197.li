@@ -11,10 +11,6 @@ def erdos_e1197_let_e_subset_0_infty_be_a_set_of_positiv() -> int
 =
   return 0
 
-extern proc erdos_e1197_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

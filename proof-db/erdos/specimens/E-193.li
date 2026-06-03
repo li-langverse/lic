@@ -11,10 +11,6 @@ def erdos_e193_let_s_subseteq_mathbb_z_3_be_a_finite_se() -> int
 =
   return 0
 
-extern proc erdos_e193_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

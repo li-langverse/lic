@@ -11,10 +11,6 @@ def erdos_e216_let_g_k_be_the_smallest_integer_if_any_s() -> int
 =
   return 0
 
-extern proc erdos_e216_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

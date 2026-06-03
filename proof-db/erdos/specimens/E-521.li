@@ -11,10 +11,6 @@ def erdos_e521_let_epsilon_k_k_geq_0_be_independently_u() -> int
 =
   return 0
 
-extern proc erdos_e521_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

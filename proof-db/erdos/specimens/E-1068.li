@@ -11,10 +11,6 @@ def erdos_e1068_does_every_graph_with_chromatic_number_a() -> int
 =
   return 0
 
-extern proc erdos_e1068_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

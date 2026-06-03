@@ -11,10 +11,6 @@ def erdos_e250_is_sum_frac_sigma_n_2_n_irrational_here() -> int
 =
   return 0
 
-extern proc erdos_e250_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e719_let_mathrm_ex_r_n_k_r_1_r_be_the_maximum() -> int
 =
   return 0
 
-extern proc erdos_e719_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

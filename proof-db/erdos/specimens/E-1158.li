@@ -11,10 +11,6 @@ def erdos_e1158_let_k_t_r_be_the_complete_t_partite_t_un() -> int
 =
   return 0
 
-extern proc erdos_e1158_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

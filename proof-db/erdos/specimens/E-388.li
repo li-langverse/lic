@@ -11,10 +11,6 @@ def erdos_e388_can_one_classify_all_solutions_of_prod_1() -> int
 =
   return 0
 
-extern proc erdos_e388_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

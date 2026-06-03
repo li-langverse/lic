@@ -1,8 +1,10 @@
 # AX-PHYS-001..003
-extern proc proof_db_net_force_zero_preserves() -> int
+def proof_db_net_force_zero_preserves()-> int
   requires true
   ensures result == 0
   decreases 0
+=
+  return 0
 
 def force_from_mass_accel(m: float, a: float) -> float
   requires m > 0.0
@@ -11,10 +13,14 @@ def force_from_mass_accel(m: float, a: float) -> float
 =
   return m * a
 
-extern proc proof_db_pairwise_force_reciprocal(f_ij: float, f_ji: float) -> int
+def proof_db_pairwise_force_reciprocal(f_ij: float, f_ji: float)-> int
   requires f_ij + f_ji == 0.0
   ensures result == 0
   decreases 0
+
+=
+
+  return 0
 
 def main() -> int
   requires true

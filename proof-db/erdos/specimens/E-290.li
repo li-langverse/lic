@@ -11,10 +11,6 @@ def erdos_e290_let_a_geq_1_must_there_exist_some_b_a_su() -> int
 =
   return 0
 
-extern proc erdos_e290_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

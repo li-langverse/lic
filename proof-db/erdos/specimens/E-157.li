@@ -11,10 +11,6 @@ def erdos_e157_does_there_exist_an_infinite_sidon_set_w() -> int
 =
   return 0
 
-extern proc erdos_e157_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e448_let_tau_n_count_the_divisors_of_n_and_ta() -> int
 =
   return 0
 
-extern proc erdos_e448_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

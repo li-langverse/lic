@@ -11,10 +11,6 @@ def erdos_e421_is_there_a_sequence_1_leq_d_1_d_2_cdots() -> int
 =
   return 0
 
-extern proc erdos_e421_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

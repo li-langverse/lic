@@ -11,10 +11,6 @@ def erdos_e1045_let_z_1_ldots_z_n_in_mathbb_c_with_lvert() -> int
 =
   return 0
 
-extern proc erdos_e1045_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

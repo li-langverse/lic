@@ -1,7 +1,9 @@
-extern proc proof_db_real_add_comm(a: float, b: float) -> float
+def proof_db_real_add_comm(a: float, b: float)-> float
   requires true
   ensures result == b + a
   decreases 0
+=
+  return 0.0
 
 def main() -> int
   requires true

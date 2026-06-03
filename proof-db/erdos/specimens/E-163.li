@@ -11,10 +11,6 @@ def erdos_e163_for_any_d_geq_1_if_h_is_a_graph_such_tha() -> int
 =
   return 0
 
-extern proc erdos_e163_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

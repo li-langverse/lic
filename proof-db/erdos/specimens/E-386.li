@@ -11,10 +11,6 @@ def erdos_e386_let_2_leq_k_leq_n_2_can_binom_n_k_be_the() -> int
 =
   return 0
 
-extern proc erdos_e386_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

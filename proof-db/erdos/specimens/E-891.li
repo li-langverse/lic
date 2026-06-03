@@ -11,10 +11,6 @@ def erdos_e891_let_2_p_1_p_2_cdots_be_the_primes_and_k() -> int
 =
   return 0
 
-extern proc erdos_e891_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

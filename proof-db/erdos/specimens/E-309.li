@@ -11,10 +11,6 @@ def erdos_e309_let_n_geq_1_how_many_integers_can_be_wri() -> int
 =
   return 0
 
-extern proc erdos_e309_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

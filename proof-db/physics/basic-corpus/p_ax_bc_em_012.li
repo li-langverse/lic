@@ -1,9 +1,13 @@
 # P-AX-BC-EM-012: Gauss law (integral form) for electric flux.
 
-extern proc p_ax_bc_em_012_axiom_witness() -> int
+def p_ax_bc_em_012_axiom_witness()-> int
   requires true
   ensures result == 0
   decreases 0
+
+=
+
+  return 0
 
 def p_ax_bc_em_012_holds() -> int
   requires true

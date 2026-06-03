@@ -11,10 +11,6 @@ def erdos_e698_is_there_some_h_n_to_infty_such_that_for() -> int
 =
   return 0
 
-extern proc erdos_e698_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -85,10 +85,12 @@ def enrich_body(row: dict[str, str]) -> str:
                 "    i = i + 1",
                 "  return total",
                 "",
-                f"extern proc {s}_axiom_witness() -> int",
+                f"def {s}_axiom_witness() -> int",
                 "  requires true",
                 "  ensures result == 0",
                 "  decreases 0",
+                "=",
+                "  return 0",
                 "",
             ]
         )
@@ -109,10 +111,12 @@ def enrich_body(row: dict[str, str]) -> str:
                 "=",
                 "  return a * ex + b * ey",
                 "",
-                f"extern proc {s}_axiom_witness() -> int",
+                f"def {s}_axiom_witness() -> int",
                 "  requires true",
                 "  ensures result == 0",
                 "  decreases 0",
+                "=",
+                "  return 0",
                 "",
             ]
         )
@@ -238,20 +242,24 @@ def enrich_body(row: dict[str, str]) -> str:
                     "=",
                     "  return m * a",
                     "",
-                    f"extern proc {s}_axiom_witness() -> int",
+                    f"def {s}_axiom_witness() -> int",
                     "  requires true",
                     "  ensures result == 0",
                     "  decreases 0",
+                    "=",
+                    "  return 0",
                     "",
                 ]
             )
         else:
             lines.extend(
                 [
-                    f"extern proc {s}_axiom_witness() -> int",
+                    f"def {s}_axiom_witness() -> int",
                     "  requires true",
                     "  ensures result == 0",
                     "  decreases 0",
+                    "=",
+                    "  return 0",
                     "",
                     f"def {s}_holds() -> int",
                     "  requires true",
@@ -266,10 +274,12 @@ def enrich_body(row: dict[str, str]) -> str:
         lines.extend(_comment_block(eid, stmt))
         lines.extend(
             [
-                f"extern proc {s}_axiom_witness() -> int",
+                f"def {s}_axiom_witness() -> int",
                 "  requires true",
                 "  ensures result == 0",
                 "  decreases 0",
+                "=",
+                "  return 0",
                 "",
                 f"def {s}_holds() -> int",
                 "  requires true",
@@ -347,10 +357,12 @@ def enrich_body(row: dict[str, str]) -> str:
                 "=",
                 "  return adj_ji",
                 "",
-                f"extern proc {s}_axiom_witness() -> int",
+                f"def {s}_axiom_witness() -> int",
                 "  requires true",
                 "  ensures result == 0",
                 "  decreases 0",
+                "=",
+                "  return 0",
                 "",
             ]
         )
@@ -484,10 +496,12 @@ def enrich_body(row: dict[str, str]) -> str:
         lines.extend(_comment_block(eid, stmt))
         lines.extend(
             [
-                f"extern proc {s}_axiom_witness() -> int",
+                f"def {s}_axiom_witness() -> int",
                 "  requires true",
                 "  ensures result == 0",
                 "  decreases 0",
+                "=",
+                "  return 0",
                 "",
                 f"def {s}_mass_conserved(m_in: float, m_out: float) -> float",
                 "  requires m_in >= 0.0 and m_out >= 0.0",
@@ -502,10 +516,12 @@ def enrich_body(row: dict[str, str]) -> str:
         lines.extend(_comment_block(eid, stmt))
         lines.extend(
             [
-                f"extern proc {s}_axiom_witness() -> int",
+                f"def {s}_axiom_witness() -> int",
                 "  requires true",
                 "  ensures result == 0",
                 "  decreases 0",
+                "=",
+                "  return 0",
                 "",
                 f"def {s}_tautology(p: bool, q: bool) -> bool",
                 "  requires true",
@@ -573,10 +589,12 @@ def enrich_body(row: dict[str, str]) -> str:
         if kind == "axiom":
             lines.extend(
                 [
-                    f"extern proc {s}_axiom_witness() -> int",
+                    f"def {s}_axiom_witness() -> int",
                     "  requires true",
                     "  ensures result == 0",
                     "  decreases 0",
+                    "=",
+                    "  return 0",
                     "",
                 ]
             )

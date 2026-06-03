@@ -11,10 +11,6 @@ def erdos_e517_let_f_z_sum_k_1_infty_a_kz_n_k_be_an_ent() -> int
 =
   return 0
 
-extern proc erdos_e517_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

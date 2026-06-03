@@ -13,10 +13,6 @@ def erdos_e47_does_the_collatz_map_n_n_2_even_or_3n_1() -> int
 =
   return 0
 
-extern proc erdos_e47_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

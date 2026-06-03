@@ -11,10 +11,6 @@ def erdos_e605_is_there_some_function_f_n_to_infty_as_n() -> int
 =
   return 0
 
-extern proc erdos_e605_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

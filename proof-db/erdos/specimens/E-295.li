@@ -11,10 +11,6 @@ def erdos_e295_let_n_geq_1_and_let_k_n_denote_the_small() -> int
 =
   return 0
 
-extern proc erdos_e295_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

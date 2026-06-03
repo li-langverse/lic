@@ -11,10 +11,6 @@ def erdos_e862_let_a_1_n_be_the_number_of_maximal_sidon() -> int
 =
   return 0
 
-extern proc erdos_e862_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

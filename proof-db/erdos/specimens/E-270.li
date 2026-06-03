@@ -11,10 +11,6 @@ def erdos_e270_let_f_n_to_infty_as_n_to_infty_is_it_tru() -> int
 =
   return 0
 
-extern proc erdos_e270_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

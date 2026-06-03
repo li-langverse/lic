@@ -11,10 +11,6 @@ def erdos_e1105_the_anti_ramsey_number_mathrm_ar_n_g_is() -> int
 =
   return 0
 
-extern proc erdos_e1105_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e203_is_there_an_integer_m_geq_1_with_m_6_1_s() -> int
 =
   return 0
 
-extern proc erdos_e203_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e1051_is_it_true_that_if_1_leq_a_1_a_2_cdots_i() -> int
 =
   return 0
 
-extern proc erdos_e1051_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

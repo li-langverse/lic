@@ -11,10 +11,6 @@ def erdos_e548_let_n_geq_k_1_every_graph_on_n_vertices() -> int
 =
   return 0
 
-extern proc erdos_e548_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

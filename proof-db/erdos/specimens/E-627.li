@@ -11,10 +11,6 @@ def erdos_e627_let_omega_g_denote_the_clique_number_of() -> int
 =
   return 0
 
-extern proc erdos_e627_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

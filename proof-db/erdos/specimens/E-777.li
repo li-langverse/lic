@@ -11,10 +11,6 @@ def erdos_e777_if_mathcal_f_is_a_family_of_subsets_of_1() -> int
 =
   return 0
 
-extern proc erdos_e777_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

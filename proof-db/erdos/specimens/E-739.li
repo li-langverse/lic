@@ -11,10 +11,6 @@ def erdos_e739_let_mathfrak_m_be_an_infinite_cardinal_a() -> int
 =
   return 0
 
-extern proc erdos_e739_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

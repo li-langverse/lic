@@ -11,10 +11,6 @@ def erdos_e277_is_it_true_that_for_every_c_there_exists() -> int
 =
   return 0
 
-extern proc erdos_e277_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

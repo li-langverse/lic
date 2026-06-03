@@ -11,10 +11,6 @@ def erdos_e909_let_n_geq_2_is_there_a_space_s_of_dimens() -> int
 =
   return 0
 
-extern proc erdos_e909_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

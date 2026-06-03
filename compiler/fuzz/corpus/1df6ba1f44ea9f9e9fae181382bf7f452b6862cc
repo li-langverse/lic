@@ -1,4 +1,0 @@
-@cpul@parallel(disjoint=disjoint_var)
-proc 
-=@cpu
-

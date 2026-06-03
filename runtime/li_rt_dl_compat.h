@@ -29,12 +29,19 @@ static inline const char* li_rt_dlerror(void) {
   return buf;
 }
 
+static inline void li_rt_dlclose(void* handle) {
+  if (handle) {
+    FreeLibrary((HMODULE)handle);
+  }
+}
+
 #else
 #include <dlfcn.h>
 
 #define li_rt_dlopen(path, flags) dlopen((path), (flags))
 #define li_rt_dlsym(handle, symbol) dlsym((handle), (symbol))
 #define li_rt_dlerror() dlerror()
+#define li_rt_dlclose(handle) dlclose(handle)
 
 #endif
 

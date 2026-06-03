@@ -2,13 +2,13 @@
   "competitor_id": "cpp_openmp",
   "suite": "ph-ml-competitor-cpp-openmp-mlp",
   "workload": "mlp_forward_2_2_1_f32",
-  "executed": true,
-  "cpu_sec": 1.4e-05,
-  "validity_gate_pass": true,
-  "validity_ratio": 1.0,
-  "framework_version": "/usr/bin/g++",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
   "device": "cpu",
   "workload_size": null,
-  "note": "C++ serial MLP 2-2-1 (OpenMP optional deferred)",
-  "generated_at": "2026-06-01T03:08:54Z"
+  "note": "no C++ compiler",
+  "generated_at": "2026-06-03T02:06:05Z"
 }

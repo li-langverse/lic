@@ -2,13 +2,13 @@
   "competitor_id": "pytorch_cuda",
   "suite": "ph-ml-competitor-pytorch-cuda-matmul",
   "workload": "matmul_4x4_f32",
-  "executed": true,
-  "cpu_sec": 9.1e-05,
-  "validity_gate_pass": true,
-  "validity_ratio": 1.0,
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
   "framework_version": "2.6.0+cu124",
   "device": "cuda",
   "workload_size": 4,
-  "note": null,
-  "generated_at": "2026-06-01T03:08:42Z"
+  "note": "CUDA not available (CI CPU-only OK)",
+  "generated_at": "2026-06-03T02:05:51Z"
 }

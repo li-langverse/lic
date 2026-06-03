@@ -3,12 +3,12 @@
   "suite": "ph-ml-competitor-numpy-matmul",
   "workload": "matmul_4x4_f32",
   "executed": true,
-  "cpu_sec": 1e-06,
+  "cpu_sec": 2e-06,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
-  "framework_version": "2.2.6",
+  "framework_version": "2.0.2",
   "device": "cpu",
   "workload_size": 32,
   "note": null,
-  "generated_at": "2026-06-01T03:09:46Z"
+  "generated_at": "2026-06-03T02:07:20Z"
 }

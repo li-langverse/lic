@@ -32,6 +32,8 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
+**Agent verification (2026-06-03):** run `code_implementer-1780456052305` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~122s) on Linux with native `build/compiler/lic/lic` via `resolve-lic-runnable.sh` (`ratio_vs_li` 0.000132, `live_proxy` true, SB3/Ray `executed:true`); confirms post-#676 gate fix on GLIBC-older agent hosts; PR [#730](https://github.com/li-langverse/lic/pull/730).
+
 **Agent verification (2026-06-03):** run `code_implementer-1780452564194` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~119s) on Linux with native `build/compiler/lic/lic` via `resolve-lic-runnable.sh` (`ratio_vs_li` 0.000141, `live_proxy` true, SB3/Ray `executed:true`); PR [#730](https://github.com/li-langverse/lic/pull/730).
 
 **Agent verification (2026-06-03):** run `code_implementer-1780449015822` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~119s) on Linux with `resolve-lic-runnable.sh` (`ratio_vs_li` 0.00014, `live_proxy` true); post-#676 lic resolution fix for stale `build-wsl` GLIBC_2.38.

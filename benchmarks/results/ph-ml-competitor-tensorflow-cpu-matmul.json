@@ -2,13 +2,13 @@
   "competitor_id": "tensorflow_cpu",
   "suite": "ph-ml-competitor-tensorflow-cpu-matmul",
   "workload": "matmul_4x4_f32",
-  "executed": false,
-  "cpu_sec": null,
-  "validity_gate_pass": false,
-  "validity_ratio": 0.0,
-  "framework_version": null,
+  "executed": true,
+  "cpu_sec": 8.3e-05,
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "framework_version": "2.18.1",
   "device": "cpu",
   "workload_size": 4,
-  "note": "tensorflow not installed (optional Wave 8 dep)",
-  "generated_at": "2026-06-01T03:09:13Z"
+  "note": null,
+  "generated_at": "2026-06-03T09:48:39Z"
 }

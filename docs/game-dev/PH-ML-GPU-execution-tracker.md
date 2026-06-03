@@ -107,4 +107,5 @@
 | WP-ML-17 | C++ MLP competitor | 10 | done | bench_ph_ml_competitor_cpp_openmp_mlp.py |
 | WP-ML-18 | ml_matmul perf v6 lanes=8 max_dim=32 | 10 | done | ml_matmul_general.li |
 | program complete | Wave 13 | done | ph-ml-program-complete-gates.sh |
+| gate verify | post-#676 lic-resolve | done | `ph-ml-program-complete-gates.sh` exit 0 — agent run `1780458161452` (~120s, Debian GLIBC 2.36 + native `./build/compiler/lic/lic`) |
 

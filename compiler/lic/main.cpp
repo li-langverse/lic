@@ -253,13 +253,13 @@ int httpd_explain_config(int argc, char** argv) {
 void apply_resource_options_to_env() {
   const auto& opts = li::resource_options();
   if (!opts.build_dir.empty()) {
-    setenv("LI_BUILD_DIR", opts.build_dir.c_str(), 1);
+    li::set_env_var("LI_BUILD_DIR", opts.build_dir.c_str(), 1);
   }
   if (opts.jobs > 0) {
-    setenv("LI_COMPILE_JOBS", std::to_string(opts.jobs).c_str(), 1);
+    li::set_env_var("LI_COMPILE_JOBS", std::to_string(opts.jobs).c_str(), 1);
   }
   if (opts.max_memory_mb > 0) {
-    setenv("LI_MAX_MEMORY_MB", std::to_string(opts.max_memory_mb).c_str(), 1);
+    li::set_env_var("LI_MAX_MEMORY_MB", std::to_string(opts.max_memory_mb).c_str(), 1);
   }
 }
 

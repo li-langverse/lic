@@ -1,4 +1,5 @@
 #include "li/resource_options.hpp"
+#include "li/platform.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -214,7 +215,7 @@ void finalize_resource_options(ResourceOptions& opts) {
 unsigned g_compile_jobs_reserved = 1;
 void note_compile_jobs_reserved(const ResourceOptions& opts) {
   g_compile_jobs_reserved = opts.effective_jobs();
-  setenv("LI_COMPILE_JOBS", std::to_string(g_compile_jobs_reserved).c_str(), 1);
+  set_env_var("LI_COMPILE_JOBS", std::to_string(g_compile_jobs_reserved).c_str(), 1);
 }
 unsigned compile_jobs_reserved() { return g_compile_jobs_reserved; }
 

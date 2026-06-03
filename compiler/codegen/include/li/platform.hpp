@@ -108,4 +108,14 @@ inline bool is_safe_link_path(const std::string& path) {
   return true;
 }
 
+/// Portable environment variable setter (POSIX setenv / Windows _putenv_s).
+inline void set_env_var(const char* name, const char* value, int overwrite = 1) {
+#if defined(_WIN32)
+  (void)overwrite;
+  _putenv_s(name, value);
+#else
+  setenv(name, value, overwrite);
+#endif
+}
+
 }  // namespace li

@@ -17,9 +17,6 @@
 #if !defined(_WIN32)
 #include <unistd.h>
 #endif
-#if defined(_WIN32)
-#include <netinet/tcp.h>
-#endif
 
 #ifdef __linux__
 #define HTTPD_EPOLL_CLIENT_TAG UINT64_C(0x8000000000000000)

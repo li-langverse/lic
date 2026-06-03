@@ -2,7 +2,12 @@
 # Pick the first lic binary that executes on this host (build-wsl may exist but need newer glibc).
 li_pick_lic_bin() {
   local root="${1:?root required}"
+  local lic_root="${LIC_ROOT:-${LI_REPO_ROOT:-}}"
   local cand rel
+  if [[ -n "${LIC:-}" ]] && [[ -x "$LIC" ]] && "$LIC" --version &>/dev/null; then
+    echo "$LIC"
+    return 0
+  fi
   for cand in \
     "$root/build/compiler/lic/lic" \
     "$root/build-wsl/compiler/lic/lic" \
@@ -17,7 +22,38 @@ li_pick_lic_bin() {
       return 0
     fi
   done
+  if [[ -n "$lic_root" ]]; then
+    for cand in \
+      "$lic_root/build/compiler/lic/lic" \
+      "$lic_root/build-wsl/compiler/lic/lic" \
+      "$lic_root/build/compiler/lic/lic.exe"; do
+      if [[ -x "$cand" ]] && "$cand" --version &>/dev/null; then
+        echo "$cand"
+        return 0
+      fi
+    done
+  fi
   return 1
+}
+
+lic_is_runnable() {
+  local bin="$1"
+  [[ -n "$bin" && -x "$bin" ]] || return 1
+  "$bin" --version >/dev/null 2>&1
+}
+
+lic_resolve_runnable() {
+  local root="${1:?root required}"
+  local lic_rel
+  lic_rel="$(li_pick_lic_bin "$root")" || return 1
+  case "$lic_rel" in
+    ./*) echo "$root/${lic_rel#./}" ;;
+    *) echo "$lic_rel" ;;
+  esac
+}
+
+li_lic_runnable_available() {
+  li_pick_lic_bin "${1:?root required}" >/dev/null 2>&1
 }
 
 # Export LIC to a compiler that runs on this host (skips build-wsl when glibc mismatches).

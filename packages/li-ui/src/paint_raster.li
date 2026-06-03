@@ -1,0 +1,38 @@
+# CPU raster compositing helpers — source-over via color_over (PaintCmd / paint_blit truth path).
+
+def paint_raster_source_over(dst: Color, src: Color) -> Color
+  requires dst.a >= 0.0
+  requires dst.a <= 1.0
+  requires src.a >= 0.0
+  requires src.a <= 1.0
+  ensures result.a >= 0.0
+  ensures result.a <= 1.0
+  decreases 0
+=
+  return color_over(dst, src)
+
+def paint_raster_fill_pixel(dst: Color, fill: Color) -> Color
+  requires dst.a >= 0.0
+  requires dst.a <= 1.0
+  requires fill.a >= 0.0
+  requires fill.a <= 1.0
+  ensures result.a >= 0.0
+  ensures result.a <= 1.0
+  decreases 0
+=
+  return paint_raster_source_over(dst, fill)
+
+def paint_raster_glyph_pixel(dst: Color, ink: Color, coverage: float) -> Color
+  requires dst.a >= 0.0
+  requires dst.a <= 1.0
+  requires ink.a >= 0.0
+  requires ink.a <= 1.0
+  requires coverage >= 0.0
+  requires coverage <= 1.0
+  ensures result.a >= 0.0
+  ensures result.a <= 1.0
+  decreases 0
+=
+  var eff_a: float = ink.a * coverage
+  var src: Color = color_with_alpha(ink, eff_a)
+  return paint_raster_source_over(dst, src)

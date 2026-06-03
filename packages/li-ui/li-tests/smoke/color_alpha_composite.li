@@ -1,0 +1,47 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_version() < 9:
+    return 1
+  var base: Color = studio_color_bg_primary()
+  var zero: Color = color_with_alpha(base, 0.0)
+  if zero.a != 0.0:
+    return 2
+  if zero.r != base.r:
+    return 3
+  var full: Color = color_with_alpha(base, 1.0)
+  if full.a != 1.0:
+    return 4
+  if full.r != base.r:
+    return 5
+  var half: Color = color_with_alpha(base, 0.5)
+  if half.a != 0.5:
+    return 6
+  var white: Color = color_rgb(1.0, 1.0, 1.0, 1.0)
+  var black_half: Color = color_rgb(0.0, 0.0, 0.0, 0.5)
+  var gray: Color = color_over(white, black_half)
+  if gray.a < 0.99:
+    return 7
+  if gray.r > 0.51 or gray.r < 0.49:
+    return 8
+  var red: Color = color_rgb(1.0, 0.0, 0.0, 1.0)
+  var blue_half: Color = color_rgb(0.0, 0.0, 1.0, 0.5)
+  var purple: Color = color_over(red, blue_half)
+  if purple.r > 0.51 or purple.r < 0.49:
+    return 9
+  if purple.b > 0.51 or purple.b < 0.49:
+    return 10
+  var dst_px: Color = color_rgb(0.2, 0.3, 0.4, 1.0)
+  var fill_px: Color = color_rgb(1.0, 0.0, 0.0, 0.25)
+  var blended: Color = paint_raster_fill_pixel(dst_px, fill_px)
+  if blended.a < 0.99:
+    return 11
+  var ink: Color = color_rgb(0.9, 0.9, 0.9, 1.0)
+  var glyph_px: Color = paint_raster_glyph_pixel(dst_px, ink, 0.5)
+  if glyph_px.a <= dst_px.a:
+    return 12
+  return 0

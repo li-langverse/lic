@@ -1,0 +1,45 @@
+# Color compositing — straight-alpha source-over (sRGB channels; see GUI-LIBRARY-PLAN RFC stub).
+# Porter-Duff "over": Co = Cs*As + Cd*Ad*(1-As), Ao = As + Ad*(1-As).
+
+def color_with_alpha(c: Color, alpha: float) -> Color
+  requires 0.0 <= alpha
+  requires alpha <= 1.0
+  requires c.a >= 0.0
+  requires c.a <= 1.0
+  ensures result.r == c.r
+  ensures result.g == c.g
+  ensures result.b == c.b
+  ensures result.a == alpha
+  decreases 0
+=
+  return color_rgb(c.r, c.g, c.b, alpha)
+
+def color_over(dst: Color, src: Color) -> Color
+  requires dst.a >= 0.0
+  requires dst.a <= 1.0
+  requires src.a >= 0.0
+  requires src.a <= 1.0
+  ensures result.a >= 0.0
+  ensures result.a <= 1.0
+  decreases 0
+=
+  var out_a: float = src.a + dst.a * (1.0 - src.a)
+  if out_a <= 0.0:
+    return color_rgb(0.0, 0.0, 0.0, 0.0)
+  var dst_weight: float = dst.a * (1.0 - src.a)
+  var out_r: float = (src.r * src.a + dst.r * dst_weight) / out_a
+  var out_g: float = (src.g * src.a + dst.g * dst_weight) / out_a
+  var out_b: float = (src.b * src.a + dst.b * dst_weight) / out_a
+  return color_rgb(out_r, out_g, out_b, out_a)
+
+def color_over_opaque_dst(dst_rgb_r: float, dst_rgb_g: float, dst_rgb_b: float, src: Color) -> Color
+  requires src.a >= 0.0
+  requires src.a <= 1.0
+  ensures result.a == 1.0
+  decreases 0
+=
+  var dst: Color = color_rgb(dst_rgb_r, dst_rgb_g, dst_rgb_b, 1.0)
+  var blended: Color = color_over(dst, src)
+  if blended.a >= 1.0:
+    return blended
+  return color_rgb(blended.r, blended.g, blended.b, 1.0)

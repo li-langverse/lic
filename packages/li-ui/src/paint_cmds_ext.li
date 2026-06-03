@@ -96,6 +96,20 @@ def paint_cmd_clip_pop() -> PaintCmd
   paint_cmd_ext_zero(c)
   return c
 
+def paint_cmd_glyph_run_used_width(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_draw_glyphs()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.stroke_px
+
+def paint_cmd_glyph_run_used_height(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_draw_glyphs()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.radius_px
+
 def paint_cmd_draw_glyph(dest: Rect, face_id: int, codepoint: int, color: Color) -> PaintCmd
   requires dest.w >= 0.0
   requires dest.h >= 0.0
@@ -107,14 +121,17 @@ def paint_cmd_draw_glyph(dest: Rect, face_id: int, codepoint: int, color: Color)
   ensures result.face_id == face_id
   ensures result.codepoint == codepoint
   ensures result.glyph_count == 1
+  ensures result.stroke_px == font_atlas_glyph_advance_px(font_atlas_face_new(face_id), codepoint)
+  ensures result.radius_px == font_atlas_glyph_run_line_height_px(font_atlas_face_new(face_id))
   decreases codepoint
 =
+  var face: FontAtlasFace = font_atlas_face_new(face_id)
   var c: PaintCmd
   c.kind = paint_op_draw_glyphs()
   c.rect = dest
   c.color = color
-  c.stroke_px = 0.0
-  c.radius_px = 0.0
+  c.stroke_px = font_atlas_glyph_advance_px(face, codepoint)
+  c.radius_px = font_atlas_glyph_run_line_height_px(face)
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   c.face_id = face_id
   c.codepoint = codepoint
@@ -136,14 +153,17 @@ def paint_cmd_draw_glyphs_run(dest: Rect, face_id: int, color: Color, first_code
   ensures result.face_id == face_id
   ensures result.codepoint == first_codepoint
   ensures result.glyph_count == glyph_count
+  ensures result.stroke_px == font_atlas_glyph_run_used_width_px(font_atlas_face_new(face_id), first_codepoint, glyph_count)
+  ensures result.radius_px == font_atlas_glyph_run_line_height_px(font_atlas_face_new(face_id))
   decreases glyph_count
 =
+  var face: FontAtlasFace = font_atlas_face_new(face_id)
   var c: PaintCmd
   c.kind = paint_op_draw_glyphs()
   c.rect = dest
   c.color = color
-  c.stroke_px = 0.0
-  c.radius_px = 0.0
+  c.stroke_px = font_atlas_glyph_run_used_width_px(face, first_codepoint, glyph_count)
+  c.radius_px = font_atlas_glyph_run_line_height_px(face)
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   c.face_id = face_id
   c.codepoint = first_codepoint

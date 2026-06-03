@@ -30,10 +30,10 @@ type UiFrame = object
   public viewport_h: float
 def li_std_ui_version() -> int
   requires true
-  ensures result == 7
+  ensures result == 8
   decreases 0
 =
-  return 7
+  return 8
 
 def li_std_ui_studio_composables_version() -> int
   requires true
@@ -1622,6 +1622,20 @@ def paint_cmd_clip_pop() -> PaintCmd
   paint_cmd_ext_zero(c)
   return c
 
+def paint_cmd_glyph_run_used_width(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_draw_glyphs()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.stroke_px
+
+def paint_cmd_glyph_run_used_height(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_draw_glyphs()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.radius_px
+
 def paint_cmd_draw_glyph(dest: Rect, face_id: int, codepoint: int, color: Color) -> PaintCmd
   requires dest.w >= 0.0
   requires dest.h >= 0.0
@@ -1633,14 +1647,17 @@ def paint_cmd_draw_glyph(dest: Rect, face_id: int, codepoint: int, color: Color)
   ensures result.face_id == face_id
   ensures result.codepoint == codepoint
   ensures result.glyph_count == 1
+  ensures result.stroke_px == font_atlas_glyph_advance_px(font_atlas_face_new(face_id), codepoint)
+  ensures result.radius_px == font_atlas_glyph_run_line_height_px(font_atlas_face_new(face_id))
   decreases codepoint
 =
+  var face: FontAtlasFace = font_atlas_face_new(face_id)
   var c: PaintCmd
   c.kind = paint_op_draw_glyphs()
   c.rect = dest
   c.color = color
-  c.stroke_px = 0.0
-  c.radius_px = 0.0
+  c.stroke_px = font_atlas_glyph_advance_px(face, codepoint)
+  c.radius_px = font_atlas_glyph_run_line_height_px(face)
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   c.face_id = face_id
   c.codepoint = codepoint
@@ -1662,14 +1679,17 @@ def paint_cmd_draw_glyphs_run(dest: Rect, face_id: int, color: Color, first_code
   ensures result.face_id == face_id
   ensures result.codepoint == first_codepoint
   ensures result.glyph_count == glyph_count
+  ensures result.stroke_px == font_atlas_glyph_run_used_width_px(font_atlas_face_new(face_id), first_codepoint, glyph_count)
+  ensures result.radius_px == font_atlas_glyph_run_line_height_px(font_atlas_face_new(face_id))
   decreases glyph_count
 =
+  var face: FontAtlasFace = font_atlas_face_new(face_id)
   var c: PaintCmd
   c.kind = paint_op_draw_glyphs()
   c.rect = dest
   c.color = color
-  c.stroke_px = 0.0
-  c.radius_px = 0.0
+  c.stroke_px = font_atlas_glyph_run_used_width_px(face, first_codepoint, glyph_count)
+  c.radius_px = font_atlas_glyph_run_line_height_px(face)
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   c.face_id = face_id
   c.codepoint = first_codepoint
@@ -2045,6 +2065,30 @@ def font_atlas_glyph_advance_px(face: FontAtlasFace, codepoint: int) -> float
   if codepoint >= 97 and codepoint <= 122:
     return 6.0
   return 6.0
+
+def font_atlas_glyph_run_used_width_px(face: FontAtlasFace, first_codepoint: int, glyph_count: int) -> float
+  requires glyph_count >= 1
+  requires glyph_count <= 32
+  requires font_atlas_codepoint_supported(first_codepoint) == 1
+  requires first_codepoint + glyph_count - 1 <= font_atlas_last_codepoint()
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result > 0.0
+  decreases glyph_count
+=
+  var total: float = 0.0
+  var i: int = 0
+  while i < glyph_count:
+    var cp: int = first_codepoint + i
+    total = total + font_atlas_glyph_advance_px(face, cp)
+    i = i + 1
+  return total
+
+def font_atlas_glyph_run_line_height_px(face: FontAtlasFace) -> float
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= face.cell_h
+  decreases 0
+=
+  return face.ascent_px + face.descent_px + 2.0
 
 def font_atlas_glyph_metrics(face: FontAtlasFace, codepoint: int) -> FontGlyphMetrics
   requires font_atlas_codepoint_supported(codepoint) == 1
@@ -7381,4 +7425,48 @@ def text_layout_baseline_y_px(face: FontAtlasFace, line_top_y: float, size_px: f
   decreases 0
 =
   return line_top_y + face.ascent_px
+
+type GlyphRunLayout = object
+  public used_width_px: float
+  public used_height_px: float
+
+def text_glyph_run_layout(face: FontAtlasFace, size_px: float, first_cp: int, count: int) -> GlyphRunLayout
+  requires size_px > 0.0
+  requires count >= 1
+  requires count <= 32
+  requires font_atlas_codepoint_supported(first_cp) == 1
+  requires first_cp + count - 1 <= font_atlas_last_codepoint()
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result.used_width_px > 0.0
+  ensures result.used_height_px >= size_px
+  decreases count
+=
+  var out: GlyphRunLayout
+  out.used_width_px = text_metrics_advance_run_px(face, first_cp, count)
+  out.used_height_px = text_metrics_line_height_px(face, size_px)
+  if out.used_height_px < font_atlas_glyph_run_line_height_px(face):
+    out.used_height_px = font_atlas_glyph_run_line_height_px(face)
+  return out
+
+def text_layout_glyph_dest_in_anchor(anchor: Rect, face: FontAtlasFace, size_px: float, first_cp: int, count: int) -> Rect
+  requires anchor.w >= 0.0
+  requires anchor.h >= 0.0
+  requires size_px > 0.0
+  requires count >= 1
+  requires count <= 32
+  requires font_atlas_codepoint_supported(first_cp) == 1
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result.w > 0.0
+  ensures result.h > 0.0
+  ensures text_layout_rect_inside(result, anchor, 1.0) == 1
+  decreases count
+=
+  var run: GlyphRunLayout = text_glyph_run_layout(face, size_px, first_cp, count)
+  var x: float = anchor.x + (anchor.w - run.used_width_px) / 2.0
+  if x < anchor.x:
+    x = anchor.x
+  var y: float = anchor.y + (anchor.h - run.used_height_px) / 2.0
+  if y < anchor.y:
+    y = anchor.y
+  return rect_make(x, y, run.used_width_px, run.used_height_px)
 # END text-layout

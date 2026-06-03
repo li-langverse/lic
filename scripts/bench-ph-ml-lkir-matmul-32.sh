@@ -7,44 +7,10 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 
-run_in_wsl() {
-  local wsl_root wsl_bench
-  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
-  wsl_bench=""
-  if [[ -n "${BENCHMARKS_ROOT:-}" ]]; then
-    wsl_bench="$(wsl.exe wslpath -u "$BENCHMARKS_ROOT" 2>/dev/null | tr -d '\r\n')" || wsl_bench=""
-  fi
-  if [[ -z "$wsl_bench" ]]; then
-    for _c in "$ROOT/../benchmarks" "$ROOT/../../benchmarks" "$ROOT/../../../../../benchmarks"; do
-      if [[ -f "$_c/harness/bench.py" ]]; then
-        wsl_bench="$(wsl.exe wslpath -u "$(cd "$_c" && pwd)" 2>/dev/null | tr -d '\r\n')" || wsl_bench=""
-        break
-      fi
-    done
-  fi
-  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_MATMUL32_INNER=1 BENCHMARKS_ROOT='${wsl_bench}' LIC=./build-wsl/compiler/lic/lic CC=clang-22 CXX=clang++-22 && bash scripts/bench-ph-ml-lkir-matmul-32.sh"
-}
-
-if [[ "${PH_ML_MATMUL32_INNER:-0}" != "1" ]] \
-  && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] \
-  && command -v wsl.exe >/dev/null 2>&1; then
-  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
-  if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
-    run_in_wsl
-    exit $?
-  fi
-fi
-
-LIC="${LIC:-}"
-if [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-elif [[ -z "$LIC" ]]; then
-  LIC="$($ROOT/scripts/resolve-lic.sh)"
-fi
+# shellcheck source=lib/ph-ml-lic.sh
+source "$ROOT/scripts/lib/ph-ml-lic.sh"
+export LIC
+LIC="$(ph_ml_resolve_lic "$ROOT")" || LIC="$($ROOT/scripts/resolve-lic.sh)"
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul-32.json"
 NUMPY_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-matmul-32.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_matmul_32_lkir.li"

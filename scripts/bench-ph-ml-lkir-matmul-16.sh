@@ -3,8 +3,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 source "$ROOT/scripts/lib/li-ui.sh"
-LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
-[[ -x "$ROOT/build-wsl/compiler/lic/lic" ]] && LIC="$ROOT/build-wsl/compiler/lic/lic"
+# shellcheck source=lib/ph-ml-lic.sh
+source "$ROOT/scripts/lib/ph-ml-lic.sh"
+export LIC
+LIC="$(ph_ml_resolve_lic "$ROOT" 2>/dev/null)" || LIC="$($ROOT/scripts/resolve-lic.sh)"
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul-16.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_matmul_16_lkir.li"
 mkdir -p "$BENCHMARKS_RESULTS"

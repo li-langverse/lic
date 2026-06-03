@@ -10,6 +10,10 @@
 #include <sys/stat.h>
 #include <time.h>
 
+#if defined(_WIN32)
+#include <direct.h>
+#endif
+
 #define LI_LOG_DIR_MAX 512
 #define LI_LOG_PATH_MAX 640
 #define LI_LOG_LINE_MAX 4096
@@ -29,7 +33,11 @@ static int li_log_ensure_dir(void) {
     }
     return -1;
   }
+#if defined(_WIN32)
+  if (_mkdir(g_log_dir) != 0 && errno != EEXIST) {
+#else
   if (mkdir(g_log_dir, 0750) != 0 && errno != EEXIST) {
+#endif
     return -1;
   }
   return 0;

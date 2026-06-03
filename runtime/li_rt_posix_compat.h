@@ -107,12 +107,33 @@ static inline int li_rt_httpd_cpu_count(void) {
 #endif
 
 /* Winsock setsockopt expects const char* option values. */
-#define LI_RT_WINSOCK_SETSOCKOPT(s, level, optname, optval, optlen) \
-  setsockopt((s), (level), (optname), (const char*)(optval), (int)(optlen))
-#undef setsockopt
-static inline int setsockopt(SOCKET s, int level, int optname, const void* optval, int optlen) {
-  return LI_RT_WINSOCK_SETSOCKOPT(s, level, optname, optval, optlen);
+static inline int li_rt_winsock_setsockopt(SOCKET s, int level, int optname, const void* optval, int optlen) {
+  return setsockopt(s, level, optname, (const char*)optval, optlen);
 }
+#undef setsockopt
+#define setsockopt(s, level, optname, optval, optlen) \
+  li_rt_winsock_setsockopt((SOCKET)(s), (level), (optname), (optval), (int)(optlen))
+
+static inline int clock_gettime(int clk_id, struct timespec* ts) {
+  (void)clk_id;
+  if (!ts) {
+    return -1;
+  }
+  FILETIME ft;
+  GetSystemTimePreciseAsFileTime(&ft);
+  ULONGLONG t = ((ULONGLONG)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+  t -= 116444736000000000ULL;
+  ts->tv_sec = (time_t)(t / 10000000ULL);
+  ts->tv_nsec = (long)((t % 10000000ULL) * 100ULL);
+  return 0;
+}
+
+#ifndef CLOCK_MONOTONIC
+#define CLOCK_MONOTONIC 1
+#endif
+#ifndef CLOCK_REALTIME
+#define CLOCK_REALTIME 0
+#endif
 
 static inline void* memmem(const void* haystack, size_t haystacklen, const void* needle, size_t needlelen) {
   if (needlelen == 0) {

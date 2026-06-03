@@ -1,6 +1,6 @@
 # WP-AX-09 — proof-library library.json rebuild
 
-PR: (proof-library — library.json phase10 catalog sync)
+PR: https://github.com/li-langverse/proof-library/pull/7
 Gate: wp-ax-09-rebuild-library-json.sh
 Entries: 1538 (15 divergent)
 LIC_ROOT: lic cursor/proof-explorer-phase10-axiom-layer @ merge #740

@@ -513,7 +513,9 @@ int32_t httpd_fork_workers_i(void) {
 int32_t httpd_config_workers_i(void) { return (int32_t)httpd_resolve_workers(); }
 
 int32_t tcp_listen(int32_t port) {
+#if defined(_WIN32)
   li_rt_winsock_ensure();
+#endif
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   if (fd < 0) {
     net_fail("socket");
@@ -549,7 +551,7 @@ int32_t tcp_accept(int32_t listen_fd) {
   return (int32_t)c;
 }
 
-void tcp_li_rt_sock_close(int32_t fd) {
+void tcp_close(int32_t fd) {
   li_rt_sock_close((int)fd);
 }
 
@@ -6303,7 +6305,7 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
   int epfd = kqueue();
 #endif
   if (epfd < 0) {
-    tcp_li_rt_sock_close(listen_fd);
+    tcp_close(listen_fd);
     return -2;
   }
 #if defined(__linux__)
@@ -6313,7 +6315,7 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
   lev.data.fd = listen_fd;
   if (epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &lev) < 0) {
     li_rt_sock_close(epfd);
-    tcp_li_rt_sock_close(listen_fd);
+    tcp_close(listen_fd);
     return -3;
   }
 #elif defined(__APPLE__)
@@ -6321,7 +6323,7 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
   EV_SET(&ke, listen_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
   if (kevent(epfd, &ke, 1, NULL, 0, NULL) < 0) {
     li_rt_sock_close(epfd);
-    tcp_li_rt_sock_close(listen_fd);
+    tcp_close(listen_fd);
     return -3;
   }
 #endif
@@ -6343,7 +6345,7 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
         if (c >= 0) {
           net_set_nonblock(c);
           if (conn >= 0) {
-            tcp_li_rt_sock_close(conn);
+            tcp_close(conn);
           }
           conn = c;
           struct epoll_event cev;
@@ -6382,7 +6384,7 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
         if (c >= 0) {
           net_set_nonblock(c);
           if (conn >= 0) {
-            tcp_li_rt_sock_close(conn);
+            tcp_close(conn);
           }
           conn = c;
           struct kevent cke;
@@ -6412,9 +6414,9 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
   }
 done:
   if (conn >= 0) {
-    tcp_li_rt_sock_close(conn);
+    tcp_close(conn);
   }
-  tcp_li_rt_sock_close(listen_fd);
+  tcp_close(listen_fd);
   li_rt_sock_close(epfd);
   return echoed > 0 ? echoed : -4;
 #endif

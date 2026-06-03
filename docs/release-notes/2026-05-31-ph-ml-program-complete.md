@@ -40,6 +40,8 @@ bash scripts/ph-ml-program-complete-gates.sh
 
 **Agent verification (2026-06-03):** run `code_implementer-1780496920347` — `LIC=/workspace/lic/build/compiler/lic/lic LIC_ROOT=/workspace/lic bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~120s); `ratio_vs_li` 5.4e-05; `live_proxy` true; SB3/Ray `executed:true`.
 
+**Agent verification (2026-06-03):** run `code_implementer-1780517417465` — `LIC_ROOT=/workspace/lic bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~123s); `ratio_vs_li` 0.00014; `live_proxy` true; SB3/Ray `executed:true`.
+
 **Prior run `code_implementer-1780279881936`:** `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~116s); `ratio_vs_li` 0.0044 (T6), `live_proxy` true (T8).
 
 **Prior run `code_implementer-1780279148925`:** exit 0 (~113s); all CI green (build-and-test linux/macos/windows, studio-ui native capture).

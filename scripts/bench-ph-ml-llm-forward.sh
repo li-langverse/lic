@@ -6,9 +6,6 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
-if [[ ! -x "$LIC" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-fi
 OUT="$BENCHMARKS_RESULTS/ph-ml-llm-forward.json"
 SMOKE="$ROOT/packages/li-llm/li-tests/smoke/llm_forward.li"
 mkdir -p "$BENCHMARKS_RESULTS"

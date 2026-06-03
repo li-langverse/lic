@@ -9,7 +9,9 @@ mkdir -p "$OUT_DIR"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="$OUT_DIR/bench-${STAMP}.json"
 LATEST="$OUT_DIR/latest-bench.json"
-COMPETITIVE="$BENCHMARKS_RESULTS/bench-studio-viewport-perf.json"
+# Registry harness output_competitive is relative to lic ROOT (not sibling BENCHMARKS_RESULTS).
+COMPETITIVE="$ROOT/benchmarks/results/bench-studio-viewport-perf.json"
+mkdir -p "$(dirname "$COMPETITIVE")"
 REGISTRY="$BENCHMARKS_COMPETITIVE/studio-ui.toml"
 
 python3 - "$ROOT" "$OUT" "$LATEST" "$COMPETITIVE" "$REGISTRY" <<'PY'

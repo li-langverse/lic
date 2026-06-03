@@ -5,10 +5,10 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 13
+  ensures result == 14
   decreases 0
 =
-  return 13
+  return 14
 
 def gui_inspector_pilot_version() -> int
   requires true
@@ -2848,6 +2848,726 @@ def shell_widget_tree_all_regions_laid_out(layout: ShellWidgetTreeLayout) -> int
       ok = 0
     rid = rid + 1
   return ok
+
+# UiSnapshot — serializable shell element tree with stable dot-path ID tags (WREC W0).
+
+extern proc li_rt_ui_snapshot_id_name(tag: int) -> str
+  requires tag >= 0
+  ensures result != ""
+  decreases tag
+
+extern proc li_rt_ui_snapshot_tag_from_id(id: str) -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+def gui_ui_snapshot_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def ui_snapshot_max_elements() -> int
+  requires true
+  ensures result == 24
+  decreases 0
+=
+  return 24
+
+def ui_snapshot_role_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def ui_snapshot_role_button() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def ui_snapshot_role_label() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def ui_snapshot_role_panel() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def ui_snapshot_role_input() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def ui_snapshot_tag_topbar() -> int
+  requires true
+  ensures result == 100
+  decreases 0
+=
+  return 100
+
+def ui_snapshot_tag_topbar_profile_chip() -> int
+  requires true
+  ensures result == 101
+  decreases 0
+=
+  return 101
+
+def ui_snapshot_tag_viewport() -> int
+  requires true
+  ensures result == 102
+  decreases 0
+=
+  return 102
+
+def ui_snapshot_tag_dock_slot_0() -> int
+  requires true
+  ensures result == 110
+  decreases 0
+=
+  return 110
+
+def ui_snapshot_tag_dock_slot_1() -> int
+  requires true
+  ensures result == 111
+  decreases 0
+=
+  return 111
+
+def ui_snapshot_tag_dock_slot_2() -> int
+  requires true
+  ensures result == 112
+  decreases 0
+=
+  return 112
+
+def ui_snapshot_tag_dock_slot_3() -> int
+  requires true
+  ensures result == 113
+  decreases 0
+=
+  return 113
+
+def ui_snapshot_tag_outliner_row_0() -> int
+  requires true
+  ensures result == 120
+  decreases 0
+=
+  return 120
+
+def ui_snapshot_tag_outliner_row_1() -> int
+  requires true
+  ensures result == 121
+  decreases 0
+=
+  return 121
+
+def ui_snapshot_tag_outliner_row_root() -> int
+  requires true
+  ensures result == 122
+  decreases 0
+=
+  return 122
+
+def ui_snapshot_tag_timeline_play() -> int
+  requires true
+  ensures result == 130
+  decreases 0
+=
+  return 130
+
+def ui_snapshot_tag_timeline_track() -> int
+  requires true
+  ensures result == 131
+  decreases 0
+=
+  return 131
+
+def ui_snapshot_tag_inspector_header() -> int
+  requires true
+  ensures result == 140
+  decreases 0
+=
+  return 140
+
+def ui_snapshot_tag_inspector_field_selection_name() -> int
+  requires true
+  ensures result == 141
+  decreases 0
+=
+  return 141
+
+def ui_snapshot_tag_agent_status() -> int
+  requires true
+  ensures result == 150
+  decreases 0
+=
+  return 150
+
+def ui_snapshot_tag_agent_cancel() -> int
+  requires true
+  ensures result == 151
+  decreases 0
+=
+  return 151
+
+def ui_snapshot_tag_agent_tool_trace() -> int
+  requires true
+  ensures result == 152
+  decreases 0
+=
+  return 152
+
+def ui_snapshot_tag_agent_send_button() -> int
+  requires true
+  ensures result == 153
+  decreases 0
+=
+  return 153
+
+def ui_snapshot_tag_palette_search() -> int
+  requires true
+  ensures result == 160
+  decreases 0
+=
+  return 160
+
+def ui_snapshot_tag_palette_row_0() -> int
+  requires true
+  ensures result == 161
+  decreases 0
+=
+  return 161
+
+def ui_snapshot_tag_palette_row_1() -> int
+  requires true
+  ensures result == 162
+  decreases 0
+=
+  return 162
+
+type UiElement = object
+  public id_tag: int
+  public role: int
+  public bounds: Rect
+  public enabled: int
+  public focused: int
+  public child_count: int
+
+type UiSnapshot = object
+  public frame_id: int
+  public profile_id: int
+  public width: int
+  public height: int
+  public element_count: int
+  public tag0: int
+  public role0: int
+  public bounds0: Rect
+  public tag1: int
+  public role1: int
+  public bounds1: Rect
+  public tag2: int
+  public role2: int
+  public bounds2: Rect
+  public tag3: int
+  public role3: int
+  public bounds3: Rect
+  public tag4: int
+  public role4: int
+  public bounds4: Rect
+  public tag5: int
+  public role5: int
+  public bounds5: Rect
+  public tag6: int
+  public role6: int
+  public bounds6: Rect
+  public tag7: int
+  public role7: int
+  public bounds7: Rect
+  public tag8: int
+  public role8: int
+  public bounds8: Rect
+  public tag9: int
+  public role9: int
+  public bounds9: Rect
+  public tag10: int
+  public role10: int
+  public bounds10: Rect
+  public tag11: int
+  public role11: int
+  public bounds11: Rect
+  public tag12: int
+  public role12: int
+  public bounds12: Rect
+  public tag13: int
+  public role13: int
+  public bounds13: Rect
+  public tag14: int
+  public role14: int
+  public bounds14: Rect
+  public tag15: int
+  public role15: int
+  public bounds15: Rect
+  public tag16: int
+  public role16: int
+  public bounds16: Rect
+  public tag17: int
+  public role17: int
+  public bounds17: Rect
+  public tag18: int
+  public role18: int
+  public bounds18: Rect
+  public tag19: int
+  public role19: int
+  public bounds19: Rect
+  public tag20: int
+  public role20: int
+  public bounds20: Rect
+  public tag21: int
+  public role21: int
+  public bounds21: Rect
+  public tag22: int
+  public role22: int
+  public bounds22: Rect
+  public tag23: int
+  public role23: int
+  public bounds23: Rect
+
+def ui_snapshot_role_from_widget_kind(kind: int) -> int
+  requires kind >= widget_kind_none()
+  requires kind <= widget_kind_text_input()
+  ensures result >= ui_snapshot_role_none()
+  ensures result <= ui_snapshot_role_input()
+  decreases kind
+=
+  if kind == widget_kind_button():
+    return ui_snapshot_role_button()
+  if kind == widget_kind_label():
+    return ui_snapshot_role_label()
+  if kind == widget_kind_panel():
+    return ui_snapshot_role_panel()
+  if kind == widget_kind_text_input():
+    return ui_snapshot_role_input()
+  return ui_snapshot_role_none()
+
+def ui_element_make(id_tag: int, role: int, bounds: Rect, enabled: int, focused: int, child_count: int) -> UiElement
+  requires role >= ui_snapshot_role_none()
+  requires role <= ui_snapshot_role_input()
+  requires enabled >= 0
+  requires enabled <= 1
+  requires focused >= 0
+  requires focused <= 1
+  requires child_count >= 0
+  ensures result.id_tag == id_tag
+  ensures result.role == role
+  ensures result.bounds == bounds
+  decreases child_count
+=
+  var out: UiElement
+  out.id_tag = id_tag
+  out.role = role
+  out.bounds = bounds
+  out.enabled = enabled
+  out.focused = focused
+  out.child_count = child_count
+  return out
+
+def ui_snapshot_empty(frame_id: int, profile_id: int, width: int, height: int) -> UiSnapshot
+  requires frame_id >= 0
+  requires width >= 0
+  requires height >= 0
+  ensures result.element_count == 0
+  ensures result.frame_id == frame_id
+  ensures result.profile_id == profile_id
+  decreases frame_id
+=
+  var out: UiSnapshot
+  out.frame_id = frame_id
+  out.profile_id = profile_id
+  out.width = width
+  out.height = height
+  out.element_count = 0
+  return out
+
+def ui_snapshot_element_tag_at(snap: UiSnapshot, at: int) -> int
+  requires at >= 0
+  requires at < ui_snapshot_max_elements()
+  ensures result >= 0
+  decreases at
+=
+  if at == 0:
+    return snap.tag0
+  if at == 1:
+    return snap.tag1
+  if at == 2:
+    return snap.tag2
+  if at == 3:
+    return snap.tag3
+  if at == 4:
+    return snap.tag4
+  if at == 5:
+    return snap.tag5
+  if at == 6:
+    return snap.tag6
+  if at == 7:
+    return snap.tag7
+  if at == 8:
+    return snap.tag8
+  if at == 9:
+    return snap.tag9
+  if at == 10:
+    return snap.tag10
+  if at == 11:
+    return snap.tag11
+  if at == 12:
+    return snap.tag12
+  if at == 13:
+    return snap.tag13
+  if at == 14:
+    return snap.tag14
+  if at == 15:
+    return snap.tag15
+  if at == 16:
+    return snap.tag16
+  if at == 17:
+    return snap.tag17
+  if at == 18:
+    return snap.tag18
+  if at == 19:
+    return snap.tag19
+  if at == 20:
+    return snap.tag20
+  if at == 21:
+    return snap.tag21
+  if at == 22:
+    return snap.tag22
+  if at == 23:
+    return snap.tag23
+  return 0
+
+def ui_snapshot_element_bounds_at(snap: UiSnapshot, at: int) -> Rect
+  requires at >= 0
+  requires at < snap.element_count
+  ensures result.w >= 0.0
+  decreases at
+=
+  if at == 0:
+    return snap.bounds0
+  if at == 1:
+    return snap.bounds1
+  if at == 2:
+    return snap.bounds2
+  if at == 3:
+    return snap.bounds3
+  if at == 4:
+    return snap.bounds4
+  if at == 5:
+    return snap.bounds5
+  if at == 6:
+    return snap.bounds6
+  if at == 7:
+    return snap.bounds7
+  if at == 8:
+    return snap.bounds8
+  if at == 9:
+    return snap.bounds9
+  if at == 10:
+    return snap.bounds10
+  if at == 11:
+    return snap.bounds11
+  if at == 12:
+    return snap.bounds12
+  if at == 13:
+    return snap.bounds13
+  if at == 14:
+    return snap.bounds14
+  if at == 15:
+    return snap.bounds15
+  if at == 16:
+    return snap.bounds16
+  if at == 17:
+    return snap.bounds17
+  if at == 18:
+    return snap.bounds18
+  if at == 19:
+    return snap.bounds19
+  if at == 20:
+    return snap.bounds20
+  if at == 21:
+    return snap.bounds21
+  if at == 22:
+    return snap.bounds22
+  if at == 23:
+    return snap.bounds23
+  return rect_make(0.0, 0.0, 0.0, 0.0)
+
+def ui_snapshot_push(snap: var UiSnapshot, elem: UiElement) -> int
+  requires snap.element_count >= 0
+  requires snap.element_count <= ui_snapshot_max_elements()
+  ensures result >= 0
+  ensures result <= 1
+  decreases snap.element_count
+=
+  var slot: int = snap.element_count
+  if slot >= ui_snapshot_max_elements():
+    return 0
+  if slot == 0:
+    snap.tag0 = elem.id_tag
+    snap.role0 = elem.role
+    snap.bounds0 = elem.bounds
+  if slot == 1:
+    snap.tag1 = elem.id_tag
+    snap.role1 = elem.role
+    snap.bounds1 = elem.bounds
+  if slot == 2:
+    snap.tag2 = elem.id_tag
+    snap.role2 = elem.role
+    snap.bounds2 = elem.bounds
+  if slot == 3:
+    snap.tag3 = elem.id_tag
+    snap.role3 = elem.role
+    snap.bounds3 = elem.bounds
+  if slot == 4:
+    snap.tag4 = elem.id_tag
+    snap.role4 = elem.role
+    snap.bounds4 = elem.bounds
+  if slot == 5:
+    snap.tag5 = elem.id_tag
+    snap.role5 = elem.role
+    snap.bounds5 = elem.bounds
+  if slot == 6:
+    snap.tag6 = elem.id_tag
+    snap.role6 = elem.role
+    snap.bounds6 = elem.bounds
+  if slot == 7:
+    snap.tag7 = elem.id_tag
+    snap.role7 = elem.role
+    snap.bounds7 = elem.bounds
+  if slot == 8:
+    snap.tag8 = elem.id_tag
+    snap.role8 = elem.role
+    snap.bounds8 = elem.bounds
+  if slot == 9:
+    snap.tag9 = elem.id_tag
+    snap.role9 = elem.role
+    snap.bounds9 = elem.bounds
+  if slot == 10:
+    snap.tag10 = elem.id_tag
+    snap.role10 = elem.role
+    snap.bounds10 = elem.bounds
+  if slot == 11:
+    snap.tag11 = elem.id_tag
+    snap.role11 = elem.role
+    snap.bounds11 = elem.bounds
+  if slot == 12:
+    snap.tag12 = elem.id_tag
+    snap.role12 = elem.role
+    snap.bounds12 = elem.bounds
+  if slot == 13:
+    snap.tag13 = elem.id_tag
+    snap.role13 = elem.role
+    snap.bounds13 = elem.bounds
+  if slot == 14:
+    snap.tag14 = elem.id_tag
+    snap.role14 = elem.role
+    snap.bounds14 = elem.bounds
+  if slot == 15:
+    snap.tag15 = elem.id_tag
+    snap.role15 = elem.role
+    snap.bounds15 = elem.bounds
+  if slot == 16:
+    snap.tag16 = elem.id_tag
+    snap.role16 = elem.role
+    snap.bounds16 = elem.bounds
+  if slot == 17:
+    snap.tag17 = elem.id_tag
+    snap.role17 = elem.role
+    snap.bounds17 = elem.bounds
+  if slot == 18:
+    snap.tag18 = elem.id_tag
+    snap.role18 = elem.role
+    snap.bounds18 = elem.bounds
+  if slot == 19:
+    snap.tag19 = elem.id_tag
+    snap.role19 = elem.role
+    snap.bounds19 = elem.bounds
+  if slot == 20:
+    snap.tag20 = elem.id_tag
+    snap.role20 = elem.role
+    snap.bounds20 = elem.bounds
+  if slot == 21:
+    snap.tag21 = elem.id_tag
+    snap.role21 = elem.role
+    snap.bounds21 = elem.bounds
+  if slot == 22:
+    snap.tag22 = elem.id_tag
+    snap.role22 = elem.role
+    snap.bounds22 = elem.bounds
+  if slot == 23:
+    snap.tag23 = elem.id_tag
+    snap.role23 = elem.role
+    snap.bounds23 = elem.bounds
+  snap.element_count = snap.element_count + 1
+  return 1
+
+def ui_snapshot_element_find_by_tag(snap: UiSnapshot, id_tag: int) -> int
+  requires snap.element_count >= 0
+  requires snap.element_count <= ui_snapshot_max_elements()
+  ensures result >= -1
+  ensures result < snap.element_count
+  decreases snap.element_count
+=
+  var idx: int = 0
+  while idx < snap.element_count
+    var tag: int = ui_snapshot_element_tag_at(snap, idx)
+    if tag == id_tag:
+      return idx
+    idx = idx + 1
+  return -1
+
+def ui_snapshot_element_find(snap: UiSnapshot, id: str) -> int raises Alloc
+  requires snap.element_count >= 0
+  ensures result >= -1
+  decreases snap.element_count
+=
+  var tag: int = li_rt_ui_snapshot_tag_from_id(id)
+  if tag <= 0:
+    return -1
+  return ui_snapshot_element_find_by_tag(snap, tag)
+
+def ui_snapshot_tags_stable(snap_a: UiSnapshot, snap_b: UiSnapshot) -> int
+  requires snap_a.element_count == snap_b.element_count
+  requires snap_a.element_count >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases snap_a.element_count
+=
+  var idx: int = 0
+  while idx < snap_a.element_count
+    var tag_a: int = ui_snapshot_element_tag_at(snap_a, idx)
+    var tag_b: int = ui_snapshot_element_tag_at(snap_b, idx)
+    if tag_a != tag_b:
+      return 0
+    idx = idx + 1
+  return 1
+
+def ui_snapshot_push_widget(snap: var UiSnapshot, id_tag: int, node: WidgetNode, bounds: Rect, child_count: int) -> int
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_text_input()
+  ensures result >= 0
+  ensures result <= 1
+  decreases snap.element_count
+=
+  var role: int = ui_snapshot_role_from_widget_kind(node.kind)
+  var elem: UiElement = ui_element_make(id_tag, role, bounds, node.enabled, node.focused, child_count)
+  return ui_snapshot_push(snap, elem)
+
+def ui_snapshot_push_dock_slots(snap: var UiSnapshot, tree: ShellWidgetTree, layout: ShellWidgetTreeLayout) -> unit
+  requires layout.region_count == shell_widget_tree_region_count()
+  ensures true
+  decreases tree.region_count
+=
+  var lay0: WidgetLayoutResult = layout.dock_layout.child_layouts[0]
+  var lay1: WidgetLayoutResult = layout.dock_layout.child_layouts[1]
+  var lay2: WidgetLayoutResult = layout.dock_layout.child_layouts[2]
+  var lay3: WidgetLayoutResult = layout.dock_layout.child_layouts[3]
+  var _p0: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_dock_slot_0(), tree.dock.children[0], lay0.bounds, 0)
+  var _p1: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_dock_slot_1(), tree.dock.children[1], lay1.bounds, 0)
+  var _p2: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_dock_slot_2(), tree.dock.children[2], lay2.bounds, 0)
+  var _p3: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_dock_slot_3(), tree.dock.children[3], lay3.bounds, 0)
+
+def ui_snapshot_push_outliner_rows(snap: var UiSnapshot, tree: ShellWidgetTree, layout: ShellWidgetTreeLayout) -> unit
+  requires layout.region_count == shell_widget_tree_region_count()
+  ensures true
+  decreases tree.region_count
+=
+  var ol0: WidgetLayoutResult = layout.outliner_layout.child_layouts[0]
+  var ol1: WidgetLayoutResult = layout.outliner_layout.child_layouts[1]
+  var ol2: WidgetLayoutResult = layout.outliner_layout.child_layouts[2]
+  var _p0: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_outliner_row_0(), tree.outliner.children[0], ol0.bounds, 0)
+  var _p1: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_outliner_row_1(), tree.outliner.children[1], ol1.bounds, 0)
+  var _p2: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_outliner_row_root(), tree.outliner.children[2], ol2.bounds, 0)
+
+def ui_snapshot_push_timeline(snap: var UiSnapshot, tree: ShellWidgetTree, layout: ShellWidgetTreeLayout) -> unit
+  requires layout.region_count == shell_widget_tree_region_count()
+  ensures true
+  decreases tree.region_count
+=
+  var tl0: WidgetLayoutResult = layout.timeline_layout.child_layouts[0]
+  var tl1: WidgetLayoutResult = layout.timeline_layout.child_layouts[1]
+  var _pp: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_timeline_play(), tree.timeline.children[0], tl0.bounds, 0)
+  var _pt: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_timeline_track(), tree.timeline.children[1], tl1.bounds, 0)
+
+def ui_snapshot_push_inspector(snap: var UiSnapshot, tree: ShellWidgetTree, layout: ShellWidgetTreeLayout) -> unit
+  requires layout.region_count == shell_widget_tree_region_count()
+  ensures true
+  decreases tree.params.has_selection
+=
+  var hdr_layout: WidgetLayoutResult = layout.inspector_layout.header_layout
+  var hdr: UiElement = ui_element_make(ui_snapshot_tag_inspector_header(), ui_snapshot_role_panel(), hdr_layout.bounds, 1, 0, 0)
+  var _ph: int = ui_snapshot_push(snap, hdr)
+  if tree.inspector.has_selection == 1:
+    var field_layout: WidgetLayoutResult = layout.inspector_layout.fields_layout.child_layouts[1]
+    var _f0: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_inspector_field_selection_name(), tree.inspector.fields.children[1], field_layout.bounds, 0)
+
+def ui_snapshot_push_agent_strip(snap: var UiSnapshot, tree: ShellWidgetTree, layout: ShellWidgetTreeLayout) -> unit
+  requires layout.region_count == shell_widget_tree_region_count()
+  ensures true
+  decreases tree.params.agent_task_state
+=
+  var ag0: WidgetLayoutResult = layout.agent_layout.child_layouts[0]
+  var ag1: WidgetLayoutResult = layout.agent_layout.child_layouts[1]
+  var ag2: WidgetLayoutResult = layout.agent_layout.child_layouts[2]
+  var _st: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_agent_status(), tree.agent_strip.children[0], ag0.bounds, 0)
+  var _cn: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_agent_cancel(), tree.agent_strip.children[1], ag1.bounds, 0)
+  var _tr: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_agent_tool_trace(), tree.agent_strip.children[2], ag2.bounds, 0)
+
+def ui_snapshot_push_palette_overlay(snap: var UiSnapshot, tree: ShellWidgetTree, layout: ShellWidgetTreeLayout) -> unit
+  requires layout.region_count == shell_widget_tree_region_count()
+  ensures true
+  decreases tree.params.palette_open
+=
+  if tree.params.palette_open != 1:
+    return
+  var pl0: WidgetLayoutResult = layout.palette_layout.child_layouts[0]
+  var pl1: WidgetLayoutResult = layout.palette_layout.child_layouts[1]
+  var pl2: WidgetLayoutResult = layout.palette_layout.child_layouts[2]
+  var _sr: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_palette_search(), tree.palette_overlay.children[0], pl0.bounds, 0)
+  var _r0: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_palette_row_0(), tree.palette_overlay.children[1], pl1.bounds, 0)
+  var _r1: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_palette_row_1(), tree.palette_overlay.children[2], pl2.bounds, 0)
+
+def shell_widget_tree_ui_snapshot(tree: ShellWidgetTree, layout: ShellWidgetTreeLayout, frame_id: int, profile_id: int, width: int, height: int) -> UiSnapshot
+  requires layout.region_count == shell_widget_tree_region_count()
+  requires frame_id >= 0
+  requires width >= 0
+  requires height >= 0
+  ensures result.element_count >= 8
+  ensures result.frame_id == frame_id
+  decreases tree.region_count
+=
+  var snap: UiSnapshot = ui_snapshot_empty(frame_id, profile_id, width, height)
+  ui_snapshot_push_dock_slots(snap, tree, layout)
+  ui_snapshot_push_outliner_rows(snap, tree, layout)
+  var top_layout: WidgetLayoutResult = layout.topbar_layout
+  var vp_layout: WidgetLayoutResult = layout.viewport_layout
+  var _top: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_topbar(), tree.topbar, top_layout.bounds, 0)
+  var _vp: int = ui_snapshot_push_widget(snap, ui_snapshot_tag_viewport(), tree.viewport, vp_layout.bounds, 0)
+  ui_snapshot_push_timeline(snap, tree, layout)
+  ui_snapshot_push_inspector(snap, tree, layout)
+  ui_snapshot_push_agent_strip(snap, tree, layout)
+  ui_snapshot_push_palette_overlay(snap, tree, layout)
+  return snap
 
 # Phase 2 — Reactive compose primitives (Function layer).
 # Canonical split: src/reactive.li (mirrored here for `import gui`).

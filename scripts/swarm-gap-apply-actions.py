@@ -29,6 +29,7 @@ RUNNER_BACKLOGS: dict[str, str] = {
     "sim-md-research": "docs/ecosystem/sim-md-research-backlog.md",
     "sim-chem-research": "docs/ecosystem/sim-chem-research-backlog.md",
     "compiler-studio": "docs/superpowers/plans/2026-05-22-compiler-studio-plan-loop.md",
+    "ph-db": "docs/superpowers/plans/2026-06-03-ph-db-plan-loop.md",
     "security-research": "docs/ecosystem/security-research-backlog.md",
     "studio-ui-ux": os.environ.get(
         "STUDIO_UI_UX_PLAN_PATH",
@@ -50,6 +51,7 @@ KNOWN_LOOPS = frozenset(
         "sim-md-research",
         "sim-chem-research",
         "swarm-observer",
+        "ph-db",
     }
 )
 

@@ -3,9 +3,12 @@ workflow_repo: lic
 ph_ids: [PH-DB-1, PH-DB-3, PH-DB-4, PH-DB-5, PH-DB-10]
 tracker: docs/superpowers/plans/ph-db-execution-tracker.md
 status_doc: roadmap/docs/ecosystem/ph-db-status.md
+plan_loop: docs/superpowers/plans/2026-06-03-ph-db-plan-loop.md
 ---
 
 # PH-DB swarm plan (native Li data platform)
+
+**Supervisor:** [2026-06-03-ph-db-plan-loop.md](./2026-06-03-ph-db-plan-loop.md) (canonical YAML for snapshot runner `ph-db`). Keep todo statuses in sync with this canvas.
 
 | Repo | Branch | Tip (2026-05-31) |
 |------|--------|------------------|

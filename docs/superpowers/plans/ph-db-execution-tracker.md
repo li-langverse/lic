@@ -6,7 +6,7 @@
 
 ---
 
-**Swarm todos (canvas):** [ph-db-swarm-plan.md](./ph-db-swarm-plan.md)
+**Swarm todos (canvas):** [ph-db-swarm-plan.md](./ph-db-swarm-plan.md) · **Plan loop:** [2026-06-03-ph-db-plan-loop.md](./2026-06-03-ph-db-plan-loop.md)
 
 
 ## 1. Execution phases (Wave 3 ladder)

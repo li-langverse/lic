@@ -30,10 +30,10 @@ type UiFrame = object
   public viewport_h: float
 def li_std_ui_version() -> int
   requires true
-  ensures result == 9
+  ensures result == 10
   decreases 0
 =
-  return 9
+  return 10
 
 def li_std_ui_studio_composables_version() -> int
   requires true
@@ -1353,12 +1353,19 @@ def paint_op_draw_image() -> int
 =
   return 10
 
-def paint_op_kind_max() -> int
+def paint_op_layer_blur() -> int
   requires true
-  ensures result == paint_op_draw_image()
+  ensures result == 11
   decreases 0
 =
-  return paint_op_draw_image()
+  return 11
+
+def paint_op_kind_max() -> int
+  requires true
+  ensures result == paint_op_layer_blur()
+  decreases 0
+=
+  return paint_op_layer_blur()
 
 type PaintCmd = object
   public kind: int
@@ -1743,6 +1750,20 @@ def paint_frame_pop_clip_scope(frame: var PaintFrame) -> unit
   decreases 0
 =
   paint_frame_push(frame, paint_cmd_clip_pop())
+
+def paint_frame_push_layer_blur(frame: var PaintFrame, layer_rect: Rect, sigma_px: float, radius_px: float, passes: int) -> unit
+  requires frame.cmd_count >= 0
+  requires layer_rect.w >= 0.0
+  requires layer_rect.h >= 0.0
+  requires sigma_px >= 0.0
+  requires radius_px >= 0.0
+  requires passes >= 1
+  requires passes <= 4
+  ensures frame.cmd_count == old(frame.cmd_count) + 1
+  ensures frame.last_kind == paint_op_layer_blur()
+  decreases passes
+=
+  paint_frame_push(frame, paint_cmd_layer_blur(layer_rect, sigma_px, radius_px, passes))
 # END paint-cmds-ext
 
 def paint_frame_push_elevated_panel(frame: var PaintFrame, rect: Rect) -> unit
@@ -7559,3 +7580,80 @@ def paint_raster_glyph_pixel(dst: Color, ink: Color, coverage: float) -> Color
   var src: Color = color_with_alpha(ink, eff_a)
   return paint_raster_source_over(dst, src)
 # END paint-raster
+
+# BEGIN blur-kernel (src/blur_kernel.li)
+# Separable box-blur kernel — normalized weights for shadow-layer diffusion (wtfx-w4).
+# One-dimensional taps: w(i) = 1 / (2*radius + 1) for i in [-radius, radius].
+
+def blur_kernel_radius_from_sigma(sigma_px: float) -> int
+  requires sigma_px >= 0.0
+  ensures result >= 0
+  decreases 0
+=
+  var r: int = 0
+  if sigma_px >= 3.0:
+    r = 3
+  elif sigma_px >= 2.0:
+    r = 2
+  elif sigma_px >= 1.0:
+    r = 1
+  return r
+
+def blur_kernel_tap_count(radius: int) -> int
+  requires radius >= 0
+  requires radius <= 8
+  ensures result == radius * 2 + 1
+  ensures result >= 1
+  decreases radius
+=
+  return radius * 2 + 1
+
+def blur_kernel_weight_at(radius: int, tap_index: int) -> float
+  requires radius >= 0
+  requires radius <= 8
+  requires tap_index >= 0
+  requires tap_index < blur_kernel_tap_count(radius)
+  ensures result > 0.0
+  ensures result <= 1.0
+  decreases radius
+=
+  var taps: int = blur_kernel_tap_count(radius)
+  return 1.0 / float(taps)
+
+def blur_kernel_weight_sum(radius: int) -> float
+  requires radius >= 0
+  requires radius <= 8
+  ensures result >= 0.999
+  ensures result <= 1.001
+  decreases radius
+=
+  var sum: float = 0.0
+  var i: int = 0
+  var taps: int = blur_kernel_tap_count(radius)
+  while i < taps:
+    sum = sum + blur_kernel_weight_at(radius, i)
+    i = i + 1
+  return sum
+
+def blur_separable_passes_for_radius(radius_px: float, token_passes: int) -> int
+  requires radius_px >= 0.0
+  requires token_passes >= 1
+  requires token_passes <= 4
+  ensures result >= 1
+  ensures result <= 4
+  decreases token_passes
+=
+  if token_passes < 1:
+    return 1
+  return token_passes
+
+def blur_effective_sigma_px(sigma_px: float, radius_px: float) -> float
+  requires sigma_px >= 0.0
+  requires radius_px >= 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  if sigma_px > radius_px:
+    return radius_px
+  return sigma_px
+# END blur-kernel

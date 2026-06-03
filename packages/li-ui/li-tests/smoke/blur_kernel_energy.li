@@ -1,0 +1,32 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_version() < 10:
+    return 1
+  var r0: int = 0
+  var sum0: float = blur_kernel_weight_sum(r0)
+  if sum0 < 0.999:
+    return 2
+  if sum0 > 1.001:
+    return 3
+  var r3: int = blur_kernel_radius_from_sigma(3.0)
+  if r3 != 3:
+    return 4
+  var sum3: float = blur_kernel_weight_sum(r3)
+  if sum3 < 0.999:
+    return 5
+  if sum3 > 1.001:
+    return 6
+  var w0: float = blur_kernel_weight_at(r3, 0)
+  var w_mid: float = blur_kernel_weight_at(r3, 3)
+  if w0 != w_mid:
+    return 7
+  if blur_kernel_tap_count(r3) != 7:
+    return 8
+  if blur_separable_passes_for_radius(6.0, 2) != 2:
+    return 9
+  return 0

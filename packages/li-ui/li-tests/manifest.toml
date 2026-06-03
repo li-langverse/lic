@@ -62,6 +62,12 @@ note = "T-PKG-li-ui-color-alpha-composite-wtfx-w2"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/blur_kernel_energy.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-blur-kernel-energy-wtfx-w4"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/icon_atlas_dock_tokens.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-ui-icon-atlas-dock-tokens-wsg-w3"

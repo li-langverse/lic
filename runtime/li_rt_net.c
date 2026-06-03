@@ -2217,7 +2217,6 @@ static void upstream_pool_release(int32_t port, int fd, int reuse) {
       if (!reuse) {
         close(fd);
         p->fds[i] = -1;
-        httpd_upstream_peer_note_failure(port);
       } else {
         httpd_drain_upstream_fd(fd);
         if (httpd_upstream_fd_stale(fd)) {
@@ -2277,7 +2276,10 @@ static int httpd_upstream_resp_persistent(const char* hdr, int hdr_len) {
   }
   int persistent = (hdr[7] == '1');
   for (int i = 0; i + 11 < hdr_len; i++) {
-    if (hdr[i] == 'C' && memcmp(hdr + i, "Connection:", 11) == 0) {
+    if ((hdr[i] | 32) == 'c' && (hdr[i + 1] | 32) == 'o' && (hdr[i + 2] | 32) == 'n' &&
+        (hdr[i + 3] | 32) == 'n' && (hdr[i + 4] | 32) == 'e' && (hdr[i + 5] | 32) == 'c' &&
+        (hdr[i + 6] | 32) == 't' && (hdr[i + 7] | 32) == 'i' && (hdr[i + 8] | 32) == 'o' &&
+        (hdr[i + 9] | 32) == 'n' && hdr[i + 10] == ':') {
       int j = i + 11;
       while (j < hdr_len && (hdr[j] == ' ' || hdr[j] == '\t')) {
         j++;
@@ -3177,6 +3179,9 @@ static void httpd_proxy_finish_ok(int epfd, int32_t slot) {
   int keep = g_slots[slot].proxy_keep;
   int hdr_end = g_slots[slot].proxy_hdr_end;
   int conn = g_slots[slot].fd;
+  if (g_slots[slot].proxy_active && g_slots[slot].proxy_peer_port > 0) {
+    httpd_upstream_peer_note_success(g_slots[slot].proxy_peer_port);
+  }
   if (g_proxy_snap_recording && g_proxy_snap_len > 0) {
     g_proxy_snap_ready = 1;
     g_proxy_snap_recording = 0;

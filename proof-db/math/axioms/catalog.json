@@ -7,7 +7,7 @@
       "status": "axiomatic",
       "family": "peano",
       "statement": "Zero not successor",
-      "li_stub": "proof-db/math/axioms/peano_order.li",
+      "li_stub": "proof-db/math/axioms/peano_zero_not_succ.li",
       "lean_stub": "proof-db/math/axioms/MathAxioms.lean#peano_zero_not_succ",
       "source": {
         "citation": "Peano 1889",
@@ -19,7 +19,7 @@
       "status": "axiomatic",
       "family": "peano",
       "statement": "succ injective",
-      "li_stub": "proof-db/math/axioms/peano_order.li",
+      "li_stub": "proof-db/math/axioms/peano_succ_injective.li",
       "lean_stub": "proof-db/math/axioms/MathAxioms.lean#peano_succ_injective",
       "source": {
         "citation": "Peano 1889",
@@ -31,7 +31,7 @@
       "status": "axiomatic",
       "family": "peano",
       "statement": "induction",
-      "li_stub": "proof-db/math/axioms/peano_order.li",
+      "li_stub": "proof-db/math/axioms/peano_induction.li",
       "lean_stub": "proof-db/math/axioms/MathAxioms.lean#peano_induction",
       "source": {
         "citation": "Peano 1889",
@@ -43,7 +43,7 @@
       "status": "axiomatic",
       "family": "order",
       "statement": "trichotomy",
-      "li_stub": "proof-db/math/axioms/peano_order.li",
+      "li_stub": "proof-db/math/axioms/order_trichotomy_nat.li",
       "lean_stub": "proof-db/math/axioms/MathAxioms.lean#order_trichotomy_nat",
       "source": {
         "citation": "Rudin Ch.1",
@@ -55,7 +55,7 @@
       "status": "axiomatic",
       "family": "order",
       "statement": "antisymmetry",
-      "li_stub": "proof-db/math/axioms/peano_order.li",
+      "li_stub": "proof-db/math/axioms/order_antisym.li",
       "lean_stub": "proof-db/math/axioms/MathAxioms.lean#order_antisym",
       "source": {
         "citation": "Order axioms",
@@ -71,7 +71,7 @@
       "lean_stub": "proof-db/math/axioms/MathAxioms.lean#real_add_comm",
       "source": {
         "citation": "Field axioms",
-        "url": "https://en.wikipedia.org/wiki/Peano_axioms"
+        "url": "https://en.wikipedia.org/wiki/Field_axioms"
       }
     },
     {
@@ -83,7 +83,7 @@
       "lean_stub": "proof-db/math/axioms/MathAxioms.lean#real_add_assoc",
       "source": {
         "citation": "Field axioms",
-        "url": "https://en.wikipedia.org/wiki/Peano_axioms"
+        "url": "https://en.wikipedia.org/wiki/Field_axioms"
       }
     },
     {
@@ -95,7 +95,7 @@
       "lean_stub": "proof-db/math/axioms/MathAxioms.lean#real_mul_distrib",
       "source": {
         "citation": "Field axioms",
-        "url": "https://en.wikipedia.org/wiki/Peano_axioms"
+        "url": "https://en.wikipedia.org/wiki/Field_axioms"
       }
     },
     {
@@ -107,7 +107,7 @@
       "lean_stub": "proof-db/math/axioms/MathAxioms.lean#real_mul_one",
       "source": {
         "citation": "Field axioms",
-        "url": "https://en.wikipedia.org/wiki/Peano_axioms"
+        "url": "https://en.wikipedia.org/wiki/Field_axioms"
       }
     }
   ]

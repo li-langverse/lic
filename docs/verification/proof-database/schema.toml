@@ -20,7 +20,7 @@ biology = ["BIO-AX-", "BIO-LM-"]
 
 [entry_types.axiom]
 required = ["id", "kind", "field", "statement", "proof_status", "lean_module", "last_verified_lic_commit"]
-optional = ["domain", "erdos_id", "erdos_status", "convergence_class", "benchmark_ref", "mathlib_ref", "priority_tier", "gap_id", "gap_kind", "lean_thm", "li_specimen", "bench_refs", "release_pin", "notes", "content_tier", "latex", "context", "sources", "external_url"]
+optional = ["domain", "erdos_id", "erdos_status", "convergence_class", "benchmark_ref", "mathlib_ref", "priority_tier", "gap_id", "gap_kind", "lean_thm", "li_specimen", "li_axiom_symbol", "specimen_role", "bench_refs", "release_pin", "notes", "content_tier", "latex", "context", "sources", "external_url"]
 
 [entry_types.lemma]
 required = ["id", "kind", "field", "statement", "proof_status", "lean_module", "last_verified_lic_commit"]

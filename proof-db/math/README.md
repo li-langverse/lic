@@ -4,7 +4,7 @@ Classical math vertical for the Li proof database.
 
 | Area | Path | Catalog ids |
 |------|------|-------------|
-| Peano + order axioms | [axioms/peano_order.li](axioms/peano_order.li) | `M-AX-PEANO-*`, `M-AX-ORDER-*` |
+| Peano + order axioms | [axioms/peano_*.li](axioms/), [axioms/order_*.li](axioms/) | `M-AX-PEANO-*`, `M-AX-ORDER-*` |
 | ℝ field axioms | [axioms/reals_field.li](axioms/reals_field.li) | `M-AX-REAL-*` |
 | Lean stub module | [axioms/MathAxioms.lean](axioms/MathAxioms.lean) | `Li.ProofDb.Math.*` |
 | Lemma specimens | [lemmas/](lemmas/) | `M-LM-*` |

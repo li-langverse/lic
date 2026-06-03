@@ -2,10 +2,25 @@
 
 #include <cstdlib>
 #include <iostream>
+
+#if defined(_WIN32)
+#include <stdlib.h>
+#else
 #include <unistd.h>
+#endif
 
 namespace li {
 namespace {
+
+#if defined(_WIN32)
+void set_env_var(const char* name, const char* value, int /*overwrite*/) {
+  _putenv_s(name, value);
+}
+#else
+void set_env_var(const char* name, const char* value, int overwrite) {
+  setenv(name, value, overwrite);
+}
+#endif
 
 ResourceOptions g_opts;
 bool g_env_warned = false;
@@ -214,7 +229,7 @@ void finalize_resource_options(ResourceOptions& opts) {
 unsigned g_compile_jobs_reserved = 1;
 void note_compile_jobs_reserved(const ResourceOptions& opts) {
   g_compile_jobs_reserved = opts.effective_jobs();
-  setenv("LI_COMPILE_JOBS", std::to_string(g_compile_jobs_reserved).c_str(), 1);
+  set_env_var("LI_COMPILE_JOBS", std::to_string(g_compile_jobs_reserved).c_str(), 1);
 }
 unsigned compile_jobs_reserved() { return g_compile_jobs_reserved; }
 

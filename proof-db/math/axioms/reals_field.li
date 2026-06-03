@@ -1,9 +1,32 @@
+# M-AX-REAL-*: ℝ field axioms (Li float contract mirror; Lean authoritative).
+
 def proof_db_real_add_comm(a: float, b: float)-> float
   requires true
   ensures result == b + a
   decreases 0
 =
-  return 0.0
+  return a + b
+
+def proof_db_real_add_assoc(a: float, b: float, c: float)-> float
+  requires true
+  ensures result == a + (b + c)
+  decreases 0
+=
+  return (a + b) + c
+
+def proof_db_real_mul_distrib(a: float, b: float, c: float)-> float
+  requires true
+  ensures result == a * (b + c)
+  decreases 0
+=
+  return a * b + a * c
+
+def proof_db_real_mul_one(a: float)-> float
+  requires true
+  ensures result == a
+  decreases 0
+=
+  return a * 1.0
 
 def main() -> int
   requires true

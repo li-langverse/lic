@@ -1,31 +1,20 @@
 {
-  "sprint": "proof-explorer-program",
-  "phase": 9,
-  "started": "2026-06-01",
+  "sprint": "proof-explorer-phase10-axiom-layer",
+  "phase": 10,
+  "started": "2026-06-03",
   "completed_wps": [
-    "wp-cg-01",
-    "wp-cg-02",
-    "wp-cg-03",
-    "wp-cg-04",
-    "wp-cg-05",
-    "wp-cg-06"
+    "wp-ax-01",
+    "wp-ax-02",
+    "wp-ax-05",
+    "wp-ax-07"
   ],
-  "current_wp": "complete",
-  "branch": "cursor/proof-explorer-compiler-gaps",
+  "current_wp": "wp-ax-06",
+  "branch": "cursor/proof-explorer-phase10-axiom-layer",
   "research_problem_id": null,
   "claim_count": 0,
   "review_round": 0,
   "loop_sleep_sec": 300,
-  "problem_source": "compiler_gap_audit",
+  "problem_source": "axiom_layer",
   "priority_tier": "P0",
-  "dot4_pr": 696,
-  "open_bug_c": 6,
-  "regression_open": [
-    "BUG-C-02",
-    "BUG-C-04",
-    "BUG-C-05",
-    "BUG-C-06",
-    "BUG-C-08",
-    "BUG-C-12"
-  ]
+  "compiler_rfc": "BUG-C-13"
 }

@@ -46,6 +46,8 @@ EXPORT_KEYS = (
     "sources",
     "notes",
     "li_specimen",
+    "li_axiom_symbol",
+    "specimen_role",
     "last_verified_lic_commit",
 )
 

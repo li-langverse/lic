@@ -1,6 +1,6 @@
 # Compiler audit — BUG-C gap register
 
-**Phase:** Proof Explorer phase 9 (`proof-explorer-phase9-compiler-gaps`)  
+**Phase:** Proof Explorer phase 9 (`proof-explorer-phase9-compiler-gaps`) · phase 10 axiom RFC [BUG-C-13](BUG-C-13-li-axiom-declarations.md)  
 **Gap scripts:** `li-tests/tooling/*_gap.sh` (run via `scripts/proof-explorer-gates/wp-compiler-gap-regression.sh`)
 
 Agents **must not** edit `compiler/` from proof-explorer goals. File or update the matching `BUG-C-*.md` and adjust catalog/docs when claims are wrong.
@@ -23,6 +23,7 @@ Agents **must not** edit `compiler/` from proof-explorer goals. File or update t
 | BUG-C-10 | `sum_dot_product_equiv_gap.sh` | [BUG-C-10.md](BUG-C-10.md) | Open (no Lean equiv) | PASS |
 | BUG-C-11 | `vec3_dot_opaque_ensures_gap.sh` | [BUG-C-11.md](BUG-C-11.md) | Open (opaque ensures) | PASS |
 | BUG-C-12 | `vec3_len_callproc_ensures_gap.sh` | [BUG-C-12.md](BUG-C-12.md) | Open | OPEN |
+| BUG-C-13 | *(RFC — axiom decl / VC skip)* | [BUG-C-13-li-axiom-declarations.md](BUG-C-13-li-axiom-declarations.md) | RFC (phase 10) | — |
 
 ## Owner
 

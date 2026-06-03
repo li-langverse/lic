@@ -107,5 +107,5 @@
 | WP-ML-17 | C++ MLP competitor | 10 | done | bench_ph_ml_competitor_cpp_openmp_mlp.py |
 | WP-ML-18 | ml_matmul perf v6 lanes=8 max_dim=32 | 10 | done | ml_matmul_general.li |
 | program complete | Wave 13 | done | ph-ml-program-complete-gates.sh |
-| gate verify | post-#676 lic-resolve | done | `ph-ml-program-complete-gates.sh` exit 0 — agent run `1780458891135` (~120s, native `./build/compiler/lic/lic` via `resolve-lic-runnable.sh`) |
+| gate verify | post-#676 lic-resolve | done | `ph-ml-program-complete-gates.sh` exit 0 — agent runs `1780458891135`, `1780459627515` (~122s, native `./build/compiler/lic/lic` via `resolve-lic-runnable.sh`; PR [#734](https://github.com/li-langverse/lic/pull/734)) |
 

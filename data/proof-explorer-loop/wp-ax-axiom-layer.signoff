@@ -1,0 +1,5 @@
+# WP-AX-12 — phase 10 axiom layer (bootstrap sign-off)
+
+Gate: scripts/proof-explorer-phase10-completion-gate.sh exit 0
+Branch: cursor/proof-explorer-phase10-axiom-layer
+Signed: 2026-06-03 (phase10 bootstrap: WP-AX-01/02/05/07 + plan/gates; WP-AX-03/04/06/08/09/10 remain for K8s agent)

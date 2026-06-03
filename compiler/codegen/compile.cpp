@@ -168,16 +168,19 @@ bool compile_module(const Module& module, const std::string& output_path,
   cmd << " -opaque-pointers";
 #endif
   cmd << " -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
+#if !defined(_WIN32)
   if (link_runtime_full || rt_needs.needs_rt_httpd) {
     if (std::filesystem::exists(rt_httpd_path)) {
       cmd << " -x c \"" << rt_httpd_path.string() << "\"";
     }
   }
+#endif
   if (link_runtime_full || rt_needs.needs_rt_log) {
     if (std::filesystem::exists(rt_log_path)) {
       cmd << " -x c \"" << rt_log_path.string() << "\"";
     }
   }
+#if !defined(_WIN32)
   if (link_runtime_full || rt_needs.needs_rt_net) {
     if (std::filesystem::exists(rt_net_path)) {
       cmd << " -x c \"" << rt_net_path.string() << "\"";
@@ -189,6 +192,7 @@ bool compile_module(const Module& module, const std::string& output_path,
       cmd << " -x c \"" << rt_h2_path.string() << "\"";
     }
   }
+#endif
   if (std::filesystem::exists(rt_lig_path)) {
     cmd << " -x c \"" << rt_lig_path.string() << "\"";
   }

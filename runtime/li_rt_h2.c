@@ -1,13 +1,18 @@
 /* M2 minimal HTTP/2 — TLS+ALPN h2 smoke (GET /health, static body). */
+#if !defined(_WIN32)
 #define _GNU_SOURCE 1
+#endif
 #include "li_rt_h2.h"
 #include "li_rt_tls.h"
+#include "li_rt_posix_compat.h"
 
 #include <poll.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#if !defined(_WIN32)
 #include <unistd.h>
+#endif
 
 #define H2_PREFACE_LEN 24
 #define H2_IOBUF 65536

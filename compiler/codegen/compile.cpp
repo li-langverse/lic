@@ -168,19 +168,16 @@ bool compile_module(const Module& module, const std::string& output_path,
   cmd << " -opaque-pointers";
 #endif
   cmd << " -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
-#if !defined(_WIN32)
   if (link_runtime_full || rt_needs.needs_rt_httpd) {
     if (std::filesystem::exists(rt_httpd_path)) {
       cmd << " -x c \"" << rt_httpd_path.string() << "\"";
     }
   }
-#endif
   if (link_runtime_full || rt_needs.needs_rt_log) {
     if (std::filesystem::exists(rt_log_path)) {
       cmd << " -x c \"" << rt_log_path.string() << "\"";
     }
   }
-#if !defined(_WIN32)
   if (link_runtime_full || rt_needs.needs_rt_net) {
     if (std::filesystem::exists(rt_net_path)) {
       cmd << " -x c \"" << rt_net_path.string() << "\"";
@@ -192,7 +189,6 @@ bool compile_module(const Module& module, const std::string& output_path,
       cmd << " -x c \"" << rt_h2_path.string() << "\"";
     }
   }
-#endif
   if (std::filesystem::exists(rt_lig_path)) {
     cmd << " -x c \"" << rt_lig_path.string() << "\"";
   }
@@ -250,6 +246,13 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
 #if defined(__linux__)
   cmd << " -lm -ldl";
+#elif defined(__APPLE__)
+  cmd << " -lm";
+#endif
+#if defined(_WIN32)
+  if (link_runtime_full || rt_needs.needs_rt_net) {
+    cmd << " -lws2_32";
+  }
 #endif
   const int rc = std::system(cmd.str().c_str());
   maybe_keep_emit_ll(ll_path);

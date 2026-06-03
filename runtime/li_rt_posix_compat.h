@@ -46,16 +46,20 @@ typedef long ssize_t;
 #ifndef POLLOUT
 #define POLLOUT 0x0004
 #endif
+#ifndef POLLRDHUP
+#define POLLRDHUP 0
+#endif
+#ifndef POLLHUP
+#define POLLHUP 0x0002
+#endif
+#ifndef POLLERR
+#define POLLERR 0x0008
+#endif
 
-struct pollfd {
-  SOCKET fd;
-  SHORT events;
-  SHORT revents;
-};
-
-static inline int poll(struct pollfd* fds, unsigned long nfds, int timeout) {
-  return WSAPoll(fds, nfds, timeout);
-}
+/* winsock2.h already defines struct pollfd + WSAPoll on MSYS2 UCRT. */
+#ifndef poll
+#define poll WSAPoll
+#endif
 
 static inline void li_rt_sock_close(int fd) {
   if (fd >= 0) {

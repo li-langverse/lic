@@ -1,6 +1,6 @@
 # BUG-C-13 — Li axiom declarations & VC emit (RFC for Julian)
 
-**Status:** **Open** (RFC — no agent `compiler/` edits in phase 10)  
+**Status:** **Partial** (minimal `proof_db_*` discharge landed; full `axiom proc` / `@axiom def` parser pending Julian review)  
 **Gap kind:** G-vc / proof-db axiom layer  
 **Related:** Phase 10 `proof-explorer-phase10-axiom-layer`, `proof-db/math/axioms/*.li`
 
@@ -71,14 +71,22 @@ if decl.is_axiom() && decl.lean_thm():
 ## Verification (post-implementation)
 
 ```bash
-# Future — not run in phase 10 agent sprint
-bash li-tests/tooling/axiom_decl_vc_skip_gap.sh
-lic build proof-db/math/axioms/peano_zero_not_succ.li
+bash li-tests/tooling/axiom_decl_vc_skip_gap.sh   # PASS — proof_db_* Discharge cite
+lic build proof-db/math/axioms/peano_succ_injective.li --no-lean-verify
 ```
 
-## Agent policy
+### Landed (2026-06-03, `cursor/fix-axiom-layer-completion`)
 
-Phase 10 agents **must not** patch `compiler/verify/vc_emit_lean.cpp` or `vc_witness.cpp`. Update this RFC and catalog only until Julian approves implementation.
+- `is_proof_db_axiom_decl` in `vc_witness.cpp` — skips trivial `True` ensures for `proof_db_*` defs.
+- `vc_emit_lean.cpp` — emits `Li.Discharge.proof_db_*_ensures_N_proved` (requires→ensures when present).
+- `Discharge.lean` — `Li.ProofDb.Math.*` axioms + peano_succ_injective / order_antisym discharge.
+- Li specimens: `implies` rewritten as `not … or …` (parser has no `implies` keyword yet).
+
+### Still Julian-owned
+
+- `axiom proc` / `@axiom def` surface syntax and proof-db-only scoping.
+- Full float ℝ axiom discharge (currently `sorry` in Discharge).
+- peano_zero / peano_induction stub ensures vs authoritative Prop statements.
 
 ## References
 

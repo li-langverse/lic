@@ -29,7 +29,18 @@ message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 
 list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 include(AddLLVM)
-include(HandleLLVMOptions)
+# MSYS2/MinGW: HandleLLVMOptions mis-quotes LLVM_DEFINITIONS in Ninja (broken -D_GLIBCXX_*).
+if(WIN32)
+  set(LLVM_DEFINITIONS
+    -D_FILE_OFFSET_BITS=64
+    -D__STDC_CONSTANT_MACROS
+    -D__STDC_FORMAT_MACROS
+    -D__STDC_LIMIT_MACROS
+    -D_GLIBCXX_USE_CXX11_ABI=1
+  )
+else()
+  include(HandleLLVMOptions)
+endif()
 
 add_subdirectory(compiler)
 add_subdirectory(runtime)

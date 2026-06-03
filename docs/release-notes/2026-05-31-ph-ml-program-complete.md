@@ -19,6 +19,8 @@
 
 ## Verification
 
+On Linux agent hosts where `build-wsl/compiler/lic/lic` is present but not runnable (GLIBC mismatch), gate scripts use `scripts/lib/lic-bin-select.sh` (and `lic-runnable.sh` shim) to prefer native `build/` or sibling `/workspace/lic` builds.
+
 ```bash
 export LIG_EMIT_CUDA=1
 bash scripts/lig-emit-vendor-stub.sh

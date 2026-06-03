@@ -11,5 +11,5 @@ if lic="$(li_pick_lic_bin "$ROOT")"; then
   esac
   exit 0
 fi
-echo "resolve-lic: no runnable lic under build/ or build-wsl/" >&2
+echo "resolve-lic: no runnable lic under build/, build-wsl/, or LIC_ROOT siblings" >&2
 exit 1

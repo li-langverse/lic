@@ -3,6 +3,10 @@
 set -euo pipefail
 ROOT="${PH_ML_PROGRAM_COMPLETE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
+if [[ "${PH_ML_PROGRAM_COMPLETE_INNER:-0}" == "1" ]]; then
+  export PH_ML_WAVE13_INNER=1 PH_ML_WAVE12_INNER=1 PH_ML_WAVE11_INNER=1 PH_ML_WAVE10_INNER=1
+  export PH_ML_MATMUL32_INNER=1
+fi
 run_in_wsl() {
   local wsl_root wsl_bench
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"

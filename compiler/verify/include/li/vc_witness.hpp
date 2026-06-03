@@ -22,6 +22,9 @@ bool witness_dot4_int_loop(const ProcDecl& proc, const Expr& ensures_rhs);
 bool witness_dot4_prelude_call(const Expr& ret, const Expr& ensures_rhs);
 bool witness_mat2_int_at2_spec(const ProcDecl& proc, const Expr& ensures_expr);
 bool witness_sqrt_open_bound_spec(const ProcDecl& proc, const Expr& ensures_expr);
+bool is_proof_db_axiom_decl(const ProcDecl& proc);
+std::optional<std::string> proof_db_axiom_discharge_suffix(const ProcDecl& proc);
+bool ensures_expr_mentions_result(const Expr& e);
 
 VcWitnessStats compute_vc_witness_stats(const Module& module, const MirModule* mir);
 

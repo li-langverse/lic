@@ -2,7 +2,7 @@
 
 def proof_db_peano_induction(base_holds: int, step_holds: int)-> int
   requires base_holds >= 0 and step_holds >= 0
-  ensures (base_holds == 1 and step_holds == 1) implies result == 1
+  ensures not (base_holds == 1 and step_holds == 1) or (result == 1)
   decreases 0
 =
   return 1

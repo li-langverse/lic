@@ -1,4 +1,5 @@
 # WP-AX-06 — proof-library AXIOM badge
 
-PR: (proof-library branch cursor/proof-explorer-phase10-axiom-ui — open after push)
+PR: proof-library main (KindBadge AXIOM + build-library witness hide)
 Gate: wp-ax-06-proof-library-axiom-ui.sh
+Signed: 2026-06-03

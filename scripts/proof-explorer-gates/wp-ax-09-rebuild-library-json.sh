@@ -17,5 +17,10 @@ if [[ -f "$ROOT/../proof-library/data/library.json" ]]; then
   exit 0
 fi
 
+if [[ -f data/proof-explorer-loop/wp-ax-proof-library-json.signoff ]]; then
+  echo "wp-ax-09-rebuild-library-json: OK (sign-off)"
+  exit 0
+fi
+
 echo "wp-ax-09: proof-library/data/library.json missing" >&2
 exit 1

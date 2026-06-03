@@ -20,6 +20,14 @@ li_pick_lic_bin() {
   return 1
 }
 
+li_has_runnable_lic() {
+  local root="${1:?root required}"
+  if [[ -n "${LIC:-}" ]] && "$LIC" --version &>/dev/null; then
+    return 0
+  fi
+  li_pick_lic_bin "$root" >/dev/null
+}
+
 li_ensure_lic() {
   local root="${1:?root required}"
   local msg="${2:-build lic (./scripts/build.sh)}"

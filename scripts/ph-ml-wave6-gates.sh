@@ -13,18 +13,14 @@ run_in_wsl() {
 }
 
 lic_bin_for_smokes() {
-  local lic="$1"
-  if [[ "$lic" == "$ROOT/build-wsl/compiler/lic/lic" ]] && [[ -x "./build-wsl/compiler/lic/lic" ]]; then
-    echo "./build-wsl/compiler/lic/lic"
-    return
+  # shellcheck source=lib/resolve-lic-runnable.sh
+  source "$ROOT/scripts/lib/resolve-lic-runnable.sh"
+  if [[ -n "${1:-}" ]] && lic_runnable "$1"; then
+    echo "$1"
+  else
+    resolve_lic_runnable "$ROOT"
   fi
-  if [[ "$lic" == "$ROOT/build/compiler/lic/lic" ]] && [[ -x "./build/compiler/lic/lic" ]]; then
-    echo "./build/compiler/lic/lic"
-    return
-  fi
-  echo "$lic"
 }
-
 lic_check_smokes() {
   local lic smoke rc
   lic="$(lic_bin_for_smokes "$1")"
@@ -57,13 +53,10 @@ if [[ "${PH_ML_WAVE6_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/l
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="./build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="./build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
+# shellcheck source=lib/resolve-lic-runnable.sh
+source "$ROOT/scripts/lib/resolve-lic-runnable.sh"
+if [[ -z "${LIC:-}" ]] || ! lic_runnable "$LIC"; then
+  LIC="$(resolve_lic_runnable "$ROOT")"
 fi
 
 [[ -x "$LIC" ]] || { echo "ph-ml-wave6-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }

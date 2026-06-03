@@ -721,6 +721,10 @@ static int httpd_m2_policy_blocks_proxy_snap(void) {
 }
 
 static int httpd_proxy_snap_disabled(void) {
+  const char* v = getenv("LI_HTTPD_PROXY_SNAP");
+  if (v && (v[0] == '0' || v[0] == 'n' || v[0] == 'N')) {
+    return 1;
+  }
   return httpd_m2_policy_blocks_proxy_snap() || g_lb_mode == HTTPD_LB_MODE_COOKIE;
 }
 
@@ -2347,14 +2351,6 @@ static int httpd_proxy_compact_req_hdr(int32_t slot, int hdr_end) {
   if (tail > 0) {
     memmove(buf + w, buf + hdr_end, (size_t)tail);
   }
-  /* Nginx proxy_set_header Connection "" — explicit keep-alive to inference backends. */
-  if (w >= 4 && w + 22 + 4 <= (int)sizeof(g_slots[slot].buf) && buf[w - 4] == '\r' && buf[w - 3] == '\n' &&
-      buf[w - 2] == '\r' && buf[w - 1] == '\n') {
-    int insert_at = w - 4;
-    memmove(buf + insert_at + 22, buf + insert_at, (size_t)(w - insert_at + tail));
-    memcpy(buf + insert_at, "Connection: keep-alive\r\n", 22);
-    w += 22;
-  }
   g_slots[slot].len = w + tail;
   return w;
 }
@@ -2500,7 +2496,7 @@ static int httpd_traceparent_present(const char* buf, int hdr_end) {
 }
 
 static int httpd_inject_traceparent_if_missing(int32_t slot, int hdr_end) {
-  if (slot < 0 || slot >= HTTPD_MAX_CONN || hdr_end <= 0) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || hdr_end <= 4) {
     return hdr_end;
   }
   if (httpd_traceparent_present(g_slots[slot].buf, hdr_end)) {
@@ -2508,12 +2504,18 @@ static int httpd_inject_traceparent_if_missing(int32_t slot, int hdr_end) {
   }
   static const char k_tp[] = "traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01\r\n";
   int add = (int)sizeof(k_tp) - 1;
+  int insert_at = hdr_end - 4;
+  char* buf = g_slots[slot].buf;
+  if (!(buf[insert_at] == '\r' && buf[insert_at + 1] == '\n' && buf[insert_at + 2] == '\r' &&
+        buf[insert_at + 3] == '\n')) {
+    return hdr_end;
+  }
   int tail = g_slots[slot].len - hdr_end;
   if (g_slots[slot].len + add >= HTTPD_IO_BUF) {
     return hdr_end;
   }
-  memmove(g_slots[slot].buf + hdr_end + add, g_slots[slot].buf + hdr_end, (size_t)tail);
-  memcpy(g_slots[slot].buf + hdr_end, k_tp, (size_t)add);
+  memmove(buf + insert_at + add, buf + insert_at, (size_t)(4 + tail));
+  memcpy(buf + insert_at, k_tp, (size_t)add);
   g_slots[slot].len += add;
   return hdr_end + add;
 }
@@ -2979,7 +2981,12 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
       net_slot_consume(slot, hdr_end);
       return keep ? 1 : -1;
     }
-    hdr_end = httpd_inject_traceparent_if_missing(slot, hdr_end);
+    if (req.body_mode == 1 && (g_slots[slot].len - hdr_end) < req.content_length) {
+      return 0;
+    }
+    if (httpd_route_requires_traceparent_for(&req, req.path, req.path_len)) {
+      hdr_end = httpd_inject_traceparent_if_missing(slot, hdr_end);
+    }
     hdr_end = httpd_proxy_compact_req_hdr(slot, hdr_end);
     httpd_proxy_client_epoll_mod(g_httpd_epfd, slot, EPOLLIN | EPOLLET);
     if (httpd_proxy_start_async(g_httpd_epfd, conn, slot, hdr_end, &req, keep) < 0) {
@@ -4559,7 +4566,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
     g_proxy_snap_len = 0;
   }
   if (req->body_mode == 1) {
-    s->proxy_body_left = req->content_length - (s->len - hdr_end);
+    s->proxy_body_left = req->content_length;
     if (s->proxy_body_left < 0) {
       s->proxy_body_left = 0;
     }
@@ -4613,6 +4620,8 @@ static void httpd_serve_conn_epoll(int epfd, int32_t slot) {
   if (g_slots[slot].proxy_active) {
     if (g_slots[slot].proxy_phase == HTTPD_PROXY_PHASE_SEND_BODY) {
       httpd_proxy_try_send_body(epfd, slot);
+    } else if (g_slots[slot].proxy_phase == HTTPD_PROXY_PHASE_RELAY) {
+      httpd_proxy_pump_relay(epfd, slot);
     }
     return;
   }
@@ -4651,6 +4660,9 @@ static void httpd_serve_conn_epoll(int epfd, int32_t slot) {
         httpd_conn_close_slot(epfd, slot);
         return;
       }
+    }
+    if (g_slots[slot].proxy_active) {
+      return;
     }
   }
 }
@@ -5913,7 +5925,7 @@ int32_t httpd_li_proxy_init_req_i(int32_t slot, int32_t hdr_end) {
   s->proxy_body_left = 0;
   s->proxy_up_pending_len = 0;
   if (req.body_mode == 1) {
-    s->proxy_body_left = req.content_length - (s->len - hdr_end);
+    s->proxy_body_left = req.content_length;
     if (s->proxy_body_left < 0) {
       s->proxy_body_left = 0;
     }

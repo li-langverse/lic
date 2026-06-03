@@ -6,7 +6,6 @@
 #include "li_rt_tls.h"
 #include "li_rt_posix_compat.h"
 
-#include <poll.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

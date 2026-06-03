@@ -1,8 +1,11 @@
-/* M2 TLS 1.3 terminate — OpenSSL 3.x loaded at runtime (dlopen). */
+/* M2 TLS 1.3 terminate — OpenSSL 3.x loaded at runtime (dlopen / LoadLibrary). */
+#if !defined(_WIN32)
 #define _GNU_SOURCE
+#endif
 #include "li_rt_tls.h"
+#include "li_rt_dl_compat.h"
+#include "li_rt_posix_compat.h"
 
-#include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -10,7 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <poll.h>
+#if !defined(_WIN32)
 #include <unistd.h>
+#endif
 
 typedef struct ssl_st SSL;
 typedef struct ssl_ctx_st SSL_CTX;
@@ -163,7 +168,7 @@ int32_t httpd_pure_tls_alpn(int32_t slot) {
 
 
 static int tls_load_sym(void* lib, const char* name, void** out) {
-  void* sym = dlsym(lib, name);
+  void* sym = li_rt_dlsym(lib, name);
   if (!sym) {
     return -1;
   }
@@ -175,32 +180,37 @@ static int tls_load_openssl(void) {
   if (g_tls_ready) {
     return 0;
   }
+#if defined(_WIN32)
+  const char* ssl_names[] = {"libssl-3-x64.dll", "libssl-3.dll", "libssl.dll", NULL};
+  const char* crypto_names[] = {"libcrypto-3-x64.dll", "libcrypto-3.dll", "libcrypto.dll", NULL};
+#else
   const char* ssl_names[] = {"libssl.so.3", "libssl.so", NULL};
   const char* crypto_names[] = {"libcrypto.so.3", "libcrypto.so", NULL};
+#endif
   for (int i = 0; crypto_names[i]; i++) {
-    g_crypto_lib = dlopen(crypto_names[i], RTLD_NOW | RTLD_GLOBAL);
+    g_crypto_lib = li_rt_dlopen(crypto_names[i], RTLD_NOW | RTLD_GLOBAL);
     if (g_crypto_lib) {
       break;
     }
   }
   for (int i = 0; ssl_names[i]; i++) {
-    g_ssl_lib = dlopen(ssl_names[i], RTLD_NOW | RTLD_GLOBAL);
+    g_ssl_lib = li_rt_dlopen(ssl_names[i], RTLD_NOW | RTLD_GLOBAL);
     if (g_ssl_lib) {
       break;
     }
   }
   if (!g_crypto_lib) {
-    fprintf(stderr, "li-httpd tls: dlopen crypto: %s\n", dlerror());
+    fprintf(stderr, "li-httpd tls: dlopen crypto: %s\n", li_rt_dlerror());
     return -1;
   }
   if (!g_ssl_lib) {
-    fprintf(stderr, "li-httpd tls: dlopen ssl: %s\n", dlerror());
+    fprintf(stderr, "li-httpd tls: dlopen ssl: %s\n", li_rt_dlerror());
     return -1;
   }
 #define LOAD(fn, name)                                                                  \
   do {                                                                                  \
     if (tls_load_sym(g_ssl_lib, name, (void**)&p_##fn) != 0) {                          \
-      fprintf(stderr, "li-httpd tls: missing symbol %s: %s\n", name, dlerror());        \
+      fprintf(stderr, "li-httpd tls: missing symbol %s: %s\n", name, li_rt_dlerror());        \
       return -1;                                                                        \
     }                                                                                   \
   } while (0)

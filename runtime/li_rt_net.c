@@ -1,26 +1,26 @@
 /* Trusted Net seam — POSIX syscalls and I/O buffers only; HTTP lives in Li. */
+#if !defined(_WIN32)
 #define _GNU_SOURCE
+#endif
 #include "li_rt.h"
 #include "li_rt_h2.h"
 #include "li_rt_tls.h"
+#include "li_rt_posix_compat.h"
 
-#include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
 #include <poll.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <stdint.h>
-#include <signal.h>
-#include <sys/wait.h>
 #include <time.h>
+#if !defined(_WIN32)
+#include <unistd.h>
+#endif
+#if defined(_WIN32)
+#include <netinet/tcp.h>
+#endif
 
 #ifdef __linux__
 #define HTTPD_EPOLL_CLIENT_TAG UINT64_C(0x8000000000000000)
@@ -389,11 +389,7 @@ static char* li_rt_strdup_buf(const char* src, size_t n) {
 }
 
 static int set_nonblocking(int fd) {
-  int flags = fcntl(fd, F_GETFL, 0);
-  if (flags < 0) {
-    return -1;
-  }
-  return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+  return li_rt_sock_set_nonblocking(fd);
 }
 
 static int wait_writable(int conn) {
@@ -463,16 +459,7 @@ static void tcp_ack_now(int32_t fd) {
   (void)fd;
 }
 
-static int httpd_cpu_count(void) {
-  long n = sysconf(_SC_NPROCESSORS_ONLN);
-  if (n < 1) {
-    return 1;
-  }
-  if (n > 64) {
-    return 64;
-  }
-  return (int)n;
-}
+static int httpd_cpu_count(void) { return li_rt_httpd_cpu_count(); }
 
 static int httpd_resolve_workers(void) {
   const char* env = getenv("LI_HTTPD_WORKERS");
@@ -526,6 +513,7 @@ int32_t httpd_fork_workers_i(void) {
 int32_t httpd_config_workers_i(void) { return (int32_t)httpd_resolve_workers(); }
 
 int32_t tcp_listen(int32_t port) {
+  li_rt_winsock_ensure();
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   if (fd < 0) {
     net_fail("socket");
@@ -543,11 +531,11 @@ int32_t tcp_listen(int32_t port) {
   addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
   addr.sin_port = htons((uint16_t)port);
   if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-    close(fd);
+    li_rt_sock_close(fd);
     net_fail("bind");
   }
   if (listen(fd, 128) < 0) {
-    close(fd);
+    li_rt_sock_close(fd);
     net_fail("listen");
   }
   return (int32_t)fd;
@@ -561,10 +549,8 @@ int32_t tcp_accept(int32_t listen_fd) {
   return (int32_t)c;
 }
 
-void tcp_close(int32_t fd) {
-  if (fd >= 0) {
-    close((int)fd);
-  }
+void tcp_li_rt_sock_close(int32_t fd) {
+  li_rt_sock_close((int)fd);
 }
 
 int32_t tcp_send(int32_t conn_fd, const char* data) {
@@ -1074,11 +1060,11 @@ int32_t httpd_prepare_root_i(intptr_t root) {
   }
   struct stat st;
   if (fstat(fd, &st) < 0 || !S_ISREG(st.st_mode) || st.st_size > HTTPD_IO_BUF) {
-    close(fd);
+    li_rt_file_close(fd);
     return 0;
   }
   ssize_t rd = read(fd, g_cached_body, (size_t)st.st_size);
-  close(fd);
+  li_rt_file_close(fd);
   if (rd < 0) {
     return 0;
   }
@@ -1155,7 +1141,7 @@ int32_t httpd_prepare_root_i(intptr_t root) {
           }
         }
       }
-      close(fd);
+      li_rt_file_close(fd);
     }
   }
   return 0;
@@ -1554,7 +1540,7 @@ static int tcp_connect_loopback_port(int port) {
     return -1;
   }
   if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-    close(fd);
+    li_rt_sock_close(fd);
     return -1;
   }
   tcp_tune_client((int32_t)fd);
@@ -1603,7 +1589,7 @@ void httpd_clear_upstream_peers_i(void) {
   for (int i = 0; i < g_up_peer_count; i++) {
     for (int j = 0; j < HTTPD_POOL_PER_PEER; j++) {
       if (g_up_peers[i].fds[j] >= 0) {
-        close(g_up_peers[i].fds[j]);
+        li_rt_sock_close(g_up_peers[i].fds[j]);
         g_up_peers[i].fds[j] = -1;
       }
       g_up_peers[i].in_use[j] = 0;
@@ -1653,7 +1639,7 @@ static void httpd_upstream_close_pool_fds(httpd_upstream_peer_t* p) {
   }
   for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
     if (p->fds[i] >= 0) {
-      close(p->fds[i]);
+      li_rt_sock_close(p->fds[i]);
       p->fds[i] = -1;
       p->in_use[i] = 0;
     }
@@ -1871,7 +1857,7 @@ static int httpd_upstream_active_probe_peer(httpd_upstream_peer_t* peer) {
                          "\r\n",
                          g_health_active_path);
   if (req_len <= 0 || req_len >= (int)sizeof(req)) {
-    close(fd);
+    li_rt_sock_close(fd);
     httpd_upstream_peer_note_failure(peer->port);
     return -1;
   }
@@ -1879,7 +1865,7 @@ static int httpd_upstream_active_probe_peer(httpd_upstream_peer_t* peer) {
   while (sent < req_len) {
     ssize_t w = send(fd, req + sent, (size_t)(req_len - sent), 0);
     if (w <= 0) {
-      close(fd);
+      li_rt_sock_close(fd);
       httpd_upstream_peer_note_failure(peer->port);
       return -1;
     }
@@ -1901,7 +1887,7 @@ static int httpd_upstream_active_probe_peer(httpd_upstream_peer_t* peer) {
       break;
     }
   }
-  close(fd);
+  li_rt_sock_close(fd);
 
   int ok = 0;
   if (hdr_done && total >= 12) {
@@ -2120,19 +2106,19 @@ static int httpd_upstream_fd_stale(int fd) {
 static void httpd_upstream_pool_drop_fd(httpd_upstream_peer_t* p, int fd) {
   if (!p || fd < 0) {
     if (fd >= 0) {
-      close(fd);
+      li_rt_sock_close(fd);
     }
     return;
   }
   for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
     if (p->fds[i] == fd) {
-      close(fd);
+      li_rt_sock_close(fd);
       p->fds[i] = -1;
       p->in_use[i] = 0;
       return;
     }
   }
-  close(fd);
+  li_rt_sock_close(fd);
 }
 
 static int httpd_upstream_send_errno_stale(void) {
@@ -2202,7 +2188,7 @@ static int upstream_pool_acquire(int32_t port) {
 static void upstream_pool_release(int32_t port, int fd, int reuse) {
   httpd_upstream_peer_t* p = upstream_peer_find(port);
   if (!p) {
-    close(fd);
+    li_rt_sock_close(fd);
     return;
   }
   if (p->active > 0) {
@@ -2212,7 +2198,7 @@ static void upstream_pool_release(int32_t port, int fd, int reuse) {
     if (p->fds[i] == fd) {
       p->in_use[i] = 0;
       if (!reuse) {
-        close(fd);
+        li_rt_sock_close(fd);
         p->fds[i] = -1;
         httpd_upstream_peer_note_failure(port);
       } else {
@@ -2224,7 +2210,7 @@ static void upstream_pool_release(int32_t port, int fd, int reuse) {
       return;
     }
   }
-  close(fd);
+  li_rt_sock_close(fd);
 }
 
 static void httpd_drain_upstream_fd(int fd) {
@@ -2804,11 +2790,11 @@ static int32_t httpd_send_static_path(int32_t conn, int32_t slot, const char* re
   }
   struct stat st;
   if (fstat(fd, &st) < 0 || !S_ISREG(st.st_mode)) {
-    close(fd);
+    li_rt_file_close(fd);
     return -1;
   }
   if (st.st_size > 0x7fffffff) {
-    close(fd);
+    li_rt_file_close(fd);
     return -1;
   }
   int32_t body_len = (int32_t)st.st_size;
@@ -2824,30 +2810,30 @@ static int32_t httpd_send_static_path(int32_t conn, int32_t slot, const char* re
                       "\r\n",
                       ctype, (int)body_len, keep ? "keep-alive" : "close");
   if (hlen < 0 || hlen >= (int)sizeof(g_slots[slot].hdr)) {
-    close(fd);
+    li_rt_file_close(fd);
     return -1;
   }
   tcp_ack_now(conn);
   if (body_len > 16384) {
     if (send_all_nb((int)conn, g_slots[slot].hdr, (size_t)hlen) < 0) {
-      close(fd);
+      li_rt_file_close(fd);
       return -1;
     }
     if (net_sendfile_fd(conn, fd, body_len) < 0) {
-      close(fd);
+      li_rt_file_close(fd);
       return -1;
     }
-    close(fd);
+    li_rt_file_close(fd);
     return 0;
   }
   if (body_len > 0) {
     char* body = (char*)malloc((size_t)body_len);
     if (!body) {
-      close(fd);
+      li_rt_file_close(fd);
       return -1;
     }
     ssize_t rd = read(fd, body, (size_t)body_len);
-    close(fd);
+    li_rt_file_close(fd);
     if (rd != (ssize_t)body_len) {
       free(body);
       return -1;
@@ -2859,7 +2845,7 @@ static int32_t httpd_send_static_path(int32_t conn, int32_t slot, const char* re
     free(body);
     return 0;
   }
-  close(fd);
+  li_rt_file_close(fd);
   if (send_all_nb((int)conn, g_slots[slot].hdr, (size_t)hlen) < 0) {
     return -1;
   }
@@ -4595,7 +4581,7 @@ static void httpd_conn_close_slot(int epfd, int32_t slot) {
       epoll_ctl((int)epfd, EPOLL_CTL_DEL, g_slots[slot].fd, NULL);
     }
 #endif
-    close(g_slots[slot].fd);
+    li_rt_sock_close(g_slots[slot].fd);
     g_slots[slot].fd = -1;
     g_slots[slot].len = 0;
   }
@@ -4679,7 +4665,7 @@ static void httpd_dispatch_epoll_event(int epfd, int listen_fd, struct epoll_eve
       tcp_tune_client(cfd);
       int32_t slot = httpd_slot_alloc(cfd);
       if (slot < 0) {
-        close(cfd);
+        li_rt_sock_close(cfd);
         break;
       }
       struct epoll_event cev;
@@ -4978,7 +4964,7 @@ int32_t net_read_fd(int32_t fd, intptr_t buf, int32_t max_bytes) {
 }
 
 int32_t net_close_fd(int32_t fd) {
-  close((int)fd);
+  li_rt_file_close((int)fd);
   return 0;
 }
 
@@ -6278,23 +6264,23 @@ int32_t li_async_reactor_selftest_i(void) {
   net_set_nonblock(sv[0]);
   net_set_nonblock(sv[1]);
   if (li_async_reactor_register_i((int32_t)sv[1], 0) < 0) {
-    close(sv[0]);
-    close(sv[1]);
+    li_rt_sock_close(sv[0]);
+    li_rt_sock_close(sv[1]);
     return -2;
   }
   const char msg[] = "a";
   if (send(sv[0], msg, 1, 0) != 1) {
-    close(sv[0]);
-    close(sv[1]);
+    li_rt_sock_close(sv[0]);
+    li_rt_sock_close(sv[1]);
     return -3;
   }
   if (li_async_poll(0u) != 1) {
-    close(sv[0]);
-    close(sv[1]);
+    li_rt_sock_close(sv[0]);
+    li_rt_sock_close(sv[1]);
     return -4;
   }
-  close(sv[0]);
-  close(sv[1]);
+  li_rt_sock_close(sv[0]);
+  li_rt_sock_close(sv[1]);
   return 0;
 #else
   return 0;
@@ -6317,7 +6303,7 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
   int epfd = kqueue();
 #endif
   if (epfd < 0) {
-    tcp_close(listen_fd);
+    tcp_li_rt_sock_close(listen_fd);
     return -2;
   }
 #if defined(__linux__)
@@ -6326,16 +6312,16 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
   lev.events = EPOLLIN;
   lev.data.fd = listen_fd;
   if (epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &lev) < 0) {
-    close(epfd);
-    tcp_close(listen_fd);
+    li_rt_sock_close(epfd);
+    tcp_li_rt_sock_close(listen_fd);
     return -3;
   }
 #elif defined(__APPLE__)
   struct kevent ke;
   EV_SET(&ke, listen_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
   if (kevent(epfd, &ke, 1, NULL, 0, NULL) < 0) {
-    close(epfd);
-    tcp_close(listen_fd);
+    li_rt_sock_close(epfd);
+    tcp_li_rt_sock_close(listen_fd);
     return -3;
   }
 #endif
@@ -6357,7 +6343,7 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
         if (c >= 0) {
           net_set_nonblock(c);
           if (conn >= 0) {
-            tcp_close(conn);
+            tcp_li_rt_sock_close(conn);
           }
           conn = c;
           struct epoll_event cev;
@@ -6396,7 +6382,7 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
         if (c >= 0) {
           net_set_nonblock(c);
           if (conn >= 0) {
-            tcp_close(conn);
+            tcp_li_rt_sock_close(conn);
           }
           conn = c;
           struct kevent cke;
@@ -6426,10 +6412,10 @@ int32_t tcp_echo_epoll_once_i(int32_t port) {
   }
 done:
   if (conn >= 0) {
-    tcp_close(conn);
+    tcp_li_rt_sock_close(conn);
   }
-  tcp_close(listen_fd);
-  close(epfd);
+  tcp_li_rt_sock_close(listen_fd);
+  li_rt_sock_close(epfd);
   return echoed > 0 ? echoed : -4;
 #endif
 }

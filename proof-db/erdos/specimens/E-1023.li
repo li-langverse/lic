@@ -11,10 +11,6 @@ def erdos_e1023_let_f_n_be_the_maximal_size_of_a_family() -> int
 =
   return 0
 
-extern proc erdos_e1023_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

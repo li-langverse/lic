@@ -11,10 +11,6 @@ def erdos_e336_for_r_geq_2_let_h_r_be_the_maximal_finit() -> int
 =
   return 0
 
-extern proc erdos_e336_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

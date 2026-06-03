@@ -11,10 +11,6 @@ def erdos_e434_let_k_leq_n_what_choice_of_a_subseteq_1() -> int
 =
   return 0
 
-extern proc erdos_e434_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e160_let_h_n_be_the_smallest_k_such_that_1_ld() -> int
 =
   return 0
 
-extern proc erdos_e160_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

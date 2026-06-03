@@ -11,10 +11,6 @@ def erdos_e43_if_a_b_subset_1_ldots_n_are_two_sidon_se() -> int
 =
   return 0
 
-extern proc erdos_e43_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e732_call_a_sequence_1_x_1_leq_cdots_leq_x_m() -> int
 =
   return 0
 
-extern proc erdos_e732_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

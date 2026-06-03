@@ -11,10 +11,6 @@ def erdos_e676_is_every_sufficiently_large_integer_of_t() -> int
 =
   return 0
 
-extern proc erdos_e676_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

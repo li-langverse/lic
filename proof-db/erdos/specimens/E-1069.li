@@ -11,10 +11,6 @@ def erdos_e1069_given_any_n_points_in_mathbb_r_2_the_num() -> int
 =
   return 0
 
-extern proc erdos_e1069_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

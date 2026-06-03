@@ -11,10 +11,6 @@ def erdos_e543_define_f_n_be_the_minimal_k_such_that_th() -> int
 =
   return 0
 
-extern proc erdos_e543_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

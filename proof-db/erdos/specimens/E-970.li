@@ -11,10 +11,6 @@ def erdos_e970_let_h_k_be_jacobsthal_s_function_defined() -> int
 =
   return 0
 
-extern proc erdos_e970_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

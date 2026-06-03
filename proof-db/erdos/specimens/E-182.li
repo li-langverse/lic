@@ -11,10 +11,6 @@ def erdos_e182_let_k_geq_3_what_is_the_maximum_number_o() -> int
 =
   return 0
 
-extern proc erdos_e182_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

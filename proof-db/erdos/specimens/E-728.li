@@ -11,10 +11,6 @@ def erdos_e728_let_c_0_and_epsilon_0_be_sufficiently_sm() -> int
 =
   return 0
 
-extern proc erdos_e728_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e229_let_s_n_n_geq_1_be_a_sequence_of_sets_of() -> int
 =
   return 0
 
-extern proc erdos_e229_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

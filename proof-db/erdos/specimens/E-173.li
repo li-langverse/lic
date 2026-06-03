@@ -11,10 +11,6 @@ def erdos_e173_in_any_2_colouring_of_mathbb_r_2_for_all() -> int
 =
   return 0
 
-extern proc erdos_e173_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

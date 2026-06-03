@@ -11,10 +11,6 @@ def erdos_e213_let_n_geq_4_are_there_n_points_in_mathbb() -> int
 =
   return 0
 
-extern proc erdos_e213_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

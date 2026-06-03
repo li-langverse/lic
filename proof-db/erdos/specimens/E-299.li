@@ -11,10 +11,6 @@ def erdos_e299_is_there_an_infinite_sequence_a_1_a_2_cd() -> int
 =
   return 0
 
-extern proc erdos_e299_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

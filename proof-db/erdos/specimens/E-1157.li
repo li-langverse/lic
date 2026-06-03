@@ -11,10 +11,6 @@ def erdos_e1157_let_t_k_r_geq_2_let_mathcal_f_be_the_fam() -> int
 =
   return 0
 
-extern proc erdos_e1157_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

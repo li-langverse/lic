@@ -11,10 +11,6 @@ def erdos_e946_are_there_infinitely_many_n_such_that_ta() -> int
 =
   return 0
 
-extern proc erdos_e946_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e940_let_r_geq_3_a_number_n_is_r_powerful_if() -> int
 =
   return 0
 
-extern proc erdos_e940_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

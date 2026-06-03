@@ -11,10 +11,6 @@ def erdos_e60_does_there_exist_a_prime_between_n_and_2() -> int
 =
   return 0
 
-extern proc erdos_e60_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

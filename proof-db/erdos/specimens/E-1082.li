@@ -11,10 +11,6 @@ def erdos_e1082_let_a_subset_mathbb_r_2_be_a_set_of_n_po() -> int
 =
   return 0
 
-extern proc erdos_e1082_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

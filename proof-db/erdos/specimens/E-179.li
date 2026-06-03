@@ -11,10 +11,6 @@ def erdos_e179_let_1_leq_k_ell_be_integers_and_define_f() -> int
 =
   return 0
 
-extern proc erdos_e179_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

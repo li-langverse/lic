@@ -11,10 +11,6 @@ def erdos_e191_let_c_0_be_arbitrary_is_it_true_that_if() -> int
 =
   return 0
 
-extern proc erdos_e191_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

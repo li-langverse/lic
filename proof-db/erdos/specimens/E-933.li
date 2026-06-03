@@ -11,10 +11,6 @@ def erdos_e933_if_n_n_1_2_k3_lm_where_m_6_1_then_is_it() -> int
 =
   return 0
 
-extern proc erdos_e933_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

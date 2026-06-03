@@ -11,10 +11,6 @@ def erdos_e513_let_f_sum_n_0_infty_a_nz_n_be_a_transcen() -> int
 =
   return 0
 
-extern proc erdos_e513_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

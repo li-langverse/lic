@@ -11,10 +11,6 @@ def erdos_e1022_is_there_a_constant_c_t_where_c_t_to_inf() -> int
 =
   return 0
 
-extern proc erdos_e1022_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

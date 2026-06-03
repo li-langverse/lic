@@ -11,10 +11,6 @@ def erdos_e1093_for_n_geq_2k_we_define_the_deficiency_of() -> int
 =
   return 0
 
-extern proc erdos_e1093_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e1096_let_1_q_1_epsilon_and_consider_the_set_o() -> int
 =
   return 0
 
-extern proc erdos_e1096_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

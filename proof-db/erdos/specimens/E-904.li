@@ -11,10 +11,6 @@ def erdos_e904_let_r_geq_2_and_let_t_r_n_be_the_tur_n_n() -> int
 =
   return 0
 
-extern proc erdos_e904_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

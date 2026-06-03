@@ -11,10 +11,6 @@ def erdos_e259_is_the_sum_sum_n_mu_n_2_frac_n_2_n_irrat() -> int
 =
   return 0
 
-extern proc erdos_e259_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

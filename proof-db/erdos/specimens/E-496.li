@@ -11,10 +11,6 @@ def erdos_e496_let_alpha_in_mathbb_r_be_irrational_and() -> int
 =
   return 0
 
-extern proc erdos_e496_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

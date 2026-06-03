@@ -11,10 +11,6 @@ def erdos_e1137_let_d_n_p_n_1_p_n_where_p_n_denotes_the() -> int
 =
   return 0
 
-extern proc erdos_e1137_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

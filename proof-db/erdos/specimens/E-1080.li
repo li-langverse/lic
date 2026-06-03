@@ -11,10 +11,6 @@ def erdos_e1080_let_g_be_a_bipartite_graph_on_n_vertices() -> int
 =
   return 0
 
-extern proc erdos_e1080_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

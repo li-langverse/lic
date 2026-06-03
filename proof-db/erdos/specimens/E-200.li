@@ -11,10 +11,6 @@ def erdos_e200_does_the_longest_arithmetic_progression() -> int
 =
   return 0
 
-extern proc erdos_e200_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

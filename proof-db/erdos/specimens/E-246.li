@@ -11,10 +11,6 @@ def erdos_e246_let_a_b_1_the_set_a_kb_l_k_l_geq_0_is_co() -> int
 =
   return 0
 
-extern proc erdos_e246_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

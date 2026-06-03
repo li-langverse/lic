@@ -8,10 +8,14 @@ def expectation_linear(a: float, b: float, ex: float, ey: float) -> float
 =
   return a * ex + b * ey
 
-extern proc st_ax_bc_ex_012_axiom_witness() -> int
+def st_ax_bc_ex_012_axiom_witness()-> int
   requires true
   ensures result == 0
   decreases 0
+
+=
+
+  return 0
 
 def main() -> int
   requires true

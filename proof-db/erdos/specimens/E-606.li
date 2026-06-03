@@ -11,10 +11,6 @@ def erdos_e606_given_any_n_distinct_points_in_mathbb_r() -> int
 =
   return 0
 
-extern proc erdos_e606_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

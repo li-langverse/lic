@@ -11,10 +11,6 @@ def erdos_e509_let_f_z_in_mathbb_c_z_be_a_monic_non_con() -> int
 =
   return 0
 
-extern proc erdos_e509_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

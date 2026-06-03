@@ -11,10 +11,6 @@ def erdos_e195_what_is_the_largest_k_such_that_in_any_p() -> int
 =
   return 0
 
-extern proc erdos_e195_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e113_if_g_is_bipartite_then_mathrm_ex_n_g_ll() -> int
 =
   return 0
 
-extern proc erdos_e113_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

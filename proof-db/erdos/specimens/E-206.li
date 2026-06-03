@@ -11,10 +11,6 @@ def erdos_e206_let_x_0_be_a_real_number_for_any_n_geq_1() -> int
 =
   return 0
 
-extern proc erdos_e206_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

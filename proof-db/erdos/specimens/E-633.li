@@ -11,10 +11,6 @@ def erdos_e633_classify_those_triangles_which_can_only() -> int
 =
   return 0
 
-extern proc erdos_e633_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

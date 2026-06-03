@@ -11,10 +11,6 @@ def erdos_e218_let_d_n_p_n_1_p_n_the_set_of_n_such_that() -> int
 =
   return 0
 
-extern proc erdos_e218_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

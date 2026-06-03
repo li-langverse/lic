@@ -11,10 +11,6 @@ def erdos_e829_let_a_subset_mathbb_n_be_the_set_of_cube() -> int
 =
   return 0
 
-extern proc erdos_e829_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

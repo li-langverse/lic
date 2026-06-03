@@ -11,10 +11,6 @@ def erdos_e976_let_f_in_mathbb_z_x_be_an_irreducible_po() -> int
 =
   return 0
 
-extern proc erdos_e976_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

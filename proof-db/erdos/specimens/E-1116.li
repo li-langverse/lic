@@ -11,10 +11,6 @@ def erdos_e1116_for_a_meromorphic_function_f_let_n_r_a_c() -> int
 =
   return 0
 
-extern proc erdos_e1116_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

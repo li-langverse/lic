@@ -11,10 +11,6 @@ def erdos_e1075_let_r_geq_3_there_exists_c_r_r_r_such_th() -> int
 =
   return 0
 
-extern proc erdos_e1075_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

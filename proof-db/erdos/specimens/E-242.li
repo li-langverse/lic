@@ -11,10 +11,6 @@ def erdos_e242_for_every_n_2_there_exist_distinct_integ() -> int
 =
   return 0
 
-extern proc erdos_e242_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

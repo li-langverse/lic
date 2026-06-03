@@ -1,9 +1,13 @@
 # D-AX-BC-LOG-005: Excluded middle: P or not P (propositional tautology).
 
-extern proc d_ax_bc_log_005_axiom_witness() -> int
+def d_ax_bc_log_005_axiom_witness()-> int
   requires true
   ensures result == 0
   decreases 0
+
+=
+
+  return 0
 
 def d_ax_bc_log_005_tautology(p: bool, q: bool) -> bool
   requires true

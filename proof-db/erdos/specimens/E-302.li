@@ -11,10 +11,6 @@ def erdos_e302_let_f_n_be_the_size_of_the_largest_a_sub() -> int
 =
   return 0
 
-extern proc erdos_e302_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

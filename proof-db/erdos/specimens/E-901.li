@@ -11,10 +11,6 @@ def erdos_e901_let_m_n_be_minimal_such_that_there_is_an() -> int
 =
   return 0
 
-extern proc erdos_e901_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

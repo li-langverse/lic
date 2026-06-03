@@ -11,10 +11,6 @@ def erdos_e1032_we_say_that_a_graph_is_4_chromatic_criti() -> int
 =
   return 0
 
-extern proc erdos_e1032_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

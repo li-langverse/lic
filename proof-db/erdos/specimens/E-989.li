@@ -11,10 +11,6 @@ def erdos_e989_if_a_z_1_z_2_ldots_in_mathbb_r_2_is_an_i() -> int
 =
   return 0
 
-extern proc erdos_e989_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

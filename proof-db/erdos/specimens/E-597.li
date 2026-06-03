@@ -11,10 +11,6 @@ def erdos_e597_let_g_be_a_graph_on_at_most_aleph_1_vert() -> int
 =
   return 0
 
-extern proc erdos_e597_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

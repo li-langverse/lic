@@ -11,10 +11,6 @@ def erdos_e150_does_every_triangle_free_graph_on_n_vert() -> int
 =
   return 0
 
-extern proc erdos_e150_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

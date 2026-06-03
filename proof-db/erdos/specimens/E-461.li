@@ -11,10 +11,6 @@ def erdos_e461_let_s_t_n_be_the_t_smooth_component_of_n() -> int
 =
   return 0
 
-extern proc erdos_e461_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

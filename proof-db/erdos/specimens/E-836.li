@@ -11,10 +11,6 @@ def erdos_e836_let_r_geq_2_and_g_be_a_r_uniform_hypergr() -> int
 =
   return 0
 
-extern proc erdos_e836_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

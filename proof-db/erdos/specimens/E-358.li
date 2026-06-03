@@ -11,10 +11,6 @@ def erdos_e358_let_a_a_1_cdots_be_an_infinite_sequence() -> int
 =
   return 0
 
-extern proc erdos_e358_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

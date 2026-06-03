@@ -11,10 +11,6 @@ def erdos_e896_estimate_the_maximum_of_f_a_b_as_a_b_ran() -> int
 =
   return 0
 
-extern proc erdos_e896_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

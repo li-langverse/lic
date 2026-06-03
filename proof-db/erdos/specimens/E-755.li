@@ -11,10 +11,6 @@ def erdos_e755_the_number_of_equilateral_triangles_of_s() -> int
 =
   return 0
 
-extern proc erdos_e755_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

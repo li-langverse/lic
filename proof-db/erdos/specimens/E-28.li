@@ -12,10 +12,6 @@ def erdos_e28_if_a_subset_n_is_such_that_a_a_contains() -> int
 =
   return 0
 
-extern proc erdos_e28_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

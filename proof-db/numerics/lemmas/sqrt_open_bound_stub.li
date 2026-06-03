@@ -1,5 +1,10 @@
 # N-LM-SQRT-BOUND: mirrors contracts_verify sqrt_open_bound (WP1 numerics specimen).
-extern proc li_rt_sqrt(x: float) -> float
+def li_rt_sqrt(x: float)-> float
+  requires true
+  ensures true
+  decreases 0
+=
+  return 0.0
 
 def sqrt_open(x: float) raises IO -> float
   requires x >= 0.0

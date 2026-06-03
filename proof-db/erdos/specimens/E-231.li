@@ -11,10 +11,6 @@ def erdos_e231_let_s_be_a_string_of_length_2_k_1_formed() -> int
 =
   return 0
 
-extern proc erdos_e231_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

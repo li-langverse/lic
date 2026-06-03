@@ -11,10 +11,6 @@ def erdos_e960_let_r_k_geq_2_be_fixed_let_a_subset_math() -> int
 =
   return 0
 
-extern proc erdos_e960_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

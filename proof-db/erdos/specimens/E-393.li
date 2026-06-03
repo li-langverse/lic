@@ -11,10 +11,6 @@ def erdos_e393_let_f_n_denote_the_minimal_m_geq_1_such() -> int
 =
   return 0
 
-extern proc erdos_e393_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

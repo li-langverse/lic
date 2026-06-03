@@ -11,10 +11,6 @@ def erdos_e441_let_n_geq_1_what_is_the_size_of_the_larg() -> int
 =
   return 0
 
-extern proc erdos_e441_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e211_let_1_leq_k_n_given_n_points_in_mathbb_r() -> int
 =
   return 0
 
-extern proc erdos_e211_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

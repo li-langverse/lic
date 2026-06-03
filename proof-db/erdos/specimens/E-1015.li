@@ -11,10 +11,6 @@ def erdos_e1015_let_f_t_be_minimal_such_that_in_any_two() -> int
 =
   return 0
 
-extern proc erdos_e1015_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

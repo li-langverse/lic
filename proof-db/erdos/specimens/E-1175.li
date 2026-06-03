@@ -11,10 +11,6 @@ def erdos_e1175_let_kappa_be_an_uncountable_cardinal_mus() -> int
 =
   return 0
 
-extern proc erdos_e1175_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

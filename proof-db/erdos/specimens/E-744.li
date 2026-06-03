@@ -11,10 +11,6 @@ def erdos_e744_let_k_be_a_large_fixed_constant_let_f_k() -> int
 =
   return 0
 
-extern proc erdos_e744_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e504_let_alpha_n_be_the_supremum_of_all_0_leq() -> int
 =
   return 0
 
-extern proc erdos_e504_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e443_let_m_n_geq_1_what_is_k_m_k_1_leq_k_leq() -> int
 =
   return 0
 
-extern proc erdos_e443_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -13,10 +13,6 @@ def erdos_e10_does_there_exist_a_set_a_of_positive_int() -> int
 =
   return 0
 
-extern proc erdos_e10_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

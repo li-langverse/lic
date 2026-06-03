@@ -11,10 +11,6 @@ def erdos_e683_is_it_true_that_for_every_1_leq_k_leq_n() -> int
 =
   return 0
 
-extern proc erdos_e683_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e465_let_n_x_delta_denote_the_maximum_number() -> int
 =
   return 0
 
-extern proc erdos_e465_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

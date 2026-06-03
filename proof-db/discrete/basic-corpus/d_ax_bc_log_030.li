@@ -1,9 +1,13 @@
 # D-AX-BC-LOG-030: Disjunctive syllogism: (P or Q) and (not P) implies Q.
 
-extern proc d_ax_bc_log_030_axiom_witness() -> int
+def d_ax_bc_log_030_axiom_witness()-> int
   requires true
   ensures result == 0
   decreases 0
+
+=
+
+  return 0
 
 def d_ax_bc_log_030_tautology(p: bool, q: bool) -> bool
   requires true

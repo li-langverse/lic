@@ -11,10 +11,6 @@ def erdos_e1126_if_f_x_y_f_x_f_y_for_almost_all_x_y_in_m() -> int
 =
   return 0
 
-extern proc erdos_e1126_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

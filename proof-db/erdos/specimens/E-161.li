@@ -11,10 +11,6 @@ def erdos_e161_let_alpha_in_0_1_2_and_n_t_geq_1_let_f_t() -> int
 =
   return 0
 
-extern proc erdos_e161_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

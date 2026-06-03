@@ -11,10 +11,6 @@ def erdos_e1213_let_a_k_geq_1_does_there_exist_f_a_k_suc() -> int
 =
   return 0
 
-extern proc erdos_e1213_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -80,7 +80,6 @@ def render_specimen(row: dict[str, Any], overlay: dict[str, Any] | None) -> str:
     lines.append("")
 
     target = def_name(n, stmt)
-    witness = witness_name(n)
     lines.extend(
         [
             f"def {target}() -> int",
@@ -89,11 +88,6 @@ def render_specimen(row: dict[str, Any], overlay: dict[str, Any] | None) -> str:
             "  decreases 0",
             "=",
             "  return 0",
-            "",
-            f"extern proc {witness}() -> int",
-            "  requires true",
-            "  ensures result == 0",
-            "  decreases 0",
             "",
             "def main() -> int",
             "  requires true",

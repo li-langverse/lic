@@ -11,10 +11,6 @@ def erdos_e766_let_f_n_k_l_min_mathrm_ex_n_g_where_g_ra() -> int
 =
   return 0
 
-extern proc erdos_e766_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

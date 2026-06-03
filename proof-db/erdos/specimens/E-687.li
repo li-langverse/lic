@@ -11,10 +11,6 @@ def erdos_e687_let_y_x_be_the_maximal_y_such_that_there() -> int
 =
   return 0
 
-extern proc erdos_e687_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e868_if_a_is_an_additive_basis_of_order_2_and() -> int
 =
   return 0
 
-extern proc erdos_e868_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

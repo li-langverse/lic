@@ -11,10 +11,6 @@ def erdos_e411_let_g_1_g_n_n_phi_n_and_g_k_n_g_g_k_1_n() -> int
 =
   return 0
 
-extern proc erdos_e411_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

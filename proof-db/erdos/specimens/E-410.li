@@ -11,10 +11,6 @@ def erdos_e410_let_sigma_1_n_sigma_n_the_sum_of_divisor() -> int
 =
   return 0
 
-extern proc erdos_e410_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

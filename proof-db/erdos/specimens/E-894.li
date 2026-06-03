@@ -11,10 +11,6 @@ def erdos_e894_let_a_n_1_n_2_cdots_subset_mathbb_n_be_a() -> int
 =
   return 0
 
-extern proc erdos_e894_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

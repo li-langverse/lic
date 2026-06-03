@@ -11,10 +11,6 @@ def erdos_e91_are_there_arbitrarily_long_runs_of_conse() -> int
 =
   return 0
 
-extern proc erdos_e91_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

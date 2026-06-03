@@ -11,10 +11,6 @@ def erdos_e986_for_any_fixed_s_geq_3_r_s_k_gg_frac_k_s() -> int
 =
   return 0
 
-extern proc erdos_e986_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

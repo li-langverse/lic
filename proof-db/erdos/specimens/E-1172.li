@@ -11,10 +11,6 @@ def erdos_e1172_establish_whether_the_following_are_true() -> int
 =
   return 0
 
-extern proc erdos_e1172_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

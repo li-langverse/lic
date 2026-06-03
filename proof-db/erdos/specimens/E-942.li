@@ -11,10 +11,6 @@ def erdos_e942_let_h_n_count_the_number_of_powerful_if() -> int
 =
   return 0
 
-extern proc erdos_e942_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

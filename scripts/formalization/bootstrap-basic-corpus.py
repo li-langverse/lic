@@ -73,10 +73,12 @@ def specimen_body(entry: PlannedEntry) -> str:
         safe = slug_from_id(entry.id)
         lines.extend(
             [
-                f"extern proc proof_db_{safe}() -> int",
+                f"def proof_db_{safe}() -> int",
                 "  requires true",
                 "  ensures result == 0",
                 "  decreases 0",
+                "=",
+                "  return 0",
                 "",
             ]
         )

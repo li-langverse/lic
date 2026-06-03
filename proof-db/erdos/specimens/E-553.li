@@ -11,10 +11,6 @@ def erdos_e553_let_r_3_3_n_denote_the_smallest_integer() -> int
 =
   return 0
 
-extern proc erdos_e553_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

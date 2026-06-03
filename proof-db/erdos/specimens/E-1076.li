@@ -11,10 +11,6 @@ def erdos_e1076_let_k_geq_5_and_let_mathcal_f_k_be_the_f() -> int
 =
   return 0
 
-extern proc erdos_e1076_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

@@ -11,10 +11,6 @@ def erdos_e552_determine_the_ramsey_number_r_c_4_s_n_wh() -> int
 =
   return 0
 
-extern proc erdos_e552_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

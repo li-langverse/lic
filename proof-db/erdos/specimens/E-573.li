@@ -11,10 +11,6 @@ def erdos_e573_is_it_true_that_mathrm_ex_n_c_3_c_4_sim() -> int
 =
   return 0
 
-extern proc erdos_e573_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

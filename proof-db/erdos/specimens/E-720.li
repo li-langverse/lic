@@ -11,10 +11,6 @@ def erdos_e720_let_hat_r_g_denote_the_size_ramsey_numbe() -> int
 =
   return 0
 
-extern proc erdos_e720_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

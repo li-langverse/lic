@@ -19,10 +19,14 @@ def kolmogorov_mass_normalized(p: array[n, float]) -> float
     i = i + 1
   return total
 
-extern proc st_ax_bc_pr_031_axiom_witness() -> int
+def st_ax_bc_pr_031_axiom_witness()-> int
   requires true
   ensures result == 0
   decreases 0
+
+=
+
+  return 0
 
 def main() -> int
   requires true

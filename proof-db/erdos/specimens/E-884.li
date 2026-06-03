@@ -11,10 +11,6 @@ def erdos_e884_is_it_true_that_for_any_n_if_d_1_cdots_d() -> int
 =
   return 0
 
-extern proc erdos_e884_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

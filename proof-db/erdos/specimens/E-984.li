@@ -11,10 +11,6 @@ def erdos_e984_can_mathbb_n_be_2_coloured_such_that_if() -> int
 =
   return 0
 
-extern proc erdos_e984_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

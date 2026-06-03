@@ -11,10 +11,6 @@ def erdos_e872_consider_the_two_player_game_in_which_pl() -> int
 =
   return 0
 
-extern proc erdos_e872_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 
 def main() -> int
   requires true

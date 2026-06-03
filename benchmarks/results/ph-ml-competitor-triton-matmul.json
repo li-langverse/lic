@@ -2,13 +2,13 @@
   "competitor_id": "triton_cuda",
   "suite": "ph-ml-competitor-triton-matmul",
   "workload": "matmul_4x4_f32",
-  "executed": true,
-  "cpu_sec": 9.8e-05,
-  "validity_gate_pass": true,
-  "validity_ratio": 1.0,
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
   "framework_version": "3.2.0",
   "device": "cuda",
   "workload_size": 4,
-  "note": null,
-  "generated_at": "2026-06-01T03:09:13Z"
+  "note": "Triton matmul requires CUDA GPU; CI CPU-only OK",
+  "generated_at": "2026-06-02T21:07:00Z"
 }

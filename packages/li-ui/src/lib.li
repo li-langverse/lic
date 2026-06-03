@@ -593,6 +593,20 @@ def studio_panel_transition_ms() -> float
 =
   return 100.0
 
+def studio_animation_easing_default_len() -> int
+  requires true
+  ensures result == 14
+  decreases 0
+=
+  return 14
+
+def studio_animation_reduced_motion_scale() -> float
+  requires true
+  ensures result == 0.0
+  decreases 0
+=
+  return 0.0
+
 # UX-04 command palette — docs/design/studio-design-tokens.toml [semantic] command_palette_hint
 def studio_command_palette_hint_len() -> int
   requires true

@@ -1,0 +1,138 @@
+# Motion core — easing, tweens, monotonic frame clock (wtfx-w5).
+# Canonical split mirrored into lib.li for `import gui`.
+
+def gui_motion_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def motion_easing_id_linear() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def motion_easing_id_ease_out_cubic() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def motion_easing_id_ease_in_out_cubic() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def motion_frame_as_float(frame_id: int) -> float
+  requires frame_id >= 0
+  requires frame_id <= 10000
+  ensures result >= 0.0
+  decreases frame_id
+=
+  var acc: float = 0.0
+  var i: int = 0
+  while i < frame_id:
+    acc = acc + 1.0
+    i = i + 1
+  return acc
+
+def easing_linear(t: float) -> float
+  requires t >= 0.0
+  requires t <= 1.0
+  ensures result >= 0.0
+  ensures result <= 1.0
+  ensures result == t
+  decreases 0
+=
+  return t
+
+def easing_ease_out_cubic(t: float) -> float
+  requires t >= 0.0
+  requires t <= 1.0
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  var u: float = 1.0 - t
+  var u2: float = u * u
+  var u3: float = u2 * u
+  return 1.0 - u3
+
+def easing_ease_in_out_cubic(t: float) -> float
+  requires t >= 0.0
+  requires t <= 1.0
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  if t < 0.5:
+    var t2: float = t * t
+    var t3: float = t2 * t
+    return 4.0 * t3
+  var u: float = -2.0 * t + 2.0
+  var u2: float = u * u
+  var u3: float = u2 * u
+  return 1.0 - u3 / 2.0
+
+def easing_apply(t: float, easing_id: int) -> float
+  requires t >= 0.0
+  requires t <= 1.0
+  requires easing_id >= motion_easing_id_linear()
+  requires easing_id <= motion_easing_id_ease_in_out_cubic()
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases easing_id
+=
+  if easing_id == motion_easing_id_ease_out_cubic():
+    return easing_ease_out_cubic(t)
+  if easing_id == motion_easing_id_ease_in_out_cubic():
+    return easing_ease_in_out_cubic(t)
+  return easing_linear(t)
+
+def tween_float(from_v: float, to_v: float, t: float, easing_id: int) -> float
+  requires t >= 0.0
+  requires t <= 1.0
+  requires easing_id >= motion_easing_id_linear()
+  requires easing_id <= motion_easing_id_ease_in_out_cubic()
+  decreases easing_id
+=
+  var eased: float = easing_apply(t, easing_id)
+  var delta: float = to_v - from_v
+  return from_v + delta * eased
+
+def motion_clock_ms(frame_id: int, dt_ms: float) -> float
+  requires frame_id >= 0
+  requires frame_id <= 10000
+  requires dt_ms >= 0.0
+  ensures result >= 0.0
+  decreases frame_id
+=
+  return motion_frame_as_float(frame_id) * dt_ms
+
+def motion_reduced() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return 0
+
+def gui_animation_easing_default_id() -> int
+  requires true
+  ensures result == motion_easing_id_ease_out_cubic()
+  decreases 0
+=
+  return motion_easing_id_ease_out_cubic()
+
+def gui_animation_reduced_motion_scale() -> float
+  requires true
+  ensures result == studio_animation_reduced_motion_scale()
+  decreases 0
+=
+  return studio_animation_reduced_motion_scale()

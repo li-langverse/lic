@@ -5,6 +5,8 @@ ROOT="${PH_ML_WAVE11_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}
 cd "$ROOT"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
+# shellcheck source=lib/lic-runnable.sh
+source "$ROOT/scripts/lib/lic-runnable.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 
@@ -16,15 +18,11 @@ run_in_wsl() {
 
 lic_bin_for_smokes() {
   local lic="$1"
-  if [[ "$lic" == "$ROOT/build-wsl/compiler/lic/lic" ]] && [[ -x "./build-wsl/compiler/lic/lic" ]]; then
-    echo "./build-wsl/compiler/lic/lic"
+  if lic_is_runnable "$lic"; then
+    echo "$lic"
     return
   fi
-  if [[ "$lic" == "$ROOT/build/compiler/lic/lic" ]] && [[ -x "./build/compiler/lic/lic" ]]; then
-    echo "./build/compiler/lic/lic"
-    return
-  fi
-  echo "$lic"
+  lic_resolve_runnable "$ROOT"
 }
 
 lic_check_smokes() {
@@ -54,7 +52,7 @@ lic_check_smokes() {
   done
 }
 
-if [[ "${PH_ML_WAVE11_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] && command -v wsl.exe >/dev/null 2>&1; then
+if [[ "${PH_ML_WAVE11_INNER:-0}" != "1" ]] && ! lic_resolve_runnable "$ROOT" >/dev/null 2>&1 && command -v wsl.exe >/dev/null 2>&1; then
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
   if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
     run_in_wsl
@@ -62,16 +60,9 @@ if [[ "${PH_ML_WAVE11_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="./build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="./build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
+if [[ -z "${LIC:-}" ]] || ! lic_is_runnable "$LIC"; then
+  LIC="$(lic_resolve_runnable "$ROOT")"
 fi
-
-[[ -x "$LIC" ]] || { echo "ph-ml-wave11-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }
 
 grep -q 'Wave 11' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 11"; exit 1; }
 grep -q 'llm_safetensors_tensor_bytes_scaffold' packages/li-llm/src/lib.li || { echo "li-llm missing byte tensor scaffold"; exit 1; }

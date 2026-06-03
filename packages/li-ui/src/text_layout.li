@@ -1,0 +1,136 @@
+# Typography layout metrics — canonical split mirrored into lib.li for `import ui`.
+# Ellipsis policy: when width exceeded, fit prefix glyphs then append three '.' (cp 46) if width allows.
+
+def text_layout_ellipsis_codepoint() -> int
+  requires true
+  ensures result == 46
+  decreases 0
+=
+  return 46
+
+def text_layout_ellipsis_glyph_count() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def text_metrics_line_height_px(face: FontAtlasFace, size_px: float) -> float
+  requires size_px > 0.0
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= size_px
+  decreases 0
+=
+  if size_px == face.line_height_px:
+    return face.ascent_px + face.descent_px + 2.0
+  return size_px + 4.0
+
+def text_metrics_advance_one_px(face: FontAtlasFace, codepoint: int) -> float
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result > 0.0
+  decreases codepoint
+=
+  return font_atlas_glyph_advance_px(face, codepoint)
+
+def text_metrics_advance_run_px(face: FontAtlasFace, first_cp: int, count: int) -> float
+  requires count >= 0
+  requires count <= 32
+  requires font_atlas_codepoint_supported(first_cp) == 1
+  requires first_cp + count - 1 <= font_atlas_last_codepoint()
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= 0.0
+  decreases count
+=
+  if count <= 0:
+    return 0.0
+  var total: float = 0.0
+  var i: int = 0
+  while i < count:
+    var cp: int = first_cp + i
+    total = total + text_metrics_advance_one_px(face, cp)
+    i = i + 1
+  return total
+
+type TextTruncateResult = object
+  public visible_glyph_count: int
+  public used_width_px: float
+  public ellipsis_applied: int
+
+def text_truncate_to_width_px(face: FontAtlasFace, first_cp: int, glyph_count: int, max_width_px: float) -> TextTruncateResult
+  requires glyph_count >= 0
+  requires glyph_count <= 32
+  requires max_width_px >= 0.0
+  requires font_atlas_codepoint_supported(first_cp) == 1
+  requires first_cp + glyph_count - 1 <= font_atlas_last_codepoint()
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result.visible_glyph_count >= 0
+  ensures result.visible_glyph_count <= glyph_count
+  ensures result.used_width_px >= 0.0
+  ensures result.ellipsis_applied >= 0
+  ensures result.ellipsis_applied <= 1
+  decreases glyph_count
+=
+  var out: TextTruncateResult
+  out.visible_glyph_count = 0
+  out.used_width_px = 0.0
+  out.ellipsis_applied = 0
+  if glyph_count <= 0:
+    return out
+  if max_width_px <= 0.0:
+    return out
+  var ellipsis_w: float = text_metrics_advance_one_px(face, text_layout_ellipsis_codepoint()) * 3.0
+  var used: float = 0.0
+  var visible: int = 0
+  var i: int = 0
+  while i < glyph_count:
+    var cp: int = first_cp + i
+    var adv: float = text_metrics_advance_one_px(face, cp)
+    var need_ellipsis: int = 0
+    if i < glyph_count - 1:
+      need_ellipsis = 1
+    var budget: float = max_width_px
+    if need_ellipsis == 1:
+      budget = max_width_px - ellipsis_w
+    if budget < 0.0:
+      budget = 0.0
+    if used + adv > budget:
+      if need_ellipsis == 1 and ellipsis_w <= max_width_px:
+        out.ellipsis_applied = 1
+        out.used_width_px = used + ellipsis_w
+      else:
+        out.used_width_px = used
+      out.visible_glyph_count = visible
+      return out
+    used = used + adv
+    visible = visible + 1
+    i = i + 1
+  out.visible_glyph_count = visible
+  out.used_width_px = used
+  return out
+
+def text_layout_rect_inside(inner: Rect, outer: Rect, eps: float) -> int
+  requires eps >= 0.0
+  requires outer.w >= 0.0
+  requires outer.h >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if inner.x < outer.x - eps:
+    return 0
+  if inner.y < outer.y - eps:
+    return 0
+  if inner.x + inner.w > outer.x + outer.w + eps:
+    return 0
+  if inner.y + inner.h > outer.y + outer.h + eps:
+    return 0
+  return 1
+
+def text_layout_baseline_y_px(face: FontAtlasFace, line_top_y: float, size_px: float) -> float
+  requires size_px > 0.0
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= line_top_y
+  decreases 0
+=
+  return line_top_y + face.ascent_px

@@ -1,0 +1,32 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_version() < 7:
+    return 1
+  var inter: FontAtlasFace = font_atlas_face_new(font_face_inter())
+  var mono: FontAtlasFace = font_atlas_face_new(font_face_ui_mono())
+  var inter_lh: float = text_metrics_line_height_px(inter, studio_typography_body_px())
+  var mono_lh: float = text_metrics_line_height_px(mono, studio_typography_caption_px())
+  if inter_lh < studio_typography_body_px():
+    return 2
+  if mono_lh < studio_typography_caption_px():
+    return 3
+  if inter_lh <= mono_lh:
+    return 4
+  var run_w: float = text_metrics_advance_run_px(inter, 65, 5)
+  if run_w <= font_atlas_glyph_advance_px(inter, 65):
+    return 5
+  var trunc: TextTruncateResult = text_truncate_to_width_px(inter, 65, 8, 12.0)
+  if trunc.visible_glyph_count < 1:
+    return 6
+  if trunc.used_width_px > 12.0 + 0.01:
+    return 7
+  var base_y: float = 10.0
+  var baseline: float = text_layout_baseline_y_px(inter, base_y, studio_typography_body_px())
+  if baseline < base_y + inter.ascent_px - 0.01:
+    return 8
+  return 0

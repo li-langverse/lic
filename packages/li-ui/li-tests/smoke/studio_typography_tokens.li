@@ -11,6 +11,8 @@ def main() -> int
     return 2
   if studio_typography_body_px() != 12.0:
     return 3
+  if studio_typography_caption_px() != 11.0:
+    return 15
   if studio_typography_heading_px() != 14.0:
     return 4
   if studio_radius_md_px() != studio_default_panel_radius_px():

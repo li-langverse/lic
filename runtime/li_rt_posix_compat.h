@@ -9,8 +9,6 @@
 #include <string.h>
 #include <time.h>
 
-void li_rt_winsock_ensure(void);
-
 #if defined(_WIN32)
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -22,6 +20,10 @@ void li_rt_winsock_ensure(void);
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+
+#ifndef O_NONBLOCK
+#define O_NONBLOCK 0x0004
+#endif
 
 #ifndef ssize_t
 #ifdef _WIN64
@@ -37,6 +39,23 @@ typedef long ssize_t;
 #ifndef POLLWRNORM
 #define POLLWRNORM POLLOUT
 #endif
+
+#ifndef POLLIN
+#define POLLIN 0x0001
+#endif
+#ifndef POLLOUT
+#define POLLOUT 0x0004
+#endif
+
+struct pollfd {
+  SOCKET fd;
+  SHORT events;
+  SHORT revents;
+};
+
+static inline int poll(struct pollfd* fds, unsigned long nfds, int timeout) {
+  return WSAPoll(fds, nfds, timeout);
+}
 
 static inline void li_rt_sock_close(int fd) {
   if (fd >= 0) {
@@ -79,6 +98,17 @@ static inline int li_rt_httpd_cpu_count(void) {
 #ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL 0
 #endif
+
+static inline void li_rt_winsock_ensure(void) {
+  static int ready;
+  if (ready) {
+    return;
+  }
+  WSADATA wsa;
+  if (WSAStartup(MAKEWORD(2, 2), &wsa) == 0) {
+    ready = 1;
+  }
+}
 
 #else /* ! _WIN32 */
 
@@ -133,6 +163,8 @@ static inline int li_rt_httpd_cpu_count(void) {
   return 1;
 #endif
 }
+
+static inline void li_rt_winsock_ensure(void) {}
 
 #endif /* _WIN32 */
 

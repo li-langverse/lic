@@ -7,6 +7,13 @@ export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1
 
+is_wsl() {
+  [[ -n "${WSL_INTEROP:-}" ]] && return 0
+  [[ -n "${WSL_DISTRO_NAME:-}" ]] && return 0
+  [[ -r /proc/version ]] && grep -qiE '(microsoft|wsl)' /proc/version && return 0
+  return 1
+}
+
 _wsl_path_u() {
   wsl.exe wslpath -u "$1" 2>/dev/null | tr -d '\r\n'
 }
@@ -76,6 +83,9 @@ fi
 
 # shellcheck source=lib/lic-bin-select.sh
 source "$ROOT/scripts/lib/lic-bin-select.sh"
+if ! is_wsl && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
+  bash "$ROOT/scripts/build.sh"
+fi
 li_ensure_lic "$ROOT" "ph-ml-wave12-gates: build lic (./scripts/build.sh or --build-dir build-wsl in WSL)" || exit 1
 
 grep -q 'Wave 12' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 12"; exit 1; }

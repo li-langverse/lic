@@ -7,16 +7,7 @@ export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
-LIC="${LIC:-}"
-if [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-elif [[ -z "$LIC" ]]; then
-  LIC="$($ROOT/scripts/resolve-lic.sh)"
-fi
+LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
 OUT="$BENCHMARKS_RESULTS/ph-ml-mlp-forward.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_mlp_forward.li"
 mkdir -p "$BENCHMARKS_RESULTS"

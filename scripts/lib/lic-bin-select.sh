@@ -1,12 +1,24 @@
 #!/usr/bin/env bash
 # Pick the first lic binary that executes on this host (build-wsl may exist but need newer glibc).
+
+li_is_wsl() {
+  [[ -n "${WSL_INTEROP:-}" ]] && return 0
+  [[ -n "${WSL_DISTRO_NAME:-}" ]] && return 0
+  [[ -r /proc/version ]] && grep -qiE '(microsoft|wsl)' /proc/version && return 0
+  return 1
+}
+
 li_pick_lic_bin() {
   local root="${1:?root required}"
   local cand rel
-  for cand in \
-    "$root/build/compiler/lic/lic" \
-    "$root/build-wsl/compiler/lic/lic" \
-    "$root/build/compiler/lic/lic.exe"; do
+  local -a candidates=(
+    "$root/build/compiler/lic/lic"
+  )
+  if li_is_wsl; then
+    candidates+=("$root/build-wsl/compiler/lic/lic")
+  fi
+  candidates+=("$root/build/compiler/lic/lic.exe")
+  for cand in "${candidates[@]}"; do
     if [[ -x "$cand" ]] && "$cand" --version &>/dev/null; then
       case "$cand" in
         "$root/build/compiler/lic/lic") rel="./build/compiler/lic/lic" ;;

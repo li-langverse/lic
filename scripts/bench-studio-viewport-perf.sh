@@ -10,6 +10,7 @@ STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="$OUT_DIR/bench-${STAMP}.json"
 LATEST="$OUT_DIR/latest-bench.json"
 COMPETITIVE="$BENCHMARKS_RESULTS/bench-studio-viewport-perf.json"
+# studio-ui-ux-verify-bench-registry.py resolves the same competitive JSON via BENCHMARKS_RESULTS.
 REGISTRY="$BENCHMARKS_COMPETITIVE/studio-ui.toml"
 
 python3 - "$ROOT" "$OUT" "$LATEST" "$COMPETITIVE" "$REGISTRY" <<'PY'

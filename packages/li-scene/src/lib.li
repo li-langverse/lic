@@ -382,3 +382,16 @@ def scene_bench_all_particle_tiers_native_pass() -> int
   if t2.native_pixels != 1:
     return 0
   return 1
+
+def scene_gpu_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var draw: SceneParticleDraw = scene_bench_particle_tier_simulate(scene_md_tier_10k())
+  if draw.meets_target != 1:
+    return 0
+  if scene_md_particle_display_fps(draw) < 30:
+    return 0
+  return 1

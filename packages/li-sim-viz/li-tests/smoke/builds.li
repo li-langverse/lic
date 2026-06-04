@@ -11,4 +11,6 @@ def main() -> int
     return 2
   if viz_smoke_entry() != 7024:
     return 3
+  if sim_viz_gpu_progress() != 1:
+    return 4
   return 0

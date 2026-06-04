@@ -1632,13 +1632,13 @@ note = "PH-SCI-GPU-07 @gpu wavefunction normalize"
 suite = "science_gpu"
 file = "packages/li-physics-weather/li-tests/smoke/physics_gpu_weather_diffuse.li"
 outcome = "compile_open_ok"
-note = "PH-SCI-GPU-08 @gpu weather diffusion"
+note = "PH-SCI-GPU-07 @gpu weather diffusion"
 
 [[tests]]
 suite = "science_gpu"
 file = "packages/li-scene/li-tests/smoke/scene_gpu_md_particle_bench.li"
 outcome = "compile_open_ok"
-note = "PH-SCI-GPU-09 @gpu MD particle tier bench"
+note = "PH-SCI-GPU-10 @gpu MD particle tier bench"
 
 [[tests]]
 suite = "science_gpu"

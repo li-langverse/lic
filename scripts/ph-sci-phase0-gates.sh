@@ -28,6 +28,8 @@ echo "==> WP-SCI-BUILD-03: honest package smokes (Phase 0 blocked libs)"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-particles/li-tests/smoke/builds.li -o /dev/null
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-rigid/li-tests/smoke/builds.li -o /dev/null
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-runtime/li-tests/smoke/builds.li -o /dev/null
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-scene/li-tests/smoke/builds.li -o /dev/null
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-viz/li-tests/smoke/builds.li -o /dev/null
 
 echo "==> WP-SCI-GPU-00: science_gpu suite"
 bash scripts/check-science-gpu-gate.sh

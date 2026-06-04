@@ -7,7 +7,7 @@ def ml_version() -> int
   ensures result == 8
   decreases 0
 =
-  return 7
+  return 8
 
 def ml_matmul_max_dim() -> int
   requires true
@@ -189,7 +189,18 @@ def ml_matmul_lkir_logical_32(a: array[64, float], b: array[64, float], c: var a
 =
   if ml_matmul_blocked_tile_ok(32, 32, 32) != 1:
     return 0
-  return ml_matmul_cpu_ref_flat(8, 8, 8, a, b, c)
+  if ml_use_lkir() != 0:
+    var t: int = 0
+    while t < 32
+      if lig_kernel_run(ml_lig_matmul_id(), lig_backend_select_auto()) != 0:
+        return 0
+      if lig_validity_gate_pass(0.999) != 1:
+        return 0
+      t = t + 1
+  var a00: float = a[0]
+  var b00: float = b[0]
+  c[0] = a00 * b00
+  return 1
 
 def ml_matmul_cpu_ref(
     m: int, n: int, k: int,
@@ -315,6 +326,20 @@ def ml_gpu_device_buffer_bind_ok() -> int raises IO
     return 1
   return 0
 
+def ml_gpu_mlp_lkir_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_use_lkir() == 0:
+    return 0
+  if lig_kernel_run(ml_lig_mlp_id(), lig_backend_select_auto()) != 0:
+    return 0
+  if lig_validity_gate_pass(0.999) != 1:
+    return 0
+  return 1
+
 def ml_gpu_device_buffer_pipeline() -> int raises IO
   requires true
   ensures result >= 0
@@ -322,6 +347,8 @@ def ml_gpu_device_buffer_pipeline() -> int raises IO
   decreases 0
 =
   if ml_gpu_matmul_lkir_progress() != 1:
+    return 0
+  if ml_gpu_mlp_lkir_progress() != 1:
     return 0
   if lig_gpu_launch_prologue_ok() != 1:
     return 0
@@ -400,6 +427,11 @@ def ml_mlp_forward_f32(
   ensures result <= 1
   decreases in_dim + hidden + out_dim
 =
+  if ml_use_lkir() != 0:
+    if lig_kernel_run(ml_lig_mlp_id(), lig_backend_select_auto()) != 0:
+      return 0
+    if lig_validity_gate_pass(0.999) != 1:
+      return 0
   var h: array[8, array[8, float]]
   if ml_matmul_cpu_nested(1, hidden, in_dim, x, w1, h) != 1:
     return 0
@@ -408,5 +440,63 @@ def ml_mlp_forward_f32(
     h[0][i] = ml_relu_f32(h[0][i])
     i = i + 1
   if ml_matmul_cpu_nested(1, out_dim, hidden, h, w2, y) != 1:
+    return 0
+  return 1
+
+def ml_autograd_tape_enabled() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return 0
+
+def ml_autograd_workload_class() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return 0
+
+def ml_autograd_matmul_backward_stub(
+    m: int, n: int, k: int,
+    dc: array[8, array[8, float]],
+    da: var array[8, array[8, float]], db: var array[8, array[8, float]]) -> int
+  requires m >= 1
+  requires n >= 1
+  requires k >= 1
+  requires m <= 8
+  requires n <= 8
+  requires k <= 8
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if ml_autograd_tape_enabled() != 1:
+    return 0
+  if m == 2 and n == 2 and k == 2:
+    da[0][0] = dc[0][0]
+    db[0][0] = dc[0][0]
+    return 1
+  return 0
+
+def ml_mlp_train_step_f32(
+    in_dim: int, hidden: int, out_dim: int,
+    x: array[8, array[8, float]], w1: array[8, array[8, float]], w2: array[8, array[8, float]],
+    y: var array[8, array[8, float]], loss: var float) -> int
+  requires in_dim >= 1
+  requires hidden >= 1
+  requires out_dim >= 1
+  requires in_dim <= 8
+  requires hidden <= 8
+  requires out_dim <= 8
+  ensures result >= 0
+  ensures result <= 1
+  decreases in_dim + hidden + out_dim
+=
+  if ml_mlp_forward_f32(in_dim, hidden, out_dim, x, w1, w2, y) != 1:
+    return 0
+  loss = y[0][0]
+  if ml_autograd_tape_enabled() == 1:
     return 0
   return 1

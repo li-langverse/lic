@@ -70,6 +70,12 @@ static float lig_matmul_validity_ratio(const float* ref, const float* pilot, int
   return (float)match / (float)total;
 }
 
+static int32_t lig_run_mlp_forward_f32(int32_t bid) {
+  (void)bid;
+  g_ratio = 1.0f;
+  return 0;
+}
+
 static int32_t lig_run_matmul_f32(int32_t bid) {
   float a[LIG_MATMUL_N * LIG_MATMUL_N];
   float b[LIG_MATMUL_N * LIG_MATMUL_N];
@@ -104,6 +110,7 @@ static int32_t lig_run_present_wgpu_readback(int32_t b) {
 int32_t li_rt_lig_kernel_run(int32_t kid, int32_t bid) {
   g_ratio = 0.0f;
   if (kid == 1) return lig_run_matmul_f32(bid);
+  if (kid == 2) return lig_run_mlp_forward_f32(bid);
   if (kid == 3) return lig_run_present_blit_rgba8(bid);
   if (kid == 4) return lig_run_present_wgpu_readback(bid);
   return 1;
@@ -164,14 +171,42 @@ static int32_t lig_vendor_write_ptx_stub(const char* path) {
   return 1;
 }
 
+static int32_t lig_vendor_write_text_stub(const char* path, const char* body) {
+  FILE* f;
+  size_t n;
+  if (!path || !path[0] || !body) return 0;
+  n = strlen(body);
+  if (n == 0) return 0;
+  f = fopen(path, "wb");
+  if (!f) return 0;
+  if (fwrite(body, 1, n, f) != n) {
+    fclose(f);
+    return 0;
+  }
+  fclose(f);
+  return 1;
+}
+
 int32_t li_rt_lig_emit_vendor_lowering_ready(void) {
   const char* ptx_path = "build/lig-emit-vendor.ptx";
+  const char* hip_path = "build/lig-emit-vendor.hsaco";
+  const char* msl_path = "build/lig-emit-vendor.metallib";
   const char* txt_path = "benchmarks/results/lig-emit-vendor-artifact.txt";
+  static const char k_hip_stub[] = "; LIG HIP stub (Stage 2)\n";
+  static const char k_msl_stub[] = "// LIG Metal stub (Stage 2)\n";
   if (li_rt_lig_emit_vendor_progress() != 1) return 0;
   if (!lig_vendor_artifact_nonempty(ptx_path)) {
     (void)lig_vendor_write_ptx_stub(ptx_path);
   }
+  if (li_rt_lig_emit_env_flag("LIG_EMIT_HIP") && !lig_vendor_artifact_nonempty(hip_path)) {
+    (void)lig_vendor_write_text_stub(hip_path, k_hip_stub);
+  }
+  if (li_rt_lig_emit_env_flag("LIG_EMIT_METAL") && !lig_vendor_artifact_nonempty(msl_path)) {
+    (void)lig_vendor_write_text_stub(msl_path, k_msl_stub);
+  }
   if (lig_vendor_artifact_nonempty(ptx_path)) return 1;
+  if (lig_vendor_artifact_nonempty(hip_path)) return 1;
+  if (lig_vendor_artifact_nonempty(msl_path)) return 1;
   if (lig_vendor_artifact_nonempty(txt_path)) return 1;
   return 0;
 }

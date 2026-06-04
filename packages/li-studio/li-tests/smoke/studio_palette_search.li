@@ -10,7 +10,7 @@ def main() -> int
     return 1
   if li_std_ui_studio_composables_version() < 3:
     return 2
-  var shell: StudioShellCompose = studio_compose_shell_palette(1920.0, 1080.0, 0, 1, studio_palette_open_flag(), 11)
+  var shell: StudioShellCompose = studio_compose_shell_palette_filtered(1920.0, 1080.0, 0, 1, studio_palette_open_flag(), 11)
   if studio_compose_ok(shell) != 1:
     return 3
   if studio_palette_shell_ok(shell) != 1:

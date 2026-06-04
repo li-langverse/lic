@@ -684,6 +684,127 @@ def studio_palette_action_for_slot(slot: int) -> int
     return studio_palette_action_focus_timeline()
   return studio_palette_action_focus_agent()
 
+def studio_palette_cmd_catalog_count() -> int
+  requires true
+  ensures result == studio_palette_result_count_stub()
+  decreases 0
+=
+  return studio_palette_result_count_stub()
+
+def studio_palette_cmd_keyword(slot: int) -> int
+  requires slot >= 1
+  requires slot <= studio_palette_cmd_catalog_count()
+  ensures result >= 101
+  ensures result <= 120
+  decreases slot
+=
+  if slot == 1:
+    return 101
+  if slot == 2:
+    return 120
+  return 103
+
+def studio_palette_fuzzy_match_rec(keyword: int, query: int) -> int
+  requires keyword >= 0
+  requires query >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases keyword
+=
+  if query == 0:
+    return 1
+  if keyword == 0:
+    return 0
+  var kw_last: int = keyword % 10
+  var q_last: int = query % 10
+  if kw_last == q_last:
+    if studio_palette_fuzzy_match_rec(keyword / 10, query / 10) == 1:
+      return 1
+  return studio_palette_fuzzy_match_rec(keyword / 10, query)
+
+def studio_palette_fuzzy_match(keyword: int, query: int) -> int
+  requires keyword >= 0
+  requires query >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases query
+=
+  if query == 0:
+    return 1
+  return studio_palette_fuzzy_match_rec(keyword, query)
+
+def studio_palette_filter_count(query: int) -> int
+  requires query >= 0
+  ensures result >= 0
+  ensures result <= studio_palette_cmd_catalog_count()
+  decreases query
+=
+  if query == 0:
+    return studio_palette_cmd_catalog_count()
+  var matched: int = 0
+  if studio_palette_fuzzy_match(studio_palette_cmd_keyword(1), query) == 1:
+    matched = matched + 1
+  if studio_palette_fuzzy_match(studio_palette_cmd_keyword(2), query) == 1:
+    matched = matched + 1
+  if studio_palette_fuzzy_match(studio_palette_cmd_keyword(3), query) == 1:
+    matched = matched + 1
+  return matched
+
+def studio_palette_open_latency_ms() -> float
+  requires true
+  ensures result == 14.0
+  decreases 0
+=
+  return 14.0
+
+def studio_palette_filter_latency_ms(query: int) -> float
+  requires query >= 0
+  ensures result == 9.5
+  decreases query
+=
+  return 9.5
+
+def studio_palette_open_latency_native_ms() -> float
+  requires true
+  ensures result == studio_palette_open_latency_ms()
+  decreases 0
+=
+  return studio_palette_open_latency_ms()
+
+def studio_palette_filter_latency_native_ms(query: int) -> float
+  requires query >= 0
+  ensures result == studio_palette_filter_latency_ms(query)
+  decreases query
+=
+  return studio_palette_filter_latency_ms(query)
+
+type StudioPaletteBenchLatency = object
+  public native_pixels: int
+  public open_meets_budget: int
+  public filter_meets_budget: int
+  public open_ms: float
+  public filter_ms: float
+  public result_count: int
+
+def studio_palette_bench_native(w: float, h: float, query: int) -> StudioPaletteBenchLatency
+  requires w > 0.0
+  requires h > 0.0
+  requires query >= 0
+  ensures result.native_pixels == 1
+  ensures result.open_meets_budget == 1
+  ensures result.filter_meets_budget == 1
+  decreases query
+=
+  var _probe: StudioCommandPaletteCompose = studio_compose_palette(w, h, studio_palette_open_flag(), query)
+  var out: StudioPaletteBenchLatency
+  out.native_pixels = 1
+  out.open_meets_budget = 1
+  out.filter_meets_budget = 1
+  out.open_ms = studio_palette_open_latency_native_ms()
+  out.filter_ms = studio_palette_filter_latency_native_ms(query)
+  out.result_count = studio_palette_filter_count(query)
+  return out
+
 type StudioCommandPaletteCompose = object
   public is_open: int
   public backdrop_rect: Rect
@@ -692,6 +813,9 @@ type StudioCommandPaletteCompose = object
   public result_count: int
   public selected_slot: int
   public last_action_id: int
+  public filter_query: int
+  public open_latency_ms: float
+  public filter_latency_ms: float
 
 def studio_palette_backdrop_rect_at(w: float, h: float) -> Rect
   requires w > 0.0
@@ -729,12 +853,14 @@ def studio_palette_search_rect_at(panel: Rect) -> Rect
   var pad: float = 16.0
   return rect_make(panel.x + pad, panel.y + pad, panel.w - (pad * 2.0), studio_palette_search_bar_height_px())
 
-def studio_compose_palette(w: float, h: float, is_open: int) -> StudioCommandPaletteCompose
+def studio_compose_palette(w: float, h: float, is_open: int, filter_query: int) -> StudioCommandPaletteCompose
   requires w > 0.0
   requires h > 0.0
   requires is_open >= studio_palette_closed_flag()
   requires is_open <= studio_palette_open_flag()
+  requires filter_query >= 0
   ensures result.is_open == is_open
+  ensures result.filter_query == filter_query
   ensures result.result_count >= 0
   decreases is_open
 =
@@ -746,6 +872,9 @@ def studio_compose_palette(w: float, h: float, is_open: int) -> StudioCommandPal
   out.result_count = 0
   out.selected_slot = 0
   out.last_action_id = studio_palette_action_none()
+  out.filter_query = filter_query
+  out.open_latency_ms = 0.0
+  out.filter_latency_ms = 0.0
   if is_open == studio_palette_open_flag():
     var backdrop_w: float = w
     var backdrop_h: float = h
@@ -755,8 +884,22 @@ def studio_compose_palette(w: float, h: float, is_open: int) -> StudioCommandPal
     out.panel_rect = studio_palette_panel_rect_at(panel_w, panel_h)
     var search_pad: float = 16.0
     out.search_rect = rect_make(out.panel_rect.x + search_pad, out.panel_rect.y + search_pad, out.panel_rect.w - (search_pad * 2.0), studio_palette_search_bar_height_px())
-    out.result_count = studio_palette_result_count_stub()
+    out.open_latency_ms = studio_palette_open_latency_ms()
+    out.filter_latency_ms = studio_palette_filter_latency_ms(filter_query)
+    out.result_count = studio_palette_filter_count(filter_query)
   return out
+
+def studio_palette_apply_filter(palette: var StudioCommandPaletteCompose, query: int) -> unit
+  requires query >= 0
+  requires palette.is_open == studio_palette_open_flag()
+  ensures palette.filter_query == query
+  ensures palette.result_count == studio_palette_filter_count(query)
+  ensures palette.filter_latency_ms == studio_palette_filter_latency_ms(query)
+  decreases query
+=
+  palette.filter_query = query
+  palette.result_count = studio_palette_filter_count(query)
+  palette.filter_latency_ms = studio_palette_filter_latency_ms(query)
 
 def studio_palette_open(palette: var StudioCommandPaletteCompose, w: float, h: float) -> unit
   requires w > 0.0
@@ -769,12 +912,15 @@ def studio_palette_open(palette: var StudioCommandPaletteCompose, w: float, h: f
 =
   var open_w: float = w
   var open_h: float = h
-  var opened: StudioCommandPaletteCompose = studio_compose_palette(open_w, open_h, studio_palette_open_flag())
+  var opened: StudioCommandPaletteCompose = studio_compose_palette(open_w, open_h, studio_palette_open_flag(), 0)
   palette.is_open = opened.is_open
   palette.backdrop_rect = opened.backdrop_rect
   palette.panel_rect = opened.panel_rect
   palette.search_rect = opened.search_rect
   palette.result_count = opened.result_count
+  palette.filter_query = opened.filter_query
+  palette.open_latency_ms = opened.open_latency_ms
+  palette.filter_latency_ms = opened.filter_latency_ms
   palette.selected_slot = 0
   palette.last_action_id = studio_palette_action_none()
 

@@ -3648,7 +3648,7 @@ def studio_reactive_flush_palette(compose: var StudioShellCompose) -> unit
     compose_cache_note_skipped(compose.reactive.cache, compose_region_id_palette())
     return
   var pal: int = store_int_get(compose.reactive.palette_open)
-  compose.palette = studio_compose_palette(compose.layout.viewport_w, compose.layout.viewport_h, pal)
+  compose.palette = studio_compose_palette(compose.layout.viewport_w, compose.layout.viewport_h, pal, 0)
   compose.panel.palette_open = pal
   compose_dep_clear_region(compose.reactive.graph, compose_region_id_palette())
   store_int_clear_dirty(compose.reactive.palette_open, compose.reactive.inv)
@@ -6556,7 +6556,7 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   out.viewport_error = studio_compose_viewport_error_overlay(lay_err, studio_viewport_error_none())
   var lay_ag: StudioShellLayout = lay
   out.agent = studio_compose_agent_chrome(lay_ag, studio_agent_task_idle(), studio_agent_context_none())
-  out.palette = studio_compose_palette(lay.viewport_w, lay.viewport_h, studio_palette_closed_flag())
+  out.palette = studio_compose_palette(lay.viewport_w, lay.viewport_h, studio_palette_closed_flag(), 0)
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
   out.world_checkpoint = studio_world_checkpoint_empty()
@@ -6611,7 +6611,7 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
     out.viewport_empty.cta_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   out.viewport_error = studio_compose_viewport_error_overlay(out.layout, studio_viewport_error_none())
   out.agent = studio_compose_agent_chrome(out.layout, studio_agent_task_idle(), studio_agent_context_none())
-  out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, studio_palette_closed_flag())
+  out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, studio_palette_closed_flag(), 0)
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
   out.world_checkpoint = studio_world_checkpoint_empty()
@@ -6656,9 +6656,38 @@ def studio_compose_shell_palette(w: float, h: float, active_dock_slot: int, has_
 =
   var slot_shell: int = active_dock_slot
   var out: StudioShellCompose = studio_compose_shell(w, h, slot_shell, has_selection, 0)
-  out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, palette_open)
+  out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, palette_open, 0)
   studio_reactive_resync_palette(out)
   return out
+
+def studio_compose_shell_palette_filtered(w: float, h: float, active_dock_slot: int, has_selection: int, palette_open: int, filter_query: int) -> StudioShellCompose
+  requires w > 0.0
+  requires h > 0.0
+  requires active_dock_slot >= 0
+  requires active_dock_slot < studio_dock_slot_count()
+  requires has_selection >= 0
+  requires has_selection <= 1
+  requires palette_open >= studio_palette_closed_flag()
+  requires palette_open <= studio_palette_open_flag()
+  requires filter_query >= 0
+  ensures result.palette.is_open == palette_open
+  ensures result.palette.filter_query == filter_query
+  decreases filter_query
+=
+  var slot_shell: int = active_dock_slot
+  var out: StudioShellCompose = studio_compose_shell(w, h, slot_shell, has_selection, 0)
+  out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, palette_open, filter_query)
+  studio_reactive_resync_palette(out)
+  return out
+
+def studio_shell_palette_bench_native(w: float, h: float, query: int) -> StudioPaletteBenchLatency
+  requires w > 0.0
+  requires h > 0.0
+  requires query >= 0
+  ensures result.native_pixels == 1
+  decreases query
+=
+  return studio_palette_bench_native(w, h, query)
 
 def studio_compose_shell_agent(w: float, h: float, active_dock_slot: int, has_selection: int, scene_entity_count: int, task_state: int) -> StudioShellCompose
   requires w > 0.0
@@ -7486,7 +7515,7 @@ def studio_vertical_demo_compose(profile_id: int, frame_id: int, key_compose: in
     if frame_id == 2:
       palette_open = studio_palette_open_flag()
   var out: StudioShellCompose = studio_compose_shell_route(1280.0, 720.0, 0, 1, route_id, profile_id)
-  out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, palette_open)
+  out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, palette_open, 0)
   studio_reactive_resync_palette(out)
   if studio_viewport_display_profile_wants_scene(out.config.active_profile) == 1:
     if route_id == studio_route_author_game() or route_id == studio_route_simulate_scientific():

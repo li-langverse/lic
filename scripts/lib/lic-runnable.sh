@@ -29,17 +29,34 @@ lic_resolve_runnable() {
     fi
   done
 
+  local sibling_roots=()
   if [[ -n "$lic_root" ]]; then
+    sibling_roots+=("$lic_root")
+  fi
+  for sibling in \
+    "/workspace/lic" \
+    "$root/../lic" \
+    "$root/../../lic" \
+    "$root/../../../../../workspace/lic"; do
+    if [[ -d "$sibling" ]]; then
+      sibling_roots+=("$sibling")
+    fi
+  done
+
+  local seen="" s
+  for s in "${sibling_roots[@]}"; do
+    [[ "$seen" == *"|$s|"* ]] && continue
+    seen="${seen}|$s|"
     for candidate in \
-      "$lic_root/build/compiler/lic/lic" \
-      "$lic_root/build/compiler/lic/lic.exe" \
-      "$lic_root/build-wsl/compiler/lic/lic"; do
+      "$s/build/compiler/lic/lic" \
+      "$s/build/compiler/lic/lic.exe" \
+      "$s/build-wsl/compiler/lic/lic"; do
       if lic_is_runnable "$candidate"; then
         echo "$candidate"
         return 0
       fi
     done
-  fi
+  done
 
   if [[ -x "$root/scripts/resolve-lic.sh" ]]; then
     candidate="$("$root/scripts/resolve-lic.sh" 2>/dev/null)" || true

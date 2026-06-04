@@ -1,20 +1,24 @@
-# PH-ML Stage 6 prep — li-httpd native route
+# PH-ML Stage 6 — li-httpd native route
 
-**Gate (future):** `scripts/ph-ml-stage6-gates.sh` (not yet implemented)  
-**Baseline:** Stage 5 transformer forward
+**Branch:** `cursor/ph-ml-stage6-httpd-native`  
+**Gate:** `scripts/ph-ml-stage6-gates.sh`  
+**Baseline:** Stage 5 @ PR #856 merged (`cc3bde4c`)
 
 ## Goal
 
-Wire native `li-llm` generate path into `li-httpd` trusted route: load weights from `fixtures/ph-ml-weights`, tokenize prompt, return multi-token decode result over HTTP without Ollama proxy.
+Wire native `li-llm` generate path into the trusted li-httpd route: load weights from `fixtures/ph-ml-weights`, run `llm_generate_tracked` (≥8 steps), bench with `native_generate` — retire Python T8 `live_proxy` for prod gates.
 
-## Prep work
+## Exit criteria
 
-- Extend `llm_trusted_httpd_route.li` smoke to call `llm_generate_tracked`
-- Bench: `bench_ph_ml_llm_trusted_httpd.py` native mode (not live_proxy only)
-- K8s wave13 engine image refresh with Stage 5 lic binary
+| Item | Artifact |
+|------|----------|
+| `li_llm_version` 7 | `packages/li-llm/src/lib.li` |
+| Native generate OK | `llm_trusted_httpd_native_generate_ok` |
+| Smoke | `llm_trusted_httpd_route.li` |
+| Bench | `ph-ml-llm-trusted-httpd.json` with `native_generate: true` |
 
-## Deferred
+## Deferred (Stage 7+)
 
-- Streaming SSE tokens
+- Streaming SSE tokens — see `ph-ml-stage7-streaming-prep.md`
 - Auth / rate limits
 - Production model download in cluster

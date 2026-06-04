@@ -210,10 +210,10 @@ def llm_path_is_gguf_fixture(path: str) -> int raises IO, Alloc
 
 def li_llm_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 type LlmTokenIds = object
   public count: int
@@ -892,6 +892,43 @@ def llm_trusted_backend_ollama_scaffold_note() -> int
   ensures result == 1
   decreases 0
 =
+  return 1
+
+def llm_trusted_httpd_weights_path() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return "fixtures/ph-ml-weights/model.safetensors"
+
+def llm_trusted_httpd_vocab_path() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return "fixtures/vocab.json"
+
+def llm_trusted_httpd_native_generate_tracked() -> LlmGenerateResult raises IO, Alloc
+  requires true
+  ensures result.decode_steps >= 0
+  decreases 0
+=
+  var w: LlmModelWeights = llm_load_weights(llm_trusted_httpd_weights_path())
+  return llm_generate_tracked("hi", w, llm_trusted_httpd_vocab_path(), 8)
+
+def llm_trusted_httpd_native_generate_ok() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var tracked: LlmGenerateResult = llm_trusted_httpd_native_generate_tracked()
+  if tracked.forward_matmul != 1:
+    return 0
+  if tracked.decode_steps < 8:
+    return 0
+  if tracked.token_count < 8:
+    return 0
   return 1
 
 

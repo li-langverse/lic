@@ -110,14 +110,19 @@ grep -q 'llm_path_is_safetensors_fixture' packages/li-llm/src/lib.li \
   || { echo "T7: missing ph-ml-weights path helpers"; exit 1; }
 
 export PH_ML_LLM_TRUSTED_HTTPD_OUT="$BENCHMARKS_RESULTS/ph-ml-llm-trusted-httpd.json"
-export PH_ML_LLM_TRUSTED_HTTPD_LIVE=1
+export PH_ML_LLM_TRUSTED_HTTPD_NATIVE=1
+export PH_ML_LLM_TRUSTED_HTTPD_ROOT="$ROOT"
+export PH_ML_LLM_TRUSTED_HTTPD_LIC="${LIC:-$ROOT/build-wsl/compiler/lic/lic}"
+export PH_ML_LLM_TRUSTED_HTTPD_LIVE=0
 python3 scripts/bench_ph_ml_llm_trusted_httpd.py
 python3 - <<'PY'
 import json, sys
 from pathlib import Path
 d = json.loads(Path("benchmarks/results/ph-ml-llm-trusted-httpd.json").read_text())
-if not d.get("executed") or not d.get("live_proxy"):
-    sys.exit("T8: trusted httpd bench must execute with live_proxy")
+if not d.get("executed") or not d.get("native_generate"):
+    sys.exit("T8: trusted httpd bench must execute with native_generate")
+if d.get("live_proxy"):
+    sys.exit("T8: live_proxy retired for prod gate (Stage 6)")
 PY
 
 [[ -f docs/release-notes/2026-05-31-ph-ml-program-complete.md ]] \

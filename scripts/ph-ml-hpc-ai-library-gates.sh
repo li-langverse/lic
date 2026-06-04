@@ -18,8 +18,8 @@ if [[ "${PH_ML_HPC_AI_LIBRARY_INNER:-0}" != "1" ]] && command -v wsl.exe >/dev/n
   fi
 fi
 
-export PH_ML_STAGE5_INNER=1
-bash scripts/ph-ml-stage5-gates.sh
+export PH_ML_STAGE6_INNER=1
+bash scripts/ph-ml-stage6-gates.sh
 
 python3 - <<'PY'
 import json, sys
@@ -39,6 +39,8 @@ PY
 [[ -f data/goal-directed-sprints/ph-ml-hpc-ai-library-complete.md ]] \
   || { echo "missing ph-ml-hpc-ai-library-complete.md"; exit 1; }
 [[ -f data/goal-directed-sprints/ph-ml-stage6-httpd-native-prep.md ]] \
-  || { echo "missing stage6 prep goal"; exit 1; }
+  || { echo "missing stage6 goal"; exit 1; }
+[[ -f data/goal-directed-sprints/ph-ml-stage7-streaming-prep.md ]] \
+  || { echo "missing stage7 prep goal"; exit 1; }
 
 echo "ph-ml-hpc-ai-library: completion gate OK"

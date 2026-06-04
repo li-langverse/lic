@@ -6,7 +6,7 @@
 
 ## Goal
 
-Close the native Li ML/HPC/AI library track through Stage 5: real transformer forward via `ml_matmul_f32` on safetensors bytes, greedy multi-token decode (≥8 steps), tier-3 competitive bench rows with **no `workload_class=stub` on executed Li rows**, and Stage 6 prep for li-httpd native route.
+Close the native Li ML/HPC/AI library track through Stage 6: real transformer forward via `ml_matmul_f32` on safetensors bytes, greedy multi-token decode (≥8 steps), tier-3 competitive bench rows with **no `workload_class=stub` on executed Li rows**, and li-httpd native `llm_generate_tracked` (no Python T8 live_proxy prod gate).
 
 ## Stages
 
@@ -14,7 +14,8 @@ Close the native Li ML/HPC/AI library track through Stage 5: real transformer fo
 |-------|-------|------|
 | 4 | LLM import (safetensors/GGUF, lillm-import) | `ph-ml-stage4-gates.sh` |
 | 5 | Transformer forward + multi-decode | `ph-ml-stage5-gates.sh` |
-| 6 (prep) | li-httpd native trusted route | `ph-ml-stage6-httpd-native-prep.md` |
+| 6 | li-httpd native trusted route | `ph-ml-stage6-gates.sh` |
+| 7 (prep) | SSE streaming decode | `ph-ml-stage7-streaming-prep.md` |
 
 ## Stage 5 exit criteria
 
@@ -24,8 +25,14 @@ Close the native Li ML/HPC/AI library track through Stage 5: real transformer fo
 - `ph-ml-llm-forward.json`: `forward_matmul_ok`, `workload_class=tier3_cpu`
 - Competitive `llm_forward` Li row: executed, not stub
 
-## Deferred (Stage 6+)
+## Stage 6 exit criteria
+
+- `li_llm_version() == 7`
+- `llm_trusted_httpd_native_generate_ok` — ≥8 decode steps, `forward_matmul == 1`
+- `ph-ml-llm-trusted-httpd.json`: `native_generate: true`, `live_proxy: false`
+
+## Deferred (Stage 7+)
 
 - Full reference logits parity vs transformers
 - GPU decode / KV-cache device buffers
-- Live li-httpd native inference route (see Stage 6 prep)
+- SSE streaming tokens (see Stage 7 prep)

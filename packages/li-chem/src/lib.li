@@ -1,5 +1,6 @@
 import lig
 
+# PH-SCI-GPU-CHEM — mini STO-3G-style basis + DFT energy kernel (CPU lib; @gpu smokes call in).
 def chem_dft_energy_stub_hartree() -> float
   requires true
   ensures result == -76.0
@@ -7,12 +8,164 @@ def chem_dft_energy_stub_hartree() -> float
 =
   return -76.0
 
-def chem_dft_run_smoke() -> float
+def chem_dft_sto3g_grid_n() -> int
   requires true
-  ensures result == chem_dft_energy_stub_hartree()
+  ensures result == 8
   decreases 0
 =
-  return chem_dft_energy_stub_hartree()
+  return 8
+
+def chem_dft_grid_r_at(i: int) -> float
+  requires i >= 0
+  requires i < chem_dft_sto3g_grid_n()
+  ensures result > 0.0
+  decreases i
+=
+  if i == 0:
+    return 0.12
+  if i == 1:
+    return 0.30
+  if i == 2:
+    return 0.48
+  if i == 3:
+    return 0.66
+  if i == 4:
+    return 0.84
+  if i == 5:
+    return 1.02
+  if i == 6:
+    return 1.20
+  return 1.38
+
+# Slater-like primitive (no libm exp): 1 / (1 + zeta * r^2).
+def chem_dft_primitive_decay(r: float, zeta: float) -> float
+  requires r >= 0.0
+  requires zeta > 0.0
+  ensures result > 0.0
+  decreases 0
+=
+  var rr: float = r * r
+  return 1.0 / (1.0 + zeta * rr)
+
+# Contracted mini STO-3G s-type on radial grid (H-like exponents/coeffs, scaled).
+def chem_dft_basis_eval_sto3g(r: float) -> float
+  requires r >= 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  var p0: float = chem_dft_primitive_decay(r, 3.42525091)
+  var p1: float = chem_dft_primitive_decay(r, 0.62391373)
+  var p2: float = chem_dft_primitive_decay(r, 0.16885540)
+  return 0.15432897 * p0 + 0.53532814 * p1 + 0.44463454 * p2
+
+def chem_dft_fill_density_from_basis(dens: var array[8, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < chem_dft_sto3g_grid_n()
+    var r: float = chem_dft_grid_r_at(i)
+    var phi: float = chem_dft_basis_eval_sto3g(r)
+    dens[i] = phi * phi
+    i = i + 1
+
+def chem_dft_energy_from_density(dens: array[8, float]) -> float
+  requires true
+  ensures result <= 0.0
+  decreases 0
+=
+  var kin: float = 0.0
+  var pot: float = 0.0
+  var xc: float = 0.0
+  var z_eff: float = 1.0
+  var dr: float = 0.18
+  var i: int = 0
+  while i < chem_dft_sto3g_grid_n()
+    var r: float = chem_dft_grid_r_at(i)
+    var rho: float = dens[i]
+    pot = pot - z_eff * rho / (r + 0.05)
+    xc = xc + 0.25 * rho * rho
+    if i < 7:
+      var dphi: float = chem_dft_basis_eval_sto3g(chem_dft_grid_r_at(i + 1))
+      dphi = dphi - chem_dft_basis_eval_sto3g(r)
+      kin = kin + 0.5 * dphi * dphi / (dr * dr)
+    i = i + 1
+  return kin + pot + xc
+
+def chem_dft_energy_kernel_hartree() -> float
+  requires true
+  ensures result <= 0.0
+  decreases 0
+=
+  var dens: array[8, float]
+  chem_dft_fill_density_from_basis(dens)
+  return chem_dft_energy_from_density(dens)
+
+def chem_dft_fock_density_mix_step(dens: var array[8, float], mix: float) -> unit
+  requires mix > 0.0
+  requires mix <= 1.0
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < chem_dft_sto3g_grid_n()
+    var r: float = chem_dft_grid_r_at(i)
+    var phi: float = chem_dft_basis_eval_sto3g(r)
+    var target: float = phi * phi
+    dens[i] = (1.0 - mix) * dens[i] + mix * target
+    i = i + 1
+
+# SCF scaffold: fixed-point density mixing until energy delta below tol or max_iter.
+def chem_dft_scf_iteration_scaffold(max_iter: int) -> float
+  requires max_iter >= 1
+  requires max_iter <= 32
+  ensures result <= 0.0
+  decreases max_iter
+=
+  var dens: array[8, float]
+  chem_dft_fill_density_from_basis(dens)
+  var energy: float = chem_dft_energy_from_density(dens)
+  var iter: int = 0
+  var tol: float = 1.0e-5
+  var mix: float = 0.35
+  while iter < max_iter
+    chem_dft_fock_density_mix_step(dens, mix)
+    var e_new: float = chem_dft_energy_from_density(dens)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    if de < tol:
+      return energy
+    iter = iter + 1
+  return energy
+
+def chem_dft_gpu_energy_checksum() -> float
+  requires true
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  var e: float = chem_dft_scf_iteration_scaffold(6)
+  var lo: float = -1.25
+  var hi: float = -0.02
+  var span: float = hi - lo
+  if span < 1.0e-9:
+    span = 1.0e-9
+  var t: float = (e - lo) / span
+  if t < 0.0:
+    t = 0.0
+  if t > 1.0:
+    t = 1.0
+  return t
+
+def chem_dft_run_smoke() -> float
+  requires true
+  ensures result == chem_dft_energy_kernel_hartree()
+  decreases 0
+=
+  return chem_dft_energy_kernel_hartree()
 
 def chem_lig_backend_auto() raises IO -> int
   requires true

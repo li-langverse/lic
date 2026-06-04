@@ -1663,3 +1663,15 @@ suite = "science_gpu"
 file = "packages/li-sim-drug-design/li-tests/smoke/drug_gpu_litl_workflow.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-15 @gpu drug LitL workflow"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-chem/li-tests/smoke/chem_gpu_dft_energy.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-16 @gpu DFT energy kernel (STO-3G + SCF scaffold)"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-drug-design/li-tests/smoke/drug_gpu_dft_stage.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-17 @gpu drug LitL DFT stage"

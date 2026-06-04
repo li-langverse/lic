@@ -6,6 +6,6 @@ def main() raises IO -> int
 =
   if chem_lig_backend_auto() < 1:
     return 1
-  if chem_dft_run_smoke() != chem_dft_energy_stub_hartree():
+  if chem_dft_run_smoke() != chem_dft_energy_kernel_hartree():
     return 2
   return 0

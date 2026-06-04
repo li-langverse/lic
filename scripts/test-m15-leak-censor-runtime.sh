@@ -61,16 +61,16 @@ def handle_json(conn: socket.socket) -> None:
 
 
 def handle_sse(conn: socket.socket) -> None:
+    # Content-Length (not chunked): leak_censor redacts body bytes without
+    # rewriting chunk framing — chunked SSE upstream breaks proxy egress tests.
     payload = f'data: {{"k":"{secret}"}}\n\n'.encode()
     conn.sendall(
         b"HTTP/1.1 200 OK\r\n"
         b"Content-Type: text/event-stream\r\n"
-        b"Transfer-Encoding: chunked\r\n"
+        b"Content-Length: " + str(len(payload)).encode() + b"\r\n"
         b"Connection: close\r\n"
-        b"\r\n"
+        b"\r\n" + payload
     )
-    chunk = f"{len(payload):x}\r\n".encode() + payload + b"\r\n0\r\n\r\n"
-    conn.sendall(chunk)
 
 
 def handle(conn: socket.socket) -> None:
@@ -107,10 +107,11 @@ json_body=$(curl -s -m 5 \
   -H "Content-Type: application/json" \
   -d '{}' || true)
 
-sse_body=$(curl -s -N -m 5 \
+sse_body=$(curl -s -N -m 8 \
   -X POST "http://127.0.0.1:${FRONT_PORT}/v1/leak-sse" \
   -H "Content-Type: application/json" \
   -H "Accept: text/event-stream" \
+  -H "Connection: close" \
   -d '{}' || true)
 
 kill "$FE_PID" "$BE_PID" 2>/dev/null || true

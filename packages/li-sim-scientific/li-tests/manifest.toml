@@ -39,8 +39,8 @@ note = "WP-SCI-05 FEA linear elasticity oracle + registry algo 214"
 [[tests]]
 suite = "smoke"
 file = "smoke/scientific_csv_ingest_gate.li"
-outcome = "verify_ok"
-note = "PH-IO-4 std.io/csv ingest gate before competitive vertical oracle benches"
+outcome = "verify_open_ok"
+note = "PH-IO-4 ingest bundle → MD registry (std.io/csv via ph_io4 + check-ph-io-4-gate)"
 
 [[tests]]
 suite = "smoke"

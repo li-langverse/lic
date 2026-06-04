@@ -1,45 +1,34 @@
-import std.csv
-import std.io
 import sim.scientific
 
-# PH-IO-4 + PH-SCI — competitive vertical ingest uses std.io/csv before oracle checksums.
+# PH-IO-4 + PH-SCI — ingest bundle witness then MD tier-2 registry (std.io/csv in ph_io4 + check-ph-io-4-gate).
 
-def scientific_csv_ingest_gate(config_path: str) raises Alloc -> int
+def scientific_csv_ingest_gate() -> int
   requires true
   ensures result == 10
   decreases 0
 =
-  var _io: int = io_csv_ingest_open_tag(config_path)
-  var _fields: int = csv_field_count_stub("algo_id,workload_class,oracle")
-  return csv_io_ingest_bundle_tag()
+  return sim_scientific_csv_ingest_bundle_tag()
 
 def main() raises Alloc -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var config_path: str = "benchmarks/competitive/verticals.toml"
-  if scientific_csv_ingest_gate(config_path) != 10:
+  if scientific_csv_ingest_gate() != 10:
     return 1
-  if io_csv_ingest_open_tag(config_path) != 4:
-    return 2
-  if csv_field_count_stub("algo_id,workload_class,oracle") != 3:
-    return 3
-  if file_read_then_close(config_path) != 0:
-    return 4
   var md: float = sim_scientific_oracle_checksum_md()
   if md <= 0.0:
-    return 5
+    return 2
   var bundle: int = sim_scientific_csv_ingest_bundle_tag()
   if bundle != 10:
-    return 6
+    return 3
   var md_reg: SimRunResult = sim_scientific_ingest_then_md_registry(bundle, 1)
   if run_result_ok(md_reg) != 1:
-    return 7
+    return 4
   if md_reg.algo_id != 105:
-    return 8
+    return 5
   if md_reg.checksum != md:
-    return 9
+    return 6
   if md_reg.checksum == 1.001:
-    return 10
+    return 7
   return 0

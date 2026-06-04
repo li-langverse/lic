@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PH-IO-4 smoke tier** — `scientific_csv_ingest_gate.li` uses `verify_open_ok` (sim.scientific codegen path); std.io/csv contract in monorepo smoke via `ph_io4_ingest_contract.li`.
 - `run_heat_tier2_registry` limited to algo 201–204 (FEA/CFD rows split from heat band); `li_sim_scientific_version` → 7 (drug/robo registry tier-2).
 - **WP-SCI-01 multi-physics tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` (MD + heat + rigid smokes); smoke `li-tests/smoke/multi_physics_tick.li`.
 

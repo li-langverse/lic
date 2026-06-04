@@ -6,7 +6,7 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close plan
 
-**Status:** Phase 0–3 complete on `cursor/ph-ml-stage2-dl-spine` (2026-06-04); run `code_implementer-1780556505754` registers `scientific_csv_ingest_gate.li` in monorepo `li-tests/manifest.toml` smoke + extends `check-ph-io-4-gate.sh`; prior `code_implementer-1780556244082` wires **PH-IO-4** ingest bundle → `run_algo(105)` MD tier-2 (`sim_scientific_ingest_then_md_registry`); prior `code_implementer-1780555950812` adds std.io/csv smoke; re-verify `ph-sci-phase{0,1,2,3}` + `ph-sci-gpu-gates` + `check-ph-io-4-gate` when `lic` runnable on host. WP-SCI-GPU-VENDOR-02 MD grid device-buffer readback parity; **PH-IO-4** std.io/csv ingest contract (`file_read_then_close`, `csv_field_count_stub`, `scripts/check-ph-io-4-gate.sh`) (`scientific_gpu_md_device_buffer.li`, `bench-ph-sci-md-device-buffer.sh`, 0.1% force-checksum tolerance); prior: WP-SCI-GPU-VENDOR-01 MD oracle LKIR launch; WP-SCI-03 registry tier-2; WP-SCI-GPU-03 `nbody_pair_force`. Gates: `scripts/ph-sci-phase{0,1,2,3}-gates.sh`, `scripts/ph-sci-gpu-gates.sh` (exports `LIC` before `science_gpu`).  
+**Status:** Phase 0–3 complete on `cursor/ph-ml-stage2-dl-spine` (2026-06-04); run `code_implementer-1780556723760` re-verifies `ph-sci-all-gates.sh` on native `build/compiler/lic/lic` (Debian glibc 2.36), fixes smoke `scientific_csv_ingest_gate.li` (`verify_open_ok`, sim.scientific-only codegen path) + registers `ph_io4_ingest_contract.li` in monorepo smoke; prior `code_implementer-1780556505754` registers ingest gate smoke + `check-ph-io-4-gate.sh`; **PH-IO-4** std.io/csv contract in `std/io`, `std/csv`, `ph_io4`, and phase0 gate. WP-SCI-GPU-VENDOR-02 MD grid device-buffer readback parity; **PH-IO-4** std.io/csv ingest contract (`file_read_then_close`, `csv_field_count_stub`, `scripts/check-ph-io-4-gate.sh`) (`scientific_gpu_md_device_buffer.li`, `bench-ph-sci-md-device-buffer.sh`, 0.1% force-checksum tolerance); prior: WP-SCI-GPU-VENDOR-01 MD oracle LKIR launch; WP-SCI-03 registry tier-2; WP-SCI-GPU-03 `nbody_pair_force`. Gates: `scripts/ph-sci-phase{0,1,2,3}-gates.sh`, `scripts/ph-sci-gpu-gates.sh` (exports `LIC` before `science_gpu`).  
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and planned `science_gpu` / `@gpu` placement coverage.  
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
 
@@ -20,6 +20,8 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 ## Completion gate
 
 ```bash
+bash scripts/ph-sci-all-gates.sh
+# or per phase:
 bash scripts/ph-sci-phase0-gates.sh
 bash scripts/ph-sci-phase1-gates.sh
 ```

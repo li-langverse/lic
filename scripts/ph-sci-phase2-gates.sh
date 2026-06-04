@@ -26,7 +26,7 @@ echo "==> WP-SCI-03: quantum lib + QM tier-2 oracle"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-quantum/src/lib.li -o /dev/null
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_qm_normalize.li
 
-echo "==> WP-SCI-06: cavity + tier-2 registry smokes"
+echo "==> WP-SCI-06: cavity + tier-2 registry smokes (incl. rigid 301–305, drug/robo)"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_cfd_cavity.li -o /dev/null
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_cfd_cavity.li
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li
@@ -45,4 +45,4 @@ echo "==> WP-AM-02: additive require_sim_pass heat witness"
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-additive/li-tests/smoke/additive_require_sim_pass_heat.li
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-additive/li-tests/smoke/slicer_workflow.li
 
-echo "ph-sci-simulation-gap-close: Phase 2 (WP-SCI-03 QM/drug/robo registry, WP-SCI-05, WP-SCI-06, WP-AM-02) gate OK"
+echo "ph-sci-simulation-gap-close: Phase 2 (WP-SCI-03 QM/rigid/drug/robo registry, WP-SCI-05, WP-SCI-06, WP-AM-02) gate OK"

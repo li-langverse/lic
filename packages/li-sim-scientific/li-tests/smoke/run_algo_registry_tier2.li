@@ -46,11 +46,14 @@ def main() -> int
     return 20
   if fea214.checksum == 1.001:
     return 21
+  var rigid_oracle: float = sim_scientific_oracle_checksum_rigid()
   var rigid302: SimRunResult = run_algo(302, 0)
   if run_result_ok(rigid302) != 1:
     return 13
   if rigid302.algo_id != 302:
     return 14
+  if rigid302.checksum != rigid_oracle:
+    return 32
   if rigid302.checksum == 1.001:
     return 15
   var qm_oracle: float = sim_scientific_oracle_checksum_qm()

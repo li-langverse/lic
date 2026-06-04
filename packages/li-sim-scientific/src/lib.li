@@ -9,10 +9,10 @@ import sim.robotics
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 7
+  ensures result == 8
   decreases 0
 =
-  return 7
+  return 8
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -254,6 +254,24 @@ def sim_scientific_oracle_checksum_robo() -> float
 =
   var robo: SimRunResult = run_robo_arm_at_steps(8)
   return robo.checksum
+
+# WP-SCI-03 — tier-2 Li oracle: semi-implicit rigid body integrate (gaming vertical).
+def sim_scientific_oracle_checksum_rigid() -> float
+  requires true
+  ensures result != 1.001
+  decreases 0
+=
+  var body: RigidBody
+  body.px = 0.0
+  body.py = 0.0
+  body.pz = 0.0
+  body.vx = 1.0
+  body.vy = 0.0
+  body.vz = 0.0
+  body.inv_mass = 1.0
+  body.radius = 0.5
+  rigid_integrate_semi_implicit(body, 0.0, 0.0, -9.81, 0.01)
+  return body.pz
 
 def sim_scientific_checksum_combine(chk_md: float, chk_heat: float, chk_rigid: float, step_index: int) -> float
   requires step_index >= 1
@@ -612,6 +630,25 @@ def run_robo_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_rigid_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 301
+  requires algo_id <= 305
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_rigid()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_gaming_rigid()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -638,9 +675,7 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   if algo_id >= 301:
     if algo_id <= 305:
       var d2: int = detail
-      var rigid: SimRunResult = run_rigid_smoke(d2)
-      rigid.algo_id = algo_id
-      return rigid
+      return run_rigid_tier2_registry(algo_id, d2)
   if algo_id >= 401:
     if algo_id <= 432:
       var d2b: int = detail

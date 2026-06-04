@@ -1,0 +1,24 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() != 5:
+    return 1
+  var fea: float = sim_scientific_oracle_checksum_fea()
+  if fea <= 0.0:
+    return 2
+  var run214: SimRunResult = run_algo(214, 0)
+  if run_result_ok(run214) != 1:
+    return 3
+  if run214.algo_id != 214:
+    return 4
+  if run214.vertical_id != vertical_fea_linear_elasticity():
+    return 5
+  if run214.checksum != fea:
+    return 6
+  if run214.checksum == 1.001:
+    return 7
+  return 0

@@ -87,6 +87,48 @@ def broadphase_cell_index(x: float, cell_size: float) -> int
     c = 0
   return c
 
+# WP-SCI-05 — 1D bar linear elasticity surrogate (8-DOF, Jacobi solve, E0201-safe).
+def fea_bar_jacobi_step(
+    u: var array[8, float], rhs: var array[8, float], k_diag: float, k_off: float) -> unit
+  requires k_diag > 0.0
+  ensures result == 0
+  decreases 0
+=
+  var v: array[8, float]
+  var i: int = 0
+  while i < 8
+    v[i] = u[i]
+    i = i + 1
+  u[1] = (rhs[1] - k_off * (v[0] + v[2])) / k_diag
+  u[2] = (rhs[2] - k_off * (v[1] + v[3])) / k_diag
+  u[3] = (rhs[3] - k_off * (v[2] + v[4])) / k_diag
+  u[4] = (rhs[4] - k_off * (v[3] + v[5])) / k_diag
+  u[5] = (rhs[5] - k_off * (v[4] + v[6])) / k_diag
+  u[6] = (rhs[6] - k_off * (v[5] + v[7])) / k_diag
+  u[0] = 0.0
+  u[7] = 0.0
+
+def fea_bar_oracle_checksum() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var u: array[8, float]
+  var rhs: array[8, float]
+  var i: int = 0
+  while i < 8
+    u[i] = 0.0
+    rhs[i] = 0.0
+    i = i + 1
+  rhs[4] = 1.0
+  var k_diag: float = 4.0
+  var k_off: float = -1.0
+  var step: int = 0
+  while step < 80
+    fea_bar_jacobi_step(u, rhs, k_diag, k_off)
+    step = step + 1
+  return u[1] + u[2] + u[3] + u[4] + u[5] + u[6]
+
 def physics_rigid_gpu_progress() -> int
   requires true
   ensures result >= 0

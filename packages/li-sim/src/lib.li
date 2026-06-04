@@ -133,6 +133,13 @@ def vertical_cfd_lid_driven_cavity() -> int
 =
   return 5
 
+def vertical_fea_linear_elasticity() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
 def algo_registry_count() -> int
   requires true
   ensures result == 126

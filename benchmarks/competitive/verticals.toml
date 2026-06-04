@@ -39,11 +39,11 @@ notes = "heat_equation_2d in verify.py; Li oracle `sim_scientific_oracle_checksu
 id = "fea_linear_elasticity"
 incumbent = "CalculiX / ANSYS Mechanical / SimScale"
 kernel_or_api = "linear elasticity stiffness assembly + solve"
-workload_class = "stub"
+workload_class = "partial"
 oracle = "cpp"
 li_package = "sim.scientific"
-last_reviewed = "2026-05-23"
-notes = "PH-CAE FEA track; engineering-cae-fundamentals.md; no bench oracle yet."
+last_reviewed = "2026-06-04"
+notes = "PH-CAE FEA track; Li oracle `sim_scientific_oracle_checksum_fea()` via `physics.rigid.fea_bar_oracle_checksum()` (1D 8-DOF bar Jacobi surrogate); registry algo 211–216."
 
 [[vertical]]
 id = "cfd_lid_driven_cavity"

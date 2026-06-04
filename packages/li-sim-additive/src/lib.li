@@ -1,13 +1,14 @@
 
 
 import sim
+import sim.scientific
 
 def li_sim_additive_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 def li_sim_additive_profile_contract() -> int
   requires true
@@ -94,15 +95,33 @@ def sim_additive_export_format_ok(fmt: int) -> int
     return 1
   return 0
 
+# WP-AM-02 — thermal export gate witnesses sim.scientific heat tier-2 oracle (not a bool flag).
+def sim_additive_heat_witness_checksum() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return sim_scientific_oracle_checksum_heat()
+
 def sim_additive_require_sim_pass_ok(sim_pass: int) -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases sim_pass
 =
-  if sim_pass == 1:
+  if sim_pass == 0:
     return 1
-  return 0
+  var chk: float = sim_additive_heat_witness_checksum()
+  if chk <= 0.0:
+    return 0
+  var heat201: SimRunResult = run_algo(201, 0)
+  if run_result_ok(heat201) != 1:
+    return 0
+  if heat201.checksum != chk:
+    return 0
+  if heat201.checksum == 1.001:
+    return 0
+  return 1
 
 def run_am_slicer_stage(stage: int, detail: int) -> SimRunResult
   requires detail >= 0
@@ -119,7 +138,7 @@ def run_am_slicer_stage(stage: int, detail: int) -> SimRunResult
     algo = algo_am_export_gcode_3mf()
   var checksum: float = 1.0
   if stage == am_slicer_stage_preview():
-    checksum = 1.01
+    checksum = sim_additive_heat_witness_checksum() * 1.0e-6
   if stage == am_slicer_stage_export():
     checksum = 1.02
   var r: SimRunResult

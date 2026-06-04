@@ -1,0 +1,25 @@
+# WP-AM-02: require_sim_pass gates on sim.scientific heat tier-2 oracle.
+import sim.additive
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_additive_require_sim_pass_ok(0) != 1:
+    return 1
+  if sim_additive_require_sim_pass_ok(1) != 1:
+    return 2
+  var chk: float = sim_additive_heat_witness_checksum()
+  var heat201: SimRunResult = run_algo(201, 0)
+  if heat201.checksum != chk:
+    return 3
+  if heat201.checksum == 1.001:
+    return 4
+  var preview: SimRunResult = run_am_slicer_stage(am_slicer_stage_preview(), 0)
+  if preview.ok != 1:
+    return 5
+  if preview.checksum <= 0.0:
+    return 6
+  return 0

@@ -93,7 +93,7 @@ workload_class = "partial"
 oracle = "composable_only"
 li_package = "sim.additive"
 last_reviewed = "2026-05-26"
-notes = "am_slice_mesh_plan layer/path points + sim_additive_require_sim_pass_ok; slice→preview→export composable — not Prusa/Cura/Bambu parity."
+notes = "am_slice_mesh_plan layer/path points + sim_additive_require_sim_pass_ok witnesses sim_scientific_oracle_checksum_heat (WP-AM-02); slice→preview→export composable — not Prusa/Cura/Bambu parity."
 
 [[vertical]]
 id = "scientific_viz"

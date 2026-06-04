@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-AM-02 thermal gate** — `sim_additive_require_sim_pass_ok` witnesses `sim_scientific_oracle_checksum_heat` + registry algo 201; preview stage checksum scaled from heat oracle; smoke `additive_require_sim_pass_heat.li`; depends on `li-sim-scientific`; `li_sim_additive_version` → 4.
+
+### Added
+
 - **WP-AM-03 sim.export.print** — `AmExportPrintResult`, `sim_export_print` (3MF/G-code/STL magic tags after slicer workflow); smoke `sim_export_print.li`; `li_sim_additive_version` → 3.
 - **PH-AM AM-0** — slicer stage gates (`am_slicer_stage_slice` / `preview` / `export`), export format ids, `run_additive_slicer_workflow`, `sim_additive_tick_stub`, smoke `li-tests/smoke/slicer_workflow.li`, composable `import_sim_additive_slicer_workflow.li`.
 - PH-SIM vertical gap **#3** — profile contract + studio id constants, `run_additive_smoke()`, package smoke (`li-tests/smoke/builds.li`).

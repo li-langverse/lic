@@ -7,6 +7,7 @@ description = "Additive simulation profiles — Metal and polymer AM simulation"
 
 [dependencies]
 li-sim = { path = "../li-sim" }
+li-sim-scientific = { path = "../li-sim-scientific" }
 
 [package.metadata.li]
 github_repo = "li-sim-additive"

@@ -11,6 +11,8 @@ li-physics-particles = { path = "../li-physics-particles" }
 li-physics-rigid = { path = "../li-physics-rigid" }
 li-physics-fluids = { path = "../li-physics-fluids" }
 li-physics-quantum = { path = "../li-physics-quantum" }
+li-sim-drug-design = { path = "../li-sim-drug-design" }
+li-sim-robotics = { path = "../li-sim-robotics" }
 
 [package.metadata.li]
 github_repo = "li-sim-scientific"

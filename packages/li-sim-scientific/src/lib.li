@@ -4,13 +4,15 @@ import physics.particles
 import physics.rigid
 import physics.fluids
 import physics.quantum
+import sim.drug_design
+import sim.robotics
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -233,6 +235,25 @@ def sim_scientific_oracle_checksum_qm() -> float
   decreases 0
 =
   return qm_normalize_oracle_checksum()
+
+# WP-SCI-03 — tier-2 Li oracle: LITL retrain-stage payload (sim.drug_design).
+def sim_scientific_oracle_checksum_drug() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var payload: DrugLitlStagePayload = drug_litl_stage_payload(drug_litl_stage_retrain())
+  return drug_litl_payload_checksum(payload)
+
+# WP-SCI-03 — tier-2 Li oracle: 2-DOF arm FK after bounded integrate (sim.robotics).
+def sim_scientific_oracle_checksum_robo() -> float
+  requires true
+  ensures result >= -2.0
+  ensures result <= 2.0
+  decreases 0
+=
+  var robo: SimRunResult = run_robo_arm_at_steps(8)
+  return robo.checksum
 
 def sim_scientific_checksum_combine(chk_md: float, chk_heat: float, chk_rigid: float, step_index: int) -> float
   requires step_index >= 1
@@ -553,6 +574,44 @@ def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_drug_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 501
+  requires algo_id <= 505
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_drug()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = sim_contract_sim_drug_design()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_robo_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 801
+  requires algo_id <= 805
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_robo()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = robo_vertical_sim_robotics()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -586,6 +645,14 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
     if algo_id <= 432:
       var d2b: int = detail
       return run_qm_tier2_registry(algo_id, d2b)
+  if algo_id >= 501:
+    if algo_id <= 505:
+      var d2c: int = detail
+      return run_drug_tier2_registry(algo_id, d2c)
+  if algo_id >= 801:
+    if algo_id <= 805:
+      var d2d: int = detail
+      return run_robo_tier2_registry(algo_id, d2d)
   var d3: int = detail
   return run_algo_registry_stub(algo_id, d3)
 

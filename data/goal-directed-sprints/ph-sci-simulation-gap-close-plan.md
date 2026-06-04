@@ -6,7 +6,7 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close plan
 
-**Status:** Phase 0–2 complete on `cursor/ph-ml-stage2-dl-spine` (2026-06-04); WP-SCI-GPU-03 `nbody_pair_force` borrow accumulation + `scripts/ph-sci-gpu-gates.sh` (VENDOR-03 doc gate). Gates: `scripts/ph-sci-phase{0,1,2}-gates.sh`, `scripts/ph-sci-gpu-gates.sh`.  
+**Status:** Phase 0–2 complete on `cursor/ph-ml-stage2-dl-spine` (2026-06-04); WP-SCI-GPU-03 `nbody_pair_force`; WP-SCI-03 drug/robo registry tier-2 (algo 501–505, 801–805). Gates: `scripts/ph-sci-phase{0,1,2}-gates.sh`, `scripts/ph-sci-gpu-gates.sh`.  
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and planned `science_gpu` / `@gpu` placement coverage.  
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
 

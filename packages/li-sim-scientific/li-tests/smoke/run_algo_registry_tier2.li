@@ -63,4 +63,24 @@ def main() -> int
     return 17
   if qm418.checksum == 1.001:
     return 23
+  var drug_oracle: float = sim_scientific_oracle_checksum_drug()
+  var drug501: SimRunResult = run_algo(501, 1)
+  if run_result_ok(drug501) != 1:
+    return 24
+  if drug501.algo_id != 501:
+    return 25
+  if drug501.checksum != drug_oracle:
+    return 26
+  if drug501.checksum == 1.001:
+    return 27
+  var robo_oracle: float = sim_scientific_oracle_checksum_robo()
+  var robo801: SimRunResult = run_algo(801, 2)
+  if run_result_ok(robo801) != 1:
+    return 28
+  if robo801.algo_id != 801:
+    return 29
+  if robo801.checksum != robo_oracle:
+    return 30
+  if robo801.checksum == 1.001:
+    return 31
   return 0

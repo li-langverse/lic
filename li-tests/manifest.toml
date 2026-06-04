@@ -1675,3 +1675,9 @@ suite = "science_gpu"
 file = "packages/li-sim-drug-design/li-tests/smoke/drug_gpu_dft_stage.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-17 @gpu drug LitL DFT stage"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-chem/li-tests/smoke/chem_gpu_dft_lkir.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-18 @gpu DFT LKIR launch pipeline"

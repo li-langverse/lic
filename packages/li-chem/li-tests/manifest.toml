@@ -5,3 +5,9 @@ suite = "smoke"
 file = "smoke/chem_gpu_dft_energy.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-16 @gpu DFT energy kernel"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/chem_gpu_dft_lkir.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-18 @gpu DFT LKIR launch pipeline"

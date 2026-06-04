@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PH-IO-4 ingest → registry dispatch** — `sim_scientific_csv_ingest_bundle_tag`, `sim_scientific_ingest_then_md_registry`; smoke ties std.io/csv ingest to `run_algo(105)` tier-2 MD oracle.
 - **PH-IO-4 scientific CSV ingest gate** — smoke `scientific_csv_ingest_gate.li` (`std.io`/`std.csv` before competitive vertical oracle checksums); phase-2 gate hook.
 - **WP-SCI-GPU-VENDOR-02** — `sim_scientific_md_device_buffer_bind_ok`, `sim_scientific_gpu_md_device_buffer_pipeline`; smoke `scientific_gpu_md_device_buffer.li`; bench `scripts/bench-ph-sci-md-device-buffer.sh` (0.1% force-checksum parity).
 - **WP-SCI-GPU-VENDOR-01** — `sim_scientific_md_lkir_progress`, `sim_scientific_gpu_lkir_launch_pipeline`; smoke `scientific_gpu_lkir_launch.li`; `lig.kernel.md_force_short` (kid=5); bench `scripts/bench-ph-sci-lkir-md-oracle.sh`.

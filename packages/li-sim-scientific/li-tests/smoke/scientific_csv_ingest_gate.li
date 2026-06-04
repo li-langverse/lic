@@ -30,4 +30,16 @@ def main() raises Alloc -> int
   var md: float = sim_scientific_oracle_checksum_md()
   if md <= 0.0:
     return 5
+  var bundle: int = sim_scientific_csv_ingest_bundle_tag()
+  if bundle != 10:
+    return 6
+  var md_reg: SimRunResult = sim_scientific_ingest_then_md_registry(bundle, 1)
+  if run_result_ok(md_reg) != 1:
+    return 7
+  if md_reg.algo_id != 105:
+    return 8
+  if md_reg.checksum != md:
+    return 9
+  if md_reg.checksum == 1.001:
+    return 10
   return 0

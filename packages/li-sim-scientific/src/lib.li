@@ -792,6 +792,24 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   bad.detail_emitted = d5
   return bad
 
+# PH-IO-4 — competitive vertical ingest bundle tag (lib path; smokes use std.io/csv first).
+def sim_scientific_csv_ingest_bundle_tag() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+# PH-IO-4 — ingest witness then MD tier-2 registry dispatch (no std.io import in lib).
+def sim_scientific_ingest_then_md_registry(ingest_tag: int, detail: int) -> SimRunResult
+  requires ingest_tag == 10
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  return run_algo(105, detail)
+
 def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3

@@ -32,7 +32,11 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
+**Agent verification (2026-06-04):** run `code_implementer-1780574454428` — rebased PR [#797](https://github.com/li-langverse/lic/pull/797) onto `main`; runnable lic via `scripts/lib/lic-bin-select.sh`; WSL gate uses `--version` probe.
+
 **Agent verification (2026-06-04):** run `code_implementer-1780540275403` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~122s) on Debian glibc 2.36 with `scripts/lib/lic-bin-select.sh` (prefers `build/compiler/lic` when runnable; falls back to `build-wsl` only when native lic is missing or not loadable).
+
+**Agent verification (2026-06-04):** run `code_implementer-1780539084727` — rebuilt native `build/compiler/lic/lic`, `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~121s); `resolve-lic.sh` → native lic (skips GLIBC-mismatched `build-wsl/`); `ratio_vs_li` 0.000129; `live_proxy` true; SB3/Ray `executed:true`. Follow-up PR [#797](https://github.com/li-langverse/lic/pull/797).
 
 **Agent verification (2026-06-04):** run `code_implementer-1780537415293` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~120s) on Linux agents with stale `build-wsl/` glibc; native `build/compiler/lic/lic` via runnable probe; `ratio_vs_li` 0.000129; `live_proxy` true; SB3/Ray `executed:true`. PR [#676](https://github.com/li-langverse/lic/pull/676) merged to `main`.
 

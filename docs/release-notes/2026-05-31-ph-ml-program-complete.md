@@ -19,6 +19,8 @@
 
 ## Verification
 
+On Linux agent hosts where `build-wsl/compiler/lic/lic` is present but not runnable (GLIBC mismatch), gate scripts use `scripts/lib/lic-bin-select.sh` (and `lic-runnable.sh` shim) to prefer native `build/` or sibling `/workspace/lic` builds.
+
 ```bash
 export LIG_EMIT_CUDA=1
 bash scripts/lig-emit-vendor-stub.sh
@@ -32,9 +34,15 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
+**Agent verification (2026-06-04):** run `code_implementer-1780595491489` — rebased PR [#763](https://github.com/li-langverse/lic/pull/763) onto `main`; `lic-bin-select.sh` extended with `/workspace/lic` sibling search; `lic-runnable.sh` shim retained for PH-ML gates.
+
 **Agent verification (2026-06-04):** run `code_implementer-1780540275403` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~122s) on Debian glibc 2.36 with `scripts/lib/lic-bin-select.sh` (prefers `build/compiler/lic` when runnable; falls back to `build-wsl` only when native lic is missing or not loadable).
 
-**Agent verification (2026-06-01):** latest run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green, await human `merge-approved`.
+**Agent verification (2026-06-03):** run `code_implementer-1780516618535` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~122s) on Debian/glibc 2.36 via `lic-bin-select.sh` → `/workspace/lic/build/compiler/lic/lic`; `ratio_vs_li` 0.00014 (T6), SB3/Ray `executed:true` (T5), `live_proxy:true` (T8); PR [#763](https://github.com/li-langverse/lic/pull/763).
+
+**Agent verification (2026-06-03):** run `code_implementer-1780513967350` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~115s); `ratio_vs_li` 0.000125; PR [#763](https://github.com/li-langverse/lic/pull/763) — exec-tested lic resolution for stale build-wsl on Linux agents.
+
+**Agent verification (2026-06-01):** run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green, await human `merge-approved`.
 
 **Prior run `code_implementer-1780279881936`:** `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~116s); `ratio_vs_li` 0.0044 (T6), `live_proxy` true (T8).
 

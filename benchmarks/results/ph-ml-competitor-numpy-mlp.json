@@ -3,12 +3,12 @@
   "suite": "ph-ml-competitor-numpy-mlp",
   "workload": "mlp_forward_2_2_1_f32",
   "executed": true,
-  "cpu_sec": 2e-06,
+  "cpu_sec": 3e-06,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
-  "framework_version": "2.2.6",
+  "framework_version": "2.0.2",
   "device": "cpu",
   "workload_size": null,
   "note": null,
-  "generated_at": "2026-06-01T03:08:54Z"
+  "generated_at": "2026-06-04T00:43:54Z"
 }

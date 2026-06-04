@@ -37,8 +37,8 @@ fi
 
 bash scripts/ph-ml-program-complete-gates.sh
 
-grep -q 'while t < 32' packages/li-ml/src/lib.li \
-  || { echo "2.1: missing 32-tile LKIR matmul prologue"; exit 1; }
+grep -q 'ml_matmul_tiled_dynamic' packages/li-ml/src/lib.li \
+  || { echo "2.1: missing dynamic tiled matmul"; exit 1; }
 grep -q 'ml_gpu_mlp_lkir_progress' packages/li-ml/src/lib.li \
   || { echo "2.1: missing MLP device buffer progress"; exit 1; }
 grep -q 'ml_mlp_train_step_f32' packages/li-ml/src/lib.li \

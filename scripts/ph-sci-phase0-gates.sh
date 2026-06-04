@@ -35,6 +35,9 @@ echo "==> WP-SCI-BUILD-03: honest package smokes (Phase 0 blocked libs)"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim/li-tests/smoke/builds.li -o /dev/null
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-core/li-tests/smoke/builds.li -o /dev/null
 
+echo "==> PH-IO-4: std.io + std.csv ingest harness"
+bash scripts/check-ph-io-4-gate.sh
+
 echo "==> WP-SCI-GPU-00: science_gpu suite"
 bash scripts/check-science-gpu-gate.sh
 

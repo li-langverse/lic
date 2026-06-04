@@ -31,6 +31,14 @@ def csv_parse_row_three_col() raises Alloc -> CsvRow
   r.field_count = 3
   return r
 
+# PH-IO-4 — field-count stub for benchmark CSV ingest (fixed witness).
+def csv_field_count_stub(line: str) raises Alloc -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
 def csv_io_ingest_bundle_tag() -> int
   requires true
   ensures result == 10

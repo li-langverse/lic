@@ -3469,8 +3469,8 @@ static void httpd_proxy_try_send_req(int epfd, int32_t slot) {
         httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
         return;
       }
-      s->proxy_body_slot_done += n;
-      s->proxy_body_left -= n;
+      s->proxy_body_slot_done += (int)off;
+      s->proxy_body_left -= (int)off;
     }
     if (s->proxy_body_left > 0) {
       s->proxy_phase = HTTPD_PROXY_PHASE_SEND_BODY;
@@ -4426,9 +4426,16 @@ static void httpd_proxy_up_handler(int epfd, int32_t slot, uint32_t events) {
     return;
   }
   if (events & (EPOLLERR | EPOLLHUP)) {
-    if (s->proxy_phase == HTTPD_PROXY_PHASE_RELAY && s->proxy_rbuf_sent > 0) {
-      httpd_proxy_finish_ok(epfd, slot);
-      return;
+    if (s->proxy_phase == HTTPD_PROXY_PHASE_RELAY) {
+      httpd_proxy_pump_relay(epfd, slot);
+      if (!s->proxy_active) {
+        return;
+      }
+      httpd_proxy_flush_client_out(epfd, slot);
+      if (s->proxy_relay_got_data || httpd_proxy_relay_pending_client(s)) {
+        httpd_proxy_finish_ok(epfd, slot);
+        return;
+      }
     }
     httpd_proxy_finish_err(epfd, slot);
     return;

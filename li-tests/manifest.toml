@@ -1648,6 +1648,12 @@ note = "PH-SCI-GPU-10 @gpu arm integration loop"
 
 [[tests]]
 suite = "science_gpu"
+file = "packages/li-sim-robotics/li-tests/smoke/robo_gpu_ik_step.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-15 @gpu 6-DOF session IK step"
+
+[[tests]]
+suite = "science_gpu"
 file = "packages/li-sim-viz/li-tests/smoke/viz_gpu_pipeline_step.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-11 @gpu viz pipeline scientific step"

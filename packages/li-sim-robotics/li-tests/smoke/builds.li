@@ -13,4 +13,6 @@ def main() -> int
     return 3
   if run_robotics_smoke() != 0:
     return 4
+  if sim_robotics_gpu_ik_progress() != 1:
+    return 5
   return 0

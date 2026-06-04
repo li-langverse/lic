@@ -58,5 +58,9 @@ On-disk safetensors header parse (dtype/shape/tensor count), minimal GGUF header
 
 `llm_forward_matmul_top_id` uses `ml_matmul_f32` on safetensors mmap bytes; `llm_generate_tracked` greedy decode >=8 steps. Bench `forward_matmul_ok`, competitive Li row `tier3_cpu`. Gate: `ph-ml-stage5-gates.sh`. Master: `ph-ml-hpc-ai-library-gates.sh`.
 
+## Stage 6 ? li-httpd native generate
+
+`llm_trusted_httpd_native_generate_ok` runs native decode on `fixtures/ph-ml-weights`; bench `native_generate` (Python T8 `live_proxy` retired for prod gate). Gate: `ph-ml-stage6-gates.sh`.
+
 ## Wave 13 ? program complete (all deferred T1?T8)
 

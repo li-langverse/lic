@@ -42,8 +42,8 @@ grep -q 'llm_forward_matmul_top_id' packages/li-llm/src/lib.li \
   || { echo "5.1: missing matmul forward"; exit 1; }
 grep -q 'llm_generate_tracked' packages/li-llm/src/lib.li \
   || { echo "5.2: missing tracked decode"; exit 1; }
-grep -q 'return 6' packages/li-llm/src/lib.li \
-  || { echo "5.3: li_llm_version must be 6"; exit 1; }
+grep -qE 'return (6|7)' packages/li-llm/src/lib.li \
+  || { echo "5.3: li_llm_version must be >= 6"; exit 1; }
 
 for smoke in \
   packages/li-llm/li-tests/smoke/llm_forward_matmul_real.li \

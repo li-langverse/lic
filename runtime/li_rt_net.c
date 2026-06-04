@@ -2964,6 +2964,9 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
       net_slot_consume(slot, hdr_end);
       return keep ? 1 : -1;
     }
+    if (req.body_mode == 1 && (g_slots[slot].len - hdr_end) < req.content_length) {
+      return 0;
+    }
     hdr_end = httpd_inject_traceparent_if_missing(slot, hdr_end);
     hdr_end = httpd_proxy_compact_req_hdr(slot, hdr_end);
     httpd_proxy_client_epoll_mod(g_httpd_epfd, slot, EPOLLIN | EPOLLET);
@@ -3329,6 +3332,16 @@ static int httpd_proxy_feed_cached_header(int epfd, int32_t slot, const char* da
 
 static void httpd_proxy_enter_relay(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
+  int consume = s->proxy_hdr_end;
+  if (s->proxy_req.body_mode == 1 && s->proxy_req.content_length > 0) {
+    consume = s->proxy_hdr_end + s->proxy_req.content_length;
+    if (consume > s->len) {
+      consume = s->len;
+    }
+  }
+  if (consume > 0 && consume <= s->len) {
+    net_slot_consume(slot, consume);
+  }
   s->proxy_phase = HTTPD_PROXY_PHASE_RELAY;
   if (g_proxy_resp_cl_cached >= 0 && g_proxy_resp_hdr_bytes_cached > 0 &&
       g_proxy_resp_hdr_bytes_cached <= (int)sizeof(g_proxy_resp_hdr_copy)) {
@@ -4544,7 +4557,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
     g_proxy_snap_len = 0;
   }
   if (req->body_mode == 1) {
-    s->proxy_body_left = req->content_length - (s->len - hdr_end);
+    s->proxy_body_left = req->content_length;
     if (s->proxy_body_left < 0) {
       s->proxy_body_left = 0;
     }
@@ -5914,7 +5927,7 @@ int32_t httpd_li_proxy_init_req_i(int32_t slot, int32_t hdr_end) {
   s->proxy_body_left = 0;
   s->proxy_up_pending_len = 0;
   if (req.body_mode == 1) {
-    s->proxy_body_left = req.content_length - (s->len - hdr_end);
+    s->proxy_body_left = req.content_length;
     if (s->proxy_body_left < 0) {
       s->proxy_body_left = 0;
     }

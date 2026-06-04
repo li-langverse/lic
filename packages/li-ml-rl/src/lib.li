@@ -4,10 +4,10 @@ import sim
 
 def ml_rl_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 def ml_rl_worker_mode() -> int
   requires true
@@ -27,6 +27,8 @@ type SampleJob = object
 type TrainStepJob = object
   public batch_size: int
   public loss_stub: float
+  public policy_loss_mean: float
+  public algorithm: int
   public dispatched: int
 
 type EvalStepJob = object
@@ -71,6 +73,8 @@ def job_graph_stub_default() -> JobGraphStub
   g.last_sample.done = 0
   g.train_step.batch_size = 0
   g.train_step.loss_stub = 0.0
+  g.train_step.policy_loss_mean = 0.0
+  g.train_step.algorithm = ml_rl_train_algorithm_scaffold()
   g.train_step.dispatched = 0
   g.eval_step.batch_size = 0
   g.eval_step.mean_reward = 0.0
@@ -92,6 +96,40 @@ def job_graph_stub_default() -> JobGraphStub
   g.sample_q3.reward = 0.0
   g.sample_q3.done = 0
   return g
+
+def ml_rl_train_algorithm_scaffold() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  # 1 = reward-mean scaffold; full PPO deferred (Stage 3.3).
+  return 1
+
+def ml_rl_train_policy_loss_from_graph(graph: JobGraphStub, batch_size: int) -> float
+  requires batch_size >= 0
+  requires batch_size <= 4
+  ensures result >= 0.0
+  decreases batch_size
+=
+  if batch_size <= 0:
+    return 0.0
+  var sum: float = 0.0
+  var n: int = 0
+  if batch_size > 0:
+    sum = sum + graph.sample_q0.reward
+    n = n + 1
+  if batch_size > 1:
+    sum = sum + graph.sample_q1.reward
+    n = n + 1
+  if batch_size > 2:
+    sum = sum + graph.sample_q2.reward
+    n = n + 1
+  if batch_size > 3:
+    sum = sum + graph.sample_q3.reward
+    n = n + 1
+  if n <= 0:
+    return 0.0
+  return sum / env_tick_as_float(n)
 
 def ml_rl_async_env_count() -> int
   requires true
@@ -172,7 +210,9 @@ def ml_rl_job_graph_train_step(graph: var JobGraphStub, batch_size: int) -> int
   if batch_size <= 0:
     return sim_status_invalid_dt()
   graph.train_step.batch_size = batch_size
+  graph.train_step.policy_loss_mean = ml_rl_train_policy_loss_from_graph(graph, batch_size)
   graph.train_step.loss_stub = graph.total_reward / env_tick_as_float(batch_size)
+  graph.train_step.algorithm = ml_rl_train_algorithm_scaffold()
   graph.train_step.dispatched = 1
   graph.job_count = graph.job_count + 1
   return sim_status_ok()

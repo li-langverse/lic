@@ -7,7 +7,7 @@
 
 ## 1. Executive summary & goals
 
-Phase 10 upgrades the **proof base** from placeholder axiom witnesses (`ensures result == 0` / `return 0` only) to **statement-aligned Li contracts** that mirror Lean `MathAxioms.lean` and catalog rows. It adds catalog metadata (`li_axiom_symbol`, `specimen_role`), proof-library **AXIOM** presentation, and a **compiler RFC** for `axiom proc` / VC-skip emit — without agents editing `compiler/` or `trusted.lean`.
+Phase 10 upgrades the **proof base** from placeholder axiom witnesses (`ensures result == 0` / `return 0` only) to **statement-aligned Li contracts** that mirror Lean `MathAxioms.lean` and catalog rows. It adds catalog metadata (`li_axiom_symbol`, `specimen_role`, `kind=axiom`), proof-library **AXIOM** presentation, and a **compiler RFC** for **`def` + `lean_thm` VC-skip emit** (not `axiom proc`) — parser-only `implies` in contracts is Julian/compiler-owned when needed.
 
 | Goal | Outcome |
 |------|---------|
@@ -16,7 +16,7 @@ Phase 10 upgrades the **proof base** from placeholder axiom witnesses (`ensures 
 | Basic corpus | Replace `*_axiom_witness` stubs where feasible; enrich Erdős open rows |
 | Catalog | TOML + schema v3 extensions; stub-audit gate for referenced specimens |
 | Site | proof-library AXIOM badge; hide `witness_stub` snippets |
-| Compiler | BUG-C-13 RFC for Julian — axiom emit in `vc_emit_lean` |
+| Compiler | BUG-C-13 RFC — `def` + catalog `kind=axiom` + `lean_thm` discharge in `vc_emit_lean` |
 
 ## 2. Non-goals
 
@@ -47,8 +47,8 @@ flowchart TB
     CAT --> V[verify-slice]
   end
   subgraph compiler [Compiler — Julian only]
-    RFC[BUG-C-13 RFC]
-    RFC -->|future| VC[vc_emit_lean axiom emit]
+    RFC[BUG-C-13 RFC def+lean_thm]
+    RFC -->|future| VC[vc_emit_lean proof_db axiom emit]
     VC -->|skip body VC| DIS[lemma discharge cites axiom]
   end
   subgraph site [proof-library]
@@ -63,7 +63,7 @@ flowchart TB
 | Lean `proof-db/math/axioms/MathAxioms.lean` | Source of truth for `Li.ProofDb.Math.*` axioms |
 | Li specimens | Executable contracts for explorer + future VC |
 | Catalog TOML | `li_axiom_symbol`, `specimen_role`, `lean_thm`, `li_specimen` |
-| Compiler (post-RFC) | `axiom proc` or `@axiom def` in proof-db only; emit `lean_thm` reference, skip body VC |
+| Compiler (post-RFC) | `proof_db_*` **def** + catalog `kind=axiom`; emit `lean_thm` reference, skip body VC; contracts use **`implies`** |
 | proof-library | Ingest catalog + Lean scan; learner-facing badges |
 
 ## 4. Phases overview
@@ -116,7 +116,7 @@ flowchart TB
 | Risk | Mitigation |
 |------|------------|
 | Li Nat/ℝ types incomplete | Contracts use `int`/`float` + comments; Lean remains authoritative |
-| Compiler lacks axiom emit | RFC BUG-C-13; specimens compile as `def` witnesses until Julian ships |
+| Compiler lacks full axiom emit | RFC BUG-C-13; specimens stay `def` witnesses with `implies` contracts until Julian ships catalog-driven `lean_thm` skip |
 | proof-library separate repo | WP-AX-06 PR against proof-library; gate checks handoff signoff path |
 | stub-audit noise on corpus | WP-AX-08 scopes to `gap_kind = axiom_layer` + math paths first |
 | Phase 9 open BUG-C rows | Do not mark proved; axiom layer independent |

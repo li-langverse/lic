@@ -48,6 +48,24 @@ note = "PH-ML Wave 6 WP-ML-11"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/ml_matmul_tiled_dynamic.li"
+outcome = "compile_open_ok"
+note = "PH-ML Stage 2b dynamic tiled matmul"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_tensor_matmul_4.li"
+outcome = "compile_open_ok"
+note = "PH-ML Stage 2b tensor 4x4 pilot"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_tensor_matmul_16.li"
+outcome = "compile_open_ok"
+note = "PH-ML Stage 2b tensor 8x8 nested pilot"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/ml_gpu_lkir_launch.li"
 outcome = "compile_open_ok"
 note = "PH-ML Wave 12 WP-ML-05 @gpu LKIR launch"

@@ -3,12 +3,12 @@
   "suite": "ph-ml-competitor-ray-rllib",
   "workload": "async_env_collect_4",
   "executed": true,
-  "cpu_sec": 0.047124,
+  "cpu_sec": 0.068377,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "framework_version": "2.44.1",
   "device": "cpu",
   "workload_size": 4,
   "note": "Ray core task fallback (RLlib deferred: `rollouts` has been deprecated. Use `AlgorithmConfig.env_runners(..)` instead.)",
-  "generated_at": "2026-06-04T03:12:20Z"
+  "generated_at": "2026-06-04T10:27:09Z"
 }

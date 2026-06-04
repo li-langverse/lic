@@ -932,7 +932,8 @@ struct Ctx {
                       "cannot mix int and float in arithmetic without explicit cast");
           return make_int();
         }
-        if (e.bin_op == BinOp::And || e.bin_op == BinOp::Or || e.bin_op == BinOp::BitXor ||
+        if (e.bin_op == BinOp::Implies || e.bin_op == BinOp::And || e.bin_op == BinOp::Or ||
+            e.bin_op == BinOp::BitXor ||
             e.bin_op == BinOp::Shl || e.bin_op == BinOp::Shr) {
           if (l->kind == TyKind::Int && r->kind == TyKind::Int) {
             if (l->unsigned_scalar != r->unsigned_scalar) {

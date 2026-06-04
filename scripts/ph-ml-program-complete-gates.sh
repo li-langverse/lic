@@ -25,17 +25,16 @@ run_in_wsl() {
   wsl.exe bash -lc "cd '$wsl_root' && PH_ML_PROGRAM_COMPLETE_ROOT='$wsl_root' PH_ML_PROGRAM_COMPLETE_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' BENCHMARKS_RESULTS='$wsl_root/benchmarks/results' PH_ML_WEIGHTS_FIXTURE='${wsl_weights:-$wsl_root/benchmarks/fixtures/ph-ml-weights}' bash scripts/ph-ml-program-complete-gates.sh"
 }
 
-# shellcheck source=lib/lic-runnable.sh
-source "$ROOT/scripts/lib/lic-runnable.sh"
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
 
-if [[ "${PH_ML_PROGRAM_COMPLETE_INNER:-0}" != "1" ]] && ! lic_resolve_runnable "$ROOT" >/dev/null 2>&1 && command -v wsl.exe >/dev/null 2>&1; then
+if [[ "${PH_ML_PROGRAM_COMPLETE_INNER:-0}" != "1" ]] && ! li_has_runnable_lic "$ROOT" && command -v wsl.exe >/dev/null 2>&1; then
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
   if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
     run_in_wsl
     exit $?
   fi
 fi
-export LIC="${LIC:-$(lic_resolve_runnable "$ROOT")}"
 
 # shellcheck source=lib/benchmarks-env.sh
 export BENCHMARKS_ALLOW_NO_HARNESS=1
@@ -43,6 +42,7 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1
+li_ensure_lic "$ROOT" "ph-ml-program-complete-gates: build lic (./scripts/build.sh or build-wsl in WSL)" || exit 1
 
 bash scripts/ph-ml-wave13-gates.sh
 

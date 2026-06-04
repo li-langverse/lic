@@ -6,9 +6,9 @@
   "cpu_sec": 1e-06,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
-  "framework_version": "2.0.2",
+  "framework_version": "2.2.6",
   "device": "cpu",
   "workload_size": 16,
   "note": null,
-  "generated_at": "2026-06-04T03:11:21Z"
+  "generated_at": "2026-06-04T10:27:16Z"
 }

@@ -17,3 +17,9 @@ suite = "smoke"
 file = "smoke/md_particle_memory_ledger.li"
 outcome = "verify_ok"
 note = "T-PKG-li-scene-md-particle-memory-ledger"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/scene_gpu_md_particle_bench.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-09 @gpu MD particle tier bench"

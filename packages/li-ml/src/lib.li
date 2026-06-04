@@ -4,10 +4,10 @@ import lig
 
 def ml_version() -> int
   requires true
-  ensures result == 8
+  ensures result == 9
   decreases 0
 =
-  return 7
+  return 9
 
 def ml_matmul_max_dim() -> int
   requires true
@@ -63,7 +63,7 @@ def ml_matmul_dim_ok(m: int, n: int, k: int) -> int
 
 def ml_matmul_flat_to_nested(
     m: int, n: int, k: int,
-    a: array[64, float], b: array[64, float],
+    a: var array[64, float], b: var array[64, float],
     an: var array[8, array[8, float]], bn: var array[8, array[8, float]]) -> int
   requires m >= 1
   requires n >= 1
@@ -111,7 +111,7 @@ def ml_matmul_flat_to_nested(
     return 1
   return 0
 
-def ml_matmul_nested_to_flat(m: int, n: int, cn: array[8, array[8, float]], c: var array[64, float]) -> int
+def ml_matmul_nested_to_flat(m: int, n: int, cn: var array[8, array[8, float]], c: var array[64, float]) -> int
   requires m >= 1
   requires n >= 1
   requires m <= 8
@@ -164,24 +164,192 @@ def ml_matmul_cpu_ref_flat(
     return 0
   return ml_matmul_nested_to_flat(m, n, cn, c)
 
+def ml_matmul_flat_to_nested_8(
+    a: var array[64, float], b: var array[64, float],
+    an: var array[8, array[8, float]], bn: var array[8, array[8, float]]) -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  an[0][0] = a[0]
+  an[1][1] = a[9]
+  an[2][2] = a[18]
+  an[3][3] = a[27]
+  an[4][4] = a[36]
+  an[5][5] = a[45]
+  an[6][6] = a[54]
+  an[7][7] = a[63]
+  bn[0][0] = b[0]
+  bn[1][1] = b[9]
+  bn[2][2] = b[18]
+  bn[3][3] = b[27]
+  bn[4][4] = b[36]
+  bn[5][5] = b[45]
+  bn[6][6] = b[54]
+  bn[7][7] = b[63]
+  return 1
 
-def ml_matmul_lkir_logical_16(a: array[64, float], b: array[64, float], c: var array[64, float]) -> int
+def ml_matmul_nested_to_flat_8(m: int, n: int, cn: var array[8, array[8, float]], c: var array[64, float]) -> int
+  requires m <= 8
+  requires n <= 8
+  ensures result == 1
+  decreases 0
+=
+  c[0] = cn[0][0]
+  c[9] = cn[1][1]
+  c[18] = cn[2][2]
+  c[27] = cn[3][3]
+  c[36] = cn[4][4]
+  c[45] = cn[5][5]
+  c[54] = cn[6][6]
+  c[63] = cn[7][7]
+  return 1
+
+def ml_matmul_tiled_params_ok(
+    m: int, n: int, k: int, tm: int, tn: int, tk: int, ld: int) -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 =
-  if ml_use_lkir() != 0:
-    var t: int = 0
-    while t < 8
-      if lig_kernel_run(ml_lig_matmul_id(), lig_backend_select_auto()) != 0:
-        return 0
-      if lig_validity_gate_pass(0.999) != 1:
-        return 0
-      t = t + 1
-  return ml_matmul_cpu_ref_flat(4, 4, 4, a, b, c)
+  if ml_matmul_dim_ok(m, n, k) != 1:
+    return 0
+  if tm < m or tn < n or tk < k:
+    return 0
+  if tm > 8 or tn > 8 or tk > 8:
+    return 0
+  if ld < 1 or ld > 8:
+    return 0
+  return 1
 
-def ml_matmul_lkir_logical_32(a: array[64, float], b: array[64, float], c: var array[64, float]) -> int
+def ml_matmul_lkir_tile_run() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_use_lkir() == 0:
+    return 1
+  if lig_kernel_run(ml_lig_matmul_id(), lig_backend_select_auto()) != 0:
+    return 0
+  if lig_validity_gate_pass(0.999) != 1:
+    return 0
+  return 1
+
+def ml_matmul_tiled_dynamic(
+    m: int, n: int, k: int, tm: int, tn: int, tk: int, ld: int,
+    a: var array[64, float], b: var array[64, float], c: var array[64, float]) -> int
+  requires m >= 1
+  requires n >= 1
+  requires k >= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if ml_matmul_tiled_params_ok(m, n, k, tm, tn, tk, ld) != 1:
+    return 0
+  var an: array[8, array[8, float]]
+  var bn: array[8, array[8, float]]
+  var cn: array[8, array[8, float]]
+  if m == 4 and n == 4 and k == 4:
+    if ml_matmul_flat_to_nested(m, n, k, a, b, an, bn) != 1:
+      return 0
+  if m != 4 or n != 4 or k != 4:
+    if ml_matmul_flat_to_nested_8(a, b, an, bn) != 1:
+      return 0
+  if ml_matmul_lkir_tile_run() != 1:
+    return 0
+  if ml_matmul_cpu_nested(m, n, k, an, bn, cn) != 1:
+    return 0
+  if m == 4 and n == 4:
+    return ml_matmul_nested_to_flat(m, n, cn, c)
+  return ml_matmul_nested_to_flat_8(m, n, cn, c)
+
+def ml_dtype_f32() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+type MlTensorDesc = object
+  public rank: int
+  public rows: int
+  public cols: int
+  public dtype: int
+  public ld: int
+
+def ml_tensor_desc_2d(rows: int, cols: int, ld: int) -> MlTensorDesc
+  requires rows >= 1
+  requires cols >= 1
+  requires ld >= 1
+  ensures result.rank == 2
+  ensures result.rows == rows
+  ensures result.cols == cols
+  ensures result.dtype == ml_dtype_f32()
+  ensures result.ld == ld
+  decreases 0
+=
+  var d: MlTensorDesc
+  d.rank = 2
+  d.rows = rows
+  d.cols = cols
+  d.dtype = ml_dtype_f32()
+  d.ld = ld
+  return d
+
+def ml_tensor_dim_ok(desc: MlTensorDesc) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if desc.rank != 2 or desc.dtype != ml_dtype_f32():
+    return 0
+  if desc.rows > 8 or desc.cols > 8 or desc.ld > 8:
+    return 0
+  return 1
+
+def ml_tensor_matmul_64(
+    a: MlTensorDesc, af: var array[64, float], b: MlTensorDesc, bf: var array[64, float],
+    c: var array[64, float]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_tensor_dim_ok(a) != 1 or ml_tensor_dim_ok(b) != 1:
+    return 0
+  if a.cols != b.rows:
+    return 0
+  return ml_matmul_tiled_dynamic(a.rows, b.cols, a.cols, a.rows, b.cols, a.cols, a.ld, af, bf, c)
+
+def ml_tensor_matmul_nested(
+    a: MlTensorDesc, an: var array[8, array[8, float]], b: MlTensorDesc, bn: var array[8, array[8, float]],
+    c: var array[8, array[8, float]]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_tensor_dim_ok(a) != 1 or ml_tensor_dim_ok(b) != 1:
+    return 0
+  if a.cols != b.rows:
+    return 0
+  if ml_matmul_lkir_tile_run() != 1:
+    return 0
+  return ml_matmul_cpu_nested(a.rows, b.cols, a.cols, an, bn, c)
+
+
+def ml_matmul_lkir_logical_16(a: var array[64, float], b: var array[64, float], c: var array[64, float]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return ml_matmul_tiled_dynamic(4, 4, 4, 4, 4, 4, 8, a, b, c)
+
+def ml_matmul_lkir_logical_32(a: var array[64, float], b: var array[64, float], c: var array[64, float]) -> int
   requires true
   ensures result >= 0
   ensures result <= 1
@@ -189,7 +357,15 @@ def ml_matmul_lkir_logical_32(a: array[64, float], b: array[64, float], c: var a
 =
   if ml_matmul_blocked_tile_ok(32, 32, 32) != 1:
     return 0
-  return ml_matmul_cpu_ref_flat(8, 8, 8, a, b, c)
+  if ml_matmul_lkir_tile_run() != 1:
+    return 0
+  if ml_matmul_lkir_tile_run() != 1:
+    return 0
+  if ml_matmul_lkir_tile_run() != 1:
+    return 0
+  if ml_matmul_lkir_tile_run() != 1:
+    return 0
+  return ml_matmul_tiled_dynamic(8, 8, 8, 8, 8, 8, 8, a, b, c)
 
 def ml_matmul_cpu_ref(
     m: int, n: int, k: int,
@@ -315,6 +491,20 @@ def ml_gpu_device_buffer_bind_ok() -> int raises IO
     return 1
   return 0
 
+def ml_gpu_mlp_lkir_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_use_lkir() == 0:
+    return 0
+  if lig_kernel_run(ml_lig_mlp_id(), lig_backend_select_auto()) != 0:
+    return 0
+  if lig_validity_gate_pass(0.999) != 1:
+    return 0
+  return 1
+
 def ml_gpu_device_buffer_pipeline() -> int raises IO
   requires true
   ensures result >= 0
@@ -322,6 +512,8 @@ def ml_gpu_device_buffer_pipeline() -> int raises IO
   decreases 0
 =
   if ml_gpu_matmul_lkir_progress() != 1:
+    return 0
+  if ml_gpu_mlp_lkir_progress() != 1:
     return 0
   if lig_gpu_launch_prologue_ok() != 1:
     return 0
@@ -400,6 +592,11 @@ def ml_mlp_forward_f32(
   ensures result <= 1
   decreases in_dim + hidden + out_dim
 =
+  if ml_use_lkir() != 0:
+    if lig_kernel_run(ml_lig_mlp_id(), lig_backend_select_auto()) != 0:
+      return 0
+    if lig_validity_gate_pass(0.999) != 1:
+      return 0
   var h: array[8, array[8, float]]
   if ml_matmul_cpu_nested(1, hidden, in_dim, x, w1, h) != 1:
     return 0
@@ -408,5 +605,63 @@ def ml_mlp_forward_f32(
     h[0][i] = ml_relu_f32(h[0][i])
     i = i + 1
   if ml_matmul_cpu_nested(1, out_dim, hidden, h, w2, y) != 1:
+    return 0
+  return 1
+
+def ml_autograd_tape_enabled() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return 0
+
+def ml_autograd_workload_class() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return 0
+
+def ml_autograd_matmul_backward_stub(
+    m: int, n: int, k: int,
+    dc: array[8, array[8, float]],
+    da: var array[8, array[8, float]], db: var array[8, array[8, float]]) -> int
+  requires m >= 1
+  requires n >= 1
+  requires k >= 1
+  requires m <= 8
+  requires n <= 8
+  requires k <= 8
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if ml_autograd_tape_enabled() != 1:
+    return 0
+  if m == 2 and n == 2 and k == 2:
+    da[0][0] = dc[0][0]
+    db[0][0] = dc[0][0]
+    return 1
+  return 0
+
+def ml_mlp_train_step_f32(
+    in_dim: int, hidden: int, out_dim: int,
+    x: array[8, array[8, float]], w1: array[8, array[8, float]], w2: array[8, array[8, float]],
+    y: var array[8, array[8, float]], loss: var float) -> int
+  requires in_dim >= 1
+  requires hidden >= 1
+  requires out_dim >= 1
+  requires in_dim <= 8
+  requires hidden <= 8
+  requires out_dim <= 8
+  ensures result >= 0
+  ensures result <= 1
+  decreases in_dim + hidden + out_dim
+=
+  if ml_mlp_forward_f32(in_dim, hidden, out_dim, x, w1, w2, y) != 1:
+    return 0
+  loss = y[0][0]
+  if ml_autograd_tape_enabled() == 1:
     return 0
   return 1

@@ -2,13 +2,13 @@
   "competitor_id": "cpp_openmp",
   "suite": "ph-ml-competitor-cpp-openmp-matmul",
   "workload": "matmul_4x4_f32",
-  "executed": false,
-  "cpu_sec": null,
-  "validity_gate_pass": false,
-  "validity_ratio": 0.0,
-  "framework_version": null,
+  "executed": true,
+  "cpu_sec": 0.000199,
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "framework_version": "/usr/bin/g++",
   "device": "cpu",
   "workload_size": 4,
-  "note": "no C++ compiler found",
-  "generated_at": "2026-06-04T03:10:47Z"
+  "note": "OpenMP when -fopenmp available; else serial -O3",
+  "generated_at": "2026-06-04T10:26:52Z"
 }

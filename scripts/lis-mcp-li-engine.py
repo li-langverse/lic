@@ -115,6 +115,96 @@ TOOLS: list[dict[str, Any]] = [
             "additionalProperties": False,
         },
     },
+    {
+        "name": "ui_snapshot",
+        "description": "Capture UiSnapshot element tree from native Studio shell",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "profile": {"type": "string"},
+                "size": {"type": "array", "items": {"type": "integer"}},
+            },
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "ui_click",
+        "description": "Click a shell element by stable dot-path ID",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"element_id": {"type": "string"}},
+            "required": ["element_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "ui_key",
+        "description": "Send keyboard action (cmd_k, escape, digit_1..5)",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"key": {"type": "string"}},
+            "required": ["key"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "ui_set_value",
+        "description": "Set text on demo-safe input fields",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "element_id": {"type": "string"},
+                "text": {"type": "string"},
+            },
+            "required": ["element_id", "text"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "ui_wait",
+        "description": "Wait for ms or frames in demo replay",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "ms": {"type": "integer"},
+                "frames": {"type": "integer"},
+            },
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "demo_record_start",
+        "description": "Start demo recording session from script path or inline steps",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"script_path": {"type": "string"}},
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "demo_record_step",
+        "description": "Execute one demo script step in active session",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "session_id": {"type": "string"},
+                "step": {"type": "object"},
+            },
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "demo_record_finish",
+        "description": "Finish demo session and encode MP4",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "session_id": {"type": "string"},
+                "out_mp4": {"type": "string"},
+            },
+            "additionalProperties": False,
+        },
+    },
 ]
 
 TOOL_INDEX = {t["name"]: i for i, t in enumerate(TOOLS)}

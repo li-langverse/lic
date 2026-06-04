@@ -250,6 +250,8 @@ int32_t li_rt_studio_viewport_error_set_mock(int32_t kind);
 int32_t li_rt_studio_viewport_error_retry(void);
 int32_t li_rt_studio_mcp_tool_from_name(const char* name);
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
+int32_t li_rt_ui_snapshot_tag_from_id(const char* id);
+const char* li_rt_ui_snapshot_id_name(int32_t tag);
 int32_t li_rt_studio_viewport_display_bg(void);
 int32_t li_rt_studio_viewport_display_set_bg(int32_t bg);
 int32_t li_rt_studio_viewport_display_particle_tier(void);

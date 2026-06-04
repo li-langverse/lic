@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-04T07:19:04Z",
+  "generated_at": "2026-06-04T07:22:14Z",
   "suite": "ph-sci-lkir-md-oracle",
   "kernel_id": "lig.kernel.md_force_short",
   "smoke": "packages/li-sim-scientific/li-tests/smoke/scientific_gpu_lkir_launch.li",
@@ -7,10 +7,10 @@
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "executed": true,
-  "cpu_sec": 0.000905,
+  "cpu_sec": 0.000782,
   "lig_emit_cuda": true,
   "run_exit_code": 0,
-  "build_cpu_sec": 0.376914,
+  "build_cpu_sec": 0.39459,
   "kernels": [
     {
       "kernel_id": "lig.kernel.md_force_short",

@@ -143,10 +143,13 @@ rows = [
         "workload_class": "pilot",
         "executed": bool(async_env.get("executed")),
         "li": {
-            **li_row(async_env, "pilot"),
+            **li_row(async_env, "pilot" if async_env.get("executed") else "stub"),
+            "workload": async_env.get("workload"),
             "worker": async_env.get("worker"),
             "worker_count": async_env.get("worker_count"),
+            "worker_backend": async_env.get("worker_backend"),
             "parallelism_model": async_env.get("parallelism_model"),
+            "env_semantics": async_env.get("env_semantics"),
         },
         "competitors": [
             comp_row(sb3_vecenv, (async_env.get("cpu_sec") or 0.001), "sb3_vecenv", "SB3 SubprocVecEnv", "stub", "Wave 10 when gymnasium installed"),

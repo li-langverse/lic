@@ -652,6 +652,9 @@ bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c, const M
   if (!c.expr) {
     return false;
   }
+  if (is_proof_db_axiom_decl(proc) && c.kind == ContractKind::Ensures) {
+    return false;
+  }
   if (is_true_literal(*c.expr)) {
     return true;
   }
@@ -743,6 +746,46 @@ bool witness_mat2_int_at2_spec(const ProcDecl& proc, const Expr& ensures_expr) {
 
 bool witness_sqrt_open_bound_spec(const ProcDecl& proc, const Expr& ensures_expr) {
   return witness_sqrt_open_bound_spec_impl(proc, ensures_expr);
+}
+
+bool is_proof_db_axiom_decl(const ProcDecl& proc) {
+  static constexpr const char kPrefix[] = "proof_db_";
+  return proc.name.rfind(kPrefix, 0) == 0;
+}
+
+std::optional<std::string> proof_db_axiom_discharge_suffix(const ProcDecl& proc) {
+  static constexpr const char kPrefix[] = "proof_db_";
+  if (proc.name.rfind(kPrefix, 0) != 0) {
+    return std::nullopt;
+  }
+  return proc.name.substr(sizeof(kPrefix) - 1);
+}
+
+bool ensures_expr_mentions_result(const Expr& e) {
+  switch (e.kind) {
+    case Expr::Kind::Ident:
+      return e.ident == "result";
+    case Expr::Kind::BinOp:
+      return (e.lhs && ensures_expr_mentions_result(*e.lhs)) ||
+             (e.rhs && ensures_expr_mentions_result(*e.rhs));
+    case Expr::Kind::UnaryNot:
+    case Expr::Kind::UnaryBitNot:
+      return e.operand && ensures_expr_mentions_result(*e.operand);
+    case Expr::Kind::Call:
+      for (const auto& arg : e.args) {
+        if (arg && ensures_expr_mentions_result(*arg)) {
+          return true;
+        }
+      }
+      return false;
+    case Expr::Kind::Index:
+      return (e.base && ensures_expr_mentions_result(*e.base)) ||
+             (e.index && ensures_expr_mentions_result(*e.index));
+    case Expr::Kind::FieldAccess:
+      return e.base && ensures_expr_mentions_result(*e.base);
+    default:
+      return false;
+  }
 }
 
 }  // namespace li

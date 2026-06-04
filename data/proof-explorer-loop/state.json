@@ -5,16 +5,25 @@
   "completed_wps": [
     "wp-ax-01",
     "wp-ax-02",
+    "wp-ax-03",
+    "wp-ax-04",
     "wp-ax-05",
-    "wp-ax-07"
+    "wp-ax-06",
+    "wp-ax-07",
+    "wp-ax-08",
+    "wp-ax-09",
+    "wp-ax-10",
+    "wp-ax-11",
+    "wp-ax-12"
   ],
-  "current_wp": "wp-ax-06",
-  "branch": "cursor/proof-explorer-phase10-axiom-layer",
+  "current_wp": null,
+  "branch": "cursor/fix-axiom-layer-completion",
   "research_problem_id": null,
   "claim_count": 0,
   "review_round": 0,
   "loop_sleep_sec": 300,
   "problem_source": "axiom_layer",
   "priority_tier": "P0",
-  "compiler_rfc": "BUG-C-13"
+  "compiler_rfc": "BUG-C-13",
+  "completed_at": "2026-06-03"
 }

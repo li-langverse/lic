@@ -31,16 +31,9 @@ if [[ "${PH_ML_WAVE2_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/l
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-fi
-
-[[ -x "$LIC" ]] || { echo "ph-ml-wave2-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_ensure_lic "$ROOT" "ph-ml-wave2-gates: build lic (./scripts/build.sh or --build-dir build-wsl in WSL)" || exit 1
 
 lic_check_smokes "$LIC"
 

@@ -19,6 +19,7 @@ def sqrt_pos(x: float) -> float
 | Clause | Role |
 |--------|------|
 | `requires` | Precondition — caller must establish this |
+| `implies` | Material implication in contract expressions (`P implies Q` ≡ `not P or Q`) |
 | `ensures` | Postcondition — true on return (`result` names the return value) |
 | `decreases` | Termination measure for the procedure body |
 

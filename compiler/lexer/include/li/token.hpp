@@ -42,6 +42,7 @@ enum class TokenKind {
   KwAwait,
   KwTrue,
   KwFalse,
+  KwImplies,
   KwAnd,
   KwOr,
   KwXor,

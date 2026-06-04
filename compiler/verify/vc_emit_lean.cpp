@@ -218,6 +218,8 @@ std::optional<std::string> expr_to_lean_bin(BinOp op, const std::string& lhs,
       return "(" + lhs + " = " + rhs + ")";
     case BinOp::Ne:
       return "(" + lhs + " ≠ " + rhs + ")";
+    case BinOp::Implies:
+      return "(" + lhs + " → " + rhs + ")";
     case BinOp::And:
       return "(" + lhs + " ∧ " + rhs + ")";
     case BinOp::Or:
@@ -425,6 +427,14 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   bool mat2_discharge_theorem = false;
   bool sqrt_discharge_theorem = false;
   bool dot4_discharge_theorem = false;
+  bool proof_db_axiom_discharge = false;
+  std::optional<std::string> proof_db_axiom_suffix;
+  if (is_proof_db_axiom_decl(proc)) {
+    proof_db_axiom_suffix = proof_db_axiom_discharge_suffix(proc);
+    if (c.kind == ContractKind::Ensures && proof_db_axiom_suffix.has_value()) {
+      proof_db_axiom_discharge = true;
+    }
+  }
   const bool par_policy =
       c.expr && (c.kind == ContractKind::Requires || c.kind == ContractKind::Invariant) &&
       par_disjoint_policy_witness(*c.expr).has_value();
@@ -445,7 +455,7 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   if (par_policy) {
     prop = "True";
   } else if (witnessed && !mat2_discharge_theorem && !sqrt_discharge_theorem &&
-             !dot4_discharge_theorem) {
+             !dot4_discharge_theorem && !proof_db_axiom_discharge) {
     prop = "True";
   } else if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
     prop = "Li.Discharge.mat2_at2_float_spec";
@@ -485,9 +495,10 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
   }
 
-  const bool semantic_ensures = (mat2_discharge_theorem || sqrt_discharge_theorem ||
-                                 dot4_discharge_theorem) &&
-                                c.kind == ContractKind::Ensures;
+  const bool semantic_ensures =
+      ((mat2_discharge_theorem || sqrt_discharge_theorem || dot4_discharge_theorem) ||
+       (proof_db_axiom_discharge && c.expr && !ensures_expr_mentions_result(*c.expr))) &&
+      c.kind == ContractKind::Ensures;
   out << "def " << name;
   emit_formals(!semantic_ensures);
   out << " : Prop := " << prop << '\n';
@@ -555,6 +566,50 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       out << ' ' << lean_ident(p.name);
     }
     out << '\n';
+  } else if (proof_db_axiom_discharge && c.kind == ContractKind::Ensures &&
+             proof_db_axiom_suffix.has_value()) {
+    out << "/-! Phase 2f: proof-db axiom catalog — Li.Discharge.proof_db_"
+        << *proof_db_axiom_suffix << "_ensures_" << idx << "_proved (BUG-C-13) -/\n";
+    out << "theorem " << name << "_proved";
+    emit_formals(false);
+    std::string requires_name = name;
+    const std::string ens_needle = "_ensures_";
+    const std::size_t ens_pos = requires_name.find(ens_needle);
+    if (ens_pos != std::string::npos) {
+      requires_name.replace(ens_pos, ens_needle.size(), "_requires_");
+    }
+    const bool has_requires = std::any_of(
+        proc.contracts.begin(), proc.contracts.end(),
+        [](const Contract& rc) { return rc.kind == ContractKind::Requires && rc.expr; });
+    if (has_requires && ens_pos != std::string::npos) {
+      out << " : " << requires_name;
+      emit_args(false);
+      out << " → " << name;
+      emit_args(false);
+      out << " := by\n";
+      out << "  intro hreq\n";
+      out << "  exact Li.Discharge.proof_db_" << *proof_db_axiom_suffix << "_ensures_" << idx
+          << "_proved";
+      for (const auto& p : proc.params) {
+        out << ' ' << lean_ident(p.name);
+      }
+      if (proc.ret_type && c.expr && ensures_expr_mentions_result(*c.expr)) {
+        out << " result";
+      }
+      out << " hreq\n";
+    } else {
+      out << " : " << name;
+      emit_args(false);
+      out << " := Li.Discharge.proof_db_" << *proof_db_axiom_suffix << "_ensures_" << idx
+          << "_proved";
+      for (const auto& p : proc.params) {
+        out << ' ' << lean_ident(p.name);
+      }
+      if (proc.ret_type && c.expr && ensures_expr_mentions_result(*c.expr)) {
+        out << " result";
+      }
+      out << '\n';
+    }
   } else if (par_policy) {
     out << "/-! Phase 2f: P-par disjoint policy witness (**G-par**) -/\n";
     out << "theorem " << name << "_proved";

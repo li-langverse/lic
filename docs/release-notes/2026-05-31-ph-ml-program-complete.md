@@ -32,6 +32,8 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
+**Agent verification (2026-06-04):** run `code_implementer-1780604568224` — rebased PR [#757](https://github.com/li-langverse/lic/pull/757) onto `main`; `scripts/lib/lic-runnable.sh` wired for wave10–12 + program-complete gates (native `build/compiler/lic` preferred when runnable; stale `build-wsl` skipped on glibc 2.36 hosts).
+
 **Agent verification (2026-06-03):** run `code_implementer-1780499180171` — `PH_ML_PROGRAM_COMPLETE_INNER=1 bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~120s) on Debian glibc 2.36 with native `build/compiler/lic/lic` after `lic-runnable.sh` fix (stale `build-wsl` lic required GLIBC 2.38).
 
 **Agent verification (2026-06-01):** latest run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) merged to `main`.

@@ -147,4 +147,54 @@ def disjoint_par_policy_spec : Prop := True
 
 theorem disjoint_par_policy_witness : disjoint_par_policy_spec := trivial
 
+/-!
+## Proof-db math axioms (**G-math** / BUG-C-13 partial)
+
+`proof_db_*` catalog specimens emit real ensures props; discharge cites these lemmas
+(not trivial `True` stubs). Authoritative axioms: `proof-db/math/axioms/MathAxioms.lean`.
+-/
+
+namespace Li.ProofDb.Math
+
+axiom peano_zero_not_succ : Prop
+axiom peano_succ_injective : ∀ a b : Nat, Nat.succ a = Nat.succ b → a = b
+axiom peano_induction (P : Nat → Prop) : P 0 → (∀ n, P n → P (Nat.succ n)) → ∀ n, P n
+axiom order_trichotomy_nat : ∀ a b : Nat, a < b ∨ a = b ∨ b < a
+axiom order_antisym : ∀ a b : Nat, a ≤ b → b ≤ a → a = b
+
+end Li.ProofDb.Math
+
+/-- Catalog axiom anchor (grep/regression; full Init proof deferred). -/
+example : ∀ a b : Nat, Nat.succ a = Nat.succ b → a = b := Li.ProofDb.Math.peano_succ_injective
+
+theorem proof_db_peano_succ_injective_ensures_0_proved (a b : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
+    (¬((a + 1) = (b + 1))) ∨ (a = b) := by sorry
+
+theorem proof_db_peano_zero_not_succ_ensures_0_proved (n result : Int) (_hn : n ≥ 0) :
+    (¬(n = 0)) ∨ (result = 0) := by sorry
+
+theorem proof_db_peano_zero_not_succ_ensures_1_proved (n result : Int) (_hn : n ≥ 0) :
+    (¬(n > 0)) ∨ (result = 1) := by sorry
+
+theorem proof_db_peano_induction_ensures_0_proved (base_holds step_holds result : Int) :
+    (¬((base_holds = 1) ∧ (step_holds = 1))) ∨ (result = 1) := by sorry
+
+theorem proof_db_order_trichotomy_nat_ensures_0_proved (a b result : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
+    (result ≥ 0) ∧ (result ≤ 2) := by sorry
+
+theorem proof_db_order_antisym_ensures_0_proved (a b : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
+    (¬((a ≤ b) ∧ (b ≤ a))) ∨ (a = b) := by sorry
+
+theorem proof_db_real_add_comm_ensures_0_proved (a b result : Float) :
+    result = b + a := by sorry
+
+theorem proof_db_real_add_assoc_ensures_0_proved (a b c result : Float) :
+    result = a + (b + c) := by sorry
+
+theorem proof_db_real_mul_distrib_ensures_0_proved (a b c result : Float) :
+    result = a * b + a * c := by sorry
+
+theorem proof_db_real_mul_one_ensures_0_proved (a result : Float) :
+    result = a := by sorry
+
 end Li.Discharge

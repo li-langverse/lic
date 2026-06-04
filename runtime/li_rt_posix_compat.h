@@ -154,6 +154,18 @@ static inline void li_rt_winsock_ensure(void) {
   }
 }
 
+static inline int usleep(unsigned usec) {
+  if (usec == 0) {
+    return 0;
+  }
+  DWORD ms = (DWORD)((usec + 999u) / 1000u);
+  if (ms == 0) {
+    ms = 1;
+  }
+  Sleep(ms);
+  return 0;
+}
+
 #else /* ! _WIN32 */
 
 #include <arpa/inet.h>

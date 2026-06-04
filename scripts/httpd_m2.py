@@ -268,7 +268,10 @@ def m2_flatten_lines(data: dict[str, Any], cfg_path: Any) -> list[str]:
     tls_nested = _server_tls_block(data)
     if str(tls_nested.get("terminate", "")).lower() in ("1", "true", "yes"):
         lines.append("m2_tls_terminate=1")
-        lines.append("m2_tls_min_protocol=1.3")
+        min_p = str(tls_nested.get("min_protocol") or "1.3").strip()
+        if min_p not in ("1.2", "1.3"):
+            min_p = "1.3"
+        lines.append(f"m2_tls_min_protocol={min_p}")
     server = data.get("server") or {}
     h2 = server.get("http2") if isinstance(server, dict) else None
     if isinstance(h2, dict) and str(h2.get("enabled", "")).lower() in ("1", "true", "yes"):

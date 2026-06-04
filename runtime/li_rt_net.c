@@ -213,6 +213,8 @@ static int g_tls_enabled_flat = 0;
 static int g_m2_tls_terminate = 0;
 static int g_m2_http2_enabled = 0;
 static char g_tls_cert_dir[4096];
+static char g_tls_min_protocol[8];
+static char g_tls_dhparam_file[4096];
 
 /* M2 queue / circuit breaker (flattened runtime.conf). */
 static int g_m2_enabled = 0;
@@ -5088,6 +5090,9 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_m2_tls_terminate = 0;
   g_m2_http2_enabled = 0;
   g_tls_cert_dir[0] = '\0';
+  strncpy(g_tls_min_protocol, "1.3", sizeof(g_tls_min_protocol) - 1);
+  g_tls_min_protocol[sizeof(g_tls_min_protocol) - 1] = '\0';
+  g_tls_dhparam_file[0] = '\0';
   g_m2_enabled = 0;
   g_m2_queue_max_depth = 0;
   g_m2_queue_retry_after_sec = 1;
@@ -5198,6 +5203,12 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
     } else if (strcmp(key, "tls_cert_dir") == 0) {
       strncpy(g_tls_cert_dir, val, sizeof(g_tls_cert_dir) - 1);
       g_tls_cert_dir[sizeof(g_tls_cert_dir) - 1] = '\0';
+    } else if (strcmp(key, "tls_min_protocol") == 0) {
+      strncpy(g_tls_min_protocol, val, sizeof(g_tls_min_protocol) - 1);
+      g_tls_min_protocol[sizeof(g_tls_min_protocol) - 1] = '\0';
+    } else if (strcmp(key, "tls_dhparam_file") == 0) {
+      strncpy(g_tls_dhparam_file, val, sizeof(g_tls_dhparam_file) - 1);
+      g_tls_dhparam_file[sizeof(g_tls_dhparam_file) - 1] = '\0';
     } else if (strcmp(key, "m2_tls_terminate") == 0) {
       g_m2_tls_terminate = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
     } else if (strcmp(key, "m2_http2_enabled") == 0) {
@@ -5349,6 +5360,8 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
     upstream_pool_prewarm_all();
   }
   if (g_m2_tls_terminate && g_tls_enabled_flat && g_tls_cert_dir[0]) {
+    int tls12 = (strcmp(g_tls_min_protocol, "1.2") == 0) ? 1 : 0;
+    httpd_tls_configure_legacy(tls12, g_tls_dhparam_file[0] ? g_tls_dhparam_file : NULL);
     if (httpd_tls_global_init(g_tls_cert_dir, g_m2_http2_enabled) != 0) {
       fprintf(stderr, "li-httpd: TLS terminate init failed\n");
       return -1;

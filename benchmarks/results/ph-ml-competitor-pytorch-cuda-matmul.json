@@ -10,5 +10,5 @@
   "device": "cuda",
   "workload_size": 4,
   "note": "CUDA not available (CI CPU-only OK)",
-  "generated_at": "2026-06-03T12:01:12Z"
+  "generated_at": "2026-06-04T02:08:10Z"
 }

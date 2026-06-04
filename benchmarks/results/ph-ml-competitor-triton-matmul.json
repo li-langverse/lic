@@ -10,5 +10,5 @@
   "device": "cuda",
   "workload_size": 4,
   "note": "Triton matmul requires CUDA GPU; CI CPU-only OK",
-  "generated_at": "2026-06-03T12:01:55Z"
+  "generated_at": "2026-06-04T02:08:52Z"
 }

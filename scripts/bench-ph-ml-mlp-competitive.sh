@@ -35,13 +35,9 @@ if [[ "${PH_ML_MLP_COMP_INNER:-0}" != "1" ]] \
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-fi
-[[ -x "$LIC" ]] || LIC="$($ROOT/scripts/resolve-lic.sh)"
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_export_lic "$ROOT" || { echo "bench-ph-ml-mlp-competitive: no runnable lic"; exit 1; }
 
 bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
 export PH_ML_NUMPY_MLP_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-mlp.json"

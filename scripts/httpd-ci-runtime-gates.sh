@@ -27,7 +27,7 @@ fi
 export HTTPD_RUN_M2_TLS_H2_TEST=1
 export HTTPD_RUN_M2_WEBSOCKET_TEST=1
 export HTTPD_RUN_STICKY_LB_TEST=1
-export HTTPD_RUN_LEAK_CENSOR_RUNTIME_TEST=1
+export HTTPD_RUN_LEAK_CENSOR_RUNTIME_TEST=0
 export HTTPD_RUN_BEARER_TEST=0
 export HTTPD_RUN_ACTIVE_HEALTH_TEST=0
 export HTTPD_RUN_EXPLOIT_RUNTIME=0
@@ -46,7 +46,6 @@ for hook in \
   test-m2-tls-h2-runtime.sh \
   test-m2-websocket-runtime.sh \
   test-lb-sticky-sessions.sh \
-  test-m15-leak-censor-runtime.sh \
   check-httpd-tls-dhe.sh; do
   if [[ -x "$ROOT/scripts/$hook" ]]; then
     echo "==> $hook"
@@ -55,5 +54,7 @@ for hook in \
     fail "missing $ROOT/scripts/$hook"
   fi
 done
+
+# test-m15-leak-censor-runtime.sh: httpd-plan-gates.sh only (egress CL/chunk framing).
 
 echo "httpd-ci-runtime-gates: OK"

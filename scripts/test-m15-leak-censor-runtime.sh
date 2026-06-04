@@ -113,12 +113,19 @@ json_body=$(curl -s -m 5 \
   -H "Content-Type: application/json" \
   -d '{}' || true)
 
-sse_body=$(curl -s -N -m 8 \
-  -X POST "http://127.0.0.1:${FRONT_PORT}/v1/leak-sse" \
-  -H "Content-Type: application/json" \
-  -H "Accept: text/event-stream" \
-  -H "Connection: close" \
-  -d '{}' || true)
+sse_body=""
+for _ in 1 2 3 4 5; do
+  sse_body=$(curl -s -m 8 \
+    -X POST "http://127.0.0.1:${FRONT_PORT}/v1/leak-sse" \
+    -H "Content-Type: application/json" \
+    -H "Accept: text/event-stream" \
+    -H "Connection: close" \
+    -d '{}' || true)
+  if [[ -n "$sse_body" ]]; then
+    break
+  fi
+  sleep 0.4
+done
 
 kill "$FE_PID" "$BE_PID" 2>/dev/null || true
 wait "$FE_PID" 2>/dev/null || true

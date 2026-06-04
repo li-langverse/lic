@@ -1,6 +1,12 @@
+import physics.em
+
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  if li_std_physics_em_version() != 1:
+    return 1
+  if physics_em_gpu_progress() != 1:
+    return 1
   return 0

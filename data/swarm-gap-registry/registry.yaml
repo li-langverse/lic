@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-31T00:53:15Z'
+updated_at: '2026-06-04T17:34:57Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -1088,11 +1088,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-16-palette-search-latency
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-16-palette-search-latency'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-16-palette-search-latency
+  - 'orch-r4 2026-06-04: plan loop status=done; iteration 20260530T092400Z'
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-16-palette-search-latency
   suggested_loop: studio-ui-ux
@@ -1101,11 +1102,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-17-gpu-fail-recovery
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-17-gpu-fail-recovery'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-17-gpu-fail-recovery
+  - 'orch-r4 2026-06-04: plan loop status=done; iteration 20260530T120800Z'
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-17-gpu-fail-recovery
   suggested_loop: studio-ui-ux

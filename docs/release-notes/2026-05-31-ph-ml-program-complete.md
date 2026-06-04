@@ -36,6 +36,8 @@ bash scripts/ph-ml-program-complete-gates.sh
 
 **Agent verification (2026-06-04):** run `code_implementer-1780531723174` — `scripts/lib/lic-runnable.sh` skips stale `build-wsl` when `lic --version` fails (GLIBC mismatch on Linux agents); `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~123s) with native `build/compiler/lic/lic`.
 
+**Agent verification (2026-06-04):** run `code_implementer-1780541320366` — merged `main` + refreshed bench JSON; `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~122s); `ratio_vs_li` 0.000362; `live_proxy` true.
+
 **Prior run `code_implementer-1780279881936`:** `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~116s); `ratio_vs_li` 0.0044 (T6), `live_proxy` true (T8).
 
 **Prior run `code_implementer-1780279148925`:** exit 0 (~113s); all CI green (build-and-test linux/macos/windows, studio-ui native capture).

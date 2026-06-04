@@ -32,6 +32,8 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
+**Agent verification (2026-06-04):** run `code_implementer-1780589744500` — rebased PR [#769](https://github.com/li-langverse/lic/pull/769) onto `main` (supersedes duplicate `lic-runnable.sh` from #802); PH-ML gate scripts use `li_pick_lic_bin` for WSL delegation and `li_ensure_lic` in program-complete.
+
 **Agent verification (2026-06-04):** run `code_implementer-1780540275403` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~122s) on Debian glibc 2.36 with `scripts/lib/lic-bin-select.sh` (prefers `build/compiler/lic` when runnable; falls back to `build-wsl` only when native lic is missing or not loadable).
 
 **Agent verification (2026-06-01):** latest run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green, await human `merge-approved`.

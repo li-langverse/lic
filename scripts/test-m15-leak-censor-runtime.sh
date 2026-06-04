@@ -78,7 +78,13 @@ def handle(conn: socket.socket) -> None:
         req = read_request(conn)
         if not req:
             return
-        if b"text/event-stream" in req.lower():
+        # Prefer request path: proxy may not forward Accept to upstream.
+        line = req.split(b"\r\n", 1)[0]
+        parts = line.split(b" ")
+        path = parts[1] if len(parts) >= 2 else b""
+        if path.endswith(b"/v1/leak-sse") or path == b"/v1/leak-sse":
+            handle_sse(conn)
+        elif b"text/event-stream" in req.lower():
             handle_sse(conn)
         else:
             handle_json(conn)

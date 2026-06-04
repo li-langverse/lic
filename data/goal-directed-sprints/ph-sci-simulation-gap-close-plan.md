@@ -1,8 +1,39 @@
+---
+workflow_repo: lic
+branch: cursor/ph-ml-stage2-dl-spine
+plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
+---
+
 # PH-SCI simulation gap-close plan
 
-**Status:** Audit + WP backlog (plan-only, 2026-06-04)  
+**Status:** Phase 0 in progress (goal-directed sprint, 2026-06-04)  
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and planned `science_gpu` / `@gpu` placement coverage.  
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
+
+## Iteration rules
+
+1. Work **Phase 0 first** (BUILD-01 → BUILD-02 → GPU-00 → BUILD-03), then Phase 1 GPU smokes, then Phase 2+.
+2. One WP or logical chunk per iteration; commit + push to `cursor/ph-ml-stage2-dl-spine`.
+3. Verify with WSL `./build-wsl/compiler/lic/lic build …` and `./li-tests/run_all.sh science_gpu` before ending an iteration.
+4. Do not mark the sprint done until `scripts/ph-sci-phase0-gates.sh` passes (Phase 0) and later phase gates as added.
+
+## Completion gate
+
+```bash
+bash scripts/ph-sci-phase0-gates.sh
+```
+
+## K8s handoff
+
+Homelab engine worker (namespace `li-swarm`):
+
+```bash
+cd li-cursor-agents
+export KUBECONFIG=~/.kube/config-homelab
+export GH_TOKEN=... CURSOR_API_KEY=...
+bash scripts/setup-engine-k8s-ph-sci-simulation-gap-close.sh
+kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
+```
 
 ## Cross-references
 

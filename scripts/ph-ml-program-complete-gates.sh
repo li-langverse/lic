@@ -25,9 +25,15 @@ run_in_wsl() {
   wsl.exe bash -lc "cd '$wsl_root' && PH_ML_PROGRAM_COMPLETE_ROOT='$wsl_root' PH_ML_PROGRAM_COMPLETE_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' BENCHMARKS_RESULTS='$wsl_root/benchmarks/results' PH_ML_WEIGHTS_FIXTURE='${wsl_weights:-$wsl_root/benchmarks/fixtures/ph-ml-weights}' bash scripts/ph-ml-program-complete-gates.sh"
 }
 
-if [[ "${PH_ML_PROGRAM_COMPLETE_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] && command -v wsl.exe >/dev/null 2>&1; then
+export RESOLVE_LIC_ROOT="$ROOT"
+# shellcheck source=lib/resolve-runnable-lic.sh
+source "$ROOT/scripts/lib/resolve-runnable-lic.sh"
+if [[ "${PH_ML_PROGRAM_COMPLETE_INNER:-0}" != "1" ]] \
+  && ! lic_runnable "$ROOT/build/compiler/lic/lic" \
+  && ! lic_runnable "$ROOT/build/compiler/lic/lic.exe" \
+  && command -v wsl.exe >/dev/null 2>&1; then
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
-  if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
+  if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "'$wsl_root/build-wsl/compiler/lic/lic' --version" 2>/dev/null; then
     run_in_wsl
     exit $?
   fi

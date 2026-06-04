@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Print path to built lic (handles lic vs lic.exe on Windows/Git Bash).
+# Print path to a runnable lic (native build/ preferred over stale build-wsl/).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-for candidate in "$ROOT/build/compiler/lic/lic.exe" "$ROOT/build/compiler/lic/lic"; do
-  if [[ -x "$candidate" ]]; then
-    echo "$candidate"
-    exit 0
-  fi
-done
-echo "resolve-lic: no executable under build/compiler/lic/" >&2
+export RESOLVE_LIC_ROOT="$ROOT"
+# shellcheck source=lib/resolve-runnable-lic.sh
+source "$ROOT/scripts/lib/resolve-runnable-lic.sh"
+if resolve_runnable_lic_path; then
+  exit 0
+fi
+echo "resolve-lic: no runnable lic under build/compiler/lic/ or build-wsl/compiler/lic/" >&2
 exit 1

@@ -14,13 +14,17 @@ run_in_wsl() {
   wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_WAVE10_ROOT='$wsl_root' PH_ML_WAVE10_INNER=1 LIC=./build-wsl/compiler/lic/lic source scripts/ph-ml-wave10-gates.sh"
 }
 
+export RESOLVE_LIC_ROOT="$ROOT"
+# shellcheck source=lib/resolve-runnable-lic.sh
+source "$ROOT/scripts/lib/resolve-runnable-lic.sh"
+
 lic_bin_for_smokes() {
   local lic="$1"
-  if [[ "$lic" == "$ROOT/build-wsl/compiler/lic/lic" ]] && [[ -x "./build-wsl/compiler/lic/lic" ]]; then
+  if [[ "$lic" == "$ROOT/build-wsl/compiler/lic/lic" ]] && lic_runnable "./build-wsl/compiler/lic/lic"; then
     echo "./build-wsl/compiler/lic/lic"
     return
   fi
-  if [[ "$lic" == "$ROOT/build/compiler/lic/lic" ]] && [[ -x "./build/compiler/lic/lic" ]]; then
+  if [[ "$lic" == "$ROOT/build/compiler/lic/lic" ]] && lic_runnable "./build/compiler/lic/lic"; then
     echo "./build/compiler/lic/lic"
     return
   fi
@@ -58,24 +62,29 @@ lic_check_smokes() {
   done
 }
 
-if [[ "${PH_ML_WAVE10_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] && command -v wsl.exe >/dev/null 2>&1; then
+if [[ "${PH_ML_WAVE10_INNER:-0}" != "1" ]] \
+  && ! lic_runnable "$ROOT/build/compiler/lic/lic" \
+  && ! lic_runnable "$ROOT/build/compiler/lic/lic.exe" \
+  && command -v wsl.exe >/dev/null 2>&1; then
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
-  if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
+  if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "'$wsl_root/build-wsl/compiler/lic/lic' --version" 2>/dev/null; then
     run_in_wsl
     exit $?
   fi
 fi
 
 LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="./build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="./build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
+if [[ -z "$LIC" ]] || ! lic_runnable "$LIC"; then
+  LIC="$(resolve_runnable_lic_path)" || true
+  if [[ -n "$LIC" && "$LIC" == "$ROOT/build/compiler/lic/lic" ]]; then
+    LIC="./build/compiler/lic/lic"
+  elif [[ -n "$LIC" && "$LIC" == "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+    LIC="./build-wsl/compiler/lic/lic"
+  fi
 fi
 
-[[ -x "$LIC" ]] || { echo "ph-ml-wave10-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }
+lic_runnable "$LIC" \
+  || { echo "ph-ml-wave10-gates: build runnable lic (./scripts/build.sh or WSL build-wsl)"; exit 1; }
 
 grep -q 'Wave 10' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 10"; exit 1; }
 grep -q 'llm_safetensors_load_tensors_scaffold' packages/li-llm/src/lib.li || { echo "li-llm missing tensor scaffold"; exit 1; }

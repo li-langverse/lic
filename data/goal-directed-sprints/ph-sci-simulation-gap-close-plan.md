@@ -6,7 +6,7 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close plan
 
-**Status:** Phase 0–3 complete on `cursor/ph-ml-stage2-dl-spine` (2026-06-04); WP-SCI-GPU-VENDOR-02 MD grid device-buffer readback parity; **PH-IO-4** std.io/csv ingest contract (`file_read_then_close`, `csv_field_count_stub`, `scripts/check-ph-io-4-gate.sh`) (`scientific_gpu_md_device_buffer.li`, `bench-ph-sci-md-device-buffer.sh`, 0.1% force-checksum tolerance); prior: WP-SCI-GPU-VENDOR-01 MD oracle LKIR launch; WP-SCI-03 registry tier-2; WP-SCI-GPU-03 `nbody_pair_force`. Gates: `scripts/ph-sci-phase{0,1,2,3}-gates.sh`, `scripts/ph-sci-gpu-gates.sh` (exports `LIC` before `science_gpu`).  
+**Status:** Phase 0–3 complete on `cursor/ph-ml-stage2-dl-spine` (2026-06-04); re-verified run `code_implementer-1780555729641` (all `ph-sci-phase{0,1,2,3}` + `ph-sci-gpu-gates` + `check-ph-io-4-gate` exit 0). WP-SCI-GPU-VENDOR-02 MD grid device-buffer readback parity; **PH-IO-4** std.io/csv ingest contract (`file_read_then_close`, `csv_field_count_stub`, `scripts/check-ph-io-4-gate.sh`) (`scientific_gpu_md_device_buffer.li`, `bench-ph-sci-md-device-buffer.sh`, 0.1% force-checksum tolerance); prior: WP-SCI-GPU-VENDOR-01 MD oracle LKIR launch; WP-SCI-03 registry tier-2; WP-SCI-GPU-03 `nbody_pair_force`. Gates: `scripts/ph-sci-phase{0,1,2,3}-gates.sh`, `scripts/ph-sci-gpu-gates.sh` (exports `LIC` before `science_gpu`).  
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and planned `science_gpu` / `@gpu` placement coverage.  
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
 
@@ -52,15 +52,10 @@ kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
 
 ### Parent context verification (`science_gpu`)
 
-- **On `cursor/ph-ml-stage2-dl-spine` (this audit branch):** No `science_gpu` suite or `*_gpu_*.li` under science/sim packages (only `li-ml` has `@gpu` smokes).
-- **On `cursor/def-only-implies-axiom`:** Landed **PH-SCI-GPU-01..15** (commits `22c27154`, `82b02323`) — merge or cherry-pick before closing **WP-SCI-GPU-00**.
-- **`@gpu` today:** MIR placement telemetry only (`li-tests/decorators/gpu_only_ok.li` → `mir_gpu_def=1` via `scripts/check-mir-gpu-decorator.sh`). Not vendor execution for science kernels.
-- **Blockers confirmed (WSL `lic build packages/<pkg>/src/lib.li`):**
-  - `li-physics-fluids`, `li-physics-em`, `li-physics-weather`: **E0201** (dynamic `while i < N` array indexing).
-  - `li-math-numerics`: **E0311** (move semantics on `var array` passed to `verlet_step_vec2` / `three_body_step_mini`).
-  - `li-physics-particles`, `li-physics-rigid`, `li-scene`, `li-sim-scientific`, `li-sim-robotics`, `li-sim-viz`: compile with **open VC** counts (smokes use `verify_ok` / `check_ok`).
-  - `li-physics-runtime`: **clean** `lic build` (Lean skip warning only).
-  - Package `builds.li` smokes are often **empty `main`** — they do **not** prove `src/lib.li` builds.
+- **On `cursor/ph-ml-stage2-dl-spine` (current):** `science_gpu` suite in `li-tests/manifest.toml` — **20** `compile_open_ok` smokes across `li-physics-*`, `li-sim-*`, `li-math-numerics`, `li-scene`; `scripts/ph-sci-gpu-gates.sh` + `check-mir-gpu-decorator.sh` pass.
+- **BUILD-01/02 (closed):** `li-physics-{fluids,em,weather}` and `li-math-numerics` `src/lib.li` build; honest `builds.li` smokes call exported lib defs (WP-SCI-BUILD-03).
+- **`@gpu` today:** MIR placement on most science smokes; **vendor pilot** on branch: `scientific_gpu_lkir_launch.li` (WP-SCI-GPU-VENDOR-01) + `scientific_gpu_md_device_buffer.li` (WP-SCI-GPU-VENDOR-02, 0.1% force-checksum parity).
+- **Remaining honesty gaps:** Tier-2 oracles only for MD/heat/rigid registry rows; `run_algo_registry_stub` for CFD/FEA/QM; `sim.viz` compose-only (no wgpu field draw); fluids/em/weather kernels real in source but not external CFD/MD oracle columns.
 
 ---
 

@@ -3424,12 +3424,25 @@ static void httpd_proxy_try_send_req(int epfd, int32_t slot) {
           httpd_proxy_enter_relay(epfd, slot);
           return;
         }
-        if (off > 0) {
+        if (off > 0 && off < (size_t)total) {
+          ssize_t cont = httpd_send_nb(s->proxy_up_fd, s->buf, (size_t)total, &off);
+          if (cont < 0) {
+            httpd_proxy_finish_err(epfd, slot);
+            return;
+          }
+          if (cont != 0) {
+            s->proxy_body_left = 0;
+            s->proxy_body_slot_done = s->proxy_req.content_length;
+            httpd_proxy_enter_relay(epfd, slot);
+            return;
+          }
           s->proxy_send_off = off;
           if (off > (size_t)s->proxy_hdr_end) {
             s->proxy_body_slot_done = (int)off - s->proxy_hdr_end;
-            s->proxy_body_left -= s->proxy_body_slot_done;
+            s->proxy_body_left = s->proxy_req.content_length - s->proxy_body_slot_done;
           }
+          httpd_proxy_up_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
+          return;
         }
       }
     }
@@ -4570,6 +4583,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   }
   tcp_tune_client(up);
   set_nonblocking(up);
+  httpd_drain_upstream_fd(up);
   httpd_slot_t* s = &g_slots[slot];
   s->proxy_active = 1;
   s->proxy_up_fd = up;

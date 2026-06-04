@@ -3406,6 +3406,34 @@ static int httpd_proxy_upstream_reconnect(int epfd, int32_t slot) {
 
 static void httpd_proxy_try_send_req(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
+  if (s->proxy_req.body_mode == 1 && s->proxy_body_left > 0 &&
+      s->proxy_body_left == s->proxy_req.content_length) {
+    int in_slot = s->len - s->proxy_hdr_end - s->proxy_body_slot_done;
+    if (in_slot >= s->proxy_body_left) {
+      int total = s->proxy_hdr_end + s->proxy_body_left;
+      if (total > 0 && total <= s->len) {
+        size_t off = 0;
+        ssize_t one = httpd_send_nb(s->proxy_up_fd, s->buf, (size_t)total, &off);
+        if (one < 0) {
+          httpd_proxy_finish_err(epfd, slot);
+          return;
+        }
+        if (one != 0) {
+          s->proxy_body_left = 0;
+          s->proxy_body_slot_done = s->proxy_req.content_length;
+          httpd_proxy_enter_relay(epfd, slot);
+          return;
+        }
+        if (off > 0) {
+          s->proxy_send_off = off;
+          if (off > (size_t)s->proxy_hdr_end) {
+            s->proxy_body_slot_done = (int)off - s->proxy_hdr_end;
+            s->proxy_body_left -= s->proxy_body_slot_done;
+          }
+        }
+      }
+    }
+  }
   int more = (s->proxy_req.body_mode != 0 || s->proxy_hdr_end < s->len) ? MSG_MORE : 0;
   ssize_t rc = httpd_send_nb_flags(s->proxy_up_fd, s->buf, (size_t)s->proxy_hdr_end, &s->proxy_send_off, more);
   if (rc < 0) {

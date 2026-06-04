@@ -107,6 +107,40 @@ def sim_automotive_tick_stub(detail: int) -> int
 =
   return sim_automotive_tick_at(detail)
 
+def auto_bicycle_pose_checksum(pose: AutomotivePose) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return pose.x_m + pose.y_m + pose.heading_rad * 0.1
+
+# WP-SCI-03 — bounded bicycle integrate for registry tier-2 oracle (algo 601–610).
+def run_automotive_bicycle_at_steps(steps: int) raises IO -> SimRunResult
+  requires steps >= 1
+  requires steps <= 64
+  ensures result.ok == 1
+  ensures result.algo_id == 601
+  ensures result.vertical_id == sim_contract_sim_automotive()
+  ensures result.detail_emitted == steps - 1
+  decreases steps
+=
+  var pose: AutomotivePose
+  automotive_pose_init(pose)
+  pose.speed_mps = 12.0
+  var wheelbase: float = sim_automotive_bicycle_wheelbase_default()
+  var dt: float = 0.05
+  var i: int = 0
+  while i < steps
+    sim_automotive_pose_integrate(pose, 0.05, wheelbase, dt)
+    i = i + 1
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = 601
+  r.vertical_id = sim_contract_sim_automotive()
+  r.checksum = auto_bicycle_pose_checksum(pose)
+  r.detail_emitted = steps - 1
+  return r
+
 def run_automotive_smoke() raises IO -> int
   requires true
   ensures result == 0

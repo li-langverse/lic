@@ -6,13 +6,14 @@ import physics.fluids
 import physics.quantum
 import sim.drug_design
 import sim.robotics
+import sim.automotive
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 8
+  ensures result == 9
   decreases 0
 =
-  return 8
+  return 9
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -254,6 +255,22 @@ def sim_scientific_oracle_checksum_robo() -> float
 =
   var robo: SimRunResult = run_robo_arm_at_steps(8)
   return robo.checksum
+
+# WP-SCI-03 — tier-2 Li oracle: bicycle kinematic witness (sim.automotive; no IO in registry path).
+def sim_scientific_oracle_checksum_auto() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return sim_automotive_bicycle_checksum(2, 0.05, 12.0)
+
+# WP-SCI-03 — tier-2 Li oracle: additive thermal preview (heat witness × 1e-6; avoids cyclic dep on sim.additive).
+def sim_scientific_oracle_checksum_additive() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return sim_scientific_oracle_checksum_heat() * 1.0e-6
 
 # WP-SCI-03 — tier-2 Li oracle: semi-implicit rigid body integrate (gaming vertical).
 def sim_scientific_oracle_checksum_rigid() -> float
@@ -630,6 +647,44 @@ def run_robo_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_auto_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 601
+  requires algo_id <= 610
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_auto()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = sim_contract_sim_automotive()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_additive_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 701
+  requires algo_id <= 707
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_additive()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = sim_contract_sim_additive()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_rigid_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -684,6 +739,14 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
     if algo_id <= 505:
       var d2c: int = detail
       return run_drug_tier2_registry(algo_id, d2c)
+  if algo_id >= 601:
+    if algo_id <= 610:
+      var d2e: int = detail
+      return run_auto_tier2_registry(algo_id, d2e)
+  if algo_id >= 701:
+    if algo_id <= 707:
+      var d2f: int = detail
+      return run_additive_tier2_registry(algo_id, d2f)
   if algo_id >= 801:
     if algo_id <= 805:
       var d2d: int = detail

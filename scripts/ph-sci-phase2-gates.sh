@@ -36,6 +36,10 @@ echo "==> WP-SCI-03: drug LITL + robotics registry tier-2 (algo 501–505, 801�
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-drug-design/src/lib.li -o /dev/null
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-robotics/src/lib.li -o /dev/null
 
+echo "==> WP-SCI-03: automotive + additive registry tier-2 (algo 601–610, 701–707)"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-automotive/src/lib.li -o /dev/null
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-additive/src/lib.li -o /dev/null
+
 echo "==> WP-SCI-GPU-03: particles nbody_pair_force + MD mini lib"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-particles/src/lib.li -o /dev/null
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-physics-particles/li-tests/smoke/nbody_pair_force.li
@@ -45,4 +49,4 @@ echo "==> WP-AM-02: additive require_sim_pass heat witness"
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-additive/li-tests/smoke/additive_require_sim_pass_heat.li
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-additive/li-tests/smoke/slicer_workflow.li
 
-echo "ph-sci-simulation-gap-close: Phase 2 (WP-SCI-03 QM/rigid/drug/robo registry, WP-SCI-05, WP-SCI-06, WP-AM-02) gate OK"
+echo "ph-sci-simulation-gap-close: Phase 2 (WP-SCI-03 QM/rigid/drug/robo/auto/additive registry, WP-SCI-05, WP-SCI-06, WP-AM-02) gate OK"

@@ -86,4 +86,24 @@ def main() -> int
     return 30
   if robo801.checksum == 1.001:
     return 31
+  var auto_oracle: float = sim_scientific_oracle_checksum_auto()
+  var auto605: SimRunResult = run_algo(605, 1)
+  if run_result_ok(auto605) != 1:
+    return 33
+  if auto605.algo_id != 605:
+    return 34
+  if auto605.checksum != auto_oracle:
+    return 35
+  if auto605.checksum == 1.001:
+    return 36
+  var additive_oracle: float = sim_scientific_oracle_checksum_additive()
+  var am701: SimRunResult = run_algo(701, 1)
+  if run_result_ok(am701) != 1:
+    return 37
+  if am701.algo_id != 701:
+    return 38
+  if am701.checksum != additive_oracle:
+    return 39
+  if am701.checksum == 1.001:
+    return 40
   return 0

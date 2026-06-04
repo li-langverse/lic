@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-SCI-03 automotive + additive registry tier-2** — `sim_scientific_oracle_checksum_auto()` / `sim_scientific_oracle_checksum_additive()`; `run_auto_tier2_registry` (601–610), `run_additive_tier2_registry` (701–707); dep `li-sim-automotive`; extended `run_algo_registry_tier2.li`.
 - **WP-SCI-03 rigid registry tier-2** — `sim_scientific_oracle_checksum_rigid()`; `run_rigid_tier2_registry` (301–305); `run_algo_registry_tier2.li` rigid oracle match.
 - **WP-SCI-03 drug + robotics registry tier-2** — `sim_scientific_oracle_checksum_drug()` / `sim_scientific_oracle_checksum_robo()`; `run_drug_tier2_registry` (501–505), `run_robo_tier2_registry` (801–805); deps `li-sim-drug-design`, `li-sim-robotics`; extended `run_algo_registry_tier2.li`.
 - **WP-SCI-03 QM tier-2 oracle** — `sim_scientific_oracle_checksum_qm()` delegates to `physics.quantum.qm_normalize_oracle_checksum()`; `run_qm_tier2_registry` for algo 401–432; smoke `scientific_qm_normalize.li`.

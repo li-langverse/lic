@@ -7,7 +7,7 @@
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "validity_note": "smoke_compiled_and_timed",
-  "cpu_sec": 0.018686,
-  "numpy_cpu_sec": 1e-06,
-  "ratio_vs_li": 5.4e-05
+  "cpu_sec": 0.00853,
+  "numpy_cpu_sec": 2e-06,
+  "ratio_vs_li": 0.000234
 }

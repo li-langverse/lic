@@ -509,7 +509,9 @@ int32_t httpd_fork_workers_i(void) {
 int32_t httpd_config_workers_i(void) { return (int32_t)httpd_resolve_workers(); }
 
 int32_t tcp_listen(int32_t port) {
+#if defined(_WIN32)
   li_rt_winsock_ensure();
+#endif
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   if (fd < 0) {
     net_fail("socket");

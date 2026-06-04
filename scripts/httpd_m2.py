@@ -87,7 +87,10 @@ def validate_m2_tls_terminate(data: dict[str, Any], path: Any) -> None:
         if profile is None:
             raise ConfigError("server.tls is required when M2 terminate or HTTP/2 is enabled")
         if profile.min_protocol != "1.3":
-            raise ConfigError("M2 TLS terminate requires server.tls.min_protocol = \"1.3\"")
+            # TLS 1.2 + dhparam is the legacy DHE terminate path (gap-tls-dhe); HTTP/2 still needs 1.3.
+            dhparam = str(tls_nested.get("dhparam_file", "")).strip()
+            if h2_on or not dhparam or profile.min_protocol != "1.2":
+                raise ConfigError("M2 TLS terminate requires server.tls.min_protocol = \"1.3\"")
         if terminate and is_public_listen(listen) and profile.mode == "self_signed":
             ss = tls_nested.get("self_signed") or {}
             dev = isinstance(ss, dict) and str(ss.get("dev", "")).lower() in ("1", "true", "yes")

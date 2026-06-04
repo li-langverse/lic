@@ -24,6 +24,9 @@ REGISTRY_DIR = ROOT / "data/swarm-gap-registry"
 REGISTRY = REGISTRY_DIR / "registry.yaml"
 SNAPSHOT = ROOT / "data/goal-directed-agents/snapshot.json"
 LATEST = BENCHMARKS / "data/latest"
+RUNNER_STATE_FILES: dict[str, Path] = {
+    "ph-db": ROOT / "data/ph-db-plan-loop/state.json",
+}
 
 
 def _load_yaml(path: Path) -> dict:
@@ -169,6 +172,36 @@ def dedupe_plan_pending_gaps(gaps_by_id: dict[str, dict]) -> int:
     return closed
 
 
+def reconcile_runner_state_files(gaps_by_id: dict[str, dict]) -> int:
+    """Close plan_debt rows when plan-loop state.json lists todo in completed_ids."""
+    closed = 0
+    for rid, state_path in RUNNER_STATE_FILES.items():
+        if not state_path.is_file():
+            continue
+        try:
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        completed = set(state.get("completed_ids") or [])
+        for gap in gaps_by_id.values():
+            if not isinstance(gap, dict) or gap.get("status") != "open":
+                continue
+            if gap.get("runner_id") != rid:
+                continue
+            raw = gap.get("plan_todo_id")
+            if not raw:
+                continue
+            norm = _normalize_plan_todo_id(str(raw), rid)
+            if norm in completed or raw in completed:
+                gap["status"] = "closed"
+                ev = gap.setdefault("evidence", [])
+                note = f"plan-loop state {rid} completed_ids includes {norm}"
+                if note not in ev:
+                    ev.append(note)
+                closed += 1
+    return closed
+
+
 def reconcile_snapshot_completed(snap: dict, gaps_by_id: dict[str, dict]) -> int:
     """Close plan_debt rows whose todo is in runner state.completed_ids."""
     closed = 0
@@ -226,7 +259,12 @@ def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> in
 def ingest_verticals_stubs(gaps_by_id: dict[str, dict]) -> int:
     vert = Path(os.environ["BENCHMARKS_COMPETITIVE"]) / "verticals.toml"
     if not vert.is_file():
-        vert = Path(os.environ.get("BENCHMARKS_COMPETITIVE", str(LANGVERSE / "benchmarks/workloads/competitive"))/verticals.toml"
+        vert = Path(
+            os.environ.get(
+                "BENCHMARKS_COMPETITIVE",
+                str(LANGVERSE / "benchmarks/workloads/competitive"),
+            )
+        ) / "verticals.toml"
     if not vert.is_file():
         return 0
     text = vert.read_text(encoding="utf-8")
@@ -274,6 +312,7 @@ def main() -> int:
         "missing_std": ingest_missing_std(explorer, gaps_by_id),
         "plan_debt_audit": ingest_plan_debt(audit, gaps_by_id),
         "plan_debt_snapshot": ingest_snapshot_plan_pending(snap, gaps_by_id),
+        "runner_state_completed": reconcile_runner_state_files(gaps_by_id),
         "snapshot_completed": reconcile_snapshot_completed(snap, gaps_by_id),
         "plan_debt_dedupe": dedupe_plan_pending_gaps(gaps_by_id),
         "competitor_catalog": ingest_competitor_catalog(explorer, gaps_by_id),

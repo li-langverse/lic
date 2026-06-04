@@ -159,6 +159,7 @@ RUNNERS: list[dict] = [
         "state": "data/ph-db-plan-loop/state.json",
         "log": "data/ph-db-plan-loop/runner.log",
         "pgrep_patterns": [
+            "ph-db-plan-loop.py",
             "verify-ph-db-wsl",
             "goal-directed-loop",
             "registry_oltp_compare",

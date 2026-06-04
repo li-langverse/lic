@@ -1,5 +1,5 @@
 {
-  "note": "WP-D merged lidb#28; PH-8d-v2 technical gates clear",
+  "note": "plan-loop YAML supervisor wired (lic#576); actionable: wp-h-containers, wp-prod-lidb-default (human)",
   "updated_at": "2026-05-31T07:38:46Z",
   "iterations": 0,
   "completed_ids": [

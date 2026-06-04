@@ -1114,10 +1114,11 @@ gaps:
 - id: gap-plan-pending-ph-db-wp-g-ci-cross-repo
   gap_kind: plan_debt
   title: 'ph-db: pending plan todo wp-g-ci-cross-repo'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
+  - plan-loop state ph-db completed_ids includes wp-g-ci-cross-repo (lic#576)
   - snapshot runner=ph-db plan_pending=wp-g-ci-cross-repo
   runner_id: ph-db
   plan_todo_id: wp-g-ci-cross-repo
@@ -1140,10 +1141,11 @@ gaps:
 - id: gap-plan-pending-ph-db-wp-k-postgres-nightly
   gap_kind: plan_debt
   title: 'ph-db: pending plan todo wp-k-postgres-nightly'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
+  - plan-loop state ph-db completed_ids includes wp-k-postgres-nightly (lic#576)
   - snapshot runner=ph-db plan_pending=wp-k-postgres-nightly
   runner_id: ph-db
   plan_todo_id: wp-k-postgres-nightly
@@ -1153,10 +1155,11 @@ gaps:
 - id: gap-plan-pending-ph-db-wp-pr-merge-wave
   gap_kind: plan_debt
   title: 'ph-db: pending plan todo wp-pr-merge-wave'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
+  - plan-loop state ph-db completed_ids includes wp-pr-merge-wave (lic#576)
   - snapshot runner=ph-db plan_pending=wp-pr-merge-wave
   runner_id: ph-db
   plan_todo_id: wp-pr-merge-wave
@@ -1166,10 +1169,11 @@ gaps:
 - id: gap-plan-pending-ph-db-wp-h0-default-main
   gap_kind: plan_debt
   title: 'ph-db: pending plan todo wp-h0-default-main'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
+  - plan-loop state ph-db completed_ids includes wp-h0-default-main (lic#576)
   - snapshot runner=ph-db plan_pending=wp-h0-default-main
   runner_id: ph-db
   plan_todo_id: wp-h0-default-main
@@ -1179,10 +1183,11 @@ gaps:
 - id: gap-plan-pending-ph-db-wp-n3-realtime
   gap_kind: plan_debt
   title: 'ph-db: pending plan todo wp-n3-realtime'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
+  - plan-loop state ph-db completed_ids includes wp-n3-realtime (lic#576)
   - snapshot runner=ph-db plan_pending=wp-n3-realtime
   runner_id: ph-db
   plan_todo_id: wp-n3-realtime
@@ -1192,10 +1197,11 @@ gaps:
 - id: gap-plan-pending-ph-db-wp-n5-security-bench
   gap_kind: plan_debt
   title: 'ph-db: pending plan todo wp-n5-security-bench'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
+  - plan-loop state ph-db completed_ids includes wp-n5-security-bench (lic#576)
   - snapshot runner=ph-db plan_pending=wp-n5-security-bench
   runner_id: ph-db
   plan_todo_id: wp-n5-security-bench
@@ -1205,10 +1211,11 @@ gaps:
 - id: gap-plan-pending-ph-db-wp-d-registry-v2
   gap_kind: plan_debt
   title: 'ph-db: pending plan todo wp-d-registry-v2'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
+  - plan-loop state ph-db completed_ids includes wp-d-registry-v2 (lic#576)
   - snapshot runner=ph-db plan_pending=wp-d-registry-v2
   runner_id: ph-db
   plan_todo_id: wp-d-registry-v2

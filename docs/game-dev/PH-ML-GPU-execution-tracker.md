@@ -1,4 +1,7 @@
 
+| WP-RL-10 | async_env_collect Li executed (Stage 3.1) | 3 | done | bench-ph-ml-async-env-collect.sh |
+| WP-RL-11 | IPC shard + CartPole stub (Stage 3.2) | 3 | done | env_pool_ipc_prepare_shards |
+| WP-RL-12 | policy_loss_mean train scaffold (Stage 3.3) | 3 | partial | ml-rl-ppo-deferral.md |
 | WP-ML-22 | LKIR 32-tile matmul prologue (Stage 2.1) | 2 | done | ml_matmul_lkir_logical_32 |
 | WP-ML-23 | MLP kid=2 + competitive row (Stage 2.2) | 2 | done | bench-ph-ml-mlp-competitive.sh |
 | WP-ML-24 | Autograd RFC + train-step scaffold (Stage 2.3) | 2 | partial | ml-autograd-forward-tape-rfc.md |

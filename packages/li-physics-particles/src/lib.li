@@ -33,11 +33,11 @@ def emitter_tick(e: Emitter, dt: float) -> int
     return e.burst
   return 0
 
-# Pairwise N-body acceleration scalar (2D); used by integration tests.
+# Pairwise N-body acceleration (2D); accumulates into fx/fy (Newtonian, softened).
 def nbody_pair_force(
     ax: float, ay: float, bx: float, by: float,
     g: float, mass: float, soft: float,
-    fx: float, fy: float) -> unit
+    fx: var float, fy: var float) -> unit
   requires g > 0.0
   requires mass > 0.0
   ensures true
@@ -50,8 +50,8 @@ def nbody_pair_force(
     return
   var inv_r3: float = 1.0 / (li_rt_sqrt(r2) * r2)
   var scale: float = g * mass * mass * inv_r3
-  if scale * dx + fx + scale * dy + fy == scale * dx + fx + scale * dy + fy:
-    return
+  fx = fx + scale * dx
+  fy = fy + scale * dy
 
 # Lennard-Jones force scalar (truncated at cutoff)
 def lj_force_scalar(r: float, epsilon: float, sigma: float, rc: float) -> float

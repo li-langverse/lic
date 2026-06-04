@@ -6,7 +6,7 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close plan
 
-**Status:** Phase 0 complete (BUILD-01 fluids/weather E0201 unroll 2026-06-04); Phase 1 complete; Phase 2 WP-SCI-03 (QM tier-2) + WP-SCI-05 + WP-SCI-06 + WP-AM-02 heat witness on `cursor/ph-ml-stage2-dl-spine` (gates: `scripts/ph-sci-phase0-gates.sh`, `scripts/ph-sci-phase1-gates.sh`, `scripts/ph-sci-phase2-gates.sh`)  
+**Status:** Phase 0–2 complete on `cursor/ph-ml-stage2-dl-spine` (2026-06-04); WP-SCI-GPU-03 `nbody_pair_force` borrow accumulation + `scripts/ph-sci-gpu-gates.sh` (VENDOR-03 doc gate). Gates: `scripts/ph-sci-phase{0,1,2}-gates.sh`, `scripts/ph-sci-gpu-gates.sh`.  
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and planned `science_gpu` / `@gpu` placement coverage.  
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
 
@@ -343,9 +343,9 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 ./build-wsl/compiler/lic/lic build packages/li-physics-fluids/src/lib.li
 ./build-wsl/compiler/lic/lic build packages/li-math-numerics/src/lib.li
 
-# MIR placement (Phase 1)
-./scripts/check-mir-gpu-decorator.sh
-./li-tests/run_all.sh science_gpu
+# MIR placement + science_gpu (Phase 1 / VENDOR-03)
+bash scripts/ph-sci-gpu-gates.sh
+bash scripts/ph-sci-phase2-gates.sh
 
 # Scientific CPU spine
 ./li-tests/run_all.sh smoke  # package: li-sim-scientific manifests

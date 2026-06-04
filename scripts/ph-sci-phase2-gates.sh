@@ -32,6 +32,10 @@ echo "==> WP-SCI-06: cavity + tier-2 registry smokes"
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li
 
+echo "==> WP-SCI-GPU-03: particles nbody_pair_force + MD mini lib"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-particles/src/lib.li -o /dev/null
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-physics-particles/li-tests/smoke/nbody_pair_force.li
+
 echo "==> WP-AM-02: additive require_sim_pass heat witness"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-additive/src/lib.li -o /dev/null
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-additive/li-tests/smoke/additive_require_sim_pass_heat.li

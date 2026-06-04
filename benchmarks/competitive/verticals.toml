@@ -19,21 +19,21 @@ notes = "world-studio.toml gaming_rigid row; composable import_physics_rigid_gam
 id = "md_lennard_jones"
 incumbent = "LAMMPS / GROMACS"
 kernel_or_api = "LJ cutoff force + energy drift"
-workload_class = "stub"
+workload_class = "partial"
 oracle = "cpp"
 li_package = "sim.scientific"
-last_reviewed = "2026-05-23"
-notes = "tier-2 verify green; Li oracle `sim_scientific_oracle_checksum_md()` (8-step 4-particle LJ chain); Layer B csv_lang lammps/gromacs stubs — not LAMMPS/GROMACS parity."
+last_reviewed = "2026-06-04"
+notes = "tier-2 verify green; Li oracle `sim_scientific_oracle_checksum_md()` (8-step 4-particle LJ chain); `physics.particles.md_mini_forces_3d` 16-particle LJ accumulation; Layer B csv_lang lammps/gromacs stubs — not LAMMPS/GROMACS parity."
 
 [[vertical]]
 id = "pde_heat_2d"
 incumbent = "OpenFOAM / PETSc"
 kernel_or_api = "explicit heat step, CFL stability"
-workload_class = "stub"
+workload_class = "partial"
 oracle = "cpp"
 li_package = "sim.scientific"
-last_reviewed = "2026-05-23"
-notes = "heat_equation_2d in verify.py; Li oracle `sim_scientific_oracle_checksum_heat()` (explicit 1D laplacian stencil); FEA/CFD split to fea_linear_elasticity + cfd_lid_driven_cavity (PH-CAE)."
+last_reviewed = "2026-06-04"
+notes = "heat_equation_2d in verify.py; Li oracle `sim_scientific_oracle_checksum_heat()` (explicit 1D laplacian stencil); WP-AM-02 heat witness via `sim_additive_require_sim_pass_ok`; FEA/CFD split to fea_linear_elasticity + cfd_lid_driven_cavity (PH-CAE)."
 
 [[vertical]]
 id = "fea_linear_elasticity"

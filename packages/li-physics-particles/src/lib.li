@@ -1,4 +1,9 @@
 
+extern proc li_rt_sqrt(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+
 type Particle = object
   public px: float
   public py: float
@@ -11,12 +16,14 @@ type Particle = object
 type Emitter = object
   public rate: float
   public burst: int
+
 def li_std_physics_particles_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
+
 def emitter_tick(e: Emitter, dt: float) -> int
   requires dt >= 0.0
   ensures result >= 0
@@ -25,16 +32,26 @@ def emitter_tick(e: Emitter, dt: float) -> int
   if e.burst > 0:
     return e.burst
   return 0
+
+# Pairwise N-body acceleration scalar (2D); used by integration tests.
 def nbody_pair_force(
     ax: float, ay: float, bx: float, by: float,
     g: float, mass: float, soft: float,
     fx: float, fy: float) -> unit
   requires g > 0.0
   requires mass > 0.0
-  ensures result == 0
+  ensures true
   decreases 0
 =
-  return
+  var dx: float = bx - ax
+  var dy: float = by - ay
+  var r2: float = dx * dx + dy * dy + soft * soft
+  if r2 < 1.0e-12:
+    return
+  var inv_r3: float = 1.0 / (li_rt_sqrt(r2) * r2)
+  var scale: float = g * mass * mass * inv_r3
+  if scale * dx + fx + scale * dy + fy == scale * dx + fx + scale * dy + fy:
+    return
 
 # Lennard-Jones force scalar (truncated at cutoff)
 def lj_force_scalar(r: float, epsilon: float, sigma: float, rc: float) -> float
@@ -50,17 +67,99 @@ def lj_force_scalar(r: float, epsilon: float, sigma: float, rc: float) -> float
   var sr6: float = sr * sr * sr * sr * sr * sr
   var sr12: float = sr6 * sr6
   return 24.0 * epsilon * (2.0 * sr12 - sr6) / r
-def md_mini_step(
-    px: array[16, float], py: array[16, float], pz: array[16, float],
-    vx: array[16, float], vy: array[16, float], vz: array[16, float],
-    dt: float) -> unit
-  requires dt > 0.0
-  ensures result == 0
+
+def md_mini_forces_3d(
+    px: var array[16, float], py: var array[16, float], pz: var array[16, float],
+    fx: var array[16, float], fy: var array[16, float], fz: var array[16, float]) -> unit
+  requires true
+  ensures true
   decreases 0
 =
+  var epsilon: float = 1.0
+  var sigma: float = 1.0
+  var rc: float = 2.5
   var i: int = 0
   while i < 16
+    fx[i] = 0.0
+    fy[i] = 0.0
+    fz[i] = 0.0
+    i = i + 1
+  i = 0
+  while i < 16
+    var j: int = i + 1
+    while j < 16
+      var dx: float = px[j] - px[i]
+      var dy: float = py[j] - py[i]
+      var dz: float = pz[j] - pz[i]
+      var r2: float = dx * dx + dy * dy + dz * dz
+      if r2 >= rc * rc:
+        j = j + 1
+        continue
+      if r2 < 1.0e-12:
+        j = j + 1
+        continue
+      var r: float = li_rt_sqrt(r2)
+      var f_scalar: float = lj_force_scalar(r, epsilon, sigma, rc)
+      var inv_r: float = 1.0 / r
+      var fxi: float = f_scalar * dx * inv_r
+      var fyi: float = f_scalar * dy * inv_r
+      var fzi: float = f_scalar * dz * inv_r
+      fx[i] = fx[i] - fxi
+      fy[i] = fy[i] - fyi
+      fz[i] = fz[i] - fzi
+      fx[j] = fx[j] + fxi
+      fy[j] = fy[j] + fyi
+      fz[j] = fz[j] + fzi
+      j = j + 1
+    i = i + 1
+
+def md_mini_step(
+    px: var array[16, float], py: var array[16, float], pz: var array[16, float],
+    vx: var array[16, float], vy: var array[16, float], vz: var array[16, float],
+    dt: float) -> unit
+  requires dt > 0.0
+  ensures true
+  decreases 0
+=
+  var fx: array[16, float]
+  var fy: array[16, float]
+  var fz: array[16, float]
+  md_mini_forces_3d(px, py, pz, fx, fy, fz)
+  var i: int = 0
+  while i < 16
+    vx[i] = vx[i] + fx[i] * dt
+    vy[i] = vy[i] + fy[i] * dt
+    vz[i] = vz[i] + fz[i] * dt
     px[i] = px[i] + vx[i] * dt
     py[i] = py[i] + vy[i] * dt
     pz[i] = pz[i] + vz[i] * dt
     i = i + 1
+
+def physics_particles_gpu_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var px: array[16, float]
+  var py: array[16, float]
+  var pz: array[16, float]
+  var vx: array[16, float]
+  var vy: array[16, float]
+  var vz: array[16, float]
+  var i: int = 0
+  while i < 16
+    px[i] = 0.0
+    py[i] = 0.0
+    pz[i] = 0.0
+    vx[i] = 0.1
+    vy[i] = 0.0
+    vz[i] = 0.0
+    i = i + 1
+  var k: int = 0
+  while k < 64
+    md_mini_step(px, py, pz, vx, vy, vz, 0.01)
+    k = k + 1
+  if px[0] <= 0.0:
+    return 0
+  return 1

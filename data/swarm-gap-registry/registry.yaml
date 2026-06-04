@@ -200,12 +200,12 @@ gaps:
 - id: gap-plan-pending-httpd-gap-phase2-perf-wrk-soak
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-phase2-perf-wrk-soak'
-  status: closed
+  status: open
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-phase2-perf-wrk-soak
-  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  - snapshot httpd plan_pending includes gap-phase2-perf-wrk-soak
   runner_id: httpd
   plan_todo_id: gap-phase2-perf-wrk-soak
   suggested_loop: httpd
@@ -229,12 +229,12 @@ gaps:
 - id: gap-plan-pending-httpd-gap-phase2-streaming-wrk
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-phase2-streaming-wrk'
-  status: closed
+  status: open
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-phase2-streaming-wrk
-  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-streaming-wrk
+  - snapshot httpd plan_pending includes gap-phase2-streaming-wrk
   runner_id: httpd
   plan_todo_id: gap-phase2-streaming-wrk
   suggested_loop: httpd
@@ -549,7 +549,7 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-perf-wrk-soak
-  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  - deduped to gap-plan-pending-httpd-gap-phase2-perf-wrk-soak
   - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-phase2-perf-wrk-soak
@@ -579,7 +579,7 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-streaming-wrk
-  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-streaming-wrk
+  - deduped to gap-plan-pending-httpd-gap-phase2-streaming-wrk
   - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-phase2-streaming-wrk
@@ -647,6 +647,7 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  - deduped to gap-plan-pending-httpd-gap-phase2-perf-wrk-soak
   - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
@@ -676,6 +677,7 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-streaming-wrk
+  - deduped to gap-plan-pending-httpd-gap-phase2-streaming-wrk
   - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-httpd-gap-phase2-streaming-wrk

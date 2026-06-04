@@ -224,9 +224,10 @@ def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> in
 
 
 def ingest_verticals_stubs(gaps_by_id: dict[str, dict]) -> int:
-    vert = Path(os.environ["BENCHMARKS_COMPETITIVE"]) / "verticals.toml"
-    if not vert.is_file():
-        vert = Path(os.environ.get("BENCHMARKS_COMPETITIVE", str(LANGVERSE / "benchmarks/workloads/competitive"))/verticals.toml"
+    default_competitive = BENCHMARKS / "workloads" / "competitive"
+    vert = Path(
+        os.environ.get("BENCHMARKS_COMPETITIVE", str(default_competitive))
+    ) / "verticals.toml"
     if not vert.is_file():
         return 0
     text = vert.read_text(encoding="utf-8")

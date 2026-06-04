@@ -41,3 +41,9 @@ suite = "smoke"
 file = "smoke/scientific_gpu_md_oracle.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-02 @gpu MD/heat oracle checksums"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/scientific_gpu_lkir_launch.li"
+outcome = "compile_open_ok"
+note = "WP-SCI-GPU-VENDOR-01 @gpu MD LKIR launch pilot"

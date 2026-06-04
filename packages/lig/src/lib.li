@@ -290,6 +290,13 @@ def lig_kernel_mlp_forward_f32() -> int
 =
   return 2
 
+def lig_kernel_md_force_short() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
 
 def lig_kernel_run(kernel_id: int, backend_id: int) raises IO -> int
   requires kernel_id >= 1

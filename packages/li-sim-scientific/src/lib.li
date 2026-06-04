@@ -1,4 +1,5 @@
 
+import lig
 import sim
 import physics.particles
 import physics.rigid
@@ -10,10 +11,10 @@ import sim.automotive
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 9
+  ensures result == 10
   decreases 0
 =
-  return 9
+  return 10
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -149,20 +150,24 @@ def sim_scientific_oracle_checksum_md() -> float
       i = i + 1
     step = step + 1
   var e1: float = md_oracle_chain_energy(px, py, vx, vy)
-  var denom: float = e0
-  if e1 > denom:
-    denom = e1
-  if denom < 0.0:
-    if -e0 > denom:
-      denom = -e0
-    if -e1 > denom:
-      denom = -e1
+  var d0: float = e0
+  if d0 < 0.0:
+    d0 = -d0
+  var d1: float = e1
+  if d1 < 0.0:
+    d1 = -d1
+  var denom: float = d0
+  if d1 > denom:
+    denom = d1
   if denom < 1.0e-12:
     denom = 1.0e-12
   var diff: float = e1 - e0
   if diff < 0.0:
     diff = -diff
-  return diff / denom
+  var rel: float = diff / denom
+  if rel < 0.0:
+    rel = -rel
+  return rel
 
 # WP-SCI-03 — tier-2 Li oracle: explicit 1D heat stencil (8-point grid).
 def heat_oracle_stencil_step(u: var array[8, float], v: var array[8, float], r: float) -> unit
@@ -820,3 +825,48 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   bad.checksum = 0.0
   bad.detail_emitted = d4
   return bad
+
+# WP-SCI-GPU-VENDOR-01 — MD oracle + lig.kernel.md_force_short LKIR launch pilot (PH-ML Wave 12 pattern).
+def sim_scientific_use_lkir() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return 1
+
+def sim_scientific_lig_md_kernel_id() -> int
+  requires true
+  ensures result == lig_kernel_md_force_short()
+  decreases 0
+=
+  return lig_kernel_md_force_short()
+
+def sim_scientific_md_lkir_progress() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_scientific_use_lkir() == 0:
+    return 0
+  var _md_witness: float = sim_scientific_oracle_checksum_md()
+  if lig_kernel_run(sim_scientific_lig_md_kernel_id(), lig_backend_select_auto()) != 0:
+    return 0
+  if lig_validity_gate_pass(0.999) != 1:
+    return 0
+  return 1
+
+def sim_scientific_gpu_lkir_launch_pipeline() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_scientific_md_lkir_progress() != 1:
+    return 0
+  if lig_emit_vendor_progress() != 1:
+    return 0
+  if lig_emit_vendor_lowering_ready() != 1:
+    return 0
+  return 1

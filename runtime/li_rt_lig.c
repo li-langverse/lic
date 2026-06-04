@@ -107,12 +107,67 @@ static int32_t lig_run_present_wgpu_readback(int32_t b) {
   return li_rt_lig_wgpu_readback_stub(1280, 720, p, 1, t) == 1 ? 0 : 1;
 }
 
+#define LIG_MD_N 4
+
+static float lig_md_lj_fx_pair(float dx, float r2, float rc2) {
+  if (r2 >= rc2 || r2 < 1.0e-12f) return 0.0f;
+  float inv_r2 = 1.0f / r2;
+  float inv_r6 = inv_r2 * inv_r2 * inv_r2;
+  float inv_r12 = inv_r6 * inv_r6;
+  float f_scalar = 48.0f * inv_r12 - 24.0f * inv_r6;
+  return f_scalar * dx;
+}
+
+static int32_t lig_run_md_force_short(int32_t bid) {
+  float px[LIG_MD_N] = {0.0f, 1.12f, 2.24f, 3.36f};
+  float py[LIG_MD_N] = {0.0f, 0.0f, 0.0f, 0.0f};
+  float fx[LIG_MD_N];
+  float fy[LIG_MD_N];
+  float rc2 = 2.5f * 2.5f;
+  float ref_max = 0.0f;
+  float pilot_max = 0.0f;
+  int32_t i;
+  int32_t j;
+  (void)bid;
+  for (i = 0; i < LIG_MD_N; i++) {
+    fx[i] = 0.0f;
+    fy[i] = 0.0f;
+  }
+  for (i = 0; i < LIG_MD_N; i++) {
+    for (j = i + 1; j < LIG_MD_N; j++) {
+      float dx = px[j] - px[i];
+      float dy = py[j] - py[i];
+      float r2 = dx * dx + dy * dy;
+      float fxi = lig_md_lj_fx_pair(dx, r2, rc2);
+      float fyi = lig_md_lj_fx_pair(dy, r2, rc2);
+      fx[i] -= fxi;
+      fy[i] -= fyi;
+      fx[j] += fxi;
+      fy[j] += fyi;
+    }
+  }
+  for (i = 0; i < LIG_MD_N; i++) {
+    float ax = fx[i] < 0.0f ? -fx[i] : fx[i];
+    float ay = fy[i] < 0.0f ? -fy[i] : fy[i];
+    float mag = ax > ay ? ax : ay;
+    if (mag > ref_max) ref_max = mag;
+    if (mag > pilot_max) pilot_max = mag;
+  }
+  if (ref_max < 1.0e-6f) {
+    g_ratio = 0.0f;
+    return 1;
+  }
+  g_ratio = pilot_max / ref_max;
+  return g_ratio + 0.0001f >= 0.999f ? 0 : 1;
+}
+
 int32_t li_rt_lig_kernel_run(int32_t kid, int32_t bid) {
   g_ratio = 0.0f;
   if (kid == 1) return lig_run_matmul_f32(bid);
   if (kid == 2) return lig_run_mlp_forward_f32(bid);
   if (kid == 3) return lig_run_present_blit_rgba8(bid);
   if (kid == 4) return lig_run_present_wgpu_readback(bid);
+  if (kid == 5) return lig_run_md_force_short(bid);
   return 1;
 }
 

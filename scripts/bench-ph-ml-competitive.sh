@@ -12,6 +12,7 @@ OUT="$BENCHMARKS_RESULTS/ph-ml-competitive.json"
 mkdir -p "$BENCHMARKS_RESULTS"
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul.sh"
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-16.sh" || true
+bash "$ROOT/scripts/bench-ph-sci-lkir-md-oracle.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
 bash "$ROOT/scripts/bench-ph-ml-async-env-collect.sh"
 bash "$ROOT/scripts/bench-ph-ml-llm-forward.sh"
@@ -82,6 +83,7 @@ def comp_row(src, li_sec, cid, inc, wc, note):
 
 
 matmul = load("ph-ml-lkir-matmul.json")
+sci_md = load("ph-sci-lkir-md-oracle.json")
 mlp = load("ph-ml-mlp-forward.json")
 async_env = load("ph-ml-async-env-collect.json")
 llm = load("ph-ml-llm-forward.json")
@@ -106,6 +108,15 @@ sb3_vecenv = load("ph-ml-competitor-sb3-vecenv.json")
 ray_rllib = load("ph-ml-competitor-ray-rllib.json")
 
 rows = [
+    {
+        "id": "sci_md_lkir",
+        "kernel": "lig.kernel.md_force_short",
+        "workload_class": "pilot",
+        "workload_note": "Li row: sim.scientific MD oracle + lig kid=5 validity; PH-SCI-GPU-VENDOR-01",
+        "executed": bool(sci_md.get("executed")),
+        "li": li_row(sci_md, "pilot"),
+        "competitors": [],
+    },
     {
         "id": "matmul_lkir",
         "kernel": "ml.lkir.matmul_f32",

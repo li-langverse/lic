@@ -6,6 +6,7 @@ license = "Apache-2.0 OR MIT"
 description = "Scientific simulation profiles — MD, PDE; callable from any Li program via import sim.scientific"
 
 [dependencies]
+lig = { path = "../lig" }
 li-sim = { path = "../li-sim" }
 li-physics-particles = { path = "../li-physics-particles" }
 li-physics-rigid = { path = "../li-physics-rigid" }

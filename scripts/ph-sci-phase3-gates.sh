@@ -7,6 +7,30 @@ cd "$ROOT"
 export PH_SCI_REQUIRE_MIR_GPU=1
 bash scripts/ph-sci-gpu-gates.sh
 
+if [[ "${PH_SCI_VENDOR_LKIR:-1}" == "1" ]]; then
+  export LIG_EMIT_CUDA=1
+  bash scripts/lig-emit-vendor-stub.sh
+  LIC="${LIC_BIN:-${LIC:-}}"
+  if [[ -z "$LIC" ]] || ! "$LIC" --version &>/dev/null; then
+    LIC="$("$ROOT/scripts/resolve-lic.sh")"
+  fi
+  export LIC
+  "$LIC" build --allow-open-vc --no-lean-verify \
+    packages/li-sim-scientific/li-tests/smoke/scientific_gpu_lkir_launch.li -o /dev/null
+  bash scripts/bench-ph-sci-lkir-md-oracle.sh
+  python3 - <<'PY'
+import json, sys
+from pathlib import Path
+p = Path("benchmarks/results/ph-sci-lkir-md-oracle.json")
+d = json.loads(p.read_text())
+if not d.get("compile_ok"):
+    sys.exit("ph-sci-lkir-md-oracle: compile_ok false")
+if d.get("lig_emit_cuda") and not d.get("validity_gate_pass"):
+    sys.exit("ph-sci-lkir-md-oracle: validity_gate_pass false (run with rebuilt lic + LIG_EMIT_CUDA=1)")
+print("WP-SCI-GPU-VENDOR-01: MD LKIR bench OK")
+PY
+fi
+
 [[ -f data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md ]] \
   || { echo "missing sprint goal file"; exit 1; }
 

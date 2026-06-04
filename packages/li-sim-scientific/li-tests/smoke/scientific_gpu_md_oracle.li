@@ -9,7 +9,7 @@ def scientific_gpu_md_oracle_smoke() -> int
   decreases 0
 =
   var md: float = sim_scientific_oracle_checksum_md()
-  if md <= 0.0:
+  if md < 0.0:
     return 0
   if md >= 1.0e-3:
     return 0

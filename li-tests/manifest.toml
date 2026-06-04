@@ -1681,3 +1681,9 @@ suite = "science_gpu"
 file = "packages/li-sim-drug-design/li-tests/smoke/drug_gpu_litl_workflow.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-15 @gpu drug LitL workflow"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_gpu_lkir_launch.li"
+outcome = "compile_open_ok"
+note = "WP-SCI-GPU-VENDOR-01 @gpu MD oracle LKIR launch pilot"

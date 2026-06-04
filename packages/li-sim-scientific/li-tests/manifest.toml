@@ -16,7 +16,13 @@ note = "WP-SCI-03 tier-2 MD/heat oracle checksums"
 suite = "smoke"
 file = "smoke/run_algo_registry_tier2.li"
 outcome = "verify_ok"
-note = "WP-SCI-03 run_algo_registry MD/heat tier-2 dispatch"
+note = "WP-SCI-03 run_algo_registry MD/heat/CFD tier-2 dispatch"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/scientific_cfd_cavity.li"
+outcome = "verify_ok"
+note = "WP-SCI-06 CFD lid-driven cavity oracle + registry algo 206"
 
 [[tests]]
 suite = "smoke"

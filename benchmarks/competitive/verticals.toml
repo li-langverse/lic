@@ -49,11 +49,11 @@ notes = "PH-CAE FEA track; engineering-cae-fundamentals.md; no bench oracle yet.
 id = "cfd_lid_driven_cavity"
 incumbent = "OpenFOAM / COMSOL CFD / PETSc"
 kernel_or_api = "incompressible Navier-Stokes, lid-driven cavity"
-workload_class = "stub"
+workload_class = "partial"
 oracle = "cpp"
 li_package = "sim.scientific"
-last_reviewed = "2026-05-23"
-notes = "PH-CAE CFD track; canonical cavity target; no bench oracle yet."
+last_reviewed = "2026-06-04"
+notes = "PH-CAE CFD track; Li oracle `sim_scientific_oracle_checksum_cfd()` via `physics.fluids.cavity_lid_oracle_checksum()` (1D 8-cell surrogate); registry algo 205–210."
 
 [[vertical]]
 id = "drug_litl"

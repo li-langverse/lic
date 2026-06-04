@@ -17,25 +17,35 @@ def main() -> int
     return 3
   if md105.checksum == 1.001:
     return 4
-  var heat210: SimRunResult = run_algo(210, 2)
-  if run_result_ok(heat210) != 1:
+  var heat201: SimRunResult = run_algo(201, 1)
+  if run_result_ok(heat201) != 1:
     return 5
-  if heat210.algo_id != 210:
+  if heat201.algo_id != 201:
     return 6
-  if heat210.checksum != heat_oracle:
+  if heat201.checksum != heat_oracle:
     return 7
-  if heat210.checksum == 1.001:
+  if heat201.checksum == 1.001:
     return 8
+  var cfd206: SimRunResult = run_algo(206, 2)
+  if run_result_ok(cfd206) != 1:
+    return 9
+  if cfd206.algo_id != 206:
+    return 10
+  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
+  if cfd206.checksum != cfd_oracle:
+    return 11
+  if cfd206.checksum == 1.001:
+    return 12
   var rigid302: SimRunResult = run_algo(302, 0)
   if run_result_ok(rigid302) != 1:
-    return 9
+    return 13
   if rigid302.algo_id != 302:
-    return 10
+    return 14
   if rigid302.checksum == 1.001:
-    return 11
+    return 15
   var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(qm418) != 1:
-    return 12
+    return 16
   if qm418.checksum != 1.001:
-    return 13
+    return 17
   return 0

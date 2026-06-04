@@ -1,0 +1,24 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() != 4:
+    return 1
+  var cfd: float = sim_scientific_oracle_checksum_cfd()
+  if cfd <= 0.0:
+    return 2
+  var run206: SimRunResult = run_algo(206, 0)
+  if run_result_ok(run206) != 1:
+    return 3
+  if run206.algo_id != 206:
+    return 4
+  if run206.vertical_id != vertical_cfd_lid_driven_cavity():
+    return 5
+  if run206.checksum != cfd:
+    return 6
+  if run206.checksum == 1.001:
+    return 7
+  return 0

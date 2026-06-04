@@ -126,6 +126,13 @@ def vertical_qm_dft() -> int
 =
   return 4
 
+def vertical_cfd_lid_driven_cavity() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
 def algo_registry_count() -> int
   requires true
   ensures result == 126

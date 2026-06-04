@@ -71,6 +71,48 @@ def cloth_pbd_distance(
   px[j] = px[j] - 0.5 * corr * dx
   py[j] = py[j] - 0.5 * corr * dy
 
+# WP-SCI-06 — 1D lid-driven cavity surrogate (8-cell channel, E0201-safe).
+def cavity_lid_step_1d(
+    u: var array[8, float], lid_vel: float, nu: float, dt: float, dx: float) -> unit
+  requires dt > 0.0
+  requires dx > 0.0
+  requires nu >= 0.0
+  ensures true
+  decreases 0
+=
+  var v: array[8, float]
+  var i: int = 0
+  while i < 8
+    v[i] = u[i]
+    i = i + 1
+  i = 1
+  while i < 7
+    var lap: float = (v[i - 1] + v[i + 1] - 2.0 * v[i]) / (dx * dx)
+    u[i] = v[i] + nu * dt * lap + 0.01 * lid_vel * dt / dx
+    i = i + 1
+  u[0] = 0.0
+  u[7] = lid_vel
+
+def cavity_lid_oracle_checksum() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var u: array[8, float]
+  var i: int = 0
+  while i < 8
+    u[i] = 0.0
+    i = i + 1
+  var lid: float = 1.0
+  var nu: float = 0.01
+  var dt: float = 0.001
+  var dx: float = 0.125
+  var step: int = 0
+  while step < 100
+    cavity_lid_step_1d(u, lid, nu, dt, dx)
+    step = step + 1
+  return u[1] + u[2] + u[3] + u[4] + u[5] + u[6]
+
 def physics_fluids_gpu_progress() -> int
   requires true
   ensures result >= 0
@@ -78,6 +120,9 @@ def physics_fluids_gpu_progress() -> int
   decreases 0
 =
   var u: array[8, float]
-  var lap: array[8, float]
-  heat_step_explicit(u, lap, 0.1, 0.01)
+  var i: int = 0
+  while i < 8
+    u[i] = 0.0
+    i = i + 1
+  cavity_lid_step_1d(u, 1.0, 0.01, 0.001, 0.125)
   return 1

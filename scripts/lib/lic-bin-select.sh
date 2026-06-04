@@ -4,13 +4,13 @@ li_pick_lic_bin() {
   local root="${1:?root required}"
   local cand rel
   for cand in \
-    "$root/build-wsl/compiler/lic/lic" \
     "$root/build/compiler/lic/lic" \
+    "$root/build-wsl/compiler/lic/lic" \
     "$root/build/compiler/lic/lic.exe"; do
     if [[ -x "$cand" ]] && "$cand" --version &>/dev/null; then
       case "$cand" in
-        "$root/build-wsl/compiler/lic/lic") rel="./build-wsl/compiler/lic/lic" ;;
         "$root/build/compiler/lic/lic") rel="./build/compiler/lic/lic" ;;
+        "$root/build-wsl/compiler/lic/lic") rel="./build-wsl/compiler/lic/lic" ;;
         *) rel="$cand" ;;
       esac
       echo "$rel"

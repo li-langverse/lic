@@ -36,7 +36,7 @@ Replace placeholder axiom witnesses with **statement-aligned Li contracts**, wir
 
 ## Do not
 
-- Edit `compiler/`, `vc_emit_lean.cpp`, `vc_witness.cpp`, or `Discharge.lean` from this goal.
+- Edit `compiler/`, `vc_emit_lean.cpp`, `vc_witness.cpp`, or `Discharge.lean` from this goal (except Julian-owned parser `implies` / def+`lean_thm` axiom emit per BUG-C-13).
 - Add axioms to `docs/semantics/trusted.lean`.
 - Mark `proof_status = proved` for specimens still failing phase-9 gap scripts.
 - Use `ensures result == 0` as the *only* contract on an axiom specimen (witness-only).

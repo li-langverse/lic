@@ -17,3 +17,9 @@ suite = "smoke"
 file = "smoke/run_algo_registry_tier2.li"
 outcome = "verify_ok"
 note = "WP-SCI-03 run_algo_registry MD/heat tier-2 dispatch"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/scientific_gpu_md_oracle.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-02 @gpu MD/heat oracle checksums"

@@ -5,3 +5,9 @@ suite = "smoke"
 file = "smoke/builds.li"
 outcome = "verify_ok"
 note = "T-PKG-li-std-physics-particles-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/physics_gpu_md_mini_step.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-03 @gpu MD mini step"

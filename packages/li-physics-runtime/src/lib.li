@@ -185,3 +185,15 @@ def game_physics_step_hook(state: var GamePhysicsState, frame_dt: float) -> unit
   state.vy = next.vy
   state.vz = next.vz
   state.step_count = next.step_count
+
+def physics_runtime_gpu_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var world: PhysicsWorld = physics_world_game_default()
+  physics_step(world, 1.0 / 60.0)
+  if world.step_count < world.substeps:
+    return 0
+  return 1

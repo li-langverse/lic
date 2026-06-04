@@ -1594,6 +1594,18 @@ note = "PH-SCI-GPU-03 @gpu MD mini step"
 
 [[tests]]
 suite = "science_gpu"
+file = "packages/li-physics-rigid/li-tests/smoke/physics_gpu_rigid_substep.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-08 @gpu rigid integrate + overlap"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-runtime/li-tests/smoke/physics_gpu_runtime_substep.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-09 @gpu physics_world substep loop"
+
+[[tests]]
+suite = "science_gpu"
 file = "packages/li-physics-fluids/li-tests/smoke/physics_gpu_fluids_heat_step.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-04 @gpu heat diffusion"

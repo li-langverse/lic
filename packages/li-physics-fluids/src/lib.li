@@ -29,16 +29,22 @@ def sph_kernel_poly6(r: float, h: float) -> float
   var x: float = (h * h - r * r) / (h * h * h)
   return 315.0 / (64.0 * 3.14159265) * x * x * x
 
+# WP-SCI-BUILD-01 — explicit indices (E0201-safe).
 def euler_advect_scalar(field: var array[8, float], vx: var array[8, float], dt: float, dx: float) -> unit
   requires dt > 0.0
   requires dx > 0.0
   ensures true
   decreases 0
 =
-  var i: int = 0
-  while i < 8
-    field[i] = field[i] - vx[i] * dt / dx
-    i = i + 1
+  var c: float = dt / dx
+  field[0] = field[0] - vx[0] * c
+  field[1] = field[1] - vx[1] * c
+  field[2] = field[2] - vx[2] * c
+  field[3] = field[3] - vx[3] * c
+  field[4] = field[4] - vx[4] * c
+  field[5] = field[5] - vx[5] * c
+  field[6] = field[6] - vx[6] * c
+  field[7] = field[7] - vx[7] * c
 
 def heat_step_explicit(
     u: var array[8, float], lap: var array[8, float], alpha: float, dt: float) -> unit
@@ -46,10 +52,15 @@ def heat_step_explicit(
   ensures true
   decreases 0
 =
-  var i: int = 0
-  while i < 8
-    u[i] = u[i] + alpha * dt * lap[i]
-    i = i + 1
+  var s: float = alpha * dt
+  u[0] = u[0] + s * lap[0]
+  u[1] = u[1] + s * lap[1]
+  u[2] = u[2] + s * lap[2]
+  u[3] = u[3] + s * lap[3]
+  u[4] = u[4] + s * lap[4]
+  u[5] = u[5] + s * lap[5]
+  u[6] = u[6] + s * lap[6]
+  u[7] = u[7] + s * lap[7]
 
 def cloth_pbd_distance(
     px: var array[4, float], py: var array[4, float],
@@ -80,16 +91,23 @@ def cavity_lid_step_1d(
   ensures true
   decreases 0
 =
-  var v: array[8, float]
-  var i: int = 0
-  while i < 8
-    v[i] = u[i]
-    i = i + 1
-  i = 1
-  while i < 7
-    var lap: float = (v[i - 1] + v[i + 1] - 2.0 * v[i]) / (dx * dx)
-    u[i] = v[i] + nu * dt * lap + 0.01 * lid_vel * dt / dx
-    i = i + 1
+  var v0: float = u[0]
+  var v1: float = u[1]
+  var v2: float = u[2]
+  var v3: float = u[3]
+  var v4: float = u[4]
+  var v5: float = u[5]
+  var v6: float = u[6]
+  var v7: float = u[7]
+  var inv_dx2: float = 1.0 / (dx * dx)
+  var nu_dt: float = nu * dt * inv_dx2
+  var lid_src: float = 0.01 * lid_vel * dt / dx
+  u[1] = v1 + nu_dt * (v0 + v2 - 2.0 * v1) + lid_src
+  u[2] = v2 + nu_dt * (v1 + v3 - 2.0 * v2) + lid_src
+  u[3] = v3 + nu_dt * (v2 + v4 - 2.0 * v3) + lid_src
+  u[4] = v4 + nu_dt * (v3 + v5 - 2.0 * v4) + lid_src
+  u[5] = v5 + nu_dt * (v4 + v6 - 2.0 * v5) + lid_src
+  u[6] = v6 + nu_dt * (v5 + v7 - 2.0 * v6) + lid_src
   u[0] = 0.0
   u[7] = lid_vel
 
@@ -99,10 +117,14 @@ def cavity_lid_oracle_checksum() -> float
   decreases 0
 =
   var u: array[8, float]
-  var i: int = 0
-  while i < 8
-    u[i] = 0.0
-    i = i + 1
+  u[0] = 0.0
+  u[1] = 0.0
+  u[2] = 0.0
+  u[3] = 0.0
+  u[4] = 0.0
+  u[5] = 0.0
+  u[6] = 0.0
+  u[7] = 0.0
   var lid: float = 1.0
   var nu: float = 0.01
   var dt: float = 0.001
@@ -120,9 +142,13 @@ def physics_fluids_gpu_progress() -> int
   decreases 0
 =
   var u: array[8, float]
-  var i: int = 0
-  while i < 8
-    u[i] = 0.0
-    i = i + 1
+  u[0] = 0.0
+  u[1] = 0.0
+  u[2] = 0.0
+  u[3] = 0.0
+  u[4] = 0.0
+  u[5] = 0.0
+  u[6] = 0.0
+  u[7] = 0.0
   cavity_lid_step_1d(u, 1.0, 0.01, 0.001, 0.125)
   return 1

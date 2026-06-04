@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 cd "$(dirname "$0")/.."
 OUT="${PH_ML_LLM_TRUSTED_HTTPD_OUT:-benchmarks/results/ph-ml-llm-trusted-httpd.json}"
-LIC=build-wsl/compiler/lic/lic
+LIC="${LIC:-build-wsl/compiler/lic/lic}"
 SMOKE=packages/li-llm/li-tests/smoke/llm_trusted_httpd_route.li
 BIN="/tmp/ph-ml-httpd-native-bin/llm_trusted_httpd_route-$$"
 mkdir -p /tmp/ph-ml-httpd-native-bin
 "$LIC" build --allow-open-vc "$SMOKE" -o "$BIN"
+set +e
+"$BIN" >/dev/null 2>&1
+_warm=$?
 "$BIN"; _ec=$?
+set -e
 if [[ "$_ec" -ne 0 ]]; then
-  echo "bench-native: smoke failed (exit $_ec)" >&2
+  echo "bench-native: smoke failed (warmup=$_warm final=$_ec)" >&2
   exit 1
 fi
 python3 - "$OUT" <<'PY'

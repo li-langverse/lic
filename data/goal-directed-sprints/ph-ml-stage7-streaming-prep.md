@@ -1,7 +1,7 @@
 # PH-ML Stage 7 prep — streaming SSE tokens
 
-**Gate (future):** `scripts/ph-ml-stage7-gates.sh` (not yet implemented)  
-**Baseline:** Stage 6 li-httpd native generate
+**Gate (future):** `scripts/ph-ml-stage7-gates.sh`  
+**Baseline:** Stage 6 li-httpd native generate @ PR #858 (`4db435cd`)
 
 ## Goal
 

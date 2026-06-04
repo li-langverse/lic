@@ -1,6 +1,6 @@
 import ml
 
-def main() -> int raises IO
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
@@ -9,6 +9,7 @@ def main() -> int raises IO
   var w1: array[8, array[8, float]]
   var w2: array[8, array[8, float]]
   var y: array[8, array[8, float]]
+  var loss: float = 0.0
   x[0][0] = 1.0
   x[0][1] = 1.0
   w1[0][0] = 1.0
@@ -17,8 +18,8 @@ def main() -> int raises IO
   w1[1][1] = 1.0
   w2[0][0] = 1.0
   w2[1][0] = 1.0
-  if ml_mlp_forward_f32(2, 2, 1, x, w1, w2, y) != 1:
+  if ml_mlp_train_step_f32(2, 2, 1, x, w1, w2, y, loss) != 1:
     return 1
-  if ml_mlp_lig_run() < -2:
+  if loss < 0.5:
     return 2
   return 0

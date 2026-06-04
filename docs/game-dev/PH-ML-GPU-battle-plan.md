@@ -27,10 +27,16 @@
 | **10** | PH-LLM depth + RL IPC scaffold + NumPy/C++ MLP + SB3 driver + tier-3 LLM bench | li-llm, li-ml, li-sim | ph-ml-wave10-gates.sh |
 | **12** | Final deferred: LIG emit, mmap loader, GPU launch pipeline, RL fork, SB3/TF/Triton gates | li-llm, li-ml, li-sim, lig | ph-ml-wave12-gates.sh |
 
-| **13** | **Program complete:** vendor lowering bytes, device buffers, import ml, Li fork, SB3/Ray hard CI, 32Ã—32 competitive, weights mmap, live httpd proxy | li-llm, li-ml, li-sim, lig, li-studio | ph-ml-program-complete-gates.sh |
+| **13** | **Program complete:** vendor lowering bytes, device buffers, import ml, Li fork, SB3/Ray hard CI, 32x32 competitive, weights mmap, live httpd proxy | li-llm, li-ml, li-sim, lig, li-studio | ph-ml-program-complete-gates.sh |
 
-| **11** | Wave 10 carryover: GPU/LKIR matmul, safetensors bytes, RL fork IPC, Rust MLP, 16Ã—16 row | li-llm, li-ml, li-sim | ph-ml-wave11-gates.sh |
+| **Stage 2** | **Native DL spine:** LKIR 32-tile matmul, MLP kid=2, competitive MLP, autograd RFC + train-step scaffold | li-ml, lig | ph-ml-stage2-gates.sh |
 
+| **11** | Wave 10 carryover: GPU/LKIR matmul, safetensors bytes, RL fork IPC, Rust MLP, 16x16 row | li-llm, li-ml, li-sim | ph-ml-wave11-gates.sh |
+
+
+## Stage 2 — Native DL spine (post program-complete)
+
+LKIR 32-tile matmul prologue, lig kid=2 MLP forward, tier-1 competitive MLP row, autograd forward-tape RFC, and forward-only `ml_mlp_train_step` bench (`autograd_mode: forward_only_scaffold`). Gate: `ph-ml-stage2-gates.sh`.
 
 ## Wave 13 — program complete (all deferred T1–T8)
 

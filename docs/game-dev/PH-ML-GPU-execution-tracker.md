@@ -1,4 +1,8 @@
 
+| WP-ML-22 | LKIR 32-tile matmul prologue (Stage 2.1) | 2 | done | ml_matmul_lkir_logical_32 |
+| WP-ML-23 | MLP kid=2 + competitive row (Stage 2.2) | 2 | done | bench-ph-ml-mlp-competitive.sh |
+| WP-ML-24 | Autograd RFC + train-step scaffold (Stage 2.3) | 2 | partial | ml-autograd-forward-tape-rfc.md |
+| WP-LIG-03 | HIP/MSL vendor stub bytes (Stage 2.1) | 2 | partial | build/lig-emit-vendor.hsaco |
 | WP-LIG-01 | LIG_EMIT_* vendor emit progress | 12 | done | lig-emit-vendor-stub.sh |
 | WP-LLM-06 | GPU matmul via li_rt_lig_matmul_ready | 12 | partial | llm_safetensors_mmap.li |
 | WP-LLM-08 | li-httpd trusted route scaffold | 12 | partial | llm_trusted_httpd_route.li |

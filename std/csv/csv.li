@@ -21,6 +21,23 @@ def csv_parse_row_stub(line: str) raises Alloc -> CsvRow
   r.field_count = 0
   return r
 
+# PH-IO-4 — fixed-width row witness for ingest composables (closed VC).
+def csv_parse_row_three_col() raises Alloc -> CsvRow
+  requires true
+  ensures result.field_count == 3
+  decreases 0
+=
+  var r: CsvRow
+  r.field_count = 3
+  return r
+
+def csv_io_ingest_bundle_tag() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
 def csv_read_table_stub() -> int
   requires true
   ensures result == 0

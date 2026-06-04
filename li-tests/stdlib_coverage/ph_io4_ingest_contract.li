@@ -1,0 +1,23 @@
+import std.csv
+import std.io
+
+# PH-IO-4 — std.io + std.csv ingest contract (open/close + row field count).
+
+def main() raises Alloc -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var path: str = "fixtures/sample.csv"
+  if io_csv_ingest_open_tag(path) != 4:
+    return 1
+  if file_read_then_close(path) != 0:
+    return 2
+  var row: CsvRow = csv_parse_row_three_col()
+  if row.field_count != 3:
+    return 3
+  if csv_io_ingest_bundle_tag() != 10:
+    return 4
+  if csv_tag() + io_tag() != 10:
+    return 5
+  return 0

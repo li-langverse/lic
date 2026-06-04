@@ -1188,6 +1188,12 @@ note = "PH-IO-4: std.csv + std.io import harness (csv_tag=6, io_tag=4)"
 
 [[tests]]
 suite = "stdlib_coverage"
+file = "stdlib_coverage/ph_io4_ingest_contract.li"
+outcome = "verify_open_ok"
+note = "PH-IO-4: io open/close + csv field-count ingest contract"
+
+[[tests]]
+suite = "stdlib_coverage"
 file = "stdlib_coverage/build_std_summary_plot.li"
 outcome = "verify_open_ok"
 note = "PH-IO-7/5: std.summary + std.plot import harness (summary_tag=7, plot_tag=5)"

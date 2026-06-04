@@ -63,8 +63,10 @@ bool is_std_module_symbol(const std::string_view name) {
                        "bisect_right_stub", "insort_left_stub", "binary_search_stub",
                        // std.io / std.csv (PH-IO-4)
                        "Path", "FileHandle", "IoError", "io_tag", "file_open_read",
-                       "file_close", "file_read_all_stub", "path_join",
+                       "file_close", "file_read_all_stub", "file_read_then_close",
+                       "io_csv_ingest_open_tag", "path_join",
                        "CsvRow", "CsvTable", "csv_tag", "csv_parse_row_stub",
+                       "csv_parse_row_three_col", "csv_io_ingest_bundle_tag",
                        "csv_read_table_stub",
                        // std.summary (PH-IO-7)
                        "SummaryRow", "SummaryStats", "summary_tag",

@@ -4,10 +4,10 @@
 suite = "smoke"
 file = "smoke/builds.li"
 outcome = "verify_ok"
-note = "T-PKG-li-std-physics-em-smoke"
+note = "T-PKG-li-sim-robotics-smoke"
 
 [[tests]]
 suite = "smoke"
-file = "smoke/physics_gpu_em_jacobi.li"
+file = "smoke/robo_gpu_integrate_steps.li"
 outcome = "compile_open_ok"
-note = "PH-SCI-GPU-05 @gpu EM vertical MIR tag"
+note = "PH-SCI-GPU-10 @gpu arm integration loop"

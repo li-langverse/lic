@@ -838,6 +838,8 @@ def proxy_handle_client_in(epfd: var int, slot: var int) raises Net, Alloc, IO -
         return 0
       if snap < 0:
         return -1
+  if httpd_env_li_proxy_loop_i() != 1:
+    return 0
   var st2: int = proxy_li_start(epfd, slot, hdr_end, keep)
   if st2 < 0:
     return -1
@@ -966,7 +968,8 @@ def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Al
     if httpd_tls_enabled_i() != 1:
       return 1
   if httpd_proxy_configured_i() == 1:
-    httpd_set_li_proxy_mode_i(1)
+    if httpd_env_li_proxy_loop_i() == 1:
+      httpd_set_li_proxy_mode_i(1)
   httpd_prepare_root_i(root)
   var epfd: int = epoll_create1_i()
   if epfd < 0:

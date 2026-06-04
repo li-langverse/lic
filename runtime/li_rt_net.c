@@ -706,6 +706,10 @@ static int httpd_m2_policy_blocks_proxy_snap(void) {
 }
 
 static int httpd_proxy_snap_disabled(void) {
+  const char* snap_env = getenv("LI_HTTPD_PROXY_SNAP");
+  if (snap_env && (snap_env[0] == '0' || snap_env[0] == 'n' || snap_env[0] == 'N')) {
+    return 1;
+  }
   return httpd_m2_policy_blocks_proxy_snap() || g_lb_mode == HTTPD_LB_MODE_COOKIE;
 }
 
@@ -2485,7 +2489,7 @@ static int httpd_traceparent_present(const char* buf, int hdr_end) {
 }
 
 static int httpd_inject_traceparent_if_missing(int32_t slot, int hdr_end) {
-  if (slot < 0 || slot >= HTTPD_MAX_CONN || hdr_end <= 0) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || hdr_end < 4) {
     return hdr_end;
   }
   if (httpd_traceparent_present(g_slots[slot].buf, hdr_end)) {
@@ -2493,12 +2497,13 @@ static int httpd_inject_traceparent_if_missing(int32_t slot, int hdr_end) {
   }
   static const char k_tp[] = "traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01\r\n";
   int add = (int)sizeof(k_tp) - 1;
-  int tail = g_slots[slot].len - hdr_end;
+  int insert_at = hdr_end - 2;
+  int tail = g_slots[slot].len - insert_at;
   if (g_slots[slot].len + add >= HTTPD_IO_BUF) {
     return hdr_end;
   }
-  memmove(g_slots[slot].buf + hdr_end + add, g_slots[slot].buf + hdr_end, (size_t)tail);
-  memcpy(g_slots[slot].buf + hdr_end, k_tp, (size_t)add);
+  memmove(g_slots[slot].buf + insert_at + add, g_slots[slot].buf + insert_at, (size_t)tail);
+  memcpy(g_slots[slot].buf + insert_at, k_tp, (size_t)add);
   g_slots[slot].len += add;
   return hdr_end + add;
 }

@@ -1,13 +1,13 @@
-# PH-ML-GPU battle plan ‚Äî native ML/DL/RL on Li
+# PH-ML-GPU battle plan ó native ML/DL/RL on Li
 
-**Status:** Wave 13 program complete (partial ‚Äî T1/T6 landed 2026-05-31); Wave 12 final deferred (2026-05-31); Wave 11 carryover (2026-05-31); Wave 10 LLM depth + RL IPC + MLP competitors (2026-05-31); Wave 9 LLM recovery + C++/Rust competitors (2026-05-31); Wave 8 SOTA competitive drivers (2026-05-31); Wave 6 flat matmul + process env scaffold + competitive benches (2026-05-31); Wave 5 thread-pool RL + JobGraph queue (2026-05-31); Wave 4 merged (2026-05-30); Wave 3 JobGraph landed (2026-05-30); Wave 1 spine on branch  
+**Status:** Wave 13 program complete (partial ó T1/T6 landed 2026-05-31); Wave 12 final deferred (2026-05-31); Wave 11 carryover (2026-05-31); Wave 10 LLM depth + RL IPC + MLP competitors (2026-05-31); Wave 9 LLM recovery + C++/Rust competitors (2026-05-31); Wave 8 SOTA competitive drivers (2026-05-31); Wave 6 flat matmul + process env scaffold + competitive benches (2026-05-31); Wave 5 thread-pool RL + JobGraph queue (2026-05-31); Wave 4 merged (2026-05-30); Wave 3 JobGraph landed (2026-05-30); Wave 1 spine on branch  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **RFC:** [specs/ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md)  
 **Tracker:** [PH-ML-GPU-execution-tracker.md](PH-ML-GPU-execution-tracker.md)
 
 ## Overview
 
-**PH-ML** delivers native-first ML/DL/RL: CPU correctness spine in Wave 1, LKIR/GPU pilot in Wave 2, async JobGraph + Studio RL in Wave 3; general matmul + MLP + sync env workers in Wave 4; pthread parallel env rewards + sample queue in Wave 5; 16√ó16 flat matmul + OS process env scaffold + SOTA competitive registry in Wave 6.
+**PH-ML** delivers native-first ML/DL/RL: CPU correctness spine in Wave 1, LKIR/GPU pilot in Wave 2, async JobGraph + Studio RL in Wave 3; general matmul + MLP + sync env workers in Wave 4; pthread parallel env rewards + sample queue in Wave 5; 16◊16 flat matmul + OS process env scaffold + SOTA competitive registry in Wave 6.
 
 ## Waves
 
@@ -18,7 +18,7 @@
 | **3** | Async JobGraph, >=4 env sample collection | li-ml-rl, li-sim | bench + studio sim_rl |
 | **4** | Persistent EnvPool + DL spine (matmul, MLP, sync workers) | li-ml, li-ml-rl, li-llm | wave4 gates + tier-3 MLP bench |
 | **5** | Thread-pool env workers + JobGraph sample queue | li-ml-rl, li-sim | wave5 gates |
-| **6** | 16√ó16 flat matmul, process env scaffold, PH-LLM bench row, competitive registry | li-ml, li-ml-rl, li-llm, li-sim | ph-ml-wave6-gates.sh |
+| **6** | 16◊16 flat matmul, process env scaffold, PH-LLM bench row, competitive registry | li-ml, li-ml-rl, li-llm, li-sim | ph-ml-wave6-gates.sh |
 | **7** | PH-LLM scaffold + NumPy competitor driver | li-llm, li-ml | ph-ml-wave7-gates.sh |
 | **8** | PyTorch/JAX/TF/Triton competitor drivers + honest ratio_vs_li | li-ml, scripts | ph-ml-wave8-gates.sh |
 
@@ -31,12 +31,18 @@
 
 | **Stage 2** | **Native DL spine:** LKIR 32-tile matmul, MLP kid=2, competitive MLP, autograd RFC + train-step scaffold | li-ml, lig | ph-ml-stage2-gates.sh |
 
+| **Stage 3** | **Parallel RL:** async_env_collect executed, IPC shard scaffold, CartPole stub, train policy_loss_mean | li-ml-rl, li-sim | ph-ml-stage3-gates.sh |
+
 | **11** | Wave 10 carryover: GPU/LKIR matmul, safetensors bytes, RL fork IPC, Rust MLP, 16x16 row | li-llm, li-ml, li-sim | ph-ml-wave11-gates.sh |
 
 
-## Stage 2 ó Native DL spine (post program-complete)
+## Stage 2 ù Native DL spine (post program-complete)
 
 LKIR 32-tile matmul prologue, lig kid=2 MLP forward, tier-1 competitive MLP row, autograd forward-tape RFC, and forward-only `ml_mlp_train_step` bench (`autograd_mode: forward_only_scaffold`). Gate: `ph-ml-stage2-gates.sh`.
 
-## Wave 13 ó program complete (all deferred T1ñT8)
+## Stage 3 ó Parallel RL
+
+Workspace `li-ml-rl`, pthread `async_env_collect` bench + competitive Li row, IPC shard prepare + CartPole-v1 stub semantics, JobGraph `policy_loss_mean` train scaffold. Full PPO deferred: `specs/ml-rl-ppo-deferral.md`. Gate: `ph-ml-stage3-gates.sh`.
+
+## Wave 13 ù program complete (all deferred T1ùT8)
 

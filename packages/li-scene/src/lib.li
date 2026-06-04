@@ -124,6 +124,23 @@ type SceneMdParticleTier = object
   public fps_target: float
   public kernel_tag: int
 
+# WP-SCI-GPU-VENDOR-02 — scene tier hook delegates MD grid device-buffer readiness to lig runtime.
+extern proc li_rt_lig_md_gpu_device_buffer_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+def scene_md_particle_gpu_device_buffer_progress() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if li_rt_lig_md_gpu_device_buffer_ready() != 1:
+    return 0
+  return 1
+
 def scene_md_particle_tier_count() -> int
   requires true
   ensures result == 3

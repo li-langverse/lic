@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-SCI-GPU-VENDOR-02** — `physics_particles_md_grid_force_checksum_4()` 4-particle LJ force-sum witness (MD oracle layout).
 - **WP-SCI-GPU-03** — `nbody_pair_force` accumulates softened 2D Newtonian force via `var float` borrow; smoke `nbody_pair_force.li`.
 
 ### Changed

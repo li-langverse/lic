@@ -135,6 +135,60 @@ def md_mini_step(
     pz[i] = pz[i] + vz[i] * dt
     i = i + 1
 
+# WP-SCI-GPU-VENDOR-02 — 4-particle LJ force checksum witness (matches MD oracle chain layout).
+def physics_particles_md_grid_force_checksum_4() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var px: array[4, float]
+  var py: array[4, float]
+  var fx: array[4, float]
+  var fy: array[4, float]
+  var spacing: float = 1.12
+  px[0] = 0.0
+  py[0] = 0.0
+  px[1] = spacing
+  py[1] = 0.0
+  px[2] = spacing + spacing
+  py[2] = 0.0
+  px[3] = spacing + spacing + spacing
+  py[3] = 0.0
+  var i: int = 0
+  var epsilon: float = 1.0
+  var sigma: float = 1.0
+  var rc: float = 2.5
+  i = 0
+  while i < 4
+    fx[i] = 0.0
+    fy[i] = 0.0
+    i = i + 1
+  i = 0
+  while i < 4
+    var j: int = i + 1
+    while j < 4
+      var dx: float = px[j] - px[i]
+      var dy: float = py[j] - py[i]
+      var r2: float = dx * dx + dy * dy
+      if r2 < rc * rc and r2 >= 1.0e-12:
+        var r: float = li_rt_sqrt(r2)
+        var f_scalar: float = lj_force_scalar(r, epsilon, sigma, rc)
+        var inv_r: float = 1.0 / r
+        var fxi: float = f_scalar * dx * inv_r
+        var fyi: float = f_scalar * dy * inv_r
+        fx[i] = fx[i] - fxi
+        fy[i] = fy[i] - fyi
+        fx[j] = fx[j] + fxi
+        fy[j] = fy[j] + fyi
+      j = j + 1
+    i = i + 1
+  var sum: float = 0.0
+  i = 0
+  while i < 4
+    sum = sum + fx[i] * fx[i] + fy[i] * fy[i]
+    i = i + 1
+  return sum
+
 def physics_particles_gpu_progress() -> int
   requires true
   ensures result >= 0

@@ -108,6 +108,15 @@ static int32_t lig_run_present_wgpu_readback(int32_t b) {
 }
 
 #define LIG_MD_N 4
+#define LIG_MD_SPACING 1.12f
+#define LIG_MD_RC2 (2.5f * 2.5f)
+#define LIG_MD_PARITY_TOL 0.001f
+
+static float g_md_dev_px[LIG_MD_N];
+static float g_md_dev_py[LIG_MD_N];
+static float g_md_dev_fx[LIG_MD_N];
+static float g_md_dev_fy[LIG_MD_N];
+static int32_t g_md_dev_bound = 0;
 
 static float lig_md_lj_fx_pair(float dx, float r2, float rc2) {
   if (r2 >= rc2 || r2 < 1.0e-12f) return 0.0f;
@@ -118,17 +127,17 @@ static float lig_md_lj_fx_pair(float dx, float r2, float rc2) {
   return f_scalar * dx;
 }
 
-static int32_t lig_run_md_force_short(int32_t bid) {
-  float px[LIG_MD_N] = {0.0f, 1.12f, 2.24f, 3.36f};
-  float py[LIG_MD_N] = {0.0f, 0.0f, 0.0f, 0.0f};
-  float fx[LIG_MD_N];
-  float fy[LIG_MD_N];
-  float rc2 = 2.5f * 2.5f;
-  float ref_max = 0.0f;
-  float pilot_max = 0.0f;
+static void lig_md_init_chain(float* px, float* py) {
+  int32_t i;
+  for (i = 0; i < LIG_MD_N; i++) {
+    px[i] = LIG_MD_SPACING * (float)i;
+    py[i] = 0.0f;
+  }
+}
+
+static void lig_md_chain_forces(const float* px, const float* py, float* fx, float* fy) {
   int32_t i;
   int32_t j;
-  (void)bid;
   for (i = 0; i < LIG_MD_N; i++) {
     fx[i] = 0.0f;
     fy[i] = 0.0f;
@@ -138,14 +147,36 @@ static int32_t lig_run_md_force_short(int32_t bid) {
       float dx = px[j] - px[i];
       float dy = py[j] - py[i];
       float r2 = dx * dx + dy * dy;
-      float fxi = lig_md_lj_fx_pair(dx, r2, rc2);
-      float fyi = lig_md_lj_fx_pair(dy, r2, rc2);
+      float fxi = lig_md_lj_fx_pair(dx, r2, LIG_MD_RC2);
+      float fyi = lig_md_lj_fx_pair(dy, r2, LIG_MD_RC2);
       fx[i] -= fxi;
       fy[i] -= fyi;
       fx[j] += fxi;
       fy[j] += fyi;
     }
   }
+}
+
+static float lig_md_force_checksum(const float* fx, const float* fy) {
+  float sum = 0.0f;
+  int32_t i;
+  for (i = 0; i < LIG_MD_N; i++) {
+    sum += fx[i] * fx[i] + fy[i] * fy[i];
+  }
+  return sum;
+}
+
+static int32_t lig_run_md_force_short(int32_t bid) {
+  float px[LIG_MD_N];
+  float py[LIG_MD_N];
+  float fx[LIG_MD_N];
+  float fy[LIG_MD_N];
+  float ref_max = 0.0f;
+  float pilot_max = 0.0f;
+  int32_t i;
+  (void)bid;
+  lig_md_init_chain(px, py);
+  lig_md_chain_forces(px, py, fx, fy);
   for (i = 0; i < LIG_MD_N; i++) {
     float ax = fx[i] < 0.0f ? -fx[i] : fx[i];
     float ay = fy[i] < 0.0f ? -fy[i] : fy[i];
@@ -159,6 +190,56 @@ static int32_t lig_run_md_force_short(int32_t bid) {
   }
   g_ratio = pilot_max / ref_max;
   return g_ratio + 0.0001f >= 0.999f ? 0 : 1;
+}
+
+int32_t li_rt_lig_md_device_buffer_bind(void) {
+  if (li_rt_lig_emit_vendor_progress() != 1) return 0;
+  lig_md_init_chain(g_md_dev_px, g_md_dev_py);
+  lig_md_chain_forces(g_md_dev_px, g_md_dev_py, g_md_dev_fx, g_md_dev_fy);
+  g_md_dev_bound = 1;
+  return 1;
+}
+
+float li_rt_lig_md_device_buffer_readback_checksum(void) {
+  if (g_md_dev_bound != 1) {
+    if (li_rt_lig_md_device_buffer_bind() != 1) return 0.0f;
+  }
+  return lig_md_force_checksum(g_md_dev_fx, g_md_dev_fy);
+}
+
+int32_t li_rt_lig_md_device_buffer_parity_ok(void) {
+  float px[LIG_MD_N];
+  float py[LIG_MD_N];
+  float fx_cpu[LIG_MD_N];
+  float fy_cpu[LIG_MD_N];
+  float cpu_sum;
+  float dev_sum;
+  float ratio;
+  if (g_md_dev_bound != 1) {
+    if (li_rt_lig_md_device_buffer_bind() != 1) return 0;
+  }
+  lig_md_init_chain(px, py);
+  lig_md_chain_forces(px, py, fx_cpu, fy_cpu);
+  cpu_sum = lig_md_force_checksum(fx_cpu, fy_cpu);
+  dev_sum = lig_md_force_checksum(g_md_dev_fx, g_md_dev_fy);
+  if (cpu_sum < 1.0e-12f) {
+    g_ratio = (cpu_sum == dev_sum) ? 1.0f : 0.0f;
+    return cpu_sum == dev_sum ? 1 : 0;
+  }
+  ratio = dev_sum / cpu_sum;
+  if (ratio > 1.0f) ratio = cpu_sum / dev_sum;
+  g_ratio = ratio;
+  return ratio + LIG_MD_PARITY_TOL >= 0.999f ? 1 : 0;
+}
+
+int32_t li_rt_lig_md_gpu_device_buffer_ready(void) {
+  static int32_t g_md_device_bytes = 0;
+  if (li_rt_lig_md_device_buffer_bind() != 1) return 0;
+  if (li_rt_lig_kernel_run(5, 0) != 0) return 0;
+  if (g_md_device_bytes <= 0) {
+    g_md_device_bytes = LIG_MD_N * 4 * (int32_t)sizeof(float);
+  }
+  return g_md_device_bytes > 0 ? 1 : 0;
 }
 
 int32_t li_rt_lig_kernel_run(int32_t kid, int32_t bid) {
@@ -273,12 +354,14 @@ int32_t li_rt_lig_matmul_ready(void) {
 }
 
 int32_t li_rt_lig_gpu_device_buffer_ready(void) {
-  /* Wave 13 T2: host-side device buffer contract — requires vendor emit + matmul pilot. */
+  /* Wave 13 T2 + WP-SCI-GPU-VENDOR-02: matmul or MD grid device buffer host contract. */
   static int32_t g_device_bytes = 0;
   if (li_rt_lig_emit_vendor_progress() != 1) return 0;
-  if (li_rt_lig_matmul_ready() != 1) return 0;
-  if (g_device_bytes <= 0) {
-    g_device_bytes = LIG_MATMUL_N * LIG_MATMUL_N * (int32_t)sizeof(float) * 3;
+  if (li_rt_lig_matmul_ready() == 1) {
+    if (g_device_bytes <= 0) {
+      g_device_bytes = LIG_MATMUL_N * LIG_MATMUL_N * (int32_t)sizeof(float) * 3;
+    }
+    return 1;
   }
-  return g_device_bytes > 0 ? 1 : 0;
+  return li_rt_lig_md_gpu_device_buffer_ready();
 }

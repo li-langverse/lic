@@ -10,5 +10,9 @@ int32_t li_rt_lig_emit_vendor_progress(void);
 int32_t li_rt_lig_emit_vendor_lowering_ready(void);
 int32_t li_rt_lig_matmul_ready(void);
 int32_t li_rt_lig_gpu_device_buffer_ready(void);
+int32_t li_rt_lig_md_device_buffer_bind(void);
+float li_rt_lig_md_device_buffer_readback_checksum(void);
+int32_t li_rt_lig_md_device_buffer_parity_ok(void);
+int32_t li_rt_lig_md_gpu_device_buffer_ready(void);
 
 #endif

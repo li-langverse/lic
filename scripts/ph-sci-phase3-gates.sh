@@ -29,6 +29,18 @@ if d.get("lig_emit_cuda") and not d.get("validity_gate_pass"):
     sys.exit("ph-sci-lkir-md-oracle: validity_gate_pass false (run with rebuilt lic + LIG_EMIT_CUDA=1)")
 print("WP-SCI-GPU-VENDOR-01: MD LKIR bench OK")
 PY
+  bash scripts/bench-ph-sci-md-device-buffer.sh
+  python3 - <<'PY'
+import json, sys
+from pathlib import Path
+p = Path("benchmarks/results/ph-sci-md-device-buffer.json")
+d = json.loads(p.read_text())
+if not d.get("compile_ok"):
+    sys.exit("ph-sci-md-device-buffer: compile_ok false")
+if d.get("lig_emit_cuda") and not d.get("parity_gate_pass"):
+    sys.exit("ph-sci-md-device-buffer: parity_gate_pass false")
+print("WP-SCI-GPU-VENDOR-02: MD device buffer parity bench OK")
+PY
 fi
 
 [[ -f data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md ]] \

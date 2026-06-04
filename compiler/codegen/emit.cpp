@@ -638,6 +638,11 @@ struct EmitCtx {
       case BinOp::Ne:
         return builder->CreateZExt(
             builder->CreateICmpNE(lhs, rhs), i32_ty(context));
+      case BinOp::Implies: {
+        llvm::Value* not_lhs =
+            builder->CreateXor(lhs, llvm::ConstantInt::get(i32_ty(context), 1));
+        return builder->CreateOr(not_lhs, rhs);
+      }
       case BinOp::And:
         return builder->CreateAnd(lhs, rhs);
       case BinOp::Or:

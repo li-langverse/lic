@@ -18,9 +18,14 @@ def step_world(dt: float) -> int
   return 0
 ```
 
+## Contracts
+
+- Use **`implies`** in `requires` / `ensures` for implications (do not spell material implication as `not … or …` in proof-db axiom specimens).
+
 ## Forbidden
 
 - New Li examples, docs, tests, release notes, telemetry names, or APIs that introduce the word **`proc`** for functions.
+- **`axiom proc`** or bare **`proc`** in `proof-db/**` (axioms are **`def`** + catalog `kind=axiom` + Lean `lean_thm` discharge).
 - New compatibility shims or aliases that teach `proc` as acceptable syntax.
 - Source-level vendor GPU strings such as `@gpu(vendor="cuda")`; backend selection belongs to `lig` config/runtime gates.
 

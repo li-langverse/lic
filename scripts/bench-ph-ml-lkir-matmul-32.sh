@@ -35,16 +35,9 @@ if [[ "${PH_ML_MATMUL32_INNER:-0}" != "1" ]] \
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-elif [[ -z "$LIC" ]]; then
-  LIC="$($ROOT/scripts/resolve-lic.sh)"
-fi
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_ensure_lic "$ROOT" "bench-ph-ml-lkir-matmul-32: build lic (./scripts/build.sh)" || exit 1
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul-32.json"
 NUMPY_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-matmul-32.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_matmul_32_lkir.li"

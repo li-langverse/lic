@@ -36,6 +36,8 @@ bash scripts/ph-ml-program-complete-gates.sh
 
 **Agent verification (2026-06-01):** latest run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green, await human `merge-approved`.
 
+**Agent verification (2026-06-04):** run `code_implementer-1780534026927` — post-#676 merge re-verify; `lic_resolve_runnable` selects `/workspace/lic/build/compiler/lic/lic` over stale `build-wsl` (GLIBC_2.38); `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~120s); T1–T8 all OK; SB3/Ray `executed:true`; `live_proxy:true`.
+
 **Agent verification (2026-06-04):** run `code_implementer-1780533156607` — `lic-runnable.sh` auto-discovers sibling `/workspace/lic` when isolated clone has stale `build-wsl`; `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~124s) without `LIC_ROOT`.
 
 **Agent verification (2026-06-04):** run `code_implementer-1780531723174` — `scripts/lib/lic-runnable.sh` skips stale `build-wsl` when `lic --version` fails (GLIBC mismatch on Linux agents); `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~123s) with native `build/compiler/lic/lic`.

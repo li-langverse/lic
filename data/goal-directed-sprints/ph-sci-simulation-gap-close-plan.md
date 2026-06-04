@@ -6,7 +6,7 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close plan
 
-**Status:** Phase 0 complete on `cursor/ph-ml-stage2-dl-spine` (gate: `scripts/ph-sci-phase0-gates.sh`, 2026-06-04)  
+**Status:** Phase 0 complete; Phase 1 complete on `cursor/ph-ml-stage2-dl-spine` (gates: `scripts/ph-sci-phase0-gates.sh`, `scripts/ph-sci-phase1-gates.sh`, 2026-06-04)  
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and planned `science_gpu` / `@gpu` placement coverage.  
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
 
@@ -21,6 +21,7 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 ```bash
 bash scripts/ph-sci-phase0-gates.sh
+bash scripts/ph-sci-phase1-gates.sh
 ```
 
 ## K8s handoff

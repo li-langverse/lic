@@ -1571,3 +1571,65 @@ suite = "smoke"
 file = "packages/lig/li-tests/smoke/present_wgpu_readback_stub.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-present-wgpu-readback"
+
+# --- science / simulation @gpu (PH-SCI-GPU) ---
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-math-numerics/li-tests/smoke/numerics_gpu_three_body.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-01 @gpu three-body Verlet"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_gpu_md_oracle.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-02 @gpu MD/heat oracle"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-particles/li-tests/smoke/physics_gpu_md_mini_step.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-03 @gpu MD mini step"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-fluids/li-tests/smoke/physics_gpu_fluids_heat_step.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-04 @gpu heat diffusion"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-em/li-tests/smoke/physics_gpu_em_jacobi.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-05 @gpu Poisson Jacobi"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-chem/li-tests/smoke/physics_gpu_chem_combustion.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-06 @gpu combustion step"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-quantum/li-tests/smoke/physics_gpu_quantum_normalize.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-07 @gpu wavefunction normalize"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-weather/li-tests/smoke/physics_gpu_weather_diffuse.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-08 @gpu weather diffusion"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-scene/li-tests/smoke/scene_gpu_md_particle_bench.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-09 @gpu MD particle tier bench"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-robotics/li-tests/smoke/robo_gpu_integrate_steps.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-10 @gpu arm integration loop"

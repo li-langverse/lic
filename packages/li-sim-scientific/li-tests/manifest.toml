@@ -38,6 +38,12 @@ note = "WP-SCI-05 FEA linear elasticity oracle + registry algo 214"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/scientific_csv_ingest_gate.li"
+outcome = "verify_ok"
+note = "PH-IO-4 std.io/csv ingest gate before competitive vertical oracle benches"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/scientific_gpu_md_oracle.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-02 @gpu MD/heat oracle checksums"

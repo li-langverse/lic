@@ -26,6 +26,9 @@ echo "==> WP-SCI-03: quantum lib + QM tier-2 oracle"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-quantum/src/lib.li -o /dev/null
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_qm_normalize.li
 
+echo "==> PH-IO-4: sim.scientific std.io/csv ingest gate"
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_csv_ingest_gate.li
+
 echo "==> WP-SCI-06: cavity + tier-2 registry smokes (incl. rigid 301–305, drug/robo)"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_cfd_cavity.li -o /dev/null
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_cfd_cavity.li

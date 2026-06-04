@@ -1,0 +1,33 @@
+import std.csv
+import std.io
+import sim.scientific
+
+# PH-IO-4 + PH-SCI — competitive vertical ingest uses std.io/csv before oracle checksums.
+
+def scientific_csv_ingest_gate(config_path: str) raises Alloc -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  var _io: int = io_csv_ingest_open_tag(config_path)
+  var _fields: int = csv_field_count_stub("algo_id,workload_class,oracle")
+  return csv_io_ingest_bundle_tag()
+
+def main() raises Alloc -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var config_path: str = "benchmarks/competitive/verticals.toml"
+  if scientific_csv_ingest_gate(config_path) != 10:
+    return 1
+  if io_csv_ingest_open_tag(config_path) != 4:
+    return 2
+  if csv_field_count_stub("algo_id,workload_class,oracle") != 3:
+    return 3
+  if file_read_then_close(config_path) != 0:
+    return 4
+  var md: float = sim_scientific_oracle_checksum_md()
+  if md <= 0.0:
+    return 5
+  return 0

@@ -159,9 +159,9 @@ rows = [
     {
         "id": "llm_forward",
         "kernel": "llm.forward_stub",
-        "workload_class": llm.get("workload_class") or ("tier3_cpu" if llm.get("validity_gate_pass") else "stub"),
+        "workload_class": llm.get("workload_class") or ("pilot" if llm.get("tensor_metadata_ok") else ("tier3_cpu" if llm.get("validity_gate_pass") else "stub")),
         "executed": bool(llm.get("executed")),
-        "li": li_row(llm, "stub"),
+        "li": li_row(llm, llm.get("workload_class") or ("pilot" if llm.get("tensor_metadata_ok") else "stub")),
         "competitors": [
             comp_stub("llamacpp", "llama.cpp", "stub", "no weights parse"),
             comp_stub("vllm", "vLLM", "stub", "GPU serving"),

@@ -1,4 +1,5 @@
 
+| WP-LLM-13 | safetensors/GGUF on-disk parse + import path (Stage 4) | 4 | done | ph-ml-stage4-gates.sh + llm_safetensors_parse_real.li |
 | WP-RL-10 | async_env_collect Li executed (Stage 3.1) | 3 | done | bench-ph-ml-async-env-collect.sh |
 | WP-RL-11 | IPC shard + CartPole stub (Stage 3.2) | 3 | done | env_pool_ipc_prepare_shards |
 | WP-RL-12 | policy_loss_mean train scaffold (Stage 3.3) | 3 | partial | ml-rl-ppo-deferral.md |

@@ -2,13 +2,13 @@
   "competitor_id": "jax_cpu",
   "suite": "ph-ml-competitor-jax-cpu-matmul",
   "workload": "matmul_4x4_f32",
-  "executed": true,
-  "cpu_sec": 5e-05,
-  "validity_gate_pass": true,
-  "validity_ratio": 1.0,
-  "framework_version": "0.5.3",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
   "device": "cpu",
   "workload_size": 4,
-  "note": null,
-  "generated_at": "2026-06-04T02:58:00Z"
+  "note": "jax not installed",
+  "generated_at": "2026-06-04T12:04:01Z"
 }

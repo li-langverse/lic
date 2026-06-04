@@ -5,3 +5,9 @@ suite = "smoke"
 file = "smoke/builds.li"
 outcome = "verify_ok"
 note = "T-PKG-li-std-physics-quantum-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/physics_gpu_quantum_normalize.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-07 @gpu wavefunction normalize"

@@ -6,9 +6,9 @@
   "cpu_sec": null,
   "validity_gate_pass": false,
   "validity_ratio": 0.0,
-  "framework_version": "3.2.0",
+  "framework_version": null,
   "device": "cuda",
   "workload_size": 4,
-  "note": "Triton matmul requires CUDA GPU; CI CPU-only OK",
-  "generated_at": "2026-06-04T02:58:42Z"
+  "note": "triton/torch not installed: No module named 'torch'",
+  "generated_at": "2026-06-04T12:04:01Z"
 }

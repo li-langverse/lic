@@ -2,13 +2,13 @@
   "competitor_id": "pytorch_cpu",
   "suite": "ph-ml-competitor-pytorch-cpu-mlp",
   "workload": "mlp_forward_2_2_1_f32",
-  "executed": true,
-  "cpu_sec": 8e-06,
-  "validity_gate_pass": true,
-  "validity_ratio": 1.0,
-  "framework_version": "2.6.0+cu124",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
   "device": "cpu",
   "workload_size": null,
-  "note": null,
-  "generated_at": "2026-06-04T02:58:04Z"
+  "note": "torch not installed",
+  "generated_at": "2026-06-04T12:04:01Z"
 }

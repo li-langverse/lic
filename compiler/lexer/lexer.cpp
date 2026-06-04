@@ -56,6 +56,7 @@ TokenKind Lexer::keyword_kind(std::string_view text) const {
   if (text == "await") return TokenKind::KwAwait;
   if (text == "true") return TokenKind::KwTrue;
   if (text == "false") return TokenKind::KwFalse;
+  if (text == "implies") return TokenKind::KwImplies;
   if (text == "and") return TokenKind::KwAnd;
   if (text == "or") return TokenKind::KwOr;
   if (text == "xor") return TokenKind::KwXor;

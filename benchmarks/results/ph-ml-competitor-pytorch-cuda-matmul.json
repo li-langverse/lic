@@ -6,9 +6,9 @@
   "cpu_sec": null,
   "validity_gate_pass": false,
   "validity_ratio": 0.0,
-  "framework_version": "2.6.0+cu124",
+  "framework_version": null,
   "device": "cuda",
   "workload_size": 4,
-  "note": "CUDA not available (CI CPU-only OK)",
-  "generated_at": "2026-06-04T02:57:59Z"
+  "note": "torch not installed",
+  "generated_at": "2026-06-04T12:04:01Z"
 }

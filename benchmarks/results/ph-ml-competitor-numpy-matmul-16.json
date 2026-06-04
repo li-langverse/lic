@@ -2,13 +2,13 @@
   "competitor_id": "python_numpy",
   "suite": "ph-ml-competitor-numpy-matmul",
   "workload": "matmul_4x4_f32",
-  "executed": true,
-  "cpu_sec": 2e-06,
-  "validity_gate_pass": true,
-  "validity_ratio": 1.0,
-  "framework_version": "2.0.2",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
   "device": "cpu",
   "workload_size": 16,
-  "note": null,
-  "generated_at": "2026-06-04T02:58:12Z"
+  "note": "numpy not installed",
+  "generated_at": "2026-06-04T12:04:01Z"
 }

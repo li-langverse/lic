@@ -340,6 +340,7 @@ std::unique_ptr<Expr> Parser::parse_postfix(std::unique_ptr<Expr> base) {
 
 int prec(TokenKind k) {
   switch (k) {
+    case TokenKind::KwImplies: return 0;
     case TokenKind::KwOr: return 1;
     case TokenKind::KwXor:
     case TokenKind::Caret: return 2;
@@ -380,6 +381,7 @@ BinOp binop(TokenKind k) {
     case TokenKind::Gt: return BinOp::Gt;
     case TokenKind::EqEq: return BinOp::Eq;
     case TokenKind::Ne: return BinOp::Ne;
+    case TokenKind::KwImplies: return BinOp::Implies;
     case TokenKind::KwAnd: return BinOp::And;
     case TokenKind::KwXor:
     case TokenKind::Caret: return BinOp::BitXor;

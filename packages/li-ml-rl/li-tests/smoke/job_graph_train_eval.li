@@ -15,6 +15,8 @@ def main() -> int
     return 2
   if graph.train_step.dispatched != 1:
     return 3
+  if graph.train_step.policy_loss_mean <= 0.0:
+    return 6
   if ml_rl_job_graph_eval_step(graph, graph.samples_collected) != sim_status_ok():
     return 4
   if graph.eval_step.dispatched != 1:

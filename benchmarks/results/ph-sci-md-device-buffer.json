@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-06-04T06:33:40Z",
+  "suite": "ph-sci-md-device-buffer",
+  "kernel_id": "lig.kernel.md_force_short",
+  "parity_tolerance": 0.001,
+  "smoke": "packages/li-sim-scientific/li-tests/smoke/scientific_gpu_md_device_buffer.li",
+  "compile_ok": true,
+  "parity_gate_pass": true,
+  "executed": true,
+  "lig_emit_cuda": true,
+  "run_exit_code": 0
+}

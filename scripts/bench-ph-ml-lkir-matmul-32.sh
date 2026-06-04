@@ -25,8 +25,11 @@ run_in_wsl() {
   wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_MATMUL32_INNER=1 BENCHMARKS_ROOT='${wsl_bench}' LIC=./build-wsl/compiler/lic/lic CC=clang-22 CXX=clang++-22 && bash scripts/bench-ph-ml-lkir-matmul-32.sh"
 }
 
+# shellcheck source=lib/lic-runnable.sh
+source "$ROOT/scripts/lib/lic-runnable.sh"
+
 if [[ "${PH_ML_MATMUL32_INNER:-0}" != "1" ]] \
-  && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] \
+  && ! lic_resolve_runnable "$ROOT" >/dev/null 2>&1 \
   && command -v wsl.exe >/dev/null 2>&1; then
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
   if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
@@ -35,16 +38,7 @@ if [[ "${PH_ML_MATMUL32_INNER:-0}" != "1" ]] \
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-elif [[ -z "$LIC" ]]; then
-  LIC="$($ROOT/scripts/resolve-lic.sh)"
-fi
+LIC="${LIC:-$(lic_resolve_runnable "$ROOT")}"
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul-32.json"
 NUMPY_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-matmul-32.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_matmul_32_lkir.li"

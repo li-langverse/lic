@@ -4,7 +4,12 @@ set -euo pipefail
 ROOT="${PH_SCI_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
 
-LIC="${LIC_BIN:-./build-wsl/compiler/lic/lic}"
+# Prefer a lic binary that runs on this host (K8s lic-ci image ≠ WSL build-wsl glibc).
+LIC="${LIC_BIN:-${LIC:-}}"
+if [[ -z "$LIC" ]] || ! "$LIC" --version &>/dev/null; then
+  LIC="$("$ROOT/scripts/resolve-lic.sh")"
+fi
+export LIC
 BUILD_FLAGS=(--allow-open-vc --no-lean-verify)
 
 echo "==> WP-SCI-BUILD-01: fluids / em / weather lib compile"

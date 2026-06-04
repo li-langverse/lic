@@ -1,12 +1,13 @@
 {
-  "generated_at": "2026-06-04T10:26:50Z",
+  "generated_at": "2026-06-04T21:46:55Z",
   "suite": "ph-ml-llm-forward",
-  "workload_class": "tier3_cpu",
+  "workload_class": "pilot",
   "compile_ok": true,
   "executed": true,
   "validity_gate_pass": true,
+  "tensor_metadata_ok": true,
   "worker": "cpu_sync",
   "worker_count": 1,
   "tier3_runs": 50,
-  "cpu_sec": 0.00073
+  "cpu_sec": 0.000737
 }

@@ -107,8 +107,12 @@ for required in ("pytorch_cpu", "jax_cpu", "python_numpy"):
     row = comps.get(required)
     if not row or not row.get("executed"):
         sys.exit(f"{required} competitor must have executed:true")
-if llm.get("workload_class") != "tier3_cpu":
-    sys.exit("ph-ml-llm-forward workload_class must be tier3_cpu")
+wc = llm.get("workload_class")
+if wc == "pilot":
+    if not llm.get("tensor_metadata_ok"):
+        sys.exit("ph-ml-llm-forward pilot requires tensor_metadata_ok")
+elif wc != "tier3_cpu":
+    sys.exit("ph-ml-llm-forward workload_class must be tier3_cpu or pilot")
 mlp = rows.get("mlp_forward") or {}
 mlp_comps = {c.get("id"): c for c in (mlp.get("competitors") or [])}
 if not (mlp_comps.get("python_numpy") or {}).get("executed"):

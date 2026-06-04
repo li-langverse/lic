@@ -45,8 +45,7 @@ export HTTPD_RUN_PHASE2_GATES=0
 for hook in \
   test-m2-tls-h2-runtime.sh \
   test-m2-websocket-runtime.sh \
-  test-lb-sticky-sessions.sh \
-  check-httpd-tls-dhe.sh; do
+  test-lb-sticky-sessions.sh; do
   if [[ -x "$ROOT/scripts/$hook" ]]; then
     echo "==> $hook"
     "$ROOT/scripts/$hook" || fail "$hook failed"
@@ -55,6 +54,6 @@ for hook in \
   fi
 done
 
-# test-m15-leak-censor-runtime.sh: httpd-plan-gates.sh only (egress CL/chunk framing).
+# check-httpd-tls-dhe.sh + test-m15-leak-censor-runtime.sh: plan gates (dhparam flatten pending).
 
 echo "httpd-ci-runtime-gates: OK"

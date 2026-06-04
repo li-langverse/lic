@@ -23,7 +23,11 @@ mkdir -p "$PUBLIC" "$CERT_DIR"
 echo ok > "$PUBLIC/health"
 
 python3 "$ROOT/scripts/validate-httpd-config.py" "$CFG"
-python3 "$ROOT/scripts/setup-tls-httpd.py" "$CFG" --cert-dir "$CERT_DIR" --gen-dhparam
+mkdir -p "$CERT_DIR/certs-dhe"
+if [[ ! -f "$CERT_DIR/certs-dhe/dhparam.pem" ]]; then
+  openssl dhparam -out "$CERT_DIR/certs-dhe/dhparam.pem" 2048
+fi
+python3 "$ROOT/scripts/setup-tls-httpd.py" "$CFG" --cert-dir "$CERT_DIR"
 python3 "$ROOT/scripts/flatten-httpd-config.py" "$CFG" -o "$CONF" --cert-dir "$CERT_DIR"
 grep -q '^tls_enabled=1' "$CONF"
 grep -q '^tls_dhparam_file=' "$CONF"

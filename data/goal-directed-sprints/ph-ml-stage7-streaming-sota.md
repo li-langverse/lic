@@ -23,3 +23,9 @@ Upgrade competitive DL rows to **non-pilot** `tier3_cpu`, prep native SSE stream
 - Production li-httpd SSE route handler wiring in cluster
 - Full MLP backward (not 2×2×2 stub)
 - LLM competitor drivers (llama.cpp, vLLM, transformers)
+
+## Completion gate
+
+```bash
+bash scripts/ph-ml-stage7-gates.sh
+```

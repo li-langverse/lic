@@ -37,3 +37,9 @@ Close the native Li ML/HPC/AI library track through Stage 6: real transformer fo
 - Full reference logits parity vs transformers
 - GPU decode / KV-cache device buffers
 - Production SSE route in cluster (Stage 7 prep landed compile/bench gate)
+
+## Completion gate
+
+```bash
+bash scripts/ph-ml-hpc-ai-library-gates.sh
+```

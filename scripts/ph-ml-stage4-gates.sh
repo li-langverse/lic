@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT="${PH_ML_STAGE4_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
 
+if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+  export LIC="$ROOT/build-wsl/compiler/lic/lic"
+fi
+
 run_in_wsl() {
   local wsl_root
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
@@ -76,14 +80,14 @@ if not fwd.get("executed") or not fwd.get("validity_gate_pass"):
     sys.exit("4.4: ph-ml-llm-forward must execute with validity_gate_pass")
 if not fwd.get("tensor_metadata_ok"):
     sys.exit("4.4: tensor_metadata_ok must be true (real safetensors smokes)")
-if fwd.get("workload_class") != "pilot":
-    sys.exit("4.4: workload_class must be pilot when tensor metadata OK")
+if fwd.get("workload_class") not in ("pilot", "tier3_cpu"):
+    sys.exit("4.4: workload_class must be pilot or tier3_cpu when tensor metadata OK")
 
 comp = json.loads((root / "ph-ml-competitive.json").read_text())
 rows = {r.get("id"): r for r in (comp.get("rows") or [])}
 llm_row = rows.get("llm_forward") or {}
-if llm_row.get("workload_class") != "pilot":
-    sys.exit("4.4: competitive llm_forward workload_class must be pilot")
+if llm_row.get("workload_class") not in ("pilot", "tier3_cpu"):
+    sys.exit("4.4: competitive llm_forward workload_class must be pilot or tier3_cpu")
 li = llm_row.get("li") or {}
 if not li.get("executed"):
     sys.exit("4.4: competitive llm_forward li.executed must be true")

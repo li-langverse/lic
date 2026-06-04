@@ -3,6 +3,11 @@
 set -euo pipefail
 ROOT="${PH_ML_PROGRAM_COMPLETE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
+
+if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+  export LIC="$ROOT/build-wsl/compiler/lic/lic"
+fi
+
 run_in_wsl() {
   local wsl_root wsl_bench
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"

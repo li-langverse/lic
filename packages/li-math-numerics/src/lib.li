@@ -208,7 +208,17 @@ def three_body_step_mini(
   decreases 0
 =
   three_body_forces_2d(px, py, fx, fy, 1.0, 1.0, 0.000000001)
-  verlet_step_vec2(px, py, vx, vy, fx, fy, 1.0, dt)
+  var i: int = 0
+  var half: float = 0.5 * dt
+  while i < 3
+    px[i] = px[i] + vx[i] * dt + fx[i] * half * dt
+    py[i] = py[i] + vy[i] * dt + fy[i] * half * dt
+    i = i + 1
+  i = 0
+  while i < 3
+    vx[i] = vx[i] + fx[i] * dt
+    vy[i] = vy[i] + fy[i] * dt
+    i = i + 1
 
 def numerics_three_body_gpu_progress() -> int
   requires true

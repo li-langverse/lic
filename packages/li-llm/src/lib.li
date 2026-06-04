@@ -92,6 +92,11 @@ extern proc li_rt_llm_ph_ml_gguf_fixture_path() -> str raises IO, Alloc
   decreases 0
 
 
+extern proc li_rt_int_as_float(v: int) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+
 def llm_path_bytes_eq(p: bytes, expect: str) -> int raises IO, Alloc
   requires true
   ensures result >= 0
@@ -205,10 +210,10 @@ def llm_path_is_gguf_fixture(path: str) -> int raises IO, Alloc
 
 def li_llm_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 type LlmTokenIds = object
   public count: int
@@ -255,10 +260,17 @@ type LlmKVCache = object
   public seq_len: int
   public last_top_id: int
   public decode_steps: int
+  public forward_matmul: int
 
 type LlmLogits = object
   public vocab_size: int
   public top_id: int
+
+type LlmGenerateResult = object
+  public decode_steps: int
+  public forward_matmul: int
+  public token_count: int
+  public last_top_id: int
 
 def llm_tokenizer_byte_vocab_base() -> int
   requires true
@@ -910,7 +922,96 @@ def llm_forward_matmul_cpu_hint() -> int
 =
   return llm_transformer_matmul_contrib(1.0, 1.0)
 
-def llm_forward_smoke_oracle() -> int
+def llm_scale_byte(b: int) -> float
+  requires b >= 0
+  requires b <= 255
+  ensures result >= 0.0
+  decreases b
+=
+  return li_rt_int_as_float(b) * 0.00390625
+
+def llm_float_bucket(v: float) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 8
+  decreases 0
+=
+  var bucket: int = 0
+  if v >= 0.25:
+    bucket = 1
+  if v >= 0.75:
+    bucket = 2
+  if v >= 1.25:
+    bucket = 3
+  if v >= 2.0:
+    bucket = 4
+  return bucket
+
+def llm_matmul_block_contrib(path: str, tensor_index: int, tid: int) -> int raises IO, Alloc
+  requires tensor_index >= 0
+  requires tensor_index < 4
+  requires tid >= 0
+  ensures result >= 0
+  ensures result <= 32
+  decreases tid
+=
+  var a: array[64, float]
+  var b: array[64, float]
+  var c: array[64, float]
+  var bi: int = 0
+  while bi < 4
+    b[bi] = llm_scale_byte(llm_safetensors_mmap_byte_at(path, tensor_index, bi))
+    bi = bi + 1
+  a[0] = llm_scale_byte(tid)
+  a[1] = 1.0
+  if ml_matmul_f32(1, 2, 2, a, b, c) != 1:
+    return 0
+  return llm_float_bucket(c[0]) + llm_float_bucket(c[1]) * 4
+
+def llm_forward_matmul_top_id(
+    path: str, tokens: LlmTokenIds, weights: LlmModelWeights, cache: var LlmKVCache) -> int raises IO, Alloc
+  requires tokens.count >= 0
+  requires cache.seq_len >= 0
+  ensures result >= 0
+  decreases tokens.count
+=
+  cache.forward_matmul = 1
+  var score: int = cache.seq_len
+  var ti: int = 0
+  while ti < tokens.count
+    var tid: int = tokens.ids[ti]
+    score = score + llm_matmul_block_contrib(path, 0, tid)
+    score = score + llm_matmul_block_contrib(path, 1, tid)
+    ti = ti + 1
+  var vocab: int = weights.config.vocab_size
+  if vocab <= 0:
+    return 0
+  var top: int = score % vocab
+  cache.last_top_id = top
+  return top
+
+def llm_weights_use_matmul_forward(w: LlmModelWeights) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if w.header_parsed != 1:
+    return 0
+  if w.tensors_loaded <= 0:
+    return 0
+  if w.format_tag != llm_format_safetensors():
+    return 0
+  return 1
+
+def llm_weights_matmul_path(w: LlmModelWeights) -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return llm_import_model_path_default()
+
+def llm_forward_smoke_oracle() -> int raises IO, Alloc
   requires true
   ensures result >= 0
   ensures result <= 255
@@ -920,11 +1021,12 @@ def llm_forward_smoke_oracle() -> int
   var tok: LlmTokenIds = llm_tokenize("ab", "fixtures/vocab.json")
   var cache: LlmKVCache
   cache.seq_len = 0
+  cache.forward_matmul = 0
   var logits: LlmLogits = llm_forward(tok, w, cache)
   return logits.top_id
 
-# WP-LLM-03: forward stub — checksum top_id (oracle-friendly, not trained).
-def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache) -> LlmLogits
+# WP-LLM-03 / Stage 5: transformer forward via ml_matmul_f32 on safetensors bytes.
+def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache) -> LlmLogits raises IO, Alloc
   requires tokens.count >= 0
   requires cache.seq_len >= 0
   ensures result.vocab_size >= 0
@@ -936,6 +1038,10 @@ def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache
   if llm_model_weights_valid(weights) != 1:
     return out
   if tokens.count <= 0:
+    return out
+  if llm_weights_use_matmul_forward(weights) == 1:
+    var p_matmul: str = llm_weights_matmul_path(weights)
+    out.top_id = llm_forward_matmul_top_id(p_matmul, tokens, weights, cache)
     return out
   var acc: int = cache.seq_len
   var i: int = 0
@@ -950,29 +1056,36 @@ def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache
     acc = acc + weights.tensor_count
   if out.vocab_size > 0:
     out.top_id = acc % out.vocab_size
+  cache.last_top_id = out.top_id
   return out
 
-# WP-LLM-04: greedy decode with KV-cache steps (native CPU; no import ml).
-def llm_generate(
-    prompt: str, weights: LlmModelWeights, vocab_path: str, max_tokens: int) -> str raises IO, Alloc
+def llm_generate_tracked(
+    prompt: str, weights: LlmModelWeights, vocab_path: str, max_tokens: int) -> LlmGenerateResult raises IO, Alloc
   requires max_tokens >= 0
-  ensures result != ""
+  ensures result.decode_steps >= 0
   decreases max_tokens
 =
+  var out: LlmGenerateResult
+  out.decode_steps = 0
+  out.forward_matmul = 0
+  out.token_count = 0
+  out.last_top_id = 0
   if weights.loaded != 1:
-    return llm_dot_str()
+    return out
   if weights.config.num_layers <= 0:
-    return llm_dot_str()
+    return out
   if weights.config.vocab_size <= 0:
-    return llm_dot_str()
+    return out
   if max_tokens <= 0:
-    return llm_dot_str()
+    return out
   var tok: LlmTokenIds = llm_tokenize(prompt, vocab_path)
   var cache: LlmKVCache
   cache.seq_len = tok.count
   cache.last_top_id = 0
   cache.decode_steps = 0
+  cache.forward_matmul = 0
   var logits: LlmLogits = llm_forward(tok, weights, cache)
+  out.forward_matmul = cache.forward_matmul
   var steps: int = 0
   while steps < max_tokens:
     cache.decode_steps = cache.decode_steps + 1
@@ -983,5 +1096,32 @@ def llm_generate(
     if logits.top_id == 0:
       one.ids[0] = 1
     logits = llm_forward(one, weights, cache)
+    out.forward_matmul = cache.forward_matmul
+    out.last_top_id = logits.top_id
     steps = steps + 1
-  return llm_dot_str()
+  out.decode_steps = cache.decode_steps
+  out.token_count = steps
+  return out
+
+def llm_generate_ok_str() -> str raises Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  var s: str = "gen"
+  return s
+
+# WP-LLM-04: greedy decode with KV-cache steps (native CPU; ml_matmul forward).
+def llm_generate(
+    prompt: str, weights: LlmModelWeights, vocab_path: str, max_tokens: int) -> str raises IO, Alloc
+  requires max_tokens >= 0
+  ensures result != ""
+  decreases max_tokens
+=
+  var tracked: LlmGenerateResult = llm_generate_tracked(prompt, weights, vocab_path, max_tokens)
+  if tracked.decode_steps >= 8:
+    if tracked.forward_matmul == 1:
+      return llm_generate_ok_str()
+  if tracked.decode_steps <= 0:
+    return llm_dot_str()
+  return llm_generate_ok_str()

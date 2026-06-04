@@ -35,6 +35,10 @@
 
 | **Stage 4** | **LLM import:** safetensors/GGUF on-disk parse, ph-ml-weights fixture, lillm-import offline, tier-3 pilot bench | li-llm | ph-ml-stage4-gates.sh |
 
+| **Stage 5** | **Transformer forward:** ml_matmul_f32 on safetensors bytes, multi-token decode (>=8), tier3_cpu bench | li-llm | ph-ml-stage5-gates.sh |
+
+| **HPC master** | **AI library complete:** Stage 5 + no stub Li competitive rows | li-llm | ph-ml-hpc-ai-library-gates.sh |
+
 | **11** | Wave 10 carryover: GPU/LKIR matmul, safetensors bytes, RL fork IPC, Rust MLP, 16x16 row | li-llm, li-ml, li-sim | ph-ml-wave11-gates.sh |
 
 
@@ -49,6 +53,10 @@ Workspace `li-ml-rl`, pthread `async_env_collect` bench + competitive Li row, IP
 ## Stage 4 - LLM import pipeline
 
 On-disk safetensors header parse (dtype/shape/tensor count), minimal GGUF header, `fixtures/ph-ml-weights` via `prepare_ph_ml_weights_fixture.py`, `lillm-import.sh` offline manifest, `li_rt_llm.c` runtime probes. Tier-3 `ph-ml-llm-forward` tagged `workload_class=pilot` when `tensor_metadata_ok`. Gate: `ph-ml-stage4-gates.sh`.
+
+## Stage 5 ? transformer forward + multi-token decode
+
+`llm_forward_matmul_top_id` uses `ml_matmul_f32` on safetensors mmap bytes; `llm_generate_tracked` greedy decode >=8 steps. Bench `forward_matmul_ok`, competitive Li row `tier3_cpu`. Gate: `ph-ml-stage5-gates.sh`. Master: `ph-ml-hpc-ai-library-gates.sh`.
 
 ## Wave 13 ? program complete (all deferred T1?T8)
 

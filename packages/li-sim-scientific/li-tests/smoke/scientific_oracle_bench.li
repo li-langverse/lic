@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_sim_scientific_version() != 5:
+  if li_sim_scientific_version() != 6:
     return 1
   var md: float = sim_scientific_oracle_checksum_md()
   if md <= 0.0:
@@ -47,4 +47,14 @@ def main() -> int
     return 16
   if fea_run.checksum != fea:
     return 17
+  var qm: float = sim_scientific_oracle_checksum_qm()
+  if qm <= 0.99:
+    return 18
+  if qm >= 1.01:
+    return 19
+  var qm_run: SimRunResult = run_qm_smoke(0)
+  if run_result_ok(qm_run) != 1:
+    return 20
+  if qm_run.checksum != qm:
+    return 21
   return 0

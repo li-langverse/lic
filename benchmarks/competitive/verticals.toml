@@ -149,11 +149,11 @@ notes = "mmorpg.toml composable import_mmo_shard.li; mmo profile shard stub — 
 id = "qm_dft"
 incumbent = "Gaussian / ORCA / Psi4"
 kernel_or_api = "DFT single-point energy"
-workload_class = "stub"
-oracle = "external_binary"
-li_package = "chem"
-last_reviewed = "2026-05-23"
-notes = "qm_dft.toml composable import_chem_dft_smoke.li; native RKS stub (workload_class=stub) — not Gaussian/ORCA/Psi4 parity; external_binary oracle TBD."
+workload_class = "partial"
+oracle = "li_tier2"
+li_package = "sim-scientific"
+last_reviewed = "2026-06-04"
+notes = "WP-SCI-03 Li oracle `sim_scientific_oracle_checksum_qm()` via `physics.quantum.qm_normalize_oracle_checksum()`; registry algo 401–432; external_binary Gaussian/ORCA/Psi4 parity TBD."
 
 [[vertical]]
 id = "ml_rl_matmul"

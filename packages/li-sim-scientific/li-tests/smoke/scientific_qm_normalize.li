@@ -1,0 +1,20 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm()
+  if chk <= 0.99:
+    return 1
+  if chk >= 1.01:
+    return 2
+  var run418: SimRunResult = run_algo(418, 0)
+  if run_result_ok(run418) != 1:
+    return 3
+  if run418.checksum != chk:
+    return 4
+  if run418.checksum == 1.001:
+    return 5
+  return 0

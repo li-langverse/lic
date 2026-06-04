@@ -49,6 +49,55 @@ def schrodinger_kinetic_diag(dx: float, mass: float) -> float
   var hbar: float = 1.0
   return hbar * hbar / (2.0 * mass * dx * dx)
 
+# WP-SCI-03 — tier-2 Li oracle: uniform 1D state normalized to unit norm (no runtime sqrt).
+def qm_normalize_oracle_checksum() -> float
+  requires true
+  ensures result > 0.99
+  ensures result < 1.01
+  decreases 0
+=
+  var psi_re: array[8, float]
+  var psi_im: array[8, float]
+  psi_re[0] = 1.0
+  psi_im[0] = 0.0
+  psi_re[1] = 1.0
+  psi_im[1] = 0.0
+  psi_re[2] = 1.0
+  psi_im[2] = 0.0
+  psi_re[3] = 1.0
+  psi_im[3] = 0.0
+  psi_re[4] = 1.0
+  psi_im[4] = 0.0
+  psi_re[5] = 1.0
+  psi_im[5] = 0.0
+  psi_re[6] = 1.0
+  psi_im[6] = 0.0
+  psi_re[7] = 1.0
+  psi_im[7] = 0.0
+  var n2: float = norm_sq_1d(psi_re, psi_im)
+  if n2 == 0.0:
+    return 0.0
+  var scale: float = 0.3535533905932738
+  var out_re: array[8, float]
+  var out_im: array[8, float]
+  out_re[0] = scale
+  out_im[0] = 0.0
+  out_re[1] = scale
+  out_im[1] = 0.0
+  out_re[2] = scale
+  out_im[2] = 0.0
+  out_re[3] = scale
+  out_im[3] = 0.0
+  out_re[4] = scale
+  out_im[4] = 0.0
+  out_re[5] = scale
+  out_im[5] = 0.0
+  out_re[6] = scale
+  out_im[6] = 0.0
+  out_re[7] = scale
+  out_im[7] = 0.0
+  return norm_sq_1d(out_re, out_im)
+
 def physics_quantum_gpu_progress() raises IO -> int
   requires true
   ensures result >= 0

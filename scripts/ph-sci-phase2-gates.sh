@@ -22,10 +22,14 @@ echo "==> WP-SCI-05: FEA smokes"
 echo "==> WP-SCI-06: fluids cavity lib + sim.scientific CFD oracle"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-fluids/src/lib.li -o /dev/null
 
+echo "==> WP-SCI-03: quantum lib + QM tier-2 oracle"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-quantum/src/lib.li -o /dev/null
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_qm_normalize.li
+
 echo "==> WP-SCI-06: cavity + tier-2 registry smokes"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_cfd_cavity.li -o /dev/null
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_cfd_cavity.li
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li
 "$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li
 
-echo "ph-sci-simulation-gap-close: Phase 2 (WP-SCI-05, WP-SCI-06) gate OK"
+echo "ph-sci-simulation-gap-close: Phase 2 (WP-SCI-03 QM, WP-SCI-05, WP-SCI-06) gate OK"

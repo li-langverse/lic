@@ -16,7 +16,13 @@ note = "WP-SCI-03 tier-2 MD/heat oracle checksums"
 suite = "smoke"
 file = "smoke/run_algo_registry_tier2.li"
 outcome = "verify_ok"
-note = "WP-SCI-03 run_algo_registry MD/heat/CFD/FEA tier-2 dispatch"
+note = "WP-SCI-03 run_algo_registry MD/heat/CFD/FEA/QM tier-2 dispatch"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/scientific_qm_normalize.li"
+outcome = "verify_ok"
+note = "WP-SCI-03 QM normalize oracle + registry algo 401–432"
 
 [[tests]]
 suite = "smoke"

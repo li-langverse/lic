@@ -9,13 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-SCI-03 QM tier-2 oracle** — `sim_scientific_oracle_checksum_qm()` delegates to `physics.quantum.qm_normalize_oracle_checksum()`; `run_qm_tier2_registry` for algo 401–432; smoke `scientific_qm_normalize.li`.
 - **WP-SCI-05 FEA elasticity oracle** — `sim_scientific_oracle_checksum_fea()` delegates to `physics.rigid.fea_bar_oracle_checksum()`; `run_fea_tier2_registry` for algo 211–216; `vertical_fea_linear_elasticity()` in `sim`; smoke `scientific_fea_elasticity.li`.
 - **WP-SCI-06 CFD cavity oracle** — `sim_scientific_oracle_checksum_cfd()` delegates to `physics.fluids.cavity_lid_oracle_checksum()`; `run_cfd_tier2_registry` for algo 205–210; `vertical_cfd_lid_driven_cavity()` in `sim`; smoke `scientific_cfd_cavity.li`.
 - **WP-SCI-03 tier-2 kernels** — `sim_scientific_oracle_checksum_md`, `sim_scientific_oracle_checksum_heat`, `run_algo_registry` MD/heat/rigid dispatch; smokes `scientific_oracle_bench.li`, `run_algo_registry_tier2.li`.
 
 ### Changed
 
-- `run_heat_tier2_registry` limited to algo 201–204 (FEA/CFD rows split from heat band); `li_sim_scientific_version` → 5 (FEA tier-2 band 211–216).
+- `run_heat_tier2_registry` limited to algo 201–204 (FEA/CFD rows split from heat band); `li_sim_scientific_version` → 6 (QM tier-2 band 401–432).
 - **WP-SCI-01 multi-physics tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` (MD + heat + rigid smokes); smoke `li-tests/smoke/multi_physics_tick.li`.
 
 ### Changed (prior)

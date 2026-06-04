@@ -3,13 +3,14 @@ import sim
 import physics.particles
 import physics.rigid
 import physics.fluids
+import physics.quantum
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -224,6 +225,15 @@ def sim_scientific_oracle_checksum_fea() -> float
 =
   return fea_bar_oracle_checksum()
 
+# WP-SCI-03 — tier-2 Li oracle: normalized 1D wavefunction (physics.quantum).
+def sim_scientific_oracle_checksum_qm() -> float
+  requires true
+  ensures result > 0.99
+  ensures result < 1.01
+  decreases 0
+=
+  return qm_normalize_oracle_checksum()
+
 def sim_scientific_checksum_combine(chk_md: float, chk_heat: float, chk_rigid: float, step_index: int) -> float
   requires step_index >= 1
   requires step_index <= 64
@@ -388,6 +398,23 @@ def run_fea_smoke(detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_qm_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == 418
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = 418
+  r.vertical_id = vertical_qm_dft()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_rigid_smoke(detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -423,9 +450,6 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   decreases 0
 =
   var vert: int = 0
-  if algo_id >= 401:
-    if algo_id <= 432:
-      vert = vertical_qm_dft()
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo_id
@@ -510,6 +534,25 @@ def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 401
+  requires algo_id <= 432
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -539,6 +582,10 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
       var rigid: SimRunResult = run_rigid_smoke(d2)
       rigid.algo_id = algo_id
       return rigid
+  if algo_id >= 401:
+    if algo_id <= 432:
+      var d2b: int = detail
+      return run_qm_tier2_registry(algo_id, d2b)
   var d3: int = detail
   return run_algo_registry_stub(algo_id, d3)
 
@@ -599,7 +646,7 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
     return run_rigid_smoke(d2)
   if vertical_id == vertical_qm_dft():
     var d3: int = detail
-    return run_algo(algo_qm_dft_scf_energy(), d3)
+    return run_qm_smoke(d3)
   var bad: SimRunResult
   var d4: int = detail
   bad.ok = 0

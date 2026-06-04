@@ -19,8 +19,8 @@ Today the repository ships **27 `.li` modules** under `std/` (compile harnesses 
 | `import std.collections` | `std/collections/collections.li` | WP0-B compile-only stub |
 | `import std.heap` | `std/heap/heap.li` | WP0-B compile-only stub |
 | `import std.algorithms` | `std/algorithms/algorithms.li` | WP0-B compile-only stub |
-| `import std.io` | `std/io/io.li` | PH-IO-4 stub (`io_tag`, file read stub) |
-| `import std.csv` | `std/csv/csv.li` | PH-IO-4 stub (`csv_field_count_stub`, row parse) |
+| `import std.io` | `std/io/io.li` | PH-IO-4 shipped (`file_read_then_close`, `io_csv_ingest_open_tag`) |
+| `import std.csv` | `std/csv/csv.li` | PH-IO-4 shipped (`csv_field_count_stub`, row witness) |
 | `import std.summary` | `std/summary/summary.li` | PH-IO-7 stub (summary JSON build stub) |
 | `import std.plot` | `std/plot/plot.li` | PH-IO-5 stub (static dashboard stub) |
 | `import std.execution.decorators` | `std/execution/decorators.li` | Reserved decorator names |

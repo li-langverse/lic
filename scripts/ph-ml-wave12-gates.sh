@@ -7,13 +7,6 @@ export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1
 
-is_wsl() {
-  [[ -n "${WSL_INTEROP:-}" ]] && return 0
-  [[ -n "${WSL_DISTRO_NAME:-}" ]] && return 0
-  [[ -r /proc/version ]] && grep -qiE '(microsoft|wsl)' /proc/version && return 0
-  return 1
-}
-
 _wsl_path_u() {
   wsl.exe wslpath -u "$1" 2>/dev/null | tr -d '\r\n'
 }

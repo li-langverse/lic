@@ -1633,3 +1633,33 @@ suite = "science_gpu"
 file = "packages/li-sim-robotics/li-tests/smoke/robo_gpu_integrate_steps.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-10 @gpu arm integration loop"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-viz/li-tests/smoke/viz_gpu_pipeline_step.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-11 @gpu viz pipeline scientific step"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-sensors/li-tests/smoke/sensors_gpu_bus_step.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-12 @gpu sensor bus raycast step"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-automotive/li-tests/smoke/auto_gpu_bicycle_steps.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-13 @gpu bicycle kinematic loop"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-additive/li-tests/smoke/additive_gpu_slicer.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-14 @gpu additive slicer workflow"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-drug-design/li-tests/smoke/drug_gpu_litl_workflow.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-15 @gpu drug LitL workflow"

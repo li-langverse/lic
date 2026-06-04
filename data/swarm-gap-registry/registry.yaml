@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-31T00:53:15Z'
+updated_at: '2026-06-04T21:26:59Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -200,7 +200,7 @@ gaps:
 - id: gap-plan-pending-httpd-gap-phase2-perf-wrk-soak
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-phase2-perf-wrk-soak'
-  status: closed
+  status: open
   priority: 7
   discovered_by: plan_verifier
   evidence:
@@ -229,7 +229,7 @@ gaps:
 - id: gap-plan-pending-httpd-gap-phase2-streaming-wrk
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-phase2-streaming-wrk'
-  status: closed
+  status: open
   priority: 7
   discovered_by: plan_verifier
   evidence:
@@ -243,11 +243,12 @@ gaps:
 - id: gap-plan-pending-sim-sim-p1-num-dot-axpy
   gap_kind: plan_debt
   title: 'sim: pending plan todo sim-p1-num-dot-axpy'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim plan_pending=sim-p1-num-dot-axpy
+  - snapshot sim todo sim-p1-num-dot-axpy completed (not in plan_pending)
   runner_id: sim
   plan_todo_id: sim-p1-num-dot-axpy
   suggested_loop: sim
@@ -256,11 +257,12 @@ gaps:
 - id: gap-plan-pending-sim-sim-p1-md-neighbor-cell
   gap_kind: plan_debt
   title: 'sim: pending plan todo sim-p1-md-neighbor-cell'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim plan_pending=sim-p1-md-neighbor-cell
+  - snapshot sim todo sim-p1-md-neighbor-cell completed (not in plan_pending)
   runner_id: sim
   plan_todo_id: sim-p1-md-neighbor-cell
   suggested_loop: sim
@@ -269,11 +271,12 @@ gaps:
 - id: gap-plan-pending-sim-sim-p2-qm-dft-scf
   gap_kind: plan_debt
   title: 'sim: pending plan todo sim-p2-qm-dft-scf'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim plan_pending=sim-p2-qm-dft-scf
+  - snapshot sim todo sim-p2-qm-dft-scf completed (not in plan_pending)
   runner_id: sim
   plan_todo_id: sim-p2-qm-dft-scf
   suggested_loop: sim
@@ -503,7 +506,7 @@ gaps:
 - id: gap-plan-pending-swarm-observer-orch-r2-competitor-stubs
   gap_kind: plan_debt
   title: 'swarm-observer: pending plan todo orch-r2-competitor-stubs'
-  status: closed
+  status: open
   priority: 7
   discovered_by: plan_verifier
   evidence:
@@ -551,6 +554,8 @@ gaps:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-perf-wrk-soak
   - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   - 'orch-r1: dedupe or complete'
+  - snapshot httpd plan_pending includes gap-phase2-perf-wrk-soak
+  - deduped to gap-plan-pending-httpd-gap-phase2-perf-wrk-soak
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-phase2-perf-wrk-soak
   suggested_loop: httpd
@@ -581,6 +586,8 @@ gaps:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-streaming-wrk
   - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-streaming-wrk
   - 'orch-r1: dedupe or complete'
+  - snapshot httpd plan_pending includes gap-phase2-streaming-wrk
+  - deduped to gap-plan-pending-httpd-gap-phase2-streaming-wrk
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-phase2-streaming-wrk
   suggested_loop: httpd
@@ -648,6 +655,8 @@ gaps:
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   - 'orch-r1: dedupe or complete'
+  - snapshot httpd plan_pending includes gap-phase2-perf-wrk-soak
+  - deduped to gap-plan-pending-httpd-gap-phase2-perf-wrk-soak
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   suggested_loop: httpd
@@ -677,6 +686,8 @@ gaps:
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-streaming-wrk
   - 'orch-r1: dedupe or complete'
+  - snapshot httpd plan_pending includes gap-phase2-streaming-wrk
+  - deduped to gap-plan-pending-httpd-gap-phase2-streaming-wrk
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-httpd-gap-phase2-streaming-wrk
   suggested_loop: httpd

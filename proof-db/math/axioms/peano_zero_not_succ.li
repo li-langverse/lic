@@ -2,8 +2,8 @@
 
 def proof_db_peano_zero_not_succ(n: int)-> int
   requires n >= 0
-  ensures not (n == 0) or (result == 0)
-  ensures not (n > 0) or (result == 1)
+  ensures (n == 0) implies (result == 0)
+  ensures (n > 0) implies (result == 1)
   decreases 0
 =
   return 1

@@ -2,7 +2,7 @@
 
 def proof_db_order_antisym(a: int, b: int)-> int
   requires a >= 0 and b >= 0
-  ensures not (a <= b and b <= a) or (a == b)
+  ensures (a <= b and b <= a) implies (a == b)
   decreases 0
 =
   return 0

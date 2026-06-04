@@ -53,7 +53,7 @@ struct Param {
 
 enum class ContractKind { Requires, Ensures, Decreases, Invariant, ProbEnsures };
 
-enum class BinOp { Add, Sub, Mul, Div, Mod, FloorDiv, Pow, MatMul, Le, Lt, Ge, Gt, Eq, Ne, And, Or, BitXor, Shl, Shr };
+enum class BinOp { Add, Sub, Mul, Div, Mod, FloorDiv, Pow, MatMul, Le, Lt, Ge, Gt, Eq, Ne, Implies, And, Or, BitXor, Shl, Shr };
 
 struct Expr {
   enum class Kind {

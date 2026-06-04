@@ -6,12 +6,10 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
-LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
-if [[ ! -x "$LIC" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-fi
-OUT="$ROOT/benchmarks/results/ph-ml-async-env-collect.json"
-export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_ensure_lic "$ROOT" "bench-ph-ml-async-env-collect: build lic (./scripts/build.sh)" || exit 1
+OUT="$BENCHMARKS_RESULTS/ph-ml-async-env-collect.json"
 SMOKE="$ROOT/packages/li-ml-rl/li-tests/smoke/env_pool_async_four.li"
 mkdir -p "$BENCHMARKS_RESULTS"
 [[ "$(pwd)" == /mnt/* ]] && export TMPDIR="${TMPDIR:-/tmp}"

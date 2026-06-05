@@ -8,7 +8,7 @@ bool starts_with(std::string_view s, std::string_view prefix) {
 }
 
 void note_one(std::string_view callee, MirModule& mir) {
-  if (starts_with(callee, "li_rt_llm_")) {
+  if (starts_with(callee, "li_rt_llm_") || starts_with(callee, "li_rt_inference_")) {
     mir.needs_rt_llm = true;
   }
   if (starts_with(callee, "li_log_") || starts_with(callee, "li_rt_log_")) {

@@ -4,8 +4,14 @@ set -euo pipefail
 ROOT="${PH_SCI_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
 
+LIC="${LIC_BIN:-${LIC:-}}"
+if [[ -z "$LIC" ]] || ! "$LIC" --version &>/dev/null; then
+  LIC="$("$ROOT/scripts/resolve-lic.sh")"
+fi
+export LIC
+
 echo "==> chem DFT lib compile (li-chem)"
-./build-wsl/compiler/lic/lic build packages/li-chem/src/lib.li --allow-open-vc
+"$LIC" build packages/li-chem/src/lib.li --allow-open-vc
 
 echo "==> science_gpu suite (includes PH-SCI-GPU-16/17/18/19 echem)"
 bash scripts/check-science-gpu-gate.sh

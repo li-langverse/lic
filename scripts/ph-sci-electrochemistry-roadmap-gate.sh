@@ -4,12 +4,11 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-LIC="${LIC:-./build-wsl/compiler/lic/lic}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
+LIC="${LIC_BIN:-${LIC:-}}"
+if [[ -z "$LIC" ]] || ! "$LIC" --version &>/dev/null; then
+  LIC="$("$ROOT/scripts/resolve-lic.sh")"
 fi
+export LIC
 
 "$LIC" build packages/li-chem/src/lib.li --allow-open-vc
 bash scripts/ph-sci-gpu-chem-gates.sh

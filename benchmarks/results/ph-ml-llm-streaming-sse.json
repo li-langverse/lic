@@ -1,0 +1,13 @@
+{
+  "suite": "ph-ml-llm-streaming-sse",
+  "generated_at": "2026-06-05T04:17:25Z",
+  "workload_class": "tier3_cpu",
+  "content_type": "text/event-stream",
+  "native_decode": true,
+  "live_proxy": false,
+  "compile_ok": true,
+  "executed": true,
+  "validity_gate_pass": true,
+  "cpu_sec": 0.013244,
+  "note": "llm_streaming_sse_prep_ok via native decode steps"
+}

@@ -1,4 +1,6 @@
 /build/
+build-native/
+build-wsl-agent/
 build-fuzz/
 .venv-plot/
 .venv-docs/

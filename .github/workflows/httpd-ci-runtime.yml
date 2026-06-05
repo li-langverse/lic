@@ -1,0 +1,61 @@
+# Fast httpd runtime gates on PR (TLS/H2, WebSocket, sticky LB, leak censor, DHE).
+name: httpd-ci-runtime
+
+on:
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - "runtime/li_rt_httpd.c"
+      - "runtime/li_rt_net.c"
+      - "packages/li-net-httpd/**"
+      - "scripts/test-m2-*.sh"
+      - "scripts/test-lb-sticky-sessions.sh"
+      - "scripts/test-m15-leak-censor-runtime.sh"
+      - "scripts/check-httpd-tls-dhe.sh"
+      - "scripts/httpd-ci-runtime-gates.sh"
+      - "scripts/httpd-plan-gates.sh"
+      - ".github/workflows/httpd-ci-runtime.yml"
+  push:
+    branches: [main]
+    paths:
+      - "runtime/li_rt_net.c"
+      - "packages/li-net-httpd/**"
+      - "scripts/httpd-ci-runtime-gates.sh"
+  workflow_dispatch:
+
+concurrency:
+  group: httpd-ci-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runtime-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LLVM 22 and curl/openssl
+        run: |
+          chmod +x scripts/ci-install-llvm.sh
+          sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq curl openssl
+
+      - name: Build lic + li-httpd
+        env:
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+          CC: clang-22
+          CXX: clang++-22
+        run: |
+          chmod +x scripts/build.sh scripts/build-li-httpd.sh
+          ./scripts/build.sh
+          ./scripts/build-li-httpd.sh
+          test -x build/li-httpd
+
+      - name: httpd-ci-runtime-gates
+        env:
+          HTTPD_CI_RUNTIME: "1"
+          HTTPD_GATES_SKIP_LIC_BUILD: "1"
+        run: |
+          chmod +x scripts/httpd-ci-runtime-gates.sh
+          ./scripts/httpd-ci-runtime-gates.sh

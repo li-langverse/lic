@@ -553,6 +553,118 @@ def chem_dft_run_gpu_queue() -> int raises IO
     return 0
   return 1
 
+# --- WP-ECHEM-01: easy electrochemistry stubs (CHE / SHE / EDL / static NEB) ---
+
+def echem_she_reference_ev() -> float
+  requires true
+  ensures result == 4.44
+  decreases 0
+=
+  return 4.44
+
+def echem_che_h2_energy_ev_stub() -> float
+  requires true
+  ensures result == 0.0
+  decreases 0
+=
+  return 0.0
+
+def echem_h_star_pt111_energy_ev_stub() -> float
+  requires true
+  ensures result == -2.45
+  decreases 0
+=
+  return -2.45
+
+def echem_che_h_adsorption_energy(potential_v: float) -> float
+  requires true
+  ensures result == echem_h_star_pt111_energy_ev_stub() - 0.5 * echem_che_h2_energy_ev_stub() - potential_v
+  decreases 0
+=
+  var half_h2: float = 0.5 * echem_che_h2_energy_ev_stub()
+  return echem_h_star_pt111_energy_ev_stub() - half_h2 - potential_v
+
+def echem_edl_permittivity_stub() -> float
+  requires true
+  ensures result == 20.0
+  decreases 0
+=
+  return 20.0
+
+def echem_edl_helmholtz_gap_nm() -> float
+  requires true
+  ensures result == 0.30
+  decreases 0
+=
+  return 0.30
+
+def echem_edl_helmholtz_capacitance_stub() -> float
+  requires true
+  ensures result > 10.0
+  ensures result < 30.0
+  decreases 0
+=
+  var eps0_f_per_m: float = 8.854 * 1.0e-12
+  var eps_r: float = echem_edl_permittivity_stub()
+  var gap_m: float = echem_edl_helmholtz_gap_nm() * 1.0e-9
+  var c_f_per_m2: float = eps0_f_per_m * eps_r / gap_m
+  return c_f_per_m2 * 1.0e4
+
+def echem_neb_image_count() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def echem_neb_image_energy_at(i: int) -> float
+  requires i >= 0
+  requires i < echem_neb_image_count()
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases i
+=
+  if i == 0:
+    return 0.0
+  if i == 1:
+    return 0.85
+  return 0.12
+
+def echem_static_barrier_neb_stub() -> float
+  requires true
+  ensures result == 0.73
+  decreases 0
+=
+  var e0: float = echem_neb_image_energy_at(0)
+  var e1: float = echem_neb_image_energy_at(1)
+  var e2: float = echem_neb_image_energy_at(2)
+  var e_lo: float = e0
+  if e2 < e_lo:
+    e_lo = e2
+  return e1 - e_lo
+
+def echem_gpu_che_h_ads_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var u0: float = echem_che_h_adsorption_energy(0.0)
+  var u_neg: float = echem_che_h_adsorption_energy(-0.5)
+  if u_neg >= u0:
+    return 0
+  var c_uf: float = echem_edl_helmholtz_capacitance_stub()
+  if c_uf < 10.0:
+    return 0
+  if c_uf > 30.0:
+    return 0
+  var barrier: float = echem_static_barrier_neb_stub()
+  if barrier <= 0.0:
+    return 0
+  if echem_she_reference_ev() != 4.44:
+    return 0
+  return 1
+
 def chem_lig_backend_auto() raises IO -> int
   requires true
   ensures 1 <= result

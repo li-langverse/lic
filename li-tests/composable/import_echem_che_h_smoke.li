@@ -1,0 +1,25 @@
+import chem
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if echem_she_reference_ev() != 4.44:
+    return 1
+  var u0: float = echem_che_h_adsorption_energy(0.0)
+  if u0 != -2.45:
+    return 2
+  var u_pos: float = echem_che_h_adsorption_energy(0.5)
+  if u_pos >= u0:
+    return 3
+  var c_uf: float = echem_edl_helmholtz_capacitance_stub()
+  if c_uf < 10.0:
+    return 4
+  if c_uf > 30.0:
+    return 5
+  if echem_static_barrier_neb_stub() != 0.73:
+    return 6
+  if echem_gpu_che_h_ads_progress() != 1:
+    return 7
+  return 0

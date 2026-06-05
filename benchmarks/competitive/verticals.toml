@@ -156,6 +156,16 @@ last_reviewed = "2026-06-05"
 notes = "ph-sci-chem-dft-competitive.json; Li chem_dft_energy_kernel_hartree mini radial scaffold vs PySCF RKS/LDA (Apache-2.0); ORCA external_manual only (not bundled); parity_gate loose until full Gaussian DFT."
 
 [[vertical]]
+id = "echem_che_h"
+incumbent = "VASP-sol / CP2K / QUANTUM ESPRESSO + CHE workflow"
+kernel_or_api = "CHE H* adsorption vs RHE + electrode potential shift"
+workload_class = "stub"
+oracle = "external_binary"
+li_package = "chem"
+last_reviewed = "2026-06-05"
+notes = "WP-ECHEM-01 echem_che_h_adsorption_energy + echem_she_reference_ev stubs; composable import_echem_che_h_smoke.li; PySCF H/Pt toy oracle planned WP-ECHEM-02 (license-free primary); ORCA user-run external only — not VASP/CP2K parity."
+
+[[vertical]]
 id = "ml_rl_matmul"
 incumbent = "PyTorch / JAX / Triton"
 kernel_or_api = "CPU matmul + MLP"

@@ -1,8 +1,8 @@
 # PH-SCI-GPU-CHEM — GPU DFT / computational chemistry
 
-**Status:** Wave 1 landed (2026-06-04) — CHEM-04 Fock/SCF + LDA/XC + LKIR smokes PH-SCI-GPU-16/17/18  
+**Status:** Wave 1 landed (2026-06-04) — CHEM-04 Fock/SCF + LDA/XC + LKIR smokes PH-SCI-GPU-16/17/18; Wave 2 (2026-06-05) — electrochemistry stubs PH-SCI-GPU-19  
 **Branch:** `cursor/ph-sci-gpu-chem-dft`  
-**Parent:** [ph-sci-simulation-gap-close-plan.md](ph-sci-simulation-gap-close-plan.md) (Phase 3 vendor GPU) · [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-plan.md) (LKIR / Stage 2)
+**Parent:** [ph-sci-simulation-gap-close-plan.md](ph-sci-simulation-gap-close-plan.md) (Phase 3 vendor GPU) · [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-plan.md) (LKIR / Stage 2) · [ph-sci-electrochemistry-sim-plan.md](ph-sci-electrochemistry-sim-plan.md) (easy electrochemistry P0)
 
 ## Vision
 
@@ -83,6 +83,10 @@ bash scripts/check-science-gpu-gate.sh
 | PH-SCI-GPU-18 | `chem_gpu_dft_lkir.li` | li-chem |
 
 Existing PH-SCI-GPU-06 (combustion) and PH-SCI-GPU-15 (LitL workflow) remain; DFT is additive.
+
+| PH-SCI-GPU-19 | `echem_gpu_che_h_ads.li` | li-chem (WP-ECHEM-01) |
+
+See [ph-sci-electrochemistry-sim-plan.md](ph-sci-electrochemistry-sim-plan.md) for CHE/SHE/EDL/NEB roadmap and PySCF electrochemistry oracle (WP-ECHEM-02).
 
 ## Still stub (vendor CUDA)
 

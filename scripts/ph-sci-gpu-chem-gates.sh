@@ -7,7 +7,7 @@ cd "$ROOT"
 echo "==> chem DFT lib compile (li-chem)"
 ./build-wsl/compiler/lic/lic build packages/li-chem/src/lib.li --allow-open-vc
 
-echo "==> science_gpu suite (includes PH-SCI-GPU-16/17/18)"
+echo "==> science_gpu suite (includes PH-SCI-GPU-16/17/18/19 echem)"
 bash scripts/check-science-gpu-gate.sh
 
 echo "==> chem DFT competitive bench (PySCF oracle; ORCA external-only)"

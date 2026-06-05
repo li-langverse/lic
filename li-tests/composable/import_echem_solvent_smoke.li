@@ -1,0 +1,25 @@
+import chem
+import physics.particles
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if echem_slab_geometry_smoke() != 1:
+    return 1
+  if echem_slab_atom_count() != 12:
+    return 2
+  if echem_solvent_water_count() != 16:
+    return 3
+  if echem_solvent_gr_peak_smoke() != 1:
+    return 4
+  var peak: float = echem_solvent_gr_peak_r_ang()
+  var ref: float = echem_solvent_gr_peak_reference_ang()
+  var tol: float = echem_solvent_gr_peak_tolerance_ang()
+  var d: float = peak - ref
+  if d < 0.0:
+    d = -d
+  if d > tol:
+    return 5
+  return 0

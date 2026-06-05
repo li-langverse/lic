@@ -174,6 +174,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-10 — Classical MD solvent shell
 
+- **Status:** done (2026-06-05) — `echem_solvent_gr_peak_smoke`, `ph-sci-echem-solvent-gr-reference.json`  
 - **Goal:** Explicit water sphere around slab via `li-physics-particles` LJ + Ewald stub.  
 - **Packages:** `li-physics-particles`  
 - **Dependencies:** WP-ECHEM-03  
@@ -296,7 +297,7 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-07 | 1D EDL Poisson–Boltzmann | 1 | P1 | **done** |
 | WP-ECHEM-08 | Full static NEB | 1 | P1 | **done** |
 | WP-ECHEM-09 | AIMD coupling | 2 | P1 | **done** |
-| WP-ECHEM-10 | Classical MD solvent | 2 | P1 | open |
+| WP-ECHEM-10 | Classical MD solvent | 2 | P1 | **done** |
 | WP-ECHEM-11 | Constrained DFT / Marcus | 2 | P2 | open |
 | WP-ECHEM-12 | Grand-canonical SHE AIMD | 3 | P2 | open |
 | WP-ECHEM-13 | TDDFT nonadiabatic | 3 | P3 | open |

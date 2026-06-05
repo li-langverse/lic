@@ -1700,3 +1700,16 @@ file = "composable/import_echem_aimd_smoke.li"
 packages = ["li-sim-scientific", "li-sim", "li-chem"]
 outcome = "compile_open_ok"
 note = "WP-ECHEM-09 AIMD interface — 8-step chem_dft_energy_kernel_hartree drift oracle"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_echem_solvent_smoke.li"
+packages = ["li-chem", "li-physics-particles"]
+outcome = "compile_open_ok"
+note = "WP-ECHEM-10 classical MD solvent shell — g(r) peak vs reference JSON"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-particles/li-tests/smoke/echem_solvent_gr_smoke.li"
+outcome = "compile_open_ok"
+note = "WP-ECHEM-10 explicit water sphere g(r) peak smoke"

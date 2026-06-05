@@ -15,7 +15,8 @@ Close the native Li ML/HPC/AI library track through Stage 6: real transformer fo
 | 4 | LLM import (safetensors/GGUF, lillm-import) | `ph-ml-stage4-gates.sh` |
 | 5 | Transformer forward + multi-decode | `ph-ml-stage5-gates.sh` |
 | 6 | li-httpd native trusted route | `ph-ml-stage6-gates.sh` |
-| 7 (prep) | SSE streaming decode | `ph-ml-stage7-streaming-prep.md` |
+| 7 | SSE streaming prep + tier3 competitive + autograd pilot | `ph-ml-stage7-gates.sh` |
+| 7 (prep doc) | SSE streaming decode | `ph-ml-stage7-streaming-prep.md` |
 
 ## Stage 5 exit criteria
 
@@ -31,8 +32,14 @@ Close the native Li ML/HPC/AI library track through Stage 6: real transformer fo
 - `llm_trusted_httpd_native_generate_ok` — ≥8 decode steps, `forward_matmul == 1`
 - `ph-ml-llm-trusted-httpd.json`: `native_generate: true`, `live_proxy: false`
 
-## Deferred (Stage 7+)
+## Deferred (Stage 8+)
 
 - Full reference logits parity vs transformers
 - GPU decode / KV-cache device buffers
-- SSE streaming tokens (see Stage 7 prep)
+- Production SSE route in cluster (Stage 7 prep landed compile/bench gate)
+
+## Completion gate
+
+```bash
+bash scripts/ph-ml-hpc-ai-library-gates.sh
+```

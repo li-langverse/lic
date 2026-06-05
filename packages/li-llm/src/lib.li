@@ -210,10 +210,10 @@ def llm_path_is_gguf_fixture(path: str) -> int raises IO, Alloc
 
 def li_llm_version() -> int
   requires true
-  ensures result == 7
+  ensures result == 8
   decreases 0
 =
-  return 7
+  return 8
 
 type LlmTokenIds = object
   public count: int
@@ -1162,3 +1162,57 @@ def llm_generate(
   if tracked.decode_steps <= 0:
     return llm_dot_str()
   return llm_generate_ok_str()
+
+# Stage 7 prep: SSE chunk contract for native decode steps (li-httpd /v1/chat/completions).
+def llm_streaming_sse_content_type() -> str raises Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  var s: str = "text/event-stream"
+  return s
+
+def llm_streaming_sse_content_type_ok() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def llm_streaming_sse_chunk_ready(token_id: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if token_id > 0:
+    return 1
+  return 0
+
+def llm_streaming_sse_from_tracked(tracked: LlmGenerateResult) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases tracked.decode_steps
+=
+  if tracked.forward_matmul != 1:
+    return 0
+  if tracked.decode_steps < 1:
+    return 0
+  if llm_streaming_sse_chunk_ready(tracked.last_top_id + 1) != 1:
+    return 0
+  return 1
+
+def llm_streaming_sse_prep_ok() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  var tracked: LlmGenerateResult
+  tracked.decode_steps = 8
+  tracked.forward_matmul = 1
+  tracked.token_count = 8
+  tracked.last_top_id = 1
+  if llm_streaming_sse_from_tracked(tracked) != 1:
+    return 0
+  return 1

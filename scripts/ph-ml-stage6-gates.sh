@@ -31,8 +31,8 @@ fi
 
 grep -q 'llm_trusted_httpd_native_generate_ok' packages/li-llm/src/lib.li \
   || { echo "6.1: missing native httpd generate"; exit 1; }
-grep -q 'return 7' packages/li-llm/src/lib.li \
-  || { echo "6.2: li_llm_version must be 7"; exit 1; }
+grep -qE 'return (7|8)' packages/li-llm/src/lib.li \
+  || { echo "6.2: li_llm_version must be >= 7"; exit 1; }
 
 python3 scripts/prepare_ph_ml_weights_fixture.py
 

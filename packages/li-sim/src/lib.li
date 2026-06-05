@@ -133,6 +133,13 @@ def vertical_echem_aimd() -> int
 =
   return 5
 
+def vertical_echem_gc_aimd() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
 def algo_registry_count() -> int
   requires true
   ensures result == 126
@@ -177,6 +184,8 @@ def algo_in_registry(algo_id: int) -> int
     if algo_id <= 432:
       return 1
   if algo_id == 433:
+    return 1
+  if algo_id == 434:
     return 1
   if algo_id >= 501:
     if algo_id <= 505:
@@ -285,6 +294,13 @@ def algo_echem_aimd_interface() -> int
   decreases 0
 =
   return 433
+
+def algo_echem_gc_aimd_interface() -> int
+  requires true
+  ensures result == 434
+  decreases 0
+=
+  return 434
 
 def algo_robo_multibody_step() -> int
   requires true

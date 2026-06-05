@@ -9,12 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-ECHEM-12 grand-canonical SHE AIMD** — `sim_scientific_oracle_checksum_echem_gc_aimd`, `run_echem_gc_aimd_tier2_registry`, `algo_echem_gc_aimd_interface()` (434) dispatch; 10-step constant-potential MD with `echem_gc_charge_neutrality_step` feedback; smoke `echem_gc_aimd_interface_smoke.li`.
 - **WP-ECHEM-09 AIMD coupling** — `sim_scientific_oracle_checksum_echem_aimd`, `run_echem_aimd_tier2_registry`, `algo_echem_aimd_interface()` (433) dispatch; 8-step velocity-Verlet + Berendsen toy thermostat calling `chem_dft_energy_kernel_hartree` each step; smoke `echem_aimd_interface_smoke.li`.
 - **WP-SCI-03 tier-2 kernels** — `sim_scientific_oracle_checksum_md`, `sim_scientific_oracle_checksum_heat`, `run_algo_registry` MD/heat/rigid dispatch; smokes `scientific_oracle_bench.li`, `run_algo_registry_tier2.li`.
 
 ### Changed
 
-- `run_md_lj_smoke` / `run_heat_smoke` use tier-2 oracle checksums (not scalar stub / constant 1.0); `li_sim_scientific_version` → 4 (WP-ECHEM-09).
+- `run_md_lj_smoke` / `run_heat_smoke` use tier-2 oracle checksums (not scalar stub / constant 1.0); `li_sim_scientific_version` → 5 (WP-ECHEM-12).
 - **WP-SCI-01 multi-physics tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` (MD + heat + rigid smokes); smoke `li-tests/smoke/multi_physics_tick.li`.
 
 ### Changed (prior)

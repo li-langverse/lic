@@ -52,4 +52,18 @@ def main() -> int
     return 18
   if aimd433.checksum == 1.001:
     return 19
+  var gc_oracle: float = sim_scientific_oracle_checksum_echem_gc_aimd()
+  if gc_oracle <= 0.0:
+    return 20
+  if gc_oracle >= 0.05:
+    return 21
+  var gc434: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 1)
+  if run_result_ok(gc434) != 1:
+    return 22
+  if gc434.algo_id != 434:
+    return 23
+  if gc434.checksum != gc_oracle:
+    return 24
+  if gc434.checksum == 1.001:
+    return 25
   return 0

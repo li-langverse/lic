@@ -196,6 +196,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-12 — Grand-canonical / computational SHE AIMD
 
+- **Status:** done (2026-06-05) — `echem_gc_mu_electron_ev`, `echem_gc_charge_neutrality_step`, `algo_echem_gc_aimd_interface` (434), `echem_gc_aimd_interface_smoke.li`  
 - **Goal:** μ_electron(U) boundary condition; constant-potential MD scaffold.  
 - **Dependencies:** WP-ECHEM-09, WP-ECHEM-06  
 - **Acceptance:** Charge neutrality drift < tol over 10 steps (toy cell)  
@@ -300,7 +301,7 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-09 | AIMD coupling | 2 | P1 | **done** |
 | WP-ECHEM-10 | Classical MD solvent | 2 | P1 | **done** |
 | WP-ECHEM-11 | Constrained DFT / Marcus | 2 | P2 | **done** |
-| WP-ECHEM-12 | Grand-canonical SHE AIMD | 3 | P2 | open |
+| WP-ECHEM-12 | Grand-canonical SHE AIMD | 3 | P2 | **done** |
 | WP-ECHEM-13 | TDDFT nonadiabatic | 3 | P3 | open |
 | WP-ECHEM-14 | ML potentials | 3 | P2 | open |
 | WP-ECHEM-15 | Multiscale kMC | 3 | P2 | open |

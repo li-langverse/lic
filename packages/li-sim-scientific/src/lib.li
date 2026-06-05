@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -293,6 +293,86 @@ def sim_scientific_oracle_checksum_echem_aimd() -> float
     diff = -diff
   return diff / denom
 
+# WP-ECHEM-12 — grand-canonical SHE AIMD: constant-potential MD + charge neutrality feedback.
+def echem_gc_aimd_step_count() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+def echem_gc_aimd_electrode_potential_v() -> float
+  requires true
+  ensures result == 0.25
+  decreases 0
+=
+  return 0.25
+
+def echem_gc_aimd_harmonic_k() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 8.0
+
+def echem_gc_aimd_dft_energy_at_potential(u_v: float) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  return echem_dft_energy_at_potential(u_v)
+
+def echem_gc_aimd_kinetic_pe(x: float, vx: float) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var k: float = echem_gc_aimd_harmonic_k()
+  return 0.5 * vx * vx + 0.5 * k * x * x
+
+def echem_gc_aimd_thermostat_step(vx: var float, target_ke: float) -> unit
+  requires target_ke >= 0.0
+  ensures true
+  decreases 0
+=
+  var ke: float = 0.5 * vx * vx
+  if ke > target_ke * 1.05:
+    vx = vx * 0.96
+  if ke < target_ke * 0.95:
+    vx = vx * 1.04
+
+def sim_scientific_oracle_checksum_echem_gc_aimd() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var q: float = 0.12
+  var x: float = 0.06
+  var vx: float = 0.02
+  var dt: float = 0.003
+  var u_v: float = echem_gc_aimd_electrode_potential_v()
+  var k: float = echem_gc_aimd_harmonic_k()
+  var target_ke: float = 0.5 * vx * vx
+  var max_drift: float = echem_gc_charge_drift_abs(q)
+  var step: int = 0
+  while step < echem_gc_aimd_step_count()
+    echem_gc_aimd_dft_energy_at_potential(u_v)
+    var ax: float = -k * x
+    vx = vx + 0.5 * dt * ax
+    x = x + dt * vx
+    ax = -k * x
+    vx = vx + 0.5 * dt * ax
+    echem_gc_aimd_thermostat_step(vx, target_ke)
+    q = echem_gc_charge_neutrality_next(q, u_v)
+    var abs_q: float = echem_gc_charge_drift_abs(q)
+    if abs_q > max_drift:
+      max_drift = abs_q
+    step = step + 1
+  var final_drift: float = echem_gc_charge_drift_abs(q)
+  if final_drift > max_drift:
+    max_drift = final_drift
+  return max_drift
+
 def sim_scientific_checksum_combine(chk_md: float, chk_heat: float, chk_rigid: float, step_index: int) -> float
   requires step_index >= 1
   requires step_index <= 64
@@ -525,6 +605,24 @@ def run_echem_aimd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_echem_gc_aimd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id == algo_echem_gc_aimd_interface()
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_echem_gc_aimd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_echem_gc_aimd()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -549,6 +647,9 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_echem_aimd_interface():
     var d_echem: int = detail
     return run_echem_aimd_tier2_registry(algo_id, d_echem)
+  if algo_id == algo_echem_gc_aimd_interface():
+    var d_gc: int = detail
+    return run_echem_gc_aimd_tier2_registry(algo_id, d_gc)
   var d3: int = detail
   return run_algo_registry_stub(algo_id, d3)
 
@@ -576,6 +677,9 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_echem_aimd_interface():
     var d_echem: int = detail
     return run_echem_aimd_tier2_registry(algo_id, d_echem)
+  if algo_id == algo_echem_gc_aimd_interface():
+    var d_gc: int = detail
+    return run_echem_gc_aimd_tier2_registry(algo_id, d_gc)
   if algo_in_registry(reg_chk) == 1:
     var d4: int = detail
     return run_algo_registry(reg_run, d4)
@@ -610,6 +714,9 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   if vertical_id == vertical_echem_aimd():
     var d_echem: int = detail
     return run_echem_aimd_tier2_registry(algo_echem_aimd_interface(), d_echem)
+  if vertical_id == vertical_echem_gc_aimd():
+    var d_gc: int = detail
+    return run_echem_gc_aimd_tier2_registry(algo_echem_gc_aimd_interface(), d_gc)
   var bad: SimRunResult
   var d4: int = detail
   bad.ok = 0

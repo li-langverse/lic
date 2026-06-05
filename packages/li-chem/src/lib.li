@@ -1277,6 +1277,58 @@ def echem_marcus_coupling_monotonic_smoke() -> int
     return 0
   return 1
 
+# --- WP-ECHEM-12: grand-canonical / computational SHE (μ_electron boundary) ---
+
+def echem_gc_mu_electron_ev(u_v: float) -> float
+  requires true
+  ensures result == echem_she_reference_ev() - u_v
+  decreases 0
+=
+  return echem_she_reference_ev() - u_v
+
+def echem_gc_target_charge() -> float
+  requires true
+  ensures result == 0.0
+  decreases 0
+=
+  return 0.0
+
+def echem_gc_charge_neutrality_next(q: float, u_v: float) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var mu: float = echem_gc_mu_electron_ev(u_v)
+  var mu0: float = echem_she_reference_ev()
+  var diff: float = mu - mu0
+  return q * 0.80 + 0.004 * diff
+
+def echem_gc_charge_drift_abs(q: float) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  if q >= 0.0:
+    return q
+  return -q
+
+def echem_gc_charge_neutrality_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var q: float = 0.12
+  var u_v: float = 0.25
+  var step: int = 0
+  while step < 10
+    q = echem_gc_charge_neutrality_next(q, u_v)
+    step = step + 1
+  var drift: float = echem_gc_charge_drift_abs(q)
+  if drift >= 0.05:
+    return 0
+  return 1
+
 def chem_lig_backend_auto() raises IO -> int
   requires true
   ensures 1 <= result

@@ -1715,6 +1715,13 @@ outcome = "compile_open_ok"
 note = "WP-ECHEM-11 Marcus reorganization λ stub + coupling-monotonic rate smoke"
 
 [[tests]]
+suite = "composable"
+file = "composable/import_echem_gc_aimd_smoke.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "compile_open_ok"
+note = "WP-ECHEM-12 grand-canonical SHE AIMD — 10-step charge neutrality drift oracle"
+
+[[tests]]
 suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/echem_solvent_gr_smoke.li"
 outcome = "compile_open_ok"

@@ -29,3 +29,9 @@ suite = "smoke"
 file = "smoke/echem_aimd_interface_smoke.li"
 outcome = "verify_ok"
 note = "WP-ECHEM-09 AIMD interface registry + 8-step DFT energy drift oracle"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/echem_gc_aimd_interface_smoke.li"
+outcome = "verify_ok"
+note = "WP-ECHEM-12 grand-canonical SHE AIMD registry + 10-step charge neutrality oracle"

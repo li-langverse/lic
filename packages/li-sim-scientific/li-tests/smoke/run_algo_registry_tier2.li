@@ -38,4 +38,18 @@ def main() -> int
     return 12
   if qm418.checksum != 1.001:
     return 13
+  var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
+  if echem_oracle <= 0.0:
+    return 14
+  if echem_oracle >= 1.0e-2:
+    return 15
+  var aimd433: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
+  if run_result_ok(aimd433) != 1:
+    return 16
+  if aimd433.algo_id != 433:
+    return 17
+  if aimd433.checksum != echem_oracle:
+    return 18
+  if aimd433.checksum == 1.001:
+    return 19
   return 0

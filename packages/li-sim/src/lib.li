@@ -126,6 +126,13 @@ def vertical_qm_dft() -> int
 =
   return 4
 
+def vertical_echem_aimd() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
 def algo_registry_count() -> int
   requires true
   ensures result == 126
@@ -169,6 +176,8 @@ def algo_in_registry(algo_id: int) -> int
   if algo_id >= 401:
     if algo_id <= 432:
       return 1
+  if algo_id == 433:
+    return 1
   if algo_id >= 501:
     if algo_id <= 505:
       return 1
@@ -269,6 +278,13 @@ def algo_qm_dft_scf_energy() -> int
   decreases 0
 =
   return 418
+
+def algo_echem_aimd_interface() -> int
+  requires true
+  ensures result == 433
+  decreases 0
+=
+  return 433
 
 def algo_robo_multibody_step() -> int
   requires true

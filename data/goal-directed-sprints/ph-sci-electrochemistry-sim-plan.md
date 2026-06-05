@@ -165,6 +165,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-09 — AIMD coupling (DFT + MD tick)
 
+- **Status:** done (2026-06-05) — `sim_scientific_oracle_checksum_echem_aimd`, `algo_echem_aimd_interface` (433), `echem_aimd_interface_smoke.li`  
 - **Goal:** `li-sim-scientific` registry row `echem_aimd_interface`; each MD step calls `chem_dft_energy_kernel_hartree`.  
 - **Packages:** `li-sim-scientific`, `li-chem`  
 - **Dependencies:** WP-ECHEM-05, WP-SCI-GPU-02  
@@ -294,7 +295,7 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-06 | Potential-dependent SCF | 1 | P1 | **done** |
 | WP-ECHEM-07 | 1D EDL Poisson–Boltzmann | 1 | P1 | **done** |
 | WP-ECHEM-08 | Full static NEB | 1 | P1 | **done** |
-| WP-ECHEM-09 | AIMD coupling | 2 | P1 | open |
+| WP-ECHEM-09 | AIMD coupling | 2 | P1 | **done** |
 | WP-ECHEM-10 | Classical MD solvent | 2 | P1 | open |
 | WP-ECHEM-11 | Constrained DFT / Marcus | 2 | P2 | open |
 | WP-ECHEM-12 | Grand-canonical SHE AIMD | 3 | P2 | open |

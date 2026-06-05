@@ -1693,3 +1693,10 @@ suite = "composable"
 file = "composable/import_echem_che_h_smoke.li"
 outcome = "compile_open_ok"
 note = "WP-ECHEM-01 CHE/SHE/EDL/NEB composable gate"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_echem_aimd_smoke.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "compile_open_ok"
+note = "WP-ECHEM-09 AIMD interface — 8-step chem_dft_energy_kernel_hartree drift oracle"

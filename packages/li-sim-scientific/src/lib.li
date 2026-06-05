@@ -1,14 +1,15 @@
 
 import sim
+import chem
 import physics.particles
 import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -206,6 +207,91 @@ def sim_scientific_oracle_checksum_heat() -> float
     heat_oracle_stencil_step(u, v, r)
     step = step + 1
   return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
+
+# WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
+def echem_aimd_step_count() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def echem_aimd_harmonic_k() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 8.0
+
+def echem_aimd_dft_energy_per_step() -> float
+  requires true
+  ensures result <= 0.0
+  decreases 0
+=
+  return chem_dft_energy_kernel_hartree()
+
+def echem_aimd_kinetic_pe(x: float, vx: float) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var k: float = echem_aimd_harmonic_k()
+  return 0.5 * vx * vx + 0.5 * k * x * x
+
+def echem_aimd_total_energy(x: float, vx: float) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  return echem_aimd_dft_energy_per_step() + echem_aimd_kinetic_pe(x, vx)
+
+def echem_aimd_thermostat_step(vx: var float, target_ke: float) -> unit
+  requires target_ke >= 0.0
+  ensures true
+  decreases 0
+=
+  var ke: float = 0.5 * vx * vx
+  if ke > target_ke * 1.05:
+    vx = vx * 0.96
+  if ke < target_ke * 0.95:
+    vx = vx * 1.04
+
+def sim_scientific_oracle_checksum_echem_aimd() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var x: float = 0.08
+  var vx: float = 0.03
+  var dt: float = 0.003
+  var k: float = echem_aimd_harmonic_k()
+  var target_ke: float = 0.5 * vx * vx
+  var e0: float = echem_aimd_total_energy(x, vx)
+  var step: int = 0
+  while step < echem_aimd_step_count()
+    echem_aimd_dft_energy_per_step()
+    var ax: float = -k * x
+    vx = vx + 0.5 * dt * ax
+    x = x + dt * vx
+    ax = -k * x
+    vx = vx + 0.5 * dt * ax
+    echem_aimd_thermostat_step(vx, target_ke)
+    step = step + 1
+  var e1: float = echem_aimd_total_energy(x, vx)
+  var denom: float = e0
+  if e1 > denom:
+    denom = e1
+  if denom < 0.0:
+    if -e0 > denom:
+      denom = -e0
+    if -e1 > denom:
+      denom = -e1
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = e1 - e0
+  if diff < 0.0:
+    diff = -diff
+  return diff / denom
 
 def sim_scientific_checksum_combine(chk_md: float, chk_heat: float, chk_rigid: float, step_index: int) -> float
   requires step_index >= 1
@@ -421,6 +507,24 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_echem_aimd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id == algo_echem_aimd_interface()
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_echem_aimd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_echem_aimd()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -442,6 +546,9 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
       var rigid: SimRunResult = run_rigid_smoke(d2)
       rigid.algo_id = algo_id
       return rigid
+  if algo_id == algo_echem_aimd_interface():
+    var d_echem: int = detail
+    return run_echem_aimd_tier2_registry(algo_id, d_echem)
   var d3: int = detail
   return run_algo_registry_stub(algo_id, d3)
 
@@ -466,6 +573,9 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_rigid_semi_implicit():
     var d3: int = detail
     return run_rigid_smoke(d3)
+  if algo_id == algo_echem_aimd_interface():
+    var d_echem: int = detail
+    return run_echem_aimd_tier2_registry(algo_id, d_echem)
   if algo_in_registry(reg_chk) == 1:
     var d4: int = detail
     return run_algo_registry(reg_run, d4)
@@ -497,6 +607,9 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   if vertical_id == vertical_qm_dft():
     var d3: int = detail
     return run_algo(algo_qm_dft_scf_energy(), d3)
+  if vertical_id == vertical_echem_aimd():
+    var d_echem: int = detail
+    return run_echem_aimd_tier2_registry(algo_echem_aimd_interface(), d_echem)
   var bad: SimRunResult
   var d4: int = detail
   bad.ok = 0

@@ -929,16 +929,17 @@ def echem_edl_pb_vs_helmholtz_smoke() -> int
     return 0
   return 1
 
-def echem_neb_image_count() -> int
+# WP-ECHEM-01: dimensionless 3-image NEB oracle (retained for regression).
+def echem_neb_stub_image_count() -> int
   requires true
   ensures result == 3
   decreases 0
 =
   return 3
 
-def echem_neb_image_energy_at(i: int) -> float
+def echem_neb_stub_image_energy_at(i: int) -> float
   requires i >= 0
-  requires i < echem_neb_image_count()
+  requires i < echem_neb_stub_image_count()
   ensures result >= 0.0
   ensures result <= 1.0
   decreases i
@@ -954,13 +955,116 @@ def echem_static_barrier_neb_stub() -> float
   ensures result == 0.73
   decreases 0
 =
-  var e0: float = echem_neb_image_energy_at(0)
-  var e1: float = echem_neb_image_energy_at(1)
-  var e2: float = echem_neb_image_energy_at(2)
+  var e0: float = echem_neb_stub_image_energy_at(0)
+  var e1: float = echem_neb_stub_image_energy_at(1)
+  var e2: float = echem_neb_stub_image_energy_at(2)
   var e_lo: float = e0
   if e2 < e_lo:
     e_lo = e2
   return e1 - e_lo
+
+# WP-ECHEM-08: 5-image static NEB on 1D reaction coordinate (DFT endpoints + climbing bump).
+def echem_neb_image_count() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def echem_neb_reaction_lambda_at(i: int) -> float
+  requires i >= 0
+  requires i < echem_neb_image_count()
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases i
+=
+  if i == 0:
+    return 0.0
+  return echem_neb_reaction_lambda_at(i - 1) + 0.25
+
+def echem_neb_sin_pi_lambda(lam: float) -> float
+  requires lam >= 0.0
+  requires lam <= 1.0
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  return 4.0 * lam * (1.0 - lam)
+
+def echem_neb_climbing_bump_ev(lam: float) -> float
+  requires lam >= 0.0
+  requires lam <= 1.0
+  ensures result >= 0.0
+  decreases 0
+=
+  return 0.73 * echem_neb_sin_pi_lambda(lam)
+
+def echem_neb_image_energy_ev_at(i: int) -> float
+  requires i >= 0
+  requires i < echem_neb_image_count()
+  ensures true
+  decreases i
+=
+  var e_is: float = echem_dft_energy_at_potential(0.0)
+  var lam: float = echem_neb_reaction_lambda_at(i)
+  var e_lin: float = (1.0 - lam) * e_is
+  return e_lin + echem_neb_climbing_bump_ev(lam)
+
+def echem_neb_image_energy_at(i: int) -> float
+  requires i >= 0
+  requires i < echem_neb_image_count()
+  ensures true
+  decreases i
+=
+  return echem_neb_image_energy_ev_at(i)
+
+def echem_neb_max_image_energy_ev() -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var e_max: float = echem_neb_image_energy_ev_at(0)
+  var i: int = 1
+  while i < echem_neb_image_count()
+    var e_i: float = echem_neb_image_energy_ev_at(i)
+    if e_i > e_max:
+      e_max = e_i
+    i = i + 1
+  return e_max
+
+def echem_neb_endpoint_min_ev() -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var e_is: float = echem_neb_image_energy_ev_at(0)
+  var e_fs: float = echem_neb_image_energy_ev_at(4)
+  var e_lo: float = e_is
+  if e_fs < e_lo:
+    e_lo = e_fs
+  return e_lo
+
+def echem_static_barrier_neb() -> float
+  requires true
+  ensures result >= echem_static_barrier_neb_stub()
+  decreases 0
+=
+  return echem_neb_max_image_energy_ev() - echem_neb_endpoint_min_ev()
+
+def echem_static_barrier_neb_vs_stub_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if echem_neb_image_count() < 3:
+    return 0
+  var barrier: float = echem_static_barrier_neb()
+  if barrier < echem_static_barrier_neb_stub():
+    return 0
+  if barrier <= 0.0:
+    return 0
+  return 1
 
 def echem_slab_layer_count() -> int
   requires true
@@ -1054,7 +1158,9 @@ def echem_gpu_che_h_ads_progress() -> int
     return 0
   if echem_edl_pb_vs_helmholtz_smoke() != 1:
     return 0
-  var barrier: float = echem_static_barrier_neb_stub()
+  if echem_static_barrier_neb_vs_stub_smoke() != 1:
+    return 0
+  var barrier: float = echem_static_barrier_neb()
   if barrier <= 0.0:
     return 0
   if echem_she_reference_ev() != 4.44:

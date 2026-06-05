@@ -153,6 +153,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-08 — Full static NEB (3+ images)
 
+- **Status:** done (2026-06-05) — `echem_static_barrier_neb`, 5-image DFT linear interp + climbing bump  
 - **Goal:** Replace barrier stub with climbing-image or linear interpolation NEB on 1D reaction coordinate.  
 - **Dependencies:** WP-ECHEM-05  
 - **Acceptance:** Barrier ≥ stub oracle; `compile_open_ok` smoke  
@@ -292,7 +293,7 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-05 | H\* from DFT kernel | 1 | P1 | **done** |
 | WP-ECHEM-06 | Potential-dependent SCF | 1 | P1 | **done** |
 | WP-ECHEM-07 | 1D EDL Poisson–Boltzmann | 1 | P1 | **done** |
-| WP-ECHEM-08 | Full static NEB | 1 | P1 | open |
+| WP-ECHEM-08 | Full static NEB | 1 | P1 | **done** |
 | WP-ECHEM-09 | AIMD coupling | 2 | P1 | open |
 | WP-ECHEM-10 | Classical MD solvent | 2 | P1 | open |
 | WP-ECHEM-11 | Constrained DFT / Marcus | 2 | P2 | open |

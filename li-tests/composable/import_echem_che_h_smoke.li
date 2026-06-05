@@ -29,6 +29,10 @@ def main() -> int
     return 13
   if echem_static_barrier_neb_stub() != 0.73:
     return 9
+  if echem_neb_image_count() < 3:
+    return 14
+  if echem_static_barrier_neb_vs_stub_smoke() != 1:
+    return 15
   if echem_potential_volcano_trend_smoke() != 1:
     return 10
   var at_u0: float = echem_dft_energy_at_potential(0.0)

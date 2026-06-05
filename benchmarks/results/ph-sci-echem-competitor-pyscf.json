@@ -3,7 +3,7 @@
   "suite": "ph-sci-echem-competitor-pyscf",
   "workload": "echem_che_h",
   "executed": true,
-  "cpu_sec": 6.683566,
+  "cpu_sec": 9.941437,
   "energy_ev": 3.399595,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
@@ -15,6 +15,6 @@
   "basis": "sto-3g",
   "xc": "lda,vwn",
   "potential_v": 0.0,
-  "generated_at": "2026-06-05T06:58:45Z",
+  "generated_at": "2026-06-05T07:24:10Z",
   "license": "Apache-2.0"
 }

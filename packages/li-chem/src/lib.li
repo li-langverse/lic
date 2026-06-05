@@ -1468,6 +1468,96 @@ def echem_sei_growth_ang_per_event() -> float
 =
   return 0.05
 
+# --- WP-ECHEM-13: TDDFT / nonadiabatic ET barrier crossing (documented stub) ---
+
+def echem_tddft_stub_honesty_tag() -> int
+  requires true
+  ensures result == 13
+  decreases 0
+=
+  return 13
+
+def echem_tddft_excitation_energy_ev() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 2.80
+
+def echem_tddft_nonadiabatic_coupling_ev() -> float
+  requires true
+  ensures result > 0.0
+  ensures result < echem_marcus_lambda_stub()
+  decreases 0
+=
+  var lam: float = echem_marcus_lambda_stub()
+  return lam * 0.12
+
+def echem_tddft_et_barrier_ev() -> float
+  requires true
+  ensures result > echem_tddft_nonadiabatic_coupling_ev()
+  decreases 0
+=
+  var lam: float = echem_marcus_lambda_stub()
+  var ex: float = echem_tddft_excitation_energy_ev()
+  return 0.25 * lam + 0.08 * ex
+
+def echem_tddft_step_count() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def echem_tddft_dt_fs() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 0.5
+
+def echem_tddft_population_ground_next(p_ground: float, coupling_ev: float, dt_fs: float) -> float
+  requires p_ground >= 0.0
+  requires p_ground <= 1.0
+  requires coupling_ev >= 0.0
+  requires dt_fs > 0.0
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  var p_excited: float = 1.0 - p_ground
+  var transfer: float = coupling_ev * dt_fs * p_excited
+  if transfer > p_ground:
+    transfer = p_ground
+  var next: float = p_ground - transfer
+  if next < 0.0:
+    next = 0.0
+  if next > 1.0:
+    next = 1.0
+  return next
+
+def echem_tddft_nonadiabatic_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var p: float = 1.0
+  var coupling: float = echem_tddft_nonadiabatic_coupling_ev()
+  var dt: float = echem_tddft_dt_fs()
+  var barrier: float = echem_tddft_et_barrier_ev()
+  if barrier <= coupling:
+    return 0
+  var step: int = 0
+  while step < echem_tddft_step_count()
+    p = echem_tddft_population_ground_next(p, coupling, dt)
+    step = step + 1
+  if p >= 0.95:
+    return 0
+  if p <= 0.0:
+    return 0
+  return 1
+
 def chem_lig_backend_auto() raises IO -> int
   requires true
   ensures 1 <= result

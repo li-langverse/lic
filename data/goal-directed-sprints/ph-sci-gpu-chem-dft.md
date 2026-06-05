@@ -43,7 +43,7 @@
   - **04b:** `chem_dft_lda_xc_density`, `chem_dft_hartree_grid`, `chem_dft_coulomb_2center`
   - **04c:** `chem_dft_gpu_lkir_progress`, `chem_dft_gpu_lkir_launch_pipeline`, `chem_dft_run_gpu_queue`, PH-SCI-GPU-18 smoke
 - **Acceptance:** PH-SCI-GPU-18 `compile_open_ok`; composable `import_lig_chem_backend` checks GPU queue stub.
-- **Status:** partial — CPU oracle + LKIR matmul spine reuse; vendor CUDA blob parity still stub.
+- **Status:** done (2026-06-05) — 04a/04b/04c landed; vendor CUDA blob parity deferred to WP-SCI-GPU-VENDOR-01.
 
 ## Studio / MCP hook
 

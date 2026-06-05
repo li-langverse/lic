@@ -1736,6 +1736,13 @@ outcome = "compile_open_ok"
 note = "WP-ECHEM-15 SEI growth kMC — NEB-barrier deposition rate vs mean-field growth oracle"
 
 [[tests]]
+suite = "composable"
+file = "composable/import_echem_tddft_smoke.li"
+packages = ["li-chem", "li-physics-quantum"]
+outcome = "compile_open_ok"
+note = "WP-ECHEM-13 TDDFT/nonadiabatic — Marcus-coupled ET barrier + 2-state population stub"
+
+[[tests]]
 suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/echem_solvent_gr_smoke.li"
 outcome = "compile_open_ok"

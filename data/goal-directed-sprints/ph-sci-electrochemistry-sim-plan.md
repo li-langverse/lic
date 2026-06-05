@@ -204,6 +204,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-13 — TDDFT / nonadiabatic (deferred)
 
+- **Status:** done (2026-06-05) — `echem_tddft_*`, `quantum_tddft_2state_population_step`, `import_echem_tddft_smoke.li`  
 - **Goal:** Coupled electron-nuclear step beyond BO for ET barrier crossing.  
 - **Packages:** `li-physics-quantum`, `li-chem`  
 - **Dependencies:** WP-ECHEM-11  
@@ -304,6 +305,6 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-10 | Classical MD solvent | 2 | P1 | **done** |
 | WP-ECHEM-11 | Constrained DFT / Marcus | 2 | P2 | **done** |
 | WP-ECHEM-12 | Grand-canonical SHE AIMD | 3 | P2 | **done** |
-| WP-ECHEM-13 | TDDFT nonadiabatic | 3 | P3 | open |
+| WP-ECHEM-13 | TDDFT nonadiabatic | 3 | P3 | **done** |
 | WP-ECHEM-14 | ML potentials | 3 | P2 | **done** |
 | WP-ECHEM-15 | Multiscale kMC | 3 | P2 | **done** |

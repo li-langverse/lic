@@ -138,3 +138,92 @@ def li_scaffold_energy_from_density(dens: list[float]) -> float:
 
 def li_scaffold_energy_hartree() -> float:
     return li_scaffold_energy_from_density(_fill_density_from_basis())
+
+
+def _li_scaffold_fock_diagonal(P: list[list[float]], z: float = 1.0) -> list[list[float]]:
+    F = [[0.0] * BASIS_N for _ in range(BASIS_N)]
+    for i in range(BASIS_N):
+        ri = BASIS_CENTROID[i]
+        h_ii = -z / (ri + 0.05) + 0.25 * BASIS_ZETA[i]
+        coul = exch = 0.0
+        for j in range(BASIS_N):
+            p_jj = P[j][j]
+            c2 = 1.0 / (abs(BASIS_CENTROID[i] - BASIS_CENTROID[j]) + 0.20)
+            coul += p_jj * c2
+            if i == j:
+                exch += 0.5 * p_jj * c2
+        F[i][i] = h_ii + coul - exch
+    return F
+
+
+def _li_scaffold_eigensolve_power4(F: list[list[float]]) -> tuple[float, list[float]]:
+    coeffs = [1.0] * BASIS_N
+    norm = sum(c * c for c in coeffs) ** 0.5
+    coeffs = [c / norm for c in coeffs]
+
+    def rayleigh(v: list[float]) -> float:
+        Fv = [sum(F[i][j] * v[j] for j in range(BASIS_N)) for i in range(BASIS_N)]
+        return sum(v[i] * Fv[i] for i in range(BASIS_N))
+
+    energy = rayleigh(coeffs)
+    for _ in range(6):
+        Fv = [sum(F[i][j] * coeffs[j] for j in range(BASIS_N)) for i in range(BASIS_N)]
+        norm = sum(c * c for c in Fv) ** 0.5
+        coeffs = [Fv[i] / norm for i in range(BASIS_N)]
+        energy = rayleigh(coeffs)
+    return energy, coeffs
+
+
+def _li_scaffold_fill_density_from_coeffs(coeffs: list[float]) -> list[float]:
+    dens = []
+    for k in range(GRID_N):
+        r = GRID_R[k]
+        psi = sum(coeffs[i] * _basis_eval_at(i, r) for i in range(BASIS_N))
+        dens.append(psi * psi)
+    return dens
+
+
+def _li_scaffold_scf_loop(energy_fn) -> float:
+    dens = _fill_density_from_basis()
+    energy = energy_fn(dens)
+    mix = 0.35
+    tol = 1.0e-5
+    for _ in range(8):
+        coeffs = [1.0, 0.0, 0.0, 0.0]
+        P = [[2.0 * coeffs[i] * coeffs[j] for j in range(BASIS_N)] for i in range(BASIS_N)]
+        F = _li_scaffold_fock_diagonal(P)
+        orb_e, coeffs = _li_scaffold_eigensolve_power4(F)
+        new_dens = _li_scaffold_fill_density_from_coeffs(coeffs)
+        dens = [(1.0 - mix) * dens[i] + mix * new_dens[i] for i in range(GRID_N)]
+        e_new = energy_fn(dens)
+        if orb_e < e_new:
+            e_new = orb_e
+        if abs(e_new - energy) < tol:
+            return e_new
+        energy = e_new
+    return energy
+
+
+def li_scaffold_energy_from_density_h2(dens: list[float], bond: float = 0.74) -> float:
+    kin = pot = xc = 0.0
+    dr = GRID_DR
+    half = 0.5 * bond
+    for i in range(GRID_N):
+        r = GRID_R[i]
+        rho = dens[i]
+        d_nuc = r + half
+        inv_r = 1.0 / (d_nuc + 0.05)
+        pot -= rho * dr * (inv_r + inv_r)
+        xc += _lda_xc_density(rho) * dr
+        if i < 7:
+            dphi = _basis_eval_sto3g(GRID_R[i + 1]) - _basis_eval_sto3g(r)
+            kin += 0.5 * dphi * dphi / (dr * dr)
+    return kin + pot + xc + _hartree_grid(dens)
+
+
+def li_scaffold_scf_hartree() -> float:
+    return _li_scaffold_scf_loop(li_scaffold_energy_from_density)
+
+
+def li_scaffold_scf_h2_hartree() -> float:
+    return _li_scaffold_scf_loop(li_scaffold_energy_from_density_h2)

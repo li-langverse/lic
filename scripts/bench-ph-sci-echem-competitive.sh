@@ -42,12 +42,12 @@ def load(name: str) -> dict:
 def li_row(src: dict, wc: str) -> dict:
     return {
         "id": "li",
-        "incumbent": "Li native (li-chem echem_che_h_adsorption_energy stub)",
+        "incumbent": "Li native (li-chem echem_che_h_adsorption_energy DFT SCF)",
         "workload_class": wc,
         "executed": bool(src.get("executed")),
         "cpu_sec": src.get("cpu_sec"),
         "energy_ev": src.get("energy_ev"),
-        "energy_source": src.get("energy_source", "li_echem_stub_mirror"),
+        "energy_source": src.get("energy_source", "li_echem_dft_scf_mirror"),
         "validity_gate_pass": bool(src.get("validity_gate_pass")),
         "validity_ratio": 1.0 if src.get("validity_gate_pass") else 0.0,
         "ratio_vs_li": 1.0,
@@ -98,14 +98,14 @@ rows = [
         "kernel": "echem.che_h_adsorption_energy",
         "workload_class": "pilot",
         "workload_note": (
-            "CHE H* vs RHE at U=0; Li scalar stub vs PySCF E(H)-0.5*E(H2) toy geometry"
+            "CHE H* vs RHE at U=0; Li mini radial SCF vs PySCF E(H)-0.5*E(H2) STO-3G"
         ),
         "potential_v": REFERENCE_POTENTIAL_V,
         "energy_tolerance_ev": ENERGY_TOLERANCE_EV,
         "energy_delta_ev": delta,
         "parity_gate_pass": parity_pass,
         "parity_note": (
-            "Large delta expected until WP-ECHEM-05 couples real slab SCF — stub honesty"
+            "Radial mini SCF ≠ Gaussian DFT — large delta OK until slab/full-basis parity"
         ),
         "executed": bool(li.get("executed")) or bool(pyscf.get("executed")),
         "li": li_row(li, "pilot"),

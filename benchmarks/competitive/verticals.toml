@@ -163,7 +163,7 @@ workload_class = "pilot"
 oracle = "pyscf"
 li_package = "chem"
 last_reviewed = "2026-06-05"
-notes = "WP-ECHEM-04 ph-sci-echem-competitive.json row echem_che_h; Li CHE stub vs PySCF E(H)-0.5*E(H2) oracle (Apache-2.0); energy_delta_ev large until WP-ECHEM-05 slab SCF; ORCA external_manual only — not VASP/CP2K parity."
+notes = "WP-ECHEM-05 ph-sci-echem-competitive.json row echem_che_h; Li CHE from chem_dft SCF vs PySCF E(H)-0.5*E(H2) oracle (Apache-2.0); energy_delta_ev large until full Gaussian/slab parity; ORCA external_manual only — not VASP/CP2K parity."
 
 [[vertical]]
 id = "ml_rl_matmul"

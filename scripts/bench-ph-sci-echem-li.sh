@@ -41,11 +41,11 @@ doc = {
     "executed": err is None,
     "cpu_sec": cpu_sec,
     "energy_ev": round(energy_ev, 6),
-    "energy_source": "li_echem_stub_mirror",
+    "energy_source": "li_echem_dft_scf_mirror",
     "validity_gate_pass": energy_ev < 0.0,
     "validity_ratio": 1.0 if energy_ev < 0.0 else 0.0,
     "potential_v": REFERENCE_POTENTIAL_V,
-    "note": "Li echem_che_h_adsorption_energy stub (WP-ECHEM-01)",
+    "note": "Li echem_che_h_adsorption_energy from chem_dft SCF (WP-ECHEM-05)",
 }
 if err:
     doc["note"] = err

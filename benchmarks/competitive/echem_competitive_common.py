@@ -1,20 +1,29 @@
 """Shared PH-SCI electrochemistry competitive workload — CHE H* toy (lib.li mirror)."""
 from __future__ import annotations
 
+import sys
 import time
+from pathlib import Path
 from typing import Any, Callable
 
-# Toy geometry: single H atom proxy for Pt(111) H* until WP-ECHEM-05 slab SCF.
+_COMP_DIR = Path(__file__).resolve().parent
+if str(_COMP_DIR) not in sys.path:
+    sys.path.insert(0, str(_COMP_DIR))
+
+from chem_dft_competitive_common import li_scaffold_scf_h2_hartree, li_scaffold_scf_hartree
+
+# PySCF CHE oracle geometry (H + H₂ STO-3G); Li uses mini radial SCF (WP-ECHEM-05).
 H_STAR_ATOM = "H 0 0 0"
 H2_ATOM = "H 0 0 0; H 0 0 0.74"
 BASIS = "sto-3g"
 XC = "lda,vwn"
 REFERENCE_POTENTIAL_V = 0.0
+H2_BOND_ANG = 0.74
 
 DEFAULT_RUNS = 12
 DEFAULT_WARMUP = 2
 
-# Li stub honesty: large delta expected until real SCF (WP-ECHEM-05).
+# Radial scaffold ≠ Gaussian DFT — loose tolerance until full slab parity.
 ENERGY_TOLERANCE_EV = 5.0
 
 HARTREE_TO_EV = 27.211386246
@@ -59,16 +68,9 @@ def bench_loop(
     return round((time.perf_counter() - t0) / runs, 6), None
 
 
-def li_echem_h_star_energy_ev_stub() -> float:
-    return -2.45
-
-
-def li_echem_h2_energy_ev_stub() -> float:
-    return 0.0
-
-
 def li_echem_che_h_adsorption_energy_ev(potential_v: float) -> float:
-    return li_echem_h_star_energy_ev_stub() - 0.5 * li_echem_h2_energy_ev_stub() - potential_v
+    delta_h = li_scaffold_scf_hartree() - 0.5 * li_scaffold_scf_h2_hartree()
+    return hartree_to_ev(delta_h) - potential_v
 
 
 def hartree_to_ev(delta_hartree: float) -> float:

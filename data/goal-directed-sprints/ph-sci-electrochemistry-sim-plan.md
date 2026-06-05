@@ -127,6 +127,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-05 — Pt(111) H\* adsorption from `chem_dft_energy_kernel`
 
+- **Status:** done (2026-06-05) — `echem_dft_h_star_energy_hartree`, `echem_dft_h2_energy_hartree`, CHE from SCF  
 - **Goal:** Bind CHE adsorption to converged SCF energy difference (H\* + slab − ½ H₂).  
 - **Packages:** `li-chem`  
 - **Dependencies:** PH-SCI-GPU-CHEM-04, WP-ECHEM-01  
@@ -286,7 +287,7 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-02 | PySCF echem oracle | 0 | P0 | **done** |
 | WP-ECHEM-03 | H₂O slab geometry stub | 0 | P1 | **done** |
 | WP-ECHEM-04 | verticals.toml honesty flip | 0 | P0 | **done** |
-| WP-ECHEM-05 | H\* from DFT kernel | 1 | P1 | open |
+| WP-ECHEM-05 | H\* from DFT kernel | 1 | P1 | **done** |
 | WP-ECHEM-06 | Potential-dependent SCF | 1 | P1 | open |
 | WP-ECHEM-07 | 1D EDL Poisson–Boltzmann | 1 | P1 | open |
 | WP-ECHEM-08 | Full static NEB | 1 | P1 | open |

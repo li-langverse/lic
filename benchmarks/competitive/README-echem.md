@@ -1,6 +1,6 @@
 # Electrochemistry competitive benchmark
 
-Compare **Li `echem_che_h_adsorption_energy()`** (CHE scalar stub in `packages/li-chem/src/lib.li`) against license-friendly QM references.
+Compare **Li `echem_che_h_adsorption_energy()`** (CHE from `chem_dft_scf_iteration_scaffold` + H₂ diatomic SCF in `packages/li-chem/src/lib.li`) against license-friendly QM references.
 
 ## Run
 
@@ -18,11 +18,11 @@ Output: `benchmarks/results/ph-sci-echem-competitive.json`
 
 | Field | Value |
 |-------|-------|
-| Geometry | `H 0 0 0` (H* toy until WP-ECHEM-05 slab) |
+| Geometry | `H 0 0 0` (H*); H₂ `0.74` Å bond (WP-ECHEM-05 radial SCF) |
 | H₂ | `H 0 0 0; H 0 0 0.74` |
 | Basis | `sto-3g` |
 | XC | `lda,vwn` (PySCF) |
-| Li kernel | CHE formula: `E(H*) - 0.5*E(H₂) - U` with scalar stubs |
+| Li kernel | CHE formula: `hartree_to_ev(E_H_scf - 0.5*E_H2_scf) - U` |
 | PySCF | `dft.RKS` on H and H₂ — **primary OSS oracle** (Apache-2.0) |
 | ORCA | **External manual oracle only** — not redistributable |
 
@@ -32,7 +32,7 @@ Output: `benchmarks/results/ph-sci-echem-competitive.json`
 
 - `workload_class = "pilot"` after WP-ECHEM-04 (PySCF oracle green)
 - `oracle = "pyscf"`
-- Large `energy_delta_ev` expected until WP-ECHEM-05 couples real slab SCF
+- Large `energy_delta_ev` expected until full Gaussian/slab parity (radial scaffold honesty)
 
 ## License notes
 

@@ -95,6 +95,6 @@ report["executed"] = True
 report["validity_gate_pass"] = True
 report["validity_ratio"] = 1.0
 report["note"] = (
-    "PySCF RKS/LDA CHE proxy: E(H) - 0.5*E(H2) - U (H* toy until WP-ECHEM-05 slab)"
+    "PySCF RKS/LDA CHE proxy: E(H) - 0.5*E(H2) - U (Li radial SCF coupled at WP-ECHEM-05)"
 )
 write_report()

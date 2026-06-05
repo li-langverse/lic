@@ -1427,6 +1427,47 @@ def echem_ml_surrogate_aimd_steps() -> int
 =
   return 80
 
+# WP-ECHEM-15 — SEI growth kMC rates from WP-ECHEM-08 NEB barrier (toy Arrhenius without exp).
+def echem_sei_barrier_ea_ev() -> float
+  requires true
+  ensures result >= echem_static_barrier_neb_stub()
+  decreases 0
+=
+  return echem_static_barrier_neb()
+
+def echem_sei_rate_prefactor() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 8.0
+
+def echem_sei_temperature_ev() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 0.026
+
+def echem_sei_deposition_rate_per_step() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var ea: float = echem_sei_barrier_ea_ev()
+  var t: float = echem_sei_temperature_ev()
+  var denom: float = ea + t
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  return echem_sei_rate_prefactor() * t / denom
+
+def echem_sei_growth_ang_per_event() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 0.05
+
 def chem_lig_backend_auto() raises IO -> int
   requires true
   ensures 1 <= result

@@ -1729,6 +1729,13 @@ outcome = "compile_open_ok"
 note = "WP-ECHEM-14 ML surrogate — holdout MAE vs DFT + 80-step AIMD drift (10× baseline)"
 
 [[tests]]
+suite = "composable"
+file = "composable/import_echem_sei_kmc_smoke.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "compile_open_ok"
+note = "WP-ECHEM-15 SEI growth kMC — NEB-barrier deposition rate vs mean-field growth oracle"
+
+[[tests]]
 suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/echem_solvent_gr_smoke.li"
 outcome = "compile_open_ok"

@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -373,6 +373,84 @@ def sim_scientific_oracle_checksum_echem_gc_aimd() -> float
     max_drift = final_drift
   return max_drift
 
+# WP-ECHEM-15 — multiscale SEI growth kMC: NEB-barrier deposition rates vs mean-field growth law.
+def echem_sei_kmc_step_count() -> int
+  requires true
+  ensures result == 48
+  decreases 0
+=
+  return 48
+
+def echem_sei_kmc_discrete_thickness_ang() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var rate: float = echem_sei_deposition_rate_per_step()
+  var growth: float = echem_sei_growth_ang_per_event()
+  var acc: float = 0.0
+  var thickness: float = 0.0
+  var step: int = 0
+  while step < echem_sei_kmc_step_count()
+    acc = acc + rate
+    if acc >= 1.0:
+      thickness = thickness + growth
+      acc = acc - 1.0
+    step = step + 1
+  return thickness
+
+def echem_sei_kmc_analytic_thickness_ang() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var rate: float = echem_sei_deposition_rate_per_step()
+  var growth: float = echem_sei_growth_ang_per_event()
+  var acc_rate: float = 0.0
+  var step: int = 0
+  while step < echem_sei_kmc_step_count()
+    acc_rate = acc_rate + rate
+    step = step + 1
+  return acc_rate * growth
+
+def echem_sei_kmc_growth_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var h_kmc: float = echem_sei_kmc_discrete_thickness_ang()
+  var h_analytic: float = echem_sei_kmc_analytic_thickness_ang()
+  if h_kmc <= 0.0:
+    return 0
+  if h_analytic <= 0.0:
+    return 0
+  var denom: float = h_analytic
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = h_kmc - h_analytic
+  if diff < 0.0:
+    diff = -diff
+  var rel: float = diff / denom
+  if rel > 0.35:
+    return 0
+  return 1
+
+def sim_scientific_oracle_checksum_echem_sei_kmc() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var h_kmc: float = echem_sei_kmc_discrete_thickness_ang()
+  var h_analytic: float = echem_sei_kmc_analytic_thickness_ang()
+  var denom: float = h_analytic
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = h_kmc - h_analytic
+  if diff < 0.0:
+    diff = -diff
+  return diff / denom
+
 def sim_scientific_checksum_combine(chk_md: float, chk_heat: float, chk_rigid: float, step_index: int) -> float
   requires step_index >= 1
   requires step_index <= 64
@@ -623,6 +701,24 @@ def run_echem_gc_aimd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_echem_sei_kmc_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id == algo_echem_sei_kmc()
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_echem_sei_kmc()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_echem_sei_kmc()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -650,6 +746,9 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_echem_gc_aimd_interface():
     var d_gc: int = detail
     return run_echem_gc_aimd_tier2_registry(algo_id, d_gc)
+  if algo_id == algo_echem_sei_kmc():
+    var d_sei: int = detail
+    return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
   var d3: int = detail
   return run_algo_registry_stub(algo_id, d3)
 
@@ -680,6 +779,9 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_echem_gc_aimd_interface():
     var d_gc: int = detail
     return run_echem_gc_aimd_tier2_registry(algo_id, d_gc)
+  if algo_id == algo_echem_sei_kmc():
+    var d_sei: int = detail
+    return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
   if algo_in_registry(reg_chk) == 1:
     var d4: int = detail
     return run_algo_registry(reg_run, d4)
@@ -717,6 +819,9 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   if vertical_id == vertical_echem_gc_aimd():
     var d_gc: int = detail
     return run_echem_gc_aimd_tier2_registry(algo_echem_gc_aimd_interface(), d_gc)
+  if vertical_id == vertical_echem_sei_kmc():
+    var d_sei: int = detail
+    return run_echem_sei_kmc_tier2_registry(algo_echem_sei_kmc(), d_sei)
   var bad: SimRunResult
   var d4: int = detail
   bad.ok = 0

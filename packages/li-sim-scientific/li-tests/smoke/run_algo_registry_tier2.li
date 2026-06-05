@@ -66,4 +66,18 @@ def main() -> int
     return 24
   if gc434.checksum == 1.001:
     return 25
+  var sei_oracle: float = sim_scientific_oracle_checksum_echem_sei_kmc()
+  if sei_oracle <= 0.0:
+    return 26
+  if sei_oracle >= 0.35:
+    return 27
+  var sei435: SimRunResult = run_algo(algo_echem_sei_kmc(), 1)
+  if run_result_ok(sei435) != 1:
+    return 28
+  if sei435.algo_id != 435:
+    return 29
+  if sei435.checksum != sei_oracle:
+    return 30
+  if sei435.checksum == 1.001:
+    return 31
   return 0

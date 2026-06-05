@@ -221,6 +221,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-15 — Multiscale kMC (SEI growth registry)
 
+- **Status:** done (2026-06-05) — `sim_scientific_oracle_checksum_echem_sei_kmc`, `algo_echem_sei_kmc` (435), `echem_sei_kmc_interface_smoke.li`  
 - **Goal:** `run_algo_registry` id for `echem_sei_kmc`; rates from WP-ECHEM-08 barriers.  
 - **Packages:** `li-sim-scientific`  
 - **Dependencies:** WP-ECHEM-08, WP-ECHEM-14  
@@ -305,4 +306,4 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-12 | Grand-canonical SHE AIMD | 3 | P2 | **done** |
 | WP-ECHEM-13 | TDDFT nonadiabatic | 3 | P3 | open |
 | WP-ECHEM-14 | ML potentials | 3 | P2 | **done** |
-| WP-ECHEM-15 | Multiscale kMC | 3 | P2 | open |
+| WP-ECHEM-15 | Multiscale kMC | 3 | P2 | **done** |

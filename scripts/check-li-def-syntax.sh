@@ -57,6 +57,15 @@ else
   done < <(find "$ROOT" -name '*.li' -type f -print0 2>/dev/null)
 fi
 
+# proof-db math axioms: prefer implies over material-implication workaround in ensures
+if [[ -d "$ROOT/proof-db/math/axioms" ]]; then
+  while IFS= read -r hit; do
+    [[ -z "$hit" ]] && continue
+    echo "check-li-def-syntax: $hit (use 'implies' in ensures, not 'not ... or ...')" >&2
+    bad=1
+  done < <(grep -Rn 'ensures not (' "$ROOT/proof-db/math/axioms" --include='*.li' 2>/dev/null || true)
+fi
+
 if [[ "$bad" -ne 0 ]]; then
   echo "check-li-def-syntax: use 'def' for Li procedures; only 'extern proc' may use proc" >&2
   exit 1

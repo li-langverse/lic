@@ -1,0 +1,14 @@
+{
+  "suite": "ph-ml-mlp-competitive",
+  "workload_class": "native_li_mlp_forward",
+  "workload_note": "mlp_forward_2_2_1_f32 \u2014 matches bench_ph_ml_competitor_numpy_mlp.py",
+  "in_dim": 2,
+  "hidden": 2,
+  "out_dim": 1,
+  "executed": true,
+  "validity_gate_pass": true,
+  "li_cpu_sec": 0.709928,
+  "numpy_cpu_sec": 3e-06,
+  "ratio_vs_li": 4e-06,
+  "tier": 1
+}

@@ -261,6 +261,16 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_LEAK_CENSOR_RUNT
   fi
 fi
 
+# gap-tls-dhe: TLS 1.2 DHE cipher when dhparam configured (opt-out HTTPD_RUN_TLS_DHE_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_TLS_DHE_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/check-httpd-tls-dhe.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> check-httpd-tls-dhe.sh (gap-tls-dhe)"
+    "$ROOT/scripts/check-httpd-tls-dhe.sh" || fail "check-httpd-tls-dhe.sh failed"
+  else
+    fail "gap-tls-dhe: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 # m2-tls-h2-runtime: TLS 1.3 terminate + HTTP/2 ALPN on live li-httpd (opt-out HTTPD_RUN_M2_TLS_H2_TEST=0).
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_M2_TLS_H2_TEST:-1}" == "1" ]]; then
   if [[ -x "$ROOT/scripts/test-m2-tls-h2-runtime.sh" && -x "$ROOT/build/li-httpd" ]]; then

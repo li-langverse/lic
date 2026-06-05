@@ -66,16 +66,9 @@ if [[ "${PH_ML_WAVE10_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="./build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="./build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-fi
-
-[[ -x "$LIC" ]] || { echo "ph-ml-wave10-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_ensure_lic "$ROOT" "ph-ml-wave10-gates: build lic (./scripts/build.sh or --build-dir build-wsl in WSL)" || exit 1
 
 grep -q 'Wave 10' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 10"; exit 1; }
 grep -q 'llm_safetensors_load_tensors_scaffold' packages/li-llm/src/lib.li || { echo "li-llm missing tensor scaffold"; exit 1; }
@@ -114,8 +107,12 @@ for required in ("pytorch_cpu", "jax_cpu", "python_numpy"):
     row = comps.get(required)
     if not row or not row.get("executed"):
         sys.exit(f"{required} competitor must have executed:true")
-if llm.get("workload_class") != "tier3_cpu":
-    sys.exit("ph-ml-llm-forward workload_class must be tier3_cpu")
+wc = llm.get("workload_class")
+if wc == "pilot":
+    if not llm.get("tensor_metadata_ok"):
+        sys.exit("ph-ml-llm-forward pilot requires tensor_metadata_ok")
+elif wc != "tier3_cpu":
+    sys.exit("ph-ml-llm-forward workload_class must be tier3_cpu or pilot")
 mlp = rows.get("mlp_forward") or {}
 mlp_comps = {c.get("id"): c for c in (mlp.get("competitors") or [])}
 if not (mlp_comps.get("python_numpy") or {}).get("executed"):

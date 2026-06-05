@@ -12,9 +12,13 @@ OUT="$BENCHMARKS_RESULTS/ph-ml-competitive.json"
 mkdir -p "$BENCHMARKS_RESULTS"
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul.sh"
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-16.sh" || true
+bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-32.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
+bash "$ROOT/scripts/bench-ph-ml-mlp-train-step.sh"
 bash "$ROOT/scripts/bench-ph-ml-async-env-collect.sh"
 bash "$ROOT/scripts/bench-ph-ml-llm-forward.sh"
+bash "$ROOT/scripts/bench-ph-ml-llm-logits-oracle.sh" || true
+bash "$ROOT/scripts/bench-ph-ml-competitor-llm-all.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-competitor-numpy-matmul.sh"
 bash "$ROOT/scripts/bench-ph-ml-competitor-all.sh"
 export PH_ML_COMP_ROOT="$ROOT" PH_ML_COMP_OUT="$OUT" PH_ML_COMP_REGISTRY="$REGISTRY"
@@ -82,10 +86,17 @@ def comp_row(src, li_sec, cid, inc, wc, note):
 
 
 matmul = load("ph-ml-lkir-matmul.json")
+matmul32 = load("ph-ml-lkir-matmul-32.json")
 mlp = load("ph-ml-mlp-forward.json")
+train = load("ph-ml-mlp-train-step.json")
 async_env = load("ph-ml-async-env-collect.json")
 llm = load("ph-ml-llm-forward.json")
-li_matmul_sec = matmul.get("cpu_sec")
+llamacpp = load("ph-ml-competitor-llamacpp.json")
+vllm = load("ph-ml-competitor-vllm.json")
+transformers_llm = load("ph-ml-competitor-transformers.json")
+li_matmul_sec = matmul32.get("cpu_sec") if matmul32.get("executed") else matmul.get("cpu_sec")
+matmul_wc = "tier3_cpu" if matmul32.get("executed") and matmul32.get("validity_gate_pass") else "pilot"
+mlp_wc = "tier3_cpu" if train.get("autograd_mode") in ("pilot_backward", "full_backward") and train.get("executed") else "pilot"
 li_mlp_sec = mlp.get("cpu_sec")
 
 numpy_m = load("ph-ml-competitor-numpy-matmul.json")
@@ -109,10 +120,10 @@ rows = [
     {
         "id": "matmul_lkir",
         "kernel": "ml.lkir.matmul_f32",
-        "workload_class": "pilot",
-        "workload_note": "Li row: LKIR lig kernel kid=1 validity gate; competitors: 4x4 f32 identity matmul (50 runs)",
-        "executed": bool(matmul.get("executed")),
-        "li": li_row(matmul, "pilot"),
+        "workload_class": matmul_wc,
+        "workload_note": "32x32 LKIR matmul (tier3) when matmul-32 bench executes; else 4x4 pilot",
+        "executed": bool(matmul.get("executed") or matmul32.get("executed")),
+        "li": li_row(matmul32 if matmul32.get("executed") else matmul, matmul_wc),
         "competitors": [
             comp_row(cpp_openmp_m, li_matmul_sec, "cpp_openmp", "C++/OpenMP matmul_blocked", "reference_native", "Wave 9 OpenMP pilot"),
             comp_row(rust_ndarray_m, li_matmul_sec, "rust_ndarray_rayon", "Rust/ndarray+rayon", "shared_c_kernel", "Wave 9 rustc pilot"),
@@ -127,10 +138,10 @@ rows = [
     {
         "id": "mlp_forward",
         "kernel": "ml.mlp_forward_f32",
-        "workload_class": "pilot",
-        "workload_note": "2-2-1 f32 MLP forward (ml_mlp_forward.li smoke shape)",
+        "workload_class": mlp_wc,
+        "workload_note": "2-2-1 f32 MLP forward; tier3 when pilot_backward train step executes",
         "executed": bool(mlp.get("executed")),
-        "li": li_row(mlp, "pilot"),
+        "li": li_row(mlp, mlp_wc),
         "competitors": [
             comp_row(cpp_openmp_mlp, li_mlp_sec, "cpp_openmp", "C++ MLP forward", "reference_native", "Wave 10 C++ MLP"),
             comp_row(numpy_mlp, li_mlp_sec, "python_numpy", "NumPy manual MLP", "blas_labeled", "Wave 10 NumPy MLP"),
@@ -143,10 +154,13 @@ rows = [
         "workload_class": "pilot",
         "executed": bool(async_env.get("executed")),
         "li": {
-            **li_row(async_env, "pilot"),
+            **li_row(async_env, "pilot" if async_env.get("executed") else "stub"),
+            "workload": async_env.get("workload"),
             "worker": async_env.get("worker"),
             "worker_count": async_env.get("worker_count"),
+            "worker_backend": async_env.get("worker_backend"),
             "parallelism_model": async_env.get("parallelism_model"),
+            "env_semantics": async_env.get("env_semantics"),
         },
         "competitors": [
             comp_row(sb3_vecenv, (async_env.get("cpu_sec") or 0.001), "sb3_vecenv", "SB3 SubprocVecEnv", "stub", "Wave 10 when gymnasium installed"),
@@ -156,13 +170,13 @@ rows = [
     {
         "id": "llm_forward",
         "kernel": "llm.forward_stub",
-        "workload_class": llm.get("workload_class") or ("tier3_cpu" if llm.get("validity_gate_pass") else "stub"),
+        "workload_class": llm.get("workload_class") or ("pilot" if llm.get("tensor_metadata_ok") else ("tier3_cpu" if llm.get("validity_gate_pass") else "stub")),
         "executed": bool(llm.get("executed")),
-        "li": li_row(llm, "stub"),
+        "li": li_row(llm, llm.get("workload_class") or ("pilot" if llm.get("tensor_metadata_ok") else "stub")),
         "competitors": [
-            comp_stub("llamacpp", "llama.cpp", "stub", "no weights parse"),
-            comp_stub("vllm", "vLLM", "stub", "GPU serving"),
-            comp_stub("pytorch_transformers", "transformers", "stub", "external TBD"),
+            comp_row(llamacpp, llm.get("cpu_sec"), "llamacpp", "llama.cpp", "reference_native", "when llama-cli installed"),
+            comp_row(vllm, llm.get("cpu_sec"), "vllm", "vLLM", "gpu_labeled", "when vllm installed"),
+            comp_row(transformers_llm, llm.get("cpu_sec"), "pytorch_transformers", "transformers", "blas_labeled", "when transformers installed"),
         ],
     },
 ]

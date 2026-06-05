@@ -5,3 +5,9 @@ suite = "smoke"
 file = "smoke/builds.li"
 outcome = "verify_ok"
 note = "T-PKG-li-std-numerics-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/numerics_gpu_three_body.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-01 @gpu MD oracle via sim.scientific"

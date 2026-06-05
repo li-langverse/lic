@@ -107,11 +107,16 @@ json_body=$(curl -s -m 5 \
   -H "Content-Type: application/json" \
   -d '{}' || true)
 
-sse_body=$(curl -s -N -m 5 \
-  -X POST "http://127.0.0.1:${FRONT_PORT}/v1/leak-sse" \
-  -H "Content-Type: application/json" \
-  -H "Accept: text/event-stream" \
-  -d '{}' || true)
+sse_body=""
+for _try in 1 2 3 4 5; do
+  sse_body=$(curl -s -N --http1.1 -m 8 \
+    -X POST "http://127.0.0.1:${FRONT_PORT}/v1/leak-sse" \
+    -H "Content-Type: application/json" \
+    -H "Accept: text/event-stream" \
+    -d '{}' || true)
+  [[ -n "$sse_body" ]] && break
+  sleep 0.4
+done
 
 kill "$FE_PID" "$BE_PID" 2>/dev/null || true
 wait "$FE_PID" 2>/dev/null || true

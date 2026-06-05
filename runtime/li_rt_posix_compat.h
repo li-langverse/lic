@@ -114,28 +114,8 @@ static inline int li_rt_winsock_setsockopt(SOCKET s, int level, int optname, con
 #define setsockopt(s, level, optname, optval, optlen) \
   li_rt_winsock_setsockopt((SOCKET)(s), (level), (optname), (optval), (int)(optlen))
 
-static inline int clock_gettime(int clk_id, struct timespec* ts) {
-  (void)clk_id;
-  if (!ts) {
-    return -1;
-  }
-  FILETIME ft;
-  GetSystemTimePreciseAsFileTime(&ft);
-  ULONGLONG t = ((ULONGLONG)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
-  t -= 116444736000000000ULL;
-  ts->tv_sec = (time_t)(t / 10000000ULL);
-  ts->tv_nsec = (long)((t % 10000000ULL) * 100ULL);
-  return 0;
-}
-
-#ifndef CLOCK_MONOTONIC
-#define CLOCK_MONOTONIC 1
-#endif
-#ifndef CLOCK_REALTIME
-#define CLOCK_REALTIME 0
-#endif
-
-static inline void* memmem(const void* haystack, size_t haystacklen, const void* needle, size_t needlelen) {
+static inline void* li_rt_memmem_impl(const void* haystack, size_t haystacklen, const void* needle,
+                                      size_t needlelen) {
   if (needlelen == 0) {
     return (void*)haystack;
   }
@@ -151,10 +131,17 @@ static inline void* memmem(const void* haystack, size_t haystacklen, const void*
   }
   return NULL;
 }
+#ifndef memmem
+#define memmem(haystack, haystacklen, needle, needlelen) \
+  li_rt_memmem_impl((haystack), (haystacklen), (needle), (needlelen))
+#endif
 
-static inline struct tm* gmtime_r(const time_t* t, struct tm* out) {
+static inline struct tm* li_rt_gmtime_r_impl(const time_t* t, struct tm* out) {
   return gmtime_s(out, t) == 0 ? out : NULL;
 }
+#ifndef gmtime_r
+#define gmtime_r(t, out) li_rt_gmtime_r_impl((t), (out))
+#endif
 
 static inline void li_rt_winsock_ensure(void) {
   static int ready;
@@ -165,6 +152,18 @@ static inline void li_rt_winsock_ensure(void) {
   if (WSAStartup(MAKEWORD(2, 2), &wsa) == 0) {
     ready = 1;
   }
+}
+
+static inline int usleep(unsigned usec) {
+  if (usec == 0) {
+    return 0;
+  }
+  DWORD ms = (DWORD)((usec + 999u) / 1000u);
+  if (ms == 0) {
+    ms = 1;
+  }
+  Sleep(ms);
+  return 0;
 }
 
 #else /* ! _WIN32 */

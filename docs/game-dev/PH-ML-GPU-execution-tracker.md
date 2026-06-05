@@ -1,4 +1,14 @@
 
+| WP-LLM-13 | safetensors/GGUF on-disk parse + import path (Stage 4) | 4 | done | ph-ml-stage4-gates.sh + llm_safetensors_parse_real.li |
+| WP-LLM-14 | transformer matmul forward + multi-decode (Stage 5) | 5 | done | ph-ml-stage5-gates.sh + llm_forward_matmul_real.li |
+| WP-LLM-15 | li-httpd native llm_generate_tracked (Stage 6) | 6 | done | ph-ml-stage6-gates.sh + llm_trusted_httpd_route.li |
+| WP-RL-10 | async_env_collect Li executed (Stage 3.1) | 3 | done | bench-ph-ml-async-env-collect.sh |
+| WP-RL-11 | IPC shard + CartPole stub (Stage 3.2) | 3 | done | env_pool_ipc_prepare_shards |
+| WP-RL-12 | policy_loss_mean train scaffold (Stage 3.3) | 3 | partial | ml-rl-ppo-deferral.md |
+| WP-ML-22 | LKIR 32-tile matmul prologue (Stage 2.1) | 2 | done | ml_matmul_lkir_logical_32 |
+| WP-ML-23 | MLP kid=2 + competitive row (Stage 2.2) | 2 | done | bench-ph-ml-mlp-competitive.sh |
+| WP-ML-24 | Autograd RFC + train-step scaffold (Stage 2.3) | 2 | partial | ml-autograd-forward-tape-rfc.md |
+| WP-LIG-03 | HIP/MSL vendor stub bytes (Stage 2.1) | 2 | partial | build/lig-emit-vendor.hsaco |
 | WP-LIG-01 | LIG_EMIT_* vendor emit progress | 12 | done | lig-emit-vendor-stub.sh |
 | WP-LLM-06 | GPU matmul via li_rt_lig_matmul_ready | 12 | partial | llm_safetensors_mmap.li |
 | WP-LLM-08 | li-httpd trusted route scaffold | 12 | partial | llm_trusted_httpd_route.li |

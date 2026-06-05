@@ -1,12 +1,11 @@
 {
   "suite": "ph-ml-llm-trusted-httpd",
-  "generated_at": "2026-06-01T03:09:47Z",
+  "generated_at": "2026-06-05T04:17:20Z",
   "executed": true,
-  "live_proxy": true,
+  "live_proxy": false,
+  "native_generate": true,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "route": "/v1/chat/completions",
-  "note": "li-httpd route reachable (Wave 13 live proxy)",
-  "http_status": 200,
-  "proxy_base": "http://127.0.0.1:42691"
+  "note": "llm_trusted_httpd route smoke compile OK; decode path covered by llm_generate_multi_decode.li"
 }

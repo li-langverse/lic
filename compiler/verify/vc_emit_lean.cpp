@@ -218,6 +218,8 @@ std::optional<std::string> expr_to_lean_bin(BinOp op, const std::string& lhs,
       return "(" + lhs + " = " + rhs + ")";
     case BinOp::Ne:
       return "(" + lhs + " ≠ " + rhs + ")";
+    case BinOp::Implies:
+      return "(" + lhs + " → " + rhs + ")";
     case BinOp::And:
       return "(" + lhs + " ∧ " + rhs + ")";
     case BinOp::Or:

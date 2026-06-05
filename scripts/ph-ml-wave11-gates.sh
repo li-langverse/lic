@@ -62,16 +62,9 @@ if [[ "${PH_ML_WAVE11_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="./build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="./build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-fi
-
-[[ -x "$LIC" ]] || { echo "ph-ml-wave11-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_ensure_lic "$ROOT" "ph-ml-wave11-gates: build lic (./scripts/build.sh or --build-dir build-wsl in WSL)" || exit 1
 
 grep -q 'Wave 11' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 11"; exit 1; }
 grep -q 'llm_safetensors_tensor_bytes_scaffold' packages/li-llm/src/lib.li || { echo "li-llm missing byte tensor scaffold"; exit 1; }

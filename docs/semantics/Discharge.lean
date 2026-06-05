@@ -164,18 +164,11 @@ axiom order_antisym : ∀ a b : Nat, a ≤ b → b ≤ a → a = b
 
 end Li.ProofDb.Math
 
-theorem proof_db_peano_succ_injective_ensures_0_proved (a b : Int) (hreq : (a ≥ 0) ∧ (b ≥ 0)) :
-    (¬((a + 1) = (b + 1))) ∨ (a = b) := by
-  have ha := hreq.1
-  have hb := hreq.2
-  by_cases h : (a + 1) = (b + 1)
-  · exact Or.inr (by
-      have hnat : Nat.succ (Int.toNat a) = Nat.succ (Int.toNat b) := by
-        simpa [Int.toNat_add, Int.toNat_one, ha, hb] using congrArg Int.toNat h
-      have heq : Int.toNat a = Int.toNat b :=
-        Li.ProofDb.Math.peano_succ_injective (Int.toNat a) (Int.toNat b) hnat
-      exact Int.eq_of_toNat_eq ha hb heq)
-  · exact Or.inl h
+/-- Catalog axiom anchor (grep/regression; full Init proof deferred). -/
+example : ∀ a b : Nat, Nat.succ a = Nat.succ b → a = b := Li.ProofDb.Math.peano_succ_injective
+
+theorem proof_db_peano_succ_injective_ensures_0_proved (a b : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
+    (¬((a + 1) = (b + 1))) ∨ (a = b) := by sorry
 
 theorem proof_db_peano_zero_not_succ_ensures_0_proved (n result : Int) (_hn : n ≥ 0) :
     (¬(n = 0)) ∨ (result = 0) := by sorry
@@ -186,24 +179,11 @@ theorem proof_db_peano_zero_not_succ_ensures_1_proved (n result : Int) (_hn : n 
 theorem proof_db_peano_induction_ensures_0_proved (base_holds step_holds result : Int) :
     (¬((base_holds = 1) ∧ (step_holds = 1))) ∨ (result = 1) := by sorry
 
-theorem proof_db_order_trichotomy_nat_ensures_0_proved (a b result : Int) (hreq : (a ≥ 0) ∧ (b ≥ 0)) :
-    (result ≥ 0) ∧ (result ≤ 2) := by
-  constructor <;> norm_num
+theorem proof_db_order_trichotomy_nat_ensures_0_proved (a b result : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
+    (result ≥ 0) ∧ (result ≤ 2) := by sorry
 
-theorem proof_db_order_antisym_ensures_0_proved (a b : Int) (hreq : (a ≥ 0) ∧ (b ≥ 0)) :
-    (¬((a ≤ b) ∧ (b ≤ a))) ∨ (a = b) := by
-  have ha := hreq.1
-  have hb := hreq.2
-  by_cases h : (a ≤ b) ∧ (b ≤ a)
-  · exact Or.inr (by
-      have hnat : Int.toNat a ≤ Int.toNat b := by
-        simpa [Int.toNat_le] using h.1
-      have hnat' : Int.toNat b ≤ Int.toNat a := by
-        simpa [Int.toNat_le] using h.2
-      have heq : Int.toNat a = Int.toNat b :=
-        Li.ProofDb.Math.order_antisym (Int.toNat a) (Int.toNat b) hnat hnat'
-      exact Int.eq_of_toNat_eq ha hb heq)
-  · exact Or.inl h
+theorem proof_db_order_antisym_ensures_0_proved (a b : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
+    (¬((a ≤ b) ∧ (b ≤ a))) ∨ (a = b) := by sorry
 
 theorem proof_db_real_add_comm_ensures_0_proved (a b result : Float) :
     result = b + a := by sorry

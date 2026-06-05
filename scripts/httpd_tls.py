@@ -34,6 +34,7 @@ class TlsProfile:
     mode: str
     min_protocol: str
     cert_dir: Path
+    dhparam_file: Path | None = None
     manual_cert: Path | None = None
     manual_key: Path | None = None
     self_signed_dev: bool = False
@@ -146,11 +147,15 @@ def normalize_tls_block(data: dict[str, Any]) -> TlsProfile:
 
     cert_dir_raw = nested.get("cert_dir") or server.get("cert_dir") or "./certs"
     cert_dir = Path(str(cert_dir_raw)).expanduser()
+    dhparam: Path | None = None
+    if nested.get("dhparam_file"):
+        dhparam = Path(str(nested["dhparam_file"]).strip())
 
     profile = TlsProfile(
         mode=mode,
         min_protocol=min_proto,
         cert_dir=cert_dir,
+        dhparam_file=dhparam,
         renew_before_days=parse_renew_before(nested.get("renew_before")),
     )
 
@@ -174,6 +179,11 @@ def normalize_tls_block(data: dict[str, Any]) -> TlsProfile:
             if days < 1 or days > 365:
                 raise ConfigError("server.tls.self_signed.valid_days must be in [1, 365]")
             profile.self_signed_days = days
+        if ss.get("key_type") is not None:
+            profile.self_signed_key_type = _normalize_key_type(str(ss.get("key_type")))
+    if dhparam is not None and min_proto == "1.2" and profile.mode == "self_signed":
+        if not (isinstance(ss, dict) and ss.get("key_type") is not None):
+            profile.self_signed_key_type = "rsa2048"
 
     le = nested.get("lets_encrypt") if isinstance(nested.get("lets_encrypt"), dict) else {}
     if not le:
@@ -386,6 +396,7 @@ def provision_tls(
     cert_dir: Path | None = None,
     dry_run: bool = False,
     renew_only: bool = False,
+    gen_dhparam: bool = False,
 ) -> list[Path]:
     data = tomllib.loads(cfg_path.read_text(encoding="utf-8"))
     profile = validate_tls_config(data, cfg_path)
@@ -425,6 +436,13 @@ def provision_tls(
     else:
         raise ConfigError(f"unsupported tls mode: {profile.mode}")
 
+    if gen_dhparam:
+        dh_out = resolve_dhparam_path(data, cfg_path, out_dir)
+        if dh_out is None:
+            raise ConfigError("gen-dhparam requires server.tls.dhparam_file in config")
+        generate_dhparam_pem(dh_out)
+        written.append(dh_out)
+
     return written
 
 
@@ -452,7 +470,38 @@ def tls_flatten_lines(data: dict[str, Any], cfg_path: Path) -> list[str]:
         lines.append(f"tls_manual_cert={profile.manual_cert}")
     if profile.manual_key:
         lines.append(f"tls_manual_key={profile.manual_key}")
+    if profile.dhparam_file is not None:
+        dh = profile.dhparam_file
+        if not dh.is_absolute():
+            dh = (cfg_path.parent / dh).resolve()
+        lines.append(f"tls_dhparam_file={dh}")
     return lines
+
+
+def resolve_dhparam_path(data: dict[str, Any], cfg_path: Path, cert_dir: Path | None = None) -> Path | None:
+    profile = validate_tls_config(data, cfg_path)
+    if profile is None or profile.dhparam_file is None:
+        return None
+    dh = profile.dhparam_file
+    if cert_dir is not None:
+        return (cert_dir / dh.name).resolve()
+    if not dh.is_absolute():
+        return (cfg_path.parent / dh).resolve()
+    return dh.resolve()
+
+
+def generate_dhparam_pem(out_path: Path, *, bits: int = 2048) -> Path:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        ["openssl", "dhparam", "-out", str(out_path), str(bits)],
+        check=True,
+        capture_output=True,
+    )
+    try:
+        out_path.chmod(0o600)
+    except OSError:
+        pass
+    return out_path
 
 
 def main() -> int:

@@ -1,6 +1,15 @@
+import physics.particles
+
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  if li_std_physics_particles_version() != 1:
+    return 1
+  var e: Emitter
+  e.rate = 1.0
+  e.burst = 0
+  if emitter_tick(e, 0.01) < 0:
+    return 1
   return 0

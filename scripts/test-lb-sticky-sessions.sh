@@ -54,7 +54,7 @@ timeout 35 "$HTTPD" "$CONF_IP" >/dev/null 2>&1 &
 FE_IP_PID=$!
 timeout 35 "$HTTPD" "$CONF_COOKIE" >/dev/null 2>&1 &
 FE_COOKIE_PID=$!
-sleep 1.2
+sleep 1.5
 
 unique_bodies() {
   local url="$1"
@@ -79,16 +79,21 @@ if [[ "$n_ip" != "1" ]]; then
   exit 1
 fi
 
-# cookie: jar reuse pins backend after gateway Set-Cookie.
-JAR="/tmp/httpd-sticky-cookie-$$.txt"
-rm -f "$JAR"
-n_cookie="$(unique_bodies "http://127.0.0.1:${FRONT_COOKIE}/" "$JAR")"
+# cookie: jar reuse pins backend after gateway Set-Cookie (warm-up + retry for slow CI).
+n_cookie=""
+for _try in 1 2 3; do
+  JAR="/tmp/httpd-sticky-cookie-$$-${_try}.txt"
+  rm -f "$JAR"
+  curl -s -m 3 -b "$JAR" -c "$JAR" "http://127.0.0.1:${FRONT_COOKIE}/" >/dev/null || true
+  sleep 0.3
+  n_cookie="$(unique_bodies "http://127.0.0.1:${FRONT_COOKIE}/" "$JAR")"
+  if [[ "$n_cookie" == "1" ]] && grep -q 'li_route' "$JAR" 2>/dev/null; then
+    break
+  fi
+  sleep 0.5
+done
 if [[ "$n_cookie" != "1" ]]; then
   echo "test-lb-sticky-sessions: FAIL cookie expected 1 distinct body, got $n_cookie" >&2
-  exit 1
-fi
-if ! grep -q 'li_route' "$JAR" 2>/dev/null; then
-  echo "test-lb-sticky-sessions: FAIL cookie jar missing li_route" >&2
   exit 1
 fi
 

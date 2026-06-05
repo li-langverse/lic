@@ -29,7 +29,40 @@ report = {
 native_mode = os.environ.get("PH_ML_LLM_TRUSTED_HTTPD_NATIVE", "1") == "1"
 live_mode = os.environ.get("PH_ML_LLM_TRUSTED_HTTPD_LIVE", "0") == "1"
 root = Path(os.environ.get("PH_ML_LLM_TRUSTED_HTTPD_ROOT", ".")).resolve()
-lic = Path(os.environ.get("PH_ML_LLM_TRUSTED_HTTPD_LIC", root / "build-wsl/compiler/lic/lic"))
+
+
+def _pick_lic_bin(r: Path) -> Path | None:
+    """Pick first lic binary that executes on this host (build-wsl may need newer glibc)."""
+    for rel in (
+        "build/compiler/lic/lic",
+        "build-wsl/compiler/lic/lic",
+        "build/compiler/lic/lic.exe",
+    ):
+        cand = r / rel
+        if not cand.is_file():
+            continue
+        try:
+            subprocess.run(
+                [str(cand), "--version"],
+                cwd=r,
+                capture_output=True,
+                check=True,
+            )
+            return cand
+        except (OSError, subprocess.CalledProcessError):
+            continue
+    return None
+
+
+_lic_env = os.environ.get("PH_ML_LLM_TRUSTED_HTTPD_LIC", "")
+if _lic_env:
+    lic = Path(_lic_env)
+    if not lic.is_file() or subprocess.run(
+        [str(lic), "--version"], capture_output=True
+    ).returncode != 0:
+        lic = _pick_lic_bin(root) or lic
+else:
+    lic = _pick_lic_bin(root) or (root / "build/compiler/lic/lic")
 smoke = root / "packages/li-llm/li-tests/smoke/llm_trusted_httpd_route.li"
 base = os.environ.get("LI_HTTPD_PROBE", "http://127.0.0.1:8080")
 url = base.rstrip("/") + report["route"]
@@ -96,8 +129,12 @@ def run_native_smoke() -> None:
 
 if native_mode:
     try:
-        if not lic.is_file() and (root / "build/compiler/lic/lic").is_file():
-            lic = root / "build/compiler/lic/lic"
+        if not lic.is_file() or subprocess.run(
+            [str(lic), "--version"], capture_output=True
+        ).returncode != 0:
+            picked = _pick_lic_bin(root)
+            if picked is not None:
+                lic = picked
         run_native_smoke()
     except Exception as exc:  # noqa: BLE001
         report["note"] = f"native generate failed: {exc}"[:200]

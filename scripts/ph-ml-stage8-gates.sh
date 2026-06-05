@@ -21,13 +21,14 @@ fi
 export PH_ML_STAGE7_INNER=1
 bash scripts/ph-ml-stage7-gates.sh
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+if li_lic_needs_rebuild "$ROOT"; then
+  echo "ph-ml-stage8-gates: rebuilding stale lic (li_rt_inference_sse link)"
+  (cd "$ROOT" && bash scripts/build.sh)
 fi
-[[ -x "$LIC" ]] || { echo "ph-ml-stage8-gates: build lic"; exit 1; }
+
+li_export_lic "$ROOT" || { echo "ph-ml-stage8-gates: build lic"; exit 1; }
 
 grep -q 'return 9' packages/li-llm/src/lib.li \
   || { echo "8.1: li_llm_version must be 9"; exit 1; }

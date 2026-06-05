@@ -7,14 +7,9 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-fi
-[[ -x "$LIC" ]] || LIC="$($ROOT/scripts/resolve-lic.sh)"
-[[ -x "$LIC" ]] || { echo "bench-ph-ml-mlp-train-step: build lic"; exit 1; }
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_export_lic "$ROOT" || { echo "bench-ph-ml-mlp-train-step: no runnable lic"; exit 1; }
 
 OUT="$BENCHMARKS_RESULTS/ph-ml-mlp-train-step.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_mlp_train_step.li"

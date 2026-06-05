@@ -10,4 +10,7 @@ echo "==> chem DFT lib compile (li-chem)"
 echo "==> science_gpu suite (includes PH-SCI-GPU-16/17/18)"
 bash scripts/check-science-gpu-gate.sh
 
+echo "==> chem DFT competitive bench (PySCF oracle; ORCA external-only)"
+bash scripts/ph-sci-chem-dft-competitive-gates.sh
+
 echo "ph-sci-gpu-chem-gates OK"

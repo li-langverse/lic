@@ -49,6 +49,22 @@
 
 `studio_mcp_chem_dft_run` dispatch remains drug-LitL energy check; queued GPU path is wired via `chem_dft_run_gpu_queue()` in composable `import_lig_chem_backend.li` (full Studio import deferred).
 
+## Competitive benchmark (Layer B)
+
+Honest comparison vs **PySCF** (primary OSS oracle) and optional **Psi4**; **ORCA** documented as user-run external oracle only (not redistributable in CI).
+
+```bash
+pip install --user --break-system-packages -r scripts/requirements-ph-sci-chem-dft-competitive.txt
+bash scripts/bench-ph-sci-chem-dft-competitive.sh
+bash scripts/ph-sci-chem-dft-competitive-gates.sh   # CI-friendly gate
+```
+
+- Registry: `benchmarks/competitive/ph-sci-chem-dft.toml`
+- Results: `benchmarks/results/ph-sci-chem-dft-competitive.json`
+- Docs: `benchmarks/competitive/README-chem-dft.md`
+
+**Parity expectation:** Li mini radial-grid scaffold ≠ PySCF Gaussian-basis SCF — large `energy_delta_hartree` is expected until CHEM-04+ full DFT; timing `ratio_vs_li` still reported.
+
 ## CI
 
 ```bash

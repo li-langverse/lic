@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-06-05T04:01:43Z",
+  "suite": "ph-sci-chem-dft-li",
+  "smoke": "packages/li-chem/li-tests/benchmarks/chem_dft_energy_bench.li",
+  "workload": "chem_dft_energy_kernel_hartree_x64",
+  "kernel": "chem.dft_energy_kernel_hartree",
+  "compile_ok": true,
+  "executed": true,
+  "validity_gate_pass": true,
+  "cpu_sec": 0.760087,
+  "energy_hartree": -2.316182628586,
+  "energy_source": "li_scaffold_python_mirror",
+  "device": "cpu",
+  "run_exit_code": 1,
+  "note": "native run exit non-zero under harness; energy mirror negative (compile OK)"
+}

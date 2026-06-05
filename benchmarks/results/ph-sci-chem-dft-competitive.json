@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-06-05T04:01:56Z",
+  "suite": "ph-sci-chem-dft-competitive",
+  "registry_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic-chem-wt/benchmarks/competitive/ph-sci-chem-dft.toml",
+  "registry_schema": "li_ph_sci_chem_dft_competitive_v1",
+  "rows": [
+    {
+      "id": "sto3g_h_energy",
+      "kernel": "chem.dft_energy_kernel_hartree",
+      "workload_class": "pilot",
+      "workload_note": "H atom @ origin; Li 8-point radial mini STO-3G + LDA grid vs PySCF RKS/LDA STO-3G",
+      "geometry": "H 0 0 0",
+      "basis": "sto-3g",
+      "xc": "lda,vwn",
+      "energy_tolerance_hartree": 0.35,
+      "energy_delta_hartree": -1.880512395606,
+      "parity_gate_pass": false,
+      "parity_note": "Li scaffold is not full Gaussian-basis DFT \u2014 large delta expected until CHEM-04 parity",
+      "executed": true,
+      "li": {
+        "id": "li",
+        "incumbent": "Li native (li-chem mini STO-3G scaffold)",
+        "workload_class": "pilot",
+        "executed": true,
+        "cpu_sec": 0.760087,
+        "energy_hartree": -2.316182628586,
+        "energy_source": "li_scaffold_python_mirror",
+        "validity_gate_pass": true,
+        "validity_ratio": 1.0,
+        "ratio_vs_li": 1.0,
+        "device": "cpu",
+        "workload": "chem_dft_energy_kernel_hartree_x64"
+      },
+      "competitors": [
+        {
+          "id": "pyscf",
+          "incumbent": "PySCF RKS/LDA",
+          "workload_class": "oss_oracle",
+          "executed": true,
+          "cpu_sec": 0.469918,
+          "energy_hartree": -0.43567023298,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 0.618242,
+          "note": "PySCF RKS converged SCF energy (primary OSS oracle)",
+          "framework_version": "pyscf",
+          "license": "Apache-2.0",
+          "device": "cpu",
+          "workload": "sto3g_h_lda_energy"
+        },
+        {
+          "id": "psi4",
+          "incumbent": "Psi4 RKS/SVWN",
+          "workload_class": "oss_oracle_optional",
+          "executed": false,
+          "cpu_sec": null,
+          "energy_hartree": null,
+          "validity_gate_pass": false,
+          "validity_ratio": 0.0,
+          "ratio_vs_li": null,
+          "note": "psi4 not installed (optional LGPL oracle)",
+          "framework_version": null,
+          "license": "LGPL-3.0-or-later",
+          "device": "cpu",
+          "workload": "sto3g_h_lda_energy"
+        },
+        {
+          "id": "orca",
+          "incumbent": "ORCA RKS/LDA",
+          "workload_class": "external_manual",
+          "executed": false,
+          "cpu_sec": null,
+          "energy_hartree": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "license": "academic-free-not-redistributable",
+          "note": "NOT bundled in CI \u2014 user-run oracle; import JSON or see benchmarks/competitive/README-chem-dft.md",
+          "device": "cpu",
+          "workload": "sto3g_h_lda_energy"
+        }
+      ]
+    }
+  ]
+}

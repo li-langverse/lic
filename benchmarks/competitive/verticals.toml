@@ -147,13 +147,13 @@ notes = "mmorpg.toml composable import_mmo_shard.li; mmo profile shard stub — 
 
 [[vertical]]
 id = "qm_dft"
-incumbent = "Gaussian / ORCA / Psi4"
-kernel_or_api = "DFT single-point energy"
-workload_class = "stub"
-oracle = "external_binary"
+incumbent = "Gaussian / ORCA / PySCF / Psi4"
+kernel_or_api = "DFT single-point energy (STO-3G H LDA)"
+workload_class = "pilot"
+oracle = "pyscf"
 li_package = "chem"
-last_reviewed = "2026-05-23"
-notes = "qm_dft.toml composable import_chem_dft_smoke.li; native RKS stub (workload_class=stub) — not Gaussian/ORCA/Psi4 parity; external_binary oracle TBD."
+last_reviewed = "2026-06-05"
+notes = "ph-sci-chem-dft-competitive.json; Li chem_dft_energy_kernel_hartree mini radial scaffold vs PySCF RKS/LDA (Apache-2.0); ORCA external_manual only (not bundled); parity_gate loose until full Gaussian DFT."
 
 [[vertical]]
 id = "ml_rl_matmul"

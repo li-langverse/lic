@@ -1,0 +1,18 @@
+{
+  "competitor_id": "psi4",
+  "suite": "ph-sci-chem-competitor-psi4",
+  "workload": "sto3g_h_lda_energy",
+  "executed": false,
+  "cpu_sec": null,
+  "energy_hartree": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
+  "device": "cpu",
+  "note": "psi4 not installed (optional LGPL oracle)",
+  "geometry": "H 0 0 0",
+  "basis": "sto-3g",
+  "xc": "lda,vwn",
+  "generated_at": "2026-06-05T04:01:56Z",
+  "license": "LGPL-3.0-or-later"
+}

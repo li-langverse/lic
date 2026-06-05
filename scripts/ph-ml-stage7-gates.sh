@@ -31,8 +31,8 @@ fi
 
 grep -q 'llm_streaming_sse_prep_ok' packages/li-llm/src/lib.li \
   || { echo "7.1: missing streaming SSE prep"; exit 1; }
-grep -q 'return 8' packages/li-llm/src/lib.li \
-  || { echo "7.2: li_llm_version must be 8"; exit 1; }
+grep -qE 'return (8|9)' packages/li-llm/src/lib.li \
+  || { echo "7.2: li_llm_version must be >= 8"; exit 1; }
 grep -q 'ml_autograd_tape_enabled() -> int' packages/li-ml/src/lib.li \
   && grep -A6 'def ml_autograd_tape_enabled' packages/li-ml/src/lib.li | grep -q 'return 1' \
   || { echo "7.3: autograd tape must be enabled"; exit 1; }
@@ -59,8 +59,8 @@ if not mat32.get("executed") or not mat32.get("validity_gate_pass"):
     sys.exit("7.4: ph-ml-lkir-matmul-32 must execute with validity_gate_pass")
 
 train = json.loads((root / "ph-ml-mlp-train-step.json").read_text())
-if train.get("autograd_mode") != "pilot_backward":
-    sys.exit("7.5: autograd_mode must be pilot_backward")
+if train.get("autograd_mode") not in ("pilot_backward", "full_backward"):
+    sys.exit("7.5: autograd_mode must be pilot_backward or full_backward")
 if not train.get("executed"):
     sys.exit("7.5: mlp train step must execute")
 

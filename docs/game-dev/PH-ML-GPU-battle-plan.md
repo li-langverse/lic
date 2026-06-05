@@ -37,7 +37,9 @@
 
 | **Stage 5** | **Transformer forward:** ml_matmul_f32 on safetensors bytes, multi-token decode (>=8), tier3_cpu bench | li-llm | ph-ml-stage5-gates.sh |
 
-| **HPC master** | **AI library complete:** Stage 5 + no stub Li competitive rows | li-llm | ph-ml-hpc-ai-library-gates.sh |
+| **HPC master** | **AI library complete:** Stage 8 production + no stub Li competitive rows | li-llm | ph-ml-hpc-ai-library-gates.sh |
+
+| **Stage 8** | **Production:** native SSE upstream, full MLP backward, GPU KV progress, LLM competitors, logits oracle | li-llm, li-ml, li-net-httpd | ph-ml-stage8-gates.sh |
 
 | **11** | Wave 10 carryover: GPU/LKIR matmul, safetensors bytes, RL fork IPC, Rust MLP, 16x16 row | li-llm, li-ml, li-sim | ph-ml-wave11-gates.sh |
 
@@ -61,6 +63,10 @@ On-disk safetensors header parse (dtype/shape/tensor count), minimal GGUF header
 ## Stage 6 ? li-httpd native generate
 
 `llm_trusted_httpd_native_generate_ok` runs native decode on `fixtures/ph-ml-weights`; bench `native_generate` (Python T8 `live_proxy` retired for prod gate). Gate: `ph-ml-stage6-gates.sh`.
+
+## Stage 8 ? production HPC AI library
+
+Native `inference-native-backend` SSE upstream for `test-m15-inference-live.sh`, `autograd_mode=full_backward` with PyTorch parity, `llm_kv_device_buffer_progress`, LLM competitor drivers (llamacpp/vLLM/transformers), logits oracle smoke. Gate: `ph-ml-stage8-gates.sh`. Master: `ph-ml-hpc-ai-library-gates.sh`.
 
 ## Wave 13 ? program complete (all deferred T1?T8)
 

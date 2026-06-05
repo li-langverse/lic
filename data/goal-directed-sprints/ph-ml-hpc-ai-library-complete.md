@@ -17,6 +17,7 @@ Close the native Li ML/HPC/AI library track through Stage 6: real transformer fo
 | 6 | li-httpd native trusted route | `ph-ml-stage6-gates.sh` |
 | 7 | SSE streaming prep + tier3 competitive + autograd pilot | `ph-ml-stage7-gates.sh` |
 | 7 (prep doc) | SSE streaming decode | `ph-ml-stage7-streaming-prep.md` |
+| 8 | Production SSE + full backward + LLM competitors | `ph-ml-stage8-gates.sh` |
 
 ## Stage 5 exit criteria
 
@@ -32,11 +33,18 @@ Close the native Li ML/HPC/AI library track through Stage 6: real transformer fo
 - `llm_trusted_httpd_native_generate_ok` — ≥8 decode steps, `forward_matmul == 1`
 - `ph-ml-llm-trusted-httpd.json`: `native_generate: true`, `live_proxy: false`
 
-## Deferred (Stage 8+)
+## Stage 8 exit criteria
 
-- Full reference logits parity vs transformers
-- GPU decode / KV-cache device buffers
-- Production SSE route in cluster (Stage 7 prep landed compile/bench gate)
+- `li_llm_version() == 9`
+- `test-m15-inference-live.sh` uses Li-native `inference-native-backend` (not Python upstream)
+- `autograd_mode=full_backward` with PyTorch parity bench
+- LLM competitor JSON rows with honest `executed: false` when deps missing
+- `ph-ml-llm-logits-oracle.json` validity gate
+
+## Deferred (post Stage 8)
+
+- Multi-layer transformer reference parity vs transformers
+- Cluster GPU production decode at scale
 
 ## Completion gate
 

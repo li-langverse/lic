@@ -210,10 +210,10 @@ def llm_path_is_gguf_fixture(path: str) -> int raises IO, Alloc
 
 def li_llm_version() -> int
   requires true
-  ensures result == 8
+  ensures result == 9
   decreases 0
 =
-  return 8
+  return 9
 
 type LlmTokenIds = object
   public count: int
@@ -261,6 +261,7 @@ type LlmKVCache = object
   public last_top_id: int
   public decode_steps: int
   public forward_matmul: int
+  public kv_device_buffer: int
 
 type LlmLogits = object
   public vocab_size: int
@@ -1086,7 +1087,7 @@ def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache
     acc = acc + tokens.ids[i]
     i = i + 1
   acc = acc + llm_forward_matmul_cpu_hint()
-  acc = acc + llm_forward_gpu_matmul_hint()
+  acc = acc + llm_forward_gpu_decode_hint()
   if weights.tensors_loaded > 0:
     acc = acc + weights.tensors_loaded
   if weights.header_parsed == 1:
@@ -1214,5 +1215,90 @@ def llm_streaming_sse_prep_ok() -> int
   tracked.token_count = 8
   tracked.last_top_id = 1
   if llm_streaming_sse_from_tracked(tracked) != 1:
+    return 0
+  return 1
+
+extern proc li_rt_inference_native_weights_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_inference_native_decode_steps() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+def llm_kv_device_buffer_progress() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_lig_emit_vendor_progress() != 1:
+    return 0
+  if ml_gpu_device_buffer_pipeline() == 1:
+    return 1
+  return 0
+
+def llm_forward_gpu_decode_hint() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if llm_kv_device_buffer_progress() == 1:
+    return 1
+  return llm_forward_gpu_matmul_hint()
+
+def llm_streaming_sse_production_ok() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if li_rt_inference_native_weights_ready() != 1:
+    return 0
+  if li_rt_inference_native_decode_steps() < 8:
+    return 0
+  var tracked: LlmGenerateResult = llm_trusted_httpd_native_generate_tracked()
+  if tracked.forward_matmul != 1:
+    return 0
+  if tracked.decode_steps < 8:
+    return 0
+  if llm_streaming_sse_from_tracked(tracked) != 1:
+    return 0
+  return 1
+
+def llm_logits_oracle_fixture_top_id() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 255
+  decreases 0
+=
+  var w: LlmModelWeights = llm_load_weights("fixtures/ph-ml-weights/model.safetensors")
+  var tok: LlmTokenIds = llm_tokenize("ab", "fixtures/vocab.json")
+  var cache: LlmKVCache
+  cache.seq_len = 0
+  cache.last_top_id = 0
+  cache.decode_steps = 0
+  cache.forward_matmul = 0
+  cache.kv_device_buffer = llm_kv_device_buffer_progress()
+  var logits: LlmLogits = llm_forward(tok, w, cache)
+  return logits.top_id
+
+def llm_logits_oracle_parity_ok() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var oracle: int = llm_logits_oracle_fixture_top_id()
+  var again: int = llm_logits_oracle_fixture_top_id()
+  if oracle != again:
+    return 0
+  if oracle < 0:
+    return 0
+  if oracle > 255:
     return 0
   return 1

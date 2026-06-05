@@ -17,6 +17,8 @@ bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
 bash "$ROOT/scripts/bench-ph-ml-mlp-train-step.sh"
 bash "$ROOT/scripts/bench-ph-ml-async-env-collect.sh"
 bash "$ROOT/scripts/bench-ph-ml-llm-forward.sh"
+bash "$ROOT/scripts/bench-ph-ml-llm-logits-oracle.sh" || true
+bash "$ROOT/scripts/bench-ph-ml-competitor-llm-all.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-competitor-numpy-matmul.sh"
 bash "$ROOT/scripts/bench-ph-ml-competitor-all.sh"
 export PH_ML_COMP_ROOT="$ROOT" PH_ML_COMP_OUT="$OUT" PH_ML_COMP_REGISTRY="$REGISTRY"
@@ -89,9 +91,12 @@ mlp = load("ph-ml-mlp-forward.json")
 train = load("ph-ml-mlp-train-step.json")
 async_env = load("ph-ml-async-env-collect.json")
 llm = load("ph-ml-llm-forward.json")
+llamacpp = load("ph-ml-competitor-llamacpp.json")
+vllm = load("ph-ml-competitor-vllm.json")
+transformers_llm = load("ph-ml-competitor-transformers.json")
 li_matmul_sec = matmul32.get("cpu_sec") if matmul32.get("executed") else matmul.get("cpu_sec")
 matmul_wc = "tier3_cpu" if matmul32.get("executed") and matmul32.get("validity_gate_pass") else "pilot"
-mlp_wc = "tier3_cpu" if train.get("autograd_mode") == "pilot_backward" and train.get("executed") else "pilot"
+mlp_wc = "tier3_cpu" if train.get("autograd_mode") in ("pilot_backward", "full_backward") and train.get("executed") else "pilot"
 li_mlp_sec = mlp.get("cpu_sec")
 
 numpy_m = load("ph-ml-competitor-numpy-matmul.json")
@@ -169,9 +174,9 @@ rows = [
         "executed": bool(llm.get("executed")),
         "li": li_row(llm, llm.get("workload_class") or ("pilot" if llm.get("tensor_metadata_ok") else "stub")),
         "competitors": [
-            comp_stub("llamacpp", "llama.cpp", "stub", "no weights parse"),
-            comp_stub("vllm", "vLLM", "stub", "GPU serving"),
-            comp_stub("pytorch_transformers", "transformers", "stub", "external TBD"),
+            comp_row(llamacpp, llm.get("cpu_sec"), "llamacpp", "llama.cpp", "reference_native", "when llama-cli installed"),
+            comp_row(vllm, llm.get("cpu_sec"), "vllm", "vLLM", "gpu_labeled", "when vllm installed"),
+            comp_row(transformers_llm, llm.get("cpu_sec"), "pytorch_transformers", "transformers", "blas_labeled", "when transformers installed"),
         ],
     },
 ]

@@ -8,6 +8,7 @@ set(LI_RT_SOURCES
   li_rt_h2.c
   li_rt_winsock.c
   li_rt_llm.c
+  li_rt_inference_sse.c
 )
 
 add_library(li_rt STATIC ${LI_RT_SOURCES})

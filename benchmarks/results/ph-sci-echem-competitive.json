@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-06-05T04:51:09Z",
+  "generated_at": "2026-06-05T04:57:45Z",
   "suite": "ph-sci-echem-competitive",
-  "registry_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic-chem-wt/benchmarks/competitive/ph-sci-electrochemistry.toml",
+  "registry_path": "/app/data/workspaces/li-langverse/lic/code_implementer-1780635197544/repo/benchmarks/competitive/ph-sci-electrochemistry.toml",
   "registry_schema": "li_ph_sci_echem_competitive_v1",
   "rows": [
     {
       "id": "echem_che_h",
       "kernel": "echem.che_h_adsorption_energy",
-      "workload_class": "stub",
+      "workload_class": "pilot",
       "workload_note": "CHE H* vs RHE at U=0; Li scalar stub vs PySCF E(H)-0.5*E(H2) toy geometry",
       "potential_v": 0.0,
       "energy_tolerance_ev": 5.0,
@@ -18,7 +18,7 @@
       "li": {
         "id": "li",
         "incumbent": "Li native (li-chem echem_che_h_adsorption_energy stub)",
-        "workload_class": "stub",
+        "workload_class": "pilot",
         "executed": true,
         "cpu_sec": 0.0,
         "energy_ev": -2.45,
@@ -36,7 +36,7 @@
           "incumbent": "PySCF RKS/LDA CHE proxy",
           "workload_class": "oss_oracle",
           "executed": true,
-          "cpu_sec": 2.455368,
+          "cpu_sec": 5.466887,
           "energy_ev": 3.399595,
           "validity_gate_pass": true,
           "validity_ratio": 1.0,

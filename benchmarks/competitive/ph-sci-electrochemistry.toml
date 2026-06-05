@@ -13,7 +13,7 @@ gate_script = "scripts/ph-sci-echem-competitive-gates.sh"
 [[row]]
 id = "echem_che_h"
 kernel = "echem.che_h_adsorption_energy"
-workload_class = "stub"
+workload_class = "pilot"
 workload = "che_h_adsorption_u0"
 geometry_h_star = "H 0 0 0"
 geometry_h2 = "H 0 0 0; H 0 0 0.74"

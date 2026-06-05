@@ -114,8 +114,9 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-04 — `verticals.toml` + competitive row honesty
 
+- **Status:** done (2026-06-05) — `echem_che_h` flipped to `workload_class=pilot`, `oracle=pyscf`  
 - **Goal:** `echem_che_h` row with `workload_class=stub` until PySCF oracle green.  
-- **Scope:** `benchmarks/competitive/verticals.toml`  
+- **Scope:** `benchmarks/competitive/verticals.toml`, `ph-sci-electrochemistry.toml`, `ph-sci-echem-competitive-gates.sh`  
 - **Dependencies:** WP-ECHEM-02  
 - **Acceptance:** Row cited in Studio claims; flip to `pilot` when oracle passes  
 - **Priority / effort:** P0 / S (row added at ECHEM-01; flip at ECHEM-02)  
@@ -284,7 +285,7 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-01 | CHE/SHE/EDL/NEB stubs + GPU-19 | 0 | P0 | **done** |
 | WP-ECHEM-02 | PySCF echem oracle | 0 | P0 | **done** |
 | WP-ECHEM-03 | H₂O slab geometry stub | 0 | P1 | **done** |
-| WP-ECHEM-04 | verticals.toml honesty flip | 0 | P0 | partial (row added) |
+| WP-ECHEM-04 | verticals.toml honesty flip | 0 | P0 | **done** |
 | WP-ECHEM-05 | H\* from DFT kernel | 1 | P1 | open |
 | WP-ECHEM-06 | Potential-dependent SCF | 1 | P1 | open |
 | WP-ECHEM-07 | 1D EDL Poisson–Boltzmann | 1 | P1 | open |

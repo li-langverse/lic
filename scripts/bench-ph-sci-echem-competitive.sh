@@ -96,7 +96,7 @@ rows = [
     {
         "id": "echem_che_h",
         "kernel": "echem.che_h_adsorption_energy",
-        "workload_class": "stub",
+        "workload_class": "pilot",
         "workload_note": (
             "CHE H* vs RHE at U=0; Li scalar stub vs PySCF E(H)-0.5*E(H2) toy geometry"
         ),
@@ -108,7 +108,7 @@ rows = [
             "Large delta expected until WP-ECHEM-05 couples real slab SCF — stub honesty"
         ),
         "executed": bool(li.get("executed")) or bool(pyscf.get("executed")),
-        "li": li_row(li, "stub"),
+        "li": li_row(li, "pilot"),
         "competitors": [
             comp_row(
                 pyscf,

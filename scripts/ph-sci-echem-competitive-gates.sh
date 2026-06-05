@@ -54,5 +54,24 @@ else:
     print("pyscf not executed — install pyscf for oracle")
     sys.exit(1)
 
+import tomllib
+
+vert_path = Path("benchmarks/competitive/verticals.toml")
+vert_doc = tomllib.loads(vert_path.read_text())
+echem_vert = next(
+    (v for v in vert_doc.get("vertical", []) if v.get("id") == "echem_che_h"),
+    None,
+)
+if not echem_vert:
+    print("verticals.toml missing echem_che_h row")
+    sys.exit(1)
+if echem_vert.get("workload_class") != "pilot":
+    print("verticals.toml echem_che_h workload_class must be pilot after WP-ECHEM-04")
+    sys.exit(1)
+if echem_vert.get("oracle") != "pyscf":
+    print("verticals.toml echem_che_h oracle must be pyscf")
+    sys.exit(1)
+print("verticals.toml echem_che_h pilot/pyscf OK")
+
 print("ph-sci-echem-competitive-gates OK")
 PY

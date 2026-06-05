@@ -2,7 +2,7 @@
 
 def proof_db_peano_succ_injective(a: int, b: int)-> int
   requires a >= 0 and b >= 0
-  ensures not ((a + 1) == (b + 1)) or (a == b)
+  ensures ((a + 1) == (b + 1)) implies (a == b)
   decreases 0
 =
   return 0

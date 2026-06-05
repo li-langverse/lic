@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-06-01",
+  "generated": "2026-06-05",
   "taxonomy": [
     "missing_lemma",
     "open_vc",
@@ -8,7 +8,7 @@
     "trusted_axiom",
     "hardware_axiom"
   ],
-  "count": 24,
+  "count": 23,
   "discrepancies": [
     {
       "id": "disc-G-lean-autovc-strict-missing-lean",
@@ -150,19 +150,6 @@
       "reference_ref": "proof-db/lean/ProofDB.lean:std_add_comm_int",
       "evidence": [
         "Li.ProofDB.std_add_comm_int"
-      ],
-      "resolution": "intentional"
-    },
-    {
-      "id": "disc-std_dot4_bilinear_right-open-vc",
-      "kind": "open_vc",
-      "gap_id": null,
-      "backlog_id": null,
-      "summary": "std_dot4_bilinear_right proved vs sorry",
-      "proof_db_ref": "index",
-      "reference_ref": "proof-db/lean/ProofDB.lean:std_dot4_bilinear_right",
-      "evidence": [
-        "Li.ProofDB.std_dot4_bilinear_right"
       ],
       "resolution": "intentional"
     },

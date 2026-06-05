@@ -1,0 +1,8 @@
+# WP-CQ phase12 — catalog quality sign-off
+
+Branch: cursor/proof-explorer-phase12-catalog-quality
+Gate: proof-explorer-phase12-completion-gate.sh
+Divergent before: 27
+Divergent after: ≤5 (reconciled domain axioms + stdlib honesty + physics discrepancy)
+Physics placeholders: P-AX-DIM-001/002, P-LM-MOM-001 → discrepancy
+Sorry honesty: std_triangle_ineq_scalar, std_dot4_bilinear_right index aligned

@@ -1,4 +1,11 @@
-# D-LM-ADD-COMM-INT / D-LM-MUL-DIST-INT: integer ring law specimens (WP1 discrete).
+# D-LM-ADD-COMM-INT / D-LM-ADD-ASSOC-INT / D-LM-MUL-DIST-INT: integer ring specimens (phase12 enrichment).
+def add_assoc_int(a: int, b: int, c: int) -> int
+  requires true
+  ensures result == (a + b) + c
+  decreases 0
+=
+  return a + (b + c)
+
 def add_comm_int(a: int, b: int) -> int
   requires true
   ensures result == a + b

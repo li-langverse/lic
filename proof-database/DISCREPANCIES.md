@@ -1,6 +1,6 @@
 # Proof database — discrepancies
 
-**Generated:** 2026-06-01
+**Generated:** 2026-06-05
 
 ## Taxonomy
 
@@ -27,7 +27,6 @@
 | `disc-sqrt-open-bound-missing-spec` | `missing_lemma` | G-lean | open |
 | `disc-std-triangle-ineq-float` | `hardware_axiom` | G-hw | wontfix |
 | `disc-std_add_comm-open-vc` | `open_vc` | — | intentional |
-| `disc-std_dot4_bilinear_right-open-vc` | `open_vc` | — | intentional |
 | `disc-std_mul_assoc-open-vc` | `open_vc` | — | intentional |
 | `disc-trusted-IO` | `trusted_axiom` | G-trust | wontfix |
 | `disc-trusted-Net` | `trusted_axiom` | G-trust | wontfix |

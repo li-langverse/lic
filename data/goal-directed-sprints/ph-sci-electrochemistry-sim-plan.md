@@ -96,6 +96,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-02 — PySCF electrochemistry energy oracle
 
+- **Status:** done (2026-06-05) — `bench-ph-sci-echem-competitive.sh`, `ph-sci-electrochemistry.toml`, row `echem_che_h`  
 - **Goal:** License-free primary oracle for H adsorption / CHE shift vs PySCF cluster model.  
 - **Scope:** `scripts/bench-ph-sci-echem-competitive.sh`, `benchmarks/competitive/ph-sci-electrochemistry.toml`  
 - **Dependencies:** WP-ECHEM-01  
@@ -104,6 +105,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-03 — H₂O on metal slab geometry stub
 
+- **Status:** done (2026-06-05) — `echem_slab_atom_count`, `echem_slab_geometry_smoke`  
 - **Goal:** Replace pure H\* toy with 3-layer Pt slab + single H₂O adsorbate coordinates (no full SCF yet).  
 - **Scope:** `echem_slab_atom_count()`, fixed lattice constants in `li-chem`  
 - **Dependencies:** WP-ECHEM-01  
@@ -259,21 +261,19 @@ bash scripts/ph-sci-gpu-chem-gates.sh
 
 ---
 
-## K8s handoff (optional — document only)
+## K8s handoff
 
-Point the existing PH-SCI simulation worker at this goal file by setting `PLAN_PATH` (or equivalent env in `setup-engine-k8s-ph-sci-simulation-gap-close.sh`):
+Dedicated worker: `li-ph-sci-electrochemistry` — see `li-cursor-agents/deploy/k8s/engine/README.md`.
 
 ```bash
 cd li-cursor-agents
 export KUBECONFIG=~/.kube/config-homelab
-export GH_TOKEN=... CURSOR_API_KEY=...
-export PLAN_PATH=data/goal-directed-sprints/ph-sci-electrochemistry-sim-plan.md
-export BRANCH=cursor/ph-sci-gpu-chem-dft
-bash scripts/setup-engine-k8s-ph-sci-simulation-gap-close.sh
-kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
+bash scripts/setup-engine-k8s-ph-sci-electrochemistry.sh
+kubectl -n li-swarm scale deploy/li-ph-sci-electrochemistry --replicas=1
+kubectl -n li-swarm logs -f deploy/li-ph-sci-electrochemistry
 ```
 
-No new deployment required unless a dedicated `li-ph-sci-electrochemistry` worker is desired later.
+Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (combined echem + GPU chem + gap-close).
 
 ---
 
@@ -282,8 +282,8 @@ No new deployment required unless a dedicated `li-ph-sci-electrochemistry` worke
 | ID | Title | Phase | Priority | Status |
 |----|-------|-------|----------|--------|
 | WP-ECHEM-01 | CHE/SHE/EDL/NEB stubs + GPU-19 | 0 | P0 | **done** |
-| WP-ECHEM-02 | PySCF echem oracle | 0 | P0 | open |
-| WP-ECHEM-03 | H₂O slab geometry stub | 0 | P1 | open |
+| WP-ECHEM-02 | PySCF echem oracle | 0 | P0 | **done** |
+| WP-ECHEM-03 | H₂O slab geometry stub | 0 | P1 | **done** |
 | WP-ECHEM-04 | verticals.toml honesty flip | 0 | P0 | partial (row added) |
 | WP-ECHEM-05 | H\* from DFT kernel | 1 | P1 | open |
 | WP-ECHEM-06 | Potential-dependent SCF | 1 | P1 | open |

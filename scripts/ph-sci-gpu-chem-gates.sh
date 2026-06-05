@@ -13,4 +13,7 @@ bash scripts/check-science-gpu-gate.sh
 echo "==> chem DFT competitive bench (PySCF oracle; ORCA external-only)"
 bash scripts/ph-sci-chem-dft-competitive-gates.sh
 
+echo "==> echem CHE competitive bench (PySCF H/H2 oracle; WP-ECHEM-02)"
+bash scripts/ph-sci-echem-competitive-gates.sh
+
 echo "ph-sci-gpu-chem-gates OK"

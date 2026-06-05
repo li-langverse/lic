@@ -1,0 +1,20 @@
+{
+  "competitor_id": "pyscf",
+  "suite": "ph-sci-echem-competitor-pyscf",
+  "workload": "echem_che_h",
+  "executed": true,
+  "cpu_sec": 2.455368,
+  "energy_ev": 3.399595,
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "framework_version": "pyscf",
+  "device": "cpu",
+  "note": "PySCF RKS/LDA CHE proxy: E(H) - 0.5*E(H2) - U (H* toy until WP-ECHEM-05 slab)",
+  "geometry_h_star": "H 0 0 0",
+  "geometry_h2": "H 0 0 0; H 0 0 0.74",
+  "basis": "sto-3g",
+  "xc": "lda,vwn",
+  "potential_v": 0.0,
+  "generated_at": "2026-06-05T04:49:29Z",
+  "license": "Apache-2.0"
+}

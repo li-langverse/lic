@@ -163,7 +163,7 @@ workload_class = "stub"
 oracle = "external_binary"
 li_package = "chem"
 last_reviewed = "2026-06-05"
-notes = "WP-ECHEM-01 echem_che_h_adsorption_energy + echem_she_reference_ev stubs; composable import_echem_che_h_smoke.li; PySCF H/Pt toy oracle planned WP-ECHEM-02 (license-free primary); ORCA user-run external only — not VASP/CP2K parity."
+notes = "WP-ECHEM-02 ph-sci-echem-competitive.json row echem_che_h; Li stub vs PySCF E(H)-0.5*E(H2) CHE proxy; large energy_delta_ev expected until WP-ECHEM-05; ORCA user-run external only — not VASP/CP2K parity."
 
 [[vertical]]
 id = "ml_rl_matmul"

@@ -643,6 +643,55 @@ def echem_static_barrier_neb_stub() -> float
     e_lo = e2
   return e1 - e_lo
 
+def echem_slab_layer_count() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def echem_slab_atom_count() -> int
+  requires true
+  ensures result == 12
+  decreases 0
+=
+  return echem_slab_layer_count() * 4
+
+def echem_slab_lattice_a_ang() -> float
+  requires true
+  ensures result == 3.92
+  decreases 0
+=
+  return 3.92
+
+def echem_slab_h2o_oxygen_z_ang() -> float
+  requires true
+  ensures result > 2.0
+  ensures result < 4.0
+  decreases 0
+=
+  return 2.85
+
+def echem_slab_geometry_smoke() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  var n: int = echem_slab_atom_count()
+  if n != 12:
+    return 0
+  var a: float = echem_slab_lattice_a_ang()
+  if a < 3.5:
+    return 0
+  if a > 4.5:
+    return 0
+  var z: float = echem_slab_h2o_oxygen_z_ang()
+  if z < 2.0:
+    return 0
+  if z > 4.0:
+    return 0
+  return 1
+
 def echem_gpu_che_h_ads_progress() -> int
   requires true
   ensures result >= 0

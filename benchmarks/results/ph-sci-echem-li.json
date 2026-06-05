@@ -1,0 +1,13 @@
+{
+  "suite": "ph-sci-echem-li",
+  "workload": "echem_che_h",
+  "executed": true,
+  "cpu_sec": 0.0,
+  "energy_ev": -2.45,
+  "energy_source": "li_echem_stub_mirror",
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "potential_v": 0.0,
+  "note": "Li echem_che_h_adsorption_energy stub (WP-ECHEM-01)",
+  "wall_cpu_sec": 0.195781
+}

@@ -1709,6 +1709,12 @@ outcome = "compile_open_ok"
 note = "WP-ECHEM-10 classical MD solvent shell — g(r) peak vs reference JSON"
 
 [[tests]]
+suite = "composable"
+file = "composable/import_echem_marcus_smoke.li"
+outcome = "compile_open_ok"
+note = "WP-ECHEM-11 Marcus reorganization λ stub + coupling-monotonic rate smoke"
+
+[[tests]]
 suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/echem_solvent_gr_smoke.li"
 outcome = "compile_open_ok"

@@ -183,6 +183,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-11 — Constrained DFT / Marcus reorganization stub
 
+- **Status:** done (2026-06-05) — `echem_marcus_lambda_stub`, `echem_marcus_rate_stub`, `import_echem_marcus_smoke.li`  
 - **Goal:** Two charge-localized states; λ = E(D⁺A⁻) − E(DA) diabatic gap toy.  
 - **Packages:** extend `li-chem` (`echem_marcus_lambda_stub`)  
 - **Dependencies:** WP-ECHEM-06  
@@ -298,7 +299,7 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-08 | Full static NEB | 1 | P1 | **done** |
 | WP-ECHEM-09 | AIMD coupling | 2 | P1 | **done** |
 | WP-ECHEM-10 | Classical MD solvent | 2 | P1 | **done** |
-| WP-ECHEM-11 | Constrained DFT / Marcus | 2 | P2 | open |
+| WP-ECHEM-11 | Constrained DFT / Marcus | 2 | P2 | **done** |
 | WP-ECHEM-12 | Grand-canonical SHE AIMD | 3 | P2 | open |
 | WP-ECHEM-13 | TDDFT nonadiabatic | 3 | P3 | open |
 | WP-ECHEM-14 | ML potentials | 3 | P2 | open |

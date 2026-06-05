@@ -3,7 +3,7 @@
   "suite": "ph-sci-chem-competitor-pyscf",
   "workload": "sto3g_h_lda_energy",
   "executed": true,
-  "cpu_sec": 4.835094,
+  "cpu_sec": 2.453208,
   "energy_hartree": -0.43567023298,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
@@ -13,6 +13,6 @@
   "geometry": "H 0 0 0",
   "basis": "sto-3g",
   "xc": "lda,vwn",
-  "generated_at": "2026-06-05T05:29:37Z",
+  "generated_at": "2026-06-05T05:41:57Z",
   "license": "Apache-2.0"
 }

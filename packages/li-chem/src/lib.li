@@ -1167,6 +1167,116 @@ def echem_gpu_che_h_ads_progress() -> int
     return 0
   return 1
 
+# --- WP-ECHEM-11: constrained DFT / Marcus reorganization toy ---
+
+def echem_marcus_diabatic_da_energy_ev() -> float
+  requires true
+  ensures result == echem_dft_energy_at_potential(0.0)
+  decreases 0
+=
+  return echem_dft_energy_at_potential(0.0)
+
+def echem_marcus_diabatic_cs_energy_ev() -> float
+  requires true
+  ensures result > echem_marcus_diabatic_da_energy_ev()
+  decreases 0
+=
+  return echem_marcus_diabatic_da_energy_ev() + 0.62
+
+def echem_marcus_lambda_stub() -> float
+  requires true
+  ensures result > 0.0
+  ensures result == echem_marcus_diabatic_cs_energy_ev() - echem_marcus_diabatic_da_energy_ev()
+  decreases 0
+=
+  var e_da: float = echem_marcus_diabatic_da_energy_ev()
+  var e_cs: float = echem_marcus_diabatic_cs_energy_ev()
+  return e_cs - e_da
+
+def echem_marcus_temperature_k() -> float
+  requires true
+  ensures result == 300.0
+  decreases 0
+=
+  return 300.0
+
+def echem_marcus_kb_ev_per_k() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 8.617333262e-5
+
+def echem_marcus_delta_g_ev() -> float
+  requires true
+  ensures result == -0.15
+  decreases 0
+=
+  return -0.15
+
+def echem_exp_toy(x: float) -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var x2: float = x * x
+  var x3: float = x2 * x
+  var x4: float = x2 * x2
+  return 1.0 + x + x2 / 2.0 + x3 / 6.0 + x4 / 24.0
+
+def echem_marcus_rate_exponent(delta_g_ev: float, lambda_ev: float) -> float
+  requires lambda_ev > 0.0
+  ensures true
+  decreases 0
+=
+  var kt: float = echem_marcus_kb_ev_per_k() * echem_marcus_temperature_k()
+  var sum: float = delta_g_ev + lambda_ev
+  var denom: float = 4.0 * lambda_ev * kt
+  return -(sum * sum) / denom
+
+def echem_marcus_rate_stub(coupling_ev: float) -> float
+  requires coupling_ev >= 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  var lam: float = echem_marcus_lambda_stub()
+  var dg: float = echem_marcus_delta_g_ev()
+  var v2: float = coupling_ev * coupling_ev
+  var exponent: float = echem_marcus_rate_exponent(dg, lam)
+  return v2 * echem_exp_toy(exponent)
+
+def echem_marcus_lambda_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var lam: float = echem_marcus_lambda_stub()
+  if lam <= 0.0:
+    return 0
+  if lam < 0.5:
+    return 0
+  if lam > 0.8:
+    return 0
+  return 1
+
+def echem_marcus_coupling_monotonic_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var r_lo: float = echem_marcus_rate_stub(0.02)
+  var r_mid: float = echem_marcus_rate_stub(0.05)
+  var r_hi: float = echem_marcus_rate_stub(0.10)
+  if r_lo <= 0.0:
+    return 0
+  if r_mid <= r_lo:
+    return 0
+  if r_hi <= r_mid:
+    return 0
+  return 1
+
 def chem_lig_backend_auto() raises IO -> int
   requires true
   ensures 1 <= result

@@ -6,7 +6,7 @@ cd "$ROOT"
 OUT="${PH_ML_LLM_STREAMING_SSE_OUT:-$ROOT/benchmarks/results/ph-ml-llm-streaming-sse.json}"
 # shellcheck source=lib/lic-bin-select.sh
 source "$ROOT/scripts/lib/lic-bin-select.sh"
-li_export_lic "$ROOT" || { echo "bench-ph-ml-llm-streaming-sse: no runnable lic"; exit 1; }
+li_ensure_lic "$ROOT" "bench-ph-ml-llm-streaming-sse: build lic" || exit 1
 
 python3 "$ROOT/scripts/prepare_ph_ml_weights_fixture.py"
 SMOKE="packages/li-llm/li-tests/smoke/llm_streaming_sse_prep.li"

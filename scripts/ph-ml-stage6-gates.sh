@@ -23,7 +23,7 @@ bash scripts/ph-ml-stage5-gates.sh
 
 # shellcheck source=lib/lic-bin-select.sh
 source "$ROOT/scripts/lib/lic-bin-select.sh"
-li_export_lic "$ROOT" || { echo "ph-ml-stage6-gates: build lic"; exit 1; }
+li_ensure_lic "$ROOT" "ph-ml-stage6-gates: build lic" || exit 1
 
 grep -q 'llm_trusted_httpd_native_generate_ok' packages/li-llm/src/lib.li \
   || { echo "6.1: missing native httpd generate"; exit 1; }

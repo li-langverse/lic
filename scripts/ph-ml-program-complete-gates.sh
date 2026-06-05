@@ -45,6 +45,10 @@ export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1
 
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_ensure_lic "$ROOT" "ph-ml-program-complete-gates: build lic" || exit 1
+
 bash scripts/ph-ml-wave13-gates.sh
 
 grep -q 'lig_emit_vendor_lowering_ready' packages/lig/src/lib.li \
@@ -112,7 +116,6 @@ grep -q 'llm_path_is_safetensors_fixture' packages/li-llm/src/lib.li \
 export PH_ML_LLM_TRUSTED_HTTPD_OUT="$BENCHMARKS_RESULTS/ph-ml-llm-trusted-httpd.json"
 export PH_ML_LLM_TRUSTED_HTTPD_NATIVE=1
 export PH_ML_LLM_TRUSTED_HTTPD_ROOT="$ROOT"
-li_export_lic "$ROOT" || { echo "ph-ml-program-complete: build lic"; exit 1; }
 export PH_ML_LLM_TRUSTED_HTTPD_LIC="$LIC"
 export PH_ML_LLM_TRUSTED_HTTPD_LIVE=0
 python3 scripts/bench_ph_ml_llm_trusted_httpd.py

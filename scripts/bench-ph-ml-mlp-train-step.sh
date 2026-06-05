@@ -2,6 +2,7 @@
 # Stage 2.3c: tier-1 ml_mlp_train_step bench (forward-only scaffold; honest autograd labels).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
@@ -9,7 +10,7 @@ mkdir -p "$BENCHMARKS_RESULTS"
 
 # shellcheck source=lib/lic-bin-select.sh
 source "$ROOT/scripts/lib/lic-bin-select.sh"
-li_export_lic "$ROOT" || { echo "bench-ph-ml-mlp-train-step: no runnable lic"; exit 1; }
+li_ensure_lic "$ROOT" "bench-ph-ml-mlp-train-step: build lic" || exit 1
 
 OUT="$BENCHMARKS_RESULTS/ph-ml-mlp-train-step.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_mlp_train_step.li"

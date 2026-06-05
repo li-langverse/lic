@@ -23,7 +23,7 @@ bash scripts/ph-ml-stage6-gates.sh
 
 # shellcheck source=lib/lic-bin-select.sh
 source "$ROOT/scripts/lib/lic-bin-select.sh"
-li_export_lic "$ROOT" || { echo "ph-ml-stage7-gates: build lic"; exit 1; }
+li_ensure_lic "$ROOT" "ph-ml-stage7-gates: build lic" || exit 1
 
 grep -q 'llm_streaming_sse_prep_ok' packages/li-llm/src/lib.li \
   || { echo "7.1: missing streaming SSE prep"; exit 1; }

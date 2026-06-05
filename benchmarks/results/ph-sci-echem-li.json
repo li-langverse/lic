@@ -2,12 +2,12 @@
   "suite": "ph-sci-echem-li",
   "workload": "echem_che_h",
   "executed": true,
-  "cpu_sec": 0.000683,
+  "cpu_sec": 0.000668,
   "energy_ev": -17.008988,
   "energy_source": "li_echem_dft_scf_mirror",
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "potential_v": 0.0,
   "note": "Li echem_che_h_adsorption_energy from chem_dft SCF (WP-ECHEM-05)",
-  "wall_cpu_sec": 0.066376
+  "wall_cpu_sec": 0.064983
 }

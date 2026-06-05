@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-05T05:11:22Z",
+  "generated_at": "2026-06-05T05:17:08Z",
   "suite": "ph-sci-chem-dft-competitive",
-  "registry_path": "/app/data/workspaces/li-langverse/lic/code_implementer-1780636030358/repo/benchmarks/competitive/ph-sci-chem-dft.toml",
+  "registry_path": "/app/data/workspaces/li-langverse/lic/code_implementer-1780636426350/repo/benchmarks/competitive/ph-sci-chem-dft.toml",
   "registry_schema": "li_ph_sci_chem_dft_competitive_v1",
   "rows": [
     {
@@ -22,7 +22,7 @@
         "incumbent": "Li native (li-chem mini STO-3G scaffold)",
         "workload_class": "pilot",
         "executed": false,
-        "cpu_sec": 0.002309,
+        "cpu_sec": 0.011672,
         "energy_hartree": -2.316182628586,
         "energy_source": "li_scaffold_python_mirror",
         "validity_gate_pass": false,
@@ -37,11 +37,11 @@
           "incumbent": "PySCF RKS/LDA",
           "workload_class": "oss_oracle",
           "executed": true,
-          "cpu_sec": 2.325182,
+          "cpu_sec": 3.265194,
           "energy_hartree": -0.43567023298,
           "validity_gate_pass": true,
           "validity_ratio": 1.0,
-          "ratio_vs_li": 1007.008229,
+          "ratio_vs_li": 279.745888,
           "note": "PySCF RKS converged SCF energy (primary OSS oracle)",
           "framework_version": "pyscf",
           "license": "Apache-2.0",

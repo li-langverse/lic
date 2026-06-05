@@ -25,6 +25,8 @@ def main() -> int
     return 7
   if c_uf > 30.0:
     return 8
+  if echem_edl_pb_vs_helmholtz_smoke() != 1:
+    return 13
   if echem_static_barrier_neb_stub() != 0.73:
     return 9
   if echem_potential_volcano_trend_smoke() != 1:

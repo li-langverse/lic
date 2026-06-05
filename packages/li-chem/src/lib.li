@@ -810,6 +810,125 @@ def echem_edl_helmholtz_capacitance_stub() -> float
   var c_f_per_m2: float = eps0_f_per_m * eps_r / gap_m
   return c_f_per_m2 * 1.0e4
 
+# WP-ECHEM-07: 1D linearized Poisson–Boltzmann toy (32-point grid; C = dσ/dU).
+def echem_edl_pb_grid_n() -> int
+  requires true
+  ensures result == 32
+  decreases 0
+=
+  return 32
+
+def echem_edl_pb_kappa_per_m() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var gap_m: float = echem_edl_helmholtz_gap_nm() * 1.0e-9
+  return 1.0 / (10.0 * gap_m)
+
+def echem_edl_pb_dx_m() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var gap_m: float = echem_edl_helmholtz_gap_nm() * 1.0e-9
+  return gap_m / 31.0
+
+def echem_sinh_toy(x: float) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var ax: float = x
+  if ax < 0.0:
+    ax = -ax
+  var x2: float = ax * ax
+  var x4: float = x2 * x2
+  return ax * (1.0 + x2 / 6.0 + x4 / 120.0)
+
+def echem_edl_pb_x_at(i: int) -> float
+  requires i >= 0
+  requires i < echem_edl_pb_grid_n()
+  ensures result >= 0.0
+  decreases i
+=
+  if i == 0:
+    return 0.0
+  return echem_edl_pb_x_at(i - 1) + echem_edl_pb_dx_m()
+
+def echem_edl_pb_psi_at(i: int, u_v: float) -> float
+  requires i >= 0
+  requires i < echem_edl_pb_grid_n()
+  requires u_v > 0.0
+  ensures result >= 0.0
+  decreases i
+=
+  var gap_m: float = echem_edl_helmholtz_gap_nm() * 1.0e-9
+  var kappa: float = echem_edl_pb_kappa_per_m()
+  var x: float = echem_edl_pb_x_at(i)
+  var kx: float = kappa * x
+  var kd: float = kappa * gap_m
+  var sinh_kd: float = echem_sinh_toy(kd)
+  if sinh_kd <= 0.0:
+    return 0.0
+  return u_v * echem_sinh_toy(kx) / sinh_kd
+
+def echem_edl_pb_capacitance_at_u_uf_cm2(u_v: float) -> float
+  requires u_v > 0.0
+  ensures result > 0.0
+  decreases 0
+=
+  var gap_m: float = echem_edl_helmholtz_gap_nm() * 1.0e-9
+  var kappa: float = echem_edl_pb_kappa_per_m()
+  var kd: float = kappa * gap_m
+  var sinh_kd: float = echem_sinh_toy(kd)
+  var eps0_f_per_m: float = 8.854 * 1.0e-12
+  var eps_r: float = echem_edl_permittivity_stub()
+  var c_f_per_m2: float = eps0_f_per_m * eps_r * kappa / sinh_kd
+  return c_f_per_m2 * 1.0e4
+
+def echem_edl_pb_capacitance_uf_cm2() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return echem_edl_pb_capacitance_at_u_uf_cm2(1.0)
+
+def echem_edl_pb_grid_boundary_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var u_v: float = 1.0
+  if echem_edl_pb_psi_at(0, u_v) != 0.0:
+    return 0
+  var psi_end: float = echem_edl_pb_psi_at(31, u_v)
+  if psi_end < 0.99:
+    return 0
+  if psi_end > 1.01:
+    return 0
+  return 1
+
+def echem_edl_pb_vs_helmholtz_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if echem_edl_pb_grid_boundary_smoke() != 1:
+    return 0
+  var c_stub: float = echem_edl_helmholtz_capacitance_stub()
+  var c_pb: float = echem_edl_pb_capacitance_uf_cm2()
+  if c_stub <= 0.0:
+    return 0
+  var ratio: float = c_pb / c_stub
+  if ratio < 0.8:
+    return 0
+  if ratio > 1.2:
+    return 0
+  return 1
+
 def echem_neb_image_count() -> int
   requires true
   ensures result == 3
@@ -932,6 +1051,8 @@ def echem_gpu_che_h_ads_progress() -> int
   if c_uf < 10.0:
     return 0
   if c_uf > 30.0:
+    return 0
+  if echem_edl_pb_vs_helmholtz_smoke() != 1:
     return 0
   var barrier: float = echem_static_barrier_neb_stub()
   if barrier <= 0.0:

@@ -144,6 +144,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-07 — 1D EDL Poisson–Boltzmann toy
 
+- **Status:** done (2026-06-05) — `echem_edl_pb_capacitance_uf_cm2`, `echem_edl_pb_vs_helmholtz_smoke`  
 - **Goal:** Replace capacitance constant with solved ψ(x) on 32-point grid; C = dσ/dU.  
 - **Packages:** `li-chem` or `li-math-numerics`  
 - **Dependencies:** WP-ECHEM-01  
@@ -290,7 +291,7 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-04 | verticals.toml honesty flip | 0 | P0 | **done** |
 | WP-ECHEM-05 | H\* from DFT kernel | 1 | P1 | **done** |
 | WP-ECHEM-06 | Potential-dependent SCF | 1 | P1 | **done** |
-| WP-ECHEM-07 | 1D EDL Poisson–Boltzmann | 1 | P1 | open |
+| WP-ECHEM-07 | 1D EDL Poisson–Boltzmann | 1 | P1 | **done** |
 | WP-ECHEM-08 | Full static NEB | 1 | P1 | open |
 | WP-ECHEM-09 | AIMD coupling | 2 | P1 | open |
 | WP-ECHEM-10 | Classical MD solvent | 2 | P1 | open |

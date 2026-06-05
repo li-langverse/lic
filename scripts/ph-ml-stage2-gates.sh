@@ -74,8 +74,8 @@ def need(path, key, label):
 matmul = need("benchmarks/results/ph-ml-lkir-matmul-32.json", "executed", "2.1 matmul-32")
 mlp = need("benchmarks/results/ph-ml-mlp-competitive.json", "executed", "2.2 mlp-competitive")
 train = need("benchmarks/results/ph-ml-mlp-train-step.json", "executed", "2.3 train-step")
-if train.get("autograd_mode") != "forward_only_scaffold":
-    sys.exit("2.3: autograd_mode must be forward_only_scaffold")
+if train.get("autograd_mode") not in ("forward_only_scaffold", "pilot_backward"):
+    sys.exit("2.3: autograd_mode must be forward_only_scaffold or pilot_backward")
 ratio = matmul.get("ratio_vs_li")
 if ratio is None or float(ratio) > 2.0:
     sys.exit(f"2.1: matmul ratio_vs_li must be <= 2.0 (got {ratio})")

@@ -45,3 +45,27 @@ suite = "smoke"
 file = "smoke/llm_weights_file_mmap.li"
 outcome = "verify_ok"
 note = "PH-ML Wave 13 T7 safetensors/GGUF mmap from PH_ML_WEIGHTS_FIXTURE paths"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_forward_matmul_real.li"
+outcome = "verify_ok"
+note = "PH-ML Stage 5 matmul forward on safetensors bytes"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_generate_multi_decode.li"
+outcome = "verify_ok"
+note = "PH-ML Stage 5 multi-token decode >=8 steps"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_trusted_httpd_route.li"
+outcome = "verify_ok"
+note = "PH-ML Stage 6 li-httpd native llm_generate_tracked"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_streaming_sse_prep.li"
+outcome = "verify_ok"
+note = "PH-ML Stage 7 SSE streaming decode prep"

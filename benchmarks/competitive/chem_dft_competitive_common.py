@@ -140,7 +140,9 @@ def li_scaffold_energy_hartree() -> float:
     return li_scaffold_energy_from_density(_fill_density_from_basis())
 
 
-def _li_scaffold_fock_diagonal(P: list[list[float]], z: float = 1.0) -> list[list[float]]:
+def _li_scaffold_fock_diagonal(
+    P: list[list[float]], z: float = 1.0, u_v: float = 0.0
+) -> list[list[float]]:
     F = [[0.0] * BASIS_N for _ in range(BASIS_N)]
     for i in range(BASIS_N):
         ri = BASIS_CENTROID[i]
@@ -152,7 +154,8 @@ def _li_scaffold_fock_diagonal(P: list[list[float]], z: float = 1.0) -> list[lis
             coul += p_jj * c2
             if i == j:
                 exch += 0.5 * p_jj * c2
-        F[i][i] = h_ii + coul - exch
+        shift = -u_v / 27.211386246
+        F[i][i] = h_ii + coul - exch + shift
     return F
 
 
@@ -183,7 +186,7 @@ def _li_scaffold_fill_density_from_coeffs(coeffs: list[float]) -> list[float]:
     return dens
 
 
-def _li_scaffold_scf_loop(energy_fn) -> float:
+def _li_scaffold_scf_loop(energy_fn, u_v: float = 0.0) -> float:
     dens = _fill_density_from_basis()
     energy = energy_fn(dens)
     mix = 0.35
@@ -191,7 +194,7 @@ def _li_scaffold_scf_loop(energy_fn) -> float:
     for _ in range(8):
         coeffs = [1.0, 0.0, 0.0, 0.0]
         P = [[2.0 * coeffs[i] * coeffs[j] for j in range(BASIS_N)] for i in range(BASIS_N)]
-        F = _li_scaffold_fock_diagonal(P)
+        F = _li_scaffold_fock_diagonal(P, u_v=u_v)
         orb_e, coeffs = _li_scaffold_eigensolve_power4(F)
         new_dens = _li_scaffold_fill_density_from_coeffs(coeffs)
         dens = [(1.0 - mix) * dens[i] + mix * new_dens[i] for i in range(GRID_N)]
@@ -221,9 +224,9 @@ def li_scaffold_energy_from_density_h2(dens: list[float], bond: float = 0.74) ->
     return kin + pot + xc + _hartree_grid(dens)
 
 
-def li_scaffold_scf_hartree() -> float:
-    return _li_scaffold_scf_loop(li_scaffold_energy_from_density)
+def li_scaffold_scf_hartree(u_v: float = 0.0) -> float:
+    return _li_scaffold_scf_loop(li_scaffold_energy_from_density, u_v=u_v)
 
 
-def li_scaffold_scf_h2_hartree() -> float:
-    return _li_scaffold_scf_loop(li_scaffold_energy_from_density_h2)
+def li_scaffold_scf_h2_hartree(u_v: float = 0.0) -> float:
+    return _li_scaffold_scf_loop(li_scaffold_energy_from_density_h2, u_v=u_v)

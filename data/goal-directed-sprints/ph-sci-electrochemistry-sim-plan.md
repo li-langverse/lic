@@ -136,6 +136,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-06 — Potential-dependent SCF (scalar U in Fock shift)
 
+- **Status:** done (2026-06-05) — `echem_dft_energy_at_potential`, `chem_dft_fock_apply_potential_shift`, volcano smoke  
 - **Goal:** `echem_dft_energy_at_potential(u_v)` applies `-eU` shift to electron chemical potential.  
 - **Dependencies:** WP-ECHEM-05  
 - **Acceptance:** Volcano trend vs U; matches CHE stub at toy geometry  
@@ -288,7 +289,7 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-03 | H₂O slab geometry stub | 0 | P1 | **done** |
 | WP-ECHEM-04 | verticals.toml honesty flip | 0 | P0 | **done** |
 | WP-ECHEM-05 | H\* from DFT kernel | 1 | P1 | **done** |
-| WP-ECHEM-06 | Potential-dependent SCF | 1 | P1 | open |
+| WP-ECHEM-06 | Potential-dependent SCF | 1 | P1 | **done** |
 | WP-ECHEM-07 | 1D EDL Poisson–Boltzmann | 1 | P1 | open |
 | WP-ECHEM-08 | Full static NEB | 1 | P1 | open |
 | WP-ECHEM-09 | AIMD coupling | 2 | P1 | open |

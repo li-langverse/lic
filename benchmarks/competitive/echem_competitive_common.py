@@ -69,7 +69,8 @@ def bench_loop(
 
 
 def li_echem_che_h_adsorption_energy_ev(potential_v: float) -> float:
-    delta_h = li_scaffold_scf_hartree() - 0.5 * li_scaffold_scf_h2_hartree()
+    """WP-ECHEM-06: potential-dependent SCF with -eU Fock shift."""
+    delta_h = li_scaffold_scf_hartree(potential_v) - 0.5 * li_scaffold_scf_h2_hartree(potential_v)
     return hartree_to_ev(delta_h) - potential_v
 
 

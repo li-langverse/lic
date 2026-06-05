@@ -26,10 +26,6 @@ pr: https://github.com/li-langverse/lic/pull/847
 ## Completion gate
 
 ```bash
-# WSL from lic repo root
-./build-wsl/compiler/lic/lic build packages/li-chem/src/lib.li --allow-open-vc
-bash scripts/ph-sci-gpu-chem-gates.sh
-./li-tests/run_all.sh science_gpu
-test -f benchmarks/results/ph-sci-echem-competitive.json
-python3 -c "import json; d=json.load(open('benchmarks/results/ph-sci-echem-competitive.json')); assert any(r.get('id')=='echem_che_h' for r in d.get('rows',[]))"
+# Fails while echem/gpu WPs remain open — worker keeps iterating
+bash scripts/ph-sci-electrochemistry-roadmap-gate.sh
 ```

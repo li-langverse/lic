@@ -4,9 +4,9 @@ set -euo pipefail
 ROOT="${PH_ML_STAGE5_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
 
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  export LIC="$ROOT/build-wsl/compiler/lic/lic"
-fi
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_export_lic "$ROOT" || true
 
 run_in_wsl() {
   local wsl_root
@@ -28,13 +28,7 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-fi
-[[ -x "$LIC" ]] || { echo "ph-ml-stage5-gates: build lic (./scripts/build.sh --build-dir build-wsl in WSL)"; exit 1; }
+li_export_lic "$ROOT" || { echo "ph-ml-stage5-gates: build lic (./scripts/build.sh)"; exit 1; }
 
 bash scripts/ph-ml-stage4-gates.sh
 

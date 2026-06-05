@@ -21,13 +21,9 @@ fi
 export PH_ML_STAGE6_INNER=1
 bash scripts/ph-ml-stage6-gates.sh
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-fi
-[[ -x "$LIC" ]] || { echo "ph-ml-stage7-gates: build lic"; exit 1; }
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_export_lic "$ROOT" || { echo "ph-ml-stage7-gates: build lic"; exit 1; }
 
 grep -q 'llm_streaming_sse_prep_ok' packages/li-llm/src/lib.li \
   || { echo "7.1: missing streaming SSE prep"; exit 1; }

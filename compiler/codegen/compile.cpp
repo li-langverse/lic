@@ -211,6 +211,11 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (std::filesystem::exists(rt_studio_headless_path)) {
     cmd << " -x c \"" << rt_studio_headless_path.string() << "\"";
   }
+  const std::filesystem::path rt_studio_demo_path =
+      resolve_runtime_c("li_rt_studio_demo_recorder.c");
+  if (std::filesystem::exists(rt_studio_demo_path)) {
+    cmd << " -x c \"" << rt_studio_demo_path.string() << "\"";
+  }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {
     cmd << " -O3 -march=native";

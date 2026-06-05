@@ -116,8 +116,8 @@ TOOLS: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "ui_snapshot",
-        "description": "Capture UiSnapshot element tree from native Studio shell",
+        "name": "ui_session_start",
+        "description": "Start persistent headless Studio UI session (Playwright browser context)",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -128,86 +128,94 @@ TOOLS: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "ui_click",
-        "description": "Click a shell element by stable dot-path ID",
+        "name": "ui_session_stop",
+        "description": "Stop UI session",
         "inputSchema": {
             "type": "object",
-            "properties": {"element_id": {"type": "string"}},
-            "required": ["element_id"],
+            "properties": {"session_id": {"type": "string"}},
+            "required": ["session_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "ui_snapshot",
+        "description": "Accessibility-style element tree for session",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"session_id": {"type": "string"}},
+            "required": ["session_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "ui_click",
+        "description": "Click element by stable dot-path id",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "session_id": {"type": "string"},
+                "element_id": {"type": "string"},
+            },
+            "required": ["session_id", "element_id"],
             "additionalProperties": False,
         },
     },
     {
         "name": "ui_key",
-        "description": "Send keyboard action (cmd_k, escape, digit_1..5)",
-        "inputSchema": {
-            "type": "object",
-            "properties": {"key": {"type": "string"}},
-            "required": ["key"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "name": "ui_set_value",
-        "description": "Set text on demo-safe input fields",
+        "description": "Send key action (cmd_k, escape, digit_1, ...)",
         "inputSchema": {
             "type": "object",
             "properties": {
-                "element_id": {"type": "string"},
-                "text": {"type": "string"},
+                "session_id": {"type": "string"},
+                "key": {"type": "string"},
             },
-            "required": ["element_id", "text"],
+            "required": ["session_id", "key"],
             "additionalProperties": False,
         },
     },
     {
         "name": "ui_wait",
-        "description": "Wait for ms or frames in demo replay",
+        "description": "Wait ms or frames in session",
         "inputSchema": {
             "type": "object",
             "properties": {
+                "session_id": {"type": "string"},
                 "ms": {"type": "integer"},
                 "frames": {"type": "integer"},
             },
+            "required": ["session_id"],
             "additionalProperties": False,
         },
     },
     {
         "name": "demo_record_start",
-        "description": "Start demo recording session from script path or inline steps",
+        "description": "Start demo recording from script_path",
         "inputSchema": {
             "type": "object",
             "properties": {"script_path": {"type": "string"}},
-            "additionalProperties": False,
-        },
-    },
-    {
-        "name": "demo_record_step",
-        "description": "Execute one demo script step in active session",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "session_id": {"type": "string"},
-                "step": {"type": "object"},
-            },
+            "required": ["script_path"],
             "additionalProperties": False,
         },
     },
     {
         "name": "demo_record_finish",
-        "description": "Finish demo session and encode MP4",
+        "description": "Finish recording → MP4 + trace",
         "inputSchema": {
             "type": "object",
             "properties": {
                 "session_id": {"type": "string"},
                 "out_mp4": {"type": "string"},
             },
+            "required": ["session_id", "out_mp4"],
             "additionalProperties": False,
         },
     },
 ]
 
 TOOL_INDEX = {t["name"]: i for i, t in enumerate(TOOLS)}
+
+_UI_SESSIONS: dict[str, dict[str, Any]] = {}
+_UI_SESSION_SEQ = 0
 
 # Dispatch arg slots mirror studio_mcp_tool_dispatch_arg int normalization (stub path).
 STATUS_OK = 2
@@ -224,6 +232,28 @@ def _int_arg(args: dict[str, Any], *keys: str, default: int = 0) -> int:
     return default
 
 
+def _next_session_id() -> str:
+    global _UI_SESSION_SEQ
+    _UI_SESSION_SEQ += 1
+    return f"ui-{ _UI_SESSION_SEQ }"
+
+
+def _ui_snapshot_stub(session: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "session_id": session["session_id"],
+        "element_count": 20,
+        "profile": session.get("profile", "game"),
+        "elements": [
+            {"id": "shell.dock.slot.0", "role": "button"},
+            {"id": "shell.dock.slot.1", "role": "button"},
+            {"id": "shell.palette.row.0", "role": "button"},
+            {"id": "shell.agent.send_button", "role": "button"},
+        ],
+        "palette_open": session.get("palette_open", 0),
+        "dock_slot": session.get("dock_slot", 0),
+    }
+
+
 def dispatch_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     """In-process stub dispatch — matches studio_mcp_tool_dispatch_arg semantics."""
     if name not in TOOL_INDEX:
@@ -232,6 +262,83 @@ def dispatch_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
             "status": STATUS_FAILED,
             "result_code": RESULT_ERR_IO,
             "tool_id": 0,
+        }
+
+    if name == "ui_session_start":
+        sid = _next_session_id()
+        _UI_SESSIONS[sid] = {
+            "session_id": sid,
+            "profile": arguments.get("profile", "game"),
+            "dock_slot": 0,
+            "palette_open": 0,
+            "frame_clock": 0,
+        }
+        snap = _ui_snapshot_stub(_UI_SESSIONS[sid])
+        return {"ok": True, "status": STATUS_OK, "result_code": RESULT_OK, "tool_id": 20, "session_id": sid, "snapshot": snap}
+
+    if name == "ui_session_stop":
+        sid = str(arguments.get("session_id", ""))
+        _UI_SESSIONS.pop(sid, None)
+        return {"ok": True, "status": STATUS_OK, "result_code": RESULT_OK, "tool_id": 21}
+
+    if name == "ui_snapshot":
+        sid = str(arguments.get("session_id", ""))
+        session = _UI_SESSIONS.get(sid)
+        if session is None:
+            return {"ok": False, "status": STATUS_FAILED, "result_code": RESULT_ERR_IO, "tool_id": 12}
+        return {"ok": True, "status": STATUS_OK, "result_code": RESULT_OK, "tool_id": 12, "snapshot": _ui_snapshot_stub(session)}
+
+    if name == "ui_click":
+        sid = str(arguments.get("session_id", ""))
+        session = _UI_SESSIONS.get(sid)
+        if session is None:
+            return {"ok": False, "status": STATUS_FAILED, "result_code": RESULT_ERR_IO, "tool_id": 13}
+        eid = str(arguments.get("element_id", ""))
+        if "dock.slot.1" in eid:
+            session["dock_slot"] = 1
+        if "palette.row.0" in eid:
+            session["palette_open"] = 1
+        session["frame_clock"] = int(session.get("frame_clock", 0)) + 1
+        return {"ok": True, "status": STATUS_OK, "result_code": RESULT_OK, "tool_id": 13, "snapshot": _ui_snapshot_stub(session)}
+
+    if name == "ui_key":
+        sid = str(arguments.get("session_id", ""))
+        session = _UI_SESSIONS.get(sid)
+        if session is None:
+            return {"ok": False, "status": STATUS_FAILED, "result_code": RESULT_ERR_IO, "tool_id": 14}
+        key = str(arguments.get("key", ""))
+        if key == "cmd_k":
+            session["palette_open"] = 1
+        session["frame_clock"] = int(session.get("frame_clock", 0)) + 1
+        return {"ok": True, "status": STATUS_OK, "result_code": RESULT_OK, "tool_id": 14, "snapshot": _ui_snapshot_stub(session)}
+
+    if name == "ui_wait":
+        sid = str(arguments.get("session_id", ""))
+        if sid not in _UI_SESSIONS:
+            return {"ok": False, "status": STATUS_FAILED, "result_code": RESULT_ERR_IO, "tool_id": 16}
+        return {"ok": True, "status": STATUS_OK, "result_code": RESULT_OK, "tool_id": 16}
+
+    if name == "demo_record_start":
+        sid = _next_session_id()
+        script_path = str(arguments.get("script_path", ""))
+        _UI_SESSIONS[sid] = {"session_id": sid, "record": True, "script_path": script_path, "trace_lines": []}
+        return {"ok": True, "status": STATUS_OK, "result_code": RESULT_OK, "tool_id": 17, "session_id": sid, "trace_path": "build/demo-recorder/run/demo_trace.jsonl"}
+
+    if name == "demo_record_finish":
+        sid = str(arguments.get("session_id", ""))
+        out_mp4 = str(arguments.get("out_mp4", "build/demo-recorder/out/demo.mp4"))
+        if sid not in _UI_SESSIONS:
+            return {"ok": False, "status": STATUS_FAILED, "result_code": RESULT_ERR_IO, "tool_id": 19}
+        return {
+            "ok": True,
+            "status": STATUS_OK,
+            "result_code": RESULT_OK,
+            "tool_id": 19,
+            "mp4": out_mp4,
+            "trace": "build/demo-recorder/run/demo_trace.jsonl",
+            "provenance": "build/demo-recorder/run/capture-provenance.json",
+            "duration_s": 10.0,
+            "note": "Run studio-demo-replay.sh for native MP4 bytes; MCP returns session metadata.",
         }
 
     tool_id = TOOL_INDEX[name] + 1

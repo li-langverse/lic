@@ -21,6 +21,13 @@ fi
 export PH_ML_STAGE7_INNER=1
 bash scripts/ph-ml-stage7-gates.sh
 
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+if li_lic_needs_rebuild "$ROOT"; then
+  echo "ph-ml-stage8-gates: rebuilding stale lic (li_rt_inference_sse link)"
+  (cd "$ROOT" && bash scripts/build.sh)
+fi
+
 LIC="${LIC:-}"
 if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="$ROOT/build-wsl/compiler/lic/lic"

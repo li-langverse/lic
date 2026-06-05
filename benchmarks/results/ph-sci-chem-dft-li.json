@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-05T05:41:57Z",
+  "generated_at": "2026-06-05T06:03:19Z",
   "suite": "ph-sci-chem-dft-li",
   "smoke": "packages/li-chem/li-tests/benchmarks/chem_dft_energy_bench.li",
   "workload": "chem_dft_energy_kernel_hartree_x64",
@@ -7,10 +7,10 @@
   "compile_ok": false,
   "executed": false,
   "validity_gate_pass": false,
-  "cpu_sec": 0.002053,
+  "cpu_sec": 0.002294,
   "energy_hartree": -2.316182628586,
   "energy_source": "li_scaffold_python_mirror",
   "device": "cpu",
   "run_exit_code": 1,
-  "stderr_tail": "po/build-wsl/compiler/lic/lic: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.38' not found (required by /app/data/workspaces/li-langverse/lic/code_implementer-1780638002621/repo/build-wsl/compiler/lic/lic)\n/app/data/workspaces/li-langverse/lic/code_implementer-1780638002621/repo/build-wsl/compiler/lic/lic: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by /app/data/workspaces/li-langverse/lic/code_implementer-1780638002621/repo/build-wsl/compiler/lic/lic)"
+  "stderr_tail": "po/build-wsl/compiler/lic/lic: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.38' not found (required by /app/data/workspaces/li-langverse/lic/code_implementer-1780639194517/repo/build-wsl/compiler/lic/lic)\n/app/data/workspaces/li-langverse/lic/code_implementer-1780639194517/repo/build-wsl/compiler/lic/lic: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by /app/data/workspaces/li-langverse/lic/code_implementer-1780639194517/repo/build-wsl/compiler/lic/lic)"
 }

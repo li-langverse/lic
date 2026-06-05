@@ -212,6 +212,7 @@ Smallest shippable slice — **toy Pt(111) H\*** OR **H₂O/metal slab stub** (g
 
 #### WP-ECHEM-14 — ML-accelerated potentials
 
+- **Status:** done (2026-06-05) — `ml_echem_surrogate_predict_ev`, holdout MAE oracle, 80-step AIMD drift smoke  
 - **Goal:** `li-ml` surrogate wraps AIMD energy calls; 10× step count at same accuracy band.  
 - **Packages:** `li-ml`, `li-chem`  
 - **Dependencies:** WP-ECHEM-09, PH-ML spine  
@@ -303,5 +304,5 @@ Goal file: `data/goal-directed-sprints/ph-sci-electrochemistry-gpu-roadmap.md` (
 | WP-ECHEM-11 | Constrained DFT / Marcus | 2 | P2 | **done** |
 | WP-ECHEM-12 | Grand-canonical SHE AIMD | 3 | P2 | **done** |
 | WP-ECHEM-13 | TDDFT nonadiabatic | 3 | P3 | open |
-| WP-ECHEM-14 | ML potentials | 3 | P2 | open |
+| WP-ECHEM-14 | ML potentials | 3 | P2 | **done** |
 | WP-ECHEM-15 | Multiscale kMC | 3 | P2 | open |

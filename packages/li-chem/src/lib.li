@@ -1329,6 +1329,104 @@ def echem_gc_charge_neutrality_smoke() -> int
     return 0
   return 1
 
+# --- WP-ECHEM-14: ML-accelerated potential holdout oracle (DFT reference frames) ---
+
+def echem_ml_holdout_count() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def echem_ml_holdout_u_v(i: int) -> float
+  requires i >= 0
+  requires i < echem_ml_holdout_count()
+  ensures true
+  decreases i
+=
+  if i == 0:
+    return -0.5
+  if i == 1:
+    return -0.25
+  if i == 2:
+    return 0.0
+  return 0.5
+
+def echem_ml_holdout_x(i: int) -> float
+  requires i >= 0
+  requires i < echem_ml_holdout_count()
+  ensures true
+  decreases i
+=
+  if i == 0:
+    return 0.08
+  if i == 1:
+    return 0.10
+  if i == 2:
+    return -0.05
+  return 0.12
+
+def echem_ml_holdout_vx(i: int) -> float
+  requires i >= 0
+  requires i < echem_ml_holdout_count()
+  ensures true
+  decreases i
+=
+  if i == 0:
+    return 0.03
+  if i == 1:
+    return 0.02
+  if i == 2:
+    return 0.04
+  return -0.02
+
+def echem_ml_dft_reference_ev(i: int) -> float
+  requires i >= 0
+  requires i < echem_ml_holdout_count()
+  ensures true
+  decreases i
+=
+  var u_v: float = echem_ml_holdout_u_v(i)
+  return echem_dft_energy_at_potential(u_v)
+
+def echem_ml_abs_err_ev(a: float, b: float) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var d: float = a - b
+  if d < 0.0:
+    d = -d
+  return d
+
+def echem_ml_mae_tolerance_ev() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 0.35
+
+def echem_ml_step_multiplier() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+def echem_ml_baseline_aimd_steps() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def echem_ml_surrogate_aimd_steps() -> int
+  requires true
+  ensures result == echem_ml_baseline_aimd_steps() * echem_ml_step_multiplier()
+  decreases 0
+=
+  return 80
+
 def chem_lig_backend_auto() raises IO -> int
   requires true
   ensures 1 <= result

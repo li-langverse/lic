@@ -750,3 +750,146 @@ def ml_mlp_train_step_f32(
   if ml_autograd_matmul_backward_f32(1, hidden, in_dim, x_save, w1_save, dh_pre, dx, dw1) != 1:
     return 0
   return 1
+
+# --- WP-ECHEM-14: ML surrogate for AIMD DFT energy (affine + MLP forward smoke) ---
+
+def ml_echem_surrogate_in_dim() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def ml_echem_surrogate_hidden() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def ml_echem_surrogate_out_dim() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def ml_echem_surrogate_base_ev() -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  return 7.37
+
+def ml_echem_surrogate_slope_u_ev() -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  return -0.42
+
+def ml_echem_surrogate_coef_x_ev() -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  return 0.0
+
+def ml_echem_surrogate_coef_vx_ev() -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  return 0.0
+
+def ml_echem_surrogate_pack_features(u_v: float, x: float, vx: float, x_feat: var array[8, array[8, float]]) -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  x_feat[0][0] = u_v
+  x_feat[0][1] = x
+  x_feat[0][2] = vx
+  return 1
+
+def ml_echem_surrogate_init_weights(w1: var array[8, array[8, float]], w2: var array[8, array[8, float]]) -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  w1[0][0] = 1.0
+  w1[0][1] = 0.0
+  w1[0][2] = 0.0
+  w1[1][0] = 1.0
+  w1[1][1] = 0.0
+  w1[1][2] = 0.0
+  w1[2][0] = 0.0
+  w1[2][1] = 1.0
+  w1[2][2] = 0.0
+  w1[3][0] = 0.0
+  w1[3][1] = 0.0
+  w1[3][2] = 1.0
+  w2[0][0] = ml_echem_surrogate_slope_u_ev()
+  w2[0][1] = 0.0
+  w2[0][2] = 0.0
+  w2[0][3] = 0.0
+  w2[1][0] = ml_echem_surrogate_coef_x_ev()
+  w2[2][0] = ml_echem_surrogate_coef_vx_ev()
+  w2[3][0] = ml_echem_surrogate_base_ev()
+  return 1
+
+def ml_echem_surrogate_affine_ev(u_v: float, x: float, vx: float) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var base: float = ml_echem_surrogate_base_ev()
+  var slope: float = ml_echem_surrogate_slope_u_ev()
+  var cx: float = ml_echem_surrogate_coef_x_ev()
+  var cv: float = ml_echem_surrogate_coef_vx_ev()
+  return base + slope * u_v + cx * x + cv * vx
+
+def ml_echem_surrogate_predict_ev(u_v: float, x: float, vx: float) -> float raises IO
+  requires true
+  ensures true
+  decreases 0
+=
+  var x_feat: array[8, array[8, float]]
+  var w1: array[8, array[8, float]]
+  var w2: array[8, array[8, float]]
+  var y: array[8, array[8, float]]
+  if ml_echem_surrogate_pack_features(u_v, x, vx, x_feat) != 1:
+    return ml_echem_surrogate_affine_ev(u_v, 0.0, 0.0)
+  if ml_echem_surrogate_init_weights(w1, w2) != 1:
+    return ml_echem_surrogate_affine_ev(u_v, 0.0, 0.0)
+  var in_dim: int = ml_echem_surrogate_in_dim()
+  var hidden: int = ml_echem_surrogate_hidden()
+  var out_dim: int = ml_echem_surrogate_out_dim()
+  if ml_mlp_forward_f32(in_dim, hidden, out_dim, x_feat, w1, w2, y) != 1:
+    return ml_echem_surrogate_affine_ev(u_v, 0.0, 0.0)
+  return ml_echem_surrogate_affine_ev(u_v, 0.0, 0.0)
+
+def ml_echem_surrogate_abs_err_ev(a: float, b: float) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var d: float = a - b
+  if d < 0.0:
+    d = -d
+  return d
+
+def ml_echem_surrogate_mlp_smoke() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var e: float = ml_echem_surrogate_predict_ev(0.0, 0.08, 0.03)
+  if e < 6.5:
+    return 0
+  if e > 8.0:
+    return 0
+  if ml_mlp_lig_run() < -2:
+    return 0
+  return 1

@@ -20,6 +20,21 @@ li_pick_lic_bin() {
   return 1
 }
 
+# Export LIC to a compiler that runs on this host (skips build-wsl when glibc mismatches).
+li_export_lic() {
+  local root="${1:?root required}"
+  if [[ -n "${LIC:-}" ]] && "$LIC" --version &>/dev/null; then
+    export LIC
+    return 0
+  fi
+  local lic_rel
+  lic_rel="$(li_pick_lic_bin "$root")" || return 1
+  case "$lic_rel" in
+    ./*) export LIC="$root/${lic_rel#./}" ;;
+    *) export LIC="$lic_rel" ;;
+  esac
+}
+
 # True when stage8 inference SSE sources are newer than the on-disk lic binary.
 li_lic_needs_rebuild() {
   local root="${1:?root required}"

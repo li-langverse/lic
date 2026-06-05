@@ -4,13 +4,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 OUT="${PH_ML_LLM_STREAMING_SSE_OUT:-$ROOT/benchmarks/results/ph-ml-llm-streaming-sse.json}"
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-fi
-[[ -x "$LIC" ]] || { echo "bench-ph-ml-llm-streaming-sse: build lic"; exit 1; }
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_export_lic "$ROOT" || { echo "bench-ph-ml-llm-streaming-sse: no runnable lic"; exit 1; }
 
 python3 "$ROOT/scripts/prepare_ph_ml_weights_fixture.py"
 SMOKE="packages/li-llm/li-tests/smoke/llm_streaming_sse_prep.li"

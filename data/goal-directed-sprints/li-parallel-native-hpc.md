@@ -15,7 +15,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 | **WP-PAR-00** | Spec `docs/superpowers/specs/2026-06-06-li-parallel-design.md` + G-par-dist row | **DONE** — spec committed |
 | **WP-PAR-01** | Package `packages/li-parallel/` + workspace member | **DONE** — scaffold + import `parallel` |
 | **WP-PAR-02** | `lipar-suite.sh` wraps `run-full-benchmark-suite.sh` | **DONE** — serial + parallel passes |
-| **WP-PAR-47** | `check-li-parallel-full-suite.sh` CI gate | **IN PROGRESS** — runs `--profile pr` dual-mode |
+| **WP-PAR-47** | `check-li-parallel-full-suite.sh` CI gate | **DONE** — dual-mode tier1 Class A rows + linker fix |
 
 ## Phase 1 — Shared-memory runtime
 

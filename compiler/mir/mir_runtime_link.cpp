@@ -25,6 +25,17 @@ void note_one(std::string_view callee, MirModule& mir) {
       starts_with(callee, "tcp_echo_")) {
     mir.needs_rt_net = true;
   }
+  if (callee == "li_parallel_for_i64" || callee == "li_omp_parallel_for_i64" ||
+      starts_with(callee, "li_par_pool_")) {
+    mir.needs_rt_par_pool = true;
+  }
+  if (starts_with(callee, "li_par_reduce_")) {
+    mir.needs_rt_par_pool = true;
+    mir.needs_rt_par_reduce = true;
+  }
+  if (starts_with(callee, "li_dpar_")) {
+    mir.needs_rt_dpar = true;
+  }
 }
 
 }  // namespace
@@ -40,6 +51,12 @@ void mir_finalize_runtime_link_needs(MirModule& mir) {
   // li_rt_net.c (httpd access log, proxy) calls li_rt_log_* in li_rt_log.c.
   if (mir.needs_rt_net) {
     mir.needs_rt_log = true;
+  }
+  if (mir.needs_rt_par_reduce) {
+    mir.needs_rt_par_pool = true;
+  }
+  if (mir.needs_rt_dpar) {
+    mir.needs_rt_net = true;
   }
 }
 

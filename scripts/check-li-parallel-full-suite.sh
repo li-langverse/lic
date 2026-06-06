@@ -3,12 +3,24 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SUITE="$ROOT/packages/li-parallel/scripts/lipar-suite.sh"
-CSV="${BENCHMARKS_CSV:-$(cd "$ROOT/../benchmarks" 2>/dev/null && pwd)/results/latest.csv}"
+BENCH_ROOT="${BENCHMARKS_ROOT:-$(cd "$ROOT/../benchmarks" 2>/dev/null && pwd || echo "")}"
+CSV="${BENCHMARKS_CSV:-${BENCH_ROOT}/results/latest.csv}"
 
 if [[ ! -f "$SUITE" ]]; then
   echo "ERROR: missing $SUITE" >&2
   exit 1
 fi
+
+if [[ -z "$BENCH_ROOT" || ! -d "$BENCH_ROOT" ]]; then
+  echo "ERROR: benchmarks repo not found — set BENCHMARKS_ROOT" >&2
+  exit 1
+fi
+
+export BENCHMARKS_ROOT="$BENCH_ROOT"
+if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
+  export SKIP_BUILD="${SKIP_BUILD:-1}"
+fi
+export SKIP_TIER5_HTTP="${SKIP_TIER5_HTTP:-1}"
 
 echo "==> li-parallel gate: lipar-suite --dual-mode --profile pr"
 bash "$SUITE" --dual-mode --profile pr --cores "${LIPAR_CORES:-8}"

@@ -1,5 +1,4 @@
 #include "li_rt.h"
-#include "li_parallel.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -37,67 +36,6 @@ const char* li_rt_argv(int index) {
     return "";
   }
   return li_argv[index];
-}
-
-static int li_warn_omp_alias_once(void) {
-  static int warned = 0;
-  if (!warned) {
-    fprintf(stderr,
-            "lic: warning: li_omp_parallel_for_i64 is deprecated; use li_parallel_for_i64 "
-            "(native pthread pool)\n");
-    warned = 1;
-  }
-  return 0;
-}
-
-static int li_resolve_team_size(int team_size) {
-  /* team_size > 0 is baked in at `lic build` from --threads/--cores (preferred). */
-  if (team_size > 0) {
-    return team_size;
-  }
-  const char* nt = getenv("LI_OMP_THREADS");
-  if (nt && *nt) {
-    int threads = atoi(nt);
-    if (threads > 0) {
-      return threads;
-    }
-  }
-#if defined(_WIN32)
-  return 1;
-#else
-  long cores = sysconf(_SC_NPROCESSORS_ONLN);
-  if (cores < 1) {
-    return 1;
-  }
-  if (cores > LI_MAX_THREADS) {
-    return LI_MAX_THREADS;
-  }
-  return (int)cores;
-#endif
-}
-
-static int li_clamp_team(int team_size, long long trip_count) {
-  team_size = li_resolve_team_size(team_size);
-  if (team_size > LI_MAX_THREADS) {
-    team_size = LI_MAX_THREADS;
-  }
-  if (trip_count < (long long)team_size) {
-    team_size = (int)trip_count;
-  }
-  if (team_size < 1) {
-    team_size = 1;
-  }
-  return team_size;
-}
-
-void li_parallel_for_i64(long long start, long long end, void (*body)(long long),
-                         int team_size) {
-  li_par_pool_fork_join(start, end, body, li_clamp_team(team_size, end - start));
-}
-
-void li_omp_parallel_for_i64(long long start, long long end, void (*body)(long long)) {
-  (void)li_warn_omp_alias_once();
-  li_parallel_for_i64(start, end, body, 0);
 }
 
 int32_t li_rt_floor_div_i32(int32_t a, int32_t b) {

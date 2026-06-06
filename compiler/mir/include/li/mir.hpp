@@ -184,6 +184,12 @@ struct MirModule {
   bool needs_rt_log = false;
   /** li_rt_llm.c — safetensors/GGUF weight file probes. */
   bool needs_rt_llm = false;
+  /** runtime/li_par_pool.c — parallel for + thread pool. */
+  bool needs_rt_par_pool = false;
+  /** runtime/li_par_reduce.c — tree reductions. */
+  bool needs_rt_par_reduce = false;
+  /** runtime/li_dpar*.c — distributed TCP mesh. */
+  bool needs_rt_dpar = false;
   /** When true: MIR stability pass + strict FP codegen (no fast-math reassociation). */
   bool fp_numerically_stable = false;
 };

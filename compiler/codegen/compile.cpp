@@ -155,6 +155,10 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_h2_path = resolve_runtime_c("li_rt_h2.c");
   const std::filesystem::path rt_llm_path = resolve_runtime_c("li_rt_llm.c");
   const std::filesystem::path rt_inference_sse_path = resolve_runtime_c("li_rt_inference_sse.c");
+  const std::filesystem::path rt_par_pool_path = resolve_runtime_c("li_par_pool.c");
+  const std::filesystem::path rt_par_reduce_path = resolve_runtime_c("li_par_reduce.c");
+  const std::filesystem::path rt_dpar_path = resolve_runtime_c("li_dpar.c");
+  const std::filesystem::path rt_dpar_collective_path = resolve_runtime_c("li_dpar_collective.c");
 
   MirModule rt_needs;
   mir_collect_runtime_link_needs(mir, rt_needs);
@@ -216,6 +220,22 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (std::filesystem::exists(rt_studio_demo_path)) {
     cmd << " -x c \"" << rt_studio_demo_path.string() << "\"";
   }
+  const bool link_par_pool =
+      link_runtime_full || mir.uses_openmp || rt_needs.needs_rt_par_pool;
+  if (link_par_pool && std::filesystem::exists(rt_par_pool_path)) {
+    cmd << " -x c \"" << rt_par_pool_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_par_reduce) &&
+      std::filesystem::exists(rt_par_reduce_path)) {
+    cmd << " -x c \"" << rt_par_reduce_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_dpar) && std::filesystem::exists(rt_dpar_path)) {
+    cmd << " -x c \"" << rt_dpar_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_dpar) &&
+      std::filesystem::exists(rt_dpar_collective_path)) {
+    cmd << " -x c \"" << rt_dpar_collective_path.string() << "\"";
+  }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {
     cmd << " -O3 -march=native";
@@ -229,7 +249,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (!extra_clang_flags.empty()) {
     cmd << " " << extra_clang_flags;
   }
-  if (mir.uses_openmp) {
+  if (mir.uses_openmp || rt_needs.needs_rt_par_pool || rt_needs.needs_rt_par_reduce) {
 #if defined(__linux__) || defined(__APPLE__)
     cmd << " -pthread";
 #endif

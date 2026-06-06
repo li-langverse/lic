@@ -1,5 +1,6 @@
 #include "li_parallel.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -345,4 +346,24 @@ void li_par_pool_shutdown(void) {
 #endif
   g_li_par_pool.initialized = 0;
   g_li_par_pool.team_size = 0;
+}
+
+static int li_warn_omp_alias_once(void) {
+  static int warned = 0;
+  if (!warned) {
+    fprintf(stderr,
+            "lic: warning: li_omp_parallel_for_i64 is deprecated; use li_parallel_for_i64 "
+            "(native pthread pool)\n");
+    warned = 1;
+  }
+  return 0;
+}
+
+void li_parallel_for_i64(long long start, long long end, void (*body)(long long), int team_size) {
+  li_par_pool_fork_join(start, end, body, li_par_clamp_team(team_size, end - start));
+}
+
+void li_omp_parallel_for_i64(long long start, long long end, void (*body)(long long)) {
+  (void)li_warn_omp_alias_once();
+  li_parallel_for_i64(start, end, body, 0);
 }

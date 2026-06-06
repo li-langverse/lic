@@ -9,24 +9,39 @@ export LI_REPO_ROOT="$ROOT"
 
 chmod +x scripts/studio-ui-ux-plan-gates.sh \
   scripts/studio-ui-ux-probe-capture-deps.sh \
+  scripts/studio-ui-ux-check-capture-deps.sh \
   scripts/studio-ui-ux-capture-native.sh \
+  deploy/studio-demo/screenshots/capture.sh \
   deploy/studio-demo/native/capture.sh 2>/dev/null || true
 
-./scripts/studio-ui-ux-probe-capture-deps.sh
-python3 - <<'PY'
+STUDIO_UI_UX_CAPTURE_DEPS_STRICT=1 \
+STUDIO_UI_UX_CAPTURE_DEPS_NATIVE_ONLY=1 \
+STUDIO_UI_UX_CAPTURE_DEPS_WARN_ONLY=0 \
+  ./scripts/studio-ui-ux-check-capture-deps.sh
+
+if python3 - <<'PY'
 import json
-import sys
 from pathlib import Path
 
 deps = json.loads(
     Path("data/studio-ui-ux-plan-loop/latest-capture-deps.json").read_text(encoding="utf-8")
 )
-if not deps.get("ready_for_native_capture"):
-    gaps = deps.get("gaps") or []
-    print("ci-studio-ui-ux-native: not ready — " + "; ".join(gaps), file=sys.stderr)
-    sys.exit(1)
-print("ci-studio-ui-ux-native: capture deps ok")
+raise SystemExit(0 if deps.get("ready_for_html_capture") else 1)
 PY
+then
+  smoke_out="$(mktemp -d)"
+  CAPTURE_CHROME_TIMEOUT_SEC=45 timeout 60 env OUT="$smoke_out" \
+    bash deploy/studio-demo/screenshots/capture.sh
+  png_count=$(find "$smoke_out" -name '*.png' 2>/dev/null | wc -l)
+  rm -rf "$smoke_out"
+  if [[ "$png_count" -lt 1 ]]; then
+    echo "ci-studio-ui-ux-native: headless HTML mock smoke produced no PNGs" >&2
+    exit 1
+  fi
+  echo "ci-studio-ui-ux-native: headless HTML mock smoke ok ($png_count PNG(s))"
+else
+  echo "ci-studio-ui-ux-native: skip HTML mock smoke (chrome not ready)"
+fi
 
 python3 scripts/studio-ui-ux-verify-native-capture.py
 

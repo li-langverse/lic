@@ -1,0 +1,25 @@
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var t0: float = sim_scientific_oracle_checksum_md()
+  if t0 <= 0.0:
+    return 1
+  if t0 >= 1.0e-3:
+    return 2
+  var ext: SimRunResult = run_algo(algo_md_oracle_external(), 1)
+  if run_result_ok(ext) != 1:
+    return 3
+  if ext.algo_id != algo_md_oracle_external():
+    return 4
+  if ext.algo_id != 104:
+    return 5
+  if ext.checksum != t0:
+    return 6
+  if ext.checksum == 1.001:
+    return 7
+  return 0

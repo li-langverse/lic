@@ -18,6 +18,8 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 
 | Ecosystem | Why track | Li implication |
 |-----------|-----------|----------------|
+| **LAMMPS** (`lammps_lj_micro`) | Domain MD oracle (Layer B) | `md_oracle.toml` + `md_external_oracle_bench.li`; validity before perf |
+| **GROMACS** (`gromacs_lj_micro`) | Second incumbent MD oracle | Same stub contract; pinned 2024.x at B2 |
 | Chapel | PGAS HPC language | Locale / distribution model → future G-* |
 | Kokkos | Performance portability | Team policies, backends → LLVM/OpenMP alignment |
 | SYCL / oneAPI | Heterogeneous offload | Watch; no Li GPU story in v1 |

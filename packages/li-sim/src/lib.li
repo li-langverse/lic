@@ -276,6 +276,13 @@ def algo_md_integrator_verlet() -> int
 =
   return 102
 
+def algo_md_oracle_external() -> int
+  requires true
+  ensures result == 104
+  decreases 0
+=
+  return 104
+
 def algo_pde_heat_explicit_2d() -> int
   requires true
   ensures result == 201

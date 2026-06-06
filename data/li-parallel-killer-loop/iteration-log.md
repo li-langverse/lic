@@ -31,3 +31,10 @@
 - RDMA hook stub, latency bench, compressed halo bench
 - `check-li-parallel-comm-gate.sh` green
 - Killer blocker advances to `check-li-parallel-hetero-gate.sh` (li-gpu / li-tpu / li-asic packages)
+
+## 2026-06-06 — WP-PAR-48 whole-catalog dual-mode CSV (code_implementer)
+
+- `lipar-dual-mode-csv.py --scope all` tags every `lang=li` row as `li_serial`/`li_parallel`
+- `lipar-suite.sh --profile full` passes `--scope all`; PR profile keeps Class A (`class_a`)
+- Killer gate dual-mode check scoped to Li benchmarks only (excludes security-only rows)
+- Test: `li-tests/tooling/li_parallel_dual_mode_csv.sh` catalog scope case

@@ -125,7 +125,17 @@ if len(benches) < min_benches:
 if not tier2:
     print("killer gate: no tier2 physics rows in CSV", file=sys.stderr)
     sys.exit(1)
-missing_dual = [b for b in benches if (b, "li_serial") not in dual or (b, "li_parallel") not in dual]
+li_langs = {"li", "li_serial", "li_parallel"}
+li_benches = {
+    r.get("benchmark")
+    for r in rows
+    if r.get("metric") == "wall_time" and r.get("lang") in li_langs and r.get("benchmark")
+}
+missing_dual = [
+    b
+    for b in li_benches
+    if (b, "li_serial") not in dual or (b, "li_parallel") not in dual
+]
 if missing_dual:
     sample = ", ".join(sorted(missing_dual)[:8])
     print(

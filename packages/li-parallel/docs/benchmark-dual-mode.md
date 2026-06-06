@@ -16,6 +16,7 @@ packages/li-parallel/scripts/lipar-suite.sh --profile pr --dual-mode --cores 8
 | `--profile full` | Whole catalog tiers 0–7 (killer gate) |
 | `--dual-mode` | Emit both `li_serial` and `li_parallel` langs |
 | `--cores N` | Thread count for parallel pass |
+| `--scope` | `class_a` (PR) or `all` (killer / full profile) — see `lipar-dual-mode-csv.py` |
 | `--skip-serial` | Parallel pass only |
 | `--skip-parallel` | Serial pass only |
 

@@ -101,9 +101,14 @@ _run_benches() {
 
 _dual_mode_tag() {
   local mode="$1"
+  local scope="class_a"
+  if [[ "$PROFILE" == "full" ]]; then
+    scope="all"
+  fi
   python3 "$ROOT/scripts/lipar-dual-mode-csv.py" \
     --csv "${BENCHMARKS_CSV:-$BENCHMARKS_RESULTS/latest.csv}" \
     --mode "$mode" \
+    --scope "$scope" \
     --cores "$CORES"
 }
 

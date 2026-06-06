@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tag li benchmark rows as li_serial / li_parallel for dual-mode gates (WP-PAR-44)."""
+"""Tag li benchmark rows as li_serial / li_parallel for dual-mode gates (WP-PAR-44/48)."""
 
 from __future__ import annotations
 
@@ -55,10 +55,25 @@ def _snapshot_path(csv_path: Path) -> Path:
     return csv_path.with_suffix(csv_path.suffix + ".lipar_serial.json")
 
 
-def _tag_li_rows(rows: list[dict[str, str]], *, lang: str, variant: str, threads: str) -> list[dict[str, str]]:
+def _in_scope(row: dict[str, str], scope: str) -> bool:
+    if row.get("lang") != "li":
+        return False
+    if scope == "all":
+        return True
+    return row.get("benchmark") in CLASS_A
+
+
+def _tag_li_rows(
+    rows: list[dict[str, str]],
+    *,
+    scope: str,
+    lang: str,
+    variant: str,
+    threads: str,
+) -> list[dict[str, str]]:
     out: list[dict[str, str]] = []
     for row in rows:
-        if row.get("benchmark") not in CLASS_A or row.get("lang") != "li":
+        if not _in_scope(row, scope):
             out.append(row)
             continue
         tagged = dict(row)
@@ -69,7 +84,18 @@ def _tag_li_rows(rows: list[dict[str, str]], *, lang: str, variant: str, threads
     return out
 
 
-def _drop_li_mode_rows(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+def _drop_li_mode_rows(rows: list[dict[str, str]], *, scope: str) -> list[dict[str, str]]:
+    if scope == "all":
+        tagged_benches = {
+            row.get("benchmark")
+            for row in rows
+            if row.get("lang") in LI_MODES and row.get("benchmark")
+        }
+        return [
+            row
+            for row in rows
+            if row.get("benchmark") not in tagged_benches or row.get("lang") not in LI_MODES
+        ]
     return [
         row
         for row in rows
@@ -95,25 +121,32 @@ def _alias_registry_rows(rows: list[dict[str, str]]) -> list[dict[str, str]]:
     return rows + extra
 
 
-def serial_phase(csv_path: Path) -> None:
+def serial_phase(csv_path: Path, *, scope: str) -> None:
     rows = _read_csv(csv_path)
-    tagged = _tag_li_rows(rows, lang="li_serial", variant="serial", threads="1")
+    tagged = _tag_li_rows(
+        rows, scope=scope, lang="li_serial", variant="serial", threads="1"
+    )
     serial_rows = [row for row in tagged if row.get("lang") == "li_serial"]
     _snapshot_path(csv_path).write_text(json.dumps(serial_rows), encoding="utf-8")
     _write_csv(csv_path, tagged)
-    print(f"lipar-dual-mode: tagged {len(serial_rows)} li_serial row(s) in {csv_path}")
+    print(
+        f"lipar-dual-mode: tagged {len(serial_rows)} li_serial row(s) "
+        f"in {csv_path} (scope={scope})"
+    )
 
 
-def parallel_phase(csv_path: Path, *, cores: int) -> None:
+def parallel_phase(csv_path: Path, *, scope: str, cores: int) -> None:
     snap = _snapshot_path(csv_path)
     if not snap.is_file():
         print(f"lipar-dual-mode: missing serial snapshot {snap}", file=sys.stderr)
         sys.exit(1)
     serial_rows: list[dict[str, str]] = json.loads(snap.read_text(encoding="utf-8"))
     rows = _read_csv(csv_path)
-    parallel_rows = _tag_li_rows(rows, lang="li_parallel", variant="parallel", threads=str(cores))
+    parallel_rows = _tag_li_rows(
+        rows, scope=scope, lang="li_parallel", variant="parallel", threads=str(cores)
+    )
     parallel_rows = [row for row in parallel_rows if row.get("lang") == "li_parallel"]
-    merged = _drop_li_mode_rows(rows)
+    merged = _drop_li_mode_rows(rows, scope=scope)
     merged.extend(serial_rows)
     merged.extend(parallel_rows)
     merged = _alias_registry_rows(merged)
@@ -121,7 +154,7 @@ def parallel_phase(csv_path: Path, *, cores: int) -> None:
     snap.unlink(missing_ok=True)
     print(
         f"lipar-dual-mode: merged {len(serial_rows)} li_serial + "
-        f"{len(parallel_rows)} li_parallel row(s) in {csv_path}"
+        f"{len(parallel_rows)} li_parallel row(s) in {csv_path} (scope={scope})"
     )
 
 
@@ -130,14 +163,20 @@ def main() -> int:
     parser.add_argument("--csv", type=Path, required=True)
     parser.add_argument("--mode", choices=("serial", "parallel"), required=True)
     parser.add_argument("--cores", type=int, default=8)
+    parser.add_argument(
+        "--scope",
+        choices=("class_a", "all"),
+        default="class_a",
+        help="class_a = PR Class A tier1; all = whole-catalog Li rows (WP-PAR-48)",
+    )
     args = parser.parse_args()
     if not args.csv.is_file():
         print(f"lipar-dual-mode: missing CSV {args.csv}", file=sys.stderr)
         return 1
     if args.mode == "serial":
-        serial_phase(args.csv)
+        serial_phase(args.csv, scope=args.scope)
     else:
-        parallel_phase(args.csv, cores=max(1, args.cores))
+        parallel_phase(args.csv, scope=args.scope, cores=max(1, args.cores))
     return 0
 
 

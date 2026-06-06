@@ -78,7 +78,7 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 | **WP-PAR-44** | Matrix `li_serial`/`li_parallel` columns | **DONE** |
 | **WP-PAR-40** | Perf gates vs OpenMP/MPI | **IN PROGRESS** — advisory in CI; strict killer gate pending |
 | **WP-PAR-47** | PR gate `check-li-parallel-full-suite.sh` | **DONE** |
-| **WP-PAR-48** | Whole-catalog dual-mode audit | **PENDING** |
+| **WP-PAR-48** | Whole-catalog dual-mode audit | **IN PROGRESS** — `--scope all` CSV tagging + Li-only killer gate check |
 
 ### Phase 5 — Documentation
 

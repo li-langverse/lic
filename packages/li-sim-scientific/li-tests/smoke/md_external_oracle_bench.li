@@ -1,0 +1,20 @@
+# md-r3-oracle-plan: T0 Li oracle + external harness path cite (md_oracle_external / algo 104).
+# External driver: benchmarks/harness/md_external_oracle.py (LAMMPS/GROMACS column stub).
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var md: float = sim_scientific_oracle_checksum_md()
+  if md <= 0.0:
+    return 1
+  if md >= 1.0e-3:
+    return 2
+  var md_run: SimRunResult = run_md_lj_smoke(0)
+  if run_result_ok(md_run) != 1:
+    return 3
+  if md_run.checksum != md:
+    return 4
+  return 0

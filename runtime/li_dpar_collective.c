@@ -3,6 +3,7 @@
 #include <string.h>
 
 #if !defined(_WIN32)
+#include <sys/socket.h>
 #include <unistd.h>
 #else
 #include <winsock2.h>

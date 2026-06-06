@@ -7424,7 +7424,7 @@ def text_truncate_to_width_px(face: FontAtlasFace, first_cp: int, glyph_count: i
       if need_ellipsis == 1 and ellipsis_w <= max_width_px:
         out.ellipsis_applied = 1
         out.used_width_px = used + ellipsis_w
-      else:
+      if need_ellipsis != 1 or ellipsis_w > max_width_px:
         out.used_width_px = used
       out.visible_glyph_count = visible
       return out

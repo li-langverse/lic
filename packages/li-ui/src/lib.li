@@ -1765,6 +1765,55 @@ def paint_frame_pop_clip_scope(frame: var PaintFrame) -> unit
 =
   paint_frame_push(frame, paint_cmd_clip_pop())
 
+def paint_cmd_blur_sigma_px(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_layer_blur()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.stroke_px
+
+def paint_cmd_blur_radius_px(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_layer_blur()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.radius_px
+
+def paint_cmd_blur_passes(cmd: PaintCmd) -> int
+  requires cmd.kind == paint_op_layer_blur()
+  ensures result >= 1
+  decreases 0
+=
+  return cmd.glyph_count
+
+def paint_cmd_layer_blur(layer_rect: Rect, sigma_px: float, radius_px: float, passes: int) -> PaintCmd
+  requires layer_rect.w >= 0.0
+  requires layer_rect.h >= 0.0
+  requires sigma_px >= 0.0
+  requires radius_px >= 0.0
+  requires passes >= 1
+  requires passes <= 4
+  ensures result.kind == paint_op_layer_blur()
+  ensures result.rect == layer_rect
+  ensures result.stroke_px == sigma_px
+  ensures result.radius_px == radius_px
+  ensures result.glyph_count == passes
+  decreases passes
+=
+  var c: PaintCmd
+  c.kind = paint_op_layer_blur()
+  c.rect = layer_rect
+  c.color = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.stroke_px = sigma_px
+  c.radius_px = radius_px
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.face_id = blur_kernel_radius_from_sigma(sigma_px)
+  c.codepoint = 0
+  c.glyph_count = passes
+  c.image_id = 0
+  c.src_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  return c
+
 def paint_frame_push_layer_blur(frame: var PaintFrame, layer_rect: Rect, sigma_px: float, radius_px: float, passes: int) -> unit
   requires frame.cmd_count >= 0
   requires layer_rect.w >= 0.0
@@ -7599,6 +7648,18 @@ def paint_raster_glyph_pixel(dst: Color, ink: Color, coverage: float) -> Color
 # Separable box-blur kernel — normalized weights for shadow-layer diffusion (wtfx-w4).
 # One-dimensional taps: w(i) = 1 / (2*radius + 1) for i in [-radius, radius].
 
+def blur_kernel_int_as_float(v: int) -> float
+  requires v >= 0
+  ensures result >= 0.0
+  decreases v
+=
+  var acc: float = 0.0
+  var i: int = 0
+  while i < v:
+    acc = acc + 1.0
+    i = i + 1
+  return acc
+
 def blur_kernel_radius_from_sigma(sigma_px: float) -> int
   requires sigma_px >= 0.0
   ensures result >= 0
@@ -7632,7 +7693,7 @@ def blur_kernel_weight_at(radius: int, tap_index: int) -> float
   decreases radius
 =
   var taps: int = blur_kernel_tap_count(radius)
-  return 1.0 / float(taps)
+  return 1.0 / blur_kernel_int_as_float(taps)
 
 def blur_kernel_weight_sum(radius: int) -> float
   requires radius >= 0

@@ -1,6 +1,18 @@
 # Separable box-blur kernel — normalized weights for shadow-layer diffusion (wtfx-w4).
 # One-dimensional taps: w(i) = 1 / (2*radius + 1) for i in [-radius, radius].
 
+def blur_kernel_int_as_float(v: int) -> float
+  requires v >= 0
+  ensures result >= 0.0
+  decreases v
+=
+  var acc: float = 0.0
+  var i: int = 0
+  while i < v:
+    acc = acc + 1.0
+    i = i + 1
+  return acc
+
 def blur_kernel_radius_from_sigma(sigma_px: float) -> int
   requires sigma_px >= 0.0
   ensures result >= 0
@@ -34,7 +46,7 @@ def blur_kernel_weight_at(radius: int, tap_index: int) -> float
   decreases radius
 =
   var taps: int = blur_kernel_tap_count(radius)
-  return 1.0 / float(taps)
+  return 1.0 / blur_kernel_int_as_float(taps)
 
 def blur_kernel_weight_sum(radius: int) -> float
   requires radius >= 0

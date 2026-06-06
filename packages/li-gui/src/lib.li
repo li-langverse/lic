@@ -4524,6 +4524,7 @@ def tween_float(from_v: float, to_v: float, t: float, easing_id: int) -> float
   requires t <= 1.0
   requires easing_id >= motion_easing_id_linear()
   requires easing_id <= motion_easing_id_ease_in_out_cubic()
+  ensures result == from_v + (to_v - from_v) * easing_apply(t, easing_id)
   decreases easing_id
 =
   var eased: float = easing_apply(t, easing_id)

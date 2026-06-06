@@ -1,6 +1,6 @@
 ---
 workflow_repo: lic
-branch: cursor/ph-ml-stage2-dl-spine
+branch: cursor/ph-sci-gpu-chem-dft
 plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 ---
 
@@ -10,10 +10,14 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and planned `science_gpu` / `@gpu` placement coverage.  
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
 
+## GPU Chem / DFT + Electrochemistry (headline — `cursor/ph-sci-gpu-chem-dft`)
+
+See **[ph-sci-gpu-chem-dft.md](ph-sci-gpu-chem-dft.md)** for WP-SCI-GPU-CHEM-01..04, stub vs real audit, and PH-ML Phase 3 LKIR hooks. Electrochemistry WP-ECHEM-01..08 (CHE/SHE/EDL/NEB, potential-dependent SCF) and PH-SCI-GPU-16..19 gates live on that branch — see [ph-sci-electrochemistry-sim-plan.md](ph-sci-electrochemistry-sim-plan.md).
+
 ## Iteration rules
 
 1. Work **Phase 0 first** (BUILD-01 → BUILD-02 → GPU-00 → BUILD-03), then Phase 1 GPU smokes, then Phase 2+.
-2. One WP or logical chunk per iteration; commit + push to `cursor/ph-ml-stage2-dl-spine`.
+2. One WP or logical chunk per iteration; commit + push to feature branch.
 3. Verify with WSL `./build-wsl/compiler/lic/lic build …` and `./li-tests/run_all.sh science_gpu` before ending an iteration.
 4. Do not mark the sprint done until `scripts/ph-sci-phase0-gates.sh` passes (Phase 0) and later phase gates as added.
 
@@ -281,8 +285,8 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 
 #### WP-SCI-GPU-VENDOR-01 — Science kernel LKIR lowering pilot
 
-- **Goal:** One science hot loop (e.g. numerics three-body or MD oracle) emits LKIR like `ml_gpu_lkir_launch.li`.
-- **Scope:** `li-math-numerics` or `li-sim-scientific`, `lig`, compiler `@gpu` backend.
+- **Goal:** One science hot loop (e.g. numerics three-body, MD oracle, or **chem DFT density loop** after CHEM-01) emits LKIR like `ml_gpu_lkir_launch.li`.
+- **Scope:** `li-math-numerics` or `li-sim-scientific` or `li-chem`, `lig`, compiler `@gpu` backend.
 - **Dependencies:** PH-ML Wave 12 T1, WP-SCI-GPU-01/02.
 - **Acceptance:** `LIG_EMIT_CUDA=1 lic build …` produces non-empty kernel blob; bench row in `ph-ml-competitive.json`.
 - **Priority / effort:** P2 / L
@@ -300,7 +304,7 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 - **Goal:** Unified gate script: `check-mir-gpu-decorator.sh` + `science_gpu` + `ml_gpu_*` when CUDA available.
 - **Scope:** `scripts/`.
 - **Dependencies:** WP-SCI-GPU-00, PH-ML program-complete gates.
-- **Acceptance:** `ph-sci-gpu-gates.sh` documented in this file's CI section.
+- **Acceptance:** `ph-sci-gpu-gates.sh` + `check-science-gpu-gate.sh` documented in this file's CI section.
 - **Priority / effort:** P2 / S
 
 ---
@@ -345,6 +349,11 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 # MIR placement (Phase 1)
 ./scripts/check-mir-gpu-decorator.sh
 ./li-tests/run_all.sh science_gpu
+
+# GPU chem / DFT + echem (cursor/ph-sci-gpu-chem-dft)
+bash scripts/ph-sci-gpu-chem-gates.sh
+bash scripts/ph-sci-echem-competitive-gates.sh
+bash scripts/ph-sci-chem-dft-competitive-gates.sh
 
 # Scientific CPU spine
 ./li-tests/run_all.sh smoke  # package: li-sim-scientific manifests

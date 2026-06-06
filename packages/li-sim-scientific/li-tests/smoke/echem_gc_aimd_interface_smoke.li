@@ -1,0 +1,37 @@
+# WP-ECHEM-12: grand-canonical SHE AIMD — 10-step constant-potential MD + charge neutrality oracle.
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() != 5:
+    return 1
+  if echem_gc_aimd_step_count() != 10:
+    return 2
+  if echem_gc_charge_neutrality_smoke() != 1:
+    return 3
+  var drift: float = sim_scientific_oracle_checksum_echem_gc_aimd()
+  if drift <= 0.0:
+    return 4
+  if drift >= 0.05:
+    return 5
+  var gc: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 1)
+  if run_result_ok(gc) != 1:
+    return 6
+  if gc.algo_id != algo_echem_gc_aimd_interface():
+    return 7
+  if gc.vertical_id != vertical_echem_gc_aimd():
+    return 8
+  if gc.checksum != drift:
+    return 9
+  if gc.checksum == 1.001:
+    return 10
+  var vert: SimRunResult = run_simulation(vertical_echem_gc_aimd(), 0)
+  if run_result_ok(vert) != 1:
+    return 11
+  if vert.checksum != drift:
+    return 12
+  return 0

@@ -1,0 +1,19 @@
+# Package-local tests — also register in monorepo li-tests/manifest.toml when integrated.
+
+[[tests]]
+suite = "smoke"
+file = "smoke/chem_gpu_dft_energy.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-16 @gpu DFT energy kernel"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/chem_gpu_dft_lkir.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-18 @gpu DFT LKIR launch pipeline"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/echem_gpu_che_h_ads.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-19 @gpu CHE H* adsorption electrochemistry stub"

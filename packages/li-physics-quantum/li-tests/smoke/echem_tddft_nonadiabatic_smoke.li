@@ -1,0 +1,13 @@
+# WP-ECHEM-13: 2-state nonadiabatic population transfer stub (quantum vertical).
+import physics.quantum
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_physics_quantum_version() != 2:
+    return 1
+  if quantum_tddft_nonadiabatic_smoke() != 1:
+    return 2
+  return 0

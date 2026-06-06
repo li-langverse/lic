@@ -1,0 +1,21 @@
+import chem
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var lam: float = echem_marcus_lambda_stub()
+  if lam <= 0.0:
+    return 1
+  if echem_marcus_lambda_smoke() != 1:
+    return 2
+  if echem_marcus_coupling_monotonic_smoke() != 1:
+    return 3
+  var e_da: float = echem_marcus_diabatic_da_energy_ev()
+  var e_cs: float = echem_marcus_diabatic_cs_energy_ev()
+  if e_cs <= e_da:
+    return 4
+  if lam != e_cs - e_da:
+    return 5
+  return 0

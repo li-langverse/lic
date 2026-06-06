@@ -13,10 +13,10 @@ type Emitter = object
   public burst: int
 def li_std_physics_particles_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 def emitter_tick(e: Emitter, dt: float) -> int
   requires dt >= 0.0
   ensures result >= 0
@@ -64,3 +64,342 @@ def md_mini_step(
     py[i] = py[i] + vy[i] * dt
     pz[i] = pz[i] + vz[i] * dt
     i = i + 1
+
+# --- WP-ECHEM-10: classical MD solvent shell (LJ + Ewald stub) around echem slab ---
+
+def echem_solvent_water_count() -> int
+  requires true
+  ensures result == 16
+  decreases 0
+=
+  return 16
+
+def echem_solvent_sphere_center_z_ang() -> float
+  requires true
+  ensures result > 4.0
+  ensures result < 6.0
+  decreases 0
+=
+  return 5.0
+
+def echem_solvent_lj_epsilon_kcal() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 0.1521
+
+def echem_solvent_lj_sigma_ang() -> float
+  requires true
+  ensures result > 3.0
+  ensures result < 3.5
+  decreases 0
+=
+  return 3.1507
+
+def echem_solvent_lj_rc_ang() -> float
+  requires true
+  ensures result > 7.0
+  decreases 0
+=
+  return 8.0
+
+def echem_ewald_stub_kappa() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 0.4
+
+def echem_ewald_stub_energy(r: float) -> float
+  requires r > 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  var kappa: float = echem_ewald_stub_kappa()
+  var damp: float = 1.0
+  var kr: float = kappa * r
+  if kr >= 6.0:
+    damp = 0.0
+  if kr > 0.0:
+    if kr < 6.0:
+      damp = 1.0 - kr / 6.0
+  return damp / r
+
+def echem_solvent_water_spacing_ang() -> float
+  requires true
+  ensures result > 2.5
+  ensures result < 3.2
+  decreases 0
+=
+  return 2.8
+
+def echem_solvent_water_oxygen_x(idx: int) -> float
+  requires idx >= 0
+  requires idx < echem_solvent_water_count()
+  ensures result >= -8.0
+  ensures result <= 8.0
+  decreases 0
+=
+  var i: int = idx
+  var col: int = i % 4
+  var spacing: float = echem_solvent_water_spacing_ang()
+  if col == 0:
+    return -1.5 * spacing
+  if col == 1:
+    return -0.5 * spacing
+  if col == 2:
+    return 0.5 * spacing
+  return 1.5 * spacing
+
+def echem_solvent_water_oxygen_y(idx: int) -> float
+  requires idx >= 0
+  requires idx < echem_solvent_water_count()
+  ensures result >= -8.0
+  ensures result <= 8.0
+  decreases 0
+=
+  var i: int = idx
+  var row: int = i / 4
+  var spacing: float = echem_solvent_water_spacing_ang()
+  if row == 0:
+    return -1.5 * spacing
+  if row == 1:
+    return -0.5 * spacing
+  if row == 2:
+    return 0.5 * spacing
+  return 1.5 * spacing
+
+def echem_solvent_water_oxygen_z(idx: int) -> float
+  requires idx >= 0
+  requires idx < echem_solvent_water_count()
+  ensures result > 3.0
+  ensures result < 7.0
+  decreases 0
+=
+  var i: int = idx
+  var base: float = echem_solvent_sphere_center_z_ang()
+  var layer: float = 0.0
+  if i % 2 == 1:
+    layer = 0.2
+  if i >= echem_solvent_water_count() / 2:
+    layer = layer + 0.4
+  return base + layer
+
+def echem_solvent_pair_distance_sq(idx_a: int, idx_b: int) -> float
+  requires idx_a >= 0
+  requires idx_b >= 0
+  requires idx_a < echem_solvent_water_count()
+  requires idx_b < echem_solvent_water_count()
+  ensures result >= 0.0
+  decreases 0
+=
+  var ia: int = idx_a
+  var ib: int = idx_b
+  var dx: float = echem_solvent_water_oxygen_x(ib) - echem_solvent_water_oxygen_x(ia)
+  var dy: float = echem_solvent_water_oxygen_y(ib) - echem_solvent_water_oxygen_y(ia)
+  var dz: float = echem_solvent_water_oxygen_z(ib) - echem_solvent_water_oxygen_z(ia)
+  return dx * dx + dy * dy + dz * dz
+
+def echem_solvent_sqrt_r2(r2: float) -> float
+  requires r2 >= 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  if r2 < 1.0e-12:
+    return 0.0
+  var r: float = r2
+  if r2 > 1.0:
+    r = r2 * 0.5 + 0.5
+  var k: int = 0
+  while k < 8
+    r = 0.5 * (r + r2 / r)
+    k = k + 1
+  return r
+
+def echem_solvent_pair_lj_energy(idx_a: int, idx_b: int) -> float
+  requires idx_a >= 0
+  requires idx_b >= 0
+  requires idx_a < echem_solvent_water_count()
+  requires idx_b < echem_solvent_water_count()
+  ensures result >= -100.0
+  ensures result <= 100.0
+  decreases 0
+=
+  var ia: int = idx_a
+  var ib: int = idx_b
+  var r2: float = echem_solvent_pair_distance_sq(ia, ib)
+  if r2 < 1.0e-12:
+    return 0.0
+  var r: float = echem_solvent_sqrt_r2(r2)
+  var rc: float = echem_solvent_lj_rc_ang()
+  if r >= rc:
+    return 0.0
+  var eps: float = echem_solvent_lj_epsilon_kcal()
+  var sig: float = echem_solvent_lj_sigma_ang()
+  var sr: float = sig / r
+  var sr6: float = sr * sr * sr * sr * sr * sr
+  var sr12: float = sr6 * sr6
+  return 4.0 * eps * (sr12 - sr6)
+
+def echem_solvent_shell_energy_stub() -> float
+  requires true
+  ensures result != 0.0
+  decreases 0
+=
+  var n: int = echem_solvent_water_count()
+  var e_lj: float = 0.0
+  var e_ew: float = 0.0
+  var i: int = 0
+  while i < n
+    var j: int = i + 1
+    while j < n
+      e_lj = e_lj + echem_solvent_pair_lj_energy(i, j)
+      var r2: float = echem_solvent_pair_distance_sq(i, j)
+      if r2 > 1.0e-12:
+        var r: float = echem_solvent_sqrt_r2(r2)
+        e_ew = e_ew + echem_ewald_stub_energy(r)
+      j = j + 1
+    i = i + 1
+  return e_lj + 0.01 * e_ew
+
+def echem_solvent_gr_bin_count() -> int
+  requires true
+  ensures result == 16
+  decreases 0
+=
+  return 16
+
+def echem_solvent_gr_dr_ang() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 0.5
+
+def echem_solvent_gr_bin_lo_ang(bin_idx: int) -> float
+  requires bin_idx >= 0
+  requires bin_idx < echem_solvent_gr_bin_count()
+  ensures result >= 0.0
+  decreases bin_idx
+=
+  if bin_idx == 0:
+    return 0.0
+  if bin_idx == 1:
+    return 0.5
+  if bin_idx == 2:
+    return 1.0
+  if bin_idx == 3:
+    return 1.5
+  if bin_idx == 4:
+    return 2.0
+  if bin_idx == 5:
+    return 2.5
+  if bin_idx == 6:
+    return 3.0
+  if bin_idx == 7:
+    return 3.5
+  if bin_idx == 8:
+    return 4.0
+  if bin_idx == 9:
+    return 4.5
+  if bin_idx == 10:
+    return 5.0
+  if bin_idx == 11:
+    return 5.5
+  if bin_idx == 12:
+    return 6.0
+  if bin_idx == 13:
+    return 6.5
+  if bin_idx == 14:
+    return 7.0
+  return 7.5
+
+def echem_solvent_gr_bin_center_ang(bin_idx: int) -> float
+  requires bin_idx >= 0
+  requires bin_idx < echem_solvent_gr_bin_count()
+  ensures result > 0.0
+  decreases bin_idx
+=
+  var lo: float = echem_solvent_gr_bin_lo_ang(bin_idx)
+  var dr: float = echem_solvent_gr_dr_ang()
+  return lo + 0.5 * dr
+
+def echem_solvent_gr_bin_hits(bin_idx: int) -> int
+  requires bin_idx >= 0
+  requires bin_idx < echem_solvent_gr_bin_count()
+  ensures result >= 0
+  decreases 0
+=
+  var n: int = echem_solvent_water_count()
+  var dr: float = echem_solvent_gr_dr_ang()
+  var hits: int = 0
+  var i: int = 0
+  while i < n
+    var j: int = i + 1
+    while j < n
+      var r2: float = echem_solvent_pair_distance_sq(i, j)
+      if r2 > 1.0e-12:
+        var r: float = echem_solvent_sqrt_r2(r2)
+        var b: int = 0
+        while b < echem_solvent_gr_bin_count()
+          var lo: float = echem_solvent_gr_bin_lo_ang(b)
+          var hi: float = lo + dr
+          if r >= lo:
+            if r < hi:
+              if b == bin_idx:
+                hits = hits + 1
+          b = b + 1
+      j = j + 1
+    i = i + 1
+  return hits
+
+def echem_solvent_gr_peak_r_ang() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var best_bin: int = 0
+  var best_hits: int = 0
+  var b: int = 0
+  while b < echem_solvent_gr_bin_count()
+    var h: int = echem_solvent_gr_bin_hits(b)
+    if h > best_hits:
+      best_hits = h
+      best_bin = b
+    b = b + 1
+  return echem_solvent_gr_bin_center_ang(best_bin)
+
+def echem_solvent_gr_peak_reference_ang() -> float
+  requires true
+  ensures result > 2.0
+  ensures result < 4.0
+  decreases 0
+=
+  return 2.8
+
+def echem_solvent_gr_peak_tolerance_ang() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 0.35
+
+def echem_solvent_gr_peak_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var peak: float = echem_solvent_gr_peak_r_ang()
+  var ref: float = echem_solvent_gr_peak_reference_ang()
+  var tol: float = echem_solvent_gr_peak_tolerance_ang()
+  var d: float = peak - ref
+  if d < 0.0:
+    d = -d
+  if d > tol:
+    return 0
+  var e: float = echem_solvent_shell_energy_stub()
+  if e == 0.0:
+    return 0
+  return 1

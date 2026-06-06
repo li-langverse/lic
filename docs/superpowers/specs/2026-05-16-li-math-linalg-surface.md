@@ -16,6 +16,16 @@ Users never call `simd(...)` or lane intrinsics in normal code. There is no “s
 
 **Goal:** linear-algebra mistakes are **compile-time errors**, same class as type errors — not `ValueError` at run time.
 
+### Broadcast (v1 reject gate)
+
+| Case | Verdict |
+|------|---------|
+| `array[N,T]` element-wise with same `N` | OK |
+| `array[1,T]` with `array[N,T]` (1d length-1 broadcast) | OK |
+| `array[M,T]` with `array[K,T]`, `M≠K`, neither is 1 | **compile_fail** |
+| `array[M,array[N,T]]` with `array[M,array[1,T]]` or `array[1,array[N,T]]` | **compile_fail** — NumPy rank broadcast rejected |
+| Full NumPy rank alignment | **deferred** ([#526](https://github.com/li-langverse/lic/issues/526)) |
+
 ---
 
 Users write `C += A @ B`, `y[i] = alpha * x[i] + y[i]`, `dot(x, y)` — not `simd(...)` or `__li_simd_*` in handbook or Tier 1 benchmarks.

@@ -103,6 +103,25 @@ flowchart LR
 
 ---
 
+## Broadcast policy (PH-2i-b, G-math)
+
+Li accepts **only** explicit 1d element-wise shapes today:
+
+| Left / right | Result |
+|--------------|--------|
+| `array[N, T]` × `array[N, T]` | OK — same length |
+| `array[1, T]` × `array[N, T]` (or symmetric) | OK — **length-1 broadcast** to the longer 1d array |
+| `array[M, T]` × `array[K, T]` with `M ≠ K` and neither is 1 | **compile_fail** — `"length-1 broadcast"` / `"matching lengths"` |
+| `array[M, array[N, T]]` × `array[M, array[1, T]]` (NumPy `(M,N)` vs `(M,1)`) | **compile_fail** — `"NumPy-style rank broadcast is not supported"` |
+| `array[M, array[N, T]]` × `array[1, array[N, T]]` (NumPy `(M,N)` vs `(1,N)`) | **compile_fail** — same |
+| General NumPy rank rules (prepend axes, align trailing dims) | **deferred** — [#526](https://github.com/li-langverse/lic/issues/526) |
+
+**Reject gate:** the typechecker rejects any element-wise `+ - * / **` where either operand is a 2d float matrix (`array[M, array[N, float]]`) unless both shapes match exactly — and even matching 2d element-wise is **not implemented yet** (use explicit index loops). There is **no silent shape promotion** (NumPy-style).
+
+**Corpus:** `li-tests/math_linalg/broadcast_len1_*.li` (OK), `broadcast_invalid_len2_vs_len4.li`, `broadcast_invalid_2d_m3n_vs_m1.li`, `broadcast_invalid_2d_m3n_vs_1n.li` (compile_fail).
+
+---
+
 ## Sub-phases
 
 | Sub | Deliverable | Exit |
@@ -171,6 +190,6 @@ Use existing [benchmarks plan](2026-05-14-benchmarks-and-simulations.md) harness
 - [x] Handbook pages published (`linear-algebra.md`, `math-hpc-examples.md`)
 - [x] No user-facing doc recommends `__li_simd_*` as the default path
 - [x] **2i-b** `norm`, `sum`/`dot`, `reductions/` suite; same-length `**` / prelude `axpy` / scalar×array (no broadcast) — float Lean Props still open
-- [x] **2i-broadcast** length-1 element-wise broadcast (`broadcast_len1_*.li`); non-broadcast length mismatch (`broadcast_invalid_len2_vs_len4.li`, `elementwise_len_mismatch.li`) — full NumPy rank rules open
+- [x] **2i-broadcast** length-1 element-wise broadcast (`broadcast_len1_*.li`); non-broadcast length mismatch (`broadcast_invalid_len2_vs_len4.li`, `elementwise_len_mismatch.li`); **2i-b-rank** NumPy rank broadcast reject gate + 2-rank `compile_fail` seeds (`broadcast_invalid_2d_*.li`) — full NumPy rank broadcast **deferred** ([#526](https://github.com/li-langverse/lic/issues/526))
 - [x] **P-linalg** loop implementation ≡ closed-form `ensures` in Lean (**G-lean**) (`linalg_dot4_int_loop_open.li` + `discharge_linalg_int_lean.sh`; float Props still **G-math** open)
 - [ ] Tier 1 perf ≤1.2× C++ (benchmarks dashboard)

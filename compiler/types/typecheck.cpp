@@ -860,6 +860,26 @@ struct Ctx {
         if (e.bin_op == BinOp::Add || e.bin_op == BinOp::Sub || e.bin_op == BinOp::Mul ||
             e.bin_op == BinOp::Div || e.bin_op == BinOp::Mod || e.bin_op == BinOp::FloorDiv ||
             e.bin_op == BinOp::Pow) {
+          {
+            std::int64_t lm = 0;
+            std::int64_t ln = 0;
+            std::int64_t rm = 0;
+            std::int64_t rn = 0;
+            const bool l2d = ty_is_2d_float_matrix(l, &lm, &ln);
+            const bool r2d = ty_is_2d_float_matrix(r, &rm, &rn);
+            if (l2d || r2d) {
+              if (l2d && r2d && lm == rm && ln == rn) {
+                diags.error(loc(e.span),
+                            "element-wise arithmetic on 2d float matrices is not supported yet; "
+                            "use explicit index loops");
+              } else {
+                diags.error(loc(e.span),
+                            "NumPy-style rank broadcast is not supported; element-wise ops accept "
+                            "matching 1d lengths or length-1 broadcast only");
+              }
+              return l2d ? l : r;
+            }
+          }
           bool l_float = false;
           bool r_float = false;
           std::int64_t ln = 0;

@@ -997,14 +997,14 @@ struct Ctx {
           }
           return make_int();
         }
-        if (e.ident == "sum") {
+        if (e.ident == "sum" || e.ident == "par_sum") {
           if (e.args.size() != 1) {
-            diags.error(loc(e.span), "sum expects one array argument");
+            diags.error(loc(e.span), e.ident + " expects one array argument");
             return make_int();
           }
           const TyPtr arg_ty = type_of(*e.args[0]);
           if (arg_ty->kind != TyKind::Array || !arg_ty->elem) {
-            diags.error(loc(e.span), "sum expects a fixed array argument");
+            diags.error(loc(e.span), e.ident + " expects a fixed array argument");
             return make_int();
           }
           if (arg_ty->elem->kind == TyKind::Int) {
@@ -1013,7 +1013,7 @@ struct Ctx {
           if (arg_ty->elem->kind == TyKind::Float) {
             return make_float();
           }
-          diags.error(loc(e.span), "sum supports int or float arrays only");
+          diags.error(loc(e.span), e.ident + " supports int or float arrays only");
           return make_int();
         }
         if (e.ident == "dot") {
@@ -1300,7 +1300,8 @@ struct Ctx {
     if (call.kind != Expr::Kind::Call) {
       return;
     }
-    if (call.ident == "echo" || call.ident == "sum" || call.ident == "dot" ||
+    if (call.ident == "echo" || call.ident == "sum" || call.ident == "par_sum" ||
+        call.ident == "dot" ||
         call.ident == "norm" || call.ident == "axpy" ||
         call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||
         call.ident == "disjoint_slice" || call.ident == "row_ok" ||

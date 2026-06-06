@@ -716,6 +716,11 @@ suite = "parallel_codegen"
 file = "parallel_codegen/three_float_arrays_12.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "parallel_codegen"
+file = "parallel_codegen/par_sum_f64.li"
+outcome = "verify_ok"
+
 # --- simd (native vector types) ---
 
 [[tests]]

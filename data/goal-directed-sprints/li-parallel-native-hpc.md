@@ -26,7 +26,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 | **WP-PAR-12** | static/dynamic/guided schedulers | **DONE** — `LI_PAR_SCHEDULE` + pool API; dynamic atomic chunks + guided decreasing chunks; smoke `li_par_pool_schedule_smoke` |
 | **WP-PAR-13** | Tree reductions `li_par_reduce.c` | **DONE** — sum/min/max f64, sum i64 |
 | **WP-PAR-14** | Windows thread pool | **DONE** — no serial `_WIN32` fallback |
-| **WP-PAR-15** | Compiler `reduce` lowering | **STUB** — runtime API ready; MIR lowering Phase 1.1 |
+| **WP-PAR-15** | Compiler `reduce` lowering | **DONE** — `par_sum(a)` → `ParReduceSumF64` / `li_par_reduce_sum_f64`; `parallel for` reduce clause Phase 1.1 |
 | **WP-PAR-16** | Reduction policy | **STUB** — existing G-par disjoint gates |
 
 ## Phase 2 — Distributed runtime
@@ -73,3 +73,5 @@ Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and 
 **Gate evidence (2026-06-06, agent run 3):** WP-PAR-12 schedulers — `bash li-tests/tooling/li_par_pool_schedule_smoke.sh` → exit 0; dynamic + guided cover all 64 iterations under chunk_size=7.
 
 **Gate evidence (2026-06-06, agent run 4):** WP-PAR-11 work-stealing — `bash li-tests/tooling/li_par_pool_steal_smoke.sh` → exit 0; steal schedule covers all 64 iterations under chunk_size=7 with 4 workers.
+
+**Gate evidence (2026-06-06, agent run 5):** WP-PAR-15 reduce lowering — `bash li-tests/tooling/li_par_reduce_codegen_smoke.sh` → exit 0; `par_sum` on `array[64,float]` links `li_par_reduce.c` + pool; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0.

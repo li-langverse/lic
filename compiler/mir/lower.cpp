@@ -1489,20 +1489,25 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           }
         }
       }
-      if (e.ident == "sum" && e.args.size() == 1 && g_arr_ctx) {
+      if ((e.ident == "sum" || e.ident == "par_sum") && e.args.size() == 1 && g_arr_ctx) {
         const std::string arr =
             lower_expr_to(*e.args[0], module, out, float_names, simd_names, i64_locals);
         const std::string dest = fresh_temp();
+        const bool par_reduce = e.ident == "par_sum";
         if (g_arr_ctx->float_array_names &&
             g_arr_ctx->float_array_names->count(arr) > 0) {
           const auto sz = g_arr_ctx->float_array_sizes.find(arr);
           if (sz != g_arr_ctx->float_array_sizes.end()) {
             MirInsn ins;
-            ins.op = MirOp::ArraySumF64;
+            ins.op = par_reduce ? MirOp::ParReduceSumF64 : MirOp::ArraySumF64;
             ins.ident = dest;
             ins.lhs_ident = arr;
             ins.int_value = sz->second;
             out.push_back(std::move(ins));
+            if (par_reduce && g_mir_module) {
+              g_mir_module->needs_rt_par_reduce = true;
+              g_mir_module->needs_rt_par_pool = true;
+            }
             float_names.insert(dest);
             return dest;
           }
@@ -1511,6 +1516,7 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           const auto sz = g_arr_ctx->int_array_sizes.find(arr);
           if (sz != g_arr_ctx->int_array_sizes.end()) {
             MirInsn ins;
+            // i32 tiles: runtime li_par_reduce_sum_i64 expects i64* — serial until i32 kernel lands.
             ins.op = MirOp::ArraySumI64;
             ins.ident = dest;
             ins.lhs_ident = arr;

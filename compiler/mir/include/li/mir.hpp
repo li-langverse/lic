@@ -67,6 +67,8 @@ enum class MirOp {
   SimdHorizSumF64,
   SimdCopyF64,
   OmpParallelFor,
+  /** `par_sum(a)` on float tiles → runtime/li_par_reduce.c tree reduce (WP-PAR-15). */
+  ParReduceSumF64,
   Label,
   Jump,
   BranchIfZero,

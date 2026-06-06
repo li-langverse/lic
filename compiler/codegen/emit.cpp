@@ -1266,6 +1266,30 @@ struct EmitCtx {
         builder->CreateStore(acc, ensure_int_local(ins.ident));
         return true;
       }
+      case MirOp::ParReduceSumF64: {
+        auto a_it = arrays.find(ins.lhs_ident);
+        if (a_it == arrays.end()) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        llvm::Value* gep_idx[] = {zero, zero};
+        llvm::Value* data_ptr = builder->CreateInBoundsGEP(
+            a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+        llvm::FunctionCallee rt_fn =
+            module->getOrInsertFunction("li_par_reduce_sum_f64",
+                                        llvm::FunctionType::get(
+                                            f64, {llvm::PointerType::getUnqual(f64),
+                                                  i64_ty(context), i32_ty(context)},
+                                            false));
+        llvm::Value* n = llvm::ConstantInt::get(i64_ty(context), ins.int_value);
+        llvm::Value* team =
+            llvm::ConstantInt::get(i32_ty(context), static_cast<unsigned>(runtime_team_size));
+        llvm::Value* sum =
+            builder->CreateCall(rt_fn, {data_ptr, n, team});
+        builder->CreateStore(sum, ensure_float_local(ins.ident));
+        return true;
+      }
       case MirOp::ArrayBinOpF64: {
         auto d_it = arrays.find(ins.ident);
         auto a_it = arrays.find(ins.lhs_ident);
@@ -1616,6 +1640,10 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                                    llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
                                i32_ty(context)},
                               false));
+  llvm::Type* f64_ptr = llvm::PointerType::getUnqual(f64);
+  module->getOrInsertFunction(
+      "li_par_reduce_sum_f64",
+      llvm::FunctionType::get(f64, {f64_ptr, i64_ty(context), i32_ty(context)}, false));
   module->getOrInsertFunction("li_async_frame_enter",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
   module->getOrInsertFunction("li_async_frame_leave",

@@ -66,6 +66,10 @@ void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) 
       if (ins.op == MirOp::CallExtern && !ins.callee.empty()) {
         mir_note_runtime_callee(ins.callee, out_flags);
       }
+      if (ins.op == MirOp::ParReduceSumF64) {
+        out_flags.needs_rt_par_reduce = true;
+        out_flags.needs_rt_par_pool = true;
+      }
       if (ins.op == MirOp::AsyncAwait || ins.op == MirOp::AsyncFrameEnter ||
           ins.op == MirOp::AsyncFrameLeave) {
         out_flags.needs_rt_net = true;

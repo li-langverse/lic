@@ -15,11 +15,20 @@ if [[ ! -f "$HTTPD_LIB" ]]; then
 fi
 
 wall_s() {
-  local start end
-  start="$(date +%s.%N)"
-  "$@"
-  end="$(date +%s.%N)"
-  awk -v s="$start" -v e="$end" 'BEGIN { printf "%.3f", e - s }'
+  if command -v python3 >/dev/null 2>&1; then
+    python3 - "$@" <<'PY'
+import subprocess, sys, time
+start = time.perf_counter()
+subprocess.run(sys.argv[1:], check=True)
+print(f"{time.perf_counter() - start:.3f}")
+PY
+  else
+    local start end
+    start=$(date +%s)
+    "$@"
+    end=$(date +%s)
+    awk -v s="$start" -v e="$end" 'BEGIN { printf "%.3f", e - s }'
+  fi
 }
 
 BUILD_FLAGS=(--allow-open-vc --no-lean-verify --build-dir="$BUILD_DIR")

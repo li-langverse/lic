@@ -1,6 +1,34 @@
+import parallel.kernels
+import parallel.proof
+import parallel.distributed
+import parallel.ghost
+
 def li_parallel_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
+
+def li_parallel_selftest() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if par_outer_product_elem(0, 0, 2.0, 3.0, 4.0, 5.0) < 7.9 or par_outer_product_elem(0, 0, 2.0, 3.0, 4.0, 5.0) > 8.1:
+    return 1
+  if par_outer_product_elem(1, 1, 2.0, 3.0, 4.0, 5.0) < 14.9 or par_outer_product_elem(1, 1, 2.0, 3.0, 4.0, 5.0) > 15.1:
+    return 2
+  if halo_local_begin(8, 0, 2) != 0:
+    return 3
+  if halo_local_end(8, 0, 2) != 4:
+    return 4
+  if halo_left_ghost_index(4, 1, 0) != 3:
+    return 5
+  if halo_right_ghost_index(4, 0) != 4:
+    return 6
+  if ghost_exchange_1d_left_sample(1.5) < 1.4 or ghost_exchange_1d_left_sample(1.5) > 1.6:
+    return 7
+  if ghost_exchange_1d_right_sample(2.5) < 2.4 or ghost_exchange_1d_right_sample(2.5) > 2.6:
+    return 8
+  return 0

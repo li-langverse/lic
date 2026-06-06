@@ -10,23 +10,57 @@ extern proc li_dpar_barrier() -> unit
   requires true
   ensures true
 
-def rank() -> int
+extern proc li_dpar_block_partition_begin(global_n: int, rank: int, world: int) -> int
+  requires global_n >= 0
+  requires rank >= 0
+  requires world > 0
+  ensures result >= 0
+  ensures result <= global_n
+
+extern proc li_dpar_block_partition_end(global_n: int, rank: int, world: int) -> int
+  requires global_n >= 0
+  requires rank >= 0
+  requires world > 0
+  ensures result >= 0
+  ensures result <= global_n
+
+def rank() -> int raises IO
   requires true
   ensures result >= 0
   decreases 0
 =
   return li_dpar_rank()
 
-def world_size() -> int
+def world_size() -> int raises IO
   requires true
   ensures result >= 1
   decreases 0
 =
   return li_dpar_world_size()
 
-def barrier() -> unit
+def barrier() -> unit raises IO
   requires true
   ensures true
   decreases 0
 =
   li_dpar_barrier()
+
+def block_partition_begin(global_n: int, rank_id: int, world: int) -> int raises IO
+  requires global_n >= 0
+  requires rank_id >= 0
+  requires world > 0
+  ensures result >= 0
+  ensures result <= global_n
+  decreases global_n
+=
+  return li_dpar_block_partition_begin(global_n, rank_id, world)
+
+def block_partition_end(global_n: int, rank_id: int, world: int) -> int raises IO
+  requires global_n >= 0
+  requires rank_id >= 0
+  requires world > 0
+  ensures result >= 0
+  ensures result <= global_n
+  decreases global_n
+=
+  return li_dpar_block_partition_end(global_n, rank_id, world)

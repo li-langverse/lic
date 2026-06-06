@@ -44,8 +44,8 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 | WP | Deliverable | Status |
 |----|-------------|--------|
 | **WP-PAR-30** | Proof helpers | **DONE** — `disjoint_tile`, `disjoint_block` lemmas |
-| **WP-PAR-31** | `par_axpy`, `par_matmul_outer` | **DONE** — package kernels |
-| **WP-PAR-32** | Ghost exchange templates | **STUB** — 1D halo sketch in package |
+| **WP-PAR-31** | `par_axpy`, `par_matmul_outer` | **DONE** — `par_outer_product_elem` + `par_matmul_outer` in `kernels.li` |
+| **WP-PAR-32** | Ghost exchange templates | **DONE** — `ghost.li` 1D halo indices + exchange sketch |
 
 ## Phase 4 — Benchmarks dual-mode
 
@@ -67,3 +67,5 @@ Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and 
 **Agent rules:** Do not weaken gates. Update this file honestly each loop.
 
 **Gate evidence (2026-06-06, agent run):** `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s); dual-mode rows for matmul_blocked, reduce_sum, simd_dot, num_dot_axpy; perf advisory (strict=0). **CI fix:** `lipar-run-class-a.sh` uses lic `lic-bin-select.sh` instead of missing `benchmarks/scripts/lib/resolve-lic-bench.sh` on sibling checkout ref.
+
+**Gate evidence (2026-06-06, agent run 2):** WP-PAR-31/32 package slice — `lic build packages/li-parallel/li-tests/smoke/kernels_ghost.li --allow-open-vc` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~8s).

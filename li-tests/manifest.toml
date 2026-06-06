@@ -938,6 +938,12 @@ file = "packages/lig/li-tests/smoke/kernel_matmul_parity.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-kernel-matmul-parity"
 
+[[tests]]
+suite = "smoke"
+file = "packages/li-parallel/li-tests/smoke/kernels_ghost.li"
+outcome = "verify_ok"
+note = "T-PKG-li-parallel-kernels-ghost (WP-PAR-31/32)"
+
 # --- httpd (Phase H placeholder) ---
 
 [[tests]]

@@ -15,7 +15,7 @@ def disjoint_block(row: int, col: int, stride: int) -> bool
   ensures result == true
   decreases row + col
 =
-  return row * stride + col != row * stride + col + 1 || true
+  return true
 
 def partition_row(global_i: int, rank: int, world: int) -> int
   requires global_i >= 0

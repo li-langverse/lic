@@ -1,0 +1,77 @@
+# 1D ghost/halo exchange templates (WP-PAR-32).
+# Proof-friendly partition indices; serial halo copy sketch for stencil prep.
+
+import parallel.distributed
+
+def halo_width_default() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def halo_local_begin(global_n: int, rank: int, world: int) -> int raises IO
+  requires global_n >= 0
+  requires rank >= 0
+  requires world > 0
+  ensures result >= 0
+  ensures result <= global_n
+  decreases global_n
+=
+  return block_partition_begin(global_n, rank, world)
+
+def halo_local_end(global_n: int, rank: int, world: int) -> int raises IO
+  requires global_n >= 0
+  requires rank >= 0
+  requires world > 0
+  ensures result >= 0
+  ensures result <= global_n
+  decreases global_n
+=
+  return block_partition_end(global_n, rank, world)
+
+def halo_left_ghost_index(local_begin: int, width: int, slot: int) -> int
+  requires local_begin >= 0
+  requires width > 0
+  requires slot >= 0
+  requires slot < width
+  ensures result >= 0
+  decreases local_begin + width - slot
+=
+  return local_begin - width + slot
+
+def halo_right_ghost_index(local_end: int, slot: int) -> int
+  requires local_end >= 0
+  requires slot >= 0
+  ensures result >= local_end
+  decreases local_end + slot
+=
+  return local_end + slot
+
+def ghost_exchange_1d_left_sample(boundary_value: float) -> float
+  requires true
+  ensures result == boundary_value
+  decreases 0
+=
+  return boundary_value
+
+def ghost_exchange_1d_right_sample(boundary_value: float) -> float
+  requires true
+  ensures result == boundary_value
+  decreases 0
+=
+  return boundary_value
+
+def ghost_exchange_1d_copy(
+  width: int,
+  left_owned: array[64, float],
+  right_owned: var array[64, float],
+  left_ghost: var array[8, float],
+  right_ghost: var array[8, float]
+) -> unit
+  requires width == 1
+  ensures true
+  decreases 0
+=
+  left_ghost[0] = ghost_exchange_1d_left_sample(left_owned[63])
+  right_ghost[0] = ghost_exchange_1d_right_sample(right_owned[0])

@@ -103,11 +103,92 @@ llvm::Value* string_ptr(llvm::IRBuilder<>& builder, llvm::GlobalVariable* gv) {
 
 struct ArraySlot {
   llvm::AllocaInst* alloca = nullptr;
+  /** `var array` param or outlined-loop capture — element 0 GEP base (WP-PAR-18). */
+  llvm::Value* byref = nullptr;
+  llvm::Type* stored_ty = nullptr;
   std::int64_t size = 0;
   std::int64_t cols = 0;
   bool is_float = false;
   bool is_matrix = false;
 };
+
+static llvm::Value* array_slot_base(const ArraySlot& slot) {
+  return slot.byref ? slot.byref : static_cast<llvm::Value*>(slot.alloca);
+}
+
+static llvm::Type* array_slot_ty(const ArraySlot& slot) {
+  if (slot.stored_ty) {
+    return slot.stored_ty;
+  }
+  return slot.alloca->getAllocatedType();
+}
+
+static std::string par_capture_global_name(const std::string& par_fn, const std::string& cap) {
+  return "__li_par_cap_" + par_fn + "_" + cap;
+}
+
+static std::string par_shared_array_key(const std::string& par_fn, const std::string& cap) {
+  return par_fn + "::" + cap;
+}
+
+struct ParSharedCache {
+  std::map<std::string, llvm::GlobalVariable*> arrays;
+};
+
+static llvm::GlobalVariable* ensure_par_shared_array(llvm::Module* module, ParSharedCache* cache,
+                                                     const std::string& par_fn,
+                                                     const MirParCapture& cap) {
+  const std::string key = par_shared_array_key(par_fn, cap.ident);
+  if (cache != nullptr) {
+    const auto it = cache->arrays.find(key);
+    if (it != cache->arrays.end()) {
+      return it->second;
+    }
+  }
+  const std::string name = "__li_par_shared_" + par_fn + "_" + cap.ident;
+  if (llvm::GlobalVariable* existing = module->getGlobalVariable(name)) {
+    if (cache != nullptr) {
+      cache->arrays[key] = existing;
+    }
+    return existing;
+  }
+  MirParam mp;
+  mp.fixed_array_elems = cap.fixed_array_elems;
+  mp.is_float = cap.is_float;
+  mp.is_matrix = cap.is_matrix;
+  mp.matrix_cols = cap.matrix_cols;
+  llvm::LLVMContext& ctx = module->getContext();
+  llvm::Type* arr_ty = llvm_array_type(ctx, mp);
+  auto* gv = new llvm::GlobalVariable(*module, arr_ty, false, llvm::GlobalValue::InternalLinkage,
+                                      llvm::ConstantAggregateZero::get(arr_ty), name);
+  if (cache != nullptr) {
+    cache->arrays[key] = gv;
+  }
+  return gv;
+}
+
+static llvm::GlobalVariable* ensure_par_capture_global(llvm::Module* module,
+                                                       const std::string& par_fn,
+                                                       const std::string& cap) {
+  const std::string name = par_capture_global_name(par_fn, cap);
+  if (llvm::GlobalVariable* existing = module->getGlobalVariable(name)) {
+    return existing;
+  }
+  llvm::LLVMContext& ctx = module->getContext();
+  auto* ty = llvm::PointerType::getUnqual(llvm::Type::getInt8Ty(ctx));
+  return new llvm::GlobalVariable(*module, ty, false, llvm::GlobalValue::InternalLinkage,
+                                  llvm::ConstantPointerNull::get(ty), name);
+}
+
+static MirParam mir_param_from_capture(const MirParCapture& cap) {
+  MirParam mp;
+  mp.name = cap.ident;
+  mp.fixed_array_elems = cap.fixed_array_elems;
+  mp.is_float = cap.is_float;
+  mp.is_matrix = cap.is_matrix;
+  mp.matrix_cols = cap.matrix_cols;
+  return mp;
+}
 
 struct EmitCtx {
   llvm::LLVMContext& context;
@@ -130,6 +211,7 @@ struct EmitCtx {
   std::map<std::string, llvm::AllocaInst*> simd_f64x4_locals;
   std::unordered_map<std::string, llvm::BasicBlock*> labels;
   int str_counter = 0;
+  ParSharedCache* par_shared_cache = nullptr;
 
   llvm::Type* vec4_f64() const {
     return llvm::VectorType::get(llvm::Type::getDoubleTy(context),
@@ -701,12 +783,12 @@ struct EmitCtx {
     }
     if (arg.is_array_ident) {
       if (auto a_it = arrays.find(arg.ident); a_it != arrays.end()) {
-        return a_it->second.alloca;
+        return array_slot_base(a_it->second);
       }
     }
     if (auto a_it = arrays.find(arg.ident); a_it != arrays.end()) {
-      llvm::Type* arr_ty = a_it->second.alloca->getAllocatedType();
-      return builder->CreateLoad(arr_ty, a_it->second.alloca);
+      llvm::Type* arr_ty = array_slot_ty(a_it->second);
+      return builder->CreateLoad(arr_ty, array_slot_base(a_it->second));
     }
     if (float_locals.find(arg.ident) != float_locals.end()) {
       return load_float(arg.ident);
@@ -718,6 +800,24 @@ struct EmitCtx {
       return load_i64(arg.ident);
     }
     return load_int(arg.ident);
+  }
+
+  void emit_array_copy_range(llvm::Value* from_base, llvm::Value* to_base, llvm::Type* arr_ty,
+                             std::int64_t n, bool is_float) {
+    if (n <= 0 || from_base == nullptr || to_base == nullptr) {
+      return;
+    }
+    llvm::Type* elem = is_float ? llvm::Type::getDoubleTy(context) : i32_ty(context);
+    llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+    const auto len = static_cast<unsigned>(n);
+    for (unsigned i = 0; i < len; ++i) {
+      llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
+      llvm::Value* gep_idx[] = {zero, idx};
+      llvm::Value* from_p = builder->CreateInBoundsGEP(arr_ty, from_base, gep_idx);
+      llvm::Value* to_p = builder->CreateInBoundsGEP(arr_ty, to_base, gep_idx);
+      llvm::Value* v = builder->CreateLoad(elem, from_p);
+      builder->CreateStore(v, to_p);
+    }
   }
 
   bool emit_insn(const MirInsn& ins) {
@@ -1133,6 +1233,18 @@ struct EmitCtx {
         if (!par_fn) {
           return true;
         }
+        for (const MirParCapture& cap : ins.par_captures) {
+          auto slot_it = arrays.find(cap.ident);
+          if (slot_it == arrays.end()) {
+            continue;
+          }
+          const MirParam mp = mir_param_from_capture(cap);
+          llvm::Type* arr_ty = llvm_array_type(context, mp);
+          llvm::GlobalVariable* shared =
+              ensure_par_shared_array(module, par_shared_cache, ins.callee, cap);
+          emit_array_copy_range(array_slot_base(slot_it->second), shared, arr_ty,
+                                cap.fixed_array_elems, cap.is_float);
+        }
         llvm::FunctionType* iter_ty =
             llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
         if (ins.par_reduce_kind != ParReduceKind::None && !ins.par_reduce_var.empty()) {
@@ -1169,6 +1281,18 @@ struct EmitCtx {
             {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
              llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn,
              llvm::ConstantInt::get(i32_ty(context), runtime_team_size)});
+        for (const MirParCapture& cap : ins.par_captures) {
+          auto slot_it = arrays.find(cap.ident);
+          if (slot_it == arrays.end()) {
+            continue;
+          }
+          const MirParam mp = mir_param_from_capture(cap);
+          llvm::Type* arr_ty = llvm_array_type(context, mp);
+          llvm::GlobalVariable* shared =
+              ensure_par_shared_array(module, par_shared_cache, ins.callee, cap);
+          emit_array_copy_range(shared, array_slot_base(slot_it->second), arr_ty,
+                                cap.fixed_array_elems, cap.is_float);
+        }
         return true;
       }
       case MirOp::DParFor: {
@@ -1199,14 +1323,16 @@ struct EmitCtx {
           llvm::ArrayType* mat_ty =
               llvm::ArrayType::get(row_ty, static_cast<unsigned>(ins.int_value));
           slot = builder->CreateAlloca(mat_ty, nullptr, ins.ident);
-          arrays[ins.ident] = ArraySlot{slot, ins.int_value, ins.rhs_int, true, true};
+          arrays[ins.ident] = ArraySlot{slot, nullptr, nullptr, ins.int_value, ins.rhs_int, true,
+                                          true};
         } else {
           llvm::Type* elem_ty = ins.array_is_float ? llvm::Type::getDoubleTy(context)
                                                    : i32_ty(context);
           llvm::ArrayType* arr_ty =
               llvm::ArrayType::get(elem_ty, static_cast<unsigned>(ins.int_value));
           slot = builder->CreateAlloca(arr_ty, nullptr, ins.ident);
-          arrays[ins.ident] = ArraySlot{slot, ins.int_value, 0, ins.array_is_float, false};
+          arrays[ins.ident] = ArraySlot{slot, nullptr, nullptr, ins.int_value, 0,
+                                          ins.array_is_float, false};
         }
         return true;
       }
@@ -1222,7 +1348,7 @@ struct EmitCtx {
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
         llvm::Value* gep_indices[] = {zero, idx};
         llvm::Value* ptr = builder->CreateInBoundsGEP(
-            it->second.alloca->getAllocatedType(), it->second.alloca, gep_indices);
+            array_slot_ty(it->second), array_slot_base(it->second), gep_indices);
         if (it->second.is_float || ins.op == MirOp::ArrayStoreFloat) {
           llvm::Value* val =
               ins.rhs_is_literal
@@ -1247,7 +1373,7 @@ struct EmitCtx {
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
         llvm::Value* gep_indices[] = {zero, idx};
         llvm::Value* ptr = builder->CreateInBoundsGEP(
-            it->second.alloca->getAllocatedType(), it->second.alloca, gep_indices);
+            array_slot_ty(it->second), array_slot_base(it->second), gep_indices);
         if (it->second.is_float) {
           llvm::Value* loaded = builder->CreateLoad(llvm::Type::getDoubleTy(context), ptr);
           if (!ins.lhs_ident.empty()) {
@@ -2199,6 +2325,23 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   };
   std::vector<UserFnEmit> user_fns;
 
+  ParSharedCache par_shared_cache;
+  for (const auto& fn : mir.functions) {
+    if (fn.name.rfind("__li_par_", 0) == 0) {
+      for (const MirParCapture& cap : fn.par_captures) {
+        ensure_par_shared_array(module.get(), &par_shared_cache, fn.name, cap);
+      }
+    }
+    for (const MirInsn& ins : fn.body) {
+      if (ins.op != MirOp::OmpParallelFor) {
+        continue;
+      }
+      for (const MirParCapture& cap : ins.par_captures) {
+        ensure_par_shared_array(module.get(), &par_shared_cache, ins.callee, cap);
+      }
+    }
+  }
+
   // Pass 1: declare every MIR function before any body references callees.
   for (const auto& fn : mir.functions) {
     if (fn.is_extern) {
@@ -2297,6 +2440,18 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                 {},
                 {},
                 {}};
+    ctx.par_shared_cache = &par_shared_cache;
+
+    if (is_par_fn) {
+      for (const MirParCapture& cap : fn.par_captures) {
+        const MirParam mp = mir_param_from_capture(cap);
+        llvm::Type* arr_ty = llvm_array_type(context, mp);
+        llvm::GlobalVariable* shared =
+            ensure_par_shared_array(module.get(), ctx.par_shared_cache, fn.name, cap);
+        ctx.arrays[cap.ident] = ArraySlot{nullptr, shared, arr_ty, cap.fixed_array_elems,
+                                            cap.matrix_cols, cap.is_float, cap.is_matrix};
+      }
+    }
 
     unsigned idx = 0;
     for (auto& arg : func->args()) {
@@ -2305,9 +2460,13 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
         const auto& mp = fn.params[idx];
         if (mp.fixed_array_elems > 0) {
           llvm::Type* arr_ty = llvm_array_type(context, mp);
+          if (mp.is_var) {
+            ctx.arrays[mp.name] = ArraySlot{nullptr, &arg, arr_ty, mp.fixed_array_elems,
+                                              mp.matrix_cols, mp.is_float, mp.is_matrix};
+          } else {
           llvm::AllocaInst* ap = builder.CreateAlloca(arr_ty, nullptr, mp.name);
-          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, mp.matrix_cols, mp.is_float,
-                                          mp.is_matrix};
+          ctx.arrays[mp.name] = ArraySlot{ap, nullptr, arr_ty, mp.fixed_array_elems, mp.matrix_cols,
+                                          mp.is_float, mp.is_matrix};
           llvm::Type* elem = llvm_scalar(context, mp.is_float, mp.is_i64, mp.is_string);
           llvm::Value* zero = llvm::ConstantInt::get(builder.getInt32Ty(), 0);
           if (mp.is_matrix && mp.matrix_cols > 0) {
@@ -2334,6 +2493,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
               llvm::Value* v = builder.CreateLoad(elem, from_p);
               builder.CreateStore(v, to_p);
             }
+          }
           }
         } else if (mp.is_string) {
           builder.CreateStore(&arg, ctx.ensure_ptr_local(mp.name));

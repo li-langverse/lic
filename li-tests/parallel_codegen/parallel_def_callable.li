@@ -1,0 +1,33 @@
+extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
+  requires true
+  ensures true
+
+@cpu
+@parallel(disjoint=disjoint_elem)
+def fill_parallel(buf: var array[64, float]) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  parallel for i in 0..<64
+    decreases 64 - i
+  =
+    buf[i] = 1.0
+  return 0
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var buf: array[64, float]
+  var i: int = 0
+  while i < 64
+    buf[i] = 0.0
+    i = i + 1
+  fill_parallel(buf)
+  var total: float = par_sum(buf)
+  li_rt_volatile_sink_f64(total)
+  if total != 64.0:
+    return 1
+  return 0

@@ -10,7 +10,7 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 |----|-----|--------|
 | WP-PAR-15 | `team()` / program-first `reduce` | **IN PROGRESS** |
 | WP-PAR-17 | Variable cores / scoped team | **IN PROGRESS** — `li_exec_team_push/pop` stack + scope smoke |
-| WP-PAR-18 | Callable parallel defs | **PENDING** |
+| WP-PAR-18 | Callable parallel defs | **DONE** — var array params + outlined capture via shared buffer |
 | WP-PAR-19 | Unlimited/auto cores | **IN PROGRESS** — `team(cores=0)` auto, cap 256 via `li_par_max_threads()` |
 
 ## Phase 2 — Distributed

@@ -30,6 +30,7 @@ for smoke in \
   li-tests/tooling/li_par_reduce_sum_smoke.sh \
   li-tests/tooling/li_exec_team_scope_smoke.sh \
   li-tests/tooling/li_dpar_for_smoke.sh \
+  li-tests/tooling/li_parallel_def_callable_smoke.sh \
   li-tests/tooling/li_parallel_suite_resolve.sh
 do
   chmod +x "$ROOT/$smoke"

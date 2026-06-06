@@ -213,6 +213,7 @@ struct LowerCtx {
   MirModule* mir = nullptr;
   std::string proc_name;
   const ProcDecl* proc = nullptr;
+  MirFn* owner_fn = nullptr;
   std::vector<LoopLabels>* loop_stack = nullptr;
   const std::unordered_map<std::string, const TypeExpr*>* object_locals = nullptr;
   std::unordered_map<std::string, double>* const_floats = nullptr;
@@ -1308,6 +1309,51 @@ void seed_i64_params(const MirFn& fn, std::unordered_set<std::string>& i64_local
   }
 }
 
+void seed_array_params(const MirFn& fn, LowerArrayCtx& arr_ctx,
+                       std::unordered_set<std::string>& float_array_names) {
+  for (const auto& p : fn.params) {
+    if (p.fixed_array_elems <= 0) {
+      continue;
+    }
+    float_array_names.insert(p.name);
+    if (p.is_float) {
+      arr_ctx.float_array_sizes[p.name] = p.fixed_array_elems;
+    } else if (!p.is_matrix) {
+      arr_ctx.int_array_sizes[p.name] = p.fixed_array_elems;
+    }
+  }
+}
+
+MirParCapture mir_par_capture_meta(const std::string& ident, const MirFn* owner,
+                                   const LowerArrayCtx* arr_ctx) {
+  MirParCapture cap;
+  cap.ident = ident;
+  if (owner) {
+    for (const auto& mp : owner->params) {
+      if (mp.name == ident && mp.fixed_array_elems > 0) {
+        cap.fixed_array_elems = mp.fixed_array_elems;
+        cap.is_float = mp.is_float;
+        cap.is_matrix = mp.is_matrix;
+        cap.matrix_cols = mp.matrix_cols;
+        return cap;
+      }
+    }
+  }
+  if (arr_ctx) {
+    const auto fs = arr_ctx->float_array_sizes.find(ident);
+    if (fs != arr_ctx->float_array_sizes.end()) {
+      cap.fixed_array_elems = fs->second;
+      cap.is_float = true;
+      return cap;
+    }
+    const auto isz = arr_ctx->int_array_sizes.find(ident);
+    if (isz != arr_ctx->int_array_sizes.end()) {
+      cap.fixed_array_elems = isz->second;
+    }
+  }
+  return cap;
+}
+
 std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirInsn>& out,
                           std::unordered_set<std::string>& float_names,
                           std::unordered_set<std::string>& simd_names,
@@ -2075,6 +2121,10 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           arr_slot = mir_field_slot_for_expr(*stmt.init->base);
         }
         if (!arr_slot.empty()) {
+          float_array_names.insert(arr_slot);
+          if (g_arr_ctx && g_arr_ctx->float_array_names) {
+            g_arr_ctx->float_array_names->insert(arr_slot);
+          }
           const bool fa = float_array_names.count(arr_slot) > 0;
           MirInsn ins;
           ins.op = fa ? MirOp::ArrayStoreFloat : MirOp::ArrayStoreInt;
@@ -2246,14 +2296,32 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       std::unordered_set<std::string> par_simd;
       std::unordered_set<std::string> par_float_arrays;
       std::unordered_set<std::string> par_i64s;
+      LowerArrayCtx par_arr_ctx;
+      par_arr_ctx.float_array_names = &par_float_arrays;
+      if (g_arr_ctx) {
+        for (const auto& kv : g_arr_ctx->float_array_sizes) {
+          par_arr_ctx.float_array_sizes[kv.first] = kv.second;
+        }
+        for (const auto& kv : g_arr_ctx->int_array_sizes) {
+          par_arr_ctx.int_array_sizes[kv.first] = kv.second;
+        }
+      }
+      LowerArrayCtx* saved_arr_ctx = g_arr_ctx;
+      g_arr_ctx = &par_arr_ctx;
       const std::string reduce_var =
           stmt.par_reduce_kind != ParReduceKind::None ? stmt.par_reduce_var : std::string();
-      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr, ctx.object_locals,
-                       nullptr, stmt.par_reduce_kind,
+      LowerCtx par_ctx{ctx.module,       ctx.mir,     par_name, nullptr, nullptr, nullptr,
+                       ctx.object_locals, nullptr, stmt.par_reduce_kind,
                        reduce_var.empty() ? nullptr : &reduce_var};
       lower_stmts(stmt.par_body, par_ctx, false, par_fn.body, par_floats, par_simd,
                   par_float_arrays, par_i64s);
+      g_arr_ctx = saved_arr_ctx;
+      for (const auto& cap_name : par_float_arrays) {
+        par_fn.par_captures.push_back(
+            mir_par_capture_meta(cap_name, ctx.owner_fn, saved_arr_ctx));
+      }
       append_implicit_return(par_fn.body);
+      const std::vector<MirParCapture> par_captures = par_fn.par_captures;
       ctx.mir->functions.push_back(std::move(par_fn));
       MirInsn call;
       call.op = MirOp::OmpParallelFor;
@@ -2268,6 +2336,7 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
         ctx.mir->needs_rt_par_reduce = true;
         ctx.mir->needs_rt_par_pool = true;
       }
+      call.par_captures = par_captures;
       out.push_back(std::move(call));
       ctx.mir->uses_openmp = true;
       break;
@@ -2289,7 +2358,7 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       std::unordered_set<std::string> par_simd;
       std::unordered_set<std::string> par_float_arrays;
       std::unordered_set<std::string> par_i64s;
-      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr, ctx.object_locals};
+      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr, nullptr, ctx.object_locals};
       lower_stmts(stmt.par_body, par_ctx, false, par_fn.body, par_floats, par_simd,
                   par_float_arrays, par_i64s);
       append_implicit_return(par_fn.body);
@@ -2763,6 +2832,7 @@ MirModule lower_to_mir(const Module& module) {
         }
         mp.is_string = mir_ptr_param_type_name(p.type.name);
         mp.is_i64 = is_i64_type_name(p.type.name) || is_string_type_name(p.type.name);
+        mp.is_var = p.type.is_var;
         fn.params.push_back(std::move(mp));
       }
     }
@@ -2789,11 +2859,12 @@ MirModule lower_to_mir(const Module& module) {
       g_mir_module = &mir;
       seed_float_params(fn, float_names);
       seed_i64_params(fn, i64_locals);
+      seed_array_params(fn, arr_ctx, float_array_names);
       std::vector<LoopLabels> loop_stack;
       std::unordered_map<std::string, double> const_floats;
       std::unordered_map<std::string, const TypeExpr*> object_local_types =
           collect_object_local_types(module, proc);
-      LowerCtx ctx{&module,       &mir,     proc.name, &proc,
+      LowerCtx ctx{&module,       &mir,     proc.name, &proc, &fn,
                    &loop_stack,   &object_local_types, &const_floats};
       g_object_locals = &object_local_types;
       bool lowered_body = false;

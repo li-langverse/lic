@@ -125,6 +125,17 @@ struct MirParam {
   /** `array[M, array[K, float]]` param: rows in fixed_array_elems, cols here. */
   bool is_matrix = false;
   std::int64_t matrix_cols = 0;
+  /** `var array[...]` — pass by pointer; mutations visible to caller (WP-PAR-18). */
+  bool is_var = false;
+};
+
+/** Array (or matrix) captured by an outlined `__li_par_*` body from the enclosing def. */
+struct MirParCapture {
+  std::string ident;
+  std::int64_t fixed_array_elems = 0;
+  bool is_float = false;
+  bool is_matrix = false;
+  std::int64_t matrix_cols = 0;
 };
 
 struct MirInsn {
@@ -160,6 +171,8 @@ struct MirInsn {
   /** `reduce(+|min|max: ident)` — float accumulator (WP-PAR-15). */
   ParReduceKind par_reduce_kind = ParReduceKind::None;
   std::string par_reduce_var;
+  /** Outlined-loop captures published before `li_parallel_for_i64` (WP-PAR-18). */
+  std::vector<MirParCapture> par_captures;
   std::vector<MirArg> args;
   /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc
    *  unpack into `ident + "_" + name` (scalar locals or ArrayAlloc slots). */
@@ -198,6 +211,8 @@ struct MirFn {
   std::vector<MirParam> params;
   /** Populated when `returns_object`; parallel to ReturnObject / unpack layout. */
   std::vector<MirParam> return_object_layout;
+  /** Captured array slots for outlined `__li_par_*` bodies (WP-PAR-18). */
+  std::vector<MirParCapture> par_captures;
   std::vector<MirInsn> body;
 };
 

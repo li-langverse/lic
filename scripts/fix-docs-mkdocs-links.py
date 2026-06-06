@@ -1,77 +1,19 @@
 #!/usr/bin/env python3
-"""Rewrite docs/ markdown links so MkDocs builds HTML without raw .md hrefs."""
+"""Rewrite docs/ markdown links for MkDocs --strict (lic#403) and HTML hygiene (lic#404)."""
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
+from urllib.parse import quote
 
 REPO = Path(__file__).resolve().parents[1]
 DOCS = REPO / "docs"
-GITHUB = "https://github.com/li-langverse/lic/blob/main"
+GITHUB_LIC = "https://github.com/li-langverse/lic/blob/main"
+GITHUB_AGENTS = "https://github.com/li-langverse/li-cursor-agents/blob/main"
+GITHUB_RESEARCH = "https://github.com/li-langverse/research-findings/blob/main"
 
-# Global replacements (old, new) applied to all docs/**/*.md
-GLOBAL_SUBS: list[tuple[str, str]] = [
-    ("../../SECURITY.md", f"{GITHUB}/SECURITY.md"),
-    ("../../proof-database/DISCREPANCIES.md", "proof-database/DISCREPANCIES.md"),
-    ("../../proof-db/README.md", f"{GITHUB}/proof-db/README.md"),
-    ("../../proof-db/reporter.md", f"{GITHUB}/proof-db/reporter.md"),
-    ("../../ecosystem/lip.md", "https://github.com/li-langverse/lip/blob/main/docs/lip.md"),
-    ("../../ecosystem/lit.md", "https://github.com/li-langverse/lit/blob/main/docs/lit.md"),
-    ("../../ecosystem/registry.md", "https://github.com/li-langverse/lip/blob/main/docs/registry.md"),
-    ("../../verification/packages.md", f"{GITHUB}/docs/verification/packages.md"),
-    ("../../handbook/README.md", "../../language/overview.md"),
-    ("../benchmarks/competitive-engines-plan.md", f"{GITHUB}/docs/benchmarks/competitive-engines-plan.md"),
-    ("../game-dev/competitive-bioengineering-plan.md", f"{GITHUB}/docs/game-dev/competitive-bioengineering-plan.md"),
-    ("../game-dev/plans/li-native-gui-plan.md", f"{GITHUB}/docs/game-dev/plans/li-native-gui-plan.md"),
-    ("../superpowers/specs/2026-05-16-li-math-linalg-surface.md", "../../superpowers/specs/2026-05-16-li-math-linalg-surface.md"),
-    ("../verification/provability-gaps.md", "../../verification/provability-gaps.md"),
-    ("sim-packages-algorithm-plan.md", f"{GITHUB}/docs/ecosystem/sim-packages-algorithm-plan.md"),
-    ("../../contrib/linguist-samples/SAMPLES_LICENSES.md", f"{GITHUB}/contrib/linguist-samples/SAMPLES_LICENSES.md"),
-    ("../../contrib/linguist-upstream/PATCH_INSTRUCTIONS.md", f"{GITHUB}/contrib/linguist-upstream/PATCH_INSTRUCTIONS.md"),
-    ("../../contrib/li-grammar/README.md", f"{GITHUB}/contrib/li-grammar/README.md"),
-    ("../../contrib/linguist-samples/README.md", f"{GITHUB}/contrib/linguist-samples/README.md"),
-    ("../../contrib/linguist-upstream/JULIAN_HANDOFF.md", f"{GITHUB}/contrib/linguist-upstream/JULIAN_HANDOFF.md"),
-    (
-        "../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md",
-        "https://github.com/li-langverse/research-findings/blob/main/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md",
-    ),
-    (
-        "../../../../research-findings/whitepapers/2026-05/md_sim_algorithms/md-r0-sota-survey/README.md",
-        "https://github.com/li-langverse/research-findings/blob/main/whitepapers/2026-05/md_sim_algorithms/md-r0-sota-survey/README.md",
-    ),
-    ("../../.cursor/rules/li-agent-scope-studio-sim.mdc", f"{GITHUB}/.cursor/rules/li-agent-scope-studio-sim.mdc"),
-    ("../../.cursor/rules/li-studio-demo-native-only.mdc", f"{GITHUB}/.cursor/rules/li-studio-demo-native-only.mdc"),
-    ("../../packages/li-studio/README.md", f"{GITHUB}/packages/li-studio/README.md"),
-    ("../../../.cursor/rules/li-native-li-only.mdc", f"{GITHUB}/.cursor/rules/li-native-li-only.mdc"),
-    ("../../.cursor/rules/li-world-studio-vision.mdc", f"{GITHUB}/.cursor/rules/li-world-studio-vision.mdc"),
-    ("../../../../LAPTOP-SSH-SETUP.md", f"{GITHUB}/LAPTOP-SSH-SETUP.md"),
-    ("../../../../scripts/README-devbox.md", f"{GITHUB}/scripts/README-devbox.md"),
-    ("../../.cursor/rules/li-easy-imports.mdc", f"{GITHUB}/.cursor/rules/li-easy-imports.mdc"),
-    (
-        "../../packages/li-physics-core/docs/scalar-precision.md",
-        f"{GITHUB}/packages/li-physics-core/docs/scalar-precision.md",
-    ),
-    ("./2026-05-25-md-r2-neighbor-list-gap.md", "../2026-05-25-md-r2-neighbor-list-gap.md"),
-    ("docs/release-notes/2026-05-25-bench-fill-wp3-pde-robo-am.md", "../../release-notes/2026-05-25-bench-fill-wp3-pde-robo-am.md"),
-    ("docs/release-notes/2026-05-28-bench-mean-std-timing.md", "../../release-notes/2026-05-28-bench-mean-std-timing.md"),
-    ("STATUS.md", f"{GITHUB}/docs/reports/sim-plan/STATUS.md"),
-    (
-        "../../../../li-cursor-agents/config/goal-scaffolds/chem_sim_algorithms.md",
-        "https://github.com/li-langverse/li-cursor-agents/blob/main/config/goal-scaffolds/chem_sim_algorithms.md",
-    ),
-    (
-        "../../../.cursor/plans/li_execution_decorators_7c6e3b42.plan.md",
-        f"{GITHUB}/.cursor/plans/li_execution_decorators_7c6e3b42.plan.md",
-    ),
-    (
-        "../../../.cursor/skills/create-li-package/SKILL.md",
-        "https://github.com/li-langverse/li-cursor-agents/blob/main/.cursor/skills/create-li-package/SKILL.md",
-    ),
-    (
-        "../../../.cursor/rules/li-benchmark-correctness.mdc",
-        f"{GITHUB}/.cursor/rules/li-benchmark-correctness.mdc",
-    ),
-]
+LINK_RE = re.compile(r"(\[[^\]]*\]\()([^)#]+)(\#[^)]*)?(\))")
 
 # Applied only under docs/superpowers/plans/
 PLANS_SUBS: list[tuple[str, str]] = [
@@ -89,9 +31,103 @@ PLANS_SUBS: list[tuple[str, str]] = [
     ("](docs/guide/", "](../../guide/"),
     ("](docs/language/", "](../../language/"),
     ("](docs/compiler/", "](../../compiler/"),
+    ("](benchmarks/harness/", f"]({GITHUB_LIC}/benchmarks/harness/"),
+    ("](benchmarks/results/", f"]({GITHUB_LIC}/benchmarks/results/"),
 ]
 
-LINK_RE = re.compile(r"(\[[^\]]*\]\()([^)]+)(\))")
+# Manual overrides for targets that need a specific destination.
+EXACT: dict[str, str] = {
+    "../../handbook/README.md": "../../language/overview.md",
+    "../../proof-database/DISCREPANCIES.md": "../verification/proof-database/DISCREPANCIES.md",
+    "../superpowers/specs/2026-05-16-li-math-linalg-surface.md": "../../superpowers/specs/2026-05-16-li-math-linalg-surface.md",
+    "../verification/provability-gaps.md": "../verification/provability-gaps.md",
+    "../lic/docs/game-dev/PH-ML-GPU-battle-plan.md": "../../game-dev/PH-ML-GPU-battle-plan.md",
+    "./2026-05-25-md-r2-neighbor-list-gap.md": "../2026-05-25-md-r2-neighbor-list-gap.md",
+    "numerics/2026-05-25-md-r2-neighbor-list-gap.md": "../2026-05-25-md-r2-neighbor-list-gap.md",
+    "../release-notes/2026-05-25-bench-fill-wp3-pde-robo-am.md": "../../release-notes/2026-05-25-bench-fill-wp3-pde-robo-am.md",
+    "../release-notes/2026-05-28-bench-mean-std-timing.md": "../../release-notes/2026-05-28-bench-mean-std-timing.md",
+    "proof-database/entries/README.md": "proof-database/entries/README.md",
+}
+
+
+def github_blob(path: Path) -> str:
+    rel = path.relative_to(REPO).as_posix()
+    return f"{GITHUB_LIC}/{quote(rel, safe='/')}"
+
+
+def github_external(path: Path) -> str | None:
+    parts = path.parts
+    if "li-cursor-agents" in parts:
+        idx = parts.index("li-cursor-agents")
+        tail = "/".join(parts[idx + 1 :])
+        return f"{GITHUB_AGENTS}/{quote(tail, safe='/')}"
+    if "research-findings" in parts:
+        idx = parts.index("research-findings")
+        tail = "/".join(parts[idx + 1 :])
+        return f"{GITHUB_RESEARCH}/{quote(tail, safe='/')}"
+    return None
+
+
+def rel_from(source: Path, target: Path) -> str:
+    return Path(
+        Path(*([".."] * len(source.parent.relative_to(DOCS).parts))),
+        *target.relative_to(DOCS).parts,
+    ).as_posix()
+
+
+def resolve_target(source: Path, raw: str) -> str:
+    if raw in EXACT:
+        return EXACT[raw]
+
+    anchor = ""
+    path_part = raw
+    if "#" in raw:
+        path_part, anchor = raw.split("#", 1)
+        anchor = f"#{anchor}"
+
+    if not path_part or path_part.startswith(("http://", "https://", "mailto:")):
+        return raw
+
+    resolved = (source.parent / path_part).resolve()
+
+    # Prefer an in-docs markdown target when one exists.
+    if resolved.suffix == ".md" and resolved.is_file() and DOCS in resolved.parents:
+        return rel_from(source, resolved) + anchor
+
+    # Walk up to find docs/ sibling (e.g. ../../verification from testing/).
+    candidate = resolved
+    for _ in range(6):
+        doc_md = DOCS / candidate.name if candidate.suffix == ".md" else None
+        if doc_md and doc_md.is_file():
+            rel_doc = DOCS / candidate.relative_to(DOCS) if DOCS in candidate.parents else doc_md
+            if rel_doc.is_file():
+                return rel_from(source, rel_doc) + anchor
+        if candidate.suffix == ".md":
+            alt = DOCS / Path(*candidate.parts[candidate.parts.index("docs") + 1 :]) if "docs" in candidate.parts else None
+            if alt and alt.is_file():
+                return rel_from(source, alt) + anchor
+        parent = candidate.parent
+        if parent == candidate:
+            break
+        candidate = parent
+
+    # Shorter relative path into docs/ when file exists.
+    if path_part.endswith(".md"):
+        name = Path(path_part).name
+        for hit in DOCS.rglob(name):
+            try:
+                return rel_from(source, hit) + anchor
+            except ValueError:
+                continue
+
+    if REPO in resolved.parents or resolved.is_relative_to(REPO):
+        return github_blob(resolved) + anchor
+
+    external = github_external(resolved)
+    if external:
+        return external + anchor
+
+    return raw
 
 
 def rewrite_file(path: Path) -> bool:
@@ -101,29 +137,14 @@ def rewrite_file(path: Path) -> bool:
     if rel.parts[:2] == ("superpowers", "plans"):
         for old, new in PLANS_SUBS:
             text = text.replace(old, new)
-    for old, new in GLOBAL_SUBS:
-        text = text.replace(old, new)
 
     def fix_link(match: re.Match[str]) -> str:
-        prefix, target, suffix = match.group(1), match.group(2), match.group(3)
-        if target.startswith(("http://", "https://", "mailto:", "#")):
+        prefix, target, frag, suffix = match.group(1), match.group(2), match.group(3) or "", match.group(4)
+        combined = target + frag
+        if combined.startswith(("http://", "https://", "mailto:", "#")):
             return match.group(0)
-        if not target.endswith(".md") and ".md#" not in target and ".md)" not in target:
-            if ".md" not in target.split("#")[0]:
-                return match.group(0)
-        # docs/foo/bar.md from anywhere -> relative from current file
-        if target.startswith("docs/"):
-            target_path = DOCS / target[5:]
-            try:
-                new_target = Path(
-                    Path(*([".."] * (len(rel.parent.parts)))).joinpath(
-                        *target_path.relative_to(DOCS).parts
-                    )
-                ).as_posix()
-                return f"{prefix}{new_target}{suffix}"
-            except ValueError:
-                pass
-        return match.group(0)
+        new_target = resolve_target(path, combined)
+        return f"{prefix}{new_target}{suffix}"
 
     text = LINK_RE.sub(fix_link, text)
     if text != original:
@@ -143,3 +164,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    sys.exit(0)

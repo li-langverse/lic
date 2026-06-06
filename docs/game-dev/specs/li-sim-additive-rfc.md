@@ -2,7 +2,7 @@
 
 **Status:** Draft  
 **Track:** PH-AM  
-**Vision:** [world-studio-vision.md](../world-studio-vision.md)
+**Vision:** [world-studio-vision.md](../../game-dev/world-studio-vision.md)
 
 ## Proposal
 

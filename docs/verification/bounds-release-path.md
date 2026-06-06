@@ -1,6 +1,6 @@
 # Bounds release path (G-bnd)
 
-**Status:** **Partial** — see [provability-gaps](provability-gaps.md#g-bnd).
+**Status:** **Partial** — see [provability-gaps](../verification/provability-gaps.md#g-bnd).
 
 ## Target
 

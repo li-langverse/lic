@@ -1,7 +1,7 @@
 # Native execution surface (syntax + ergonomics)
 
 **Date:** 2026-05-25  
-**Depends on:** [Execution resource model](2026-05-25-li-execution-resources.md), [Execution decorators](2026-05-16-li-execution-decorators.md)  
+**Depends on:** [Execution resource model](../../superpowers/specs/2026-05-25-li-execution-resources.md), [Execution decorators](../../superpowers/specs/2026-05-16-li-execution-decorators.md)  
 **Plan:** WP8 in compiler_lint_and_parallelism plan
 
 ## Design goal

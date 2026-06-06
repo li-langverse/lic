@@ -10,10 +10,10 @@ End-to-end guide for adding **Li** (`.li`) to [github-linguist/linguist](https:/
 |------|-------|--------|
 | Ruby + Bundler + Docker | Julian (linguist fork) | [Linguist CONTRIBUTING](https://github.com/github-linguist/linguist/blob/main/CONTRIBUTING.md) — `script/bootstrap`, `bundle exec rake test` |
 | GitHub fork of linguist | Julian | `https://github.com/<julian-user>/linguist` — **never** push from lic CI or agent automation |
-| Grammar (redistributable license) | WP1 → human | [`contrib/li-grammar/`](../../contrib/li-grammar/) on branch `feat/linguist-wp1-grammar` ([tree](https://github.com/li-langverse/lic/tree/feat/linguist-wp1-grammar/contrib/li-grammar)); publish fork **TBD** → `https://github.com/li-langverse/li-grammar` for `script/add-grammar` |
-| Samples (MIT, real code) | WP2 → human | [`contrib/linguist-samples/Li/`](../../contrib/linguist-samples/Li/) on branch `feat/linguist-wp2-samples` ([tree](https://github.com/li-langverse/lic/tree/feat/linguist-wp2-samples/contrib/linguist-samples)); manifest [`SAMPLES_LICENSES.md`](https://github.com/li-langverse/lic/blob/main/contrib/linguist-samples/SAMPLES_LICENSES.md) |
-| Usage evidence | WP3 → **Julian only** | [github-linguist-usage-evidence.md](./github-linguist-usage-evidence.md) — ≥2000 indexed `.li` files with Li syntax, distributed across repos |
-| Patch bundle | WP6 (lic) | [`contrib/linguist-upstream/`](../../contrib/linguist-upstream/) — `languages.yml` snippet, `PATCH_INSTRUCTIONS.md`, optional `heuristics.yml` fragment |
+| Grammar (redistributable license) | WP1 → human | [`contrib/li-grammar/`](https://github.com/li-langverse/lic/blob/main/contrib/li-grammar) on branch `feat/linguist-wp1-grammar` ([tree](https://github.com/li-langverse/lic/tree/feat/linguist-wp1-grammar/contrib/li-grammar)); publish fork **TBD** → `https://github.com/li-langverse/li-grammar` for `script/add-grammar` |
+| Samples (MIT, real code) | WP2 → human | [`contrib/linguist-samples/Li/`](https://github.com/li-langverse/lic/blob/main/contrib/linguist-samples/Li) on branch `feat/linguist-wp2-samples` ([tree](https://github.com/li-langverse/lic/tree/feat/linguist-wp2-samples/contrib/linguist-samples)); manifest [`SAMPLES_LICENSES.md`](https://github.com/li-langverse/lic/blob/main/contrib/linguist-samples/SAMPLES_LICENSES.md) |
+| Usage evidence | WP3 → **Julian only** | [github-linguist-usage-evidence.md](../ecosystem/github-linguist-usage-evidence.md) — ≥2000 indexed `.li` files with Li syntax, distributed across repos |
+| Patch bundle | WP6 (lic) | [`contrib/linguist-upstream/`](https://github.com/li-langverse/lic/blob/main/contrib/linguist-upstream) — `languages.yml` snippet, `PATCH_INSTRUCTIONS.md`, optional `heuristics.yml` fragment |
 
 Merge order into **lic** `main`: WP1 grammar → WP2 samples → this playbook branch (`feat/linguist-wp346-handoff`). Upstream Linguist PR waits until WP1 grammar URL is real (no placeholder submodule).
 
@@ -51,7 +51,7 @@ Complete on Julian's **linguist fork** before `gh pr create` against `github-lin
 |------|--------|
 | **G0** | WP1 merged to lic `main`; grammar repo published at `https://github.com/li-langverse/li-grammar` (replace TBD placeholder in WP6) |
 | **G1** | WP2 merged; `contrib/linguist-samples/Li/` has ≥2 files per conflicting extension rules; `SAMPLES_LICENSES.md` commit pinned in PR body |
-| **G2** | Usage bar met **or** maintainer exception documented — see [usage evidence](./github-linguist-usage-evidence.md). Saved weekly `gh search code` URLs in PR description |
+| **G2** | Usage bar met **or** maintainer exception documented — see [usage evidence](../ecosystem/github-linguist-usage-evidence.md). Saved weekly `gh search code` URLs in PR description |
 | **G3** | Fork updated from `github-linguist/linguist` `main`; feature branch created |
 | **G4** | `languages.yml` entry + `script/add-grammar` (real grammar URL, not placeholder) |
 | **G5** | `samples/Li/` copied from lic; `bundle exec rake samples` green |
@@ -79,7 +79,7 @@ Detailed commands: [`contrib/linguist-upstream/PATCH_INSTRUCTIONS.md`](https://g
 
 ## Related docs
 
-- [Usage evidence & search cadence](./github-linguist-usage-evidence.md)
+- [Usage evidence & search cadence](../ecosystem/github-linguist-usage-evidence.md)
 - [WP1 grammar README](https://github.com/li-langverse/lic/blob/main/contrib/li-grammar/README.md) (after WP1 merge)
 - [WP2 samples README](https://github.com/li-langverse/lic/blob/main/contrib/linguist-samples/README.md) (after WP2 merge)
 - Linguist policy: [Language extension usage requirements](https://github.com/github-linguist/linguist/blob/main/CONTRIBUTING.md#language-extension-and-filename-usage-requirements)

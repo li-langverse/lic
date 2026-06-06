@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/env bash
-# Docs site lives in lic-docs — delegate when a checkout is available.
+# Build handbook via lic-docs MkDocs with lic/docs sources overlaid.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DOCS_ROOT="${LI_DOCS_ROOT:-}"
@@ -19,4 +19,11 @@ if [[ -z "$DOCS_ROOT" || ! -f "$DOCS_ROOT/mkdocs.yml" ]]; then
   exit 1
 fi
 
-exec "$DOCS_ROOT/scripts/build-docs.sh" "$@"
+export LI_DOCS_ROOT="$DOCS_ROOT"
+if [[ " $* " == *" --strict "* ]]; then
+  export DOCS_STRICT=1
+else
+  export DOCS_STRICT="${DOCS_STRICT:-0}"
+fi
+
+exec "$ROOT/scripts/check-docs-site-links.sh"

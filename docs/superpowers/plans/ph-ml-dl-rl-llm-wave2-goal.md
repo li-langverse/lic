@@ -27,7 +27,7 @@
 
 ## Mission
 
-Land **Wave 2** of [PH-ML-GPU-battle-plan.md](../lic/docs/game-dev/PH-ML-GPU-battle-plan.md): LKIR matmul via `@gpu` hook, tier-3 competitive bench row, honest stub→real for GPU emit (CUDA/HIP/Metal still `N/A` until `LIG_EMIT_*`).
+Land **Wave 2** of [PH-ML-GPU-battle-plan.md](../../game-dev/PH-ML-GPU-battle-plan.md): LKIR matmul via `@gpu` hook, tier-3 competitive bench row, honest stub→real for GPU emit (CUDA/HIP/Metal still `N/A` until `LIG_EMIT_*`).
 
 ## Read first (in order)
 

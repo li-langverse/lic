@@ -7,10 +7,10 @@
 **Canonical stack (precedence):**
 
 1. **This document** — hub, modes, agent flows, WP index, DoD  
-2. [studio-full-implementation-plan.md](studio-full-implementation-plan.md) — 68 WPs, batches, stub inventory  
-3. [world-studio-vision.md](world-studio-vision.md) — why, architecture, program phases  
-4. [PH-world-studio-program.md](PH-world-studio-program.md) — cross-program tracker (sync with §1.3)  
-5. RFCs under [specs/](specs/) when non-stub; package READMEs for API truth  
+2. [studio-full-implementation-plan.md](../game-dev/studio-full-implementation-plan.md) — 68 WPs, batches, stub inventory  
+3. [world-studio-vision.md](../game-dev/world-studio-vision.md) — why, architecture, program phases  
+4. [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md) — cross-program tracker (sync with §1.3)  
+5. RFCs under [specs/](https://github.com/li-langverse/lic/blob/main/docs/game-dev/specs) when non-stub; package READMEs for API truth  
 
 **Policy:** Native Li only for product demo — [.cursor/rules/li-studio-demo-native-only.mdc](https://github.com/li-langverse/lic/blob/main/.cursor/rules/li-studio-demo-native-only.mdc). HTML under `deploy/studio-demo/` is marketing-only until an explicit `li-render` embed path lands (§12).
 
@@ -176,7 +176,7 @@ Studio is **one shell** with **mode overlays** — not separate apps. Modes chan
 | Esc | Cancel agent / close palette | partial |
 | Tab | Focus region cycle (UX-10 ring) | partial |
 
-Bridge: [studio-shell-input-bridge.md](studio-shell-input-bridge.md) — SDL/mock → `studio_handle_studio_key`.
+Bridge: [studio-shell-input-bridge.md](../game-dev/studio-shell-input-bridge.md) — SDL/mock → `studio_handle_studio_key`.
 
 ### 3.4 Adaptive layouts (drug / role)
 
@@ -201,7 +201,7 @@ Bridge: [studio-shell-input-bridge.md](studio-shell-input-bridge.md) — SDL/moc
 | Path | When | `native_pixels` | Retirement |
 |------|------|-----------------|------------|
 | **A — wgpu swapchain** | Production | true (real) | Target end state |
-| **B — CPU paint_blit** | CI / headless | true (CPU honest) | Until WP-GD-05; [c-host-retirement-plan.md](specs/c-host-retirement-plan.md) |
+| **B — CPU paint_blit** | CI / headless | true (CPU honest) | Until WP-GD-05; [c-host-retirement-plan.md](../game-dev/specs/c-host-retirement-plan.md) |
 | **C — HTML mock** | Marketing only | false | Never product |
 | **D — web embed** | Future optional | TBD | §12 |
 
@@ -258,7 +258,7 @@ Registry: `benchmarks/competitive/studio-ui.toml` → `./scripts/bench-studio-vi
 
 ### 5.2 MCP tool registry (AGENT-0 — done)
 
-Canonical: [studio-mcp-tools.md](studio-mcp-tools.md). **11 tools** — all mutations gated on `lic_build`.
+Canonical: [studio-mcp-tools.md](../game-dev/studio-mcp-tools.md). **11 tools** — all mutations gated on `lic_build`.
 
 | Tool | Purpose | Live? |
 |------|---------|-------|
@@ -276,7 +276,7 @@ Canonical: [studio-mcp-tools.md](studio-mcp-tools.md). **11 tools** — all muta
 
 ### 5.3 apply_patch loop (WP-AG-04)
 
-RFC: [studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md)
+RFC: [studio-cursor-sdk-rfc.md](../game-dev/specs/studio-cursor-sdk-rfc.md)
 
 ```text
 User prompt
@@ -396,7 +396,7 @@ Smoke: `studio_sim_step_by_profile.li`, `studio_vertical_profile_roundtrip.li`.
 | PH-PORT | PORT-0…2 | `lic` triples | portable-targets |
 | PH-COMPLY | COMPLY-0…4 | CRITICAL packages | critical-package-compliance |
 
-Tracker sync: [PH-world-studio-program.md](PH-world-studio-program.md).
+Tracker sync: [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md).
 
 ### 7.2 Phase dependency graph
 
@@ -443,7 +443,7 @@ flowchart TB
 
 ## 8. Work packages by track
 
-**Full tables:** [studio-full-implementation-plan.md §3](studio-full-implementation-plan.md#3-work-packages-wps) (68 WPs).
+**Full tables:** [studio-full-implementation-plan.md §3](../game-dev/studio-full-implementation-plan.md#3-work-packages-wps) (68 WPs).
 
 ### 8.1 Summary index
 
@@ -490,7 +490,7 @@ WP-PLAT-02 (Lean build)
 
 ## 9. PH-UX — SOTA rubric & design system
 
-Canonical rubric: [competitive-intel/ui-ux-by-dimension.md](competitive-intel/ui-ux-by-dimension.md).
+Canonical rubric: [competitive-intel/ui-ux-by-dimension.md](../game-dev/competitive-intel/ui-ux-by-dimension.md).
 
 ### 9.1 Performance gates
 
@@ -524,7 +524,7 @@ Canonical rubric: [competitive-intel/ui-ux-by-dimension.md](competitive-intel/ui
 
 ### 9.3 Design tokens
 
-Source: [docs/design/studio-design-tokens.toml](../design/studio-design-tokens.toml)  
+Source: [docs/design/studio-design-tokens.toml](https://github.com/li-langverse/lic/blob/main/docs/design/studio-design-tokens.toml)  
 Generated: [studio-design-system.generated.md](../design/studio-design-system.generated.md)  
 Module target: `studio.design` (WP-UX-12).
 
@@ -580,13 +580,13 @@ Wave 1 (studio-ux-00…10): **done** in YAML. Wave 2 (11…19): merge into YAML 
 }
 ```
 
-RFC to expand: [publication-export-rfc.md](specs/publication-export-rfc.md) (currently stub — flesh from this §).
+RFC to expand: [publication-export-rfc.md](../game-dev/specs/publication-export-rfc.md) (currently stub — flesh from this §).
 
 ---
 
 ## 11. Runtime profiles & vertical DoD
 
-Per-profile **done** criteria: [studio-full-implementation-plan.md §6](studio-full-implementation-plan.md#6-definition-of-done-per-runtime-profile).
+Per-profile **done** criteria: [studio-full-implementation-plan.md §6](../game-dev/studio-full-implementation-plan.md#6-definition-of-done-per-runtime-profile).
 
 | Profile | Ship headline | Blocking WPs |
 |---------|---------------|--------------|
@@ -693,10 +693,10 @@ Adjust when Wave A (`WP-PLAT-02`) slips.
 
 ## 15. Living sync rules
 
-1. **WP state change** → update [studio-full-implementation-plan.md §1.3](studio-full-implementation-plan.md#13-landed-on-branch-done-vs-remaining) and [PH-world-studio-program.md](PH-world-studio-program.md).  
+1. **WP state change** → update [studio-full-implementation-plan.md §1.3](../game-dev/studio-full-implementation-plan.md#13-landed-on-branch-done-vs-remaining) and [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md).  
 2. **`workload_class` change** → bump `benchmarks/competitive/verticals.toml` `updated`.  
 3. **RFC stub → partial** → expand matching file under `specs/` when WP leaves stub.  
-4. **New MCP tool** → [studio-mcp-tools.md](studio-mcp-tools.md) + smoke + `studio_mcp_tool_count`.  
+4. **New MCP tool** → [studio-mcp-tools.md](../game-dev/studio-mcp-tools.md) + smoke + `studio_mcp_tool_count`.  
 5. **Vision §3 baseline** → refresh when GD-1/SIM-0 land (remove false “gaps”).  
 6. **Mode / agent FSM change** → update §3 and §5 in this doc + WP-UX-15.  
 
@@ -706,28 +706,28 @@ Adjust when Wave A (`WP-PLAT-02`) slips.
 
 | RFC | Track |
 |-----|-------|
-| [li-engine-unified-sim-rfc.md](specs/li-engine-unified-sim-rfc.md) | PH-SIM |
-| [studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md) | PH-AGENT |
-| [studio-ux-design-system-rfc.md](specs/studio-ux-design-system-rfc.md) | PH-UX |
-| [publication-export-rfc.md](specs/publication-export-rfc.md) | PH-PUB |
-| [c-host-retirement-plan.md](specs/c-host-retirement-plan.md) | PH-UX / PH-HW |
-| [lig-rfc.md](specs/lig-rfc.md) | PH-HW |
-| [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md) | PH-DRUG |
-| [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md) | PH-SCI |
-| [li-sim-additive-rfc.md](specs/li-sim-additive-rfc.md) | PH-AM |
-| [li-sim-robotics-rfc.md](specs/li-sim-robotics-rfc.md) | PH-ROBO |
-| [ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md) | PH-ML |
-| [critical-package-compliance-rfc.md](specs/critical-package-compliance-rfc.md) | PH-COMPLY |
+| [li-engine-unified-sim-rfc.md](../game-dev/specs/li-engine-unified-sim-rfc.md) | PH-SIM |
+| [studio-cursor-sdk-rfc.md](../game-dev/specs/studio-cursor-sdk-rfc.md) | PH-AGENT |
+| [studio-ux-design-system-rfc.md](../game-dev/specs/studio-ux-design-system-rfc.md) | PH-UX |
+| [publication-export-rfc.md](../game-dev/specs/publication-export-rfc.md) | PH-PUB |
+| [c-host-retirement-plan.md](../game-dev/specs/c-host-retirement-plan.md) | PH-UX / PH-HW |
+| [lig-rfc.md](../game-dev/specs/lig-rfc.md) | PH-HW |
+| [drug-design-lab-loop-rfc.md](../game-dev/specs/drug-design-lab-loop-rfc.md) | PH-DRUG |
+| [sim-viz-scientific-rfc.md](../game-dev/specs/sim-viz-scientific-rfc.md) | PH-SCI |
+| [li-sim-additive-rfc.md](../game-dev/specs/li-sim-additive-rfc.md) | PH-AM |
+| [li-sim-robotics-rfc.md](../game-dev/specs/li-sim-robotics-rfc.md) | PH-ROBO |
+| [ml-async-parallel-rfc.md](../game-dev/specs/ml-async-parallel-rfc.md) | PH-ML |
+| [critical-package-compliance-rfc.md](../game-dev/specs/critical-package-compliance-rfc.md) | PH-COMPLY |
 
 ## Appendix B — Related documents
 
 | Doc | Role |
 |-----|------|
-| [world-studio-vision.md](world-studio-vision.md) | Vision & program phases |
-| [studio-full-implementation-plan.md](studio-full-implementation-plan.md) | 68 WPs, stubs, batches |
-| [PH-world-studio-program.md](PH-world-studio-program.md) | Tracker table |
-| [PH-LLM-program.md](PH-LLM-program.md) | Local LLM for agents |
-| [studio-mcp-tools.md](studio-mcp-tools.md) | MCP contract |
+| [world-studio-vision.md](../game-dev/world-studio-vision.md) | Vision & program phases |
+| [studio-full-implementation-plan.md](../game-dev/studio-full-implementation-plan.md) | 68 WPs, stubs, batches |
+| [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md) | Tracker table |
+| [PH-LLM-program.md](../game-dev/PH-LLM-program.md) | Local LLM for agents |
+| [studio-mcp-tools.md](../game-dev/studio-mcp-tools.md) | MCP contract |
 | [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md) | Layer B verticals |
 | [packages/li-studio/README.md](https://github.com/li-langverse/lic/blob/main/packages/li-studio/README.md) | API & demo commands |
 

@@ -2,8 +2,8 @@
 
 **Status:** Draft (Wave 1 deepen)  
 **Date:** 2026-05-30  
-**Vision:** [world-studio-vision.md](../world-studio-vision.md)  
-**Battle plan:** [PH-ML-GPU-battle-plan.md](../PH-ML-GPU-battle-plan.md)
+**Vision:** [world-studio-vision.md](../../game-dev/world-studio-vision.md)  
+**Battle plan:** [PH-ML-GPU-battle-plan.md](../../game-dev/PH-ML-GPU-battle-plan.md)
 
 ## Problem
 

@@ -55,7 +55,7 @@ See also [SECURITY.md](https://github.com/li-langverse/lic/blob/main/SECURITY.md
 
 ### Historic failures (OS-ready)
 
-[`security/historic-bugs.toml`](../../security/historic-bugs.toml) maps **famous incidents** to Li rules so a future Li kernel does not repeat C-era mistakes:
+[`security/historic-bugs.toml`](https://github.com/li-langverse/lic/blob/main/security/historic-bugs.toml) maps **famous incidents** to Li rules so a future Li kernel does not repeat C-era mistakes:
 
 | Incident | Lesson | Li enforcement |
 |----------|--------|----------------|
@@ -70,9 +70,9 @@ Validated on **Linux, macOS, Windows** via `scripts/check-historic-bugs.sh` (aut
 
 ### Web server / reverse-proxy classes
 
-See **[Web server security](webserver-security.md)** for nginx/Apache CVE classes (smuggling, path traversal, SSRF, Slowloris, …) mapped to what Li **already enforces** in the language vs what **li-httpd** will add at config/parse time.
+See **[Web server security](../testing/webserver-security.md)** for nginx/Apache CVE classes (smuggling, path traversal, SSRF, Slowloris, …) mapped to what Li **already enforces** in the language vs what **li-httpd** will add at config/parse time.
 
-Registry: [`security/webserver-bugs.toml`](../../security/webserver-bugs.toml) — `scripts/check-webserver-bugs.sh` on every OS in `ci-security.sh`.
+Registry: [`security/webserver-bugs.toml`](https://github.com/li-langverse/lic/blob/main/security/webserver-bugs.toml) — `scripts/check-webserver-bugs.sh` on every OS in `ci-security.sh`.
 
 ## 3. Parser fuzzing (continuous)
 
@@ -99,7 +99,7 @@ Registry: [`security/webserver-bugs.toml`](../../security/webserver-bugs.toml) �
 
 **Harness:** `li-tests/race_shared_memory/` + `manifest.toml`
 
-Documented in [Tests overview](overview.md#race-exploit-suite-security-of-parallelism).
+Documented in [Tests overview](../testing/overview.md#race-exploit-suite-security-of-parallelism).
 
 ## 5. Policy gate (forbidden constructs)
 
@@ -111,7 +111,7 @@ Documented in [Tests overview](overview.md#race-exploit-suite-security-of-parall
 
 **Harness:** `li-tests/decorator_exploits/` — run via `./li-tests/run_all.sh decorator_exploits` (also in `scripts/ci.sh`).
 
-This complements Lean, not replaces it. See [Provability gaps](../../verification/provability-gaps.md) (**G-dec**).
+This complements Lean, not replaces it. See [Provability gaps](../verification/provability-gaps.md) (**G-dec**).
 
 ## 6. Memory CI (Linux)
 

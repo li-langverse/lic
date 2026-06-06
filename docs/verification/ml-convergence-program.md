@@ -1,7 +1,7 @@
 # ML convergence program (WP0-C)
 
 **Audience:** agents extending **G-ml** / **P-ml-convergence** without collapsing training heuristics into `ensures true`.  
-**Related:** [Provability gaps](provability-gaps.md) (**G-ml**) · [Proof corpus roadmap](proof-corpus-roadmap.md) (**P-ml-convergence**) · [Proof database](proof-database.md)
+**Related:** [Provability gaps](../verification/provability-gaps.md) (**G-ml**) · [Proof corpus roadmap](../verification/proof-corpus-roadmap.md) (**P-ml-convergence**) · [Proof database](../verification/proof-database.md)
 
 ## Goal
 
@@ -52,7 +52,7 @@ flowchart LR
 
 ## Agent workflow
 
-1. Read **G-ml** in [provability-gaps.md](provability-gaps.md) and **P-ml-convergence** in [proof-corpus-roadmap.md](proof-corpus-roadmap.md).  
+1. Read **G-ml** in [provability-gaps.md](../verification/provability-gaps.md) and **P-ml-convergence** in [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md).  
 2. Add or edit specimens under `proof-db/ml/lemmas/`; copy patterns from `contracts_verify/linalg_*_closed.li`.  
 3. Add Lean only in `Discharge.lean` when the specimen’s AutoVC goal is stable.  
 4. Update `entries/ml-convergence.toml` in the **same PR** as lemma or specimen changes.  

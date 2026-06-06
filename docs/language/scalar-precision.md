@@ -64,7 +64,7 @@ p.float_bits = 32
 p.int_bits = 32
 ```
 
-For shared math at **multiple** widths in one codebase, see [Precision polymorphism](precision-polymorphism.md) (generics `[S]`, duplicate modules per `Real`, proposed `precision float32:` block).
+For shared math at **multiple** widths in one codebase, see [Precision polymorphism](../language/precision-polymorphism.md) (generics `[S]`, duplicate modules per `Real`, proposed `precision float32:` block).
 
 ---
 
@@ -259,7 +259,7 @@ default_int = "int64"
 # default_weights = "binary"   # documentation only until manifest schema lands
 ```
 
-See [li.toml manifest](li-toml.md).
+See [li.toml manifest](../language/li-toml.md).
 
 ---
 
@@ -274,7 +274,7 @@ See [li.toml manifest](li-toml.md).
 | `float4` / `float8` packed | Yes | Logical; packed ops TBD |
 | `binary` type + `0b` literals | Yes | Stub / no dedicated runtime yet |
 
-Track gaps: [Provability gaps](../../verification/provability-gaps.md).
+Track gaps: [Provability gaps](../verification/provability-gaps.md).
 
 ---
 
@@ -294,8 +294,8 @@ To make **all** widths applicable in shared code (not only `float64`):
 
 | Pattern | Syntax | Doc |
 |---------|--------|-----|
-| Module alias | `type Real = float32` | [Precision polymorphism](precision-polymorphism.md) § A |
-| Generic scalar | `def dot[S](a: S, b: S) -> S` | § B |
+| Module alias | `type Real = float32` | [Precision polymorphism](../language/precision-polymorphism.md) § A |
+| Generic scalar | `def dot[S](https://github.com/li-langverse/lic/blob/main/docs/language/a%3A%20S%2C%20b%3A%20S) -> S` | § B |
 | Proposed block | `precision float32: …` | § C (desugars to § A) |
 
 **Examples:** `li-tests/generics/precision_real_alias.li` (Pattern A), `precision_generic_fn.li` (Pattern B def)  
@@ -305,8 +305,8 @@ To make **all** widths applicable in shared code (not only `float64`):
 
 ## Related
 
-- [Precision polymorphism](precision-polymorphism.md) — math/physics/numerics patterns
-- [Types and data](types-and-data.md)
-- [Numerics](numerics.md)
-- [Contracts and proofs](contracts-and-proofs.md)
+- [Precision polymorphism](../language/precision-polymorphism.md) — math/physics/numerics patterns
+- [Types and data](../language/types-and-data.md)
+- [Numerics](../language/numerics.md)
+- [Contracts and proofs](../language/contracts-and-proofs.md)
 - [Release notes: scalar precision](../release-notes/2026-05-19-scalar-precision-types.md)

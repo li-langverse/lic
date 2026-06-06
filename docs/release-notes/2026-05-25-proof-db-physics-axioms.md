@@ -13,7 +13,7 @@ Seeds the proof database **classical physics** vertical with seven `P-AX-*` axio
 
 ## Agent continuation (required)
 
-1. Read: [proof-database.md](../verification/proof-database.md), [proof-database/README.md](../verification/proof-database/README.md), [provability-gaps.md](../../verification/provability-gaps.md) (**G-physics**, **G-proof-db**)
+1. Read: [proof-database.md](../verification/proof-database.md), [proof-database/README.md](../verification/proof-database/README.md), [provability-gaps.md](../verification/provability-gaps.md) (**G-physics**, **G-proof-db**)
 2. Run: `python3 scripts/proof-db/proof-db.py verify-slice` (when present); `cd docs/semantics && lake build` for `Discharge.lean` physics lemmas; tier-0 `md_energy_single_step.li`, `three_body_invariants.li`
 3. Then: close **P-AX-MECH-002** / **P-AX-DIM-*** via `contracts_verify` + real kernel `ensures`; keep **modeling_gap** on extern tier-2 until specs export
 4. Blocked on: universal tier-2 VC emit from `lic build` — not required for this doc/TOML seed PR
@@ -25,7 +25,7 @@ Seeds the proof database **classical physics** vertical with seven `P-AX-*` axio
 | Catalog | `docs/verification/proof-database/entries/physics-{mechanics,conservation,dimensions,lemmas}.toml` | 7 axioms + 3 lemmas; pin `a9542bfc` |
 | Index | `docs/verification/proof-database.md`, `proof-database/README.md` | `proof_gap` vs `modeling_gap` taxonomy |
 | Lean | `docs/semantics/Discharge.lean` — `kinetic_energy_def_consistent`, `linear_momentum_linear_stub`, `force_equals_mass_accel_stub`, `dimensional_homogeneity_placeholder` | `lake build` in semantics job |
-| Gaps | [provability-gaps.md](../../verification/provability-gaps.md) — **G-physics**, **G-proof-db** register rows | links `entries/physics-*.toml` |
+| Gaps | [provability-gaps.md](../verification/provability-gaps.md) — **G-physics**, **G-proof-db** register rows | links `entries/physics-*.toml` |
 | Roadmap | [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md) — **P-physics** backlog row | — |
 
 ## Not changed (scope fence)

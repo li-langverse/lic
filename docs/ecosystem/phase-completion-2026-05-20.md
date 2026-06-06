@@ -13,7 +13,7 @@
 
 ## Agent continuation
 
-1. Read [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md) and [provability-gaps.md](../../../verification/provability-gaps.md) (**G-lean**, **G-vc**).
+1. Read [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md) and [provability-gaps.md](../verification/provability-gaps.md) (**G-lean**, **G-vc**).
 2. Run `./li-tests/run_all.sh contracts_verify` and `./li-tests/run_httpd_config.sh`.
 3. Next: float `abs` lemmas (`sqrt_open_bound`); TOML route table in Li; structured `disjoint=` (**7d-c**).
 4. Close superseded draft PRs **#77**, **#78** if still open.

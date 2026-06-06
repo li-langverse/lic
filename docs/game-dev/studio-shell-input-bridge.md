@@ -1,7 +1,7 @@
 # Studio shell input bridge (SDL → `InputState`)
 
 **Audience:** native hosts wiring `li-studio` shell demo / future `li-gui` window.  
-**Rubric:** [UX-09 Keyboard-first workflows](competitive-intel/ui-ux-by-dimension.md) (score **3** = instrumented global shortcuts like Blender / Linear).
+**Rubric:** [UX-09 Keyboard-first workflows](../game-dev/competitive-intel/ui-ux-by-dimension.md) (score **3** = instrumented global shortcuts like Blender / Linear).
 
 ## Contract
 

@@ -3,13 +3,13 @@
 **Date:** 2026-05-16  
 **Status:** Planning / research (**Vision-LLM** — partial on master plan)  
 **Pillar priority:** Provability (#1) unchanged — this spec optimizes **agent ergonomics**, not proof shortcuts.  
-**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](../plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability-gaps](../../../verification/provability-gaps.md) (no **G-*** closure from JSON diagnostics alone)
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](../../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability-gaps](../../verification/provability-gaps.md) (no **G-*** closure from JSON diagnostics alone)
 
 ## What this page is for
 
 Capture how Li language, tooling, and docs should minimize **token cost** for LLM agents reading and editing code, without weakening `lic build` or Lean contracts.
 
-**Prerequisites:** [2026-05-14-li-language-design.md](2026-05-14-li-language-design.md), [agent-handover-formats.md](../../ecosystem/agent-handover-formats.md).
+**Prerequisites:** [2026-05-14-li-language-design.md](../../superpowers/specs/2026-05-14-li-language-design.md), [agent-handover-formats.md](../../ecosystem/agent-handover-formats.md).
 
 ## Principles
 
@@ -69,5 +69,5 @@ When LLM-first convenience conflicts with provability: **provability wins** (sam
 ## Related
 
 - [Agent handover formats](../../ecosystem/agent-handover-formats.md)
-- [li-agent-manifest.toml](../../ecosystem/li-agent-manifest.toml)
-- [Provability gaps](../../../verification/provability-gaps.md)
+- [li-agent-manifest.toml](https://github.com/li-langverse/lic/blob/main/docs/ecosystem/li-agent-manifest.toml)
+- [Provability gaps](../../verification/provability-gaps.md)

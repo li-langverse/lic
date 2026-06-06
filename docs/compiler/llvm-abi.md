@@ -2,7 +2,7 @@
 
 This page documents **what `lic build` actually lowers to** in LLVM IR and how that must match **C runtime** symbols. There is no separate published “Li native ABI” spec yet — this file is the implementation contract agents and `extern` authors should follow.
 
-See also: [Build pipeline](build-pipeline.md), `compiler/codegen/emit.cpp`, `compiler/mir/lower.cpp`, `runtime/li_rt.h`.
+See also: [Build pipeline](../compiler/build-pipeline.md), `compiler/codegen/emit.cpp`, `compiler/mir/lower.cpp`, `runtime/li_rt.h`.
 
 ## End-to-end path
 

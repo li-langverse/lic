@@ -3,7 +3,7 @@
 > **Depends on:** Phases 3–5b (MIR/LLVM, benchmarks harness)  
 > **Blocks:** Pure-Li Tier 2 perf tables, OpenMP scaling columns
 
-**Proof gaps (Doc-c):** [G-par](../../../verification/provability-gaps.md#g-par) · [G-dec](../../../verification/provability-gaps.md#g-dec) · [G-math](../../../verification/provability-gaps.md#g-math) · [still open](../../../verification/provability-gaps.md#still-open-report-every-session)
+**Proof gaps (Doc-c):** [G-par](../../verification/provability-gaps.md#g-par) · [G-dec](../../verification/provability-gaps.md#g-dec) · [G-math](../../verification/provability-gaps.md#g-math) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)
 
 **Goal:** Built-in `simd[T, N]` and proved `parallel for` without user-level parallel/math libraries. Toolchain links LLVM + libomp only.
 
@@ -77,7 +77,7 @@
 
 **7e (mathematical surface — user writes formulas, not `simd(...)`):**
 
-> **Plan:** [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md)
+> **Plan:** [2026-05-16-li-math-linalg-surface.md](../../superpowers/plans/2026-05-16-li-math-linalg-surface.md)
 
 | Sub | Task | Exit |
 |-----|------|------|

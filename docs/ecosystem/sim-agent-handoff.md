@@ -3,7 +3,7 @@
 **Status:** 2026-05-24  
 **Bench scope:** `benchmarks/manifest.toml` · `./scripts/bench-package.sh`  
 **Registry:** `benchmarks/competitive/algo_registry.json` (126 `algo_id`s)  
-**Output contract:** [sim-output-contract.md](sim-output-contract.md)
+**Output contract:** [sim-output-contract.md](../ecosystem/sim-output-contract.md)
 
 ---
 
@@ -76,7 +76,7 @@ Reports: `docs/reports/sim-plan/daily/YYYY-MM-DD.md`, live `docs/reports/sim-pla
 
 Each iteration gates: **validity** + **performance** (`bench-package --timing`) + **memory** (`sim-bench-memory.sh`) + **docs** (`sim-plan-iteration-report.py`).
 
-Todos: [sim-algorithm-backlog.md](sim-algorithm-backlog.md); when empty, loop picks next `implemented_smoke: false` from the registry.
+Todos: [sim-algorithm-backlog.md](../ecosystem/sim-algorithm-backlog.md); when empty, loop picks next `implemented_smoke: false` from the registry.
 
 ---
 
@@ -94,6 +94,6 @@ Full table: `benchmarks/manifest.toml`.
 
 ## Blockers before “production sim” claims
 
-1. Replace registry stubs with proved kernels (Wave A: 2e/2f VC gates per [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md)).
+1. Replace registry stubs with proved kernels (Wave A: 2e/2f VC gates per [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md)).
 2. Tier-2 Li vs native checksum parity for `md_lennard_jones`.
 3. External oracle column (LAMMPS/GROMACS) for MD — competitive plan item.

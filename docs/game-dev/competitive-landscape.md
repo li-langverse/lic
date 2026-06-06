@@ -1,7 +1,7 @@
 # Competitive landscape — Li World Studio / Li Engine
 
 **Status:** Planning snapshot  
-**Vision:** [world-studio-vision.md](world-studio-vision.md)
+**Vision:** [world-studio-vision.md](../game-dev/world-studio-vision.md)
 
 | Area | Incumbent | Li beat condition |
 |------|-----------|-------------------|

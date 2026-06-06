@@ -1,6 +1,6 @@
 # Execution decorators
 
-**Handbook:** [Parallelism](parallelism.md). **Surface:** [execution surface](../superpowers/specs/2026-05-25-li-execution-surface.md).
+**Handbook:** [Parallelism](../language/parallelism.md). **Surface:** [execution surface](../superpowers/specs/2026-05-25-li-execution-surface.md).
 
 Li attaches **execution decorators** to `def` and to `for` / `while` loops with `@name` syntax (see [execution decorators spec](../superpowers/specs/2026-05-16-li-execution-decorators.md)).
 
@@ -14,7 +14,7 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 ## Status
 
-Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../../verification/provability-gaps.md).
+Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
 
 ## Resource knobs (`lic build`)
 

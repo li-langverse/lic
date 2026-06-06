@@ -154,8 +154,8 @@ isProject: false
 
 # li-httpd — minimal, proved, nginx-competitive
 
-**Proof gaps (Doc-c):** [G-net](../../../verification/provability-gaps.md#g-net) · [G-async](../../../verification/provability-gaps.md#g-async) · [G-vc](../../../verification/provability-gaps.md#g-vc) · [still open](../../../verification/provability-gaps.md#still-open-report-every-session)  
-**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
+**Proof gaps (Doc-c):** [G-net](../../verification/provability-gaps.md#g-net) · [G-async](../../verification/provability-gaps.md#g-async) · [G-vc](../../verification/provability-gaps.md#g-vc) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)  
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](../../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
 
 ## Parity milestones (agent-gateway vs nginx oracle)
 
@@ -179,8 +179,8 @@ Li today is optimized for **proved HPC kernels** (Tetris/SDL, physics benchmarks
 | Area       | Today                                                                                                                                                                            | Needed for nginx-class                                                  |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | Proof gate | **2e–2f httpd path gated (w0):** `check-httpd-lean-gate.sh`, closed `http_parse_forward_closed.li`, callee-ensures witness; composite smokes ≤8 open VC; full kernel still **G-lean** ([proof-corpus-roadmap](../../verification/proof-corpus-roadmap.md)) | Every server module must pass `lic build` with discharged goals (target) |
-| Trusted IO | [trusted.lean](../../semantics/trusted.lean): SDL/frame axioms only                                                                                                               | Syscalls, sockets, timers, process spawn — **RFC-reviewed axioms only** |
-| Stdlib     | `std/` effectively empty; heap `str`/`bytes`/`list` mostly **spec** ([data structures roadmap](../specs/2026-05-14-li-language-design.md#data-structures-roadmap)) | Full bytes I/O, config, containers, regex, compression                  |
+| Trusted IO | [trusted.lean](https://github.com/li-langverse/lic/blob/main/docs/semantics/trusted.lean): SDL/frame axioms only                                                                                                               | Syscalls, sockets, timers, process spawn — **RFC-reviewed axioms only** |
+| Stdlib     | `std/` effectively empty; heap `str`/`bytes`/`list` mostly **spec** ([data structures roadmap](../../superpowers/specs/2026-05-14-li-language-design.md#data-structures-roadmap)) | Full bytes I/O, config, containers, regex, compression                  |
 | Async      | **w1 shipped:** `async`/`await` + `li_async_poll` epoll/kqueue reactor; tier5 `tcp_echo` scenario (timing off in CI)                                                          | Full task scheduler + 100k+ connections (M1.5+)                         |
 | Networking | **None** in repo                                                                                                                                                                 | TCP/UDP, DNS, TLS, HTTP/1.1–3, stream proxy                             |
 
@@ -212,7 +212,7 @@ Nginx source is **read-only** (what invariants matter). Li makes enforcing them 
 
 ### Package creation — master plan (do not hand-roll)
 
-Follow **[Phase Pkg — package scaffold](2026-05-16-li-package-scaffold.md)** and canonical **`li.toml` in [lip plan § A3](2026-05-16-li-package-manager-lip.md)**. Never invent a second manifest format.
+Follow **[Phase Pkg — package scaffold](../../superpowers/plans/2026-05-16-li-package-scaffold.md)** and canonical **`li.toml` in [lip plan § A3](../../superpowers/plans/2026-05-16-li-package-manager-lip.md)**. Never invent a second manifest format.
 
 | Step | Tool | When |
 | ---- | ---- | ---- |
@@ -286,7 +286,7 @@ benchmarks/tier5_http/
 
 **Harness / tooling:** `bench_http.py`, `exploit_http.py`, `audit_nginx_src.py` in-repo (Python OK). **Crypto:** `li-crypto` in Li first; optional `li-crypto-hacl` org package later.
 
-**Agent discipline:** [engineering-standards.md](../../ecosystem/engineering-standards.md) (mandatory gates). **Vision:** product here; language/ecosystem in [master plan](2026-05-14-li-master-plan.md). **Learn from others:** nginx/Envoy/LiteLLM for algorithms — not C ports; CVE rows in `nginx_mitigations.toml` + tier5 exploits must stay green.
+**Agent discipline:** [engineering-standards.md](../../ecosystem/engineering-standards.md) (mandatory gates). **Vision:** product here; language/ecosystem in [master plan](../../superpowers/plans/2026-05-14-li-master-plan.md). **Learn from others:** nginx/Envoy/LiteLLM for algorithms — not C ports; CVE rows in `nginx_mitigations.toml` + tier5 exploits must stay green.
 
 ---
 
@@ -1389,13 +1389,13 @@ Before any “ultra secure” claim ships:
 - **2e:** VC generation from `requires`/`ensures`/`invariant`/`decreases`
 - **2f:** `lic build` invokes Lean 4 kernel; cache by VC hash
 - **MIR:** proved bounds on dynamic indices (today: partial — see [architecture overview](../../architecture/overview.md))
-- `**li-tests`:** expand `verify_ok` / `verify_fail` beyond skeleton ([contracts_verify](li-tests/contracts_verify/))
+- `**li-tests`:** expand `verify_ok` / `verify_fail` beyond skeleton ([contracts_verify](https://github.com/li-langverse/lic/blob/main/docs/superpowers/plans/li-tests/contracts_verify))
 
 Without this, a webserver is “memory-safe-ish C++ via LLVM,” not Li’s thesis.
 
 ### 2. Systems type + memory model for wire protocols
 
-From the [design spec](../specs/2026-05-14-li-language-design.md):
+From the [design spec](../../superpowers/specs/2026-05-14-li-language-design.md):
 
 - `**bytes` / `bytearray` / `memoryview[T]` / `stringview`** with linear ownership for parse buffers
 - `**ringbuffer[N, T]`** (already on roadmap) for socket read paths without per-read `Alloc`
@@ -1449,7 +1449,7 @@ Extensibility = edit `li-httpd.toml` and redeploy, or fork li-httpd. **No** `.so
 
 ### Layer 0 — OS interface (trusted, minimal)
 
-Expand [trusted.lean](../../semantics/trusted.lean) **only** with:
+Expand [trusted.lean](https://github.com/li-langverse/lic/blob/main/docs/semantics/trusted.lean) **only** with:
 
 - File descriptors as opaque `Fd`
 - `read`/`write`/`recv`/`send`/`poll`/`epoll_wait` as axioms with **contracts** (bytes written ≤ buffer len, no phantom FDs)
@@ -1568,7 +1568,7 @@ For benchmarks, tests, load-balancer tie-breaks, fuzz **schedules**, and any “
 | Package  | `packages/li-rng/prng.li` — **no** `raises Rng`                                                                       |
 
 
-Aligns with existing bench rule: **deterministic seeds** in `params.toml` ([benchmarks plan](2026-05-14-benchmarks-and-simulations.md)).
+Aligns with existing bench rule: **deterministic seeds** in `params.toml` ([benchmarks plan](../../superpowers/plans/2026-05-14-benchmarks-and-simulations.md)).
 
 ### Concept B — `Csprng` + `raises Rng` + **uniform OS contract**
 
@@ -1889,7 +1889,7 @@ Drop features from M1 before raising LOC cap.
 
 ## Nginx benchmark harness (TOML-configurable, correctness-first)
 
-Extend the existing [benchmarks harness](benchmarks/harness/bench.py) pattern — same CSV schema, same “verify before timing” rule as [benchmarks plan](2026-05-14-benchmarks-and-simulations.md).
+Extend the existing [benchmarks harness](https://github.com/li-langverse/lic/blob/main/benchmarks/harness/bench.py) pattern — same CSV schema, same “verify before timing” rule as [benchmarks plan](../../superpowers/plans/2026-05-14-benchmarks-and-simulations.md).
 
 **Design principle:** users never edit Python to add a scenario — only TOML. `bench_http.py` merges config layers, starts servers, runs load tools, writes CSV.
 
@@ -2053,7 +2053,7 @@ Fixture sizes declared in `defaults.toml` `[fixtures]`; harness generates files 
 
 ### CSV schema (reuse existing)
 
-Same columns as [bench.py](benchmarks/harness/bench.py): `benchmark, lang, variant, threads, metric, value, unit, git_sha, cpu_model, flags`.
+Same columns as [bench.py](https://github.com/li-langverse/lic/blob/main/benchmarks/harness/bench.py): `benchmark, lang, variant, threads, metric, value, unit, git_sha, cpu_model, flags`.
 
 Example rows:
 
@@ -2061,7 +2061,7 @@ Example rows:
 - `static_small, li, sendfile_on, 8, rps, 98000, req/s, ...`
 - `static_small, li, sendfile_on, 8, p99_latency, 4.2, ms, ...`
 
-Add optional `verify.csv` pass/fail per scenario (mirror [verify.csv](benchmarks/results/verify.csv)).
+Add optional `verify.csv` pass/fail per scenario (mirror [verify.csv](https://github.com/li-langverse/lic/blob/main/benchmarks/results/verify.csv)).
 
 ### `bench_http.py` flow
 

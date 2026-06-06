@@ -1,8 +1,8 @@
 # PH-LLM — native LLM inference program
 
 **Status:** Planning (Wave 0 scaffold landed)  
-**Vision:** [world-studio-vision.md](world-studio-vision.md)  
-**RFC:** [specs/lillm-rfc.md](specs/lillm-rfc.md)  
+**Vision:** [world-studio-vision.md](../game-dev/world-studio-vision.md)  
+**RFC:** [specs/lillm-rfc.md](../game-dev/specs/lillm-rfc.md)  
 **Package:** `packages/li-llm` (`import llm`)
 
 ## Overview
@@ -34,7 +34,7 @@ Fine-tuning, autograd, MoE, multimodal.
 
 - `packages/li-studio-ai` — `studio_ai_complete` → `llm_generate` when weights loaded
 - Fallback: Cursor SDK cloud when no local weights
-- See [studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md)
+- See [studio-cursor-sdk-rfc.md](../game-dev/specs/studio-cursor-sdk-rfc.md)
 
 ## Milestones (from battle plan)
 
@@ -46,4 +46,4 @@ Fine-tuning, autograd, MoE, multimodal.
 
 ## Tracker linkage
 
-Add PH-LLM row to [PH-world-studio-program.md](PH-world-studio-program.md) after Wave 1 CPU matmul (PH-ML Wave 1).
+Add PH-LLM row to [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md) after Wave 1 CPU matmul (PH-ML Wave 1).

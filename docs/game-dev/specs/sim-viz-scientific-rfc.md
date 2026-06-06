@@ -2,7 +2,7 @@
 
 **Status:** Draft stub  
 **Date:** 2026-05  
-**Vision:** [world-studio-vision.md](../world-studio-vision.md)
+**Vision:** [world-studio-vision.md](../../game-dev/world-studio-vision.md)
 
 ## Problem
 
@@ -23,7 +23,7 @@ Use **`def`** for all new APIs. Do not document bare **`proc`**. **`extern proc`
 
 ## Dependencies
 
-See [PH-world-studio-program.md](../PH-world-studio-program.md).
+See [PH-world-studio-program.md](../../game-dev/PH-world-studio-program.md).
 
 ## Open questions
 

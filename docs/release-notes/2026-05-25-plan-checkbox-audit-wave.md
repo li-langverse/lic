@@ -59,5 +59,5 @@ N/A — no codegen or bench threshold changes.
 
 ```markdown
 ### Changed
-- Plan checkbox audit wave — sync phase plan exit gates with shipped compiler evidence ([#PR](URL))
+- Plan checkbox audit wave — sync phase plan exit gates with shipped compiler evidence ([#PR](https://github.com/li-langverse/lic/blob/main/docs/release-notes/URL))
 ```

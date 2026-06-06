@@ -7,7 +7,7 @@ For the normative technical spec, see the [language design spec](../superpowers/
 ## Design goals (plain language)
 
 1. **No silent lies** — types and contracts must agree; the build fails otherwise.
-2. **Readable code** — **does what it reads like it does** (Python-style simplicity: clear names, obvious flow). See [Philosophy](philosophy.md).
+2. **Readable code** — **does what it reads like it does** (Python-style simplicity: clear names, obvious flow). See [Philosophy](../language/philosophy.md).
 3. **Real speed** — after proof, LLVM produces native code with SIMD and multiple cores.
 
 ## Program shape
@@ -30,19 +30,19 @@ def name(arg: T) -> R
 
 | Topic | Page |
 |-------|------|
-| Philosophy & naming | [Philosophy](philosophy.md) |
-| Naming conventions (PascalCase types) | [Naming conventions](naming-conventions.md) |
+| Philosophy & naming | [Philosophy](../language/philosophy.md) |
+| Naming conventions (PascalCase types) | [Naming conventions](../language/naming-conventions.md) |
 | Full OOP roadmap (methods, traits) | [OOP roadmap](../superpowers/plans/2026-05-20-li-oop-roadmap.md) |
-| Imports | [Import style](import-style.md) |
-| Types & data | [Types and data](types-and-data.md) |
-| Scalar precision (`float32`, `binary`, suffixes) | [Scalar precision](scalar-precision.md) |
-| Math/physics at any width | [Precision polymorphism](precision-polymorphism.md) |
-| Numbers | [Numerics](numerics.md) |
-| Vectors & parallel | [SIMD and parallel](simd-parallel.md) |
-| Contracts & proof | [Contracts and proofs](contracts-and-proofs.md) |
-| Control flow & functions | [Control flow and functions](control-flow-and-functions.md) |
-| Collections & generics | [Collections and generics](collections-generics.md) |
-| Effects & I/O | [Effects and I/O](effects-and-io.md) |
+| Imports | [Import style](../language/import-style.md) |
+| Types & data | [Types and data](../language/types-and-data.md) |
+| Scalar precision (`float32`, `binary`, suffixes) | [Scalar precision](../language/scalar-precision.md) |
+| Math/physics at any width | [Precision polymorphism](../language/precision-polymorphism.md) |
+| Numbers | [Numerics](../language/numerics.md) |
+| Vectors & parallel | [SIMD and parallel](../language/simd-parallel.md) |
+| Contracts & proof | [Contracts and proofs](../language/contracts-and-proofs.md) |
+| Control flow & functions | [Control flow and functions](../language/control-flow-and-functions.md) |
+| Collections & generics | [Collections and generics](../language/collections-generics.md) |
+| Effects & I/O | [Effects and I/O](../language/effects-and-io.md) |
 
 ## What every compiling program includes
 
@@ -66,6 +66,6 @@ def name(arg: T) -> R
 
 The compiler is **growing**. Some spec features are fully implemented; others are parsed or typechecked only. When in doubt, look at `li-tests/` for a working `.li` example or run `lic build` on your file.
 
-**Canonical gap list:** [Provability gaps (current compiler)](../../verification/provability-gaps.md) — what is **not** proved or not wired yet (Lean gate, decorator elaboration, math surface, heuristic parallel checks, …).
+**Canonical gap list:** [Provability gaps (current compiler)](../verification/provability-gaps.md) — what is **not** proved or not wired yet (Lean gate, decorator elaboration, math surface, heuristic parallel checks, …).
 
 Implementation phases: [Master plan](../superpowers/plans/2026-05-14-li-master-plan.md).

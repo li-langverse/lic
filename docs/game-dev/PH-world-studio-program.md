@@ -1,8 +1,8 @@
 # PH-world-studio-program — master tracker
 
 **Status:** Planning  
-**Hub:** [WORLD-STUDIO-MASTER-PLAN.md](WORLD-STUDIO-MASTER-PLAN.md) — modes, agent flows, canvas, exports, WP index
-**Vision:** [world-studio-vision.md](world-studio-vision.md)
+**Hub:** [WORLD-STUDIO-MASTER-PLAN.md](../game-dev/WORLD-STUDIO-MASTER-PLAN.md) — modes, agent flows, canvas, exports, WP index
+**Vision:** [world-studio-vision.md](../game-dev/world-studio-vision.md)
 
 Cross-cutting program IDs. Implementation order respects dependencies in the vision doc.
 
@@ -19,7 +19,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **PH-VOXEL** | VOXEL-0…5 | PH-GD-5 |
 | **PH-PUB** | PUB-0…5 | PH-UX, `sim.viz` |
 | **PH-ML** | ML-0…5 | PH-HW-1 |
-| **PH-LLM** | LLM-01…08 | PH-ML Wave 1 · **Program:** [PH-LLM-program.md](PH-LLM-program.md) |
+| **PH-LLM** | LLM-01…08 | PH-ML Wave 1 · **Program:** [PH-LLM-program.md](../game-dev/PH-LLM-program.md) |
 | **PH-AGENT** | AGENT-0…6 | `lic check --format=json`, PH-LLM WP-LLM-04 smoke |
 | **PH-PORT** | PORT-0…2 | LLVM triples |
 | **PH-HW** | HW-0…4 | `lig` (WP1 governance; WP2+ `packages/lig`) |

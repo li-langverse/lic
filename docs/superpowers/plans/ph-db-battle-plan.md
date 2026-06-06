@@ -1,8 +1,8 @@
 # PH-DB battle plan — parallel execution
 
 **Status:** Active execution guide (2026-05-26)  
-**Supersedes:** scaffolding-only sprint; does **not** replace [ph-db-lidb-platform.md](ph-db-lidb-platform.md) (phase index) or roadmap ADR detail.  
-**CI / hosting / containers:** [ph-db-ci-hosting-plan.md](ph-db-ci-hosting-plan.md) · **Execution tracker:** [ph-db-execution-tracker.md](ph-db-execution-tracker.md)  
+**Supersedes:** scaffolding-only sprint; does **not** replace [ph-db-lidb-platform.md](../../superpowers/plans/ph-db-lidb-platform.md) (phase index) or roadmap ADR detail.  
+**CI / hosting / containers:** [ph-db-ci-hosting-plan.md](../../superpowers/plans/ph-db-ci-hosting-plan.md) · **Execution tracker:** [ph-db-execution-tracker.md](../../superpowers/plans/ph-db-execution-tracker.md)  
 **Research:** [db-r0-vertical-seed](https://github.com/li-langverse/research-findings/blob/main/whitepapers/2026-05/database_platform/db-r0-vertical-seed/README.md)  
 **Control plane:** [lidb-migration-control-plane.md](https://github.com/li-langverse/li-cursor-agents/blob/main/docs/plans/lidb-migration-control-plane.md)
 
@@ -442,8 +442,8 @@ Local verification on engineering WP branches (`git fetch` + checkout; commands 
 
 | Doc | Path |
 |-----|------|
-| Phase index | [ph-db-lidb-platform.md](ph-db-lidb-platform.md) |
-| Master plan row | [2026-05-14-li-master-plan.md](2026-05-14-li-master-plan.md) § PH-DB |
+| Phase index | [ph-db-lidb-platform.md](../../superpowers/plans/ph-db-lidb-platform.md) |
+| Master plan row | [2026-05-14-li-master-plan.md](../../superpowers/plans/2026-05-14-li-master-plan.md) § PH-DB |
 | Control plane migration | [li-cursor-agents/docs/plans/lidb-migration-control-plane.md](https://github.com/li-langverse/li-cursor-agents/blob/main/docs/plans/lidb-migration-control-plane.md) |
 | R0 vertical seed | [db-r0-vertical-seed/README.md](https://github.com/li-langverse/research-findings/blob/main/whitepapers/2026-05/database_platform/db-r0-vertical-seed/README.md) |
 | lis handoff | [lidb/docs/handoff-wp5-lis.md](https://github.com/li-langverse/lidb/blob/main/docs/handoff-wp5-lis.md) |

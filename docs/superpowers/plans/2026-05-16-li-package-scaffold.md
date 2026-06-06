@@ -1,15 +1,15 @@
 # Li package scaffold — setup tool, skill, and docs
 
-> **Part of the ecosystem track.** Canonical **`li.toml` schema** and long-term UX live in [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md) (§ A3). This plan covers **day-one scaffolding** before `lip init` ships in phase **8b**.
+> **Part of the ecosystem track.** Canonical **`li.toml` schema** and long-term UX live in [2026-05-16-li-package-manager-lip.md](../../superpowers/plans/2026-05-16-li-package-manager-lip.md) (§ A3). This plan covers **day-one scaffolding** before `lip init` ships in phase **8b**.
 
 **Master plan ID:** **Pkg** (prerequisite for **8a** layout consistency and **8b** `lip init`).  
-**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [governance](2026-05-16-li-ecosystem-governance.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) (docs/traceability; no **G-*** closure in Pkg alone)
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [governance](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md) · [master plan](../../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) (docs/traceability; no **G-*** closure in Pkg alone)
 
 ---
 
 ## How this fits `lip`
 
-| Concern | This plan (Pkg) | [lip plan](2026-05-16-li-package-manager-lip.md) |
+| Concern | This plan (Pkg) | [lip plan](../../superpowers/plans/2026-05-16-li-package-manager-lip.md) |
 |---------|-----------------|--------------------------------------------------|
 | Create directories | `scripts/li-new-package` | `lip init` wraps same script (8b) |
 | `li.toml` fields | Templates **must match** lip § A3 | **Authoritative schema** |
@@ -50,7 +50,7 @@ lip init my-math          # equivalent to li-new-package + lockfile stub
 
 ## Standard directory layout
 
-Same tree as lip plan and [li-httpd](2026-05-16-li-httpd-plan.md) `packages/` convention:
+Same tree as lip plan and [li-httpd](../../superpowers/plans/2026-05-16-li-httpd-plan.md) `packages/` convention:
 
 ```text
 packages/my-math/
@@ -109,10 +109,10 @@ Templates: `scripts/templates/package/` — **generated from lip § A3** (single
 | [docs/ecosystem/governance.md](../../ecosystem/governance.md) | Org policy, standards, traceability (summary) |
 | [docs/ecosystem/official-packages.md](../../ecosystem/official-packages.md) | `PKG-*` registry + GitHub org repos |
 | [docs/ecosystem/lip.md](https://github.com/li-langverse/lip/blob/main/docs/lip.md) | lip plan (8b–8d) |
-| [2026-05-16-li-ecosystem-governance.md](2026-05-16-li-ecosystem-governance.md) | Full governance + intl standards |
+| [2026-05-16-li-ecosystem-governance.md](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md) | Full governance + intl standards |
 | mkdocs Guide + Ecosystem nav | All above |
 
-**Per-package repo files** (from [governance plan](2026-05-16-li-ecosystem-governance.md)): `README`, `CHANGELOG` (Keep a Changelog), `LICENSE` (SPDX), `SECURITY.md`, `PUBLISH.md` (`PKG-` id), `docs/traceability.md`.
+**Per-package repo files** (from [governance plan](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md)): `README`, `CHANGELOG` (Keep a Changelog), `LICENSE` (SPDX), `SECURITY.md`, `PUBLISH.md` (`PKG-` id), `docs/traceability.md`.
 
 **CLI:** `--official` → assign `PKG-` stub, print `gh repo create li-langverse/<name>` checklist, emit traceability template.
 

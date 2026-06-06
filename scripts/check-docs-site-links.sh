@@ -32,6 +32,8 @@ rm -rf "$DOCS_ROOT/.docs-lic-backup"
 mv "$DOCS_ROOT/docs" "$DOCS_ROOT/.docs-lic-backup"
 cp -a "$ROOT/docs" "$DOCS_ROOT/docs"
 
+python3 "$ROOT/scripts/patch-mkdocs-validation.py" "$DOCS_ROOT/mkdocs.yml"
+
 chmod +x "$DOCS_ROOT/scripts/build-docs.sh" 2>/dev/null || true
 STRICT="${DOCS_STRICT:-1}"
 if [[ "$STRICT" == "1" ]]; then

@@ -57,5 +57,5 @@ N/A for merge gate — alias `md_*` rows time the same LJ oracle as `md_lennard_
 
 ```markdown
 ### Added
-- **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs (LJ oracle template), `bench.py` registration, five tier-2 kernel runnable fixes — PH-5b ([#PR](URL))
+- **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs (LJ oracle template), `bench.py` registration, five tier-2 kernel runnable fixes — PH-5b ([#PR](https://github.com/li-langverse/lic/blob/main/docs/release-notes/URL))
 ```

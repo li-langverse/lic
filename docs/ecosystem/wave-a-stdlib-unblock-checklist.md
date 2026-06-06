@@ -1,7 +1,7 @@
 # Wave A stdlib unblock checklist (WP-WA)
 
 **Program:** Li stdlib ADT — close strict Wave A before list/dict runtime (WP1 blocked).  
-**Sources:** [provability-gaps.md](../../../verification/provability-gaps.md), [algorithms-and-libraries-plan.md §5](algorithms-and-libraries-plan.md#5-lic-maturity--gate-before-large-scale-libraries).  
+**Sources:** [provability-gaps.md](../verification/provability-gaps.md), [algorithms-and-libraries-plan.md §5](../ecosystem/algorithms-and-libraries-plan.md#5-lic-maturity--gate-before-large-scale-libraries).  
 **Assessed:** 2026-05-26 · branch `cursor/wave-a-stdlib-unblock` · integration **WA-P6** · repo `/home/s4il0r/Documents/Cursor/li-langverse/lic`
 
 **Wave A exit (strict):** **G-lean**, **G-vc**, **G-par**, **G-math** all **Done** (not Partial); `lic build` fails on open VCs by default; tier-1 pure-Li math ≤1.2× C++ (`LI_TIER1_PERF_STRICT=1`); phase **8a** workspace smoke green.

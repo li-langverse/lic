@@ -2,7 +2,7 @@
 
 **Status:** Draft (Wave 0 expanded)  
 **Date:** 2026-05-29  
-**Vision:** [world-studio-vision.md](../world-studio-vision.md)  
+**Vision:** [world-studio-vision.md](../../game-dev/world-studio-vision.md)  
 **Package:** `packages/li-studio-ai` (`import studio.ai`)
 
 ## Problem
@@ -59,7 +59,7 @@ arbitrary shell.
 | No local weights | Cursor SDK cloud via `@cursor/sdk` |
 | User offline + no weights | Honest error in task strip |
 
-See [lillm-rfc.md](lillm-rfc.md).
+See [lillm-rfc.md](../../game-dev/specs/lillm-rfc.md).
 
 ## Work packages
 
@@ -86,8 +86,8 @@ in `li-studio`. Contracts on every export.
 
 ## Dependencies
 
-- [PH-world-studio-program.md](../PH-world-studio-program.md)
-- [PH-LLM-program.md](../PH-LLM-program.md)
+- [PH-world-studio-program.md](../../game-dev/PH-world-studio-program.md)
+- [PH-LLM-program.md](../../game-dev/PH-LLM-program.md)
 - `packages/li-studio`, `packages/li-llm`, `packages/li-studio-ai`
 
 ## Open questions

@@ -33,7 +33,7 @@ Define terms on first use. Link to the design spec instead of copying ten-page t
 
 When documenting proofs, `lic build`, decorators, parallelism, or math notation:
 
-1. Read **[Provability gaps](../../../verification/provability-gaps.md)** first.  
+1. Read **[Provability gaps](../verification/provability-gaps.md)** first.  
 2. Use **target** vs **today** language (see that page’s summary table).  
 3. When a gap closes in code, update the **gap register** in the **same PR** as the implementation.  
 

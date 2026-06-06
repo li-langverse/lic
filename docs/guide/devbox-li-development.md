@@ -2,7 +2,7 @@
 
 Short setup guide for **human developers** and **Cursor agents** working on the Li monorepo from a dedicated Linux dev machine (hostname `engine`, Debian 12).
 
-See also: [Getting started — tools](getting-started-tools.md) (generic macOS/Linux), [httpd M1 baseline](../ecosystem/httpd-m1-baseline.md), [Cursor devbox host notes](https://github.com/li-langverse/lic/blob/main/scripts/README-devbox.md) (sleep/LUKS/RAM on the host).
+See also: [Getting started — tools](../guide/getting-started-tools.md) (generic macOS/Linux), [httpd M1 baseline](../ecosystem/httpd-m1-baseline.md), [Cursor devbox host notes](https://github.com/li-langverse/lic/blob/main/scripts/README-devbox.md) (sleep/LUKS/RAM on the host).
 
 ## What you need
 
@@ -161,4 +161,4 @@ Mark a todo done in loop state without running the agent:
 
 - **RAM:** ~64 GiB physical; swap ~1 GiB — see Cursor memory cap script in repo `Documents/Cursor/scripts/`.
 - **SSH:** laptop → `engine` ([LAPTOP-SSH-SETUP.md](https://github.com/li-langverse/lic/blob/main/LAPTOP-SSH-SETUP.md)).
-- **LUKS:** unattended reboot may need TPM unlock ([setup-devbox-always-on.sh](../../../../scripts/setup-devbox-always-on.sh)).
+- **LUKS:** unattended reboot may need TPM unlock ([setup-devbox-always-on.sh](https://github.com/li-langverse/lic/blob/main/scripts/setup-devbox-always-on.sh)).

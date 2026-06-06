@@ -52,7 +52,7 @@
 | Cross-module | `private` fields not accessible via import merge (E02xx) |
 | CI | `private_field_cross_module.li` compile_fail; `private_method_use.li` compile_fail |
 
-**Exit:** private **methods** + module visibility tests; **G-def** → **Partial+** in [provability-gaps](../../../verification/provability-gaps.md). (Cross-module **field** privacy: `leak_imported_vault.li` already green.)
+**Exit:** private **methods** + module visibility tests; **G-def** → **Partial+** in [provability-gaps](../../verification/provability-gaps.md). (Cross-module **field** privacy: `leak_imported_vault.li` already green.)
 
 ### 2j-c — Object semantics (mutation + call conventions)
 
@@ -81,7 +81,7 @@
 | Deliverable | Detail |
 |-------------|--------|
 | `type Hash = trait` with required `def hash(self: Self) -> u64` | Parse + check impl on `object` types |
-| Bounds | `def sort[T: Hash](xs: list[T])` — reuse **2b** generics |
+| Bounds | `def sort[T: Hash](https://github.com/li-langverse/lic/blob/main/docs/superpowers/plans/xs%3A%20list%5BT%5D)` — reuse **2b** generics |
 | Proof | Trait laws as optional `requires` templates (document trusted vs proved) |
 | CI | `trait_hash_impl.li`, `trait_missing_impl.li` compile_fail |
 
@@ -151,4 +151,4 @@
 - [Types and data](../../language/types-and-data.md)
 - [Naming conventions](../../language/naming-conventions.md)
 - [Philosophy](../../language/philosophy.md)
-- Master plan: [2026-05-14-li-master-plan.md](2026-05-14-li-master-plan.md) § Phase 2j
+- Master plan: [2026-05-14-li-master-plan.md](../../superpowers/plans/2026-05-14-li-master-plan.md) § Phase 2j

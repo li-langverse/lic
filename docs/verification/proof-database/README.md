@@ -2,7 +2,7 @@
 
 **Audience:** agents extending **P-physics** and tier-2 bench oracles without weakening discharge honesty.
 
-**Index:** [proof-database.md](../proof-database.md) · **Extension roadmap:** [proof-database-extension-roadmap.md](../proof-database-extension-roadmap.md) · **Schema:** v2 ([schema.toml](schema.toml)) · [Provability gaps](../provability-gaps.md) (**G-physics**, **G-proof-db**) · [Proof corpus roadmap](../proof-corpus-roadmap.md) · **Schema:** [schema.toml](schema.toml)
+**Index:** [proof-database.md](../../verification/proof-database.md) · **Extension roadmap:** [proof-database-extension-roadmap.md](../../verification/proof-database-extension-roadmap.md) · **Schema:** v2 ([schema.toml](https://github.com/li-langverse/lic/blob/main/docs/verification/proof-database/schema.toml)) · [Provability gaps](../../verification/provability-gaps.md) (**G-physics**, **G-proof-db**) · [Proof corpus roadmap](../../verification/proof-corpus-roadmap.md) · **Schema:** [schema.toml](https://github.com/li-langverse/lic/blob/main/docs/verification/proof-database/schema.toml)
 
 ## Discrepancy taxonomy (`gap_kind`)
 
@@ -33,10 +33,10 @@ Optional fields: `domain`, `erdos_id`, `erdos_status`, `convergence_class`, `ben
 
 | Path | Role |
 |------|------|
-| [entries/physics-mechanics.toml](entries/physics-mechanics.toml) | `P-AX-MECH-001` … `003` |
-| [entries/physics-conservation.toml](entries/physics-conservation.toml) | `P-AX-CONS-001` … `002` |
-| [entries/physics-dimensions.toml](entries/physics-dimensions.toml) | `P-AX-DIM-001` … `002` |
-| [entries/physics-lemmas.toml](entries/physics-lemmas.toml) | `P-LM-*` |
+| [entries/physics-mechanics.toml](https://github.com/li-langverse/lic/blob/main/docs/verification/proof-database/entries/physics-mechanics.toml) | `P-AX-MECH-001` … `003` |
+| [entries/physics-conservation.toml](https://github.com/li-langverse/lic/blob/main/docs/verification/proof-database/entries/physics-conservation.toml) | `P-AX-CONS-001` … `002` |
+| [entries/physics-dimensions.toml](https://github.com/li-langverse/lic/blob/main/docs/verification/proof-database/entries/physics-dimensions.toml) | `P-AX-DIM-001` … `002` |
+| [entries/physics-lemmas.toml](https://github.com/li-langverse/lic/blob/main/docs/verification/proof-database/entries/physics-lemmas.toml) | `P-LM-*` |
 
 ## Tier-2 bench refs
 
@@ -50,7 +50,7 @@ Optional fields: `domain`, `erdos_id`, `erdos_status`, `convergence_class`, `ben
 
 ## Agent workflow
 
-1. Read [proof-database.md](../proof-database.md) and the relevant `entries/physics-*.toml`.
+1. Read [proof-database.md](../../verification/proof-database.md) and the relevant `entries/physics-*.toml`.
 2. Edit `docs/semantics/Discharge.lean` only for scalar lemmas; keep **modeling_gap** on axiom rows until kernels export real `ensures`.
 3. Run `python3 scripts/proof-db/proof-db.py verify-slice` when CLI is on the branch.
-4. Update **G-physics** in [provability-gaps.md](../provability-gaps.md) in the same PR.
+4. Update **G-physics** in [provability-gaps.md](../../verification/provability-gaps.md) in the same PR.

@@ -8,7 +8,7 @@
 
 - Extended [plan-cross-links.md](../ecosystem/plan-cross-links.md) with **open master-plan tracker rows** (2i, 7d, 7e, 8p, Vision-LLM) and expanded **ui_ux_quality** digest table + remediation manifest path.
 - Refreshed [gui-ux-quality-handoff.md](../ecosystem/gui-ux-quality-handoff.md) with proactive GUI audit snapshot (2026-05-30T15:47Z) and preflight vs proactive audit distinction.
-- Linked [provability-gaps.md](../../verification/provability-gaps.md) alignment table to open PH tracker + GUI UX handoff (no **G-*** changes).
+- Linked [provability-gaps.md](../verification/provability-gaps.md) alignment table to open PH tracker + GUI UX handoff (no **G-*** changes).
 - Added **Vision-LLM** plan map to [li-llm-first-design.md](../superpowers/specs/2026-05-16-li-llm-first-design.md).
 
 ## Verification

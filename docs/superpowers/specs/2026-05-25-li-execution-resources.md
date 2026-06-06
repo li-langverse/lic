@@ -1,7 +1,7 @@
 # Execution resource model (normative)
 
 **Date:** 2026-05-25  
-**Companion:** [Native execution surface](2026-05-25-li-execution-surface.md)  
+**Companion:** [Native execution surface](../../superpowers/specs/2026-05-25-li-execution-surface.md)  
 **Plan:** `.cursor/plans/compiler_lint_and_parallelism_330a4d8e.plan.md` — Phase G
 
 ## Four axes (do not conflate)
@@ -32,4 +32,4 @@ dot in one thread   → @vectorized(lanes=8)
 fast li-tests       → run_all.sh -j + --max-memory
 ```
 
-See [execution surface](2026-05-25-li-execution-surface.md).
+See [execution surface](../../superpowers/specs/2026-05-25-li-execution-surface.md).

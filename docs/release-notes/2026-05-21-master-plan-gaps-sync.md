@@ -6,7 +6,7 @@ Updates the phase tracker and adds a standing **Still open (G-*)** section so ev
 
 ## Agent continuation
 
-1. **Read** [provability-gaps.md](../../verification/provability-gaps.md#still-open-report-every-session) before claiming proof or math milestones.
+1. **Read** [provability-gaps.md](../verification/provability-gaps.md#still-open-report-every-session) before claiming proof or math milestones.
 2. **Run** `./li-tests/run_all.sh --ci` (176 pass on `main`).
 3. **Next** — close **P-linalg** loop open VC; then **G-lean** default kernel gate.
 4. **Blocked on** `Core.lean` array/loop semantics for loop ≡ closed-form proofs.

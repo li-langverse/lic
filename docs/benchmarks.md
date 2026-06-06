@@ -56,7 +56,7 @@ python3 benchmarks/harness/bench.py --tier 12 --runs 3 --skip-verify
 ## Dashboard ([li-langverse/benchmarks](https://github.com/li-langverse/benchmarks))
 
 CI on `lic` `dev`/`main` uploads `benchmarks/results/latest.csv` (+ `stability.csv`, `security.csv`) and dispatches ingest.
-Add new benchmark ids to the org **`catalog.toml`** — see [benchmarks-catalog-additions.toml](ecosystem/benchmarks-catalog-additions.toml) for tier-3 rows (async, effects, security).
+Add new benchmark ids to the org **`catalog.toml`** — see [benchmarks-catalog-additions.toml](https://github.com/li-langverse/lic/blob/main/docs/ecosystem/benchmarks-catalog-additions.toml) for tier-3 rows (async, effects, security).
 
 Published site: [li-langverse.github.io/benchmarks](https://li-langverse.github.io/benchmarks/).
 

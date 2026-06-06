@@ -1,7 +1,7 @@
 # Proof corpus and verification roadmap
 
 **Audience:** agents extending **2e/2f**, reviewers judging “is `lic build` a proof certificate?”  
-**Related:** [Provability gaps](provability-gaps.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
+**Related:** [Provability gaps](../verification/provability-gaps.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 ## What “testing proofs” means in this repo
 
@@ -85,7 +85,7 @@ See [proof-db/reporter.md](https://github.com/li-langverse/lic/blob/main/proof-d
 
 ## Master-plan backlog (research: what to prove next)
 
-Priority order aligned with [provability-gaps](provability-gaps.md) and **2e → 2f → 7d**:
+Priority order aligned with [provability-gaps](../verification/provability-gaps.md) and **2e → 2f → 7d**:
 
 | ID | Topic | Why unproven today | Suggested corpus |
 |----|-------|-------------------|------------------|
@@ -96,7 +96,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + loop witness. **Open:** float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
 | **P-par** | `parallel for` disjointness | **Partial** — `_par*` → `disjoint_*_spec` + policy witnesses + MIR tag | Iteration-independence Lean specs (7d-c) |
 | **P-dec** | Decorators never run at runtime | **G-dec** no MIR lowering | `decorator_exploits/` + elaboration proofs |
-| **P-bnd** | Release builds omit `li_bounds_fail` | **Partial** — `check_release_bounds_ir.sh` | [bounds-release-path](bounds-release-path.md) |
+| **P-bnd** | Release builds omit `li_bounds_fail` | **Partial** — `check_release_bounds_ir.sh` | [bounds-release-path](../verification/bounds-release-path.md) |
 | **P-http** | Parser/route config safety | Phase **H** | `httpd/*`, TOML desugar invariants |
 | **P-narrow** | Width-narrowing / casts | **G-narrow** partial | Ariane-style `prove_reject` + proved narrowing |
 
@@ -104,7 +104,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-num** | Number theory lemmas | **Stub** — **WP0-A** catalog (N-AX-*, N-LM-*) not in entries/ yet | proof-db/num/ (planned), **G-num** |
 | **P-discrete** | Combinatorics / finite structures | **Stub** — **WP0-A** after **P-num** axiom layer | proof-db/discrete/ (planned), **G-discrete** |
 | **P-stats** | Estimators + sampling bounds | **Stub** — axiomatic stats rows first | Tier-2 stats benches (planned), **G-stats** |
-| **P-ml-convergence** | Optimizer / SGD convergence | **Stub** — [ml-convergence-program](ml-convergence-program.md) dual track | proof-db/ml/ (planned), **G-ml** |
+| **P-ml-convergence** | Optimizer / SGD convergence | **Stub** — [ml-convergence-program](../verification/ml-convergence-program.md) dual track | proof-db/ml/ (planned), **G-ml** |
 | **P-graph** | Graph invariants | **Stub** — **WP0-A** | proof-db/graph/ (planned), **G-graph** |
 | **P-erdos** | Erdős register → formal targets | **Partial** — **WP0-B** E-* catalog; specimens **WP1+** | proof-db/erdos/register.json, **G-erdos** |
 | **P-chem** | Stoichiometry + reaction bookkeeping | **Stub** — **WP0-D** | Tier-2 chem benches (planned), **G-chem** |

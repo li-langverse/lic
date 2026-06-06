@@ -5,7 +5,7 @@
 **Register:** `proof-db/erdos/register.json`  
 **Roadmap / tiers:** `proof-db/erdos/ROADMAP.md`  
 **Catalog:** `docs/verification/proof-database/entries/erdos-register.toml` (`E-{number}`)  
-**Index:** [proof-database.md](proof-database.md) · [proof-database/entries/README.md](proof-database/entries/README.md)
+**Index:** [proof-database.md](../verification/proof-database.md) · [proof-database/entries/README.md](proof-database/entries/README.md)
 
 ## When to use this doc
 
@@ -26,7 +26,7 @@
 
 4. **Review** `erdos-register.toml`: each row must have `id = E-{number}`, `kind = target`, `field = erdos`.
 5. **Do not** set `proof_status = proved` unless literature + Lean discharge match; use `erdos_status = proved` in the register and re-sync.
-6. **Promote to formal work:** change `erdos_status` to `target`, add `li_specimen` in a follow-up PR (WP1+), wire **G-erdos** in [provability-gaps.md](provability-gaps.md).
+6. **Promote to formal work:** change `erdos_status` to `target`, add `li_specimen` in a follow-up PR (WP1+), wire **G-erdos** in [provability-gaps.md](../verification/provability-gaps.md).
 7. **Verify** (optional): `python3 scripts/proof-db/rebuild_lemmas.py` picks up new `entries/*.toml` rows.
 
 ## `erdos_status` semantics

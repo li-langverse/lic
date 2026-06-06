@@ -1,7 +1,7 @@
 # Fast math and parallelism
 
 !!! note "Status"
-    **Math surface** (`dot`, `a @ b`, 2d `C = A @ B`, `sum`, element-wise ops) is **implemented** on fixed `array` tiles. **`@vectorized(lanes=4)`** on `def` is validated; **`@no_vectorize`** disables f64×4 array SIMD in codegen. **`@vectorized` on `for`** parses but does not elaborate loops yet. **`@parallel`** requires `disjoint=`. See **[Provability gaps](../../verification/provability-gaps.md)**.
+    **Math surface** (`dot`, `a @ b`, 2d `C = A @ B`, `sum`, element-wise ops) is **implemented** on fixed `array` tiles. **`@vectorized(lanes=4)`** on `def` is validated; **`@no_vectorize`** disables f64×4 array SIMD in codegen. **`@vectorized` on `for`** parses but does not elaborate loops yet. **`@parallel`** requires `disjoint=`. See **[Provability gaps](../verification/provability-gaps.md)**.
 
 Li is built for **scientific and high-performance** work. Prefer:
 
@@ -10,7 +10,7 @@ Li is built for **scientific and high-performance** work. Prefer:
 
 You do **not** install NumPy, OpenMP bindings, or a thread library yourself — Li’s compiler wires native vector instructions and (on Linux) OpenMP when your program passes the proof gate.
 
-**Start here:** [Math-first HPC examples](math-hpc-examples.md) · [Linear algebra](../language/linear-algebra.md)
+**Start here:** [Math-first HPC examples](../guide/math-hpc-examples.md) · [Linear algebra](../language/linear-algebra.md)
 
 ---
 
@@ -85,7 +85,7 @@ var v: simd[f64, 4] = __li_simd_splat_f64(1.5)
 
 Lane counts **4 and 8** are supported; other sizes are rejected at compile time.
 
-**Migration:** replace manual intrinsic loops with `dot` / `@` on `array` tiles; see [Examples gallery](examples-gallery.md#math-vs-intrinsics).
+**Migration:** replace manual intrinsic loops with `dot` / `@` on `array` tiles; see [Examples gallery](../guide/examples-gallery.md#math-vs-intrinsics).
 
 More detail: [SIMD & parallel reference](../language/simd-parallel.md).
 

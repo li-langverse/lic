@@ -23,7 +23,7 @@ Single integration branch and release note for **`lig`** multi-vendor GPU work p
 
 | Area | What | Evidence |
 |------|------|----------|
-| **PH-HW WP1** | `lig` RFC, kernel catalog, `lig-kernels.toml` schema | [#217](https://github.com/li-langverse/lic/pull/217) · [2026-05-25-lig-ph-hw-work-packages.md](2026-05-25-lig-ph-hw-work-packages.md) |
+| **PH-HW WP1** | `lig` RFC, kernel catalog, `lig-kernels.toml` schema | [#217](https://github.com/li-langverse/lic/pull/217) · [2026-05-25-lig-ph-hw-work-packages.md](../release-notes/2026-05-25-lig-ph-hw-work-packages.md) |
 | **PH-HW WP2** | `packages/lig` `lig.device` probe, `li-gpu` → `lig` rename | [#218](https://github.com/li-langverse/lic/pull/218) · `docs/release-notes/2026-05-25-ph-hw-lig-device.md` (on WP branch) |
 | **PH-HW WP3** | `lig.present` swapchain + host present / studio glue | [#213](https://github.com/li-langverse/lic/pull/213) · `docs/release-notes/2026-05-25-lig-present-hw1.md` (on WP branch) |
 | **PH-HW WP4** | `lig.kernel` LKIR matmul pilot, parity bench | [#220](https://github.com/li-langverse/lic/pull/220) · `docs/release-notes/2026-05-25-ph-hw-wp4-lig-kernel-lkir.md` (on WP branch) |

@@ -2,9 +2,9 @@
 
 **Status:** Draft (WP1 governance)  
 **Track:** PH-HW · HW-0 (governance)  
-**Vision:** [world-studio-vision.md](../world-studio-vision.md)  
-**Kernel catalog:** [lig-kernel-catalog.md](../lig-kernel-catalog.md)  
-**Bench schema:** [lig-kernels.toml](../../../benchmarks/competitive/lig-kernels.toml)
+**Vision:** [world-studio-vision.md](../../game-dev/world-studio-vision.md)  
+**Kernel catalog:** [lig-kernel-catalog.md](../../game-dev/lig-kernel-catalog.md)  
+**Bench schema:** [lig-kernels.toml](https://github.com/li-langverse/lic/blob/main/benchmarks/competitive/lig-kernels.toml)
 
 ## Summary
 
@@ -151,7 +151,7 @@ Agents **must not** weaken these gates in prompts, hooks, or bench thresholds.
 | Package `li-gpu` / folder `packages/li-gpu` | `lig` / `packages/lig` (`git mv`) |
 | `import gpu` | `import lig` |
 | `gpu.cuda`, `gpu.rocm`, `gpu.wgpu` | `lig.device` + `lig.kernel` |
-| [li-gpu-lkir-rfc.md](li-gpu-lkir-rfc.md) | Stub → this RFC |
+| [li-gpu-lkir-rfc.md](../../game-dev/specs/li-gpu-lkir-rfc.md) | Stub → this RFC |
 | `[engine.gpu]` in `li.toml` | `[engine.lig]` (alias accepted one release) |
 
 ```li
@@ -184,13 +184,13 @@ def run(a: tensor[f32], b: tensor[f32]) -> tensor[f32]
 |-------|--------|
 | Host launch (`requires` on buffers, alignment) | Target: proved in Lean via `lic build` |
 | Device kernel bodies | Trusted until device calculus lands; LKIR carries ghost specs |
-| Vendor FFI (`extern proc`) | Trusted + SBOM; **IMPORTANT** tier per [critical-package-compliance-rfc.md](critical-package-compliance-rfc.md) |
+| Vendor FFI (`extern proc`) | Trusted + SBOM; **IMPORTANT** tier per [critical-package-compliance-rfc.md](../../game-dev/specs/critical-package-compliance-rfc.md) |
 
 ## Dependencies
 
-- [PH-world-studio-program.md](../PH-world-studio-program.md) — PH-HW HW-0…4
-- [portable-targets-rfc.md](portable-targets-rfc.md) — CPU triples + `[engine.lig]`
-- [ml-async-parallel-rfc.md](ml-async-parallel-rfc.md) — streams, Triton-distributed patterns
+- [PH-world-studio-program.md](../../game-dev/PH-world-studio-program.md) — PH-HW HW-0…4
+- [portable-targets-rfc.md](../../game-dev/specs/portable-targets-rfc.md) — CPU triples + `[engine.lig]`
+- [ml-async-parallel-rfc.md](../../game-dev/specs/ml-async-parallel-rfc.md) — streams, Triton-distributed patterns
 - [algorithms-and-libraries-plan.md](../../ecosystem/algorithms-and-libraries-plan.md) — package register
 
 ## Open questions

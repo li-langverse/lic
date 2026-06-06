@@ -60,7 +60,7 @@
 
 **Wave 3:** Async JobGraph + >=4 env sample collection (WP-RL-02)
 
-**Battle plan:** [PH-ML-GPU-battle-plan.md](PH-ML-GPU-battle-plan.md)
+**Battle plan:** [PH-ML-GPU-battle-plan.md](../game-dev/PH-ML-GPU-battle-plan.md)
 
 | WP | Title | Wave | Status | Verification |
 |----|-------|------|--------|--------------|

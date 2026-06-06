@@ -2,7 +2,7 @@
 
 **Status:** WP0-A (schema v2 + vertical stubs) — 2026-05-30  
 **Audience:** agents extending the multi-domain proof catalog  
-**Related:** [proof-database](proof-database.md) · [schema.toml](proof-database/schema.toml) · [proof-corpus-roadmap.md](proof-corpus-roadmap.md)
+**Related:** [proof-database](../verification/proof-database.md) · [schema.toml](https://github.com/li-langverse/lic/blob/main/docs/verification/proof-database/schema.toml) · [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md)
 
 ## Goal
 

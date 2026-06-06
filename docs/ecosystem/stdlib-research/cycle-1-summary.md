@@ -25,8 +25,8 @@
 
 | Step | Digest | Primary outcome |
 |------|--------|-----------------|
-| `inventory_std_tree-1` | [cycle-1-inventory-std-tree.md](./cycle-1-inventory-std-tree.md) | Maturity map, CI harness links, planned-not-on-disk modules |
-| `gap_vs_sota-linalg-1` | [cycle-1-gap-vs-sota-linalg.md](./cycle-1-gap-vs-sota-linalg.md) | Prelude vs BLAS/LAPACK/NumPy matrix; perf + proof gaps |
+| `inventory_std_tree-1` | [cycle-1-inventory-std-tree.md](../../ecosystem/stdlib-research/cycle-1-inventory-std-tree.md) | Maturity map, CI harness links, planned-not-on-disk modules |
+| `gap_vs_sota-linalg-1` | [cycle-1-gap-vs-sota-linalg.md](../../ecosystem/stdlib-research/cycle-1-gap-vs-sota-linalg.md) | Prelude vs BLAS/LAPACK/NumPy matrix; perf + proof gaps |
 | `synthesize_step` | this file | Consolidated YAML + prioritized implementer queue |
 
 ### Std tree vs packages (placement)
@@ -42,8 +42,8 @@
 
 ### Proof-before-perf gates (do not skip)
 
-- **G-math** Partial — strict tier-1 and float `@` Props open ([provability-gaps.md](../../../verification/provability-gaps.md)).
-- **WP0-B runtime** blocked on Wave A **G-vc**, **G-lean**, **G-par**, **G-math** ([wave-a-stdlib-unblock-checklist.md](../wave-a-stdlib-unblock-checklist.md)).
+- **G-math** Partial — strict tier-1 and float `@` Props open ([provability-gaps.md](../../verification/provability-gaps.md)).
+- **WP0-B runtime** blocked on Wave A **G-vc**, **G-lean**, **G-par**, **G-math** ([wave-a-stdlib-unblock-checklist.md](../../ecosystem/wave-a-stdlib-unblock-checklist.md)).
 - No `trusted.lean` edits from this research pass.
 
 ### Implementer priority queue
@@ -125,4 +125,4 @@ connections:
 
 **north_star_fit:** ecosystem, scientific_computing, hpc · **PH-2i**, **PH-7e**, **PH-IO-5/7**, **AL-10**, **AL-11**  
 **Whitepaper:** [std-r0-cycle1-ecosystem-summary](https://github.com/li-langverse/research-findings/tree/main/whitepapers/2026-05/stdlib_ecosystem/std-r0-cycle1-ecosystem-summary)  
-**Session rollup:** [stdlib_ecosystem-cycle.md](../research-sessions/stdlib_ecosystem-cycle.md)
+**Session rollup:** [stdlib_ecosystem-cycle.md](../../ecosystem/research-sessions/stdlib_ecosystem-cycle.md)

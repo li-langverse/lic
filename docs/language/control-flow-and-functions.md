@@ -14,7 +14,7 @@ def add(a: int, b: int) -> int
 ### Parameters
 
 - Positional parameters with types.
-- Generic parameters: `def id[T](x: T) -> T`.
+- Generic parameters: `def id[T](https://github.com/li-langverse/lic/blob/main/docs/language/x%3A%20T) -> T`.
 - `extern proc` for C linkage (runtime or libraries).
 
 ### Return
@@ -57,7 +57,7 @@ parallel for i in 0..<N
   body
 ```
 
-See [SIMD and parallel](simd-parallel.md).
+See [SIMD and parallel](../language/simd-parallel.md).
 
 ## Variables
 
@@ -98,7 +98,7 @@ Index assignment on arrays requires valid indices.
 ## `cast` with proof
 
 ```nim
-cast[i32](x, proof_term)
+cast[i32](https://github.com/li-langverse/lic/blob/main/docs/language/x%2C%20proof_term)
 ```
 
 Bare `cast` without proof is forbidden.

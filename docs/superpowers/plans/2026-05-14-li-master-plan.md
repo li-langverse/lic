@@ -12,7 +12,7 @@
 
 **Reliability target:** Li is **not a runtime-interpreted language**. User logic is **fully static**: types, contracts, memory, parallelism, and (for release) bounds/shapes are resolved at **`lic build`** + Lean — **not** at process start with dynamic checks. Push failures **left** until runtime error rate for proved programs approaches **zero** (only the capped **trusted** `IO` / platform surface remains outside user proofs).
 
-**Honest status (docs):** [Provability gaps (today)](../../../verification/provability-gaps.md) — living register of what is **not** proved/wired yet (Lean gate, heuristic parallel policy, decorator parse-only, …). Update that file when closing a phase gate.
+**Honest status (docs):** [Provability gaps (today)](../../verification/provability-gaps.md) — living register of what is **not** proved/wired yet (Lean gate, heuristic parallel policy, decorator parse-only, …). Update that file when closing a phase gate.
 
 **Architecture:** C++ compiler → MIR → LLVM 22 (sole backend). Bootstrap to self-host later. No VM, no JIT for user code, no runtime decorator dispatch.
 
@@ -41,7 +41,7 @@
 | Language pillars, compiler phases, org policy | **This master plan** (+ language design spec if normative) |
 | Quarterly / public milestones | [`li-langverse/roadmap`](https://github.com/li-langverse/roadmap) + [benchmarks dashboard](https://li-langverse.github.io/benchmarks/) |
 | Single package scope | That package’s `README`, `PUBLISH.md`, `docs/traceability.md` only |
-| li-httpd product | [2026-05-16-li-httpd-plan.md](2026-05-16-li-httpd-plan.md) + **`lis`** |
+| li-httpd product | [2026-05-16-li-httpd-plan.md](../../superpowers/plans/2026-05-16-li-httpd-plan.md) + **`lis`** |
 
 Agents **must not** treat package README as the only vision doc when the change affects multiple repos or pillars.
 
@@ -108,21 +108,21 @@ These three are **enough** until a row in [Future org repos](#future-org-repos-a
 **New org repo workflow** (subset of above):
 
 1. Check whether the repo already exists on GitHub.
-2. If **no**, post **“Action needed from you”** with: repo name, purpose, phase ID, [governance checklist](2026-05-16-li-ecosystem-governance.md#repo-creation-checklist-human-or-agent).
+2. If **no**, post **“Action needed from you”** with: repo name, purpose, phase ID, [governance checklist](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md#repo-creation-checklist-human-or-agent).
 3. **Wait for confirmation** before implementing or pushing.
 4. Do **not** request “authorize all orgs” OAuth; human uses UI or fine-grained PAT scoped to `li-langverse`.
 
 | Phase / trigger | Create repo | Name pattern | Why |
 |-----------------|-------------|--------------|-----|
 | Stdlib split | When `std/` outgrows **`lic`** or listed in `official-packages.md` | `li-std-<area>` e.g. `li-std-core`, `li-std-math` | Independent semver / second consumer; **register in `li-downstream-repos.txt`** |
-| Phase **H** (httpd stack) | Before httpd needs standalone publish | `li-http`, `li-net`, `li-tls`, … per [httpd plan](2026-05-16-li-httpd-plan.md) | Infra packages, own CI |
-| **PH-DB-1** (data platform) | Before `lidb` engine ships | **`lidb`** | Postgres-shaped engine + registry schema; [PH-DB plan](ph-db-lidb-platform.md); human creates repo |
-| Official package promotion | `li-new-package --official` + second consumer or **1.0.0** | `li-<name>` | [Governance](2026-05-16-li-ecosystem-governance.md) promotion |
+| Phase **H** (httpd stack) | Before httpd needs standalone publish | `li-http`, `li-net`, `li-tls`, … per [httpd plan](../../superpowers/plans/2026-05-16-li-httpd-plan.md) | Infra packages, own CI |
+| **PH-DB-1** (data platform) | Before `lidb` engine ships | **`lidb`** | Postgres-shaped engine + registry schema; [PH-DB plan](../../superpowers/plans/ph-db-lidb-platform.md); human creates repo |
+| Official package promotion | `li-new-package --official` + second consumer or **1.0.0** | `li-<name>` | [Governance](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md) promotion |
 | Registry package (third-party) | **Never** in `li-langverse` unless adopted | author’s org | `lip publish` only |
 
 **Stay in `lic` monorepo** (`packages/<name>/`) when: experimental, single consumer, or blocked on **8a**/**8b** — document promotion in CHANGELOG when splitting out.
 
-**Human checklist** (after agent reminder): [governance § Repo creation checklist](2026-05-16-li-ecosystem-governance.md#repo-creation-checklist-human-or-agent); templates in `scripts/templates/github-repo/`.
+**Human checklist** (after agent reminder): [governance § Repo creation checklist](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md#repo-creation-checklist-human-or-agent); templates in `scripts/templates/github-repo/`.
 
 ### Cross-repo dependency notifications (every official package)
 
@@ -178,11 +178,11 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 2c | Types: TypedDict, enums, collections | `2026-05-14-phase-02c-types-collections.md` (new) | dict/list/tuple tests |
 | 2d | Borrow + effects + `array[N,T]` | `2026-05-14-phase-02-typechecker.md` | borrow error tests |
 | 2g | **`def`**, Nim `object`, field `private`/`public`, `import` (v1) | `.cursor/plans/nim_oop_and_def_e5f70493.plan.md` | `li-tests/encapsulation/` green |
-| **2j** | **Full OOP** — methods/`self`, method visibility, traits, inheritance, object write-back | [2026-05-20-li-oop-roadmap.md](2026-05-20-li-oop-roadmap.md) | 2j-a…f exit gates in OOP plan |
+| **2j** | **Full OOP** — methods/`self`, method visibility, traits, inheritance, object write-back | [2026-05-20-li-oop-roadmap.md](../../superpowers/plans/2026-05-20-li-oop-roadmap.md) | 2j-a…f exit gates in OOP plan |
 | 2h | **Python-math surface** (`**`, `//`, `%`, `for`/`range`, contract sugar, `old`) | same plan (Phase A0) | `li-tests/math_syntax/` green |
-| **2i** | **Math / linalg surface** (infix `*`, `+`, `dot`, `A @ B` — not user `simd(...)`) | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | `li-tests/math_linalg/`; docs samples |
+| **2i** | **Math / linalg surface** (infix `*`, `+`, `dot`, `A @ B` — not user `simd(...)`) | [2026-05-16-li-math-linalg-surface.md](../../superpowers/plans/2026-05-16-li-math-linalg-surface.md) | `li-tests/math_linalg/`; docs samples |
 | 2e | Contracts + refinements | [proof-corpus-roadmap](../../verification/proof-corpus-roadmap.md) | **Partial (PR #83):** call-site `requires`, refinements, AutoVC |
-| 2f | Lean 4 verify | same + [provability-gaps](../../../verification/provability-gaps.md) | **Partial:** open-VC gate; `contracts_verify` 16/16; full kernel **G-lean** open |
+| 2f | Lean 4 verify | same + [provability-gaps](../../verification/provability-gaps.md) | **Partial:** open-VC gate; `contracts_verify` 16/16; full kernel **G-lean** open |
 | 3 | MIR + LLVM codegen | `2026-05-14-phase-03-mir-codegen.md` | `lic build` |
 | 4 | Stdlib + runtime + deferred annotations | `2026-05-14-phase-04-runtime-stdlib.md` | hello + collections run |
 | 5 | Tetris | `2026-05-14-phase-05-tetris.md` | playable game |
@@ -190,19 +190,19 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 6 | Self-host (post-live) | `2026-05-14-phase-06-self-host.md` | `lic` built by li (bootstrap seed) |
 | 7 | Native HPC (SIMD + OpenMP) | `2026-05-14-phase-07-native-hpc.md` | Pure-Li simd_dot + md; race suite; fuzz daily |
 | **7d** | **Execution decorators** | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | **Partial:** `@vectorized` scope (#150); **G-par** disjoint= open |
-| **7e** | **Math → SIMD lowering** | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) § 7e | **Partial:** pure-Li tier-1 (#148); perf bar open |
+| **7e** | **Math → SIMD lowering** | [2026-05-16-li-math-linalg-surface.md](../../superpowers/plans/2026-05-16-li-math-linalg-surface.md) § 7e | **Partial:** pure-Li tier-1 (#148); perf bar open |
 | **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | **M1 partial:** epoll static/sendfile + proxy (#153/#156); **li-log** package stub (access sink + redact); **next:** M1 ship gate Lean + Li reactor |
 | **Obs** | Fuzz dashboard + plan canvas | `scripts/export-fuzz-status.sh` + `canvases/*.canvas.tsx` | Nightly updates `.canvas.data.json` sidecars |
-| **Pkg** | **Package scaffold** (dirs + `li.toml`) | [2026-05-16-li-package-scaffold.md](2026-05-16-li-package-scaffold.md) | `li-new-package` + skill + creating-packages guide (**`lic`** repo) |
-| **8-repo** | **Org repos live + push/CI** | [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md) | **`lic`**, **`lip`**, **`lit`** on GitHub; toolchain pins; bootstrap smoke |
+| **Pkg** | **Package scaffold** (dirs + `li.toml`) | [2026-05-16-li-package-scaffold.md](../../superpowers/plans/2026-05-16-li-package-scaffold.md) | `li-new-package` + skill + creating-packages guide (**`lic`** repo) |
+| **8-repo** | **Org repos live + push/CI** | [2026-05-16-li-package-manager-lip.md](../../superpowers/plans/2026-05-16-li-package-manager-lip.md) | **`lic`**, **`lip`**, **`lit`** on GitHub; toolchain pins; bootstrap smoke |
 | **8a** | **Modules + workspace** `lic build` | same § 8a | **`lic`**: `li-tests/modules/`; same `li.toml` as Pkg |
 | **8e-li** | **`lic --coverage-instrument`** | same § 8e | **`lic`**: LLVM profiling flag for coverage |
 | **8e** | **`lit` + coverage gate** | same § 8e | **`lit`**: ≥80% on publish; **`std/**` in `lic`**: **100%** (`check-stdlib-coverage.sh`) |
 | **8b** | **`lip` path/git + lockfile** | same § 8b | **`lip`**: `lip init` → scaffold; `lip install` reproducible |
 | **8c** | **Signatures + proof digests** | same § 8c | **`lip`**: ed25519; `proof_digest` in `li.lock` |
 | **8d** | **Registry + `lip publish`** | same § 8d | **`lip`**: hybrid git + registry; CI runs **`lit`** + `lic build` |
-| **PH-DB** | **Li data platform** (`lidb` + `lis`) | [ph-db-lidb-platform.md](ph-db-lidb-platform.md) | PH-DB-0..10; **`PH-8d-v2` → `PH-DB-4`** (registry v2 central DB) |
-| **8-sync** | **Upstream dependency notifications** | [governance § Cross-repo notifications](2026-05-16-li-ecosystem-governance.md#cross-repo-dependency-notifications) | Dependabot + `lic` release dispatch; every official repo |
+| **PH-DB** | **Li data platform** (`lidb` + `lis`) | [ph-db-lidb-platform.md](../../superpowers/plans/ph-db-lidb-platform.md) | PH-DB-0..10; **`PH-8d-v2` → `PH-DB-4`** (registry v2 central DB) |
+| **8-sync** | **Upstream dependency notifications** | [governance § Cross-repo notifications](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md#cross-repo-dependency-notifications) | Dependabot + `lic` release dispatch; every official repo |
 | **8p** | **Parallel compile + CI throughput** | [§ 8p below](#phase-8p--parallel-compile--ci-throughput) | `li-tests` / workspace / `lic build` use host cores; local-ci ≲½ wall time on 8+ cores |
 | **Doc** | **Documentation + provability honesty** | [§ Doc below](#documentation--provability-honesty-cross-cutting) | Gap register current; handbook matches `lic`; no overclaim |
 
@@ -214,12 +214,12 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 
 ## Ecosystem — packages (`lic`, `lip`, `lit`, scaffold)
 
-Three **org repos** + scaffold in **`lic`**. **One `li.toml` schema** (authoritative in [lip plan § A3](2026-05-16-li-package-manager-lip.md)):
+Three **org repos** + scaffold in **`lic`**. **One `li.toml` schema** (authoritative in [lip plan § A3](../../superpowers/plans/2026-05-16-li-package-manager-lip.md)):
 
 | Plan | Repo | Role | Ship when |
 |------|------|------|-----------|
-| [2026-05-16-li-package-scaffold.md](2026-05-16-li-package-scaffold.md) | **`lic`** | `scripts/li-new-package`, agent skill, user guide | **Pkg** — before `import` |
-| [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md) | **`lip`** + **`lit`** | lockfile, registry, proof+sig+coverage | **8-repo → 8a → 8e-li → 8e → 8b → 8c → 8d** |
+| [2026-05-16-li-package-scaffold.md](../../superpowers/plans/2026-05-16-li-package-scaffold.md) | **`lic`** | `scripts/li-new-package`, agent skill, user guide | **Pkg** — before `import` |
+| [2026-05-16-li-package-manager-lip.md](../../superpowers/plans/2026-05-16-li-package-manager-lip.md) | **`lip`** + **`lit`** | lockfile, registry, proof+sig+coverage | **8-repo → 8a → 8e-li → 8e → 8b → 8c → 8d** |
 
 ```text
 8-repo (lic + lip + lit on GitHub, push + CI)
@@ -236,9 +236,9 @@ Three **org repos** + scaffold in **`lic`**. **One `li.toml` schema** (authorita
 
 **Docs:** `docs/ecosystem/*` in **`lic`**; `docs/lip.md` + `registry.md` in **`lip`**; `docs/lit.md` in **`lit`**; threat model `docs/verification/packages.md` in **`lic`**.
 
-**Governance:** [2026-05-16-li-ecosystem-governance.md](2026-05-16-li-ecosystem-governance.md) — org **`li-langverse`**, compiler home **`lic`** (not `li-language`), **SemVer/SPDX/Changelog**, **PKG/REQ** traceability.
+**Governance:** [2026-05-16-li-ecosystem-governance.md](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md) — org **`li-langverse`**, compiler home **`lic`** (not `li-language`), **SemVer/SPDX/Changelog**, **PKG/REQ** traceability.
 
-**Also uses packages:** [li-httpd plan](2026-05-16-li-httpd-plan.md) — `li-new-package` in **`lic`**; resolve with **`lip`** after **8b**; promote to **`li-langverse/li-*`** per governance.
+**Also uses packages:** [li-httpd plan](../../superpowers/plans/2026-05-16-li-httpd-plan.md) — `li-new-package` in **`lic`**; resolve with **`lip`** after **8b**; promote to **`li-langverse/li-*`** per governance.
 
 ---
 
@@ -265,7 +265,7 @@ Li maximizes **reliability** by eliminating **user-visible runtime failure modes
 
 **Implication for 7d / 7e / 2i:** decorators and math are **static sugar** only; performance and correctness are fixed at compile time.
 
-The table above describes the **target**. Where **`lic` has not established mathematical provability yet**, see [Provability gaps](../../../verification/provability-gaps.md) and [compiler task → gap map](#compiler-tasks-vs-proof-gaps) below.
+The table above describes the **target**. Where **`lic` has not established mathematical provability yet**, see [Provability gaps](../../verification/provability-gaps.md) and [compiler task → gap map](#compiler-tasks-vs-proof-gaps) below.
 
 ---
 
@@ -306,7 +306,7 @@ The table above describes the **target**. Where **`lic` has not established math
 
 ### Agent priority
 
-Implement **8p-a** before **8p-c** (largest CI win for least compiler risk). Track in [provability-gaps](../../../verification/provability-gaps.md) only if parallel scheduling changes what “green” means.
+Implement **8p-a** before **8p-c** (largest CI win for least compiler risk). Track in [provability-gaps](../../verification/provability-gaps.md) only if parallel scheduling changes what “green” means.
 
 **Learned from:** Cargo `build -j`, Ninja, Bazel remote/local pools — adopt **job pool + hermetic per-task `target/`**, not distributed compilation in v1.
 
@@ -332,7 +332,7 @@ See [local-ci-docker-images.md](../../ecosystem/local-ci-docker-images.md).
 
 **Problem:** Handbook and specs must not read as if Lean, full disjoint proofs, decorators, or math lowering already ship when they do not. Contributors need a **single gap register** and **compiler-task linkage**.
 
-**Canonical register:** [docs/verification/provability-gaps.md](../../../verification/provability-gaps.md) (`G-*` IDs). **Plan map:** [docs/ecosystem/plan-cross-links.md](../../ecosystem/plan-cross-links.md) · [handbook index](../../language/overview.md).
+**Canonical register:** [docs/verification/provability-gaps.md](../../verification/provability-gaps.md) (`G-*` IDs). **Plan map:** [docs/ecosystem/plan-cross-links.md](../../ecosystem/plan-cross-links.md) · [handbook index](../../language/overview.md).
 
 ### Phase Doc — sub-phases
 
@@ -350,7 +350,7 @@ See [local-ci-docker-images.md](../../ecosystem/local-ci-docker-images.md).
 
 When a PR implements or partially implements a proof-related compiler feature:
 
-1. Update **[provability-gaps.md](../../../verification/provability-gaps.md)** — move **G-*** row to **Partial** or **Done** with one-line evidence (file, test suite, CLI flag).  
+1. Update **[provability-gaps.md](../../verification/provability-gaps.md)** — move **G-*** row to **Partial** or **Done** with one-line evidence (file, test suite, CLI flag).  
 2. Update affected handbook pages listed in the gap doc § *Documentation that must stay aligned*.  
 3. If the feature is still **Partial**, add an admonition on the handbook page (mkdocs `!!! note "Provability status"`).  
 4. Mention **G-*** ID in the PR description.
@@ -383,7 +383,7 @@ Track in phase **Doc** until each is checked:
 
 - [x] **Doc-a** — gap register complete and linked site-wide (mkdocs nav; README audit ongoing)  
 - [x] **Doc-b** — [linear-algebra.md](../../language/linear-algebra.md) stub + [decorators.md](../../language/decorators.md); fast-math guide audit partial  
-- [x] **Doc-b** — [language design spec](../specs/2026-05-14-li-language-design.md) banner: “implementation status → provability-gaps”  
+- [x] **Doc-b** — [language design spec](../../superpowers/specs/2026-05-14-li-language-design.md) banner: “implementation status → provability-gaps”  
 - [x] **Doc-c** — phase plan files (02, 03, 07) link **G-*** in exit gates  
 - [x] **Doc-d** — `.cursor/skills/build-li-master-plan/SKILL.md` includes gap-register update step  
 - [x] **Doc-e** — `check-doc-provability-claims.sh` in `scripts/ci.sh`  
@@ -417,19 +417,19 @@ Track in phase **Doc** until each is checked:
 | `2026-05-14-plots-and-social.md` | **X-ready** benchmark + test plots |
 | `2026-05-16-li-httpd-plan.md` | Proved AI/agent HTTP gateway (li-httpd); nginx oracle only |
 | `.cursor/plans/nim_oop_and_def_e5f70493.plan.md` | Phase **2g** (objects/visibility/`def`) + **2h** (Python-math syntax audit) |
-| [2026-05-20-li-oop-roadmap.md](2026-05-20-li-oop-roadmap.md) | Phase **2j** (full OOP — methods, traits, inheritance; **not** httpd) |
+| [2026-05-20-li-oop-roadmap.md](../../superpowers/plans/2026-05-20-li-oop-roadmap.md) | Phase **2j** (full OOP — methods, traits, inheritance; **not** httpd) |
 | `2026-05-16-li-package-scaffold.md` | **Pkg** — scaffold tool, skill, guide (same `li.toml` as lip) |
 | `2026-05-16-li-package-manager-lip.md` | **8-repo, 8a–8d, 8e, 8e-li** — three repos (`lic`/`lip`/`lit`), registry, proof+sig+coverage |
 | `2026-05-16-li-ecosystem-governance.md` | GitHub org policy, intl doc standards, PKG/REQ traceability, org repo templates |
 | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | Phase **7d** — `@` decorators on `def`/`for`/`while`; reserved stdlib names; `decorator_exploits` suite |
-| [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | Phase **2i** + **7e** — math notation in source; compiler lowers to SIMD/OpenMP; Tier 1 cross-lang benches |
-| [provability-gaps.md](../../../verification/provability-gaps.md) | **Doc-a** — living **G-*** register; update on every proof-surface PR |
-| [2026-05-22-parallel-compile-ci.md](2026-05-22-parallel-compile-ci.md) | Phase **8p** — parallel `li-tests`, workspace builds, `--jobs` frontend |
-| [ph-db-lidb-platform.md](ph-db-lidb-platform.md) | Phase **PH-DB** — `lidb` + `lis` data platform; **PH-8d-v2 → PH-DB-4** |
+| [2026-05-16-li-math-linalg-surface.md](../../superpowers/plans/2026-05-16-li-math-linalg-surface.md) | Phase **2i** + **7e** — math notation in source; compiler lowers to SIMD/OpenMP; Tier 1 cross-lang benches |
+| [provability-gaps.md](../../verification/provability-gaps.md) | **Doc-a** — living **G-*** register; update on every proof-surface PR |
+| [2026-05-22-parallel-compile-ci.md](../../superpowers/plans/2026-05-22-parallel-compile-ci.md) | Phase **8p** — parallel `li-tests`, workspace builds, `--jobs` frontend |
+| [ph-db-lidb-platform.md](../../superpowers/plans/ph-db-lidb-platform.md) | Phase **PH-DB** — `lidb` + `lis` data platform; **PH-8d-v2 → PH-DB-4** |
 
 **2g / 2h / 2i:** After **2d**, run **2g** + **2h** in parallel; then **2i** (linalg surface). User-facing functions are **`def` only**; numerics read like **math** (`C += A @ B`, `y[i] = alpha * x[i] + y[i]`), not `simd(...)`. Finish **2g–2i** before widening **2e** method VCs. `simd[T,N]` / `__li_simd_*` only in compiler appendix.
 
-**7 / 7d / 7e:** Complete **7a–7c** (SIMD MIR, `parallel for`, benchmarks) first. **7d** = decorators (`@parallel`, `@vectorized`, `@cpu`, …). **7e** = lower **math expressions** to that MIR (users never write `simd(...)` in docs/benches). Depends on **2i** + **7b**. Cross-lang perf: [benchmarks plan](2026-05-14-benchmarks-and-simulations.md) Tier 1 (`simd_dot`, `matmul_*`), policy **≤1.2× C++**. Specs: `docs/superpowers/specs/2026-05-16-li-execution-decorators.md`, `docs/superpowers/specs/2026-05-16-li-math-linalg-surface.md`.
+**7 / 7d / 7e:** Complete **7a–7c** (SIMD MIR, `parallel for`, benchmarks) first. **7d** = decorators (`@parallel`, `@vectorized`, `@cpu`, …). **7e** = lower **math expressions** to that MIR (users never write `simd(...)` in docs/benches). Depends on **2i** + **7b**. Cross-lang perf: [benchmarks plan](../../superpowers/plans/2026-05-14-benchmarks-and-simulations.md) Tier 1 (`simd_dot`, `matmul_*`), policy **≤1.2× C++**. Specs: `docs/superpowers/specs/2026-05-16-li-execution-decorators.md`, `docs/superpowers/specs/2026-05-16-li-math-linalg-surface.md`.
 
 ---
 
@@ -442,7 +442,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2c — Collections + TypedDict (list/dict/tuple, named tuple, enum)
 - [x] Phase 2d — Borrow + effects (lexical borrowck, raises IO/Alloc)
 - [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
-- [x] Phase 2j — Full OOP surface — **2j-a…f done** (#83+); Lean method/trait `ensures` sugar still **G-oop** open — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
+- [x] Phase 2j — Full OOP surface — **2j-a…f done** (#83+); Lean method/trait `ensures` sugar still **G-oop** open — [OOP roadmap](../../superpowers/plans/2026-05-20-li-oop-roadmap.md)
 - [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); **`for i in start..<end`** (`for_range_sum.li`); Python `range()` deferred (**G-math-syn**)
 - [ ] Phase 2i — Math / linalg surface — **partial:** **2i-a/c** (#148); **2i-b** `norm`, `sum`/`dot`, `reductions/`, same-length `**`, prelude `axpy`, scalar×array; **length-1 broadcast** (`array[1]`→`array[N]` element-wise); full NumPy rank broadcast still open; float `@` Props closed (`mat2_at2_eval`)
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
@@ -452,13 +452,13 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
 - [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
-- [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155):** default `lake build AutoVC` on `lic build`; **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; intentional open: `sqrt_open_bound`; **G-lean** / **G-vc** still open — [still open gaps](../../../verification/provability-gaps.md#still-open-report-every-session)
+- [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155):** default `lake build AutoVC` on `lic build`; **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; intentional open: `sqrt_open_bound`; **G-lean** / **G-vc** still open — [still open gaps](../../verification/provability-gaps.md#still-open-report-every-session)
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (#150 7d-c):** `@vectorized` on `for` → `ArraySimdScope`; **7d-b** lanes=4; **def `@parallel(disjoint=)`** inherits to nested `parallel for` (policy); **open:** full MIR proc tags, Lean **G-par** proofs
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150, #155):** loop matmul + FMA horner; tier-1 advisory ≤1.2× (`matmul_naive`, `horner_pure_li`); **`check-tier1-li-vs-cpp.sh`** strict optional; **open:** remaining tier-1 slices, full float Lean Props
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, validate/explain/flatten-config, overlap reject, Bearer auth (C), `packages/li-log` (#158); **next:** Li `net.httpd` lib build + M1 ship gate Lean ([httpd-prerequisites](../../ecosystem/httpd-prerequisites.md))
-- [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
+- [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](../../superpowers/plans/2026-05-16-li-package-scaffold.md), [governance](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](../../superpowers/plans/2026-05-16-li-package-manager-lip.md))
 - [x] Phase 8-repo — [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) on GitHub + CI
 - [x] Phase 8a — Modules + workspace `lic build` — `std.*` + workspace/local imports; `li-tests/modules/`; `lic-workspace-build.sh` on 3 packages
 - [x] Phase 8e-li — `lic build --coverage-instrument` (LLVM profile flags)
@@ -468,18 +468,18 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 8d — Registry + `lip publish` — **v1:** local `registry/index.json` + publish gate (`lit` + `lic`)
 - [x] Phase 8-sync — cross-repo workflows; optional PAT scope fix for `repository_dispatch`
 - [ ] Phase 8p — Parallel compile + CI throughput — **partial (8p-a/b/c/d):** 8p-a parallel `run_all` + isolated `LI_BUILD_DIR` ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200)); 8p-c/d `ResourceOptions` + `lic build --jobs` reserved pass + CI test-job smokes (`compiler/common/`, `scripts/ci.sh`); **open:** 8p-b workspace pool, wall-time SLO ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
-- [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../../../verification/provability-gaps.md))
+- [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
 - [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
 - [x] Phase Doc-d — Contributing / build skill requires gap-register updates
 - [x] Phase Doc-e — `scripts/check-doc-provability-claims.sh` in `scripts/ci.sh` (expand patterns over time)
-- [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../../ecosystem/agent-handover-formats.md))
+- [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../../superpowers/specs/2026-05-16-li-llm-first-design.md), [agent-handover](../../ecosystem/agent-handover-formats.md))
 
 **Dashboards (Cursor):** `canvases/li-master-plan-progress.canvas.tsx` — phase tracker; `canvases/li-fuzz-security-dashboard.canvas.tsx` — updated by `scripts/export-fuzz-status.sh` after nightly fuzz.
 
-**Maintenance:** When ecosystem or org layout changes (`lic` / `lip` / `lit` repos, phase gates, policies, **future-repo table**), update **this file**, [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md), and [2026-05-16-li-ecosystem-governance.md](2026-05-16-li-ecosystem-governance.md) in the same PR. Agents: add a row to **Future org repos** when a plan introduces a new `li-langverse/*` home.
+**Maintenance:** When ecosystem or org layout changes (`lic` / `lip` / `lit` repos, phase gates, policies, **future-repo table**), update **this file**, [2026-05-16-li-package-manager-lip.md](../../superpowers/plans/2026-05-16-li-package-manager-lip.md), and [2026-05-16-li-ecosystem-governance.md](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md) in the same PR. Agents: add a row to **Future org repos** when a plan introduces a new `li-langverse/*` home.
 
-**Maintenance (proof surface):** When a compiler phase changes what `lic build` proves, update [provability-gaps.md](../../../verification/provability-gaps.md) and the [compiler task → gap map](#compiler-tasks-vs-proof-gaps) in the **same PR** — see **Doc** phase rules above.
+**Maintenance (proof surface):** When a compiler phase changes what `lic build` proves, update [provability-gaps.md](../../verification/provability-gaps.md) and the [compiler task → gap map](#compiler-tasks-vs-proof-gaps) in the **same PR** — see **Doc** phase rules above.
 
 ---
 
@@ -499,17 +499,17 @@ Runnable on `dev` after `./scripts/build.sh`:
 
 | v2 item | Gap ID(s) | Why still open |
 |---------|-----------|----------------|
-| **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../../../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../../verification/proof-corpus-roadmap.md) |
+| **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../../verification/proof-corpus-roadmap.md) |
 | **2i / 7e** | **G-math** | broadcast, loop-dot proof, remaining tier-1 strict rows |
 | **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |
-| **8b–8d v2** | — | Remote registry, full trust store; **blocked on PH-DB-4** ([PH-DB plan](ph-db-lidb-platform.md)) |
-| **PH-DB** | — | `lidb` engine + registry v2; phases 0–10 in [ph-db-lidb-platform.md](ph-db-lidb-platform.md) |
+| **8b–8d v2** | — | Remote registry, full trust store; **blocked on PH-DB-4** ([PH-DB plan](../../superpowers/plans/ph-db-lidb-platform.md)) |
+| **PH-DB** | — | `lidb` engine + registry v2; phases 0–10 in [ph-db-lidb-platform.md](../../superpowers/plans/ph-db-lidb-platform.md) |
 | **Vision-LLM** | — | Agent JSON diagnostics completion |
 | **8p** | — | Parallel `li-tests` / workspace / `lic --jobs`; CI wall-time SLO |
 | **Release containers** | — | GHCR images with **prebuilt `lic`** (toolchain-only images exist now; [§ deferred](#deferred--ghcr-release-images-prebuilt-lic)) |
 
-**Open G-* register:** every row in [provability-gaps.md](../../../verification/provability-gaps.md#still-open-report-every-session) — **none Done**; **Partial** is the best current status.
+**Open G-* register:** every row in [provability-gaps.md](../../verification/provability-gaps.md#still-open-report-every-session) — **none Done**; **Partial** is the best current status.
 
 **“Master plan done”** per original spec = all tracker rows **plus** proved `lic build` **plus** shipped lip/lit/httpd — **not claimed**. Use **Lic monorepo v1** for what ships from this repository today.

@@ -38,7 +38,7 @@ jobs:
       - name: MkDocs build + zero .md href gate
         env:
           LI_DOCS_ROOT: ${{ github.workspace }}/../lic-docs
-          DOCS_STRICT: "0"
+          DOCS_STRICT: "1"
         run: |
-          chmod +x scripts/check-docs-site-links.sh scripts/check-docs-md-hrefs.py
+          chmod +x scripts/check-docs-site-links.sh scripts/build-docs.sh
           ./scripts/check-docs-site-links.sh

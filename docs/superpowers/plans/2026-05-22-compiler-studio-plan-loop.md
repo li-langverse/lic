@@ -48,7 +48,7 @@ isProject: false
 
 **Not in scope:** `li-httpd`, tier5 HTTP — use `httpd-plan-loop.py` in a separate process.
 
-**Priority:** [master plan](2026-05-14-li-master-plan.md) open **2e/2f/2i/7d/7e** → [algorithms-and-libraries-plan](../../ecosystem/algorithms-and-libraries-plan.md) Wave B/C.
+**Priority:** [master plan](../../superpowers/plans/2026-05-14-li-master-plan.md) open **2e/2f/2i/7d/7e** → [algorithms-and-libraries-plan](../../ecosystem/algorithms-and-libraries-plan.md) Wave B/C.
 
 **Philosophy:** [li-benchmark-correctness.mdc](https://github.com/li-langverse/lic/blob/main/.cursor/rules/li-benchmark-correctness.mdc) — correct per spec, fast as possible; **DCE allowed, our harness must verify**.
 

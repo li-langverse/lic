@@ -56,7 +56,7 @@ When docs say “class name,” they mean the **PascalCase type name** (`RigidBo
 
 ## Packages and imports
 
-See [import-style.md](import-style.md). Summary:
+See [import-style.md](../language/import-style.md). Summary:
 
 - Import path: `physics.runtime` (domain words, lowercase, dots)
 - GitHub repo: `li-physics-runtime` (`li-` + dots → hyphens)
@@ -94,7 +94,7 @@ def rigid_integrate_semi_implicit(b: var RigidBody, dt: float) -> unit
 
 ## Related
 
-- [Philosophy](philosophy.md) — readability and prose
-- [Types and data](types-and-data.md) — `object`, fields, visibility
-- [Import style](import-style.md)
+- [Philosophy](../language/philosophy.md) — readability and prose
+- [Types and data](../language/types-and-data.md) — `object`, fields, visibility
+- [Import style](../language/import-style.md)
 - [Repo naming](../ecosystem/repo-naming.md)

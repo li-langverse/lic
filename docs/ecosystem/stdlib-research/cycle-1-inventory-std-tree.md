@@ -10,12 +10,12 @@
 
 - **25 `.li` modules** under `lic/std/` (~1,180 LOC); layout is `std/<domain>/<domain>.li` for single-segment imports (`std.bytes` → `std/bytes/bytes.li`, per CHANGELOG).
 - **One heavyweight module:** `std/runtime/seam.li` (655 lines) — canonical `extern proc` seam for `li_rt.c` / `li_rt_net.c` / httpd; product code must import it (`packages/li-net-httpd`, `li-bytes`, async tests).
-- **WP0-B compile-only stubs** ship for Phase 2 collections parity: `collections`, `heap`, `algorithms` — tagged constants + identity/no-op stubs; headers state runtime blocked until WP-WA + WP1 ([stdlib-collections-algorithms-plan.md](../stdlib-collections-algorithms-plan.md)).
+- **WP0-B compile-only stubs** ship for Phase 2 collections parity: `collections`, `heap`, `algorithms` — tagged constants + identity/no-op stubs; headers state runtime blocked until WP-WA + WP1 ([stdlib-collections-algorithms-plan.md](../../ecosystem/stdlib-collections-algorithms-plan.md)).
 - **`std/bytes`** is the only non-seam std module with real algorithmic Li code (Reader/Writer over `extern proc` buffer primitives); used by `li-bytes` and `li-tests/bytes/`.
 - **Physics namespace** is 13 tag-only facades (`physics_*_std_tag`); composable packages (`packages/li-physics-*`) are the intended implementation locus per master plan.
 - **Docs drift:** [stdlib.md](../../language/stdlib.md) L51–53 still claims collections/heap/algorithms are absent; explorer `std_modules_on_disk` (2026-05-26) omits the three WP0-B modules — refresh both after this inventory.
 - **Planned tree not on disk:** `tensor`, `sparse`, `arena`, `btree`, `graph` (stdlib plan); `std/http`, `std/net`, `std/tls` (httpd plan) — defer to `package_architect` / WP-WA gates.
-- **Benchmarks ingest gaps unchanged:** `std.summary`, `std.plot` still missing ([ecosystem-explorer.json](../../../../benchmarks/data/latest/ecosystem-explorer.json) PH-IO-7 / PH-IO-5).
+- **Benchmarks ingest gaps unchanged:** `std.summary`, `std.plot` still missing ([ecosystem-explorer.json](https://github.com/li-langverse/lic/blob/main/benchmarks/data/latest/ecosystem-explorer.json) PH-IO-7 / PH-IO-5).
 
 ---
 
@@ -165,4 +165,4 @@ connections:
 ## Handoff
 
 **Next focus:** `audit_package` → `li-std-core` (sample)  
-**Implementers:** Do not expand WP0-B stubs to runtime until [wave-a-stdlib-unblock-checklist.md](../wave-a-stdlib-unblock-checklist.md) marks WP-WA **Done**.
+**Implementers:** Do not expand WP0-B stubs to runtime until [wave-a-stdlib-unblock-checklist.md](../../ecosystem/wave-a-stdlib-unblock-checklist.md) marks WP-WA **Done**.

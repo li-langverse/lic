@@ -6,7 +6,7 @@ Implements the master-plan priority slice: **P-linalg loop dot witness**, prelud
 
 ## Agent continuation
 
-1. **Read** [provability-gaps.md](../../verification/provability-gaps.md#still-open-report-every-session) — report which **G-*** remain open every session.
+1. **Read** [provability-gaps.md](../verification/provability-gaps.md#still-open-report-every-session) — report which **G-*** remain open every session.
 2. **Run** `./li-tests/tooling/discharge_linalg_int_lean.sh`, `./li-tests/run_all.sh --ci` (**180** pass on this branch).
 3. **Next** — **G-lean** default kernel gate; tier-1 **≤1.2× C++** (`bench.py --tier 1`); float `vec3_dot` Props; httpd reactor.
 4. **Blocked on** remote bench env for perf sign-off; `Core.lean` for full loop semantics in Lean.

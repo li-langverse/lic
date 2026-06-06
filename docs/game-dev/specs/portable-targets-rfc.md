@@ -2,7 +2,7 @@
 
 **Status:** Draft  
 **Track:** PH-PORT  
-**Vision:** [world-studio-vision.md](../world-studio-vision.md)
+**Vision:** [world-studio-vision.md](../../game-dev/world-studio-vision.md)
 
 ## Proposal
 
@@ -26,4 +26,4 @@ All official `packages/*` build on tier-1 without source changes.
 
 ## Dependencies
 
-LLVM 22 only for CPU; GPU via `[engine.lig]` in `li.toml` (see [lig-rfc.md](lig-rfc.md); legacy `[engine.gpu]` alias one release).
+LLVM 22 only for CPU; GPU via `[engine.lig]` in `li.toml` (see [lig-rfc.md](../../game-dev/specs/lig-rfc.md); legacy `[engine.gpu]` alias one release).

@@ -73,4 +73,4 @@ def main() -> int
   return 0
 ```
 
-Next: [Examples gallery](examples-gallery.md) or the [Language handbook](../language/overview.md).
+Next: [Examples gallery](../guide/examples-gallery.md) or the [Language handbook](../language/overview.md).

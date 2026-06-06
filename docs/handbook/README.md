@@ -8,7 +8,7 @@ Canonical **language** handbook: [li-language Pages](https://li-langverse.github
 |------------|-----|
 | Install and first build | [Getting started](../guide/getting-started-tools.md) |
 | Language surface (honest status) | [Language overview](../language/overview.md) |
-| What `lic build` proves **today** | [Provability gaps](../../verification/provability-gaps.md) |
+| What `lic build` proves **today** | [Provability gaps](../verification/provability-gaps.md) |
 | PH order and repo policy | [Master plan](../superpowers/plans/2026-05-14-li-master-plan.md) |
 | Map plans ↔ gaps ↔ benchmarks | [Plan cross-links](../ecosystem/plan-cross-links.md) |
 | GUI UX agent handoff (`ui_ux_quality`) | [gui-ux-quality-handoff](../ecosystem/gui-ux-quality-handoff.md) |
@@ -32,5 +32,5 @@ Live handbook roots (HEAD-checked by `benchmarks/scripts/ecosystem-audit.py`):
 
 ## Honesty
 
-- Benchmark green ≠ **G-*** Done — cite `li-tests`, Lean, or VC evidence in [provability-gaps](../../verification/provability-gaps.md).
+- Benchmark green ≠ **G-*** Done — cite `li-tests`, Lean, or VC evidence in [provability-gaps](../verification/provability-gaps.md).
 - Engineering standards: [roadmap](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/engineering-standards.md).

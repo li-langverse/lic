@@ -96,7 +96,7 @@ def main() -> int =
 
 ---
 
-**Proof gaps (Doc-c):** [G-bnd](../../../verification/provability-gaps.md#g-bnd) · [G-meta](../../../verification/provability-gaps.md#g-meta)
+**Proof gaps (Doc-c):** [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-meta](../../verification/provability-gaps.md#g-meta)
 
 ### Phase 3 exit gate
 

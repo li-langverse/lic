@@ -47,7 +47,7 @@ default_float = "float64"   # or float32, float16, float8, …
 default_int = "int64"
 ```
 
-Callers override in source (`float32` locals) or in physics metadata (`PhysicsProfile.float_bits`). See [Scalar precision](scalar-precision.md).
+Callers override in source (`float32` locals) or in physics metadata (`PhysicsProfile.float_bits`). See [Scalar precision](../language/scalar-precision.md).
 
 ## Package sections (summary)
 

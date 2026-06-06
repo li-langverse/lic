@@ -24,7 +24,7 @@ HTTPD_GATES_SKIP_LIC_BUILD=0 ./scripts/httpd-plan-gates.sh
 ## Honesty
 
 - `parse_request_smoke` / full `li-http` import still have documented open VCs (if-chains, `result == 24` oracle, seam LB extern) unless `--allow-open-vc`.
-- Full Lean kernel discharge on every `lic build` remains **G-lean** partial; see [provability-gaps.md](../../verification/provability-gaps.md).
+- Full Lean kernel discharge on every `lic build` remains **G-lean** partial; see [provability-gaps.md](../verification/provability-gaps.md).
 
 ## Live sites
 

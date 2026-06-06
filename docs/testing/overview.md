@@ -3,7 +3,7 @@
 All conformance tests live in **`li-tests/`**. Nothing is scattered under `compiler/` as one-off files.
 
 !!! note "Tests vs full proof gate"
-    Passing `run_all.sh` exercises the **current** compiler gate (parse, policy, typecheck, borrow, codegen). It does **not** yet mean Lean discharged all contracts. See **[Provability gaps](../../verification/provability-gaps.md)**.
+    Passing `run_all.sh` exercises the **current** compiler gate (parse, policy, typecheck, borrow, codegen). It does **not** yet mean Lean discharged all contracts. See **[Provability gaps](../verification/provability-gaps.md)**.
 
 ## E2E-first policy (master plan v2)
 
@@ -114,7 +114,7 @@ Separate from manifest — **`li-tests/run_security.sh`**:
 
 Runs on **every** `scripts/ci.sh` and in the Windows CI job.
 
-Details: [Security audits](security.md).
+Details: [Security audits](../testing/security.md).
 
 ## Fuzz testing (parser)
 

@@ -1,6 +1,6 @@
 # Studio demo media (gitignored outputs)
 
-Generated assets are not committed. See [VERTICALS-RECORDING.md](../VERTICALS-RECORDING.md).
+Generated assets are not committed. See [VERTICALS-RECORDING.md](../../demo/VERTICALS-RECORDING.md).
 
 ```bash
 LIG_HOST_PRESENT=1 ./scripts/record-studio-verticals-demo.sh

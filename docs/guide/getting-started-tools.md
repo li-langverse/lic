@@ -49,7 +49,7 @@ Or `./scripts/build.sh` after `export LLVM_DIR=...` — it auto-detects via `scr
 
 **Cloud Agent VMs:** use [cloud-agent-vm.md](../ecosystem/cloud-agent-vm.md) — `bash scripts/cloud-vm-bootstrap.sh`.
 
-**Dedicated dev box (e.g. `engine`):** use the idempotent script and agent-oriented guide — [devbox Li development](devbox-li-development.md).
+**Dedicated dev box (e.g. `engine`):** use the idempotent script and agent-oriented guide — [devbox Li development](../guide/devbox-li-development.md).
 
 ```bash
 sudo bash scripts/setup-li-devbox.sh --full
@@ -67,7 +67,7 @@ export PATH="$HOME/.elan/bin:$PATH"
 cd /home/s4il0r/Documents/Cursor/li-langverse/lic/docs/semantics && lake build
 ```
 
-Without `lake`, `lic build` still runs but skips semantics verification (see [provability-gaps.md](../../verification/provability-gaps.md)).
+Without `lake`, `lic build` still runs but skips semantics verification (see [provability-gaps.md](../verification/provability-gaps.md)).
 
 ## Your first build
 
@@ -96,4 +96,4 @@ Without `lake`, `lic build` still runs but skips semantics verification (see [pr
 
 That builds Li, runs security checks, and runs the full `li-tests` suite.
 
-Next: [Hello world in depth](hello-world.md).
+Next: [Hello world in depth](../guide/hello-world.md).

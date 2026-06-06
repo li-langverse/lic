@@ -20,6 +20,9 @@ if [[ ! -x "$ROOT/build/compiler/lic/lic" ]]; then
   li_fail "lic missing — run ./scripts/build.sh"
   exit 1
 fi
+# shellcheck source=lib/lipar-suite-prereqs.sh
+source "$ROOT/scripts/lib/lipar-suite-prereqs.sh"
+lipar_suite_ensure_prereqs "$ROOT"
 export SKIP_BUILD="${SKIP_BUILD:-1}"
 
 echo "==> killer gate step 1: parallel runtime smokes"

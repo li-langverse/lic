@@ -8,6 +8,8 @@ export LIC_ROOT="$ROOT"
 export LI_REPO_ROOT="$ROOT"
 # shellcheck source=../../../scripts/lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
+# shellcheck source=../../../scripts/lib/lipar-suite-prereqs.sh
+source "$ROOT/scripts/lib/lipar-suite-prereqs.sh"
 
 _ensure_full_benchmarks_root() {
   local suite="${BENCHMARKS_ROOT}/scripts/run-full-benchmark-suite.sh"
@@ -95,6 +97,7 @@ _run_benches() {
     chmod +x "$ROOT/scripts/lipar-run-class-a.sh"
     bash "$ROOT/scripts/lipar-run-class-a.sh"
   else
+    lipar_suite_ensure_prereqs "$ROOT"
     bash "$SUITE"
   fi
 }

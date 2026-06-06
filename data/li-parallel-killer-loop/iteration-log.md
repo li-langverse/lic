@@ -38,3 +38,10 @@
 - `lipar-suite.sh --profile full` passes `--scope all`; PR profile keeps Class A (`class_a`)
 - Killer gate dual-mode check scoped to Li benchmarks only (excludes security-only rows)
 - Test: `li-tests/tooling/li_parallel_dual_mode_csv.sh` catalog scope case
+
+## 2026-06-06 — WP-PAR-02 full-suite prereqs (code_implementer)
+
+- `scripts/lib/lipar-suite-prereqs.sh` builds li-httpd + exports `TIER5_EXPLOIT_LANGS=nginx,li`
+- `lipar-suite.sh --profile full` and killer gate step 3 call prereqs before `run-full-benchmark-suite.sh`
+- Test: `li-tests/tooling/li_parallel_full_suite_prereqs.sh`
+- Killer blocker advances from tier5 exploit harness abort (missing li-httpd / apache noise) toward dual-mode CSV breadth check

@@ -148,6 +148,7 @@ bool compile_module(const Module& module, const std::string& output_path,
     return p;
   };
   const std::filesystem::path rt_path = resolve_runtime_c("li_rt.c");
+  const std::filesystem::path rt_par_pool_path = resolve_runtime_c("li_par_pool.c");
   const std::filesystem::path rt_httpd_path = resolve_runtime_c("li_rt_httpd.c");
   const std::filesystem::path rt_log_path = resolve_runtime_c("li_rt_log.c");
   const std::filesystem::path rt_net_path = resolve_runtime_c("li_rt_net.c");
@@ -170,6 +171,9 @@ bool compile_module(const Module& module, const std::string& output_path,
   cmd << " -opaque-pointers";
 #endif
   cmd << " -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
+  if (std::filesystem::exists(rt_par_pool_path)) {
+    cmd << " -x c \"" << rt_par_pool_path.string() << "\"";
+  }
   if (link_runtime_full || rt_needs.needs_rt_httpd) {
     if (std::filesystem::exists(rt_httpd_path)) {
       cmd << " -x c \"" << rt_httpd_path.string() << "\"";
@@ -229,7 +233,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (!extra_clang_flags.empty()) {
     cmd << " " << extra_clang_flags;
   }
-  if (mir.uses_openmp) {
+  if (mir.uses_openmp || std::filesystem::exists(rt_par_pool_path)) {
 #if defined(__linux__) || defined(__APPLE__)
     cmd << " -pthread";
 #endif

@@ -174,6 +174,16 @@ struct EmitCtx {
     return sum;
   }
 
+  llvm::Value* emit_fma_f64(llvm::Value* factor, llvm::Value* acc, llvm::Value* addend) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    if (!fp_numerically_stable) {
+      llvm::Function* fma_fn =
+          llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+      return builder->CreateCall(fma_fn, {factor, acc, addend});
+    }
+    return builder->CreateFAdd(acc, builder->CreateFMul(factor, addend));
+  }
+
   llvm::Value* gather_array_f64x4(llvm::AllocaInst* alloca, unsigned start) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
@@ -861,30 +871,24 @@ struct EmitCtx {
         llvm::Value* factor = load_float(ins.lhs_ident);
         llvm::Value* acc = load_float(ins.rhs_ident);
         llvm::Value* addend = llvm::ConstantFP::get(f64, ins.float_value);
-        llvm::Function* fma_fn =
-            llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
-        llvm::Value* result = builder->CreateCall(fma_fn, {factor, acc, addend});
+        llvm::Value* result = emit_fma_f64(factor, acc, addend);
         builder->CreateStore(result, ensure_float_local(ins.ident));
         return true;
       }
       case MirOp::HornerFmaUnroll: {
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
-        llvm::Function* fma_fn =
-            llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
         llvm::Value* x = load_float(ins.lhs_ident);
         llvm::Value* one = llvm::ConstantFP::get(f64, ins.float_value);
         llvm::Value* acc = load_float(ins.ident);
         const int steps = static_cast<int>(ins.int_value > 0 ? ins.int_value : 1);
         for (int i = 0; i < steps; ++i) {
-          acc = builder->CreateCall(fma_fn, {x, acc, one});
+          acc = emit_fma_f64(x, acc, one);
         }
         builder->CreateStore(acc, ensure_float_local(ins.ident));
         return true;
       }
       case MirOp::HornerStepPow4: {
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
-        llvm::Function* fma_fn =
-            llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
         const double x = ins.float_value;
         const double x2 = x * x;
         const double x3 = x2 * x;
@@ -895,15 +899,13 @@ struct EmitCtx {
         llvm::Value* acc = load_float(ins.ident);
         const int steps = static_cast<int>(ins.int_value > 0 ? ins.int_value : 1);
         for (int i = 0; i < steps; ++i) {
-          acc = builder->CreateCall(fma_fn, {x4v, acc, tailv});
+          acc = emit_fma_f64(x4v, acc, tailv);
         }
         builder->CreateStore(acc, ensure_float_local(ins.ident));
         return true;
       }
       case MirOp::HornerConstLoopF64: {
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
-        llvm::Function* fma_fn =
-            llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
         llvm::Value* xv = llvm::ConstantFP::get(f64, ins.float_value);
         llvm::Value* one = llvm::ConstantFP::get(f64, 1.0);
         constexpr std::int64_t chunk_steps = 64;
@@ -923,13 +925,13 @@ struct EmitCtx {
           llvm::Value* addv = llvm::ConstantFP::get(f64, chunk_add);
           emit_idx_for(iv, limit, [&](llvm::Value*) {
             llvm::Value* acc = load_float(ins.ident);
-            llvm::Value* next = builder->CreateCall(fma_fn, {mulv, acc, addv});
+            llvm::Value* next = emit_fma_f64(mulv, acc, addv);
             builder->CreateStore(next, ensure_float_local(ins.ident));
           });
         }
         llvm::Value* acc = load_float(ins.ident);
         for (std::int64_t i = 0; i < rem; ++i) {
-          acc = builder->CreateCall(fma_fn, {xv, acc, one});
+          acc = emit_fma_f64(xv, acc, one);
         }
         if (rem > 0) {
           builder->CreateStore(acc, ensure_float_local(ins.ident));

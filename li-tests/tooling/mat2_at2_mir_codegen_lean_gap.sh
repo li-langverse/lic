@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # G-lean / G-meta / G-math: 2×2 `@` Lean certificate uses mat2_at2_eval; MIR uses ArrayMatMul2DF64.
-# No lemma links codegen to Li.Discharge.mat2_at2_eval (provability-gaps.md G-lean still-open row).
+# Closed eval discharge; MIR↔eval preservation deferred (no codegen bridge lemma).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
@@ -30,9 +30,6 @@ if grep -qE 'ArrayMatMul|mat2_at2_eval.*MIR|mir_matmul' "$DISCHARGE" "$TRUSTED" 
   echo "FAIL: unexpected MIR/matmul bridge in Discharge/trusted" >&2
   exit 1
 fi
-if ! test -f "$ROOT/docs/semantics/MIR.lean"; then
-  : # planned — no preservation lemmas yet
-fi
 
 "$LIC" check "$CLOSED"
 "$LIC" check "$PROBE"
@@ -53,11 +50,7 @@ if ! grep -q 'mat2_at2_float_spec_proved' "$AUTOVC"; then
 fi
 
 if ! grep -A2 'linalg_mat2_at2_float_closed' "$MANIFEST" | grep -q 'verify_ok'; then
-  echo "FAIL: manifest should tier closed mat2 as verify_ok (not prove_lean_ok)" >&2
-  exit 1
-fi
-if grep -q 'prove_lean_ok' "$ROOT/li-tests/run_all.sh"; then
-  echo "FAIL: run_all.sh should not implement prove_lean_ok yet (G-test-verify)" >&2
+  echo "FAIL: manifest should tier closed mat2 as verify_ok" >&2
   exit 1
 fi
 
@@ -68,9 +61,6 @@ ASM="$(sed -n '/<li_user_main>:/,/^$/p' <(objdump -d "$TMP/probe" 2>/dev/null))"
 if ! grep -q mulsd <<<"$ASM"; then
   echo "FAIL: li_user_main should emit mulsd for 2×2 @ (ArrayMatMul2DF64 unrolled path)" >&2
   exit 1
-fi
-if grep -q vfmadd <<<"$ASM"; then
-  echo "NOTE: main @ path may use FMA when numerically-stable off (G-hw associativity deferred)"
 fi
 
 echo "PASS mat2_at2_mir_codegen_lean_gap: eval-based Lean VC; MIR @ codegen; no MIR↔eval lemma"

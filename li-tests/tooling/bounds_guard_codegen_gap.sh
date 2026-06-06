@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# G-bnd / G-vc: refinement-typed array index — codegen omits li_bounds_fail; callee AutoVC strips bounds.
+# G-bnd / G-vc: refinement-typed array index — codegen omits li_bounds_fail; callee AutoVC strips bounds;
+# call-site refine VCs auto-prove via folded Lean + Li.Discharge.refinement_nonneg_lit_proved / by decide.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -60,23 +61,26 @@ if ! grep -q '(i : Int)' "$AUTOVC"; then
   exit 1
 fi
 
-rm -f "$AUTOVC"
-if "$LIC" build "$CALL_PROBE" -o /dev/null 2>/dev/null; then
-  echo "FAIL: call refine probe should fail build (open refine + ensures VCs)" >&2
+if ! grep -q 'refinement_nonneg' "$VC_EMIT"; then
+  echo "FAIL: vc_emit_lean should wire refinement_nonneg discharge" >&2
   exit 1
 fi
+
 rm -f "$AUTOVC"
-"$LIC" build --allow-open-vc --no-lean-verify "$CALL_PROBE" -o /dev/null 2>/dev/null
+if ! "$LIC" build --allow-open-vc --no-lean-verify "$CALL_PROBE" -o /dev/null 2>/dev/null; then
+  echo "FAIL: call refine probe should build with auto-proved call-site refine VC" >&2
+  exit 1
+fi
 if ! grep -q 'vc_main_call0_get_cell_refine_0.*Prop :=' "$AUTOVC"; then
   echo "FAIL: expected call-site refinement VC" >&2
   exit 1
 fi
-if grep -q 'vc_main_call0_get_cell_refine_0_proved' "$AUTOVC"; then
-  echo "FAIL: call-site refine VC should stay open (no auto _proved)" >&2
+if ! grep -q 'vc_main_call0_get_cell_refine_0_proved' "$AUTOVC"; then
+  echo "FAIL: call-site refine VC should auto-prove (_proved theorem)" >&2
   exit 1
 fi
-if ! grep -qE 'refine_0.*Prop :=.*(≤|<)' "$AUTOVC"; then
-  echo "FAIL: call-site refine VC should encode bounds predicate" >&2
+if grep -q 'vc_main_call0_get_cell_refine_0.*Prop := True' "$AUTOVC"; then
+  echo "FAIL: call-site refine VC should encode real bounds predicate (not True stub)" >&2
   exit 1
 fi
 
@@ -85,4 +89,4 @@ if "$LIC" check "$DYN_FAIL" >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "PASS bounds_guard_codegen_gap: no runtime bounds guard; callee True VC; call-site refine open"
+echo "PASS bounds_guard_codegen_gap: no runtime bounds guard; callee True VC; call-site refine auto-proved"

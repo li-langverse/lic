@@ -440,7 +440,7 @@ note = "P-linalg closed"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_at2_float_closed.li"
-outcome = "prove_lean_ok"
+outcome = "verify_ok"
 note = "P-linalg closed: mat2_at2_float_spec_proved"
 
 [[tests]]

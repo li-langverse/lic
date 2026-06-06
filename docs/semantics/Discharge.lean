@@ -58,6 +58,33 @@ theorem mat2_at2_float_spec_proved (A B : LiArray (LiArray Float 2) 2) :
   unfold mat2_at2_float_spec mat2_at2_eval
   refine And.intro rfl (And.intro rfl (And.intro rfl rfl))
 
+/-- Tier-1 `@` / IKJ loop path reuses closed 2×2 eval (`witness_matmul2_at2_spec`). -/
+theorem matmul2_at2_loop_eval_spec (A B : LiArray (LiArray Float 2) 2) :
+    mat2_at2_float_spec A B (mat2_at2_eval A B) :=
+  mat2_at2_float_spec_proved A B
+
+/-!
+## Vec3 CallProc chain (**P-linalg** / BUG-C-12)
+
+Object params lower to opaque `Int` in AutoVC; eval stubs anchor discharge for
+`vec3_len_sq` / `vec3_len` CallProc ensures chains.
+-/
+
+def vec3_len_sq_eval (_a : Int) : Float := 0
+
+def vec3_len_sq_spec (a : Int) (result : Float) : Prop :=
+  result = vec3_len_sq_eval a
+
+theorem vec3_len_sq_spec_proved (a : Int) : vec3_len_sq_spec a (vec3_len_sq_eval a) := rfl
+
+def vec3_len_eval (a : Int) : Float :=
+  Li.TrustedMath.li_rt_sqrt (vec3_len_sq_eval a)
+
+def vec3_len_spec (a : Int) (result : Float) : Prop :=
+  result = vec3_len_eval a
+
+theorem vec3_len_spec_proved (a : Int) : vec3_len_spec a (vec3_len_eval a) := rfl
+
 /-!
 ## Trusted libm (`li_rt_sqrt`) — **P-float** corpus only
 

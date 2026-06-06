@@ -249,7 +249,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
   if ((link_runtime_full || rt_needs.needs_rt_exec_plan) &&
       std::filesystem::exists(rt_exec_plan_path)) {
-    cmd << " -x c -DLI_EXEC_PLAN_DEFAULT=0 \"" << rt_exec_plan_path.string() << "\"";
+    cmd << " -x c \"" << rt_exec_plan_path.string() << "\"";
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {

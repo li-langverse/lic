@@ -7,13 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef LI_EXEC_PLAN_DEFAULT
-#define LI_EXEC_PLAN_DEFAULT 0
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((weak))
 #endif
-
-#if LI_EXEC_PLAN_DEFAULT
 const LiExecPlan __li_exec_plan = {
-    LI_EXEC_PLAN_MAGIC,
+    0u,
     LI_EXEC_PLAN_VERSION,
     0,
     0,
@@ -21,7 +19,6 @@ const LiExecPlan __li_exec_plan = {
     0u,
     0u,
 };
-#endif
 
 #define LI_EXEC_TEAM_STACK 16
 

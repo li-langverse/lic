@@ -1509,6 +1509,12 @@ file = "tooling/lean_lake_lock_smoke.sh"
 outcome = "script_ok"
 note = "parallel li-tests must serialize lake AutoVC via .autovc.lock (G-lean)"
 
+[[tests]]
+suite = "tooling"
+file = "tooling/md_external_oracle_stub.sh"
+outcome = "script_ok"
+note = "md-r3-oracle-plan: external LAMMPS/GROMACS oracle stub manifest (benchmarks/competitive/md_oracle.toml)"
+
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
 # --- stdlib_parity (WP0-D — compile-only until WP-WA + WP1 runtime) ---

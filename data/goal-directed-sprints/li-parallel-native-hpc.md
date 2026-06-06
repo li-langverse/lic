@@ -21,7 +21,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-10** | Persistent pool `li_par_pool.c` | **DONE** — replaces pthread spawn; Win32 thread pool |
+| **WP-PAR-10** | Persistent pool `li_par_pool.c` | **DONE** — Linux pthread pool parallel static dispatch (no ephemeral spawn); Win32 thread pool |
 | **WP-PAR-11** | Work-stealing scheduler | **STUB** — static chunks via pool; steal in Phase 1.1 |
 | **WP-PAR-12** | static/dynamic/guided schedulers | **STUB** — static only in v1 slice |
 | **WP-PAR-13** | Tree reductions `li_par_reduce.c` | **DONE** — sum/min/max f64, sum i64 |

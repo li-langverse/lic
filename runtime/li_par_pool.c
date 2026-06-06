@@ -22,6 +22,13 @@ typedef struct {
 
 typedef struct LiParPool LiParPool;
 
+#if !defined(_WIN32)
+typedef struct {
+  LiParPool* pool;
+  int worker_id;
+} LiParWorkerArg;
+#endif
+
 struct LiParPool {
   int team_size;
   int initialized;
@@ -34,13 +41,15 @@ struct LiParPool {
   CONDITION_VARIABLE join_cv;
 #else
   pthread_t* threads;
+  LiParWorkerArg* worker_args;
   pthread_mutex_t mutex;
   pthread_cond_t work_cv;
   pthread_cond_t done_cv;
   int shutdown;
-  int active_workers;
   int jobs_pending;
-  LiParTask task;
+  LiParTask batch[LI_MAX_THREADS];
+  int batch_size;
+  int workers_done;
 #endif
 };
 
@@ -157,16 +166,11 @@ static void li_par_pool_run_win(LiParTask* chunks, int launched) {
 
 #else
 
-static void* li_par_ephemeral_worker(void* raw) {
-  LiParTask* task = (LiParTask*)raw;
-  for (long long i = task->begin; i < task->end; ++i) {
-    task->body(i);
-  }
-  return NULL;
-}
-
 static void* li_par_pool_worker(void* raw) {
-  LiParPool* pool = (LiParPool*)raw;
+  LiParWorkerArg* warg = (LiParWorkerArg*)raw;
+  LiParPool* pool = warg->pool;
+  const int worker_id = warg->worker_id;
+
   for (;;) {
     pthread_mutex_lock(&pool->mutex);
     while (!pool->shutdown && pool->jobs_pending == 0) {
@@ -176,18 +180,23 @@ static void* li_par_pool_worker(void* raw) {
       pthread_mutex_unlock(&pool->mutex);
       break;
     }
-    LiParTask local = pool->task;
-    pool->jobs_pending = 0;
+    const int batch_size = pool->batch_size;
     pthread_mutex_unlock(&pool->mutex);
 
-    for (long long i = local.begin; i < local.end; ++i) {
-      local.body(i);
+    if (worker_id < batch_size) {
+      LiParTask local = pool->batch[worker_id];
+      for (long long i = local.begin; i < local.end; ++i) {
+        local.body(i);
+      }
     }
 
     pthread_mutex_lock(&pool->mutex);
-    pool->active_workers -= 1;
-    if (pool->active_workers == 0) {
+    pool->workers_done += 1;
+    if (pool->workers_done >= batch_size) {
       pthread_cond_broadcast(&pool->done_cv);
+    }
+    while (pool->jobs_pending && !pool->shutdown) {
+      pthread_cond_wait(&pool->work_cv, &pool->mutex);
     }
     pthread_mutex_unlock(&pool->mutex);
   }
@@ -207,38 +216,44 @@ static void li_par_pool_init_pthread(int team_size) {
       pthread_join(g_li_par_pool.threads[i], NULL);
     }
     free(g_li_par_pool.threads);
+    free(g_li_par_pool.worker_args);
     pthread_mutex_destroy(&g_li_par_pool.mutex);
     pthread_cond_destroy(&g_li_par_pool.work_cv);
     pthread_cond_destroy(&g_li_par_pool.done_cv);
   }
   g_li_par_pool.team_size = team_size;
   g_li_par_pool.threads = (pthread_t*)calloc((size_t)team_size, sizeof(pthread_t));
+  g_li_par_pool.worker_args = (LiParWorkerArg*)calloc((size_t)team_size, sizeof(LiParWorkerArg));
   pthread_mutex_init(&g_li_par_pool.mutex, NULL);
   pthread_cond_init(&g_li_par_pool.work_cv, NULL);
   pthread_cond_init(&g_li_par_pool.done_cv, NULL);
   g_li_par_pool.shutdown = 0;
-  g_li_par_pool.active_workers = 0;
   g_li_par_pool.jobs_pending = 0;
+  g_li_par_pool.batch_size = 0;
+  g_li_par_pool.workers_done = 0;
   for (int i = 0; i < team_size; ++i) {
-    pthread_create(&g_li_par_pool.threads[i], NULL, li_par_pool_worker, &g_li_par_pool);
+    g_li_par_pool.worker_args[i].pool = &g_li_par_pool;
+    g_li_par_pool.worker_args[i].worker_id = i;
+    pthread_create(&g_li_par_pool.threads[i], NULL, li_par_pool_worker,
+                   &g_li_par_pool.worker_args[i]);
   }
   g_li_par_pool.initialized = 1;
 }
 
 static void li_par_pool_run_pthread(LiParTask* chunks, int launched) {
   pthread_mutex_lock(&g_li_par_pool.mutex);
-  g_li_par_pool.active_workers = launched;
   for (int w = 0; w < launched; ++w) {
-    g_li_par_pool.task = chunks[w];
-    g_li_par_pool.jobs_pending = 1;
-    pthread_cond_signal(&g_li_par_pool.work_cv);
-    while (g_li_par_pool.jobs_pending > 0) {
-      pthread_cond_wait(&g_li_par_pool.done_cv, &g_li_par_pool.mutex);
-    }
+    g_li_par_pool.batch[w] = chunks[w];
   }
-  while (g_li_par_pool.active_workers > 0) {
+  g_li_par_pool.batch_size = launched;
+  g_li_par_pool.workers_done = 0;
+  g_li_par_pool.jobs_pending = 1;
+  pthread_cond_broadcast(&g_li_par_pool.work_cv);
+  while (g_li_par_pool.workers_done < launched) {
     pthread_cond_wait(&g_li_par_pool.done_cv, &g_li_par_pool.mutex);
   }
+  g_li_par_pool.jobs_pending = 0;
+  pthread_cond_broadcast(&g_li_par_pool.work_cv);
   pthread_mutex_unlock(&g_li_par_pool.mutex);
 }
 
@@ -297,21 +312,7 @@ void li_par_pool_fork_join(long long start, long long end, void (*body)(long lon
 #if defined(_WIN32)
   li_par_pool_run_win(chunks, launched);
 #else
-  pthread_t threads[LI_MAX_THREADS];
-  for (int w = 0; w < launched; ++w) {
-    LiParTask* arg = &chunks[w];
-    if (pthread_create(&threads[w], NULL, li_par_ephemeral_worker, arg) != 0) {
-      for (long long i = arg->begin; i < arg->end; ++i) {
-        arg->body(i);
-      }
-      threads[w] = (pthread_t)0;
-    }
-  }
-  for (int w = 0; w < launched; ++w) {
-    if (threads[w]) {
-      pthread_join(threads[w], NULL);
-    }
-  }
+  li_par_pool_run_pthread(chunks, launched);
 #endif
 }
 
@@ -340,6 +341,8 @@ void li_par_pool_shutdown(void) {
   }
   free(g_li_par_pool.threads);
   g_li_par_pool.threads = NULL;
+  free(g_li_par_pool.worker_args);
+  g_li_par_pool.worker_args = NULL;
   pthread_mutex_destroy(&g_li_par_pool.mutex);
   pthread_cond_destroy(&g_li_par_pool.work_cv);
   pthread_cond_destroy(&g_li_par_pool.done_cv);

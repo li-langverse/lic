@@ -1508,6 +1508,12 @@ file = "tooling/lean_lake_lock_smoke.sh"
 outcome = "script_ok"
 note = "parallel li-tests must serialize lake AutoVC via .autovc.lock (G-lean)"
 
+[[tests]]
+suite = "tooling"
+file = "tooling/li_par_pool_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-10: persistent pthread pool static-chunk parallel dispatch"
+
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
 # --- stdlib_parity (WP0-D — compile-only until WP-WA + WP1 runtime) ---

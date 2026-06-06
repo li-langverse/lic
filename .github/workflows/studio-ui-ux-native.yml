@@ -45,7 +45,14 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            libsdl2-dev pkg-config xvfb gcc python3
+            libsdl2-dev pkg-config xvfb gcc python3 chromium-browser
+
+      - name: Capture deps check + headless HTML smoke
+        env:
+          STUDIO_UI_UX_CHECK_CAPTURE_HTML_SMOKE: "1"
+        run: |
+          chmod +x scripts/studio-ui-ux-check-capture-deps.sh scripts/studio-ui-ux-probe-capture-deps.sh
+          ./scripts/studio-ui-ux-check-capture-deps.sh
 
       - name: Studio UI/UX gates (no lic build)
         env:
@@ -64,6 +71,7 @@ jobs:
           path: |
             data/studio-ui-ux-plan-loop/latest-native-capture.json
             data/studio-ui-ux-plan-loop/latest-capture-deps.json
+            data/studio-ui-ux-plan-loop/latest-html-capture-smoke.json
             data/studio-ui-ux-plan-loop/latest-bench.json
           if-no-files-found: error
 

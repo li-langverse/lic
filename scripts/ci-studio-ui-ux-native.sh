@@ -8,11 +8,12 @@ export STUDIO_UI_UX_GATES_SKIP_BUILD=1
 export LI_REPO_ROOT="$ROOT"
 
 chmod +x scripts/studio-ui-ux-plan-gates.sh \
+  scripts/studio-ui-ux-check-capture-deps.sh \
   scripts/studio-ui-ux-probe-capture-deps.sh \
   scripts/studio-ui-ux-capture-native.sh \
   deploy/studio-demo/native/capture.sh 2>/dev/null || true
 
-./scripts/studio-ui-ux-probe-capture-deps.sh
+STUDIO_UI_UX_CHECK_CAPTURE_HTML_SMOKE=1 ./scripts/studio-ui-ux-check-capture-deps.sh
 python3 - <<'PY'
 import json
 import sys

@@ -77,14 +77,6 @@ def vec3_len_sq_spec (a : Int) (result : Float) : Prop :=
 
 theorem vec3_len_sq_spec_proved (a : Int) : vec3_len_sq_spec a (vec3_len_sq_eval a) := rfl
 
-def vec3_len_eval (a : Int) : Float :=
-  Li.TrustedMath.li_rt_sqrt (vec3_len_sq_eval a)
-
-def vec3_len_spec (a : Int) (result : Float) : Prop :=
-  result = vec3_len_eval a
-
-theorem vec3_len_spec_proved (a : Int) : vec3_len_spec a (vec3_len_eval a) := rfl
-
 /-!
 ## Trusted libm (`li_rt_sqrt`) — **P-float** corpus only
 
@@ -104,6 +96,14 @@ def sqrt_open_bound_spec (x : Float) : Prop :=
 
 theorem sqrt_open_bound_spec_proved (x : Float) (hreq : x ≥ (0 : Float)) : sqrt_open_bound_spec x :=
   Li.TrustedMath.li_rt_sqrt_bound x hreq
+
+def vec3_len_eval (a : Int) : Float :=
+  Li.TrustedMath.li_rt_sqrt (vec3_len_sq_eval a)
+
+def vec3_len_spec (a : Int) (result : Float) : Prop :=
+  result = vec3_len_eval a
+
+theorem vec3_len_spec_proved (a : Int) : vec3_len_spec a (vec3_len_eval a) := rfl
 
 /-!
 ## Refinement types (**P-refine** / **G-vc**)

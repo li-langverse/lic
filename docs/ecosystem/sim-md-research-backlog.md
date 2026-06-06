@@ -70,9 +70,10 @@ todos:
   handoff_implement: sim-p1-md-neighbor-cell
 
 - id: md-r3-oracle-plan
-  content: "External LAMMPS/GROMACS oracle column plan; update verticals.toml honesty"
+  content: "External LAMMPS/GROMACS oracle column plan; update verticals.toml honesty — see docs/superpowers/plans/2026-06-04-md-r3-oracle-plan.md"
   status: completed
   study_only: true
+  plan_doc: docs/superpowers/plans/2026-06-04-md-r3-oracle-plan.md
 
 ---
 

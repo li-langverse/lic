@@ -3,20 +3,16 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SUITE="$ROOT/packages/li-parallel/scripts/lipar-suite.sh"
-BENCH_ROOT="${BENCHMARKS_ROOT:-$(cd "$ROOT/../benchmarks" 2>/dev/null && pwd || echo "")}"
-CSV="${BENCHMARKS_CSV:-${BENCH_ROOT}/results/latest.csv}"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
+CSV="${BENCHMARKS_CSV:-$BENCHMARKS_RESULTS/latest.csv}"
 
 if [[ ! -f "$SUITE" ]]; then
   echo "ERROR: missing $SUITE" >&2
   exit 1
 fi
 
-if [[ -z "$BENCH_ROOT" || ! -d "$BENCH_ROOT" ]]; then
-  echo "ERROR: benchmarks repo not found — set BENCHMARKS_ROOT" >&2
-  exit 1
-fi
-
-export BENCHMARKS_ROOT="$BENCH_ROOT"
 if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   export SKIP_BUILD="${SKIP_BUILD:-1}"
 fi
@@ -56,5 +52,11 @@ if missing:
 
 print("GATE: dual-mode Class A tier1 rows present for", ", ".join(required))
 PY
+
+echo "==> li-parallel gate: perf thresholds (advisory unless LI_LIPAR_PERF_STRICT=1)"
+chmod +x "$ROOT/scripts/check-li-parallel-perf-gate.sh"
+export LI_LIPAR_PERF_CSV="$CSV"
+export LI_LIPAR_PERF_STRICT="${LI_LIPAR_PERF_STRICT:-0}"
+"$ROOT/scripts/check-li-parallel-perf-gate.sh"
 
 echo "==> check-li-parallel-full-suite.sh: PASS"

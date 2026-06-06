@@ -54,7 +54,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 | **WP-PAR-45** | Tier1 Class A parallel variants | **DONE** — matmul_blocked, reduce_sum, simd_dot, num_dot_axpy |
 | **WP-PAR-46** | Tier2 MD/FEA parallel variants | **DONE** — md_lennard_jones, fea_stiffness_assembly |
 | **WP-PAR-44** | Matrix report `li_serial`/`li_parallel` columns | **DONE** — `speedup_vs_serial` in report |
-| **WP-PAR-40–43** | Perf gates vs OpenMP/MPI | **IN PROGRESS** — harness wired; thresholds pending CI |
+| **WP-PAR-40–43** | Perf gates vs OpenMP/MPI | **DONE** — `check-li-parallel-perf-gate.sh` (speedup≥1.05× vs serial when wall≥5ms; li_parallel≤1.2× cpp); advisory CI via `.github/workflows/li-parallel-gate.yml` |
 
 ## Completion gate
 

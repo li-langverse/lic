@@ -1,0 +1,70 @@
+name: li-parallel gate
+
+on:
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - "runtime/li_par*.c"
+      - "runtime/li_dpar*.c"
+      - "packages/li-parallel/**"
+      - "scripts/check-li-parallel*.sh"
+      - "scripts/lipar-suite.sh"
+      - "compiler/codegen/compile.cpp"
+      - "compiler/mir/**"
+      - ".github/workflows/li-parallel-gate.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: li-parallel-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lipar-gate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout lip + lit + benchmarks (GitHub siblings)
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
+
+      - name: Install LLVM 22 and build tools
+        run: |
+          chmod +x scripts/ci-install-llvm.sh
+          sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+
+      - name: Build lic
+        env:
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+          CC: clang-22
+          CXX: clang++-22
+        run: |
+          chmod +x scripts/build.sh scripts/resolve-lic.sh
+          ./scripts/build.sh
+
+      - name: Execution resources smoke
+        run: |
+          chmod +x li-tests/execution_resources/smoke.sh
+          ./li-tests/execution_resources/smoke.sh
+
+      - name: li-parallel perf gate (fixture CSV, advisory)
+        run: |
+          chmod +x scripts/check-li-parallel-perf-gate.sh \
+            li-tests/tooling/li_parallel_perf_gate.sh
+          export LI_LIPAR_PERF_STRICT=0
+          ./li-tests/tooling/li_parallel_perf_gate.sh
+
+      - name: li-parallel full suite gate (PR profile, dual-mode)
+        env:
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+          CC: clang-22
+          CXX: clang++-22
+          SKIP_BUILD: "1"
+          SKIP_TIER5_HTTP: "1"
+          LI_LIPAR_PERF_STRICT: "0"
+          LIPAR_CORES: "8"
+        run: |
+          chmod +x scripts/check-li-parallel-full-suite.sh \
+            packages/li-parallel/scripts/lipar-suite.sh
+          ./scripts/check-li-parallel-full-suite.sh

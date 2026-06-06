@@ -44,3 +44,26 @@ if missing:
     sys.exit(1)
 print("li_parallel_dual_mode_csv: ok")
 PY
+
+# WP-PAR-44 — stale num_dot_axpy li_serial must not block li_parallel alias from simd_dot.
+cat >"$WORK/stale.csv" <<'CSV'
+benchmark,lang,variant,threads,metric,value,stddev,sample_runs,unit,git_sha,cpu_model,flags,os,passed,oracle_kind,verify_abs_err,verify_rel_err,verify_ulps,verify_within_1ulp
+num_dot_axpy,li_serial,serial,1,wall_time,0.0026,0.0001,3,s,t,cpu,f,linux,,,,,,
+simd_dot,li,release,1,wall_time,0.0391,0.0001,3,s,t,cpu,f,linux,,,,,,
+CSV
+python3 "$ROOT/scripts/lipar-dual-mode-csv.py" --csv "$WORK/stale.csv" --mode serial
+cat >"$WORK/stale.csv" <<'CSV'
+benchmark,lang,variant,threads,metric,value,stddev,sample_runs,unit,git_sha,cpu_model,flags,os,passed,oracle_kind,verify_abs_err,verify_rel_err,verify_ulps,verify_within_1ulp
+num_dot_axpy,li_serial,serial,1,wall_time,0.0026,0.0001,3,s,t,cpu,f,linux,,,,,,
+simd_dot,li,release,1,wall_time,0.0391,0.0001,3,s,t,cpu,f,linux,,,,,,
+CSV
+python3 "$ROOT/scripts/lipar-dual-mode-csv.py" --csv "$WORK/stale.csv" --mode parallel --cores 8
+python3 - "$WORK/stale.csv" <<'PY'
+import csv, sys
+rows = list(csv.DictReader(open(sys.argv[1], newline="", encoding="utf-8")))
+by = {(r["benchmark"], r["lang"]) for r in rows if r.get("metric") == "wall_time"}
+if ("num_dot_axpy", "li_parallel") not in by:
+    print("stale partial-alias: num_dot_axpy/li_parallel missing", file=sys.stderr)
+    sys.exit(1)
+print("li_parallel_dual_mode_csv: stale partial-alias ok")
+PY

@@ -78,16 +78,20 @@ def _drop_li_mode_rows(rows: list[dict[str, str]]) -> list[dict[str, str]]:
 
 
 def _alias_registry_rows(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Clone registry alias rows per (benchmark, lang) — not only when alias is absent."""
     extra: list[dict[str, str]] = []
+    existing = {(row.get("benchmark"), row.get("lang")) for row in rows}
     for alias, source in REGISTRY_ALIASES.items():
-        if any(row.get("benchmark") == alias for row in rows):
-            continue
         for row in rows:
             if row.get("benchmark") != source:
+                continue
+            key = (alias, row.get("lang"))
+            if key in existing:
                 continue
             cloned = deepcopy(row)
             cloned["benchmark"] = alias
             extra.append(cloned)
+            existing.add(key)
     return rows + extra
 
 

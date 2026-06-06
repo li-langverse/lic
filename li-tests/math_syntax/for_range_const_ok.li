@@ -1,10 +1,11 @@
-# G-math-syn: plain `for i in start..<end` (see also `for_range_*` for `range(n)` sugar).
+# G-math-syn: `for i in range(n)` with const-int witness from prior binding.
 def main() -> int
   requires true
   ensures result == 6
   decreases 0
 =
+  var n: int = 4
   var acc: int = 0
-  for i in 0..<4
+  for i in range(n)
     acc = acc + i
   return acc

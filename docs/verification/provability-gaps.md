@@ -41,7 +41,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-bnd** | Partial | **Closed slice:** `bounds_refinement_release_ok.li` + `check_release_bounds_ir.sh`; `discharge_refinement_lean.sh` |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
 | **G-oop** | Partial | Lean `ensures` on methods; trait laws in kernel |
-| **G-math-syn** | Partial | **Closed slice:** `for i in start..<end` (`math_syntax/for_range_sum.li`); Python `range()` / dynamic bounds open |
+| **G-math-syn** | Partial | **Closed slice:** `for i in start..<end` + `for i in range(n)` compile-time bound (`math_syntax/for_range_*.li`); dynamic bounds open |
 | **G-stdlib** | Partial | Full workspace cycle + seal edge cases |
 | **G-narrow** | Partial | Proved width narrowing (beyond `cast[` reject) |
 | **G-async** | Partial | `await` + structured concurrency proofs |
@@ -91,7 +91,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — [bounds-release-path](bounds-release-path.md) | **2e**, **3** | `check_release_bounds_ir.sh` |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
 | **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface done; Lean `ensures` on methods / trait laws open | **2j** | `li-tests/encapsulation/trait_*.li`, `method_call_requires_*.li` |
-| **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; **`for i in 0..<n`** (`for_range_sum.li`); `range()` helper + dynamic bounds open | **2h** | `li-tests/math_syntax/` |
+| **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; **`for i in 0..<n`** + **`for i in range(n)`** const bound (`for_range_*.li`); dynamic bounds open | **2h** | `li-tests/math_syntax/` |
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
 | **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Partial** — MIR telemetry + **Wave 13** device-buffer host contract (`ml_gpu_device_buffer.li`); vendor codegen slice via `lig_emit_vendor_lowering_ready`; address-space proofs open | **3+**, **7d** | `li-tests/decorators/gpu_*`, `packages/li-ml/li-tests/smoke/ml_gpu_device_buffer.li`, `scripts/check-mir-gpu-decorator.sh` |
 | **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; await not parsed | **2+**, **7d** | `li-tests/effects/` |

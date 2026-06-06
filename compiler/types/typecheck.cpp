@@ -1356,7 +1356,34 @@ struct Ctx {
     }
   }
 
-  void check_stmt(const Stmt& s) {
+  bool resolve_for_range_bound(Stmt& s) {
+    if (!s.for_range_sugar || !s.for_range_bound) {
+      return true;
+    }
+    const Expr& bound = *s.for_range_bound;
+    if (bound.kind == Expr::Kind::IntLit) {
+      s.for_start = 0;
+      s.for_end = bound.int_value;
+      s.for_range_bound.reset();
+      return true;
+    }
+    if (bound.kind == Expr::Kind::Ident) {
+      const auto it = const_int_locals.find(bound.ident);
+      if (it == const_int_locals.end()) {
+        diags.error(loc(s.span),
+                    "for i in range(n) requires compile-time constant bound");
+        return false;
+      }
+      s.for_start = 0;
+      s.for_end = it->second;
+      s.for_range_bound.reset();
+      return true;
+    }
+    diags.error(loc(s.span), "for i in range(n) requires compile-time constant bound");
+    return false;
+  }
+
+  void check_stmt(Stmt& s) {
     if (s.kind == Stmt::Kind::VarDecl) {
       const TyPtr declared = resolve_type_expr(s.var_type);
       if (s.init) {
@@ -1396,12 +1423,12 @@ struct Ctx {
         type_of(*s.cond);
         note_nonneg_assumption_from_cond(*s.cond, assum_nonneg_ints);
       }
-      for (const auto& inner : s.then_body) {
+      for (auto& inner : s.then_body) {
         check_stmt(inner);
       }
       assum_nonneg_ints = saved_assum;
       if (s.else_body) {
-        for (const auto& inner : *s.else_body) {
+        for (auto& inner : *s.else_body) {
           check_stmt(inner);
         }
       }
@@ -1432,7 +1459,7 @@ struct Ctx {
         type_of(*s.cond);
         note_nonneg_assumption_from_cond(*s.cond, assum_nonneg_ints);
       }
-      for (const auto& inner : s.while_body) {
+      for (auto& inner : s.while_body) {
         check_stmt(inner);
       }
       loop_depth--;
@@ -1441,6 +1468,9 @@ struct Ctx {
       return;
     }
     if (s.kind == Stmt::Kind::For) {
+      if (!resolve_for_range_bound(s)) {
+        return;
+      }
       std::set<std::string> saved_loop = loop_index_vars;
       loop_depth++;
       if (!s.for_iter.empty()) {
@@ -1452,7 +1482,7 @@ struct Ctx {
           type_of(*c.expr);
         }
       }
-      for (const auto& inner : s.for_body) {
+      for (auto& inner : s.for_body) {
         check_stmt(inner);
       }
       loop_depth--;
@@ -1471,7 +1501,7 @@ struct Ctx {
           type_of(*c.expr);
         }
       }
-      for (const auto& inner : s.par_body) {
+      for (auto& inner : s.par_body) {
         check_stmt(inner);
       }
       loop_depth--;
@@ -1677,7 +1707,7 @@ struct Ctx {
       const TyPtr pt = resolve_type_expr(param.type);
       locals[param.name] = pt;
     }
-    for (const auto& s : p.body) {
+    for (auto& s : p.body) {
       check_stmt(s);
     }
     current_ret_ty.reset();

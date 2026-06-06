@@ -102,6 +102,49 @@ struct Parser {
     return false;
   }
 
+  /// `for i in start..<end` or `for i in range(n)` (G-math-syn compile-time bound).
+  void parse_serial_for_bounds(Stmt& s, const Token& start_tok) {
+    if (at(TokenKind::Ident) && cur().text == "range") {
+      i++;
+      if (!expect(TokenKind::LParen, "'(' after range")) {
+        return;
+      }
+      s.for_range_sugar = true;
+      s.for_start = 0;
+      if (at(TokenKind::IntLit)) {
+        s.for_end = cur().int_value;
+        i++;
+      } else if (at(TokenKind::Ident)) {
+        auto bound = std::make_unique<Expr>();
+        bound->kind = Expr::Kind::Ident;
+        bound->ident = std::string(cur().text);
+        bound->span = {cur().start, cur().end};
+        s.for_range_bound = std::move(bound);
+        i++;
+      } else {
+        diags.error({file, start_tok.line, 1, start_tok.start},
+                    "range() requires integer bound");
+      }
+      expect(TokenKind::RParen, "')' after range bound");
+      return;
+    }
+    if (at(TokenKind::IntLit)) {
+      s.for_start = cur().int_value;
+      i++;
+    }
+    if (at(TokenKind::DotDotLt)) {
+      i++;
+    } else {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "for loop requires '..<' range or range(n)");
+      return;
+    }
+    if (at(TokenKind::IntLit)) {
+      s.for_end = cur().int_value;
+      i++;
+    }
+  }
+
   bool parse_module(Module& out) {
     skip_newlines();
     while (!at(TokenKind::Eof)) {
@@ -882,19 +925,7 @@ Stmt Parser::parse_stmt() {
       } else {
         i++;
       }
-      if (at(TokenKind::IntLit)) {
-        s.for_start = cur().int_value;
-        i++;
-      }
-      if (at(TokenKind::DotDotLt)) {
-        i++;
-      } else {
-        diags.error({file, start_tok.line, 1, start_tok.start}, "for loop requires '..<' range");
-      }
-      if (at(TokenKind::IntLit)) {
-        s.for_end = cur().int_value;
-        i++;
-      }
+      parse_serial_for_bounds(s, start_tok);
       if (at(TokenKind::Colon)) {
         i++;
       }
@@ -982,19 +1013,7 @@ Stmt Parser::parse_stmt() {
     } else {
       i++;
     }
-    if (at(TokenKind::IntLit)) {
-      s.for_start = cur().int_value;
-      i++;
-    }
-    if (at(TokenKind::DotDotLt)) {
-      i++;
-    } else {
-      diags.error({file, start_tok.line, 1, start_tok.start}, "for loop requires '..<' range");
-    }
-    if (at(TokenKind::IntLit)) {
-      s.for_end = cur().int_value;
-      i++;
-    }
+    parse_serial_for_bounds(s, start_tok);
     if (at(TokenKind::Colon)) {
       i++;
     }

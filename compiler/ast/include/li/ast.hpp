@@ -134,6 +134,14 @@ struct Stmt {
     ClusterBlock,
     /** `overlap comm` — comm/compute overlap site (**WP-PAR-71** compile smoke). */
     OverlapComm,
+    /** `elide copy` — transfer copy elision site (**WP-PAR-88**). */
+    ElideCopy,
+    /** `fuse xfer` — transfer fusion site (**WP-PAR-89**). */
+    FuseXfer,
+    /** `d2d path` — device-to-device transfer path (**WP-PAR-90**). */
+    D2dPath,
+    /** `rdma gpu` — RDMA→GPU staging hook (**WP-PAR-91**). */
+    RdmaGpu,
     Break,
     Continue,
     Expr,

@@ -2355,6 +2355,50 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       out.push_back(std::move(oc));
       break;
     }
+    case Stmt::Kind::ElideCopy: {
+      if (!ctx.mir) {
+        break;
+      }
+      ctx.mir->xfer_plan.elide_copy_count++;
+      ctx.mir->needs_rt_xfer_plan = true;
+      MirInsn ins;
+      ins.op = MirOp::XferElide;
+      out.push_back(std::move(ins));
+      break;
+    }
+    case Stmt::Kind::FuseXfer: {
+      if (!ctx.mir) {
+        break;
+      }
+      ctx.mir->xfer_plan.fusion_count++;
+      ctx.mir->needs_rt_xfer_plan = true;
+      MirInsn ins;
+      ins.op = MirOp::XferFusion;
+      out.push_back(std::move(ins));
+      break;
+    }
+    case Stmt::Kind::D2dPath: {
+      if (!ctx.mir) {
+        break;
+      }
+      ctx.mir->xfer_plan.d2d_path_count++;
+      ctx.mir->needs_rt_xfer_plan = true;
+      MirInsn ins;
+      ins.op = MirOp::XferD2d;
+      out.push_back(std::move(ins));
+      break;
+    }
+    case Stmt::Kind::RdmaGpu: {
+      if (!ctx.mir) {
+        break;
+      }
+      ctx.mir->xfer_plan.rdma_gpu_count++;
+      ctx.mir->needs_rt_xfer_plan = true;
+      MirInsn ins;
+      ins.op = MirOp::XferRdmaGpu;
+      out.push_back(std::move(ins));
+      break;
+    }
     case Stmt::Kind::If: {
       if (try_lower_par_reduce_acc(stmt, ctx, module, out, float_names, simd_names, i64_locals)) {
         note_par_reduce_runtime(ctx);
@@ -2657,6 +2701,8 @@ void note_offload_decorators(const std::vector<Decorator>& decos, MirModule* mir
     if (d.name == "offload") {
       mir->exec_plan.offload_count++;
       mir->needs_rt_exec_plan = true;
+      mir->xfer_plan.elide_copy_count++;
+      mir->needs_rt_xfer_plan = true;
     }
   }
 }
@@ -2811,6 +2857,11 @@ MirModule lower_to_mir(const Module& module) {
           MirInsn comm_apply;
           comm_apply.op = MirOp::CommPlanApply;
           plan_prefix.push_back(std::move(comm_apply));
+        }
+        if (mir.needs_rt_xfer_plan) {
+          MirInsn xfer_apply;
+          xfer_apply.op = MirOp::XferPlanApply;
+          plan_prefix.push_back(std::move(xfer_apply));
         }
         if (mir.needs_rt_exec_plan) {
           MirInsn apply;

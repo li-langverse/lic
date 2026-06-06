@@ -131,12 +131,12 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-87** | Embedded `__li_xfer_plan` | **PENDING** |
-| **WP-PAR-88** | Copy elision | **PENDING** |
-| **WP-PAR-89** | Fusion | **PENDING** |
-| **WP-PAR-90** | D2D paths | **PENDING** |
-| **WP-PAR-91** | RDMA→GPU | **PENDING** |
-| **WP-PAR-92** | Dashboard `xfer_sec` / `elided_copies` | **PENDING** |
+| **WP-PAR-87** | Embedded `__li_xfer_plan` | **DONE** |
+| **WP-PAR-88** | Copy elision | **DONE** |
+| **WP-PAR-89** | Fusion | **DONE** |
+| **WP-PAR-90** | D2D paths | **DONE** |
+| **WP-PAR-91** | RDMA→GPU | **DONE** |
+| **WP-PAR-92** | Dashboard `xfer_sec` / `elided_copies` | **DONE** |
 
 ### Phase 99 — Killer gate
 
@@ -154,4 +154,4 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-06)
 
-Killer gate advances past `check-li-parallel-hetero-gate.sh` (WP-PAR-79–86 chip packages + orchestration). Next blocker: `check-li-parallel-xfer-gate.sh` until transfer plan WPs land.
+Killer gate advances past `check-li-parallel-xfer-gate.sh` (WP-PAR-87–92 transfer plan). Next blockers: remaining IN PROGRESS WPs (WP-PAR-02, WP-PAR-15, WP-PAR-30, WP-PAR-40, WP-PAR-48, WP-PAR-07–09) and killer gate full-suite breadth.

@@ -1658,6 +1658,36 @@ struct EmitCtx {
         builder->CreateCall(rt, {});
         return true;
       }
+      case MirOp::XferElide: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_xfer_elide_copy", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::XferFusion: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_xfer_fusion", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::XferD2d: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_xfer_d2d_path", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::XferRdmaGpu: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_xfer_rdma_gpu", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::XferPlanApply: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_xfer_plan_apply", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
       case MirOp::ArraySimdScope:
         if (ins.int_value != 0) {
           array_simd_scope_stack.push_back(true);
@@ -1717,6 +1747,22 @@ void emit_comm_plan_global(llvm::Module* module, const MirCommPlan& plan) {
        llvm::ConstantInt::get(i32_ty(ctx), plan.rdma_hooks)});
   new llvm::GlobalVariable(*module, st, true, llvm::GlobalValue::ExternalLinkage, init,
                            "__li_comm_plan");
+}
+
+void emit_xfer_plan_global(llvm::Module* module, const MirXferPlan& plan) {
+  llvm::LLVMContext& ctx = module->getContext();
+  llvm::StructType* st = llvm::StructType::get(
+      ctx, {i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx)});
+  llvm::Constant* init = llvm::ConstantStruct::get(
+      st,
+      {llvm::ConstantInt::get(i32_ty(ctx), 0x5058494cu),
+       llvm::ConstantInt::get(i32_ty(ctx), 1u),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.elide_copy_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.fusion_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.d2d_path_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.rdma_gpu_count)});
+  new llvm::GlobalVariable(*module, st, true, llvm::GlobalValue::ExternalLinkage, init,
+                           "__li_xfer_plan");
 }
 
 }  // namespace
@@ -2126,6 +2172,19 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
     module->getOrInsertFunction("li_comm_plan_apply",
                                 llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
     module->getOrInsertFunction("li_comm_overlap_region",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+  }
+  if (mir.needs_rt_xfer_plan) {
+    emit_xfer_plan_global(module.get(), mir.xfer_plan);
+    module->getOrInsertFunction("li_xfer_plan_apply",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_xfer_elide_copy",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_xfer_fusion",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_xfer_d2d_path",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_xfer_rdma_gpu",
                                 llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
   }
 

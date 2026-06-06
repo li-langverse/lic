@@ -1087,6 +1087,58 @@ Stmt Parser::parse_stmt() {
     skip_newlines();
     return s;
   }
+  if (at(TokenKind::Ident) && cur().text == "elide") {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "copy") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'copy' after 'elide'");
+      return s;
+    }
+    i++;
+    s.kind = Stmt::Kind::ElideCopy;
+    s.span = {start_tok.start, cur().start};
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "fuse") {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "xfer") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'xfer' after 'fuse'");
+      return s;
+    }
+    i++;
+    s.kind = Stmt::Kind::FuseXfer;
+    s.span = {start_tok.start, cur().start};
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "d2d") {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "path") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'path' after 'd2d'");
+      return s;
+    }
+    i++;
+    s.kind = Stmt::Kind::D2dPath;
+    s.span = {start_tok.start, cur().start};
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "rdma") {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "gpu") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'gpu' after 'rdma'");
+      return s;
+    }
+    i++;
+    s.kind = Stmt::Kind::RdmaGpu;
+    s.span = {start_tok.start, cur().start};
+    skip_newlines();
+    return s;
+  }
   if (at(TokenKind::Ident) && cur().text == "team") {
     const Token start_tok = cur();
     i++;

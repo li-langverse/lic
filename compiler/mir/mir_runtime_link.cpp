@@ -43,6 +43,9 @@ void note_one(std::string_view callee, MirModule& mir) {
   if (starts_with(callee, "li_comm_")) {
     mir.needs_rt_comm_plan = true;
   }
+  if (starts_with(callee, "li_xfer_")) {
+    mir.needs_rt_xfer_plan = true;
+  }
 }
 
 }  // namespace
@@ -72,6 +75,9 @@ void mir_finalize_runtime_link_needs(MirModule& mir) {
     }
   }
   if (mir.needs_rt_comm_plan) {
+    mir.needs_rt_dpar = true;
+  }
+  if (mir.needs_rt_xfer_plan) {
     mir.needs_rt_dpar = true;
   }
   if (mir.needs_rt_dpar) {
@@ -105,6 +111,10 @@ void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) 
       }
       if (ins.op == MirOp::OverlapComm || ins.op == MirOp::CommPlanApply) {
         out_flags.needs_rt_comm_plan = true;
+      }
+      if (ins.op == MirOp::XferElide || ins.op == MirOp::XferFusion || ins.op == MirOp::XferD2d ||
+          ins.op == MirOp::XferRdmaGpu || ins.op == MirOp::XferPlanApply) {
+        out_flags.needs_rt_xfer_plan = true;
       }
       if (ins.op == MirOp::AsyncAwait || ins.op == MirOp::AsyncFrameEnter ||
           ins.op == MirOp::AsyncFrameLeave) {

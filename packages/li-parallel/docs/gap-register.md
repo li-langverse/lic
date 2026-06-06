@@ -35,7 +35,7 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 | WP-PAR-70–75 | Compiler comm plan | **DONE** — __li_comm_plan, overlap comm MIR, MD ghost overlap ≥50%, RDMA hooks, latency + compressed halo benches |
 | WP-PAR-07–09 | Embedded execution plan | **IN PROGRESS** — team/cluster/offload/overlap comm compile smokes land; runtime plan apply at main |
 | WP-PAR-79–86 | Chip packages + boundaries | **DONE** — li-gpu (`import ligpu`), li-tpu, li-asic, hetero orchestration gate |
-| WP-PAR-87–92 | Transfer plan | **PENDING** |
+| WP-PAR-87–92 | Transfer plan | **DONE** — __li_xfer_plan, elide copy/fuse xfer/d2d path/rdma gpu, dashboard xfer_sec/elided_copies |
 
 ## Documentation (this sprint)
 

@@ -111,6 +111,9 @@ void warn_unreachable(const std::vector<Stmt>& body, const std::string& file,
       warn_unreachable(stmt.par_body, file, diags);
     } else if (stmt.kind == Stmt::Kind::OverlapComm) {
       /* no body */
+    } else if (stmt.kind == Stmt::Kind::ElideCopy || stmt.kind == Stmt::Kind::FuseXfer ||
+               stmt.kind == Stmt::Kind::D2dPath || stmt.kind == Stmt::Kind::RdmaGpu) {
+      /* no body */
     }
     if (stmt_terminates(stmt)) {
       seen_terminator = true;

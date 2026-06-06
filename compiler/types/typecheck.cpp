@@ -1518,6 +1518,10 @@ struct Ctx {
     if (s.kind == Stmt::Kind::OverlapComm) {
       return;
     }
+    if (s.kind == Stmt::Kind::ElideCopy || s.kind == Stmt::Kind::FuseXfer ||
+        s.kind == Stmt::Kind::D2dPath || s.kind == Stmt::Kind::RdmaGpu) {
+      return;
+    }
     if (s.kind == Stmt::Kind::Borrow) {
       if (s.init && s.init->kind == Expr::Kind::Ident) {
         const auto it = locals.find(s.init->ident);

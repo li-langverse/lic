@@ -85,10 +85,20 @@ enum class MirOp {
   TeamPop,
   /** WP-PAR-71 — overlap comm site (compile-time intent). */
   OverlapComm,
+  /** WP-PAR-88 — elide copy site. */
+  XferElide,
+  /** WP-PAR-89 — fuse xfer site. */
+  XferFusion,
+  /** WP-PAR-90 — d2d path site. */
+  XferD2d,
+  /** WP-PAR-91 — rdma gpu site. */
+  XferRdmaGpu,
   /** WP-PAR-09 — apply embedded __li_exec_plan at program entry. */
   ExecPlanApply,
   /** WP-PAR-70 — apply embedded __li_comm_plan at program entry. */
   CommPlanApply,
+  /** WP-PAR-87 — apply embedded __li_xfer_plan at program entry. */
+  XferPlanApply,
 };
 
 struct MirArg {
@@ -199,6 +209,14 @@ struct MirCommPlan {
   std::uint32_t rdma_hooks = 0;
 };
 
+/** WP-PAR-87 — fields embedded as `__li_xfer_plan` global at link time. */
+struct MirXferPlan {
+  std::uint32_t elide_copy_count = 0;
+  std::uint32_t fusion_count = 0;
+  std::uint32_t d2d_path_count = 0;
+  std::uint32_t rdma_gpu_count = 0;
+};
+
 /** WP-PAR-07 — fields embedded as `__li_exec_plan` global at link time. */
 struct MirExecPlan {
   std::int64_t team_cores = 0;
@@ -230,8 +248,11 @@ struct MirModule {
   bool needs_rt_exec_plan = false;
   /** runtime/li_comm_plan.c — embedded comm plan (**WP-PAR-70–71**). */
   bool needs_rt_comm_plan = false;
+  /** runtime/li_xfer_plan.c — embedded transfer plan (**WP-PAR-87–92**). */
+  bool needs_rt_xfer_plan = false;
   MirExecPlan exec_plan;
   MirCommPlan comm_plan;
+  MirXferPlan xfer_plan;
   /** When true: MIR stability pass + strict FP codegen (no fast-math reassociation). */
   bool fp_numerically_stable = false;
 };

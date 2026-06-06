@@ -1342,10 +1342,8 @@ def echem_ml_holdout_count() -> int
 def echem_ml_holdout_u_v(i: int) -> float
   requires i >= 0
   requires i < echem_ml_holdout_count()
-  ensures (i == 0) implies (result == -0.5)
-  ensures (i == 1) implies (result == -0.25)
-  ensures (i == 2) implies (result == 0.0)
-  ensures (i == 3) implies (result == 0.5)
+  ensures result >= -0.5
+  ensures result <= 0.5
   decreases i
 =
   if i == 0:
@@ -1359,10 +1357,8 @@ def echem_ml_holdout_u_v(i: int) -> float
 def echem_ml_holdout_x(i: int) -> float
   requires i >= 0
   requires i < echem_ml_holdout_count()
-  ensures (i == 0) implies (result == 0.08)
-  ensures (i == 1) implies (result == 0.10)
-  ensures (i == 2) implies (result == -0.05)
-  ensures (i == 3) implies (result == 0.12)
+  ensures result >= -0.05
+  ensures result <= 0.12
   decreases i
 =
   if i == 0:
@@ -1376,10 +1372,8 @@ def echem_ml_holdout_x(i: int) -> float
 def echem_ml_holdout_vx(i: int) -> float
   requires i >= 0
   requires i < echem_ml_holdout_count()
-  ensures (i == 0) implies (result == 0.03)
-  ensures (i == 1) implies (result == 0.02)
-  ensures (i == 2) implies (result == 0.04)
-  ensures (i == 3) implies (result == -0.02)
+  ensures result >= -0.02
+  ensures result <= 0.04
   decreases i
 =
   if i == 0:

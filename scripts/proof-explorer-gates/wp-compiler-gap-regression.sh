@@ -4,9 +4,31 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
+# shellcheck source=../lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+if lic_rel="$(li_pick_lic_bin "$ROOT" 2>/dev/null)"; then
+  case "$lic_rel" in
+    ./*) export LIC="$ROOT/${lic_rel#./}" ;;
+    *) export LIC="$lic_rel" ;;
+  esac
+else
+  echo "wp-compiler-gap-regression: building lic (./scripts/build.sh)" >&2
+  (cd "$ROOT" && bash scripts/build.sh) || {
+    echo "wp-compiler-gap-regression: lic build failed" >&2
+    exit 1
+  }
+  lic_rel="$(li_pick_lic_bin "$ROOT")" || {
+    echo "wp-compiler-gap-regression: lic binary missing after build" >&2
+    exit 1
+  }
+  case "$lic_rel" in
+    ./*) export LIC="$ROOT/${lic_rel#./}" ;;
+    *) export LIC="$lic_rel" ;;
+  esac
+fi
+
 fail=0
 open=0
-LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
 shopt -s nullglob
 gaps=(li-tests/tooling/*_gap.sh)
 if [[ ${#gaps[@]} -eq 0 ]]; then
@@ -19,11 +41,6 @@ for script in "${gaps[@]}"; do
   set +e
   bash "$script"
   code=$?
-  if [[ "$name" == "dot4_loop_ensures_lean_stub_gap.sh" && ! -x "$LIC" ]]; then
-    echo "wp-compiler-gap-regression: SKIP $name (lic not built — phase9 incomplete)" >&2
-    fail=1
-    continue
-  fi
   set -e
   if [[ "$code" -eq 0 ]]; then
     echo "wp-compiler-gap-regression: PASS $name"

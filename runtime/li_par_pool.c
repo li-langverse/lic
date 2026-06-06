@@ -69,6 +69,22 @@ static LiParPool g_li_par_pool;
 static int g_li_par_pool_team = 0;
 static LiParScheduleKind g_li_par_schedule = LI_PAR_SCHED_STATIC;
 static long long g_li_par_chunk_size = 0;
+static int g_li_par_max_threads = -1;
+
+int li_par_max_threads(void) {
+  if (g_li_par_max_threads < 0) {
+    const char* cap = getenv("LI_MAX_THREADS");
+    int max = cap && *cap ? atoi(cap) : LI_MAX_THREADS;
+    if (max < 1) {
+      max = 1;
+    }
+    if (max > LI_MAX_THREADS) {
+      max = LI_MAX_THREADS;
+    }
+    g_li_par_max_threads = max;
+  }
+  return g_li_par_max_threads;
+}
 
 static LiParScheduleKind li_par_env_schedule(void) {
   const char* sched = getenv("LI_PAR_SCHEDULE");
@@ -115,8 +131,9 @@ static int li_par_env_team_size(void) {
   if (cores < 1) {
     return 1;
   }
-  if (cores > LI_MAX_THREADS) {
-    return LI_MAX_THREADS;
+  const int cap = li_par_max_threads();
+  if (cores > cap) {
+    return cap;
   }
   return (int)cores;
 }
@@ -125,8 +142,9 @@ static int li_par_clamp_team(int team_size, long long trip_count) {
   if (team_size <= 0) {
     team_size = li_par_env_team_size();
   }
-  if (team_size > LI_MAX_THREADS) {
-    team_size = LI_MAX_THREADS;
+  const int cap = li_par_max_threads();
+  if (team_size > cap) {
+    team_size = cap;
   }
   if (trip_count < (long long)team_size) {
     team_size = (int)trip_count;

@@ -6,7 +6,11 @@
 extern "C" {
 #endif
 
-#define LI_MAX_THREADS 64
+/** Compile-time worker array bound (WP-PAR-19). Runtime cap via li_par_max_threads(). */
+#define LI_MAX_THREADS 256
+
+/** Effective thread cap — override with LI_MAX_THREADS env (default LI_MAX_THREADS). */
+int li_par_max_threads(void);
 
 typedef enum {
   LI_PAR_SCHED_STATIC = 0,

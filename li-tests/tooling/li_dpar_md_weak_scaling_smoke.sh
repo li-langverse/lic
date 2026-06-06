@@ -23,6 +23,8 @@ mkdir -p "$(dirname "$OUT")"
 
 LI_DPAR_RANK=0 LI_DPAR_WORLD_SIZE=1 "$OUT"
 
-PORT="${LI_DPAR_PORT:-29601}"
+# shellcheck source=scripts/lib/pick-dpar-port.sh
+source "$ROOT/scripts/lib/pick-dpar-port.sh"
+PORT="$(pick_dpar_port)"
 chmod +x "$LIPAR_RUN"
 "$LIPAR_RUN" --hosts "127.0.0.1,127.0.0.1,127.0.0.1,127.0.0.1" --world 4 --port "$PORT" -- "$OUT"

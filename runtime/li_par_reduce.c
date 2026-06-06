@@ -34,8 +34,8 @@ static int li_par_clamp_team(long long n, int team_size) {
   if (team_size <= 0) {
     team_size = li_par_pool_team_size();
   }
-  if (team_size > LI_MAX_THREADS) {
-    team_size = LI_MAX_THREADS;
+  if (team_size > li_par_max_threads()) {
+    team_size = li_par_max_threads();
   }
   if (n < (long long)team_size) {
     team_size = (int)n;
@@ -280,8 +280,8 @@ static void li_parallel_for_reduce_f64(long long start, long long end, void (*bo
   if (team_size <= 0) {
     team_size = li_par_pool_team_size();
   }
-  if (team_size > LI_MAX_THREADS) {
-    team_size = LI_MAX_THREADS;
+  if (team_size > li_par_max_threads()) {
+    team_size = li_par_max_threads();
   }
   if (trip < (long long)team_size) {
     team_size = (int)trip;

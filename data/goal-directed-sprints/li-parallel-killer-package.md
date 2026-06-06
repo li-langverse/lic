@@ -47,9 +47,9 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 | **WP-PAR-14** | Windows thread pool | **DONE** |
 | **WP-PAR-15** | Compiler `reduce` lowering | **IN PROGRESS** — `par_sum` + `parallel for reduce`; program-first `team()` pending WP-PAR-07–09 |
 | **WP-PAR-16** | Reduction policy proofs | **DONE** |
-| **WP-PAR-17** | Variable cores / scoped team push-pop | **PENDING** |
+| **WP-PAR-17** | Variable cores / scoped team push-pop | **IN PROGRESS** — push/pop stack + scope smoke |
 | **WP-PAR-18** | Callable parallel defs | **PENDING** |
-| **WP-PAR-19** | Unlimited/auto cores; drop LI_MAX_THREADS cap | **PENDING** |
+| **WP-PAR-19** | Unlimited/auto cores; drop LI_MAX_THREADS cap | **IN PROGRESS** — `team(cores=0)`, cap 256, env `LI_MAX_THREADS` |
 
 ### Phase 2 — Distributed runtime
 

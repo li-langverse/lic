@@ -132,10 +132,12 @@ int li_dpar_init_from_env(void) {
         remote.sin_port = htons((uint16_t)(base_port + peer));
         inet_pton(AF_INET, hosts[peer], &remote.sin_addr);
         int fd = (int)socket(AF_INET, SOCK_STREAM, 0);
+        int connected = 0;
         for (int retry = 0; retry < 200; ++retry) {
           if (connect(fd, (struct sockaddr*)&remote, sizeof(remote)) == 0) {
             g_dpar_peer_fd[peer] = fd;
             g_dpar_peer_count++;
+            connected = 1;
             break;
           }
 #if defined(_WIN32)
@@ -143,6 +145,17 @@ int li_dpar_init_from_env(void) {
 #else
           usleep(10000);
 #endif
+        }
+        if (!connected) {
+          fprintf(stderr,
+                  "li_dpar: rank %d failed to connect to peer %d on port %d after 200 retries\n",
+                  g_dpar_rank, peer, base_port + peer);
+#if defined(_WIN32)
+          closesocket(fd);
+#else
+          close(fd);
+#endif
+          exit(1);
         }
       }
     }

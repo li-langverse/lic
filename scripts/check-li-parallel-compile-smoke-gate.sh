@@ -12,6 +12,7 @@ for specimen in \
   li-tests/parallel_codegen/par_for_reduce_f64.li \
   li-tests/parallel_codegen/dpar_for_range.li \
   li-tests/parallel_codegen/team_block_par_for.li \
+  li-tests/parallel_codegen/team_auto_cores.li \
   li-tests/parallel_codegen/cluster_block_dpar.li \
   li-tests/parallel_codegen/program_first_exec_plan.li
 do
@@ -28,6 +29,7 @@ for smoke in \
   li-tests/tooling/li_par_for_reduce_codegen_smoke.sh \
   li-tests/tooling/li_dpar_for_codegen_smoke.sh \
   li-tests/tooling/li_team_block_codegen_smoke.sh \
+  li-tests/tooling/li_team_auto_cores_codegen_smoke.sh \
   li-tests/tooling/li_cluster_block_codegen_smoke.sh \
   li-tests/tooling/li_program_first_exec_plan_smoke.sh
 do

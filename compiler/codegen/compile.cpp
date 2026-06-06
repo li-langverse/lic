@@ -10,6 +10,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
+#include <iostream>
 #include <sstream>
 
 #include "llvm/Config/llvm-config.h"
@@ -103,6 +104,10 @@ bool compile_module(const Module& module, const std::string& output_path,
   MirModule mir = lower_to_mir(module);
   mir.fp_numerically_stable = opts.fp_numerically_stable;
   apply_numerical_stability(mir);
+  if (const char* log_env = std::getenv("LI_COMPILE_JOBS_LOG"); log_env != nullptr &&
+      log_env[0] == '1') {
+    std::cerr << "lic: compile_module jobs=" << compile_jobs_from_options() << '\n';
+  }
   std::string abi_err;
   if (!verify_mir_extern_abi(module, mir, &abi_err)) {
     if (error) {

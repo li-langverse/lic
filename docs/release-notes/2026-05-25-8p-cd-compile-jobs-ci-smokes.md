@@ -25,7 +25,7 @@
 
 ## Not changed
 
-- Parallel MIR/LLVM frontend passes (reserved job count only).
+- Parallel MIR lowering or clang link (emit Pass 2 only).
 - `lic-workspace-build.sh` pool (8p-b).
 - Vision-LLM `lic edit --patch=json`.
 - Proof gates, `trusted.lean`, tier physics benches.

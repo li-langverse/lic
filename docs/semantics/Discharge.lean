@@ -97,7 +97,7 @@ def sqrt_open_bound_spec (x : Float) : Prop :=
 theorem sqrt_open_bound_spec_proved (x : Float) (hreq : x ≥ (0 : Float)) : sqrt_open_bound_spec x :=
   Li.TrustedMath.li_rt_sqrt_bound x hreq
 
-def vec3_len_eval (a : Int) : Float :=
+noncomputable def vec3_len_eval (a : Int) : Float :=
   Li.TrustedMath.li_rt_sqrt (vec3_len_sq_eval a)
 
 def vec3_len_spec (a : Int) (result : Float) : Prop :=

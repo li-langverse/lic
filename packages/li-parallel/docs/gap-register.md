@@ -24,8 +24,8 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 
 | WP | Gap | Status |
 |----|-----|--------|
-| WP-PAR-40 | Strict perf vs OpenMP/MPI | **IN PROGRESS** |
-| WP-PAR-48 | Whole-catalog dual-mode audit | **PENDING** |
+| WP-PAR-40 | Strict perf vs OpenMP/MPI | **IN PROGRESS** — reduce_sum strict speedup green (1.065×) |
+| WP-PAR-48 | Whole-catalog dual-mode audit | **IN PROGRESS** — 28 `main_parallel.li` overlays; `audit-li-parallel-catalog-coverage.sh` green |
 
 ## Phase 6–8 — FL, comm, hetero, xfer
 

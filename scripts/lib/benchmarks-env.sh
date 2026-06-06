@@ -7,6 +7,12 @@ _benchmarks_env_valid_root() {
   local root="$1"
   [[ -n "$root" ]] || return 1
   [[ -f "$root/harness/bench.py" ]] && return 0
+  return 1
+}
+
+_benchmarks_env_lite_root() {
+  local root="$1"
+  [[ -n "$root" ]] || return 1
   [[ -d "$root/results" && -d "$root/competitive" ]] && return 0
   return 1
 }
@@ -45,10 +51,17 @@ if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
       break
     fi
   done
+  # Local cache (full harness) before in-repo lite tree.
+  if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
+    _cache="$_lic/.cache/li-benchmarks"
+    if [[ -f "$_cache/harness/bench.py" ]]; then
+      BENCHMARKS_ROOT="$(cd "$_cache" && pwd)"
+    fi
+  fi
   # Lite fallback: vendored results/competitive only (no tier-0 run-bench.sh).
   if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
     for _c in "$_lic/benchmarks"; do
-      if [[ -d "$_c/results" && -d "$_c/competitive" ]]; then
+      if _benchmarks_env_lite_root "$_c"; then
         BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
         break
       fi

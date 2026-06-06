@@ -6,11 +6,24 @@ export LIC_ROOT="$ROOT"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 
+# Full org catalog lives in li-langverse/benchmarks, not the in-repo lite tree.
+if [[ ! -f "${BENCHMARKS_ROOT}/catalog.toml" ]]; then
+  _cache="$ROOT/.cache/li-benchmarks"
+  if [[ -f "$_cache/catalog.toml" ]]; then
+    BENCHMARKS_ROOT="$_cache"
+    export BENCHMARKS_ROOT
+  fi
+fi
+
 CATALOG="${BENCHMARKS_ROOT}/catalog.toml"
 if [[ ! -f "$CATALOG" ]]; then
   echo "audit-li-parallel-catalog-coverage: missing $CATALOG" >&2
+  echo "  hint: clone benchmarks to .cache/li-benchmarks or set BENCHMARKS_ROOT" >&2
   exit 1
 fi
+
+chmod +x "$ROOT/scripts/lipar-apply-parallel-src.sh"
+"$ROOT/scripts/lipar-apply-parallel-src.sh"
 
 python3 - "$CATALOG" "$BENCHMARKS_ROOT" <<'PY'
 import re

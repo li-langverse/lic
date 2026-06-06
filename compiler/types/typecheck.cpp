@@ -885,6 +885,26 @@ struct Ctx {
             return l;
           }
           {
+            std::int64_t lm = 0;
+            std::int64_t ln = 0;
+            std::int64_t rm = 0;
+            std::int64_t rn = 0;
+            const bool l2 = ty_is_2d_float_matrix(l, &lm, &ln);
+            const bool r2 = ty_is_2d_float_matrix(r, &rm, &rn);
+            if (l2 || r2) {
+              if (l2 && r2) {
+                diags.error(loc(e.span),
+                            "element-wise arithmetic on 2d arrays requires matching (M,N) "
+                            "shapes; NumPy rank broadcast is not supported");
+              } else {
+                diags.error(loc(e.span),
+                            "element-wise arithmetic requires matching array rank "
+                            "(1d array vs 2d matrix)");
+              }
+              return l;
+            }
+          }
+          {
             bool rf = false;
             std::int64_t rn = 0;
             if (l->kind == TyKind::Float && ty_is_1d_numeric_array(r, &rf, &rn) && rf) {

@@ -178,7 +178,7 @@ def chem_dft_overlap_build(S: var array[4, array[4, float]]) -> unit
 def chem_dft_core_hamiltonian_ii(bi: int) -> float
   requires bi >= 0
   requires bi < chem_dft_basis_n()
-  ensures true
+  ensures result == -1.0 / (chem_dft_basis_centroid_at(bi) + 0.05) + 0.25 * chem_dft_basis_zeta_at(bi)
   decreases bi
 =
   var z_eff: float = 1.0
@@ -271,7 +271,7 @@ def chem_dft_vec_normalize4(v: var array[4, float]) -> unit
 
 def chem_dft_rayleigh4(F: array[4, array[4, float]], v: var array[4, float]) -> float
   requires true
-  ensures true
+  ensures result <= 0.0
   decreases 0
 =
   var Fv: array[4, float]
@@ -285,7 +285,7 @@ def chem_dft_rayleigh4(F: array[4, array[4, float]], v: var array[4, float]) -> 
 
 def chem_dft_eigensolve_power4(F: array[4, array[4, float]], coeffs: var array[4, float]) -> float
   requires true
-  ensures true
+  ensures result <= 0.0
   decreases 0
 =
   var i: int = 0
@@ -419,7 +419,7 @@ def chem_dft_fock_density_mix_step(dens: var array[8, float], mix: float) -> uni
 def chem_dft_scf_fock_step(dens: var array[8, float], mix: float) -> float
   requires mix > 0.0
   requires mix <= 1.0
-  ensures true
+  ensures result <= 0.0
   decreases 0
 =
   return chem_dft_scf_fock_step_at_potential(dens, mix, 0.0)
@@ -446,7 +446,7 @@ def chem_dft_fock_apply_potential_shift(F: var array[4, array[4, float]], u_v: f
 def chem_dft_scf_fock_step_at_potential(dens: var array[8, float], mix: float, u_v: float) -> float
   requires mix > 0.0
   requires mix <= 1.0
-  ensures true
+  ensures result <= 0.0
   decreases 0
 =
   var P: array[4, array[4, float]]
@@ -769,7 +769,7 @@ def echem_dft_h2_energy_at_potential_hartree(u_v: float) -> float
 
 def echem_dft_energy_at_potential(u_v: float) -> float
   requires true
-  ensures true
+  ensures result == echem_hartree_to_ev(echem_dft_h_star_energy_at_potential_hartree(u_v) - 0.5 * echem_dft_h2_energy_at_potential_hartree(u_v)) - u_v
   decreases 0
 =
   var e_h_star: float = echem_dft_h_star_energy_at_potential_hartree(u_v)
@@ -836,7 +836,7 @@ def echem_edl_pb_dx_m() -> float
 
 def echem_sinh_toy(x: float) -> float
   requires true
-  ensures true
+  ensures result >= 0.0
   decreases 0
 =
   var ax: float = x
@@ -1002,7 +1002,7 @@ def echem_neb_climbing_bump_ev(lam: float) -> float
 def echem_neb_image_energy_ev_at(i: int) -> float
   requires i >= 0
   requires i < echem_neb_image_count()
-  ensures true
+  ensures result == (1.0 - echem_neb_reaction_lambda_at(i)) * echem_dft_energy_at_potential(0.0) + echem_neb_climbing_bump_ev(echem_neb_reaction_lambda_at(i))
   decreases i
 =
   var e_is: float = echem_dft_energy_at_potential(0.0)
@@ -1013,14 +1013,14 @@ def echem_neb_image_energy_ev_at(i: int) -> float
 def echem_neb_image_energy_at(i: int) -> float
   requires i >= 0
   requires i < echem_neb_image_count()
-  ensures true
+  ensures result == echem_neb_image_energy_ev_at(i)
   decreases i
 =
   return echem_neb_image_energy_ev_at(i)
 
 def echem_neb_max_image_energy_ev() -> float
   requires true
-  ensures true
+  ensures result >= echem_neb_image_energy_ev_at(0)
   decreases 0
 =
   var e_max: float = echem_neb_image_energy_ev_at(0)
@@ -1034,7 +1034,8 @@ def echem_neb_max_image_energy_ev() -> float
 
 def echem_neb_endpoint_min_ev() -> float
   requires true
-  ensures true
+  ensures result <= echem_neb_image_energy_ev_at(0)
+  ensures result <= echem_neb_image_energy_ev_at(4)
   decreases 0
 =
   var e_is: float = echem_neb_image_energy_ev_at(0)
@@ -1226,7 +1227,7 @@ def echem_exp_toy(x: float) -> float
 
 def echem_marcus_rate_exponent(delta_g_ev: float, lambda_ev: float) -> float
   requires lambda_ev > 0.0
-  ensures true
+  ensures result <= 0.0
   decreases 0
 =
   var kt: float = echem_marcus_kb_ev_per_k() * echem_marcus_temperature_k()

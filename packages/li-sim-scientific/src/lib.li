@@ -232,7 +232,7 @@ def echem_aimd_dft_energy_per_step() -> float
 
 def echem_aimd_kinetic_pe(x: float, vx: float) -> float
   requires true
-  ensures true
+  ensures result == 0.5 * vx * vx + 0.5 * echem_aimd_harmonic_k() * x * x
   decreases 0
 =
   var k: float = echem_aimd_harmonic_k()
@@ -240,7 +240,7 @@ def echem_aimd_kinetic_pe(x: float, vx: float) -> float
 
 def echem_aimd_total_energy(x: float, vx: float) -> float
   requires true
-  ensures true
+  ensures result == echem_aimd_dft_energy_per_step() + echem_aimd_kinetic_pe(x, vx)
   decreases 0
 =
   return echem_aimd_dft_energy_per_step() + echem_aimd_kinetic_pe(x, vx)

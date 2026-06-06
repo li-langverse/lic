@@ -1,5 +1,6 @@
 #include "li_exec_plan.h"
 
+#include "li_comm_plan.h"
 #include "li_dpar.h"
 #include "li_parallel.h"
 
@@ -74,5 +75,5 @@ void li_exec_team_pop(void) {
 }
 
 void li_exec_overlap_comm(void) {
-  /* WP-PAR-71 — compile-time intent only; runtime overlap lands in comm plan gate. */
+  li_comm_overlap_region();
 }

@@ -106,12 +106,12 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-70** | Embedded `__li_comm_plan` | **PENDING** |
-| **WP-PAR-71** | `overlap comm` MIR | **PENDING** |
-| **WP-PAR-72** | Ghost overlap ≥50% MD specimen | **PENDING** |
-| **WP-PAR-73** | RDMA hooks | **PENDING** |
-| **WP-PAR-74** | Latency benchmarks | **PENDING** |
-| **WP-PAR-75** | Compressed halo bench | **PENDING** |
+| **WP-PAR-70** | Embedded `__li_comm_plan` | **DONE** |
+| **WP-PAR-71** | `overlap comm` MIR | **DONE** |
+| **WP-PAR-72** | Ghost overlap ≥50% MD specimen | **DONE** |
+| **WP-PAR-73** | RDMA hooks | **DONE** — stub registration + smoke |
+| **WP-PAR-74** | Latency benchmarks | **DONE** — barrier RTT bench |
+| **WP-PAR-75** | Compressed halo bench | **DONE** |
 
 ### Phase 8 — Heterogeneous orchestration
 
@@ -153,4 +153,4 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-06)
 
-Killer gate advances past `check-li-parallel-fl-gate.sh` (WP-PAR-60–65 FL hardening landed). Next blocker: `check-li-parallel-comm-gate.sh` / hetero / xfer / proofs sub-gates until remaining WPs land.
+Killer gate advances past `check-li-parallel-comm-gate.sh` (WP-PAR-70–75 comm plan landed). Next blocker: `check-li-parallel-hetero-gate.sh` until li-gpu / li-tpu / li-asic packages and orchestration APIs land.

@@ -22,3 +22,12 @@
 - Embedded `__li_exec_plan` global + `runtime/li_exec_plan.c` apply at main
 - Compile smoke gate green (6 specimens + 6 smokes)
 - Killer blocker advances to catalog audit / distributed sub-gates
+
+## 2026-06-06 — WP-PAR-70–75 comm plan slice (code_implementer)
+
+- Embedded `__li_comm_plan` global + `runtime/li_comm_plan.c` apply at main
+- Overlap comm MIR wired to comm plan runtime (`li_comm_overlap_region`)
+- MD ghost overlap smoke ≥50% + cluster gather validation
+- RDMA hook stub, latency bench, compressed halo bench
+- `check-li-parallel-comm-gate.sh` green
+- Killer blocker advances to `check-li-parallel-hetero-gate.sh` (li-gpu / li-tpu / li-asic packages)

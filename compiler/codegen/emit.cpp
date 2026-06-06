@@ -1652,6 +1652,12 @@ struct EmitCtx {
         builder->CreateCall(rt, {});
         return true;
       }
+      case MirOp::CommPlanApply: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_comm_plan_apply", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
       case MirOp::ArraySimdScope:
         if (ins.int_value != 0) {
           array_simd_scope_stack.push_back(true);
@@ -1695,6 +1701,22 @@ void emit_exec_plan_global(llvm::Module* module, const MirExecPlan& plan) {
        llvm::ConstantInt::get(i32_ty(ctx), plan.overlap_comm_count)});
   new llvm::GlobalVariable(*module, st, true, llvm::GlobalValue::ExternalLinkage, init,
                            "__li_exec_plan");
+}
+
+void emit_comm_plan_global(llvm::Module* module, const MirCommPlan& plan) {
+  llvm::LLVMContext& ctx = module->getContext();
+  llvm::StructType* st = llvm::StructType::get(
+      ctx, {i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx)});
+  llvm::Constant* init = llvm::ConstantStruct::get(
+      st,
+      {llvm::ConstantInt::get(i32_ty(ctx), 0x5043494cu),
+       llvm::ConstantInt::get(i32_ty(ctx), 1u),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.overlap_comm_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.ghost_exchange_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.compressed_halo_enabled),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.rdma_hooks)});
+  new llvm::GlobalVariable(*module, st, true, llvm::GlobalValue::ExternalLinkage, init,
+                           "__li_comm_plan");
 }
 
 }  // namespace
@@ -2045,6 +2067,13 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
     module->getOrInsertFunction("li_exec_team_pop",
                                 llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
     module->getOrInsertFunction("li_exec_overlap_comm",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+  }
+  if (mir.needs_rt_comm_plan) {
+    emit_comm_plan_global(module.get(), mir.comm_plan);
+    module->getOrInsertFunction("li_comm_plan_apply",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_comm_overlap_region",
                                 llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
   }
 

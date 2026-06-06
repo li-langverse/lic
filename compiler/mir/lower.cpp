@@ -2347,7 +2347,9 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
         break;
       }
       ctx.mir->exec_plan.overlap_comm_count++;
+      ctx.mir->comm_plan.overlap_comm_count++;
       ctx.mir->needs_rt_exec_plan = true;
+      ctx.mir->needs_rt_comm_plan = true;
       MirInsn oc;
       oc.op = MirOp::OverlapComm;
       out.push_back(std::move(oc));
@@ -2803,10 +2805,21 @@ MirModule lower_to_mir(const Module& module) {
         lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
                     float_array_names, i64_locals);
       }
-      if (proc.name == "main" && mir.needs_rt_exec_plan) {
-        MirInsn apply;
-        apply.op = MirOp::ExecPlanApply;
-        fn.body.insert(fn.body.begin(), std::move(apply));
+      if (proc.name == "main") {
+        std::vector<MirInsn> plan_prefix;
+        if (mir.needs_rt_comm_plan) {
+          MirInsn comm_apply;
+          comm_apply.op = MirOp::CommPlanApply;
+          plan_prefix.push_back(std::move(comm_apply));
+        }
+        if (mir.needs_rt_exec_plan) {
+          MirInsn apply;
+          apply.op = MirOp::ExecPlanApply;
+          plan_prefix.push_back(std::move(apply));
+        }
+        if (!plan_prefix.empty()) {
+          fn.body.insert(fn.body.begin(), plan_prefix.begin(), plan_prefix.end());
+        }
       }
       g_object_locals = nullptr;
       g_mir_module = nullptr;

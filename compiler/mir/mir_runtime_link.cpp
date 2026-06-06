@@ -40,6 +40,9 @@ void note_one(std::string_view callee, MirModule& mir) {
   if (starts_with(callee, "li_exec_")) {
     mir.needs_rt_exec_plan = true;
   }
+  if (starts_with(callee, "li_comm_")) {
+    mir.needs_rt_comm_plan = true;
+  }
 }
 
 }  // namespace
@@ -68,6 +71,15 @@ void mir_finalize_runtime_link_needs(MirModule& mir) {
       mir.needs_rt_dpar = true;
     }
   }
+  if (mir.needs_rt_comm_plan) {
+    mir.needs_rt_dpar = true;
+  }
+  if (mir.needs_rt_dpar) {
+    mir.needs_rt_net = true;
+  }
+  if (mir.needs_rt_net) {
+    mir.needs_rt_log = true;
+  }
 }
 
 void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) {
@@ -90,6 +102,9 @@ void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) 
       if (ins.op == MirOp::TeamPush || ins.op == MirOp::TeamPop || ins.op == MirOp::OverlapComm ||
           ins.op == MirOp::ExecPlanApply) {
         out_flags.needs_rt_exec_plan = true;
+      }
+      if (ins.op == MirOp::OverlapComm || ins.op == MirOp::CommPlanApply) {
+        out_flags.needs_rt_comm_plan = true;
       }
       if (ins.op == MirOp::AsyncAwait || ins.op == MirOp::AsyncFrameEnter ||
           ins.op == MirOp::AsyncFrameLeave) {

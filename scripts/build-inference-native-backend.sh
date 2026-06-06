@@ -11,7 +11,7 @@ mkdir -p "$ROOT/build"
 RT="$ROOT/runtime"
 OBJS=()
 for src in \
-  li_rt.c li_rt_log.c li_rt_net.c li_rt_rng.c li_rt_winsock.c \
+  li_rt.c li_par_pool.c li_rt_log.c li_rt_net.c li_rt_rng.c li_rt_winsock.c \
   li_rt_tls.c li_rt_h2.c li_rt_httpd.c li_rt_llm.c li_rt_inference_sse.c; do
   obj="$ROOT/build/${src%.c}.o"
   "$CC" -O2 -I"$RT" -c "$RT/$src" -o "$obj"

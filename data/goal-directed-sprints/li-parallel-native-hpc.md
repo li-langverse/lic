@@ -91,3 +91,9 @@ Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and 
 **Gate evidence (2026-06-06, agent run 12):** WP-PAR-13 pool dispatch fix — `li_par_reduce_sum_f64` partitions via `li_par_pool_fork_join`; `bash li-tests/tooling/li_par_reduce_sum_smoke.sh` → exit 0; reduce_sum bench override (`LI_PAR_REDUCE_RT` + `LI_PARALLEL=1`) → ~1.10× speedup (5-run mean); `bash li-tests/run_all.sh` → 271 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s).
 
 **Gate evidence (2026-06-06, agent run 13):** Sprint completion re-verify — `./scripts/build.sh` → exit 0; `bash li-tests/run_all.sh` → 271 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~11s); dual-mode rows for matmul_blocked, reduce_sum, simd_dot, num_dot_axpy; reduce_sum speedup 1.056× (meets 1.05× threshold); perf advisory strict=0 (reduce_sum vs cpp ratio 1.42× noted).
+
+**Gate evidence (2026-06-06, agent run 14):** WP-PAR-99 killer gate — `benchmarks-env.sh` discards stale `BENCHMARKS_ROOT`; `LIPAR_KILLER_SKIP_FULL=1 bash li-tests/tooling/li_parallel_killer_gate_smoke.sh` → exit 0 (~9s); `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-killer-gate.sh` → exit 0 (~3m38s, 162 benchmarks, tier2 present); killer loop state at `data/li-parallel-killer-loop/`.
+
+| WP | Deliverable | Status |
+|----|-------------|--------|
+| **WP-PAR-99** | Killer gate script | **IN PROGRESS** — smokes + PR + whole-suite path green; `LIPAR_KILLER_SKIP_FULL=1` for CI quick profile |

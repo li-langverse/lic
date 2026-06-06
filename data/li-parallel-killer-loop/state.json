@@ -1,0 +1,34 @@
+{
+  "sprint": "li-parallel-killer-package",
+  "phase_key": "phase-4-benchmarks",
+  "phase_index": 4,
+  "branch": "cursor/li-parallel-native-hpc",
+  "started": "2026-06-06",
+  "updated_at": "2026-06-06T08:00:00Z",
+  "last_gate": {
+    "progress": "pass",
+    "killer": "pass",
+    "killer_quick": "LIPAR_KILLER_SKIP_FULL=1"
+  },
+  "completed_phases": [],
+  "pending_phases": [
+    "phase-0-program-first",
+    "phase-5-docs",
+    "phase-6-fl",
+    "phase-7-comm",
+    "phase-8-hetero",
+    "phase-8b-xfer",
+    "phase-99-killer-gate"
+  ],
+  "current_wps": [
+    "WP-PAR-02",
+    "WP-PAR-40",
+    "WP-PAR-99"
+  ],
+  "north_star_fit": {
+    "domain": "HPC parallel runtime",
+    "ph_ids": ["G-par", "G-par-dist", "PH-PAR-1"]
+  },
+  "progress_gate": "scripts/check-li-parallel-full-suite.sh",
+  "completion_gate": "scripts/check-li-parallel-killer-gate.sh"
+}

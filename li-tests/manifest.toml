@@ -1561,6 +1561,12 @@ file = "tooling/li_dpar_for_codegen_smoke.sh"
 outcome = "script_ok"
 note = "WP-PAR-23: distributed for codegen links li_dpar.c"
 
+[[tests]]
+suite = "tooling"
+file = "tooling/li_parallel_killer_gate_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-99: killer gate script (smokes + PR profile; LIPAR_KILLER_SKIP_FULL=1)"
+
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
 # --- stdlib_parity (WP0-D — compile-only until WP-WA + WP1 runtime) ---

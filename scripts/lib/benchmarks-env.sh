@@ -3,6 +3,19 @@
 # Source from lic scripts after ROOT/LIC_ROOT is set.
 set -euo pipefail
 
+_benchmarks_env_valid_root() {
+  local root="$1"
+  [[ -n "$root" ]] || return 1
+  [[ -f "$root/harness/bench.py" ]] && return 0
+  [[ -d "$root/results" && -d "$root/competitive" ]] && return 0
+  return 1
+}
+
+# Agent runners often export stale paths (e.g. /workspace/benchmarks) — discard and rediscover.
+if [[ -n "${BENCHMARKS_ROOT:-}" ]] && ! _benchmarks_env_valid_root "$BENCHMARKS_ROOT"; then
+  unset BENCHMARKS_ROOT
+fi
+
 _benchmarks_env_lic_root() {
   if [[ -n "${LIC_ROOT:-}" ]]; then
     echo "$(cd "$LIC_ROOT" && pwd)"

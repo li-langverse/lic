@@ -1,4 +1,4 @@
-# lig.memory — PH-HW HW-3 (canonical: packages/lig/src/lib.li).
+# lig.memory — PH-HW HW-3 (canonical: packages/li-gpu/src/lib.li).
 
 type LigMemoryLedger = object
   public budget_mib: int

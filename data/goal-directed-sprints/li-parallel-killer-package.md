@@ -120,10 +120,11 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 | **WP-PAR-07** | Embedded execution plan | **IN PROGRESS** — `__li_exec_plan` global + `li_exec_plan_apply` at main |
 | **WP-PAR-08** | `team()` / `cluster()` parser | **IN PROGRESS** — compile smokes green; scoped push/pop v1 |
 | **WP-PAR-09** | Runtime reads compiled plan at main | **IN PROGRESS** — `li_exec_plan_apply` reads embedded plan |
-| **WP-PAR-79** | Rename `lig` → `li-gpu` (`import ligpu`) | **PENDING** |
-| **WP-PAR-80** | Hetero orchestration API in li-parallel | **PENDING** |
-| **WP-PAR-83** | New `li-tpu` (`import litpu`) | **PENDING** |
-| **WP-PAR-84** | New `li-asic` (`import liasic`) | **PENDING** |
+| **WP-PAR-79** | Rename `lig` → `li-gpu` (`import ligpu`) | **DONE** |
+| **WP-PAR-80** | Hetero orchestration API in li-parallel | **DONE** |
+| **WP-PAR-83** | New `li-tpu` (`import litpu`) | **DONE** |
+| **WP-PAR-84** | New `li-asic` (`import liasic`) | **DONE** |
+| **WP-PAR-86** | `check-chip-package-boundaries.sh` | **DONE** |
 | **WP-PAR-86** | `check-chip-package-boundaries.sh` | **PENDING** |
 
 ### Phase 8b — Transfer plan
@@ -153,4 +154,4 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-06)
 
-Killer gate advances past `check-li-parallel-comm-gate.sh` (WP-PAR-70–75 comm plan landed). Next blocker: `check-li-parallel-hetero-gate.sh` until li-gpu / li-tpu / li-asic packages and orchestration APIs land.
+Killer gate advances past `check-li-parallel-hetero-gate.sh` (WP-PAR-79–86 chip packages + orchestration). Next blocker: `check-li-parallel-xfer-gate.sh` until transfer plan WPs land.

@@ -1,4 +1,4 @@
-import lig
+import ligpu
 def main() raises IO -> int
   requires true
   ensures result == 0

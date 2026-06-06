@@ -1,0 +1,109 @@
+# Heterogeneous orchestration (WP-PAR-80): CPU+GPU+TPU+ASIC via runtime chip seams only.
+
+extern proc li_rt_hetero_probe_gpu() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_hetero_probe_tpu() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_hetero_probe_asic() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_hetero_available_mask() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 15
+  decreases 0
+
+extern proc li_rt_hetero_probe_pipeline() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+def hetero_chip_cpu() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def hetero_chip_gpu() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def hetero_chip_tpu() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def hetero_chip_asic() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def hetero_probe_gpu() -> int raises IO
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  return li_rt_hetero_probe_gpu()
+
+def hetero_probe_tpu() -> int raises IO
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  return li_rt_hetero_probe_tpu()
+
+def hetero_probe_asic() -> int raises IO
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  return li_rt_hetero_probe_asic()
+
+def hetero_available_mask() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 15
+  decreases 0
+=
+  return li_rt_hetero_available_mask()
+
+def hetero_select_device_kind() -> int raises IO
+  requires true
+  ensures result >= hetero_chip_cpu()
+  ensures result <= hetero_chip_asic()
+  decreases 0
+=
+  if hetero_probe_gpu() == 0:
+    return hetero_chip_gpu()
+  if hetero_probe_tpu() == 0:
+    return hetero_chip_tpu()
+  if hetero_probe_asic() == 0:
+    return hetero_chip_asic()
+  return hetero_chip_cpu()
+
+def hetero_probe_pipeline() -> int raises IO
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  return li_rt_hetero_probe_pipeline()

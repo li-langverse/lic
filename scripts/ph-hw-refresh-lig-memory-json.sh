@@ -16,7 +16,7 @@ cat >"$OUT" <<EOF
   "peak_mib": ${PEAK_MIB},
   "meets_budget": true,
   "refuse_md_100k_after_1k_10k": true,
-  "source": "packages/lig/src/lib.li:lig_memory_tier_estimated_bytes"
+  "source": "packages/li-gpu/src/lib.li:lig_memory_tier_estimated_bytes"
 }
 EOF
 echo "wrote ${OUT} (budget_mib=${BUDGET_MIB} peak_mib=${PEAK_MIB})"

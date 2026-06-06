@@ -22,7 +22,7 @@ extern proc li_rt_lig_backend_select_auto() -> int
 
 extern proc li_rt_lig_capability_json() raises IO, Alloc -> str
   requires true
-  ensures true
+  ensures result != ""
   decreases 0
 
 extern proc li_rt_lig_parse_toml_backend_line(line: str) -> int

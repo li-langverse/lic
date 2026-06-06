@@ -1,7 +1,7 @@
 # wsg-w3-wgpu-viewport-pixels — Path A swapchain readback via lig.present + li-render bridge.
 
 import render
-import lig.present
+import ligpu.present
 import gui
 import ui
 

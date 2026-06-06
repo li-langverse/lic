@@ -1,6 +1,6 @@
 # studio-ux-21 — swapchain readback contract on lig.present (blocked until GPU runner).
 
-import lig.present
+import ligpu.present
 
 def main() -> int raises IO
   requires true

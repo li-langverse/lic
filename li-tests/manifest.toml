@@ -952,7 +952,7 @@ note = "PH-HW WP4 chem lig backend"
 
 [[tests]]
 suite = "smoke"
-file = "packages/lig/li-tests/smoke/kernel_matmul_parity.li"
+file = "packages/li-gpu/li-tests/smoke/kernel_matmul_parity.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-kernel-matmul-parity"
 
@@ -1622,13 +1622,13 @@ expected_substr = "array index must be constant"
 
 [[tests]]
 suite = "smoke"
-file = "packages/lig/li-tests/smoke/present_blit_rgba8.li"
+file = "packages/li-gpu/li-tests/smoke/present_blit_rgba8.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-present-blit"
 
 [[tests]]
 suite = "smoke"
-file = "packages/lig/li-tests/smoke/present_wgpu_readback_stub.li"
+file = "packages/li-gpu/li-tests/smoke/present_wgpu_readback_stub.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-present-wgpu-readback"
 
@@ -1784,7 +1784,7 @@ note = "WP-ECHEM-12 grand-canonical SHE AIMD — 10-step charge neutrality drift
 [[tests]]
 suite = "composable"
 file = "composable/import_echem_ml_surrogate_smoke.li"
-packages = ["li-chem", "li-ml", "lig"]
+packages = ["li-chem", "li-ml", "li-gpu"]
 outcome = "compile_open_ok"
 note = "WP-ECHEM-14 ML surrogate — holdout MAE vs DFT + 80-step AIMD drift (10× baseline)"
 

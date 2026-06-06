@@ -2,6 +2,6 @@
 name = "li-chem"
 version = "0.1.0"
 [dependencies]
-lig = { path = "../lig" }
+li-gpu = { path = "../li-gpu" }
 [package.metadata.li]
 import_name = "chem"

@@ -13,5 +13,10 @@ for pkg in li-gpu li-tpu li-asic; do
   fi
 done
 
-li_fail "WP-PAR-80–86 pending — hetero pipeline CPU+GPU+TPU+ASIC probe benches and orchestration APIs"
-exit 1
+chmod +x "$ROOT/scripts/check-chip-package-boundaries.sh"
+"$ROOT/scripts/check-chip-package-boundaries.sh"
+
+chmod +x "$ROOT/li-tests/tooling/li_hetero_gate_smoke.sh"
+bash "$ROOT/li-tests/tooling/li_hetero_gate_smoke.sh"
+
+li_ok "check-li-parallel-hetero-gate.sh: PASS (WP-PAR-79–86 li-gpu/litpu/liasic chip packages + hetero orchestration probes)"

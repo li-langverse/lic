@@ -1,7 +1,7 @@
 
 import ui
-import lig
-import lig.present
+import ligpu
+import ligpu.present
 
 # Phase 3 — UI raster pass: PaintCmd IR → CPU fallback + wgpu chrome pipeline (wsg-w3-ui-raster).
 

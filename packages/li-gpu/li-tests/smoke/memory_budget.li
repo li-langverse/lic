@@ -1,6 +1,6 @@
-import lig
-import lig.memory
-import lig.custom
+import ligpu
+import ligpu.memory
+import ligpu.custom
 
 def main() raises IO -> int
   requires true

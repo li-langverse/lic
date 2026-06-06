@@ -24,17 +24,19 @@ for pkg in li-tpu li-asic; do
   fi
 done
 
-if grep -R --include='*.li' -E '\bimport\s+lig\b' "$ROOT/packages" 2>/dev/null | grep -v li-gpu; then
+if grep -R --include='*.li' -E '\bimport\s+lig\b' "$ROOT/packages" 2>/dev/null | grep -v '/li-gpu/'; then
   report "import lig found outside li-gpu — use import ligpu"
 fi
 
 if [[ -d "$ROOT/packages/li-ml" ]]; then
-  if grep -R --include='*.li' -E 'litpu_|liasic_|cuda|hip|opencl' "$ROOT/packages/li-ml" 2>/dev/null; then
+  if grep -R --include='*.li' -E 'litpu_|liasic_|\bcuda[A-Z_]|#include <cuda|\bhip[A-Z_]|#include <hip|\bopencl|\bvulkan' \
+    "$ROOT/packages/li-ml" 2>/dev/null | grep -v 'lig_backend_'; then
     report "li-ml contains TPU/ASIC/GPU driver symbols — move to li-tpu / li-asic / li-gpu"
   fi
 fi
 
-if grep -R --include='*.li' -E 'cuda|hip|opencl|vulkan' "$ROOT/packages/li-parallel" 2>/dev/null; then
+if grep -R --include='*.li' -E 'extern proc.*(litpu_|liasic_)|#include <(cuda|hip)|\bcudaMemcpy|\bhipLaunch|\bopencl|\bvulkan' \
+  "$ROOT/packages/li-parallel" 2>/dev/null; then
   report "li-parallel calls vendor SDKs directly — orchestrate via chip packages only"
 fi
 

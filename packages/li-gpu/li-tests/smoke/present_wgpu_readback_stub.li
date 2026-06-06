@@ -1,4 +1,4 @@
-import lig.present
+import ligpu.present
 
 def main() -> int raises IO
   requires true

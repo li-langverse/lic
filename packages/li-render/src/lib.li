@@ -1,6 +1,6 @@
 
-import lig
-import lig.present
+import ligpu
+import ligpu.present
 import gui
 import scene
 import ui

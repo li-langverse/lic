@@ -1443,6 +1443,11 @@ struct Ctx {
     if (s.kind == Stmt::Kind::For) {
       std::set<std::string> saved_loop = loop_index_vars;
       loop_depth++;
+      if (s.for_end <= s.for_start) {
+        SourceLoc loc{file, 1, 1, s.span.start};
+        diags.error(loc, "for loop range must have end bound greater than start bound");
+        return;
+      }
       if (!s.for_iter.empty()) {
         loop_index_vars.insert(s.for_iter);
         locals[s.for_iter] = make_int();

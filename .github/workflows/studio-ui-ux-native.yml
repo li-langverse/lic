@@ -45,7 +45,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            libsdl2-dev pkg-config xvfb gcc python3
+            libsdl2-dev pkg-config xvfb gcc python3 chromium-browser
 
       - name: Studio UI/UX gates (no lic build)
         env:

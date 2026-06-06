@@ -20,14 +20,16 @@ todos:
   study_only: true
 
 - id: chem-r2-dft-scf-gap
-  content: "sim-chem-research: pending plan todo chem-r2-dft-scf-gap — gap orchestrator"
-  status: pending
+  content: "qm_dft_scf_energy (418) harness + H₂ STO-3G oracle — see docs/numerics/studies/2026-06-06-chem-r2-dft-scf-done-gate.md"
+  status: completed
   handoff_implement: sim-p2-qm-dft-scf
+  done_gate: docs/numerics/studies/2026-06-06-chem-r2-dft-scf-done-gate.md
 
 - id: chem-r3-package-placement
-  content: "sim-chem-research: pending plan todo chem-r3-package-placement — gap orchestrator"
-  status: pending
+  content: "Package placement doc — li-chem vs li-physics-quantum vs std/physics/quantum.li"
+  status: completed
   study_only: true
+  done_gate: docs/numerics/studies/2026-06-06-chem-r3-package-placement.md
 
 ---
 

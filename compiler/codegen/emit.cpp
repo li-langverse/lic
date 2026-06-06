@@ -21,6 +21,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -1586,6 +1587,9 @@ struct EmitCtx {
 
   void emit_user_fn_body(llvm::LLVMContext& context, llvm::Module* module, const MirModule& mir,
                          const UserFnEmit& ufe, int runtime_team_size) {
+    // LLVMContext is not thread-safe; one lock per function body (Pass 2 workers).
+    static std::mutex emit_ir_mutex;
+    std::lock_guard<std::mutex> guard(emit_ir_mutex);
     const MirFn& fn = *ufe.mir_fn;
     llvm::Function* func = ufe.llvm_fn;
     llvm::Type* ret_ty = ufe.ret_ty;

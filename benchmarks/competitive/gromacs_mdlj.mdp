@@ -1,0 +1,8 @@
+; GROMACS mdp skeleton for md_lennard_jones external oracle (B2).
+; Not executed in CI stub mode.
+; Target: N=256, nsteps=10000, dt=0.004, rc=2.5, cubic box 10 nm (reduced LJ mapping TBD).
+
+integrator          = md
+nsteps              = 10000
+dt                  = 0.004
+; B2 TODO: cut-off 2.5, LJ only, NVE, initial velocities from md_core FCC+MB export

@@ -1,0 +1,45 @@
+version = 1
+
+[[entry]]
+id = "P-par-dist-block-partition"
+kind = "lemma"
+field = "parallel"
+gap_id = "G-par-dist"
+statement = "Block partition maps rank-local tiles into global iteration space."
+proof_status = "proved"
+lean_module = "build/generated/AutoVC.lean"
+li_specimen = "packages/li-parallel/src/parallel/proof.li"
+last_verified_lic_commit = "cursor/li-parallel-native-hpc"
+
+[[entry]]
+id = "P-par-hetero-mask-bounded"
+kind = "lemma"
+field = "parallel"
+gap_id = "G-hetero"
+statement = "Hetero orchestration mask stays within CPU|GPU|TPU|ASIC contract."
+proof_status = "proved"
+lean_module = "build/generated/AutoVC.lean"
+li_specimen = "packages/li-parallel/src/parallel/proof.li"
+last_verified_lic_commit = "cursor/li-parallel-native-hpc"
+
+[[entry]]
+id = "P-par-dist-dpar-for-smoke"
+kind = "specimen"
+field = "parallel"
+gap_id = "G-par-dist"
+statement = "distributed for lowers to li_dpar_block_partition_* runtime."
+proof_status = "proved"
+lean_module = "build/generated/AutoVC.lean"
+li_specimen = "li-tests/parallel_codegen/dpar_for_range.li"
+last_verified_lic_commit = "cursor/li-parallel-native-hpc"
+
+[[entry]]
+id = "P-par-hetero-orchestration-smoke"
+kind = "specimen"
+field = "parallel"
+gap_id = "G-hetero"
+statement = "CPU+GPU+TPU+ASIC probes via li_rt_hetero_* runtime seams."
+proof_status = "proved"
+lean_module = "build/generated/AutoVC.lean"
+li_specimen = "packages/li-parallel/src/parallel/hetero.li"
+last_verified_lic_commit = "cursor/li-parallel-native-hpc"

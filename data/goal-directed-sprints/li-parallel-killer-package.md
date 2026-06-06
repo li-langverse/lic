@@ -65,7 +65,7 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-30** | Proof helpers | **IN PROGRESS** — disjoint lemmas; G-par-dist/G-hetero register pending |
+| **WP-PAR-30** | Proof helpers | **DONE** — G-par-dist + G-hetero closed slices in provability register |
 | **WP-PAR-31** | `par_axpy`, `par_matmul_outer` | **DONE** |
 | **WP-PAR-32** | Ghost exchange templates | **DONE** — sketch only |
 
@@ -117,7 +117,7 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-07** | Embedded execution plan | **IN PROGRESS** — `__li_exec_plan` global + `li_exec_plan_apply` at main |
+| **WP-PAR-07** | Embedded execution plan | **IN PROGRESS** — team/cluster/offload/overlap comm compile smokes green; runtime plan apply at main |
 | **WP-PAR-08** | `team()` / `cluster()` parser | **IN PROGRESS** — compile smokes green; scoped push/pop v1 |
 | **WP-PAR-09** | Runtime reads compiled plan at main | **IN PROGRESS** — `li_exec_plan_apply` reads embedded plan |
 | **WP-PAR-79** | Rename `lig` → `li-gpu` (`import ligpu`) | **DONE** |

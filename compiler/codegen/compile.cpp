@@ -262,7 +262,8 @@ bool compile_module(const Module& module, const std::string& output_path,
       std::filesystem::exists(rt_xfer_plan_path)) {
     cmd << " -x c \"" << rt_xfer_plan_path.string() << "\"";
   }
-  if ((link_runtime_full || rt_needs.needs_rt_xfer_plan) &&
+  // li_xfer_plan.c calls li_rt_hetero_* — link whenever xfer plan is linked (incl. exec plan).
+  if ((link_runtime_full || rt_needs.needs_rt_xfer_plan || rt_needs.needs_rt_exec_plan) &&
       std::filesystem::exists(rt_hetero_path)) {
     cmd << " -x c \"" << rt_hetero_path.string() << "\"";
   }

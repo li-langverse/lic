@@ -4,7 +4,44 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
-li_phase "li-parallel proofs gate"
+li_phase "li-parallel proofs gate (WP-PAR-30)"
+
+GAPS="$ROOT/docs/verification/provability-gaps.md"
+PROOF_DB="$ROOT/docs/verification/proof-database/entries/parallel-li-par.toml"
+PROOFS_TABLE="$ROOT/packages/li-parallel/docs/proofs-table.md"
+
+missing=()
+for path in "$GAPS" "$PROOF_DB" "$PROOFS_TABLE"; do
+  [[ -f "$path" ]] || missing+=("$path")
+done
+if [[ ${#missing[@]} -gt 0 ]]; then
+  li_fail "missing proof corpus files: ${missing[*]}"
+  exit 1
+fi
+
+for gap in G-par-dist G-hetero; do
+  if ! grep -q "**${gap}**" "$GAPS"; then
+    li_fail "${gap} row missing in provability-gaps.md (WP-PAR-30)"
+    exit 1
+  fi
+  if ! grep -q "gap_id = \"${gap}\"" "$PROOF_DB"; then
+    li_fail "${gap} missing in proof-database/entries/parallel-li-par.toml"
+    exit 1
+  fi
+done
+
+if grep -q 'G-hetero.*Pending' "$PROOFS_TABLE"; then
+  li_fail "proofs-table.md still marks G-hetero Pending"
+  exit 1
+fi
+
+for smoke in \
+  li-tests/tooling/li_dpar_for_codegen_smoke.sh \
+  li-tests/tooling/li_hetero_gate_smoke.sh
+do
+  chmod +x "$ROOT/$smoke"
+  bash "$ROOT/$smoke"
+done
 
 if [[ -f "$ROOT/packages/li-parallel/li-tests/smoke/kernels_ghost.li" ]]; then
   if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
@@ -14,5 +51,4 @@ if [[ -f "$ROOT/packages/li-parallel/li-tests/smoke/kernels_ghost.li" ]]; then
   fi
 fi
 
-li_fail "G-par-dist and G-hetero closed slices pending in provability register (WP-PAR-30, DOC-PAR proofs table)"
-exit 1
+li_ok "check-li-parallel-proofs-gate.sh: PASS (G-par-dist + G-hetero closed slices in register, dpar + hetero smokes)"

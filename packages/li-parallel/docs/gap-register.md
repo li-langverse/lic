@@ -54,6 +54,6 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 |-----|--------|
 | G-par | Partial |
 | G-par-dist | Closed slice |
-| G-hetero | Pending |
+| G-hetero | Closed slice |
 
 See [proofs table](proofs-table.md) and [provability gaps](../../../docs/verification/provability-gaps.md).

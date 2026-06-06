@@ -26,5 +26,5 @@
 |-------|--------|
 | Breaking | N/A — `--jobs=1` serial path unchanged |
 | Security | N/A |
-| Performance | Measurable speedup on large TUs (httpd `lib.li`) with `--jobs=4` |
+| Performance | `--jobs>1` schedules Pass 2 workers; LLVMContext mutex serializes IR today (ThreadSafeModule follow-up for full speedup) |
 | Downstream | Use `LI_COMPILE_JOBS_LOG=1` to inspect effective job budget |

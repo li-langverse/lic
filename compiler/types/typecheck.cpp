@@ -1685,8 +1685,6 @@ struct Ctx {
   }
 };
 
-namespace {
-
 SourceLoc stmt_loc(const Stmt& s, const std::string& file) {
   return SourceLoc{file, 1, 1, s.span.start};
 }

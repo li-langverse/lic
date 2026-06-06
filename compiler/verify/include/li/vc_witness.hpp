@@ -21,6 +21,7 @@ bool mir_return_links_proc(const MirFn& fn, const ProcDecl& proc);
 bool witness_dot4_int_loop(const ProcDecl& proc, const Expr& ensures_rhs);
 bool witness_dot4_prelude_call(const Expr& ret, const Expr& ensures_rhs);
 bool witness_mat2_int_at2_spec(const ProcDecl& proc, const Expr& ensures_expr);
+bool witness_broadcast_len1_add_float4_spec(const ProcDecl& proc, const Expr& ensures_expr);
 bool witness_matmul2_at2_spec(const ProcDecl& proc, const Expr& ensures_expr);
 bool witness_vec3_len_sq_callproc(const ProcDecl& proc, const Expr& ensures_expr);
 bool witness_vec3_len_callproc_chain(const ProcDecl& proc, const Expr& ensures_expr);

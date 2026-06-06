@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# G-math / PH-2i: length-1 broadcast lowers in MIR/codegen but has no Lean semantics or VC witness.
-# Contrast: mat2_at2_float_spec / dot4_int_spec in Discharge.lean; manifest compile_ok only.
+# G-math / PH-2i: length-1 broadcast lowers in MIR/codegen with Lean semantics + VC witness.
+# Closed slice: broadcast_len1_add_float4_spec in Discharge.lean; contracts_verify verify_ok.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -9,7 +9,9 @@ LOWER="$ROOT/compiler/mir/lower.cpp"
 EMIT="$ROOT/compiler/codegen/emit.cpp"
 DISCHARGE="$ROOT/docs/semantics/Discharge.lean"
 WITNESS="$ROOT/compiler/verify/vc_witness.cpp"
+VC_EMIT="$ROOT/compiler/verify/vc_emit_lean.cpp"
 MANIFEST="$ROOT/li-tests/manifest.toml"
+CLOSED="$ROOT/li-tests/contracts_verify/broadcast_len1_add_float4_closed.li"
 FLOAT_PROBE="$ROOT/li-tests/math_linalg/broadcast_len1_add_float4.li"
 INT_PROBE="$ROOT/li-tests/math_linalg/broadcast_len1_mul_int4.li"
 AUTOVC="$ROOT/build/generated/AutoVC.lean"
@@ -27,26 +29,35 @@ if ! grep -q '!ins.array_broadcast_lhs_len1 && !ins.array_broadcast_rhs_len1' "$
   echo "FAIL: expected SIMD disabled when broadcast len1 (emit.cpp)" >&2
   exit 1
 fi
-if grep -qi 'broadcast_len1\|broadcast_add\|array_broadcast' "$DISCHARGE" 2>/dev/null; then
-  echo "FAIL: Discharge.lean should not yet define broadcast_len1 semantics" >&2
+if ! grep -q 'broadcast_len1_add_float4_spec' "$DISCHARGE"; then
+  echo "FAIL: expected broadcast_len1_add_float4_spec in Discharge.lean" >&2
   exit 1
 fi
-if grep -qi 'witness.*broadcast\|broadcast_len1' "$WITNESS" 2>/dev/null; then
-  echo "FAIL: vc_witness.cpp should not yet wire broadcast_len1 witness" >&2
+if ! grep -q 'witness_broadcast_len1_add_float4_spec' "$WITNESS"; then
+  echo "FAIL: expected witness_broadcast_len1_add_float4_spec in vc_witness.cpp" >&2
   exit 1
 fi
-if ! grep -A2 'broadcast_len1_add_float4' "$MANIFEST" | grep -q 'compile_ok'; then
-  echo "FAIL: broadcast_len1_add_float4 should be compile_ok not verify_ok" >&2
+if ! grep -q 'broadcast_len1_add_float4_spec_proved' "$VC_EMIT"; then
+  echo "FAIL: expected broadcast_len1_add_float4_spec_proved discharge in vc_emit_lean.cpp" >&2
+  exit 1
+fi
+if ! grep -A2 'broadcast_len1_add_float4_closed' "$MANIFEST" | grep -q 'verify_ok'; then
+  echo "FAIL: broadcast_len1_add_float4_closed should be verify_ok" >&2
   exit 1
 fi
 
+"$LIC" check "$CLOSED"
 "$LIC" check "$FLOAT_PROBE"
 "$LIC" check "$INT_PROBE"
 
 rm -f "$AUTOVC"
-"$LIC" build --no-lean-verify "$FLOAT_PROBE" -o /dev/null 2>/dev/null
-if grep -qi 'broadcast_len1\|array_broadcast' "$AUTOVC"; then
-  echo "FAIL: AutoVC should not reference broadcast semantics yet" >&2
+"$LIC" build --no-lean-verify "$CLOSED" -o /dev/null 2>/dev/null
+if ! grep -q 'Li.Discharge.broadcast_len1_add_float4_eval' "$AUTOVC"; then
+  echo "FAIL: AutoVC should use broadcast_len1_add_float4_eval in ensures" >&2
+  exit 1
+fi
+if ! grep -q 'broadcast_len1_add_float4_spec_proved' "$AUTOVC"; then
+  echo "FAIL: expected discharge theorem reference in AutoVC" >&2
   exit 1
 fi
 
@@ -58,7 +69,6 @@ if ! grep -q '<li_user_main>:' "$TMP/asm.txt"; then
   echo "FAIL: expected li_user_main in broadcast probe binary" >&2
   exit 1
 fi
-# Broadcast rhs: load b[0] once (movsd from d8), then reuse xmm0 via movaps for each addsd (emit.cpp:1137-1162).
 USER_ASM="$(sed -n '/<li_user_main>:/,/^$/p' "$TMP/asm.txt")"
 if ! grep -q 'addsd' <<<"$USER_ASM"; then
   echo "FAIL: broadcast add should emit addsd in li_user_main (use non-release build)" >&2
@@ -69,4 +79,4 @@ if ! grep -q 'movaps.*xmm0' <<<"$USER_ASM"; then
   exit 1
 fi
 
-echo "PASS broadcast_len1_codegen_lean_gap: MIR/codegen OK; no Lean broadcast spec; compile_ok only"
+echo "PASS broadcast_len1_codegen_lean_gap: MIR/codegen + Lean broadcast_len1_add_float4_spec closed"

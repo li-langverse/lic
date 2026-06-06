@@ -21,4 +21,19 @@ bash -c '
   bench="$(_ensure)"
   [[ -f "$bench/scripts/run-full-benchmark-suite.sh" ]]
 '
+# lipar-run-class-a must not depend on benchmarks/scripts/lib/resolve-lic-bench.sh
+chmod +x "$ROOT/scripts/lipar-run-class-a.sh"
+bash -c '
+  set -euo pipefail
+  ROOT="'"$ROOT"'"
+  export LIC_ROOT="$ROOT"
+  export BENCHMARKS_ROOT="$ROOT/benchmarks"
+  [[ ! -f "$BENCHMARKS_ROOT/scripts/lib/resolve-lic-bench.sh" ]]
+  # shellcheck source=scripts/lib/benchmarks-env.sh
+  source "$ROOT/scripts/lib/benchmarks-env.sh"
+  # shellcheck source=scripts/lib/lic-bin-select.sh
+  source "$ROOT/scripts/lib/lic-bin-select.sh"
+  grep -q lic-bin-select "$ROOT/scripts/lipar-run-class-a.sh"
+  ! grep -q resolve-lic-bench "$ROOT/scripts/lipar-run-class-a.sh"
+'
 echo "li_parallel_suite_resolve: ok"

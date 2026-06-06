@@ -6,14 +6,14 @@ export LIC_ROOT="$ROOT"
 export LI_REPO_ROOT="$ROOT"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
-# shellcheck source=lib/resolve-lic-bench.sh
-source "${BENCHMARKS_ROOT}/scripts/lib/resolve-lic-bench.sh"
-export_lic_bench_paths "$LIC_ROOT"
-
-if [[ ! -x "$LIC" ]]; then
-  echo "lipar-run-class-a: lic missing at $LIC — run ./scripts/build.sh" >&2
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+if ! li_export_lic "$LIC_ROOT"; then
+  echo "lipar-run-class-a: lic missing at $LIC_ROOT/build/compiler/lic/lic — run ./scripts/build.sh" >&2
   exit 1
 fi
+export PATH="$LIC_ROOT/build/compiler/lic:$PATH"
+export LI_HTTPD_BIN="$LIC_ROOT/build/li-httpd"
 
 RUNS="${BENCH_RUNS:-3}"
 JOBS="${BENCH_JOBS:-$(nproc 2>/dev/null || echo 4)}"

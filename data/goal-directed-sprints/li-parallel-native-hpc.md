@@ -66,4 +66,4 @@ Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and 
 
 **Agent rules:** Do not weaken gates. Update this file honestly each loop.
 
-**Gate evidence (2026-06-06, agent run):** `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s); dual-mode rows for matmul_blocked, reduce_sum, simd_dot, num_dot_axpy; perf advisory (simd_dot vs cpp 1.598×, strict=0).
+**Gate evidence (2026-06-06, agent run):** `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s); dual-mode rows for matmul_blocked, reduce_sum, simd_dot, num_dot_axpy; perf advisory (strict=0). **CI fix:** `lipar-run-class-a.sh` uses lic `lic-bin-select.sh` instead of missing `benchmarks/scripts/lib/resolve-lic-bench.sh` on sibling checkout ref.

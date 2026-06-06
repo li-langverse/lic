@@ -59,4 +59,4 @@ N/A — no threshold or dashboard claims; WP7 bench run pending.
 
 ## CHANGELOG entry (paste into Unreleased)
 
-- **Bench fill WP3:** tier-2 harnesses for `pde_*`, `robo_*`, `drug_*`, `bio_*`, `am_*`, `euler_fluid_2d` — [2026-05-25-bench-fill-wp3-pde-robo-am.md](docs/release-notes/2026-05-25-bench-fill-wp3-pde-robo-am.md).
+- **Bench fill WP3:** tier-2 harnesses for `pde_*`, `robo_*`, `drug_*`, `bio_*`, `am_*`, `euler_fluid_2d` — [2026-05-25-bench-fill-wp3-pde-robo-am.md](../../release-notes/2026-05-25-bench-fill-wp3-pde-robo-am.md).

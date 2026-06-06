@@ -78,5 +78,5 @@ N/A for integration rollup — no new dashboard ratios until WP4 bench rows are 
 
 ```markdown
 ### Added
-- **PH-HW integration:** `lig` multi-vendor GPU stack (WP1–WP5 child PRs) + studio gap wave on `feat/ph-hw-multi-vendor` — [2026-05-25-lig-ph-hw-integration.md](docs/release-notes/2026-05-25-lig-ph-hw-integration.md).
+- **PH-HW integration:** `lig` multi-vendor GPU stack (WP1–WP5 child PRs) + studio gap wave on `feat/ph-hw-multi-vendor` — [2026-05-25-lig-ph-hw-integration.md](../release-notes/2026-05-25-lig-ph-hw-integration.md).
 ```

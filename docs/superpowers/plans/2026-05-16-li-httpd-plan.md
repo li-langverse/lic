@@ -154,7 +154,7 @@ isProject: false
 
 # li-httpd — minimal, proved, nginx-competitive
 
-**Proof gaps (Doc-c):** [G-net](../../verification/provability-gaps.md#g-net) · [G-async](../../verification/provability-gaps.md#g-async) · [G-vc](../../verification/provability-gaps.md#g-vc) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)  
+**Proof gaps (Doc-c):** [G-net](../../../verification/provability-gaps.md#g-net) · [G-async](../../../verification/provability-gaps.md#g-async) · [G-vc](../../../verification/provability-gaps.md#g-vc) · [still open](../../../verification/provability-gaps.md#still-open-report-every-session)  
 **Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
 
 ## Parity milestones (agent-gateway vs nginx oracle)
@@ -178,9 +178,9 @@ Li today is optimized for **proved HPC kernels** (Tetris/SDL, physics benchmarks
 
 | Area       | Today                                                                                                                                                                            | Needed for nginx-class                                                  |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Proof gate | **2e–2f httpd path gated (w0):** `check-httpd-lean-gate.sh`, closed `http_parse_forward_closed.li`, callee-ensures witness; composite smokes ≤8 open VC; full kernel still **G-lean** ([proof-corpus-roadmap](docs/verification/proof-corpus-roadmap.md)) | Every server module must pass `lic build` with discharged goals (target) |
-| Trusted IO | [trusted.lean](docs/semantics/trusted.lean): SDL/frame axioms only                                                                                                               | Syscalls, sockets, timers, process spawn — **RFC-reviewed axioms only** |
-| Stdlib     | `std/` effectively empty; heap `str`/`bytes`/`list` mostly **spec** ([data structures roadmap](docs/superpowers/specs/2026-05-14-li-language-design.md#data-structures-roadmap)) | Full bytes I/O, config, containers, regex, compression                  |
+| Proof gate | **2e–2f httpd path gated (w0):** `check-httpd-lean-gate.sh`, closed `http_parse_forward_closed.li`, callee-ensures witness; composite smokes ≤8 open VC; full kernel still **G-lean** ([proof-corpus-roadmap](../../verification/proof-corpus-roadmap.md)) | Every server module must pass `lic build` with discharged goals (target) |
+| Trusted IO | [trusted.lean](../../semantics/trusted.lean): SDL/frame axioms only                                                                                                               | Syscalls, sockets, timers, process spawn — **RFC-reviewed axioms only** |
+| Stdlib     | `std/` effectively empty; heap `str`/`bytes`/`list` mostly **spec** ([data structures roadmap](../specs/2026-05-14-li-language-design.md#data-structures-roadmap)) | Full bytes I/O, config, containers, regex, compression                  |
 | Async      | **w1 shipped:** `async`/`await` + `li_async_poll` epoll/kqueue reactor; tier5 `tcp_echo` scenario (timing off in CI)                                                          | Full task scheduler + 100k+ connections (M1.5+)                         |
 | Networking | **None** in repo                                                                                                                                                                 | TCP/UDP, DNS, TLS, HTTP/1.1–3, stream proxy                             |
 
@@ -286,7 +286,7 @@ benchmarks/tier5_http/
 
 **Harness / tooling:** `bench_http.py`, `exploit_http.py`, `audit_nginx_src.py` in-repo (Python OK). **Crypto:** `li-crypto` in Li first; optional `li-crypto-hacl` org package later.
 
-**Agent discipline:** [engineering-standards.md](../ecosystem/engineering-standards.md) (mandatory gates). **Vision:** product here; language/ecosystem in [master plan](2026-05-14-li-master-plan.md). **Learn from others:** nginx/Envoy/LiteLLM for algorithms — not C ports; CVE rows in `nginx_mitigations.toml` + tier5 exploits must stay green.
+**Agent discipline:** [engineering-standards.md](../../ecosystem/engineering-standards.md) (mandatory gates). **Vision:** product here; language/ecosystem in [master plan](2026-05-14-li-master-plan.md). **Learn from others:** nginx/Envoy/LiteLLM for algorithms — not C ports; CVE rows in `nginx_mitigations.toml` + tier5 exploits must stay green.
 
 ---
 
@@ -1388,14 +1388,14 @@ Before any “ultra secure” claim ships:
 
 - **2e:** VC generation from `requires`/`ensures`/`invariant`/`decreases`
 - **2f:** `lic build` invokes Lean 4 kernel; cache by VC hash
-- **MIR:** proved bounds on dynamic indices (today: partial — see [architecture overview](docs/architecture/overview.md))
+- **MIR:** proved bounds on dynamic indices (today: partial — see [architecture overview](../../architecture/overview.md))
 - `**li-tests`:** expand `verify_ok` / `verify_fail` beyond skeleton ([contracts_verify](li-tests/contracts_verify/))
 
 Without this, a webserver is “memory-safe-ish C++ via LLVM,” not Li’s thesis.
 
 ### 2. Systems type + memory model for wire protocols
 
-From the [design spec](docs/superpowers/specs/2026-05-14-li-language-design.md):
+From the [design spec](../specs/2026-05-14-li-language-design.md):
 
 - `**bytes` / `bytearray` / `memoryview[T]` / `stringview`** with linear ownership for parse buffers
 - `**ringbuffer[N, T]`** (already on roadmap) for socket read paths without per-read `Alloc`
@@ -1449,7 +1449,7 @@ Extensibility = edit `li-httpd.toml` and redeploy, or fork li-httpd. **No** `.so
 
 ### Layer 0 — OS interface (trusted, minimal)
 
-Expand [trusted.lean](docs/semantics/trusted.lean) **only** with:
+Expand [trusted.lean](../../semantics/trusted.lean) **only** with:
 
 - File descriptors as opaque `Fd`
 - `read`/`write`/`recv`/`send`/`poll`/`epoll_wait` as axioms with **contracts** (bytes written ≤ buffer len, no phantom FDs)
@@ -1568,7 +1568,7 @@ For benchmarks, tests, load-balancer tie-breaks, fuzz **schedules**, and any “
 | Package  | `packages/li-rng/prng.li` — **no** `raises Rng`                                                                       |
 
 
-Aligns with existing bench rule: **deterministic seeds** in `params.toml` ([benchmarks plan](docs/superpowers/plans/2026-05-14-benchmarks-and-simulations.md)).
+Aligns with existing bench rule: **deterministic seeds** in `params.toml` ([benchmarks plan](2026-05-14-benchmarks-and-simulations.md)).
 
 ### Concept B — `Csprng` + `raises Rng` + **uniform OS contract**
 
@@ -1889,7 +1889,7 @@ Drop features from M1 before raising LOC cap.
 
 ## Nginx benchmark harness (TOML-configurable, correctness-first)
 
-Extend the existing [benchmarks harness](benchmarks/harness/bench.py) pattern — same CSV schema, same “verify before timing” rule as [benchmarks plan](docs/superpowers/plans/2026-05-14-benchmarks-and-simulations.md).
+Extend the existing [benchmarks harness](benchmarks/harness/bench.py) pattern — same CSV schema, same “verify before timing” rule as [benchmarks plan](2026-05-14-benchmarks-and-simulations.md).
 
 **Design principle:** users never edit Python to add a scenario — only TOML. `bench_http.py` merges config layers, starts servers, runs load tools, writes CSV.
 
@@ -2368,7 +2368,7 @@ If Li proof passes but nginx-src audit shows a missing check → **incomplete po
 2. **Async + Lean:** Totality on `async` loops needs careful `decreases` on logical steps, not OS callbacks.
 3. **Pure Li crypto vs LOC:** small proved subset or thin extern at crypto boundary — pick smallest that passes M2 exploit tier.
 4. **Scope creep:** every nginx feature request fights LOC budget — default **no**.
-5. **Compiler correctness:** C++ `lic` is not meta-proved — server security still depends on codegen soundness ([verification overview](docs/verification/overview.md)).
+5. **Compiler correctness:** C++ `lic` is not meta-proved — server security still depends on codegen soundness ([verification overview](../../verification/overview.md)).
 6. **Package sprawl:** too many `packages/*` before 2e–2f — start with `li-net` + `li-http` + `li-httpd`, split crypto/TLS when M1.5 needs them.
 7. **Probabilistic VC cost:** `prob_ensures` + MC can be slow — cache by `(proc_hash, ε, samples)`; cap samples in PR CI.
 8. **OsRngUniform honesty:** axiom can be wrong on broken OS — PractRand + Tier F are **mandatory evidence**, not optional docs.

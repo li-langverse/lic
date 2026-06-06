@@ -12,7 +12,7 @@
 4. [PH-world-studio-program.md](PH-world-studio-program.md) — cross-program tracker (sync with §1.3)  
 5. RFCs under [specs/](specs/) when non-stub; package READMEs for API truth  
 
-**Policy:** Native Li only for product demo — [.cursor/rules/li-studio-demo-native-only.mdc](../../.cursor/rules/li-studio-demo-native-only.mdc). HTML under `deploy/studio-demo/` is marketing-only until an explicit `li-render` embed path lands (§12).
+**Policy:** Native Li only for product demo — [.cursor/rules/li-studio-demo-native-only.mdc](https://github.com/li-langverse/lic/blob/main/.cursor/rules/li-studio-demo-native-only.mdc). HTML under `deploy/studio-demo/` is marketing-only until an explicit `li-render` embed path lands (§12).
 
 ---
 
@@ -604,7 +604,7 @@ Recording honesty: [VERTICALS-RECORDING.md](../demo/VERTICALS-RECORDING.md).
 
 ## 12. Future: optional HTML / web viewport embed
 
-**Not a substitute for native studio** ([li-studio-demo-native-only.mdc](../../.cursor/rules/li-studio-demo-native-only.mdc)).
+**Not a substitute for native studio** ([li-studio-demo-native-only.mdc](https://github.com/li-langverse/lic/blob/main/.cursor/rules/li-studio-demo-native-only.mdc)).
 
 When prioritized, embed path must:
 
@@ -635,7 +635,7 @@ LIG_HOST_PRESENT=1 ./scripts/studio-verticals-capture-native.sh
 | Agent | Scope |
 |-------|-------|
 | `studio_ui_ux_builder` | UX rubric, native capture, design tokens |
-| Compiler loop | Wave A first — [li-agent-scope-studio-sim.mdc](../../.cursor/rules/li-agent-scope-studio-sim.mdc) |
+| Compiler loop | Wave A first — [li-agent-scope-studio-sim.mdc](https://github.com/li-langverse/lic/blob/main/.cursor/rules/li-agent-scope-studio-sim.mdc) |
 | Domain researchers | numerics / sim goals — not studio shell |
 
 ### 13.3 Demo & capture policy
@@ -729,7 +729,7 @@ Adjust when Wave A (`WP-PLAT-02`) slips.
 | [PH-LLM-program.md](PH-LLM-program.md) | Local LLM for agents |
 | [studio-mcp-tools.md](studio-mcp-tools.md) | MCP contract |
 | [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md) | Layer B verticals |
-| [packages/li-studio/README.md](../../packages/li-studio/README.md) | API & demo commands |
+| [packages/li-studio/README.md](https://github.com/li-langverse/lic/blob/main/packages/li-studio/README.md) | API & demo commands |
 
 ---
 

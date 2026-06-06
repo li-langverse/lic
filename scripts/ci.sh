@@ -112,6 +112,17 @@ li_phase "doc provability claims"
 chmod +x "$ROOT/scripts/check-doc-provability-claims.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
 
+li_phase "docs site link hygiene (#404)"
+chmod +x "$ROOT/scripts/check-docs-site-links.sh" "$ROOT/scripts/check-docs-md-hrefs.py"
+if [[ -n "${DOCS_SKIP_SITE_LINKS:-}" ]]; then
+  echo "skip docs site link check (DOCS_SKIP_SITE_LINKS=1)"
+elif DOCS_STRICT=0 "$ROOT/scripts/check-docs-site-links.sh"; then
+  :
+else
+  echo "hint: clone lic-docs beside lic or set LI_DOCS_ROOT; skip with DOCS_SKIP_SITE_LINKS=1" >&2
+  exit 1
+fi
+
 li_phase "lic verify smoke (2e/2f)"
 chmod +x "$ROOT/scripts/lean-verify-stub.sh" "$ROOT/li-tests/tooling/lic_verify_smoke.sh" \
   "$ROOT/li-tests/tooling/vc_emit_contracts.sh" "$ROOT/li-tests/tooling/contracts_verify_lean.sh"

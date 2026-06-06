@@ -8,11 +8,11 @@
 
 **Goal:** Open-source language: **(1) Lean provability (2) Nim syntax (3) LLVM speed** — in that priority order.
 
-**Strict by default:** Proof, security, and performance gates are always on at maximum; there is **no optional provability** ([strict-by-default.md](../ecosystem/strict-by-default.md)). Tracker items close **implementation** gaps — they do not add implicit opt-out.
+**Strict by default:** Proof, security, and performance gates are always on at maximum; there is **no optional provability** ([strict-by-default.md](../../ecosystem/strict-by-default.md)). Tracker items close **implementation** gaps — they do not add implicit opt-out.
 
 **Reliability target:** Li is **not a runtime-interpreted language**. User logic is **fully static**: types, contracts, memory, parallelism, and (for release) bounds/shapes are resolved at **`lic build`** + Lean — **not** at process start with dynamic checks. Push failures **left** until runtime error rate for proved programs approaches **zero** (only the capped **trusted** `IO` / platform surface remains outside user proofs).
 
-**Honest status (docs):** [Provability gaps (today)](../verification/provability-gaps.md) — living register of what is **not** proved/wired yet (Lean gate, heuristic parallel policy, decorator parse-only, …). Update that file when closing a phase gate.
+**Honest status (docs):** [Provability gaps (today)](../../../verification/provability-gaps.md) — living register of what is **not** proved/wired yet (Lean gate, heuristic parallel policy, decorator parse-only, …). Update that file when closing a phase gate.
 
 **Architecture:** C++ compiler → MIR → LLVM 22 (sole backend). Bootstrap to self-host later. No VM, no JIT for user code, no runtime decorator dispatch.
 
@@ -28,7 +28,7 @@
 
 **Design spec:** `docs/superpowers/specs/2026-05-14-li-language-design.md`
 
-**Ecosystem (agents — read before cross-repo work):** [agent-coordination.md](../ecosystem/agent-coordination.md), [engineering-standards.md](../ecosystem/engineering-standards.md), [vision-and-roadmap.md](../ecosystem/vision-and-roadmap.md).
+**Ecosystem (agents — read before cross-repo work):** [agent-coordination.md](../../ecosystem/agent-coordination.md), [engineering-standards.md](../../ecosystem/engineering-standards.md), [vision-and-roadmap.md](../../ecosystem/vision-and-roadmap.md).
 
 ---
 
@@ -47,12 +47,12 @@ Agents **must not** treat package README as the only vision doc when the change 
 
 ### Non-negotiable engineering (all agents)
 
-**Strict-by-default:** See [strict-by-default.md](../ecosystem/strict-by-default.md). Agents must not treat proof, CVE suites, or benches as optional; explicit downgrades only.
+**Strict-by-default:** See [strict-by-default.md](../../ecosystem/strict-by-default.md). Agents must not treat proof, CVE suites, or benches as optional; explicit downgrades only.
 
 **Strict gates — no exceptions without human approval and a tracked PH-/issue:**
 
 1. **Functionality** — spec/REQ correct; tests green; no silent wrong behavior.
-2. **Security** — [engineering-standards § CVE](../ecosystem/engineering-standards.md#security--cve-discipline); `run_security` / exploit harness / fuzz per repo; map to catalog.
+2. **Security** — [engineering-standards § CVE](../../ecosystem/engineering-standards.md#security--cve-discipline); `run_security` / exploit harness / fuzz per repo; map to catalog.
 3. **Performance** — measured; benchmark regressions investigated; no “fast” without data.
 
 Agents have freedom on structure and naming; **not** on skipping these three.
@@ -65,7 +65,7 @@ Before shipping ecosystem tooling (lip, lit, httpd, std split):
 - Adopt **algorithms and practices** that fit Li: **easy, AI-first, provable, blazingly fast**.
 - Document **“Learned from”** in the phase plan or ADR; **do not** port C/nginx verbatim.
 
-Details: [engineering-standards.md](../ecosystem/engineering-standards.md).
+Details: [engineering-standards.md](../../ecosystem/engineering-standards.md).
 
 ---
 
@@ -157,7 +157,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | `scripts/templates/github-repo/ecosystem-upstream.yml` | same |
 | `lic` `.github/workflows/notify-downstream.yml` + `li-downstream-repos.txt` | **`lic`** |
 | `scripts/check-li-toolchain.sh` | **`lic`**; consumed by **lip** / **lit** / packages |
-| Column `depends_on` in [official-packages.md](../ecosystem/official-packages.md) | **`lic`** docs |
+| Column `depends_on` in [official-packages.md](../../ecosystem/official-packages.md) | **`lic`** docs |
 
 **Agent rule:** When scaffolding or promoting an **official** package, **enable notification templates** and add the repo to **`lic`** `li-downstream-repos.txt`. Remind human if **Renovate** org app is not installed.
 
@@ -181,8 +181,8 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | **2j** | **Full OOP** — methods/`self`, method visibility, traits, inheritance, object write-back | [2026-05-20-li-oop-roadmap.md](2026-05-20-li-oop-roadmap.md) | 2j-a…f exit gates in OOP plan |
 | 2h | **Python-math surface** (`**`, `//`, `%`, `for`/`range`, contract sugar, `old`) | same plan (Phase A0) | `li-tests/math_syntax/` green |
 | **2i** | **Math / linalg surface** (infix `*`, `+`, `dot`, `A @ B` — not user `simd(...)`) | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | `li-tests/math_linalg/`; docs samples |
-| 2e | Contracts + refinements | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) | **Partial (PR #83):** call-site `requires`, refinements, AutoVC |
-| 2f | Lean 4 verify | same + [provability-gaps](../verification/provability-gaps.md) | **Partial:** open-VC gate; `contracts_verify` 16/16; full kernel **G-lean** open |
+| 2e | Contracts + refinements | [proof-corpus-roadmap](../../verification/proof-corpus-roadmap.md) | **Partial (PR #83):** call-site `requires`, refinements, AutoVC |
+| 2f | Lean 4 verify | same + [provability-gaps](../../../verification/provability-gaps.md) | **Partial:** open-VC gate; `contracts_verify` 16/16; full kernel **G-lean** open |
 | 3 | MIR + LLVM codegen | `2026-05-14-phase-03-mir-codegen.md` | `lic build` |
 | 4 | Stdlib + runtime + deferred annotations | `2026-05-14-phase-04-runtime-stdlib.md` | hello + collections run |
 | 5 | Tetris | `2026-05-14-phase-05-tetris.md` | playable game |
@@ -265,7 +265,7 @@ Li maximizes **reliability** by eliminating **user-visible runtime failure modes
 
 **Implication for 7d / 7e / 2i:** decorators and math are **static sugar** only; performance and correctness are fixed at compile time.
 
-The table above describes the **target**. Where **`lic` has not established mathematical provability yet**, see [Provability gaps](../verification/provability-gaps.md) and [compiler task → gap map](#compiler-tasks-vs-proof-gaps) below.
+The table above describes the **target**. Where **`lic` has not established mathematical provability yet**, see [Provability gaps](../../../verification/provability-gaps.md) and [compiler task → gap map](#compiler-tasks-vs-proof-gaps) below.
 
 ---
 
@@ -306,7 +306,7 @@ The table above describes the **target**. Where **`lic` has not established math
 
 ### Agent priority
 
-Implement **8p-a** before **8p-c** (largest CI win for least compiler risk). Track in [provability-gaps](../verification/provability-gaps.md) only if parallel scheduling changes what “green” means.
+Implement **8p-a** before **8p-c** (largest CI win for least compiler risk). Track in [provability-gaps](../../../verification/provability-gaps.md) only if parallel scheduling changes what “green” means.
 
 **Learned from:** Cargo `build -j`, Ninja, Bazel remote/local pools — adopt **job pool + hermetic per-task `target/`**, not distributed compilation in v1.
 
@@ -324,7 +324,7 @@ Implement **8p-a** before **8p-c** (largest CI win for least compiler risk). Tra
 | **After stable `lic` cadence** | e.g. `lic-vX.Y.Z` image with baked binary + documented `LI_LIC_VERSION` |
 | **Gate to start** | Few breaking changes per month; release tags drive downstream pins; CI green without rebuilding compiler on every small change |
 
-See [local-ci-docker-images.md](../ecosystem/local-ci-docker-images.md).
+See [local-ci-docker-images.md](../../ecosystem/local-ci-docker-images.md).
 
 ---
 
@@ -332,16 +332,16 @@ See [local-ci-docker-images.md](../ecosystem/local-ci-docker-images.md).
 
 **Problem:** Handbook and specs must not read as if Lean, full disjoint proofs, decorators, or math lowering already ship when they do not. Contributors need a **single gap register** and **compiler-task linkage**.
 
-**Canonical register:** [docs/verification/provability-gaps.md](../verification/provability-gaps.md) (`G-*` IDs). **Plan map:** [docs/ecosystem/plan-cross-links.md](../ecosystem/plan-cross-links.md) · [handbook index](../../handbook/README.md).
+**Canonical register:** [docs/verification/provability-gaps.md](../../../verification/provability-gaps.md) (`G-*` IDs). **Plan map:** [docs/ecosystem/plan-cross-links.md](../../ecosystem/plan-cross-links.md) · [handbook index](../../language/overview.md).
 
 ### Phase Doc — sub-phases
 
 | Sub | Task | Exit gate |
 |-----|------|-----------|
-| **Doc-a** | **Gap register** — keep `provability-gaps.md` current; link from index, overview, master plan, mkdocs, [plan-cross-links](../ecosystem/plan-cross-links.md) | Register lists every open **G-*** row; last-updated date |
+| **Doc-a** | **Gap register** — keep `provability-gaps.md` current; link from index, overview, master plan, mkdocs, [plan-cross-links](../../ecosystem/plan-cross-links.md) | Register lists every open **G-*** row; last-updated date |
 | **Doc-b** | **Handbook audit** — every `docs/language/*`, `docs/guide/*`, `docs/compiler/*` uses *target vs today* where spec ≠ `lic` | No page implies Lean runs on `lic build` without a status note |
 | **Doc-c** | **Spec stubs** — decorator, math, language design cross-link gaps | `2026-05-16-li-execution-decorators.md`, `2026-05-16-li-math-linalg-surface.md` point at **G-*** |
-| **Doc-d** | **Contributing rule** — [documentation style](../contributing/documentation.md) § Provability | PR template / agent skill: “updated gap register?” |
+| **Doc-d** | **Contributing rule** — [documentation style](../../contributing/documentation.md) § Provability | PR template / agent skill: “updated gap register?” |
 | **Doc-e** | **CI doc check** (optional) — `scripts/check-doc-provability-claims.sh` greps for forbidden phrases without nearby “gap” link | Fails on `proofs closed` without `provability-gaps` in changed docs |
 
 **Doc is “done” for a release tag only when:** open **G-*** rows match reality and handbook does not overclaim.
@@ -350,7 +350,7 @@ See [local-ci-docker-images.md](../ecosystem/local-ci-docker-images.md).
 
 When a PR implements or partially implements a proof-related compiler feature:
 
-1. Update **[provability-gaps.md](../verification/provability-gaps.md)** — move **G-*** row to **Partial** or **Done** with one-line evidence (file, test suite, CLI flag).  
+1. Update **[provability-gaps.md](../../../verification/provability-gaps.md)** — move **G-*** row to **Partial** or **Done** with one-line evidence (file, test suite, CLI flag).  
 2. Update affected handbook pages listed in the gap doc § *Documentation that must stay aligned*.  
 3. If the feature is still **Partial**, add an admonition on the handbook page (mkdocs `!!! note "Provability status"`).  
 4. Mention **G-*** ID in the PR description.
@@ -370,19 +370,19 @@ Maps **master plan phases** to gap IDs and what “mathematical provability esta
 | 7d-b–e | Decorator elaborate + exploits | **G-dec** | Elaboration + `decorator_exploits` CI green | language/decorators.md (new), fast-math guide |
 | 2i | Math surface types | **G-math** | `A @ B` / `dot` shape errors at typecheck; **P-linalg** closed VCs (#151) | linear-algebra.md, math spec, `contracts_verify/linalg_*` |
 | 7e | Math → SIMD MIR | **G-math** | Tier 1 Li sources math-only; lowering proved or documented | gaps, benchmarks plan, `discharge_linalg_int_lean.sh` |
-| 2f | P-linalg corpus | **G-lean**, **G-math** | Closed dot/sum/matmul-entry; loop dot open | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
+| 2f | P-linalg corpus | **G-lean**, **G-math** | Closed dot/sum/matmul-entry; loop dot open | [proof-corpus-roadmap](../../verification/proof-corpus-roadmap.md) |
 | 2g / 2h | `def`, math syntax | — | Syntax only unless tied to VC | language overview |
 | 4 | Deferred annotations | **G-ann** | PEP 649 resolve at check time | architecture diagram |
 | H / GPU | Device / async | **G-gpu**, **G-async** | Device laws in Lean + codegen | decorator spec, effects |
 
-**Not proof (document as limits):** **G-wrong-spec**, **G-hw**, **G-meta** — stay in [why-provable](../compiler/why-provable.md).
+**Not proof (document as limits):** **G-wrong-spec**, **G-hw**, **G-meta** — stay in [why-provable](../../compiler/why-provable.md).
 
 ### Documentation gaps to close (checklist)
 
 Track in phase **Doc** until each is checked:
 
 - [x] **Doc-a** — gap register complete and linked site-wide (mkdocs nav; README audit ongoing)  
-- [x] **Doc-b** — [linear-algebra.md](../language/linear-algebra.md) stub + [decorators.md](../language/decorators.md); fast-math guide audit partial  
+- [x] **Doc-b** — [linear-algebra.md](../../language/linear-algebra.md) stub + [decorators.md](../../language/decorators.md); fast-math guide audit partial  
 - [x] **Doc-b** — [language design spec](../specs/2026-05-14-li-language-design.md) banner: “implementation status → provability-gaps”  
 - [x] **Doc-c** — phase plan files (02, 03, 07) link **G-*** in exit gates  
 - [x] **Doc-d** — `.cursor/skills/build-li-master-plan/SKILL.md` includes gap-register update step  
@@ -423,7 +423,7 @@ Track in phase **Doc** until each is checked:
 | `2026-05-16-li-ecosystem-governance.md` | GitHub org policy, intl doc standards, PKG/REQ traceability, org repo templates |
 | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | Phase **7d** — `@` decorators on `def`/`for`/`while`; reserved stdlib names; `decorator_exploits` suite |
 | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | Phase **2i** + **7e** — math notation in source; compiler lowers to SIMD/OpenMP; Tier 1 cross-lang benches |
-| [provability-gaps.md](../verification/provability-gaps.md) | **Doc-a** — living **G-*** register; update on every proof-surface PR |
+| [provability-gaps.md](../../../verification/provability-gaps.md) | **Doc-a** — living **G-*** register; update on every proof-surface PR |
 | [2026-05-22-parallel-compile-ci.md](2026-05-22-parallel-compile-ci.md) | Phase **8p** — parallel `li-tests`, workspace builds, `--jobs` frontend |
 | [ph-db-lidb-platform.md](ph-db-lidb-platform.md) | Phase **PH-DB** — `lidb` + `lis` data platform; **PH-8d-v2 → PH-DB-4** |
 
@@ -451,13 +451,13 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5 — Tetris
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
-- [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
-- [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155):** default `lake build AutoVC` on `lic build`; **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; intentional open: `sqrt_open_bound`; **G-lean** / **G-vc** still open — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
+- [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
+- [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155):** default `lake build AutoVC` on `lic build`; **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; intentional open: `sqrt_open_bound`; **G-lean** / **G-vc** still open — [still open gaps](../../../verification/provability-gaps.md#still-open-report-every-session)
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (#150 7d-c):** `@vectorized` on `for` → `ArraySimdScope`; **7d-b** lanes=4; **def `@parallel(disjoint=)`** inherits to nested `parallel for` (policy); **open:** full MIR proc tags, Lean **G-par** proofs
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150, #155):** loop matmul + FMA horner; tier-1 advisory ≤1.2× (`matmul_naive`, `horner_pure_li`); **`check-tier1-li-vs-cpp.sh`** strict optional; **open:** remaining tier-1 slices, full float Lean Props
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
-- [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, validate/explain/flatten-config, overlap reject, Bearer auth (C), `packages/li-log` (#158); **next:** Li `net.httpd` lib build + M1 ship gate Lean ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
+- [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, validate/explain/flatten-config, overlap reject, Bearer auth (C), `packages/li-log` (#158); **next:** Li `net.httpd` lib build + M1 ship gate Lean ([httpd-prerequisites](../../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
 - [x] Phase 8-repo — [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) on GitHub + CI
 - [x] Phase 8a — Modules + workspace `lic build` — `std.*` + workspace/local imports; `li-tests/modules/`; `lic-workspace-build.sh` on 3 packages
@@ -468,18 +468,18 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 8d — Registry + `lip publish` — **v1:** local `registry/index.json` + publish gate (`lit` + `lic`)
 - [x] Phase 8-sync — cross-repo workflows; optional PAT scope fix for `repository_dispatch`
 - [ ] Phase 8p — Parallel compile + CI throughput — **partial (8p-a/b/c/d):** 8p-a parallel `run_all` + isolated `LI_BUILD_DIR` ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200)); 8p-c/d `ResourceOptions` + `lic build --jobs` reserved pass + CI test-job smokes (`compiler/common/`, `scripts/ci.sh`); **open:** 8p-b workspace pool, wall-time SLO ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
-- [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
+- [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../../../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
 - [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
 - [x] Phase Doc-d — Contributing / build skill requires gap-register updates
 - [x] Phase Doc-e — `scripts/check-doc-provability-claims.sh` in `scripts/ci.sh` (expand patterns over time)
-- [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../ecosystem/agent-handover-formats.md))
+- [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../../ecosystem/agent-handover-formats.md))
 
 **Dashboards (Cursor):** `canvases/li-master-plan-progress.canvas.tsx` — phase tracker; `canvases/li-fuzz-security-dashboard.canvas.tsx` — updated by `scripts/export-fuzz-status.sh` after nightly fuzz.
 
 **Maintenance:** When ecosystem or org layout changes (`lic` / `lip` / `lit` repos, phase gates, policies, **future-repo table**), update **this file**, [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md), and [2026-05-16-li-ecosystem-governance.md](2026-05-16-li-ecosystem-governance.md) in the same PR. Agents: add a row to **Future org repos** when a plan introduces a new `li-langverse/*` home.
 
-**Maintenance (proof surface):** When a compiler phase changes what `lic build` proves, update [provability-gaps.md](../verification/provability-gaps.md) and the [compiler task → gap map](#compiler-tasks-vs-proof-gaps) in the **same PR** — see **Doc** phase rules above.
+**Maintenance (proof surface):** When a compiler phase changes what `lic build` proves, update [provability-gaps.md](../../../verification/provability-gaps.md) and the [compiler task → gap map](#compiler-tasks-vs-proof-gaps) in the **same PR** — see **Doc** phase rules above.
 
 ---
 
@@ -499,7 +499,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 
 | v2 item | Gap ID(s) | Why still open |
 |---------|-----------|----------------|
-| **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
+| **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../../../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../../verification/proof-corpus-roadmap.md) |
 | **2i / 7e** | **G-math** | broadcast, loop-dot proof, remaining tier-1 strict rows |
 | **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
@@ -510,6 +510,6 @@ Runnable on `dev` after `./scripts/build.sh`:
 | **8p** | — | Parallel `li-tests` / workspace / `lic --jobs`; CI wall-time SLO |
 | **Release containers** | — | GHCR images with **prebuilt `lic`** (toolchain-only images exist now; [§ deferred](#deferred--ghcr-release-images-prebuilt-lic)) |
 
-**Open G-* register:** every row in [provability-gaps.md](../verification/provability-gaps.md#still-open-report-every-session) — **none Done**; **Partial** is the best current status.
+**Open G-* register:** every row in [provability-gaps.md](../../../verification/provability-gaps.md#still-open-report-every-session) — **none Done**; **Partial** is the best current status.
 
 **“Master plan done”** per original spec = all tracker rows **plus** proved `lic build` **plus** shipped lip/lit/httpd — **not claimed**. Use **Lic monorepo v1** for what ships from this repository today.

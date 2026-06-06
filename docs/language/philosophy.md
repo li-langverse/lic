@@ -122,7 +122,7 @@ If pseudocode needs a footnote to map to Li, the **surface syntax** should be im
 When changing Li code or docs:
 
 1. Read the `proc` names aloud — do they sound like steps in a story?
-2. Prefer extending [easy imports](../../.cursor/rules/li-easy-imports.mdc) over new opaque module prefixes.
+2. Prefer extending [easy imports](https://github.com/li-langverse/lic/blob/main/.cursor/rules/li-easy-imports.mdc) over new opaque module prefixes.
 3. Do not trade readability for “fewer lines” in examples users copy.
 
 ## Related

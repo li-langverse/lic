@@ -44,7 +44,7 @@
 ./scripts/proof-db-report.sh --baseline proof-db/expected.json --run <sweep.jsonl>
 ```
 
-See [proof-db/reporter.md](../../proof-db/reporter.md).
+See [proof-db/reporter.md](https://github.com/li-langverse/lic/blob/main/proof-db/reporter.md).
 
 **Proof database (lemma inventory):** `proof-db/**/lemmas/*.li` — rebuild with `./scripts/proof-db-rebuild.sh` (see `proof-db/README.md`).
 

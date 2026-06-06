@@ -15,9 +15,9 @@ def li_parallel_selftest() -> int raises IO
   ensures result == 0
   decreases 0
 =
-  if par_outer_product_elem(0, 0, 2.0, 3.0, 4.0, 5.0) < 7.9 or par_outer_product_elem(0, 0, 2.0, 3.0, 4.0, 5.0) > 8.1:
+  if par_outer_elem_00(2.0, 4.0) < 7.9 or par_outer_elem_00(2.0, 4.0) > 8.1:
     return 1
-  if par_outer_product_elem(1, 1, 2.0, 3.0, 4.0, 5.0) < 14.9 or par_outer_product_elem(1, 1, 2.0, 3.0, 4.0, 5.0) > 15.1:
+  if par_outer_elem_11(3.0, 5.0) < 14.9 or par_outer_elem_11(3.0, 5.0) > 15.1:
     return 2
   if halo_local_begin(8, 0, 2) != 0:
     return 3

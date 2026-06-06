@@ -44,7 +44,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 | WP | Deliverable | Status |
 |----|-------------|--------|
 | **WP-PAR-30** | Proof helpers | **DONE** — `disjoint_tile`, `disjoint_block` lemmas |
-| **WP-PAR-31** | `par_axpy`, `par_matmul_outer` | **DONE** — `par_outer_product_elem` + `par_matmul_outer` in `kernels.li` |
+| **WP-PAR-31** | `par_axpy`, `par_matmul_outer` | **DONE** — `par_outer_elem_*` + `par_matmul_outer` in `kernels.li` |
 | **WP-PAR-32** | Ghost exchange templates | **DONE** — `ghost.li` 1D halo indices + exchange sketch |
 
 ## Phase 4 — Benchmarks dual-mode
@@ -77,3 +77,5 @@ Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and 
 **Gate evidence (2026-06-06, agent run 5):** WP-PAR-15 reduce lowering — `bash li-tests/tooling/li_par_reduce_codegen_smoke.sh` → exit 0; `par_sum` on `array[64,float]` links `li_par_reduce.c` + pool; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0.
 
 **Gate evidence (2026-06-06, agent run 6):** WP-PAR-23/16 — `bash li-tests/tooling/li_dpar_for_smoke.sh` → exit 0; `bash li-tests/tooling/li_dpar_for_codegen_smoke.sh` → exit 0; `lic build packages/li-parallel/li-tests/smoke/kernels_ghost.li --allow-open-vc` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~8s).
+
+**Gate evidence (2026-06-06, agent run 7):** WP-PAR-31 E0303 fix — `par_outer_elem_*` helpers with `ensures result == …`; `lic build packages/li-parallel/li-tests/smoke/kernels_ghost.li` → exit 0 (verify_ok); `bash li-tests/run_all.sh` → 269 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~12s).

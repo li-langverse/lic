@@ -35,7 +35,7 @@ def halo_left_ghost_index(local_begin: int, width: int, slot: int) -> int
   requires width > 0
   requires slot >= 0
   requires slot < width
-  ensures result >= 0
+  ensures result == local_begin - width + slot
   decreases local_begin + width - slot
 =
   return local_begin - width + slot
@@ -43,7 +43,7 @@ def halo_left_ghost_index(local_begin: int, width: int, slot: int) -> int
 def halo_right_ghost_index(local_end: int, slot: int) -> int
   requires local_end >= 0
   requires slot >= 0
-  ensures result >= local_end
+  ensures result == local_end + slot
   decreases local_end + slot
 =
   return local_end + slot

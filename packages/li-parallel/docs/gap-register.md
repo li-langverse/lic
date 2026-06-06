@@ -31,7 +31,7 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 
 | WP range | Gap | Status |
 |----------|-----|--------|
-| WP-PAR-60–65 | Federated learning hardening | **PENDING** |
+| WP-PAR-60–65 | Federated learning hardening | **DONE** — partial ranks, stragglers, compressed halos, hetero, overlap, shrink smokes |
 | WP-PAR-70–75 | Compiler comm plan | **PENDING** |
 | WP-PAR-07–09 | Embedded execution plan | **IN PROGRESS** — team/cluster/offload/overlap comm compile smokes land; runtime plan apply at main |
 | WP-PAR-79–86 | Chip packages + boundaries | **PENDING** |

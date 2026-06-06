@@ -2,6 +2,7 @@ import parallel.kernels
 import parallel.proof
 import parallel.distributed
 import parallel.ghost
+import parallel.fl
 
 def li_parallel_version() -> int
   requires true

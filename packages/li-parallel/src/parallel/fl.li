@@ -1,0 +1,124 @@
+# Federated learning helpers (WP-PAR-60–65).
+
+import parallel.distributed
+
+extern proc li_fl_set_active_mask(mask: int) -> unit
+  requires true
+  ensures true
+
+extern proc li_fl_active_mask() -> int
+  requires true
+  ensures result >= 0
+
+extern proc li_fl_is_active(rank: int) -> int
+  requires rank >= 0
+  ensures result == 0 or result == 1
+
+extern proc li_fl_active_count(mask: int) -> int
+  requires mask >= 0
+  ensures result >= 0
+
+extern proc li_fl_set_device_kind(kind: int) -> unit
+  requires kind >= 0
+  requires kind <= 3
+  ensures true
+
+extern proc li_fl_device_kind() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 3
+
+extern proc li_fl_fedavg_masked_f64(local: float, active_mask: int) -> float
+  requires true
+  ensures true
+
+extern proc li_fl_shrink_mask(active_mask: int, failed_mask: int) -> int
+  requires true
+  ensures result >= 0
+
+def fl_device_cpu() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def fl_device_gpu() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def fl_device_tpu() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def fl_device_asic() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def set_active_mask(mask: int) -> unit raises IO
+  requires mask >= 0
+  ensures true
+  decreases 0
+=
+  li_fl_set_active_mask(mask)
+
+def active_mask() -> int raises IO
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return li_fl_active_mask()
+
+def is_active(rank: int) -> bool raises IO
+  requires rank >= 0
+  ensures true
+  decreases 0
+=
+  return li_fl_is_active(rank) != 0
+
+def active_count(mask: int) -> int raises IO
+  requires mask >= 0
+  ensures result >= 0
+  decreases 0
+=
+  return li_fl_active_count(mask)
+
+def set_device_kind(kind: int) -> unit raises IO
+  requires kind >= 0
+  requires kind <= 3
+  ensures true
+  decreases 0
+=
+  li_fl_set_device_kind(kind)
+
+def device_kind() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 3
+  decreases 0
+=
+  return li_fl_device_kind()
+
+def fedavg_masked(local: float, active_mask: int) -> float raises IO
+  requires active_mask >= 0
+  ensures true
+  decreases 0
+=
+  return li_fl_fedavg_masked_f64(local, active_mask)
+
+def shrink_mask(active_mask: int, failed_mask: int) -> int raises IO
+  requires active_mask >= 0
+  requires failed_mask >= 0
+  ensures result >= 0
+  decreases 0
+=
+  return li_fl_shrink_mask(active_mask, failed_mask)

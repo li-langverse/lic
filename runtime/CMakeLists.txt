@@ -14,6 +14,7 @@ set(LI_RT_SOURCES
   li_dpar.c
   li_dpar_collective.c
   li_exec_plan.c
+  li_fl.c
 )
 
 add_library(li_rt STATIC ${LI_RT_SOURCES})

@@ -95,12 +95,12 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-60** | Partial rank participation | **PENDING** |
-| **WP-PAR-61** | Straggler mitigation | **PENDING** |
-| **WP-PAR-62** | Compressed halos | **PENDING** |
-| **WP-PAR-63** | Hetero ranks | **PENDING** |
-| **WP-PAR-64** | Comm/compute overlap (FL) | **PENDING** |
-| **WP-PAR-65** | Fault tolerance / shrink | **PENDING** |
+| **WP-PAR-60** | Partial rank participation | **DONE** |
+| **WP-PAR-61** | Straggler mitigation | **DONE** |
+| **WP-PAR-62** | Compressed halos | **DONE** |
+| **WP-PAR-63** | Hetero ranks | **DONE** |
+| **WP-PAR-64** | Comm/compute overlap (FL) | **DONE** |
+| **WP-PAR-65** | Fault tolerance / shrink | **DONE** |
 
 ### Phase 7 — Compiler comm plan
 
@@ -153,4 +153,4 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-06)
 
-Killer gate advances past `check-li-parallel-compile-smoke-gate.sh` (WP-PAR-07–09 compile slice landed). Next blocker: `audit-li-parallel-catalog-coverage.sh` / distributed / comm sub-gates until remaining WPs land.
+Killer gate advances past `check-li-parallel-fl-gate.sh` (WP-PAR-60–65 FL hardening landed). Next blocker: `check-li-parallel-comm-gate.sh` / hetero / xfer / proofs sub-gates until remaining WPs land.

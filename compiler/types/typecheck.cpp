@@ -1356,34 +1356,7 @@ struct Ctx {
     }
   }
 
-  bool resolve_for_range_bound(Stmt& s) {
-    if (!s.for_range_sugar || !s.for_range_bound) {
-      return true;
-    }
-    const Expr& bound = *s.for_range_bound;
-    if (bound.kind == Expr::Kind::IntLit) {
-      s.for_start = 0;
-      s.for_end = bound.int_value;
-      s.for_range_bound.reset();
-      return true;
-    }
-    if (bound.kind == Expr::Kind::Ident) {
-      const auto it = const_int_locals.find(bound.ident);
-      if (it == const_int_locals.end()) {
-        diags.error(loc(s.span),
-                    "for i in range(n) requires compile-time constant bound");
-        return false;
-      }
-      s.for_start = 0;
-      s.for_end = it->second;
-      s.for_range_bound.reset();
-      return true;
-    }
-    diags.error(loc(s.span), "for i in range(n) requires compile-time constant bound");
-    return false;
-  }
-
-  void check_stmt(Stmt& s) {
+  void check_stmt(const Stmt& s) {
     if (s.kind == Stmt::Kind::VarDecl) {
       const TyPtr declared = resolve_type_expr(s.var_type);
       if (s.init) {
@@ -1423,12 +1396,12 @@ struct Ctx {
         type_of(*s.cond);
         note_nonneg_assumption_from_cond(*s.cond, assum_nonneg_ints);
       }
-      for (auto& inner : s.then_body) {
+      for (const auto& inner : s.then_body) {
         check_stmt(inner);
       }
       assum_nonneg_ints = saved_assum;
       if (s.else_body) {
-        for (auto& inner : *s.else_body) {
+        for (const auto& inner : *s.else_body) {
           check_stmt(inner);
         }
       }
@@ -1459,7 +1432,7 @@ struct Ctx {
         type_of(*s.cond);
         note_nonneg_assumption_from_cond(*s.cond, assum_nonneg_ints);
       }
-      for (auto& inner : s.while_body) {
+      for (const auto& inner : s.while_body) {
         check_stmt(inner);
       }
       loop_depth--;
@@ -1468,9 +1441,6 @@ struct Ctx {
       return;
     }
     if (s.kind == Stmt::Kind::For) {
-      if (!resolve_for_range_bound(s)) {
-        return;
-      }
       std::set<std::string> saved_loop = loop_index_vars;
       loop_depth++;
       if (!s.for_iter.empty()) {
@@ -1482,7 +1452,7 @@ struct Ctx {
           type_of(*c.expr);
         }
       }
-      for (auto& inner : s.for_body) {
+      for (const auto& inner : s.for_body) {
         check_stmt(inner);
       }
       loop_depth--;
@@ -1501,7 +1471,7 @@ struct Ctx {
           type_of(*c.expr);
         }
       }
-      for (auto& inner : s.par_body) {
+      for (const auto& inner : s.par_body) {
         check_stmt(inner);
       }
       loop_depth--;
@@ -1707,7 +1677,7 @@ struct Ctx {
       const TyPtr pt = resolve_type_expr(param.type);
       locals[param.name] = pt;
     }
-    for (auto& s : p.body) {
+    for (const auto& s : p.body) {
       check_stmt(s);
     }
     current_ret_ty.reset();
@@ -1715,7 +1685,104 @@ struct Ctx {
   }
 };
 
+namespace {
+
+SourceLoc stmt_loc(const Stmt& s, const std::string& file) {
+  return SourceLoc{file, 1, 1, s.span.start};
+}
+
+void note_const_int_binding(std::map<std::string, std::int64_t>& const_int_locals,
+                            const std::string& name, const Expr& init) {
+  if (init.kind == Expr::Kind::IntLit) {
+    const_int_locals[name] = init.int_value;
+    return;
+  }
+  if (init.kind == Expr::Kind::Ident) {
+    const auto it = const_int_locals.find(init.ident);
+    if (it != const_int_locals.end()) {
+      const_int_locals[name] = it->second;
+    }
+  }
+}
+
+bool resolve_for_range_bound(Stmt& s, const std::map<std::string, std::int64_t>& const_int_locals,
+                             DiagnosticBag& diags, const std::string& file) {
+  if (!s.for_range_sugar || !s.for_range_bound) {
+    return true;
+  }
+  const Expr& bound = *s.for_range_bound;
+  if (bound.kind == Expr::Kind::IntLit) {
+    s.for_start = 0;
+    s.for_end = bound.int_value;
+    s.for_range_bound.reset();
+    return true;
+  }
+  if (bound.kind == Expr::Kind::Ident) {
+    const auto it = const_int_locals.find(bound.ident);
+    if (it == const_int_locals.end()) {
+      diags.error(stmt_loc(s, file),
+                  "for i in range(n) requires compile-time constant bound");
+      return false;
+    }
+    s.for_start = 0;
+    s.for_end = it->second;
+    s.for_range_bound.reset();
+    return true;
+  }
+  diags.error(stmt_loc(s, file), "for i in range(n) requires compile-time constant bound");
+  return false;
+}
+
+void resolve_stmt_for_range(Stmt& s, std::map<std::string, std::int64_t>& const_int_locals,
+                            DiagnosticBag& diags, const std::string& file) {
+  if (s.kind == Stmt::Kind::VarDecl && s.init) {
+    note_const_int_binding(const_int_locals, s.var_name, *s.init);
+  }
+  if (s.kind == Stmt::Kind::Assign && s.init && s.expr &&
+      s.init->kind == Expr::Kind::Ident) {
+    note_const_int_binding(const_int_locals, s.init->ident, *s.expr);
+  }
+  if (s.kind == Stmt::Kind::If) {
+    for (auto& inner : s.then_body) {
+      resolve_stmt_for_range(inner, const_int_locals, diags, file);
+    }
+    if (s.else_body) {
+      for (auto& inner : *s.else_body) {
+        resolve_stmt_for_range(inner, const_int_locals, diags, file);
+      }
+    }
+    return;
+  }
+  if (s.kind == Stmt::Kind::While) {
+    for (auto& inner : s.while_body) {
+      resolve_stmt_for_range(inner, const_int_locals, diags, file);
+    }
+    return;
+  }
+  if (s.kind == Stmt::Kind::For) {
+    resolve_for_range_bound(s, const_int_locals, diags, file);
+    for (auto& inner : s.for_body) {
+      resolve_stmt_for_range(inner, const_int_locals, diags, file);
+    }
+    return;
+  }
+  if (s.kind == Stmt::Kind::ParallelFor) {
+    for (auto& inner : s.par_body) {
+      resolve_stmt_for_range(inner, const_int_locals, diags, file);
+    }
+  }
+}
+
 }  // namespace
+
+void resolve_for_range_bounds(Module& module, const std::string& file, DiagnosticBag& diags) {
+  for (auto& proc : module.procs) {
+    std::map<std::string, std::int64_t> const_int_locals;
+    for (auto& stmt : proc.body) {
+      resolve_stmt_for_range(stmt, const_int_locals, diags, file);
+    }
+  }
+}
 
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;

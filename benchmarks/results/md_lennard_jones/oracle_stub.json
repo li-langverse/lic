@@ -1,0 +1,18 @@
+{
+  "schema": "li_md_oracle_stub_v1",
+  "benchmark": "md_lennard_jones",
+  "mode": "stub_ok",
+  "algo_registry_id": 104,
+  "algo_registry_name": "md_oracle_external",
+  "li_oracle_fn": "sim_scientific_oracle_checksum_md",
+  "li_oracle_api": "packages/li-sim-scientific/src/lib.li",
+  "li_tests_smoke": "packages/li-sim-scientific/li-tests/smoke/md_oracle_external_tier2.li",
+  "oracle_ids": [
+    "lammps_lj_micro",
+    "gromacs_lj_micro"
+  ],
+  "pending_real_drivers": [],
+  "updated": "2026-06-06T14:05:37.707096+00:00",
+  "plan": "docs/numerics/studies/2026-06-06-md-r3-oracle-plan.md",
+  "registry": "benchmarks/competitive/md_oracle.toml"
+}

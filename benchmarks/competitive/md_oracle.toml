@@ -1,0 +1,64 @@
+# Domain MD external oracle registry (Layer B).
+# Plan: docs/numerics/studies/2026-06-06-md-r3-oracle-plan.md
+# Validate: ./scripts/check-hpc-competitive.sh
+# Gate: ./li-tests/tooling/md_external_oracle_stub.sh
+
+[meta]
+version = 1
+benchmark = "md_lennard_jones"
+schema = "li_md_oracle_competitive_v1"
+updated = "2026-06-06"
+registry_review_days_warn = 90
+
+[harness]
+script = "scripts/bench-md-oracle-external.sh"
+gate_script = "li-tests/tooling/md_external_oracle_stub.sh"
+output_manifest = "benchmarks/results/md_lennard_jones/oracle_stub.json"
+li_oracle_api = "packages/li-sim-scientific/src/lib.li"
+li_oracle_fn = "sim_scientific_oracle_checksum_md"
+li_tests_smoke = "packages/li-sim-scientific/li-tests/smoke/md_oracle_external_tier2.li"
+algo_registry_id = 104
+algo_registry_name = "md_oracle_external"
+external_harness_repo = "li-langverse/benchmarks"
+external_driver_stub = "tier2_physics/md_lennard_jones/external/run_oracle_stub.sh"
+
+# status: stub | active | retired
+# workload_class: v0_micro | full
+
+[[oracle]]
+id = "lammps_lj_micro"
+incumbent = "LAMMPS"
+repo_url = "https://github.com/lammps/lammps"
+pinned_version = "2024.06.27"
+pinned_tag = "stable_22Jun2024"
+csv_lang = "lammps"
+track = "oracle_stub"
+workload_class = "v0_micro"
+kernel_or_api = "LJ NVE micro — 256 particles, 10k steps, reduced units"
+oracle = "external_binary"
+compare_metric = "energy_drift"
+reference = "md_core.c --verify (cpp native, benchmarks repo)"
+driver = "scripts/md-external-oracle-stub.py"
+input_stub = "tier2_physics/md_lennard_jones/external/lammps_mdlj.lammps"
+status = "stub"
+last_reviewed = "2026-06-06"
+notes = "B0: Li oracle manifest + stub; B1: align FCC+MB IC with md_core."
+
+[[oracle]]
+id = "gromacs_lj_micro"
+incumbent = "GROMACS"
+repo_url = "https://gitlab.com/gromacs/gromacs"
+pinned_version = "2024.2"
+pinned_tag = "v2024.2"
+csv_lang = "gromacs"
+track = "oracle_stub"
+workload_class = "v0_micro"
+kernel_or_api = "LJ NVE micro — same contract as lammps_lj_micro"
+oracle = "external_binary"
+compare_metric = "energy_drift"
+reference = "md_core.c --verify (cpp native, benchmarks repo)"
+driver = "scripts/md-external-oracle-stub.py"
+input_stub = "tier2_physics/md_lennard_jones/external/gromacs_mdlj.mdp"
+status = "stub"
+last_reviewed = "2026-06-06"
+notes = "B0: stub only. B2: gmx mdrun after mdp matches reduced LJ + MIC box."

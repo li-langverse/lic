@@ -44,7 +44,7 @@ def partition_block_in_range(local_i: int, global_n: int, rank: int, world: int)
   requires global_n >= 0
   requires rank >= 0
   requires world > 0
-  ensures result == true
+  ensures result == (row >= 0 and row <= global_n)
   decreases global_n + rank
 =
   var row: int = partition_row(local_i, rank, world)
@@ -54,7 +54,7 @@ def partition_block_in_range(local_i: int, global_n: int, rank: int, world: int)
 def hetero_mask_bounded(mask: int) -> bool
   requires mask >= 1
   requires mask <= 15
-  ensures result == true
+  ensures result == (mask >= 1 and mask <= 15)
   decreases mask
 =
   return mask >= 1 and mask <= 15

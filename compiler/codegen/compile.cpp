@@ -169,6 +169,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_exec_plan_path = resolve_runtime_c("li_exec_plan.c");
   const std::filesystem::path rt_comm_plan_path = resolve_runtime_c("li_comm_plan.c");
   const std::filesystem::path rt_xfer_plan_path = resolve_runtime_c("li_xfer_plan.c");
+  const std::filesystem::path rt_fl_path = resolve_runtime_c("li_fl.c");
   const std::filesystem::path rt_hetero_path = resolve_runtime_c("li_rt_hetero.c");
 
   MirModule rt_needs;
@@ -262,8 +263,12 @@ bool compile_module(const Module& module, const std::string& output_path,
       std::filesystem::exists(rt_xfer_plan_path)) {
     cmd << " -x c \"" << rt_xfer_plan_path.string() << "\"";
   }
+  if ((link_runtime_full || rt_needs.needs_rt_fl) && std::filesystem::exists(rt_fl_path)) {
+    cmd << " -x c \"" << rt_fl_path.string() << "\"";
+  }
   // li_xfer_plan.c calls li_rt_hetero_* — link whenever xfer plan is linked (incl. exec plan).
-  if ((link_runtime_full || rt_needs.needs_rt_xfer_plan || rt_needs.needs_rt_exec_plan) &&
+  if ((link_runtime_full || rt_needs.needs_rt_hetero || rt_needs.needs_rt_xfer_plan ||
+       rt_needs.needs_rt_exec_plan) &&
       std::filesystem::exists(rt_hetero_path)) {
     cmd << " -x c \"" << rt_hetero_path.string() << "\"";
   }

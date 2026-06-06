@@ -46,6 +46,12 @@ void note_one(std::string_view callee, MirModule& mir) {
   if (starts_with(callee, "li_xfer_")) {
     mir.needs_rt_xfer_plan = true;
   }
+  if (starts_with(callee, "li_fl_")) {
+    mir.needs_rt_fl = true;
+  }
+  if (starts_with(callee, "li_rt_hetero_")) {
+    mir.needs_rt_hetero = true;
+  }
 }
 
 }  // namespace
@@ -78,6 +84,9 @@ void mir_finalize_runtime_link_needs(MirModule& mir) {
     mir.needs_rt_dpar = true;
   }
   if (mir.needs_rt_xfer_plan) {
+    mir.needs_rt_dpar = true;
+  }
+  if (mir.needs_rt_fl) {
     mir.needs_rt_dpar = true;
   }
   if (mir.needs_rt_dpar) {

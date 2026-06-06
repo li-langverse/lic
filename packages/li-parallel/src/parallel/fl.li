@@ -23,7 +23,7 @@ extern proc li_fl_set_device_kind(kind: int) -> unit
   requires kind <= 3
   ensures true
 
-extern proc li_fl_device_kind() -> int
+extern proc li_fl_get_device_kind() -> int
   requires true
   ensures result >= 0
   ensures result <= 3
@@ -80,7 +80,7 @@ def active_mask() -> int raises IO
 
 def is_active(rank: int) -> bool raises IO
   requires rank >= 0
-  ensures true
+  ensures (result == true) or (result == false)
   decreases 0
 =
   return li_fl_is_active(rank) != 0
@@ -106,11 +106,12 @@ def device_kind() -> int raises IO
   ensures result <= 3
   decreases 0
 =
-  return li_fl_device_kind()
+  return li_fl_get_device_kind()
 
 def fedavg_masked(local: float, active_mask: int) -> float raises IO
   requires active_mask >= 0
-  ensures true
+  ensures result >= -1.0e308
+  ensures result <= 1.0e308
   decreases 0
 =
   return li_fl_fedavg_masked_f64(local, active_mask)

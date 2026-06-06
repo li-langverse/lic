@@ -250,6 +250,10 @@ struct MirModule {
   bool needs_rt_comm_plan = false;
   /** runtime/li_xfer_plan.c — embedded transfer plan (**WP-PAR-87–92**). */
   bool needs_rt_xfer_plan = false;
+  /** runtime/li_fl.c — federated-learning rank masks and fedavg (**WP-PAR-60–65**). */
+  bool needs_rt_fl = false;
+  /** runtime/li_rt_hetero.c — CPU/GPU/TPU/ASIC orchestration probes (**WP-PAR-80**). */
+  bool needs_rt_hetero = false;
   MirExecPlan exec_plan;
   MirCommPlan comm_plan;
   MirXferPlan xfer_plan;

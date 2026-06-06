@@ -3,7 +3,39 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
-BENCH_ROOT="${BENCHMARKS_ROOT:-$(cd "$ROOT/../benchmarks" 2>/dev/null && pwd || echo "")}"
+export LIC_ROOT="${LIC_ROOT:-$ROOT}"
+# shellcheck source=../../../scripts/lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
+_ensure_full_benchmarks_root() {
+  local suite="${BENCHMARKS_ROOT}/scripts/run-full-benchmark-suite.sh"
+  if [[ -f "$suite" ]]; then
+    echo "$BENCHMARKS_ROOT"
+    return 0
+  fi
+  local cache="$ROOT/.cache/li-benchmarks"
+  if [[ ! -f "$cache/scripts/run-full-benchmark-suite.sh" ]]; then
+    mkdir -p "$(dirname "$cache")"
+    if [[ -d "$cache/.git" ]]; then
+      (cd "$cache" && git fetch --depth 1 origin main >/dev/null 2>&1 || true)
+      (cd "$cache" && git checkout -f origin/main >/dev/null 2>&1 || true)
+    else
+      git clone --depth 1 https://github.com/li-langverse/benchmarks.git "$cache" >/dev/null 2>&1 || true
+    fi
+  fi
+  if [[ -f "$cache/scripts/run-full-benchmark-suite.sh" ]]; then
+    echo "$cache"
+    return 0
+  fi
+  return 1
+}
+
+if ! BENCH_ROOT="$(_ensure_full_benchmarks_root)"; then
+  echo "ERROR: benchmarks harness missing — set BENCHMARKS_ROOT to a full benchmarks checkout" >&2
+  echo "  expected: \$BENCHMARKS_ROOT/scripts/run-full-benchmark-suite.sh" >&2
+  exit 1
+fi
+export BENCHMARKS_ROOT="$BENCH_ROOT"
 PROFILE="full"
 CORES="${LIPAR_CORES:-8}"
 HOSTS=""
@@ -38,12 +70,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$BENCH_ROOT" || ! -d "$BENCH_ROOT" ]]; then
-  echo "ERROR: benchmarks repo not found — set BENCHMARKS_ROOT" >&2
-  exit 1
-fi
-
-export LIC_ROOT="$ROOT"
 case "$PROFILE" in
   pr) export BENCH_PROFILE=pr; export BENCH_RUNS="${BENCH_RUNS:-3}"; export SKIP_TIER0="${SKIP_TIER0:-1}" ;;
   full) export BENCH_PROFILE=full; export BENCH_RUNS="${BENCH_RUNS:-6}" ;;

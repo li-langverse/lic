@@ -51,8 +51,10 @@ jobs:
       - name: li-parallel perf gate (fixture CSV, advisory)
         run: |
           chmod +x scripts/check-li-parallel-perf-gate.sh \
-            li-tests/tooling/li_parallel_perf_gate.sh
+            li-tests/tooling/li_parallel_perf_gate.sh \
+            li-tests/tooling/li_parallel_suite_resolve.sh
           export LI_LIPAR_PERF_STRICT=0
+          ./li-tests/tooling/li_parallel_suite_resolve.sh
           ./li-tests/tooling/li_parallel_perf_gate.sh
 
       - name: li-parallel full suite gate (PR profile, dual-mode)

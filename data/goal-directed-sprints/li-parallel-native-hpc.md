@@ -23,7 +23,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 |----|-------------|--------|
 | **WP-PAR-10** | Persistent pool `li_par_pool.c` | **DONE** — Linux pthread pool parallel static dispatch (no ephemeral spawn); Win32 thread pool |
 | **WP-PAR-11** | Work-stealing scheduler | **STUB** — static chunks via pool; steal in Phase 1.1 |
-| **WP-PAR-12** | static/dynamic/guided schedulers | **STUB** — static only in v1 slice |
+| **WP-PAR-12** | static/dynamic/guided schedulers | **DONE** — `LI_PAR_SCHEDULE` + pool API; dynamic atomic chunks + guided decreasing chunks; smoke `li_par_pool_schedule_smoke` |
 | **WP-PAR-13** | Tree reductions `li_par_reduce.c` | **DONE** — sum/min/max f64, sum i64 |
 | **WP-PAR-14** | Windows thread pool | **DONE** — no serial `_WIN32` fallback |
 | **WP-PAR-15** | Compiler `reduce` lowering | **STUB** — runtime API ready; MIR lowering Phase 1.1 |
@@ -69,3 +69,5 @@ Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and 
 **Gate evidence (2026-06-06, agent run):** `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s); dual-mode rows for matmul_blocked, reduce_sum, simd_dot, num_dot_axpy; perf advisory (strict=0). **CI fix:** `lipar-run-class-a.sh` uses lic `lic-bin-select.sh` instead of missing `benchmarks/scripts/lib/resolve-lic-bench.sh` on sibling checkout ref.
 
 **Gate evidence (2026-06-06, agent run 2):** WP-PAR-31/32 package slice — `lic build packages/li-parallel/li-tests/smoke/kernels_ghost.li --allow-open-vc` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~8s).
+
+**Gate evidence (2026-06-06, agent run 3):** WP-PAR-12 schedulers — `bash li-tests/tooling/li_par_pool_schedule_smoke.sh` → exit 0; dynamic + guided cover all 64 iterations under chunk_size=7.

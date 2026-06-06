@@ -15,7 +15,7 @@
 
 ## Shared memory v1
 
-- Runtime: persistent pool (`li_par_pool.c`), static chunk scheduling
+- Runtime: persistent pool (`li_par_pool.c`), static/dynamic/guided scheduling (`LI_PAR_SCHEDULE`, `li_par_pool_set_schedule`)
 - Reductions: `li_par_reduce_sum_f64` tree API; compiler `reduce` clause → Phase 1.1
 - Windows: Win32 thread pool (no serial fallback)
 

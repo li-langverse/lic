@@ -45,16 +45,50 @@ struct LiParPool {
   pthread_mutex_t mutex;
   pthread_cond_t work_cv;
   pthread_cond_t done_cv;
+  pthread_cond_t ready_cv;
   int shutdown;
   int jobs_pending;
   LiParTask batch[LI_MAX_THREADS];
   int batch_size;
   int workers_done;
+  int workers_ready;
+  LiParScheduleKind schedule;
+  void (*job_body)(long long);
+  long long job_start;
+  long long job_trip;
+  volatile long long job_next;
+  long long job_chunk;
 #endif
 };
 
 static LiParPool g_li_par_pool;
 static int g_li_par_pool_team = 0;
+static LiParScheduleKind g_li_par_schedule = LI_PAR_SCHED_STATIC;
+static long long g_li_par_chunk_size = 0;
+
+static LiParScheduleKind li_par_env_schedule(void) {
+  const char* sched = getenv("LI_PAR_SCHEDULE");
+  if (sched && *sched) {
+    if (strcmp(sched, "dynamic") == 0) {
+      return LI_PAR_SCHED_DYNAMIC;
+    }
+    if (strcmp(sched, "guided") == 0) {
+      return LI_PAR_SCHED_GUIDED;
+    }
+  }
+  return g_li_par_schedule;
+}
+
+static long long li_par_env_chunk_size(void) {
+  const char* cs = getenv("LI_PAR_CHUNK_SIZE");
+  if (cs && *cs) {
+    long long chunk = atoll(cs);
+    if (chunk > 0) {
+      return chunk;
+    }
+  }
+  return g_li_par_chunk_size;
+}
 
 static int li_par_env_team_size(void) {
   const char* nt = getenv("LI_OMP_THREADS");
@@ -97,6 +131,71 @@ static int li_par_clamp_team(int team_size, long long trip_count) {
 }
 
 #if defined(_WIN32)
+
+typedef struct {
+  void (*body)(long long);
+  long long start;
+  long long trip;
+  volatile LONG64 next;
+  long long chunk;
+  int team_size;
+  LiParScheduleKind schedule;
+} LiParWinSharedJob;
+
+static void li_par_win_run_dynamic(LiParWinSharedJob* job) {
+  const long long chunk = job->chunk > 0 ? job->chunk : 1;
+  for (;;) {
+    const long long begin = InterlockedAdd64((LONG64*)&job->next, chunk) - chunk;
+    if (begin >= job->trip) {
+      return;
+    }
+    long long end = begin + chunk;
+    if (end > job->trip) {
+      end = job->trip;
+    }
+    for (long long i = job->start + begin; i < job->start + end; ++i) {
+      job->body(i);
+    }
+  }
+}
+
+static void li_par_win_run_guided(LiParWinSharedJob* job) {
+  for (;;) {
+    long long begin;
+    long long chunk;
+    EnterCriticalSection(&g_li_par_pool.join_lock);
+    begin = job->next;
+    if (begin >= job->trip) {
+      LeaveCriticalSection(&g_li_par_pool.join_lock);
+      return;
+    }
+    const long long rem = job->trip - begin;
+    chunk = rem / job->team_size;
+    if (chunk < 1) {
+      chunk = 1;
+    }
+    job->next = begin + chunk;
+    LeaveCriticalSection(&g_li_par_pool.join_lock);
+    for (long long i = job->start + begin; i < job->start + begin + chunk; ++i) {
+      job->body(i);
+    }
+  }
+}
+
+static VOID CALLBACK li_par_win_shared_worker(PTP_CALLBACK_INSTANCE instance, PVOID context,
+                                              PTP_WORK work) {
+  (void)instance;
+  (void)work;
+  LiParWinSharedJob* job = (LiParWinSharedJob*)context;
+  if (job->schedule == LI_PAR_SCHED_GUIDED) {
+    li_par_win_run_guided(job);
+  } else {
+    li_par_win_run_dynamic(job);
+  }
+  if (InterlockedDecrement(&g_li_par_pool.jobs_remaining) == 0) {
+    WakeAllConditionVariable(&g_li_par_pool.join_cv);
+  }
+}
 
 static VOID CALLBACK li_par_win_worker(PTP_CALLBACK_INSTANCE instance, PVOID context,
                                        PTP_WORK work) {
@@ -164,7 +263,97 @@ static void li_par_pool_run_win(LiParTask* chunks, int launched) {
   LeaveCriticalSection(&g_li_par_pool.join_lock);
 }
 
+static void li_par_pool_run_win_shared(void (*body)(long long), long long start, long long trip,
+                                       int team_size, LiParScheduleKind schedule,
+                                       long long chunk_size) {
+  LiParWinSharedJob job;
+  job.body = body;
+  job.start = start;
+  job.trip = trip;
+  job.next = 0;
+  job.chunk = chunk_size;
+  job.team_size = team_size;
+  job.schedule = schedule;
+  g_li_par_pool.jobs_remaining = team_size;
+  for (int w = 0; w < team_size; ++w) {
+    PTP_WORK work =
+        CreateThreadpoolWork(li_par_win_shared_worker, &job, &g_li_par_pool.callback_env);
+    if (work) {
+      SubmitThreadpoolWork(work);
+      CloseThreadpoolWork(work);
+    } else {
+      if (schedule == LI_PAR_SCHED_GUIDED) {
+        li_par_win_run_guided(&job);
+      } else {
+        li_par_win_run_dynamic(&job);
+      }
+      if (InterlockedDecrement(&g_li_par_pool.jobs_remaining) == 0) {
+        WakeAllConditionVariable(&g_li_par_pool.join_cv);
+      }
+    }
+  }
+  EnterCriticalSection(&g_li_par_pool.join_lock);
+  while (g_li_par_pool.jobs_remaining > 0) {
+    SleepConditionVariableCS(&g_li_par_pool.join_cv, &g_li_par_pool.join_lock, INFINITE);
+  }
+  LeaveCriticalSection(&g_li_par_pool.join_lock);
+}
+
 #else
+
+static void li_par_pool_run_dynamic_pthread(LiParPool* pool) {
+  const long long trip = pool->job_trip;
+  const long long start = pool->job_start;
+  void (*body)(long long) = pool->job_body;
+  const long long chunk = pool->job_chunk > 0 ? pool->job_chunk : 1;
+
+  for (;;) {
+    long long begin;
+    pthread_mutex_lock(&pool->mutex);
+    begin = pool->job_next;
+    if (begin >= trip) {
+      pthread_mutex_unlock(&pool->mutex);
+      return;
+    }
+    long long end = begin + chunk;
+    if (end > trip) {
+      end = trip;
+    }
+    pool->job_next = end;
+    pthread_mutex_unlock(&pool->mutex);
+    for (long long i = start + begin; i < start + end; ++i) {
+      body(i);
+    }
+  }
+}
+
+static void li_par_pool_run_guided_pthread(LiParPool* pool) {
+  const long long trip = pool->job_trip;
+  const long long start = pool->job_start;
+  void (*body)(long long) = pool->job_body;
+  const int team = pool->batch_size;
+
+  for (;;) {
+    long long begin;
+    long long chunk;
+    pthread_mutex_lock(&pool->mutex);
+    begin = pool->job_next;
+    if (begin >= trip) {
+      pthread_mutex_unlock(&pool->mutex);
+      return;
+    }
+    const long long rem = trip - begin;
+    chunk = rem / team;
+    if (chunk < 1) {
+      chunk = 1;
+    }
+    pool->job_next = begin + chunk;
+    pthread_mutex_unlock(&pool->mutex);
+    for (long long i = start + begin; i < start + begin + chunk; ++i) {
+      body(i);
+    }
+  }
+}
 
 static void* li_par_pool_worker(void* raw) {
   LiParWorkerArg* warg = (LiParWorkerArg*)raw;
@@ -181,13 +370,20 @@ static void* li_par_pool_worker(void* raw) {
       break;
     }
     const int batch_size = pool->batch_size;
+    const LiParScheduleKind schedule = pool->schedule;
     pthread_mutex_unlock(&pool->mutex);
 
-    if (worker_id < batch_size) {
-      LiParTask local = pool->batch[worker_id];
-      for (long long i = local.begin; i < local.end; ++i) {
-        local.body(i);
+    if (schedule == LI_PAR_SCHED_STATIC) {
+      if (worker_id < batch_size) {
+        LiParTask local = pool->batch[worker_id];
+        for (long long i = local.begin; i < local.end; ++i) {
+          local.body(i);
+        }
       }
+    } else if (schedule == LI_PAR_SCHED_GUIDED) {
+      li_par_pool_run_guided_pthread(pool);
+    } else {
+      li_par_pool_run_dynamic_pthread(pool);
     }
 
     pthread_mutex_lock(&pool->mutex);
@@ -197,6 +393,10 @@ static void* li_par_pool_worker(void* raw) {
     }
     while (pool->jobs_pending && !pool->shutdown) {
       pthread_cond_wait(&pool->work_cv, &pool->mutex);
+    }
+    pool->workers_ready += 1;
+    if (pool->workers_ready >= pool->batch_size) {
+      pthread_cond_broadcast(&pool->ready_cv);
     }
     pthread_mutex_unlock(&pool->mutex);
   }
@@ -220,6 +420,7 @@ static void li_par_pool_init_pthread(int team_size) {
     pthread_mutex_destroy(&g_li_par_pool.mutex);
     pthread_cond_destroy(&g_li_par_pool.work_cv);
     pthread_cond_destroy(&g_li_par_pool.done_cv);
+    pthread_cond_destroy(&g_li_par_pool.ready_cv);
   }
   g_li_par_pool.team_size = team_size;
   g_li_par_pool.threads = (pthread_t*)calloc((size_t)team_size, sizeof(pthread_t));
@@ -227,10 +428,12 @@ static void li_par_pool_init_pthread(int team_size) {
   pthread_mutex_init(&g_li_par_pool.mutex, NULL);
   pthread_cond_init(&g_li_par_pool.work_cv, NULL);
   pthread_cond_init(&g_li_par_pool.done_cv, NULL);
+  pthread_cond_init(&g_li_par_pool.ready_cv, NULL);
   g_li_par_pool.shutdown = 0;
   g_li_par_pool.jobs_pending = 0;
   g_li_par_pool.batch_size = 0;
   g_li_par_pool.workers_done = 0;
+  g_li_par_pool.workers_ready = 0;
   for (int i = 0; i < team_size; ++i) {
     g_li_par_pool.worker_args[i].pool = &g_li_par_pool;
     g_li_par_pool.worker_args[i].worker_id = i;
@@ -240,10 +443,21 @@ static void li_par_pool_init_pthread(int team_size) {
   g_li_par_pool.initialized = 1;
 }
 
-static void li_par_pool_run_pthread(LiParTask* chunks, int launched) {
+static void li_par_pool_run_pthread(LiParTask* chunks, int launched, LiParScheduleKind schedule,
+                                    void (*body)(long long), long long start, long long trip,
+                                    long long chunk_size) {
   pthread_mutex_lock(&g_li_par_pool.mutex);
-  for (int w = 0; w < launched; ++w) {
-    g_li_par_pool.batch[w] = chunks[w];
+  g_li_par_pool.schedule = schedule;
+  if (schedule == LI_PAR_SCHED_STATIC) {
+    for (int w = 0; w < launched; ++w) {
+      g_li_par_pool.batch[w] = chunks[w];
+    }
+  } else {
+    g_li_par_pool.job_body = body;
+    g_li_par_pool.job_start = start;
+    g_li_par_pool.job_trip = trip;
+    g_li_par_pool.job_next = 0;
+    g_li_par_pool.job_chunk = chunk_size;
   }
   g_li_par_pool.batch_size = launched;
   g_li_par_pool.workers_done = 0;
@@ -252,8 +466,12 @@ static void li_par_pool_run_pthread(LiParTask* chunks, int launched) {
   while (g_li_par_pool.workers_done < launched) {
     pthread_cond_wait(&g_li_par_pool.done_cv, &g_li_par_pool.mutex);
   }
+  g_li_par_pool.workers_ready = 0;
   g_li_par_pool.jobs_pending = 0;
   pthread_cond_broadcast(&g_li_par_pool.work_cv);
+  while (g_li_par_pool.workers_ready < launched) {
+    pthread_cond_wait(&g_li_par_pool.ready_cv, &g_li_par_pool.mutex);
+  }
   pthread_mutex_unlock(&g_li_par_pool.mutex);
 }
 
@@ -267,6 +485,14 @@ int li_par_pool_team_size(void) {
   }
   return li_par_env_team_size();
 }
+
+void li_par_pool_set_schedule(LiParScheduleKind schedule) { g_li_par_schedule = schedule; }
+
+LiParScheduleKind li_par_pool_schedule(void) { return li_par_env_schedule(); }
+
+void li_par_pool_set_chunk_size(long long chunk_size) { g_li_par_chunk_size = chunk_size; }
+
+long long li_par_pool_chunk_size(void) { return li_par_env_chunk_size(); }
 
 void li_par_pool_fork_join(long long start, long long end, void (*body)(long long), int team_size) {
   const long long trip = end - start;
@@ -286,11 +512,23 @@ void li_par_pool_fork_join(long long start, long long end, void (*body)(long lon
     return;
   }
 
+  const LiParScheduleKind schedule = li_par_env_schedule();
+  const long long chunk_size = li_par_env_chunk_size();
+
 #if defined(_WIN32)
   li_par_pool_init_win(team_size);
 #else
   li_par_pool_init_pthread(team_size);
 #endif
+
+  if (schedule == LI_PAR_SCHED_DYNAMIC || schedule == LI_PAR_SCHED_GUIDED) {
+#if defined(_WIN32)
+    li_par_pool_run_win_shared(body, start, trip, team_size, schedule, chunk_size);
+#else
+    li_par_pool_run_pthread(NULL, team_size, schedule, body, start, trip, chunk_size);
+#endif
+    return;
+  }
 
   LiParTask chunks[LI_MAX_THREADS];
   const long long base = trip / team_size;
@@ -312,7 +550,7 @@ void li_par_pool_fork_join(long long start, long long end, void (*body)(long lon
 #if defined(_WIN32)
   li_par_pool_run_win(chunks, launched);
 #else
-  li_par_pool_run_pthread(chunks, launched);
+  li_par_pool_run_pthread(chunks, launched, LI_PAR_SCHED_STATIC, body, start, trip, chunk_size);
 #endif
 }
 
@@ -346,6 +584,7 @@ void li_par_pool_shutdown(void) {
   pthread_mutex_destroy(&g_li_par_pool.mutex);
   pthread_cond_destroy(&g_li_par_pool.work_cv);
   pthread_cond_destroy(&g_li_par_pool.done_cv);
+  pthread_cond_destroy(&g_li_par_pool.ready_cv);
 #endif
   g_li_par_pool.initialized = 0;
   g_li_par_pool.team_size = 0;

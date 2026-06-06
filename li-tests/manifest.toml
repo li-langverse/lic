@@ -1520,6 +1520,12 @@ file = "tooling/li_par_pool_smoke.sh"
 outcome = "script_ok"
 note = "WP-PAR-10: persistent pthread pool static-chunk parallel dispatch"
 
+[[tests]]
+suite = "tooling"
+file = "tooling/li_par_pool_schedule_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-12: dynamic and guided schedulers on persistent pool"
+
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
 # --- stdlib_parity (WP0-D — compile-only until WP-WA + WP1 runtime) ---

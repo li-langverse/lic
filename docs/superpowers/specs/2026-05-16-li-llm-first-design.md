@@ -3,7 +3,7 @@
 **Date:** 2026-05-16  
 **Status:** Planning / research (**Vision-LLM** — partial on master plan)  
 **Pillar priority:** Provability (#1) unchanged — this spec optimizes **agent ergonomics**, not proof shortcuts.  
-**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](../plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability-gaps](../../verification/provability-gaps.md) (no **G-*** closure from JSON diagnostics alone)
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](../plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability-gaps](../../../verification/provability-gaps.md) (no **G-*** closure from JSON diagnostics alone)
 
 ## What this page is for
 
@@ -70,4 +70,4 @@ When LLM-first convenience conflicts with provability: **provability wins** (sam
 
 - [Agent handover formats](../../ecosystem/agent-handover-formats.md)
 - [li-agent-manifest.toml](../../ecosystem/li-agent-manifest.toml)
-- [Provability gaps](../../verification/provability-gaps.md)
+- [Provability gaps](../../../verification/provability-gaps.md)

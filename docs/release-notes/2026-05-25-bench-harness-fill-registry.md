@@ -58,5 +58,5 @@ Template-alias rows duplicate parent kernel timings (documented `family-template
 
 ```markdown
 ### Added
-- **Registry benchmark harness fill:** family-template dirs + `bench_registry.py` tier-7 CSV aliases for dashboard catalog — [2026-05-25-bench-harness-fill-registry.md](docs/release-notes/2026-05-25-bench-harness-fill-registry.md).
+- **Registry benchmark harness fill:** family-template dirs + `bench_registry.py` tier-7 CSV aliases for dashboard catalog — [2026-05-25-bench-harness-fill-registry.md](../release-notes/2026-05-25-bench-harness-fill-registry.md).
 ```

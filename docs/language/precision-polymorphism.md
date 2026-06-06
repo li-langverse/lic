@@ -206,4 +206,4 @@ def integrate_step(profile: PhysicsProfile, dt: float) -> float
 
 - [Scalar precision](scalar-precision.md)
 - [Collections and generics](collections-generics.md)
-- [packages/li-physics-core/docs/scalar-precision.md](../../packages/li-physics-core/docs/scalar-precision.md)
+- [packages/li-physics-core/docs/scalar-precision.md](https://github.com/li-langverse/lic/blob/main/packages/li-physics-core/docs/scalar-precision.md)

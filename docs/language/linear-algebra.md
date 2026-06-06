@@ -31,4 +31,4 @@ y[i] = alpha * x[i] + y[i]   # AXPY via index loop until `@vectorized`
 - `@vectorized` / `@parallel` lowering on math loops (**7d** / **7e-a**)
 - `tensor[(M,N), f64]` when Phase 3 lands
 
-See [math/linalg spec](../superpowers/specs/2026-05-16-li-math-linalg-surface.md) and **G-math** in [provability-gaps](../verification/provability-gaps.md).
+See [math/linalg spec](../../superpowers/specs/2026-05-16-li-math-linalg-surface.md) and **G-math** in [provability-gaps](../../verification/provability-gaps.md).

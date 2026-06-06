@@ -2,7 +2,7 @@
 
 **Purpose:** Clean starting point for the **lic ecosystem gap loop** (scientific / engineering / gaming packages). **Out of scope:** li-httpd / webserver work (separate agent on `cursor/httpd-plan-loop-54aa`).
 
-**Plan:** [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md) §7–§12 · **Proof honesty:** [provability-gaps.md](../verification/provability-gaps.md)
+**Plan:** [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md) §7–§12 · **Proof honesty:** [provability-gaps.md](../../../verification/provability-gaps.md)
 
 ## Branch / PR target
 

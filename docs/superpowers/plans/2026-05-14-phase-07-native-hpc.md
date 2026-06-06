@@ -3,7 +3,7 @@
 > **Depends on:** Phases 3–5b (MIR/LLVM, benchmarks harness)  
 > **Blocks:** Pure-Li Tier 2 perf tables, OpenMP scaling columns
 
-**Proof gaps (Doc-c):** [G-par](../../verification/provability-gaps.md#g-par) · [G-dec](../../verification/provability-gaps.md#g-dec) · [G-math](../../verification/provability-gaps.md#g-math) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)
+**Proof gaps (Doc-c):** [G-par](../../../verification/provability-gaps.md#g-par) · [G-dec](../../../verification/provability-gaps.md#g-dec) · [G-math](../../../verification/provability-gaps.md#g-math) · [still open](../../../verification/provability-gaps.md#still-open-report-every-session)
 
 **Goal:** Built-in `simd[T, N]` and proved `parallel for` without user-level parallel/math libraries. Toolchain links LLVM + libomp only.
 
@@ -34,7 +34,7 @@
 ## 7d — Execution decorators (decorator-first HPC)
 
 > **Depends on:** **2g** (`def`), **7a** (SIMD), **7b** (`parallel for` + structured disjoint)  
-> **Plan:** [.cursor/plans/li_execution_decorators_7c6e3b42.plan.md](../../../.cursor/plans/li_execution_decorators_7c6e3b42.plan.md)  
+> **Plan:** [.cursor/plans/li_execution_decorators_7c6e3b42.plan.md](https://github.com/li-langverse/lic/blob/main/.cursor/plans/li_execution_decorators_7c6e3b42.plan.md)  
 > **Spec (to land):** `docs/superpowers/specs/2026-05-16-li-execution-decorators.md`
 
 **Goal:** Primary surface for parallelism, vectorization, and device placement is **stackable `@` decorators** on `def` and on `for`/`while` — elaborating to the same proved cores as keywords (`parallel for`, `simd`, future `gpu proc`).

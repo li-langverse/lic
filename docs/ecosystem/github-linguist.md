@@ -1,6 +1,6 @@
 # GitHub Linguist — Li language playbook
 
-End-to-end guide for adding **Li** (`.li`) to [github-linguist/linguist](https://github.com/github-linguist/linguist). Agents prepare artifacts in **lic**; **Julian** alone opens and commits the upstream PR (see [WP7 handoff](../../contrib/linguist-upstream/JULIAN_HANDOFF.md)).
+End-to-end guide for adding **Li** (`.li`) to [github-linguist/linguist](https://github.com/github-linguist/linguist). Agents prepare artifacts in **lic**; **Julian** alone opens and commits the upstream PR (see [WP7 handoff](https://github.com/li-langverse/lic/blob/main/contrib/linguist-upstream/JULIAN_HANDOFF.md)).
 
 **Status (2026-05-25):** Li is **not** on Linguist. Usage threshold for `.li` is **not met** for Li Langverse–identifiable code. Do not claim otherwise in PR text.
 
@@ -11,7 +11,7 @@ End-to-end guide for adding **Li** (`.li`) to [github-linguist/linguist](https:/
 | Ruby + Bundler + Docker | Julian (linguist fork) | [Linguist CONTRIBUTING](https://github.com/github-linguist/linguist/blob/main/CONTRIBUTING.md) — `script/bootstrap`, `bundle exec rake test` |
 | GitHub fork of linguist | Julian | `https://github.com/<julian-user>/linguist` — **never** push from lic CI or agent automation |
 | Grammar (redistributable license) | WP1 → human | [`contrib/li-grammar/`](../../contrib/li-grammar/) on branch `feat/linguist-wp1-grammar` ([tree](https://github.com/li-langverse/lic/tree/feat/linguist-wp1-grammar/contrib/li-grammar)); publish fork **TBD** → `https://github.com/li-langverse/li-grammar` for `script/add-grammar` |
-| Samples (MIT, real code) | WP2 → human | [`contrib/linguist-samples/Li/`](../../contrib/linguist-samples/Li/) on branch `feat/linguist-wp2-samples` ([tree](https://github.com/li-langverse/lic/tree/feat/linguist-wp2-samples/contrib/linguist-samples)); manifest [`SAMPLES_LICENSES.md`](../../contrib/linguist-samples/SAMPLES_LICENSES.md) |
+| Samples (MIT, real code) | WP2 → human | [`contrib/linguist-samples/Li/`](../../contrib/linguist-samples/Li/) on branch `feat/linguist-wp2-samples` ([tree](https://github.com/li-langverse/lic/tree/feat/linguist-wp2-samples/contrib/linguist-samples)); manifest [`SAMPLES_LICENSES.md`](https://github.com/li-langverse/lic/blob/main/contrib/linguist-samples/SAMPLES_LICENSES.md) |
 | Usage evidence | WP3 → **Julian only** | [github-linguist-usage-evidence.md](./github-linguist-usage-evidence.md) — ≥2000 indexed `.li` files with Li syntax, distributed across repos |
 | Patch bundle | WP6 (lic) | [`contrib/linguist-upstream/`](../../contrib/linguist-upstream/) — `languages.yml` snippet, `PATCH_INSTRUCTIONS.md`, optional `heuristics.yml` fragment |
 
@@ -65,12 +65,12 @@ Agents **must stop** after lic-side deliverables are merged:
 
 1. Do **not** `git push` to any `github-linguist/*` remote.
 2. Do **not** commit as Julian or use Julian's credentials on the linguist fork.
-3. Do **not** open the upstream Linguist PR — hand off [JULIAN_HANDOFF.md](../../contrib/linguist-upstream/JULIAN_HANDOFF.md).
+3. Do **not** open the upstream Linguist PR — hand off [JULIAN_HANDOFF.md](https://github.com/li-langverse/lic/blob/main/contrib/linguist-upstream/JULIAN_HANDOFF.md).
 4. Do **not** submodule `https://github.com/li-langverse/li-grammar` until WP1 publish branch is merged and URL is final.
 
 ## Julian execution (summary)
 
-Detailed commands: [`contrib/linguist-upstream/PATCH_INSTRUCTIONS.md`](../../contrib/linguist-upstream/PATCH_INSTRUCTIONS.md) and [JULIAN_HANDOFF.md](../../contrib/linguist-upstream/JULIAN_HANDOFF.md).
+Detailed commands: [`contrib/linguist-upstream/PATCH_INSTRUCTIONS.md`](https://github.com/li-langverse/lic/blob/main/contrib/linguist-upstream/PATCH_INSTRUCTIONS.md) and [JULIAN_HANDOFF.md](https://github.com/li-langverse/lic/blob/main/contrib/linguist-upstream/JULIAN_HANDOFF.md).
 
 1. Satisfy G0–G2 (grammar repo, samples, usage).
 2. Apply WP6 patch on linguist fork (`script/add-grammar`, rsync samples, `heuristics` if needed).
@@ -80,6 +80,6 @@ Detailed commands: [`contrib/linguist-upstream/PATCH_INSTRUCTIONS.md`](../../con
 ## Related docs
 
 - [Usage evidence & search cadence](./github-linguist-usage-evidence.md)
-- [WP1 grammar README](../../contrib/li-grammar/README.md) (after WP1 merge)
-- [WP2 samples README](../../contrib/linguist-samples/README.md) (after WP2 merge)
+- [WP1 grammar README](https://github.com/li-langverse/lic/blob/main/contrib/li-grammar/README.md) (after WP1 merge)
+- [WP2 samples README](https://github.com/li-langverse/lic/blob/main/contrib/linguist-samples/README.md) (after WP2 merge)
 - Linguist policy: [Language extension usage requirements](https://github.com/github-linguist/linguist/blob/main/CONTRIBUTING.md#language-extension-and-filename-usage-requirements)

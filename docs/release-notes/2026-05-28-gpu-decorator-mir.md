@@ -60,5 +60,5 @@ N/A — no GPU execution path or performance claim changed. This PR only adds MI
 
 ```markdown
 ### Added
-- **PH-7d / G-gpu decorator telemetry:** `@gpu` and `@gpu(devices=N)` now survive MIR lowering and `lic verify` reports `mir_gpu_def` / `mir_gpu_multi_device_def`; invalid device counts and source-level vendor args are rejected before LKIR/codegen — [2026-05-28-gpu-decorator-mir.md](docs/release-notes/2026-05-28-gpu-decorator-mir.md).
+- **PH-7d / G-gpu decorator telemetry:** `@gpu` and `@gpu(devices=N)` now survive MIR lowering and `lic verify` reports `mir_gpu_def` / `mir_gpu_multi_device_def`; invalid device counts and source-level vendor args are rejected before LKIR/codegen — [2026-05-28-gpu-decorator-mir.md](../release-notes/2026-05-28-gpu-decorator-mir.md).
 ```

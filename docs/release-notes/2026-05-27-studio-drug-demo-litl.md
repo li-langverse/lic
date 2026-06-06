@@ -49,5 +49,5 @@ N/A — same paint/chrome path; drug layout widens inspector (narrows viewport r
 
 ```markdown
 ### Added
-- **Studio drug vertical demo:** `studio_vertical_demo_frame` uses `studio_compose_shell_drug_litl` for profile 7 — [2026-05-27-studio-drug-demo-litl.md](docs/release-notes/2026-05-27-studio-drug-demo-litl.md).
+- **Studio drug vertical demo:** `studio_vertical_demo_frame` uses `studio_compose_shell_drug_litl` for profile 7 — [2026-05-27-studio-drug-demo-litl.md](../release-notes/2026-05-27-studio-drug-demo-litl.md).
 ```

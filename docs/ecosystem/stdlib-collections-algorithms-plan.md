@@ -4,7 +4,7 @@
 **Audience:** `lic` / `benchmarks` maintainers, agents  
 **Canonical types:** [Data structures roadmap](../superpowers/specs/2026-05-14-li-language-design.md#data-structures-roadmap) · [Collections and generics](../language/collections-generics.md)  
 **Ecosystem scheduling:** [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md) · **AL-14…AL-18**  
-**Proof honesty:** [provability-gaps.md](../verification/provability-gaps.md)
+**Proof honesty:** [provability-gaps.md](../../../verification/provability-gaps.md)
 
 This document is the **stdlib ADT program** companion to the language design spec: Python-parity containers and algorithms in `std/`, built on prelude heap types, with competitive benchmarks and security gates. **WP0** lands spec + harness design only; **WP1+** ships runtime code.
 
@@ -14,7 +14,7 @@ This document is the **stdlib ADT program** companion to the language design spe
 
 **Do not** implement prelude runtime, `std/collections`, `std/heap`, `std/algorithms`, HPC shapes, or Phase 4 ADTs until **WP-WA** (strict Wave A exit) is complete.
 
-**WP-WA exit** requires these **G-*** rows at **Done** (not Partial) in [provability-gaps.md](../verification/provability-gaps.md), with evidence in the **same PR** that updates the gap register:
+**WP-WA exit** requires these **G-*** rows at **Done** (not Partial) in [provability-gaps.md](../../../verification/provability-gaps.md), with evidence in the **same PR** that updates the gap register:
 
 | Gate | Gap ID | Master phase |
 |------|--------|--------------|
@@ -118,7 +118,7 @@ Deliverable: **AL-18** — btree/graph (and peers) only when a benchmark row dem
 
 ## Benchmark & security model (summary)
 
-- **Perf:** tier-1 stdlib rows ≤ **1.2× C++** (same policy as [competitive-engines-plan](../benchmarks/competitive-engines-plan.md)).
+- **Perf:** tier-1 stdlib rows ≤ **1.2× C++** (same policy as [competitive-engines-plan](https://github.com/li-langverse/lic/blob/main/docs/benchmarks/competitive-engines-plan.md)).
 - **Correctness:** Python `reference.py` scripts — `reference_only` in `kernel_honesty`; not perf oracle.
 - **Security:** hash-flood, OOB index (compile fail where possible), `stdlib_symbol_shadow` — see WP0-E / `bench_ecosystem.py` hooks.
 

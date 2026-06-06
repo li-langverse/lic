@@ -14,7 +14,7 @@
 - **`std/physics/chem.li`:** tag-only (`physics_chem_std_tag`); no GTO/SCF surface on `main` yet.
 - **Composable gate missing:** `li-tests/composable/import_chem_dft_smoke.li` not on `main`; `verticals.toml` honesty stays **stub / external_binary** until it passes.
 - **v1 implement target:** `chem-r2-dft-scf-gap` → `qm_dft_scf_energy` (418) with **Psi4 subprocess oracle** (H₂ STO-3G) before native RKS perf; validity/stability/accuracy axes locked.
-- **Evidence pack:** [chem-r0 whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) · [study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · catalog `qm_dft_scf_energy` (`size_label=harness pending`).
+- **Evidence pack:** [chem-r0 whitepaper](https://github.com/li-langverse/research-findings/blob/main/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) · [study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · catalog `qm_dft_scf_energy` (`size_label=harness pending`).
 - **No perf claims** this cycle; `threshold_ratio_cpp` (1.2) and tier-0 tolerances unchanged.
 
 ---
@@ -25,7 +25,7 @@
 
 | Step | Run | Artifact |
 |------|-----|----------|
-| `survey_sota-1` | `numerics_researcher-1779916590880` | [Study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · [Whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) |
+| `survey_sota-1` | `numerics_researcher-1779916590880` | [Study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · [Whitepaper](https://github.com/li-langverse/research-findings/blob/main/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) |
 | `digest` | `numerics_researcher-1779940539765` | This file · [Session log](../../ecosystem/research-sessions/chem_sim_algorithms-cycle.md) |
 
 ### Learned from (SOTA, 2–4)
@@ -135,4 +135,4 @@ Validity, stability (SCF convergence), and accuracy (basis-set monotonicity) rem
 - [Benchmark dashboard](https://li-langverse.github.io/benchmarks/)
 - [Sim chem backlog](../../ecosystem/sim-chem-research-backlog.md)
 - [Grading rubric](../../ecosystem/sim-algo-research-grading.md)
-- [Goal scaffold](../../../../li-cursor-agents/config/goal-scaffolds/chem_sim_algorithms.md)
+- [Goal scaffold](https://github.com/li-langverse/li-cursor-agents/blob/main/config/goal-scaffolds/chem_sim_algorithms.md)

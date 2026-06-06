@@ -35,7 +35,7 @@ Proof Explorer phases 1–8 grew the **proof-db catalog** and research corpus. C
 |----|------------|----------|-------------------------|
 | BUG-C-01 | `li-tests/tooling/dot4_loop_ensures_lean_stub_gap.sh` | **Resolved** — PR #696 | PASS |
 | BUG-C-02 | `bounds_guard_codegen_gap.sh` | Open | OPEN |
-| BUG-C-03 | `broadcast_len1_codegen_lean_gap.sh` | Open (Lean spec) | PASS |
+| BUG-C-03 | `broadcast_len1_codegen_lean_gap.sh` | Closed slice (add) | PASS |
 | BUG-C-04 | `horner_fma_numerically_stable_gap.sh` | Open | OPEN |
 | BUG-C-05 | `mat2_at2_mir_codegen_lean_gap.sh` | Open | OPEN |
 | BUG-C-06 | `matmul_loop_codegen_witness_gap.sh` | Open | OPEN |

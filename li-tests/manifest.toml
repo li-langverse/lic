@@ -284,7 +284,8 @@ note = "contract tiers: --allow-open-vc permits known-open postcondition (must n
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/sqrt_open_bound.li"
-outcome = "prove_lean_ok"
+outcome = "verify_open_ok"
+note = "intentional open control for vec3_len CallProc contrast (BUG-C-12); Float.abs ensures, no _proved"
 
 [[tests]]
 suite = "contracts_verify"

@@ -79,12 +79,7 @@ def broadcast_len1_add_float4_spec (a : LiArray Float 4) (b : LiArray Float 1)
   (result[3]! = a[3]! + b[0]!)
 
 def broadcast_len1_add_float4_eval (a : LiArray Float 4) (b : LiArray Float 1) : LiArray Float 4 :=
-  fun i =>
-    match i with
-    | ⟨0, _⟩ => a[0]! + b[0]!
-    | ⟨1, _⟩ => a[1]! + b[0]!
-    | ⟨2, _⟩ => a[2]! + b[0]!
-    | ⟨3, _⟩ => a[3]! + b[0]!
+  fun i => a[i]! + b[0]!
 
 theorem broadcast_len1_add_float4_spec_proved (a : LiArray Float 4) (b : LiArray Float 1) :
     broadcast_len1_add_float4_spec a b (broadcast_len1_add_float4_eval a b) := by
@@ -100,12 +95,7 @@ def broadcast_len1_mul_int4_spec (a : LiArray Int 4) (b : LiArray Int 1) (result
   (result[3]! = a[3]! * b[0]!)
 
 def broadcast_len1_mul_int4_eval (a : LiArray Int 4) (b : LiArray Int 1) : LiArray Int 4 :=
-  fun i =>
-    match i with
-    | ⟨0, _⟩ => a[0]! * b[0]!
-    | ⟨1, _⟩ => a[1]! * b[0]!
-    | ⟨2, _⟩ => a[2]! * b[0]!
-    | ⟨3, _⟩ => a[3]! * b[0]!
+  fun i => a[i]! * b[0]!
 
 theorem broadcast_len1_mul_int4_spec_proved (a : LiArray Int 4) (b : LiArray Int 1) :
     broadcast_len1_mul_int4_spec a b (broadcast_len1_mul_int4_eval a b) := by
@@ -121,12 +111,7 @@ def broadcast_len1_pow_int4_spec (a : LiArray Int 4) (b : LiArray Int 1) (result
   (result[3]! = a[3]! ^ Int.toNat b[0]!)
 
 def broadcast_len1_pow_int4_eval (a : LiArray Int 4) (b : LiArray Int 1) : LiArray Int 4 :=
-  fun i =>
-    match i with
-    | ⟨0, _⟩ => a[0]! ^ Int.toNat b[0]!
-    | ⟨1, _⟩ => a[1]! ^ Int.toNat b[0]!
-    | ⟨2, _⟩ => a[2]! ^ Int.toNat b[0]!
-    | ⟨3, _⟩ => a[3]! ^ Int.toNat b[0]!
+  fun i => a[i]! ^ Int.toNat b[0]!
 
 theorem broadcast_len1_pow_int4_spec_proved (a : LiArray Int 4) (b : LiArray Int 1) :
     broadcast_len1_pow_int4_spec a b (broadcast_len1_pow_int4_eval a b) := by

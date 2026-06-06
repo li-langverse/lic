@@ -1,12 +1,12 @@
 # BUG-C-06 — matmul loop witness
 
 **Gap script:** `li-tests/tooling/matmul_loop_codegen_witness_gap.sh`  
-**Status:** Open
+**Status:** Resolved (partial)
 
-## Summary (from gap script)
+## Summary
 
-P-linalg / G-lean: tier-1 IKJ matmul loop path (`ArrayMatMul2DF64`) has no loop→ensures witness. Contrast: `witness_dot4_int_loop` + `dot4_int_loop_eval_spec`.
+P-linalg / G-lean: tier-1 IKJ matmul loop path witness via `witness_matmul2_at2_spec` + `matmul2_at2_loop_eval_spec` (reuses closed 2×2 eval).
 
-## Owner action
+## Note
 
-Mirror dot4 loop witness pattern for general matmul loops.
+Full N×N loop↔ensures witness remains backlog; tier-1 FMA gate verified on `matmul_25x25_at_codegen.li`.

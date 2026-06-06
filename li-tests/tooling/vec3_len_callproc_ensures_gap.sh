@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# G-vc / P-linalg / P-float: vec3_len CallProc ensures chain (li_rt_sqrt(vec3_len_sq(a)))
-# opaque in AutoVC + trivial discharge; contrast sqrt_open_bound real Float.abs Prop (intentionally open).
+# G-vc / P-linalg / P-float: vec3_len CallProc ensures chain discharges via Li.Discharge vec3_len_* specs.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -19,12 +18,16 @@ if [[ ! -x "$LIC" ]]; then
   exit 0
 fi
 
-if ! grep -q 'case Expr::Kind::Call:' "$VC_EMIT"; then
-  echo "FAIL: expected Call handling in expr_to_lean" >&2
+if ! grep -q 'vec3_len_spec\|vec3_len_sq_spec' "$DISCHARGE"; then
+  echo "FAIL: Discharge.lean should define vec3_len chain specs" >&2
   exit 1
 fi
-if grep -qE 'vec3_len|vec3_len_sq|vec3_dot_spec' "$DISCHARGE"; then
-  echo "FAIL: Discharge.lean should not yet define vec3_len chain specs (P-linalg/P-float open)" >&2
+if ! grep -q 'witness_vec3_len' "$ROOT/compiler/verify/vc_witness.cpp"; then
+  echo "FAIL: expected witness_vec3_len* in vc_witness.cpp" >&2
+  exit 1
+fi
+if ! grep -q 'vec3_len_spec' "$VC_EMIT"; then
+  echo "FAIL: vc_emit_lean should wire vec3_len_spec discharge" >&2
   exit 1
 fi
 
@@ -33,40 +36,29 @@ fi
 
 rm -f "$AUTOVC"
 "$LIC" build --no-lean-verify "$CHAIN" -o /dev/null 2>/dev/null
-if ! grep -q 'VC ensures (opaque): source expr not yet translated' "$AUTOVC"; then
-  echo "FAIL: vec3_len / vec3_len_sq ensures should be opaque (CallProc in ensures)" >&2
+if grep -q 'VC ensures (opaque): source expr not yet translated' "$AUTOVC"; then
+  echo "FAIL: vec3_len chain ensures should not be opaque" >&2
   exit 1
 fi
-if ! grep -q 'vc_vec3_len_ensures_0 (a : Int) (result : Float) : Prop := True' "$AUTOVC"; then
-  echo "FAIL: vec3_len ensures should stub True after opaque emit" >&2
+if grep -q 'vc_vec3_len_ensures_0.*Prop := True' "$AUTOVC"; then
+  echo "FAIL: vc_vec3_len_ensures_0 should not stub True" >&2
   exit 1
 fi
-if ! grep -q 'vc_vec3_len_sq_ensures_0 (a : Int) (result : Float) : Prop := True' "$AUTOVC"; then
-  echo "FAIL: vec3_len_sq ensures should stub True (user CallProc in ensures)" >&2
+if ! grep -q 'Li.Discharge.vec3_len_spec' "$AUTOVC"; then
+  echo "FAIL: vec3_len should emit Li.Discharge.vec3_len_spec" >&2
   exit 1
 fi
-if ! grep -q 'vc_vec3_len_ensures_0_proved.*:= trivial' "$AUTOVC"; then
-  echo "FAIL: vec3_len ensures should vacuously discharge via trivial" >&2
+if ! grep -q 'vc_vec3_len_ensures_0_proved.*vec3_len_spec_proved' "$AUTOVC"; then
+  echo "FAIL: vec3_len ensures should discharge via vec3_len_spec_proved" >&2
   exit 1
 fi
-if grep -E 'def vc_vec3_(len|len_sq)_ensures_0.*Prop :=' "$AUTOVC" | grep -vq 'Prop := True$'; then
-  echo "FAIL: vec3_len chain ensures should stub True only (no real Lean predicate)" >&2
-  exit 1
-fi
-if grep -q 'Li\.Discharge\.\(vec3\|sqrt\)' "$AUTOVC" 2>/dev/null; then
-  echo "FAIL: AutoVC should not wire Discharge theorems for vec3_len chain yet" >&2
-  exit 1
-fi
-if ! grep -q 'vc_vec3_len_call0_li_rt_sqrt_requires_0.*Prop := True' "$AUTOVC"; then
-  echo "FAIL: extern li_rt_sqrt call-site requires should witness trivial (ensures true on callee)" >&2
+if ! grep -q 'Li.Discharge.vec3_len_sq_spec' "$AUTOVC"; then
+  echo "FAIL: vec3_len_sq should emit Li.Discharge.vec3_len_sq_spec" >&2
   exit 1
 fi
 
 chmod +x "$OPEN_GOALS"
-if ! "$OPEN_GOALS" "$AUTOVC" >/dev/null 2>&1; then
-  echo "FAIL: vec3_len chain should report zero open goals (vacuous True discharge)" >&2
-  exit 1
-fi
+"$OPEN_GOALS" "$AUTOVC" >/dev/null
 
 rm -f "$AUTOVC"
 "$LIC" build --no-lean-verify --allow-open-vc "$SQRT_OPEN" -o /dev/null 2>/dev/null
@@ -84,8 +76,8 @@ if "$OPEN_GOALS" "$AUTOVC" >/dev/null 2>&1; then
 fi
 
 if ! grep -A2 'math_linalg/vec3_ops.li' "$MANIFEST" | grep -q 'verify_ok'; then
-  echo "FAIL: manifest tiers vec3_ops as verify_ok despite CallProc chain gap (G-test-verify)" >&2
+  echo "FAIL: manifest tiers vec3_ops as verify_ok" >&2
   exit 1
 fi
 
-echo "PASS vec3_len_callproc_ensures_gap: opaque CallProc chain + trivial discharge; sqrt_open_bound stays open"
+echo "PASS vec3_len_callproc_ensures_gap: vec3_len chain → Li.Discharge; sqrt_open_bound stays open"

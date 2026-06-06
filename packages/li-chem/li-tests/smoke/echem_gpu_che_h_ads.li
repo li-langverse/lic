@@ -1,0 +1,20 @@
+# PH-SCI-GPU-19: @gpu CHE H* adsorption vs RHE + EDL/NEB electrochemistry stubs.
+import chem
+
+@gpu
+def echem_gpu_che_h_ads_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return echem_gpu_che_h_ads_progress()
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if echem_gpu_che_h_ads_smoke() != 1:
+    return 1
+  return 0

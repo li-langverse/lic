@@ -1,0 +1,35 @@
+# WP-ECHEM-09: AIMD interface — 8-step DFT-coupled MD energy drift oracle.
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() != 4:
+    return 1
+  if echem_aimd_step_count() != 8:
+    return 2
+  var drift: float = sim_scientific_oracle_checksum_echem_aimd()
+  if drift <= 0.0:
+    return 3
+  if drift >= 1.0e-2:
+    return 4
+  var aimd: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
+  if run_result_ok(aimd) != 1:
+    return 5
+  if aimd.algo_id != algo_echem_aimd_interface():
+    return 6
+  if aimd.vertical_id != vertical_echem_aimd():
+    return 7
+  if aimd.checksum != drift:
+    return 8
+  if aimd.checksum == 1.001:
+    return 9
+  var vert: SimRunResult = run_simulation(vertical_echem_aimd(), 0)
+  if run_result_ok(vert) != 1:
+    return 10
+  if vert.checksum != drift:
+    return 11
+  return 0

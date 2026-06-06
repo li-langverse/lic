@@ -1,12 +1,8 @@
 # BUG-C-08 — parallel disjoint Lean stubs
 
 **Gap script:** `li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh`  
-**Status:** Open
+**Status:** Resolved
 
-## Summary (from gap script)
+## Summary
 
-G-par (#387): parallel-for `disjoint_row` / `disjoint_elem` / `row_ok` contracts emit opaque `True` stubs in AutoVC — `expr_to_lean` Call handler only translates `abs()`, not disjoint builtins.
-
-## Owner action
-
-Structured parallel proofs in Lean; agent: no `proved` on parallel specimens until gap passes.
+G-par (#387): `disjoint_row` / `disjoint_elem` / `row_ok` contracts emit `Li.Discharge.*_spec` in AutoVC and discharge via `*_policy_witness` theorems.

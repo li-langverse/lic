@@ -19,6 +19,8 @@ benchmarks/results/share/*.png
 benchmarks/results/share/*.gif
 benchmarks/results/md_lennard_jones/traj_*.txt
 benchmarks/results/md_lennard_jones/*.csv
+benchmarks/results/.chem_dft_bench_bin/
+benchmarks/results/.chem_dft_build.err
 build/bench/
 
 compile_commands.json

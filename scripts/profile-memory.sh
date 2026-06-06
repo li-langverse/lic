@@ -83,7 +83,7 @@ int main(void) {
 EOF
   "$cc" -fsanitize=address -fno-omit-frame-pointer -g \
     -I"$ROOT/runtime" \
-    "$driver" "$ROOT/runtime/li_rt.c" -o "$out"
+    "$driver" "$ROOT/runtime/li_rt.c" "$ROOT/runtime/li_par_pool.c" -o "$out" -pthread
   rm -f "$driver"
   "$out"
 }

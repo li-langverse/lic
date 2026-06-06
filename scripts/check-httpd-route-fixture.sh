@@ -25,8 +25,11 @@ int main(void) {
 }
 EOF
 
+RT_PAR_O="$ROOT/build/httpd_li_par_pool.o"
+
 "$CC" -c "$ROOT/runtime/li_rt.c" -o "$RT_O"
+"$CC" -c "$ROOT/runtime/li_par_pool.c" -o "$RT_PAR_O"
 "$CC" -c "$SRC" -o "$ROOT/build/httpd_route_fixture_main.o"
-"$CC" "$RT_O" "$ROOT/build/httpd_route_fixture_main.o" -lm -o "$BIN"
+"$CC" "$RT_O" "$RT_PAR_O" "$ROOT/build/httpd_route_fixture_main.o" -lm -pthread -o "$BIN"
 "$BIN"
 echo "check-httpd-route-fixture: OK"

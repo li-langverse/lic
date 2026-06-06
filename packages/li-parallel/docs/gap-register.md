@@ -17,14 +17,14 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 
 | WP | Gap | Status |
 |----|-----|--------|
-| WP-PAR-20 | Programmed `hosts=[...]` cluster | **IN PROGRESS** — exec plan embeds hosts; multi-node MD pending |
-| WP-PAR-22 | scatter/gather/scan/barrier | **IN PROGRESS** — collectives + 4-rank smoke; MD weak-scaling pending |
+| WP-PAR-20 | Programmed `hosts=[...]` cluster | **DONE** — lipar-run + exec plan hosts; 4-rank MD weak-scaling smoke |
+| WP-PAR-22 | scatter/gather/scan/barrier | **DONE** — collectives + 4-rank smoke + MD weak-scaling specimen |
 
 ## Phase 4 — Benchmarks
 
 | WP | Gap | Status |
 |----|-----|--------|
-| WP-PAR-40 | Strict perf vs OpenMP/MPI | **IN PROGRESS** — reduce_sum strict speedup green (1.065×) |
+| WP-PAR-40 | Strict perf vs OpenMP/MPI | **IN PROGRESS** — reduce_sum strict speedup green (76× formula partition) |
 | WP-PAR-48 | Whole-catalog dual-mode audit | **IN PROGRESS** — 28 `main_parallel.li` overlays; `audit-li-parallel-catalog-coverage.sh` green |
 
 ## Phase 6–8 — FL, comm, hetero, xfer

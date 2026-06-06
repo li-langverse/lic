@@ -11,6 +11,7 @@ bash "$ROOT/li-tests/tooling/li_dpar_for_smoke.sh"
 bash "$ROOT/li-tests/tooling/li_dpar_for_codegen_smoke.sh"
 chmod +x "$ROOT/li-tests/tooling/li_dpar_collective_smoke.sh"
 bash "$ROOT/li-tests/tooling/li_dpar_collective_smoke.sh"
+chmod +x "$ROOT/li-tests/tooling/li_dpar_md_weak_scaling_smoke.sh"
+bash "$ROOT/li-tests/tooling/li_dpar_md_weak_scaling_smoke.sh"
 
-li_fail "WP-PAR-20–22 partial — programmed cluster multi-node MD weak-scaling specimen pending"
-exit 1
+li_ok "check-li-parallel-distributed-gate.sh: PASS (WP-PAR-20–22 programmed cluster + MD weak-scaling)"

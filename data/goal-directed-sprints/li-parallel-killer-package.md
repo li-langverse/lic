@@ -55,9 +55,9 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-20** | TCP bootstrap `li_dpar.c` | **DONE** — env ranks only |
+| **WP-PAR-20** | TCP bootstrap `li_dpar.c` | **DONE** — programmed cluster via lipar-run + exec plan |
 | **WP-PAR-21** | Block partition helpers | **DONE** |
-| **WP-PAR-22** | Collectives | **IN PROGRESS** — bcast/allreduce ring only; scatter/gather/scan/barrier pending |
+| **WP-PAR-22** | Collectives | **DONE** — scatter/gather/scan/barrier + MD weak-scaling smoke |
 | **WP-PAR-23** | `distributed for` MIR | **DONE** |
 | **WP-PAR-24** | `rank()` / `world_size()` | **DONE** |
 

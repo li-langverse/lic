@@ -1,14 +1,14 @@
 {
   "sprint": "li-parallel-killer-package",
-  "phase_key": "phase-4-benchmarks",
-  "phase_index": 4,
+  "phase_key": "phase-5-docs",
+  "phase_index": 5,
   "branch": "cursor/li-parallel-native-hpc",
   "started": "2026-06-06",
-  "updated_at": "2026-06-06T08:00:00Z",
+  "updated_at": "2026-06-06T12:00:00Z",
   "last_gate": {
     "progress": "pass",
-    "killer": "pass",
-    "killer_quick": "LIPAR_KILLER_SKIP_FULL=1"
+    "killer": "fail",
+    "killer_blocker": "check-li-parallel-docs-gate.sh"
   },
   "completed_phases": [],
   "pending_phases": [
@@ -21,8 +21,10 @@
     "phase-99-killer-gate"
   ],
   "current_wps": [
-    "WP-PAR-02",
-    "WP-PAR-40",
+    "WP-PAR-07",
+    "WP-PAR-48",
+    "WP-PAR-50",
+    "WP-PAR-79",
     "WP-PAR-99"
   ],
   "north_star_fit": {
@@ -30,5 +32,6 @@
     "ph_ids": ["G-par", "G-par-dist", "PH-PAR-1"]
   },
   "progress_gate": "scripts/check-li-parallel-full-suite.sh",
-  "completion_gate": "scripts/check-li-parallel-killer-gate.sh"
+  "completion_gate": "scripts/check-li-parallel-killer-gate.sh",
+  "goal_file": "data/goal-directed-sprints/li-parallel-killer-package.md"
 }

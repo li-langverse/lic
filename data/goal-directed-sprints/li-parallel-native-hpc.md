@@ -1,99 +1,23 @@
-# li-parallel — Native Parallel + Distributed HPC (goal-directed sprint)
+# li-parallel — Native Parallel + Distributed HPC (redirect)
 
-**Repos:** `lic` (primary), `benchmarks`, `li-cursor-agents  
-**Branch:** `cursor/li-parallel-native-hpc`  
-**Runner:** goal-directed SDK `code_implementer` (`LI_SWARM_EXTERNAL=1`, `LOOP_MAX=0` until gate passes)
+**Canonical sprint goal:** [`li-parallel-killer-package.md`](./li-parallel-killer-package.md)
 
-## Mission
+This file is retained for K8s ConfigMap compatibility during rollout. All WP status, phase tracking, and gate definitions live in the killer package goal.
 
-Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread pool, reductions, TCP distributed runtime, full org benchmark suite dual-mode (`li_serial` + `li_parallel`).
+## Gates
 
-## Phase 0 — Foundation
-
-| WP | Deliverable | Status |
-|----|-------------|--------|
-| **WP-PAR-00** | Spec `docs/superpowers/specs/2026-06-06-li-parallel-design.md` + G-par-dist row | **DONE** — spec committed |
-| **WP-PAR-01** | Package `packages/li-parallel/` + workspace member | **DONE** — scaffold + import `parallel` |
-| **WP-PAR-02** | `lipar-suite.sh` wraps `run-full-benchmark-suite.sh` | **DONE** — serial + parallel passes |
-| **WP-PAR-47** | `check-li-parallel-full-suite.sh` CI gate | **DONE** — Class A PR profile via `lipar-run-class-a.sh`; LIC_ROOT pinned for agent workspaces |
-
-## Phase 1 — Shared-memory runtime
-
-| WP | Deliverable | Status |
-|----|-------------|--------|
-| **WP-PAR-10** | Persistent pool `li_par_pool.c` | **DONE** — Linux pthread pool parallel static dispatch (no ephemeral spawn); Win32 thread pool |
-| **WP-PAR-11** | Work-stealing scheduler | **DONE** — `LI_PAR_SCHED_STEAL` + `LI_PAR_SCHEDULE=steal`; static partition + chunk steal; smoke `li_par_pool_steal_smoke` |
-| **WP-PAR-12** | static/dynamic/guided schedulers | **DONE** — `LI_PAR_SCHEDULE` + pool API; dynamic atomic chunks + guided decreasing chunks; smoke `li_par_pool_schedule_smoke` |
-| **WP-PAR-13** | Tree reductions `li_par_reduce.c` | **DONE** — sum/min/max f64, sum i64 |
-| **WP-PAR-14** | Windows thread pool | **DONE** — no serial `_WIN32` fallback |
-| **WP-PAR-15** | Compiler `reduce` lowering | **DONE** — `par_sum(a)` → `ParReduceSumF64` / `li_par_reduce_sum_f64`; `parallel for reduce(+|min|max: var)` Phase 1.1–1.2 |
-| **WP-PAR-16** | Reduction policy | **DONE** — `reduce_tile_disjoint` proof helper ties tree reductions to G-par disjoint tiles |
-
-## Phase 2 — Distributed runtime
-
-| WP | Deliverable | Status |
-|----|-------------|--------|
-| **WP-PAR-20** | TCP bootstrap `li_dpar.c` | **DONE** — env ranks + localhost mesh |
-| **WP-PAR-21** | Block partition helpers | **DONE** — `li_dpar_block_partition_*` |
-| **WP-PAR-22** | Collectives | **DONE** — bcast/allreduce f64/i64 ring |
-| **WP-PAR-23** | `distributed for` MIR | **DONE** — `DParFor` → `li_distributed_for_i64`; G-par-dist block partition; smoke `li_dpar_for_codegen_smoke` |
-| **WP-PAR-24** | `rank()` / `world_size()` | **DONE** — C API + package `distributed.li` |
-
-## Phase 3 — Package API
-
-| WP | Deliverable | Status |
-|----|-------------|--------|
-| **WP-PAR-30** | Proof helpers | **DONE** — `disjoint_tile`, `disjoint_block` lemmas |
-| **WP-PAR-31** | `par_axpy`, `par_matmul_outer` | **DONE** — `par_outer_elem_*` + `par_matmul_outer` in `kernels.li` |
-| **WP-PAR-32** | Ghost exchange templates | **DONE** — `ghost.li` 1D halo indices + exchange sketch |
-
-## Phase 4 — Benchmarks dual-mode
-
-| WP | Deliverable | Status |
-|----|-------------|--------|
-| **WP-PAR-45** | Tier1 Class A parallel variants | **DONE** — matmul_blocked, reduce_sum, simd_dot, num_dot_axpy |
-| **WP-PAR-46** | Tier2 MD/FEA parallel variants | **DONE** — md_lennard_jones, fea_stiffness_assembly |
-| **WP-PAR-44** | Matrix report `li_serial`/`li_parallel` columns | **DONE** — `lipar-dual-mode-csv.py` tags serial/parallel passes; `num_dot_axpy` registry alias |
-| **WP-PAR-40–43** | Perf gates vs OpenMP/MPI | **DONE** — `check-li-parallel-perf-gate.sh` (speedup≥1.05× vs serial when wall≥5ms; li_parallel≤1.2× cpp); advisory CI via `.github/workflows/li-parallel-gate.yml` |
-
-## Completion gate
+**Progress (each agent loop):**
 
 ```bash
 bash scripts/check-li-parallel-full-suite.sh
 ```
 
-Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and verifies dual-mode CSV rows for Class A tier1+2.
+**Completion (ship criterion):**
 
-**Agent rules:** Do not weaken gates. Update this file honestly each loop.
+```bash
+bash scripts/check-li-parallel-killer-gate.sh
+```
 
-**Gate evidence (2026-06-06, agent run):** `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s); dual-mode rows for matmul_blocked, reduce_sum, simd_dot, num_dot_axpy; perf advisory (strict=0). **CI fix:** `lipar-run-class-a.sh` uses lic `lic-bin-select.sh` instead of missing `benchmarks/scripts/lib/resolve-lic-bench.sh` on sibling checkout ref.
+See `li-parallel-killer-package.md` for the full phase checklist (Phases 0–99), chip package rules, and honest WP status.
 
-**Gate evidence (2026-06-06, agent run 2):** WP-PAR-31/32 package slice — `lic build packages/li-parallel/li-tests/smoke/kernels_ghost.li --allow-open-vc` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~8s).
-
-**Gate evidence (2026-06-06, agent run 3):** WP-PAR-12 schedulers — `bash li-tests/tooling/li_par_pool_schedule_smoke.sh` → exit 0; dynamic + guided cover all 64 iterations under chunk_size=7.
-
-**Gate evidence (2026-06-06, agent run 4):** WP-PAR-11 work-stealing — `bash li-tests/tooling/li_par_pool_steal_smoke.sh` → exit 0; steal schedule covers all 64 iterations under chunk_size=7 with 4 workers.
-
-**Gate evidence (2026-06-06, agent run 5):** WP-PAR-15 reduce lowering — `bash li-tests/tooling/li_par_reduce_codegen_smoke.sh` → exit 0; `par_sum` on `array[64,float]` links `li_par_reduce.c` + pool; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0.
-
-**Gate evidence (2026-06-06, agent run 6):** WP-PAR-23/16 — `bash li-tests/tooling/li_dpar_for_smoke.sh` → exit 0; `bash li-tests/tooling/li_dpar_for_codegen_smoke.sh` → exit 0; `lic build packages/li-parallel/li-tests/smoke/kernels_ghost.li --allow-open-vc` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~8s).
-
-**Gate evidence (2026-06-06, agent run 7):** WP-PAR-31 E0303 fix — `par_outer_elem_*` helpers with `ensures result == …`; `lic build packages/li-parallel/li-tests/smoke/kernels_ghost.li` → exit 0 (verify_ok); `bash li-tests/run_all.sh` → 269 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~12s).
-
-**Gate evidence (2026-06-06, agent run 8):** WP-PAR-15 Phase 1.1 — `parallel for reduce(+: total)` → `li_parallel_for_reduce_add_f64` + TLS partials; `bash li-tests/tooling/li_par_for_reduce_codegen_smoke.sh` → exit 0; `lic build li-tests/parallel_codegen/par_for_reduce_f64.li --cores=4` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~11s).
-
-**Gate evidence (2026-06-06, agent run 9):** WP-PAR-15 Phase 1.2 — `parallel for reduce(min:|max: var)` → `li_parallel_for_reduce_min_f64` / `li_parallel_for_reduce_max_f64` + TLS partials; `bash li-tests/tooling/li_par_for_reduce_minmax_codegen_smoke.sh` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~11s).
-
-**Gate evidence (2026-06-06, agent run 10):** Sprint completion re-verify — `./scripts/build.sh` → exit 0; `bash li-tests/run_all.sh` → 270 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s); perf gate skips `simd_dot`/`num_dot_axpy` speedup (simd_intrathread per registry); all Class A dual-mode rows present.
-
-**Gate evidence (2026-06-06, agent run 11):** Completion gate re-verify — `./scripts/build.sh` → exit 0; `bash li-tests/run_all.sh` → 270 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s); dual-mode rows for matmul_blocked, reduce_sum, simd_dot, num_dot_axpy; perf advisory (strict=0, reduce_sum speedup gap noted).
-
-**Gate evidence (2026-06-06, agent run 12):** WP-PAR-13 pool dispatch fix — `li_par_reduce_sum_f64` partitions via `li_par_pool_fork_join`; `bash li-tests/tooling/li_par_reduce_sum_smoke.sh` → exit 0; reduce_sum bench override (`LI_PAR_REDUCE_RT` + `LI_PARALLEL=1`) → ~1.10× speedup (5-run mean); `bash li-tests/run_all.sh` → 271 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s).
-
-**Gate evidence (2026-06-06, agent run 13):** Sprint completion re-verify — `./scripts/build.sh` → exit 0; `bash li-tests/run_all.sh` → 271 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~11s); dual-mode rows for matmul_blocked, reduce_sum, simd_dot, num_dot_axpy; reduce_sum speedup 1.056× (meets 1.05× threshold); perf advisory strict=0 (reduce_sum vs cpp ratio 1.42× noted).
-
-**Gate evidence (2026-06-06, agent run 14):** WP-PAR-99 killer gate — `benchmarks-env.sh` discards stale `BENCHMARKS_ROOT`; `LIPAR_KILLER_SKIP_FULL=1 bash li-tests/tooling/li_parallel_killer_gate_smoke.sh` → exit 0 (~9s); `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-killer-gate.sh` → exit 0 (~3m38s, 162 benchmarks, tier2 present); killer loop state at `data/li-parallel-killer-loop/`.
-
-| WP | Deliverable | Status |
-|----|-------------|--------|
-| **WP-PAR-99** | Killer gate script | **IN PROGRESS** — smokes + PR + whole-suite path green; `LIPAR_KILLER_SKIP_FULL=1` for CI quick profile |
+**Agent rules:** Do not weaken gates. Do not mark phases **DONE** until sub-gates pass. `LIPAR_KILLER_SKIP_FULL` is removed.

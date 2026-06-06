@@ -22,7 +22,10 @@ import json, sys
 from pathlib import Path
 lib = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 want = sys.argv[2]
-got = lib.get("lic_commit", "")
+got = lib.get("lic_commit") or ""
+if not isinstance(got, str) or not got:
+    print(f"wp-t10-03: lic_commit missing or null in {sys.argv[1]}", file=sys.stderr)
+    sys.exit(1)
 if not got.startswith(want[:8]):
     print(f"wp-t10-03: lic_commit mismatch {got[:12]} vs {want[:12]}", file=sys.stderr)
     sys.exit(1)

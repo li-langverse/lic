@@ -23,3 +23,21 @@ suite = "smoke"
 file = "smoke/scientific_gpu_md_oracle.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-02 @gpu MD/heat oracle checksums"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/echem_aimd_interface_smoke.li"
+outcome = "verify_ok"
+note = "WP-ECHEM-09 AIMD interface registry + 8-step DFT energy drift oracle"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/echem_gc_aimd_interface_smoke.li"
+outcome = "verify_ok"
+note = "WP-ECHEM-12 grand-canonical SHE AIMD registry + 10-step charge neutrality oracle"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/echem_sei_kmc_interface_smoke.li"
+outcome = "verify_ok"
+note = "WP-ECHEM-15 SEI growth kMC registry + 48-step NEB-barrier deposition oracle"

@@ -1,0 +1,23 @@
+# Parallel BLAS-style kernels (WP-PAR-31).
+
+def par_axpy(n: int, a: float, x: array[1024, float], y: var array[1024, float]) -> unit
+  requires n >= 0
+  requires n <= 1024
+  ensures true
+  decreases n
+=
+  var i: int = 0
+  while i < n
+    y[i] = y[i] + a * x[i]
+    i = i + 1
+
+def par_copy(n: int, src: array[1024, float], dst: var array[1024, float]) -> unit
+  requires n >= 0
+  requires n <= 1024
+  ensures true
+  decreases n
+=
+  var i: int = 0
+  while i < n
+    dst[i] = src[i]
+    i = i + 1

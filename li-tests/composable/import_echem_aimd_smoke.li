@@ -1,0 +1,21 @@
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if echem_aimd_step_count() != 8:
+    return 1
+  var drift: float = sim_scientific_oracle_checksum_echem_aimd()
+  if drift >= 1.0e-2:
+    return 2
+  var aimd: SimRunResult = run_algo(algo_echem_aimd_interface(), 0)
+  if run_result_ok(aimd) != 1:
+    return 3
+  if aimd.checksum != drift:
+    return 4
+  if aimd.checksum == 1.001:
+    return 5
+  return 0

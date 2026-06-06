@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-06-05T07:19:52Z",
+  "suite": "ph-sci-chem-dft-li",
+  "smoke": "packages/li-chem/li-tests/benchmarks/chem_dft_energy_bench.li",
+  "workload": "chem_dft_energy_kernel_hartree_x64",
+  "kernel": "chem.dft_energy_kernel_hartree",
+  "compile_ok": false,
+  "executed": false,
+  "validity_gate_pass": false,
+  "cpu_sec": 0.002087,
+  "energy_hartree": -2.316182628586,
+  "energy_source": "li_scaffold_python_mirror",
+  "device": "cpu",
+  "run_exit_code": 1,
+  "stderr_tail": "po/build-wsl/compiler/lic/lic: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.38' not found (required by /app/data/workspaces/li-langverse/lic/code_implementer-1780643491091/repo/build-wsl/compiler/lic/lic)\n/app/data/workspaces/li-langverse/lic/code_implementer-1780643491091/repo/build-wsl/compiler/lic/lic: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by /app/data/workspaces/li-langverse/lic/code_implementer-1780643491091/repo/build-wsl/compiler/lic/lic)"
+}

@@ -1,0 +1,23 @@
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if echem_gc_aimd_step_count() != 10:
+    return 1
+  if echem_gc_charge_neutrality_smoke() != 1:
+    return 2
+  var drift: float = sim_scientific_oracle_checksum_echem_gc_aimd()
+  if drift >= 0.05:
+    return 3
+  var gc: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 0)
+  if run_result_ok(gc) != 1:
+    return 4
+  if gc.checksum != drift:
+    return 5
+  if gc.checksum == 1.001:
+    return 6
+  return 0

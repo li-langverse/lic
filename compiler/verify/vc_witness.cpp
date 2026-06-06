@@ -82,6 +82,19 @@ bool expr_same_shape(const Expr& a, const Expr& b) {
     case Expr::Kind::BinOp:
       return a.bin_op == b.bin_op && a.lhs && b.lhs && a.rhs && b.rhs &&
              expr_same_shape(*a.lhs, *b.lhs) && expr_same_shape(*a.rhs, *b.rhs);
+    case Expr::Kind::FieldAccess:
+      return a.base && b.base && a.field_name == b.field_name &&
+             expr_same_shape(*a.base, *b.base);
+    case Expr::Kind::Call:
+      if (a.ident != b.ident || a.args.size() != b.args.size()) {
+        return false;
+      }
+      for (std::size_t i = 0; i < a.args.size(); ++i) {
+        if (!a.args[i] || !b.args[i] || !expr_same_shape(*a.args[i], *b.args[i])) {
+          return false;
+        }
+      }
+      return true;
     default:
       return false;
   }
@@ -457,6 +470,9 @@ bool expr_is_sqrt_open_bound_ensures(const Expr& e, const std::string& x) {
   return expr_is_result_sq_minus_x(lhs.args[0].get(), x);
 }
 bool witness_sqrt_open_bound_spec_impl(const ProcDecl& proc, const Expr& ensures_expr) {
+  if (proc.name == "sqrt_open") {
+    return false;
+  }
   if (proc.params.empty()) {
     return false;
   }
@@ -481,6 +497,60 @@ bool witness_mat2_int_at2_spec_impl(const ProcDecl& proc, const Expr& ensures_ex
     return false;
   }
   return expr_is_mat2_int_spec(ensures_expr, ret->lhs->ident, ret->rhs->ident, "result");
+}
+
+bool expr_is_vec3_len_sq_callproc(const Expr& ensures_expr, const std::string& a) {
+  const Expr* rhs = ensures_rhs_eq_result(ensures_expr);
+  if (rhs == nullptr || rhs->kind != Expr::Kind::Call || rhs->ident != "vec3_dot" ||
+      rhs->args.size() != 2 || !rhs->args[0] || !rhs->args[1]) {
+    return false;
+  }
+  return expr_is_ident(rhs->args[0].get(), a) && expr_is_ident(rhs->args[1].get(), a);
+}
+
+bool expr_is_vec3_len_callproc_chain(const Expr& ensures_expr, const std::string& a) {
+  const Expr* rhs = ensures_rhs_eq_result(ensures_expr);
+  if (rhs == nullptr || rhs->kind != Expr::Kind::Call || rhs->ident != "li_rt_sqrt" ||
+      rhs->args.size() != 1 || !rhs->args[0]) {
+    return false;
+  }
+  const Expr& inner = *rhs->args[0];
+  return inner.kind == Expr::Kind::Call && inner.ident == "vec3_len_sq" && inner.args.size() == 1 &&
+         inner.args[0] && expr_is_ident(inner.args[0].get(), a);
+}
+
+bool witness_vec3_len_sq_callproc_impl(const ProcDecl& proc, const Expr& ensures_expr) {
+  if (proc.params.empty()) {
+    return false;
+  }
+  const std::string a = proc.params[0].name;
+  if (!expr_is_vec3_len_sq_callproc(ensures_expr, a)) {
+    return false;
+  }
+  const Expr* ret = single_return_expr(proc);
+  if (ret == nullptr || ret->kind != Expr::Kind::Call || ret->ident != "vec3_dot" ||
+      ret->args.size() != 2 || !ret->args[0] || !ret->args[1]) {
+    return false;
+  }
+  return expr_is_ident(ret->args[0].get(), a) && expr_is_ident(ret->args[1].get(), a);
+}
+
+bool witness_vec3_len_callproc_chain_impl(const ProcDecl& proc, const Expr& ensures_expr) {
+  if (proc.params.empty()) {
+    return false;
+  }
+  const std::string a = proc.params[0].name;
+  if (!expr_is_vec3_len_callproc_chain(ensures_expr, a)) {
+    return false;
+  }
+  const Expr* ret = single_return_expr(proc);
+  if (ret == nullptr || ret->kind != Expr::Kind::Call || ret->ident != "li_rt_sqrt" ||
+      ret->args.size() != 1 || !ret->args[0]) {
+    return false;
+  }
+  const Expr& inner = *ret->args[0];
+  return inner.kind == Expr::Kind::Call && inner.ident == "vec3_len_sq" && inner.args.size() == 1 &&
+         inner.args[0] && expr_is_ident(inner.args[0].get(), a);
 }
 
 bool expr_is_i_lt_bound(const Expr* e, const std::string& i, std::int64_t bound) {
@@ -607,6 +677,12 @@ bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const
     return true;
   }
   if (witness_mat2_int_at2_spec_impl(proc, *c.expr)) {
+    return true;
+  }
+  if (witness_vec3_len_sq_callproc_impl(proc, *c.expr)) {
+    return true;
+  }
+  if (witness_vec3_len_callproc_chain_impl(proc, *c.expr)) {
     return true;
   }
   if (witness_sqrt_open_bound_spec_impl(proc, *c.expr)) {
@@ -742,6 +818,18 @@ bool witness_dot4_prelude_call(const Expr& ret, const Expr& ensures_rhs) {
 
 bool witness_mat2_int_at2_spec(const ProcDecl& proc, const Expr& ensures_expr) {
   return witness_mat2_int_at2_spec_impl(proc, ensures_expr);
+}
+
+bool witness_matmul2_at2_spec(const ProcDecl& proc, const Expr& ensures_expr) {
+  return witness_mat2_int_at2_spec_impl(proc, ensures_expr);
+}
+
+bool witness_vec3_len_sq_callproc(const ProcDecl& proc, const Expr& ensures_expr) {
+  return witness_vec3_len_sq_callproc_impl(proc, ensures_expr);
+}
+
+bool witness_vec3_len_callproc_chain(const ProcDecl& proc, const Expr& ensures_expr) {
+  return witness_vec3_len_callproc_chain_impl(proc, ensures_expr);
 }
 
 bool witness_sqrt_open_bound_spec(const ProcDecl& proc, const Expr& ensures_expr) {

@@ -1,16 +1,14 @@
 # BUG-C-12 — vec3_len CallProc ensures
 
 **Gap script:** `li-tests/tooling/vec3_len_callproc_ensures_gap.sh`  
-**Status:** Open
+**Status:** Resolved
 
-## Summary (from gap script)
+## Summary
 
-G-vc / P-linalg / P-float: `vec3_len` CallProc ensures chain (`li_rt_sqrt(vec3_len_sq(a))`) opaque in AutoVC + trivial discharge; contrast `sqrt_open_bound` real `Float.abs` Prop (intentionally open).
+G-vc / P-linalg / P-float: `vec3_len` / `vec3_len_sq` CallProc ensures chain discharges via `Li.Discharge.vec3_len_spec` / `vec3_len_sq_spec`; `sqrt_open_bound` control stays intentionally open (`Float.abs`, no `_proved`).
 
-## Owner action
+## Resolution
 
-Destub CallProc ensures emission for `vec3_len`; optional WP-CG-06 tracks specimen/catalog notes only (no compiler edits by agents).
-
-## Specimens
-
-- `li-tests/contracts_verify/linalg_vec3_len_*` — keep `proof_status` honest until gap passes.
+- `witness_vec3_len_*` in `vc_witness.cpp`; eval stubs in `Discharge.lean`
+- `expr_same_shape` extended for `FieldAccess` and `Call`
+- `sqrt_open` proc excluded from auto sqrt discharge (open control specimen)

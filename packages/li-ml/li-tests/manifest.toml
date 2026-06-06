@@ -42,6 +42,12 @@ note = "T-PKG-li-ml-mlp-forward PH-ML Wave 4"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/ml_echem_surrogate.li"
+outcome = "compile_open_ok"
+note = "WP-ECHEM-14 ML echem energy surrogate MLP forward smoke"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/ml_matmul_16_flat.li"
 outcome = "compile_open_ok"
 note = "PH-ML Wave 6 WP-ML-11"

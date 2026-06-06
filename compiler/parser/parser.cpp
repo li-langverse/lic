@@ -1016,6 +1016,61 @@ Stmt Parser::parse_stmt() {
     s.while_body = parse_block();
     return s;
   }
+  if (at(TokenKind::Ident) && cur().text == "distributed") {
+    const Token start_tok = cur();
+    i++;
+    if (!consume_for_kw()) {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "expected 'for' after 'distributed'");
+    }
+    s.kind = Stmt::Kind::DistributedFor;
+    if (!at(TokenKind::Ident)) {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "expected loop variable");
+    } else {
+      s.par_iter = std::string(cur().text);
+      i++;
+    }
+    if (!at(TokenKind::Ident) || cur().text != "in") {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "expected 'in' in distributed for");
+    } else {
+      i++;
+    }
+    if (at(TokenKind::IntLit)) {
+      s.par_start = cur().int_value;
+      i++;
+    }
+    if (at(TokenKind::DotDotLt)) {
+      i++;
+    } else {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "distributed for requires '..<' range");
+    }
+    if (at(TokenKind::IntLit)) {
+      s.par_end = cur().int_value;
+      i++;
+    }
+    skip_newlines();
+    if (accept(TokenKind::Indent)) {
+      skip_newlines();
+      while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+             at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+             at(TokenKind::KwInvariant)) {
+        s.par_contracts.push_back(parse_contract());
+      }
+      expect(TokenKind::Dedent, "dedent");
+      skip_newlines();
+    }
+    if (accept(TokenKind::Eq)) {
+      skip_newlines();
+      if (at(TokenKind::Indent)) {
+        s.par_body = parse_block();
+      }
+    }
+    s.span = {start_tok.start, cur().start};
+    return s;
+  }
   if (at(TokenKind::Ident) && cur().text == "parallel") {
     const Token start_tok = cur();
     i++;

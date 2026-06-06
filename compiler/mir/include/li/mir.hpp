@@ -67,6 +67,8 @@ enum class MirOp {
   SimdHorizSumF64,
   SimdCopyF64,
   OmpParallelFor,
+  /** `distributed for` — block partition via runtime/li_dpar.c (**G-par-dist**, WP-PAR-23). */
+  DParFor,
   /** `par_sum(a)` on float tiles → runtime/li_par_reduce.c tree reduce (WP-PAR-15). */
   ParReduceSumF64,
   Label,

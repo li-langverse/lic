@@ -1146,6 +1146,25 @@ struct EmitCtx {
              llvm::ConstantInt::get(i32_ty(context), runtime_team_size)});
         return true;
       }
+      case MirOp::DParFor: {
+        llvm::Function* par_fn = module->getFunction(ins.callee);
+        if (!par_fn) {
+          return true;
+        }
+        llvm::FunctionType* iter_ty =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
+        llvm::FunctionType* dpar_ty = llvm::FunctionType::get(
+            llvm::Type::getVoidTy(context),
+            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo()},
+            false);
+        llvm::FunctionCallee dpar_rt =
+            module->getOrInsertFunction("li_distributed_for_i64", dpar_ty);
+        builder->CreateCall(
+            dpar_rt,
+            {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
+             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn});
+        return true;
+      }
       case MirOp::ArrayAlloc: {
         llvm::AllocaInst* slot = nullptr;
         if (ins.array_is_matrix) {
@@ -1639,6 +1658,13 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                                llvm::PointerType::getUnqual(llvm::FunctionType::get(
                                    llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
                                i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_distributed_for_i64",
+      llvm::FunctionType::get(llvm::Type::getVoidTy(context),
+                              {i64_ty(context), i64_ty(context),
+                               llvm::PointerType::getUnqual(llvm::FunctionType::get(
+                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false))},
                               false));
   llvm::Type* f64_ptr = llvm::PointerType::getUnqual(f64);
   module->getOrInsertFunction(

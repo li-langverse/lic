@@ -27,7 +27,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 | **WP-PAR-13** | Tree reductions `li_par_reduce.c` | **DONE** — sum/min/max f64, sum i64 |
 | **WP-PAR-14** | Windows thread pool | **DONE** — no serial `_WIN32` fallback |
 | **WP-PAR-15** | Compiler `reduce` lowering | **DONE** — `par_sum(a)` → `ParReduceSumF64` / `li_par_reduce_sum_f64`; `parallel for` reduce clause Phase 1.1 |
-| **WP-PAR-16** | Reduction policy | **STUB** — existing G-par disjoint gates |
+| **WP-PAR-16** | Reduction policy | **DONE** — `reduce_tile_disjoint` proof helper ties tree reductions to G-par disjoint tiles |
 
 ## Phase 2 — Distributed runtime
 
@@ -36,7 +36,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 | **WP-PAR-20** | TCP bootstrap `li_dpar.c` | **DONE** — env ranks + localhost mesh |
 | **WP-PAR-21** | Block partition helpers | **DONE** — `li_dpar_block_partition_*` |
 | **WP-PAR-22** | Collectives | **DONE** — bcast/allreduce f64/i64 ring |
-| **WP-PAR-23** | `distributed for` MIR | **STUB** — runtime + package surface only |
+| **WP-PAR-23** | `distributed for` MIR | **DONE** — `DParFor` → `li_distributed_for_i64`; G-par-dist block partition; smoke `li_dpar_for_codegen_smoke` |
 | **WP-PAR-24** | `rank()` / `world_size()` | **DONE** — C API + package `distributed.li` |
 
 ## Phase 3 — Package API
@@ -75,3 +75,5 @@ Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and 
 **Gate evidence (2026-06-06, agent run 4):** WP-PAR-11 work-stealing — `bash li-tests/tooling/li_par_pool_steal_smoke.sh` → exit 0; steal schedule covers all 64 iterations under chunk_size=7 with 4 workers.
 
 **Gate evidence (2026-06-06, agent run 5):** WP-PAR-15 reduce lowering — `bash li-tests/tooling/li_par_reduce_codegen_smoke.sh` → exit 0; `par_sum` on `array[64,float]` links `li_par_reduce.c` + pool; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0.
+
+**Gate evidence (2026-06-06, agent run 6):** WP-PAR-23/16 — `bash li-tests/tooling/li_dpar_for_smoke.sh` → exit 0; `bash li-tests/tooling/li_dpar_for_codegen_smoke.sh` → exit 0; `lic build packages/li-parallel/li-tests/smoke/kernels_ghost.li --allow-open-vc` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~8s).

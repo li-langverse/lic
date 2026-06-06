@@ -163,7 +163,7 @@ void collect_proc_locals(const std::vector<Stmt>& stmts, std::vector<std::string
     }
     collect_proc_locals(s.while_body, out);
     collect_proc_locals(s.for_body, out);
-    if (s.kind != Stmt::Kind::ParallelFor) {
+    if (s.kind != Stmt::Kind::ParallelFor && s.kind != Stmt::Kind::DistributedFor) {
       collect_proc_locals(s.par_body, out);
     }
   }
@@ -296,9 +296,24 @@ void check_stmt_parallel(const Stmt& stmt, const std::string& file, DiagnosticBa
   }
 }
 
+void check_stmt_distributed(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
+  check_stmt_decorators(stmt, file, diags);
+  if (stmt.kind != Stmt::Kind::DistributedFor) {
+    return;
+  }
+  for (const auto& s : stmt.par_body) {
+    if (s.kind == Stmt::Kind::Borrow) {
+      diag_error(diags, SourceLoc{file, 1, 1, s.span.start}, ErrorCode::E0350,
+                 "borrow mut forbidden across distributed iterations",
+                 "Do not borrow inside a distributed loop body; index buffers with the loop "
+                 "variable over the block partition.");
+    }
+  }
+}
+
 void check_stmt_parallel_capture(const Stmt& stmt, const std::vector<std::string>& outer_locals,
                                  const std::string& file, DiagnosticBag& diags) {
-  if (stmt.kind != Stmt::Kind::ParallelFor) {
+  if (stmt.kind != Stmt::Kind::ParallelFor && stmt.kind != Stmt::Kind::DistributedFor) {
     return;
   }
   for (const auto& s : stmt.par_body) {
@@ -316,6 +331,7 @@ void walk_stmts(const std::vector<Stmt>& stmts, const std::vector<std::string>& 
                 bool proc_has_parallel_disjoint) {
   for (const auto& s : stmts) {
     check_stmt_parallel(s, file, diags, proc_has_parallel_disjoint);
+    check_stmt_distributed(s, file, diags);
     check_stmt_parallel_capture(s, outer_locals, file, diags);
     walk_stmts(s.then_body, outer_locals, file, diags, proc_has_parallel_disjoint);
     if (s.else_body) {

@@ -1479,6 +1479,25 @@ struct Ctx {
       loop_index_vars = std::move(saved_loop);
       return;
     }
+    if (s.kind == Stmt::Kind::DistributedFor) {
+      std::set<std::string> saved_loop = loop_index_vars;
+      loop_depth++;
+      if (!s.par_iter.empty()) {
+        loop_index_vars.insert(s.par_iter);
+        locals[s.par_iter] = make_int();
+      }
+      for (const auto& c : s.par_contracts) {
+        if (c.expr) {
+          type_of(*c.expr);
+        }
+      }
+      for (const auto& inner : s.par_body) {
+        check_stmt(inner);
+      }
+      loop_depth--;
+      loop_index_vars = std::move(saved_loop);
+      return;
+    }
     if (s.kind == Stmt::Kind::Borrow) {
       if (s.init && s.init->kind == Expr::Kind::Ident) {
         const auto it = locals.find(s.init->ident);

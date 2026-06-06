@@ -123,6 +123,8 @@ struct Stmt {
     While,
     For,
     ParallelFor,
+    /** `distributed for i in start..<end` — block-partitioned per rank (**G-par-dist**). */
+    DistributedFor,
     Break,
     Continue,
     Expr,

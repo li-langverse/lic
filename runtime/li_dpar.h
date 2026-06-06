@@ -20,6 +20,9 @@ long long li_dpar_allreduce_sum_i64(long long local, int root);
 long long li_dpar_block_partition_begin(long long global_n, int rank, int world);
 long long li_dpar_block_partition_end(long long global_n, int rank, int world);
 
+/** Block-partitioned loop body over [start, end); rank/world from env (WP-PAR-23). */
+void li_distributed_for_i64(long long start, long long end, void (*body)(long long));
+
 int li_dpar_peer_fd(int peer);
 
 #ifdef __cplusplus

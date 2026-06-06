@@ -28,3 +28,12 @@ def partition_row(global_i: int, rank: int, world: int) -> int
     return global_i
   var begin: int = (global_i * rank) / world
   return begin
+
+# WP-PAR-16 — tree reduction policy: read-only tiles compose under G-par disjoint writes.
+def reduce_tile_disjoint(tile: int, tiles: int) -> bool
+  requires tile >= 0
+  requires tiles > 0
+  ensures result == disjoint_tile(tile, tiles)
+  decreases tiles
+=
+  return disjoint_tile(tile, tiles)

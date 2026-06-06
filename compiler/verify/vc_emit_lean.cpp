@@ -912,7 +912,8 @@ void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& pro
 void walk_par_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
                         const std::vector<Stmt>& stmts, std::size_t& par_idx) {
   for (const auto& stmt : stmts) {
-    if (stmt.kind == Stmt::Kind::ParallelFor && !stmt.par_contracts.empty()) {
+    if ((stmt.kind == Stmt::Kind::ParallelFor || stmt.kind == Stmt::Kind::DistributedFor) &&
+        !stmt.par_contracts.empty()) {
       const std::string suffix = "_par" + std::to_string(par_idx++);
       walk_contracts(out, module, proc, stmt.par_contracts, suffix,
                      stmt.par_iter.empty() ? nullptr : &stmt.par_iter);

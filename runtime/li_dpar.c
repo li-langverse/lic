@@ -240,3 +240,17 @@ long long li_dpar_block_partition_end(long long global_n, int rank, int world) {
   }
   return (global_n * (rank + 1)) / world;
 }
+
+void li_distributed_for_i64(long long start, long long end, void (*body)(long long)) {
+  if (body == NULL || end <= start) {
+    return;
+  }
+  const int rank = li_dpar_rank();
+  const int world = li_dpar_world_size();
+  const long long global_n = end - start;
+  const long long local_begin = li_dpar_block_partition_begin(global_n, rank, world);
+  const long long local_end = li_dpar_block_partition_end(global_n, rank, world);
+  for (long long k = local_begin; k < local_end; ++k) {
+    body(start + k);
+  }
+}

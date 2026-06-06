@@ -721,6 +721,12 @@ suite = "parallel_codegen"
 file = "parallel_codegen/par_sum_f64.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "parallel_codegen"
+file = "parallel_codegen/dpar_for_range.li"
+outcome = "verify_ok"
+note = "WP-PAR-23: distributed for MIR → li_distributed_for_i64"
+
 # --- simd (native vector types) ---
 
 [[tests]]
@@ -1530,6 +1536,18 @@ suite = "tooling"
 file = "tooling/li_par_pool_schedule_smoke.sh"
 outcome = "script_ok"
 note = "WP-PAR-12: dynamic and guided schedulers on persistent pool"
+
+[[tests]]
+suite = "tooling"
+file = "tooling/li_dpar_for_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-23: li_distributed_for_i64 block partition runtime"
+
+[[tests]]
+suite = "tooling"
+file = "tooling/li_dpar_for_codegen_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-23: distributed for codegen links li_dpar.c"
 
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 

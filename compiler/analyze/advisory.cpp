@@ -113,6 +113,9 @@ void walk_stmts_unreachable(const std::vector<Stmt>& stmts, const std::string& f
     } else if (stmt.kind == Stmt::Kind::ParallelFor) {
       bool inner_term = false;
       walk_stmts_unreachable(stmt.par_body, file, proc_name, diags, inner_term);
+    } else if (stmt.kind == Stmt::Kind::DistributedFor) {
+      bool inner_term = false;
+      walk_stmts_unreachable(stmt.par_body, file, proc_name, diags, inner_term);
     }
     if (stmt_terminates(stmt)) {
       seen_terminator = true;

@@ -105,6 +105,8 @@ void warn_unreachable(const std::vector<Stmt>& body, const std::string& file,
       warn_unreachable(stmt.for_body, file, diags);
     } else if (stmt.kind == Stmt::Kind::ParallelFor) {
       warn_unreachable(stmt.par_body, file, diags);
+    } else if (stmt.kind == Stmt::Kind::DistributedFor) {
+      warn_unreachable(stmt.par_body, file, diags);
     }
     if (stmt_terminates(stmt)) {
       seen_terminator = true;

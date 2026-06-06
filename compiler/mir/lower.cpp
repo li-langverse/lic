@@ -823,6 +823,7 @@ void collect_object_local_types_r(const Module& module, const std::vector<Stmt>&
         collect_object_local_types_r(module, st.for_body, out);
         break;
       case Stmt::Kind::ParallelFor:
+      case Stmt::Kind::DistributedFor:
         collect_object_local_types_r(module, st.par_body, out);
         break;
       default:
@@ -2172,6 +2173,39 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           parallel_for_disjoint_witness(stmt, ctx.proc ? &ctx.proc->decorators : nullptr);
       out.push_back(std::move(call));
       ctx.mir->uses_openmp = true;
+      break;
+    }
+    case Stmt::Kind::DistributedFor: {
+      if (!ctx.mir) {
+        break;
+      }
+      const std::string par_name =
+          "__li_dpar_" + ctx.proc_name + "_" + std::to_string(par_counter++);
+      MirFn par_fn;
+      par_fn.name = par_name;
+      copy_decorators(stmt.decorators, par_fn.decorators);
+      MirParam ip;
+      ip.name = stmt.par_iter;
+      ip.is_i64 = true;
+      par_fn.params.push_back(ip);
+      std::unordered_set<std::string> par_floats;
+      std::unordered_set<std::string> par_simd;
+      std::unordered_set<std::string> par_float_arrays;
+      std::unordered_set<std::string> par_i64s;
+      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr, ctx.object_locals};
+      lower_stmts(stmt.par_body, par_ctx, false, par_fn.body, par_floats, par_simd,
+                  par_float_arrays, par_i64s);
+      append_implicit_return(par_fn.body);
+      ctx.mir->functions.push_back(std::move(par_fn));
+      MirInsn call;
+      call.op = MirOp::DParFor;
+      call.callee = par_name;
+      call.int_value = stmt.par_start;
+      call.rhs_int = stmt.par_end;
+      /** G-par-dist: block partition assigns disjoint iteration tiles per rank. */
+      call.parallel_disjoint_proven = true;
+      out.push_back(std::move(call));
+      ctx.mir->needs_rt_dpar = true;
       break;
     }
     case Stmt::Kind::If: {

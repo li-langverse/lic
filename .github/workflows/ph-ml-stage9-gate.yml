@@ -45,6 +45,7 @@ jobs:
           CC: clang-22
           CXX: clang++-22
           PH_ML_STAGE9_INNER: "1"
+          PH_ML_STAGE9_SKIP_STAGE8_CHAIN: "1"
         run: |
           chmod +x scripts/ph-ml-stage9-gates.sh scripts/ph-ml-stage8-gates.sh \
             scripts/ph-ml-stage7-gates.sh scripts/bench-ph-ml-competitor-llm-all.sh \

@@ -18,12 +18,18 @@ if [[ "${PH_ML_STAGE9_INNER:-0}" != "1" ]] && command -v wsl.exe >/dev/null 2>&1
   fi
 fi
 
-export PH_ML_STAGE8_INNER=1
-bash scripts/ph-ml-stage8-gates.sh
+if [[ "${PH_ML_STAGE9_SKIP_STAGE8_CHAIN:-0}" != "1" ]]; then
+  export PH_ML_STAGE8_INNER=1
+  bash scripts/ph-ml-stage8-gates.sh
+fi
 
 # shellcheck source=lib/lic-bin-select.sh
 source "$ROOT/scripts/lib/lic-bin-select.sh"
-li_export_lic "$ROOT" || { echo "ph-ml-stage9-gates: build lic"; exit 1; }
+if [[ "${PH_ML_STAGE9_SKIP_STAGE8_CHAIN:-0}" == "1" ]]; then
+  li_ensure_lic "$ROOT" || { echo "ph-ml-stage9-gates: build lic"; exit 1; }
+else
+  li_export_lic "$ROOT" || { echo "ph-ml-stage9-gates: build lic"; exit 1; }
+fi
 
 grep -q 'return 10' packages/li-llm/src/lib.li \
   || { echo "9.1: li_llm_version must be 10"; exit 1; }

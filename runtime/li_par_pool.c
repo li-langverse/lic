@@ -11,6 +11,7 @@
 #include <windows.h>
 #else
 #include <pthread.h>
+#include <sched.h>
 #include <unistd.h>
 #endif
 
@@ -58,6 +59,9 @@ struct LiParPool {
   long long job_trip;
   volatile long long job_next;
   long long job_chunk;
+  long long steal_begin[LI_MAX_THREADS];
+  long long steal_end[LI_MAX_THREADS];
+  long long steal_cursor[LI_MAX_THREADS];
 #endif
 };
 
@@ -74,6 +78,9 @@ static LiParScheduleKind li_par_env_schedule(void) {
     }
     if (strcmp(sched, "guided") == 0) {
       return LI_PAR_SCHED_GUIDED;
+    }
+    if (strcmp(sched, "steal") == 0) {
+      return LI_PAR_SCHED_STEAL;
     }
   }
   return g_li_par_schedule;
@@ -140,6 +147,9 @@ typedef struct {
   long long chunk;
   int team_size;
   LiParScheduleKind schedule;
+  long long steal_begin[LI_MAX_THREADS];
+  long long steal_end[LI_MAX_THREADS];
+  volatile LONG64 steal_cursor[LI_MAX_THREADS];
 } LiParWinSharedJob;
 
 static void li_par_win_run_dynamic(LiParWinSharedJob* job) {
@@ -155,6 +165,70 @@ static void li_par_win_run_dynamic(LiParWinSharedJob* job) {
     }
     for (long long i = job->start + begin; i < job->start + end; ++i) {
       job->body(i);
+    }
+  }
+}
+
+static int li_par_win_steal_claim(LiParWinSharedJob* job, int victim_id, long long* out_begin,
+                                  long long* out_end) {
+  const long long chunk = job->chunk > 0 ? job->chunk : 1;
+  EnterCriticalSection(&g_li_par_pool.join_lock);
+  const long long vcur = job->steal_cursor[victim_id];
+  const long long vend = job->steal_end[victim_id];
+  if (vcur >= vend) {
+    LeaveCriticalSection(&g_li_par_pool.join_lock);
+    return 0;
+  }
+  long long end = vcur + chunk;
+  if (end > vend) {
+    end = vend;
+  }
+  job->steal_cursor[victim_id] = end;
+  *out_begin = vcur;
+  *out_end = end;
+  LeaveCriticalSection(&g_li_par_pool.join_lock);
+  return 1;
+}
+
+static void li_par_win_run_steal(LiParWinSharedJob* job, int worker_id) {
+  const long long start = job->start;
+
+  for (;;) {
+    long long begin;
+    long long end;
+    if (li_par_win_steal_claim(job, worker_id, &begin, &end)) {
+      for (long long i = start + begin; i < start + end; ++i) {
+        job->body(i);
+      }
+      continue;
+    }
+    int stole = 0;
+    for (int v = 0; v < job->team_size; ++v) {
+      if (v == worker_id) {
+        continue;
+      }
+      if (li_par_win_steal_claim(job, v, &begin, &end)) {
+        for (long long i = start + begin; i < start + end; ++i) {
+          job->body(i);
+        }
+        stole = 1;
+        break;
+      }
+    }
+    if (!stole) {
+      int done = 1;
+      EnterCriticalSection(&g_li_par_pool.join_lock);
+      for (int v = 0; v < job->team_size; ++v) {
+        if (job->steal_cursor[v] < job->steal_end[v]) {
+          done = 0;
+          break;
+        }
+      }
+      LeaveCriticalSection(&g_li_par_pool.join_lock);
+      if (done) {
+        return;
+      }
+      SwitchToThread();
     }
   }
 }
@@ -179,6 +253,22 @@ static void li_par_win_run_guided(LiParWinSharedJob* job) {
     for (long long i = job->start + begin; i < job->start + begin + chunk; ++i) {
       job->body(i);
     }
+  }
+}
+
+typedef struct {
+  LiParWinSharedJob* job;
+  int worker_id;
+} LiParWinStealArg;
+
+static VOID CALLBACK li_par_win_steal_worker(PTP_CALLBACK_INSTANCE instance, PVOID context,
+                                             PTP_WORK work) {
+  (void)instance;
+  (void)work;
+  LiParWinStealArg* arg = (LiParWinStealArg*)context;
+  li_par_win_run_steal(arg->job, arg->worker_id);
+  if (InterlockedDecrement(&g_li_par_pool.jobs_remaining) == 0) {
+    WakeAllConditionVariable(&g_li_par_pool.join_cv);
   }
 }
 
@@ -327,6 +417,71 @@ static void li_par_pool_run_dynamic_pthread(LiParPool* pool) {
   }
 }
 
+static int li_par_steal_claim(LiParPool* pool, int victim_id, long long* out_begin,
+                              long long* out_end) {
+  const long long chunk = pool->job_chunk > 0 ? pool->job_chunk : 1;
+  pthread_mutex_lock(&pool->mutex);
+  const long long vcur = pool->steal_cursor[victim_id];
+  const long long vend = pool->steal_end[victim_id];
+  if (vcur >= vend) {
+    pthread_mutex_unlock(&pool->mutex);
+    return 0;
+  }
+  long long end = vcur + chunk;
+  if (end > vend) {
+    end = vend;
+  }
+  pool->steal_cursor[victim_id] = end;
+  *out_begin = vcur;
+  *out_end = end;
+  pthread_mutex_unlock(&pool->mutex);
+  return 1;
+}
+
+static void li_par_pool_run_steal_pthread(LiParPool* pool, int worker_id) {
+  const long long start = pool->job_start;
+  void (*body)(long long) = pool->job_body;
+
+  for (;;) {
+    long long begin;
+    long long end;
+    if (li_par_steal_claim(pool, worker_id, &begin, &end)) {
+      for (long long i = start + begin; i < start + end; ++i) {
+        body(i);
+      }
+      continue;
+    }
+    int stole = 0;
+    for (int v = 0; v < pool->batch_size; ++v) {
+      if (v == worker_id) {
+        continue;
+      }
+      if (li_par_steal_claim(pool, v, &begin, &end)) {
+        for (long long i = start + begin; i < start + end; ++i) {
+          body(i);
+        }
+        stole = 1;
+        break;
+      }
+    }
+    if (!stole) {
+      int done = 1;
+      pthread_mutex_lock(&pool->mutex);
+      for (int v = 0; v < pool->batch_size; ++v) {
+        if (pool->steal_cursor[v] < pool->steal_end[v]) {
+          done = 0;
+          break;
+        }
+      }
+      pthread_mutex_unlock(&pool->mutex);
+      if (done) {
+        return;
+      }
+      sched_yield();
+    }
+  }
+}
+
 static void li_par_pool_run_guided_pthread(LiParPool* pool) {
   const long long trip = pool->job_trip;
   const long long start = pool->job_start;
@@ -380,6 +535,8 @@ static void* li_par_pool_worker(void* raw) {
           local.body(i);
         }
       }
+    } else if (schedule == LI_PAR_SCHED_STEAL) {
+      li_par_pool_run_steal_pthread(pool, worker_id);
     } else if (schedule == LI_PAR_SCHED_GUIDED) {
       li_par_pool_run_guided_pthread(pool);
     } else {
@@ -458,6 +615,18 @@ static void li_par_pool_run_pthread(LiParTask* chunks, int launched, LiParSchedu
     g_li_par_pool.job_trip = trip;
     g_li_par_pool.job_next = 0;
     g_li_par_pool.job_chunk = chunk_size;
+    if (schedule == LI_PAR_SCHED_STEAL) {
+      const long long base = trip / launched;
+      const long long rem = trip % launched;
+      long long cur = 0;
+      for (int w = 0; w < launched; ++w) {
+        const long long len = base + (w < rem ? 1 : 0);
+        g_li_par_pool.steal_begin[w] = cur;
+        g_li_par_pool.steal_end[w] = cur + len;
+        g_li_par_pool.steal_cursor[w] = cur;
+        cur += len;
+      }
+    }
   }
   g_li_par_pool.batch_size = launched;
   g_li_par_pool.workers_done = 0;
@@ -521,9 +690,52 @@ void li_par_pool_fork_join(long long start, long long end, void (*body)(long lon
   li_par_pool_init_pthread(team_size);
 #endif
 
-  if (schedule == LI_PAR_SCHED_DYNAMIC || schedule == LI_PAR_SCHED_GUIDED) {
+  if (schedule == LI_PAR_SCHED_DYNAMIC || schedule == LI_PAR_SCHED_GUIDED ||
+      schedule == LI_PAR_SCHED_STEAL) {
 #if defined(_WIN32)
-    li_par_pool_run_win_shared(body, start, trip, team_size, schedule, chunk_size);
+    if (schedule == LI_PAR_SCHED_STEAL) {
+      LiParWinSharedJob job;
+      LiParWinStealArg args[LI_MAX_THREADS];
+      job.body = body;
+      job.start = start;
+      job.trip = trip;
+      job.chunk = chunk_size;
+      job.team_size = team_size;
+      job.schedule = schedule;
+      const long long base = trip / team_size;
+      const long long rem = trip % team_size;
+      long long cur = 0;
+      for (int w = 0; w < team_size; ++w) {
+        const long long len = base + (w < rem ? 1 : 0);
+        job.steal_begin[w] = cur;
+        job.steal_end[w] = cur + len;
+        job.steal_cursor[w] = cur;
+        cur += len;
+        args[w].job = &job;
+        args[w].worker_id = w;
+      }
+      g_li_par_pool.jobs_remaining = team_size;
+      for (int w = 0; w < team_size; ++w) {
+        PTP_WORK work =
+            CreateThreadpoolWork(li_par_win_steal_worker, &args[w], &g_li_par_pool.callback_env);
+        if (work) {
+          SubmitThreadpoolWork(work);
+          CloseThreadpoolWork(work);
+        } else {
+          li_par_win_run_steal(&job, w);
+          if (InterlockedDecrement(&g_li_par_pool.jobs_remaining) == 0) {
+            WakeAllConditionVariable(&g_li_par_pool.join_cv);
+          }
+        }
+      }
+      EnterCriticalSection(&g_li_par_pool.join_lock);
+      while (g_li_par_pool.jobs_remaining > 0) {
+        SleepConditionVariableCS(&g_li_par_pool.join_cv, &g_li_par_pool.join_lock, INFINITE);
+      }
+      LeaveCriticalSection(&g_li_par_pool.join_lock);
+    } else {
+      li_par_pool_run_win_shared(body, start, trip, team_size, schedule, chunk_size);
+    }
 #else
     li_par_pool_run_pthread(NULL, team_size, schedule, body, start, trip, chunk_size);
 #endif

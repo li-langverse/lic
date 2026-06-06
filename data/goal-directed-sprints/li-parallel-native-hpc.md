@@ -22,7 +22,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 | WP | Deliverable | Status |
 |----|-------------|--------|
 | **WP-PAR-10** | Persistent pool `li_par_pool.c` | **DONE** — Linux pthread pool parallel static dispatch (no ephemeral spawn); Win32 thread pool |
-| **WP-PAR-11** | Work-stealing scheduler | **STUB** — static chunks via pool; steal in Phase 1.1 |
+| **WP-PAR-11** | Work-stealing scheduler | **DONE** — `LI_PAR_SCHED_STEAL` + `LI_PAR_SCHEDULE=steal`; static partition + chunk steal; smoke `li_par_pool_steal_smoke` |
 | **WP-PAR-12** | static/dynamic/guided schedulers | **DONE** — `LI_PAR_SCHEDULE` + pool API; dynamic atomic chunks + guided decreasing chunks; smoke `li_par_pool_schedule_smoke` |
 | **WP-PAR-13** | Tree reductions `li_par_reduce.c` | **DONE** — sum/min/max f64, sum i64 |
 | **WP-PAR-14** | Windows thread pool | **DONE** — no serial `_WIN32` fallback |
@@ -71,3 +71,5 @@ Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and 
 **Gate evidence (2026-06-06, agent run 2):** WP-PAR-31/32 package slice — `lic build packages/li-parallel/li-tests/smoke/kernels_ghost.li --allow-open-vc` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~8s).
 
 **Gate evidence (2026-06-06, agent run 3):** WP-PAR-12 schedulers — `bash li-tests/tooling/li_par_pool_schedule_smoke.sh` → exit 0; dynamic + guided cover all 64 iterations under chunk_size=7.
+
+**Gate evidence (2026-06-06, agent run 4):** WP-PAR-11 work-stealing — `bash li-tests/tooling/li_par_pool_steal_smoke.sh` → exit 0; steal schedule covers all 64 iterations under chunk_size=7 with 4 workers.

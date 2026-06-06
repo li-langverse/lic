@@ -12,6 +12,7 @@ typedef enum {
   LI_PAR_SCHED_STATIC = 0,
   LI_PAR_SCHED_DYNAMIC = 1,
   LI_PAR_SCHED_GUIDED = 2,
+  LI_PAR_SCHED_STEAL = 3,
 } LiParScheduleKind;
 
 void li_parallel_for_i64(long long start, long long end, void (*body)(long long), int team_size);

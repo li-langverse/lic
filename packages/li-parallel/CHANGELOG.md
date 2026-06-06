@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Work-stealing scheduler on persistent pool (WP-PAR-11): `LI_PAR_SCHED_STEAL`, `LI_PAR_SCHEDULE=steal`, smoke `li_par_pool_steal_smoke`.
 - Dynamic and guided schedulers on persistent pool (WP-PAR-12): `li_par_pool_set_schedule`, `LI_PAR_SCHEDULE` env, smoke `li_par_pool_schedule_smoke`.
 - `par_outer_product_elem`, `par_matmul_outer` kernels (WP-PAR-31).
 - `ghost.li` 1D halo partition helpers and exchange sketch (WP-PAR-32).

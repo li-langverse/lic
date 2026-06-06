@@ -32,7 +32,7 @@ void note_one(std::string_view callee, MirModule& mir) {
   if (callee == "li_distributed_for_i64" || starts_with(callee, "li_dpar_")) {
     mir.needs_rt_dpar = true;
   }
-  if (starts_with(callee, "li_par_reduce_")) {
+  if (starts_with(callee, "li_par_reduce_") || callee == "li_parallel_for_reduce_add_f64") {
     mir.needs_rt_par_pool = true;
     mir.needs_rt_par_reduce = true;
   }
@@ -67,6 +67,10 @@ void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) 
         mir_note_runtime_callee(ins.callee, out_flags);
       }
       if (ins.op == MirOp::ParReduceSumF64) {
+        out_flags.needs_rt_par_reduce = true;
+        out_flags.needs_rt_par_pool = true;
+      }
+      if (ins.op == MirOp::OmpParallelFor && ins.par_reduce_plus_f64) {
         out_flags.needs_rt_par_reduce = true;
         out_flags.needs_rt_par_pool = true;
       }

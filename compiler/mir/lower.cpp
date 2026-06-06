@@ -207,6 +207,8 @@ struct LowerCtx {
   std::vector<LoopLabels>* loop_stack = nullptr;
   const std::unordered_map<std::string, const TypeExpr*>* object_locals = nullptr;
   std::unordered_map<std::string, double>* const_floats = nullptr;
+  /** When set, `var = var + e` lowers to `li_par_reduce_acc_add_f64(e)` (WP-PAR-15 Phase 1.1). */
+  const std::string* par_reduce_var = nullptr;
 };
 std::string fresh_label(const std::string& prefix) {
   return prefix + std::to_string(temp_counter++);
@@ -2084,6 +2086,30 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           out.push_back(std::move(ins));
         }
       } else if (stmt.init && stmt.init->kind == Expr::Kind::Ident && stmt.expr) {
+        if (ctx.par_reduce_var && !ctx.par_reduce_var->empty() &&
+            stmt.init->ident == *ctx.par_reduce_var &&
+            stmt.expr->kind == Expr::Kind::BinOp && stmt.expr->bin_op == BinOp::Add &&
+            stmt.expr->lhs && stmt.expr->lhs->kind == Expr::Kind::Ident &&
+            stmt.expr->lhs->ident == *ctx.par_reduce_var && stmt.expr->rhs) {
+          MirInsn ins;
+          ins.op = MirOp::CallExtern;
+          ins.callee = "li_par_reduce_acc_add_f64";
+          MirArg ma;
+          if (stmt.expr->rhs->kind == Expr::Kind::FloatLit) {
+            ma.is_float_literal = true;
+            ma.float_value = stmt.expr->rhs->float_value;
+          } else {
+            ma.ident =
+                lower_expr_to(*stmt.expr->rhs, module, out, float_names, simd_names, i64_locals);
+          }
+          ins.args.push_back(std::move(ma));
+          out.push_back(std::move(ins));
+          if (g_mir_module) {
+            g_mir_module->needs_rt_par_reduce = true;
+            g_mir_module->needs_rt_par_pool = true;
+          }
+          break;
+        }
         if (ctx.object_locals) {
           const auto ol_it = ctx.object_locals->find(stmt.init->ident);
           if (ol_it != ctx.object_locals->end()) {
@@ -2159,7 +2185,10 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       std::unordered_set<std::string> par_simd;
       std::unordered_set<std::string> par_float_arrays;
       std::unordered_set<std::string> par_i64s;
-      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr, ctx.object_locals};
+      const std::string reduce_var =
+          stmt.par_reduce_plus ? stmt.par_reduce_var : std::string();
+      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr, ctx.object_locals,
+                       nullptr, reduce_var.empty() ? nullptr : &reduce_var};
       lower_stmts(stmt.par_body, par_ctx, false, par_fn.body, par_floats, par_simd,
                   par_float_arrays, par_i64s);
       append_implicit_return(par_fn.body);
@@ -2171,6 +2200,12 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       call.rhs_int = stmt.par_end;
       call.parallel_disjoint_proven =
           parallel_for_disjoint_witness(stmt, ctx.proc ? &ctx.proc->decorators : nullptr);
+      if (stmt.par_reduce_plus && !stmt.par_reduce_var.empty()) {
+        call.par_reduce_plus_f64 = true;
+        call.par_reduce_var = stmt.par_reduce_var;
+        ctx.mir->needs_rt_par_reduce = true;
+        ctx.mir->needs_rt_par_pool = true;
+      }
       out.push_back(std::move(call));
       ctx.mir->uses_openmp = true;
       break;

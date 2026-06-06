@@ -1467,6 +1467,16 @@ struct Ctx {
         loop_index_vars.insert(s.par_iter);
         locals[s.par_iter] = make_int();
       }
+      if (s.par_reduce_plus) {
+        if (s.par_reduce_var.empty()) {
+          diags.error(loc(s.span), "reduce clause requires a variable name");
+        } else {
+          const auto it = locals.find(s.par_reduce_var);
+          if (it == locals.end() || it->second->kind != TyKind::Float) {
+            diags.error(loc(s.span), "reduce(+:) variable must be a float declared before parallel for");
+          }
+        }
+      }
       for (const auto& c : s.par_contracts) {
         if (c.expr) {
           type_of(*c.expr);

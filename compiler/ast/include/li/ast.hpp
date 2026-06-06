@@ -155,6 +155,9 @@ struct Stmt {
   std::int64_t par_end = 0;
   std::vector<Contract> par_contracts;
   std::vector<Stmt> par_body;
+  /** WP-PAR-15 Phase 1.1 — `reduce(+: var)` on float accumulator. */
+  std::string par_reduce_var;
+  bool par_reduce_plus = false;
   std::vector<Decorator> decorators;
 };
 

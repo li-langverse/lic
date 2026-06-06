@@ -723,6 +723,12 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "parallel_codegen"
+file = "parallel_codegen/par_for_reduce_f64.li"
+outcome = "verify_ok"
+note = "WP-PAR-15 Phase 1.1: parallel for reduce(+:) → li_parallel_for_reduce_add_f64"
+
+[[tests]]
+suite = "parallel_codegen"
 file = "parallel_codegen/dpar_for_range.li"
 outcome = "verify_ok"
 note = "WP-PAR-23: distributed for MIR → li_distributed_for_i64"

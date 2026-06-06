@@ -68,6 +68,7 @@ struct Parser {
   std::unique_ptr<Expr> parse_contract_expr();
   void parse_prob_ensures_tail(Contract& c);
   Contract parse_contract();
+  bool try_parse_par_reduce_clause(Stmt& s);
   std::unique_ptr<Expr> parse_decorator_value();
   Decorator parse_decorator();
   std::vector<Decorator> parse_decorator_list();
@@ -670,6 +671,47 @@ Contract Parser::parse_contract() {
   return c;
 }
 
+bool Parser::try_parse_par_reduce_clause(Stmt& s) {
+  if (!at(TokenKind::Ident) || cur().text != "reduce") {
+    return false;
+  }
+  const Token start = cur();
+  i++;
+  if (!at(TokenKind::LParen)) {
+    diags.error(loc(start), "expected '(' after reduce");
+    return true;
+  }
+  i++;
+  if (!at(TokenKind::Plus)) {
+    diags.error(loc(start), "reduce v1 supports '+' only");
+    return true;
+  }
+  i++;
+  if (!at(TokenKind::Colon)) {
+    diags.error(loc(start), "expected ':' in reduce(+: var)");
+    return true;
+  }
+  i++;
+  if (!at(TokenKind::Ident)) {
+    diags.error(loc(start), "expected variable name in reduce clause");
+    return true;
+  }
+  if (s.par_reduce_plus) {
+    diags.error(loc(start), "only one reduce clause allowed on parallel for");
+    return true;
+  }
+  s.par_reduce_var = std::string(cur().text);
+  s.par_reduce_plus = true;
+  i++;
+  if (!at(TokenKind::RParen)) {
+    diags.error(loc(start), "expected ')' after reduce clause");
+    return true;
+  }
+  i++;
+  skip_newlines();
+  return true;
+}
+
 std::vector<Stmt> Parser::parse_block() {
   std::vector<Stmt> body;
   skip_newlines();
@@ -848,10 +890,17 @@ Stmt Parser::parse_stmt() {
       skip_newlines();
       if (accept(TokenKind::Indent)) {
         skip_newlines();
-        while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
-               at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
-               at(TokenKind::KwInvariant)) {
-          s.par_contracts.push_back(parse_contract());
+        while (true) {
+          if (try_parse_par_reduce_clause(s)) {
+            continue;
+          }
+          if (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+              at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+              at(TokenKind::KwInvariant)) {
+            s.par_contracts.push_back(parse_contract());
+            continue;
+          }
+          break;
         }
         expect(TokenKind::Dedent, "dedent");
         skip_newlines();
@@ -1109,10 +1158,17 @@ Stmt Parser::parse_stmt() {
     skip_newlines();
     if (accept(TokenKind::Indent)) {
       skip_newlines();
-      while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
-             at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
-             at(TokenKind::KwInvariant)) {
-        s.par_contracts.push_back(parse_contract());
+      while (true) {
+        if (try_parse_par_reduce_clause(s)) {
+          continue;
+        }
+        if (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+            at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+            at(TokenKind::KwInvariant)) {
+          s.par_contracts.push_back(parse_contract());
+          continue;
+        }
+        break;
       }
       expect(TokenKind::Dedent, "dedent");
       skip_newlines();

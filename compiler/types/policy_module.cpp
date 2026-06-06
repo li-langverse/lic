@@ -263,6 +263,18 @@ void check_stmt_parallel(const Stmt& stmt, const std::string& file, DiagnosticBa
   if (stmt.kind != Stmt::Kind::ParallelFor) {
     return;
   }
+  for (const auto& s : stmt.par_body) {
+    if (s.kind == Stmt::Kind::Borrow) {
+      diag_error(diags, SourceLoc{file, 1, 1, s.span.start}, ErrorCode::E0350,
+                 "borrow mut forbidden across parallel iterations",
+                 "Do not borrow inside a parallel loop body; index the buffer directly with "
+                 "disjoint_elem(i, buf).");
+    }
+  }
+  /** WP-PAR-15 Phase 1.1: `reduce(+:)` uses TLS partials — no disjoint_elem on arrays required. */
+  if (stmt.par_reduce_plus) {
+    return;
+  }
   for (const auto& c : stmt.par_contracts) {
     if (c.kind == ContractKind::Requires && c.expr &&
         contract_requires_is_weak_parallel_witness(*c.expr)) {
@@ -285,14 +297,6 @@ void check_stmt_parallel(const Stmt& stmt, const std::string& file, DiagnosticBa
                "disjoint_row(i, grid) does not justify writing grid[0][0] from every iteration.",
                "Use disjoint_elem(i, ...) for the memory you actually write, or write only "
                "grid[i][...].");
-  }
-  for (const auto& s : stmt.par_body) {
-    if (s.kind == Stmt::Kind::Borrow) {
-      diag_error(diags, SourceLoc{file, 1, 1, s.span.start}, ErrorCode::E0350,
-                 "borrow mut forbidden across parallel iterations",
-                 "Do not borrow inside a parallel loop body; index the buffer directly with "
-                 "disjoint_elem(i, buf).");
-    }
   }
 }
 
@@ -318,6 +322,12 @@ void check_stmt_parallel_capture(const Stmt& stmt, const std::vector<std::string
   }
   for (const auto& s : stmt.par_body) {
     if (assign_targets_outer_local(s, outer_locals)) {
+      if (stmt.par_reduce_plus && s.kind == Stmt::Kind::Assign && s.init &&
+          s.init->kind == Expr::Kind::Ident && s.init->ident == stmt.par_reduce_var && s.expr &&
+          s.expr->kind == Expr::Kind::BinOp && s.expr->bin_op == BinOp::Add && s.expr->lhs &&
+          s.expr->lhs->kind == Expr::Kind::Ident && s.expr->lhs->ident == stmt.par_reduce_var) {
+        continue;
+      }
       diag_error(diags, SourceLoc{file, 1, 1, s.span.start}, ErrorCode::E0350,
                  "parallel mutable capture requires Sync proof",
                  "Do not assign to outer `var` locals from parallel iterations unless you prove "

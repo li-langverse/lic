@@ -1133,6 +1133,23 @@ struct EmitCtx {
         }
         llvm::FunctionType* iter_ty =
             llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
+        if (ins.par_reduce_plus_f64 && !ins.par_reduce_var.empty()) {
+          llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+          llvm::FunctionType* reduce_ty = llvm::FunctionType::get(
+              llvm::Type::getVoidTy(context),
+              {i64_ty(context), i64_ty(context), iter_ty->getPointerTo(), f64->getPointerTo(),
+               i32_ty(context)},
+              false);
+          llvm::FunctionCallee reduce_rt =
+              module->getOrInsertFunction("li_parallel_for_reduce_add_f64", reduce_ty);
+          llvm::Value* accum = ensure_float_local(ins.par_reduce_var);
+          builder->CreateCall(
+              reduce_rt,
+              {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
+               llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn, accum,
+               llvm::ConstantInt::get(i32_ty(context), runtime_team_size)});
+          return true;
+        }
         llvm::FunctionType* par_ty = llvm::FunctionType::get(
             llvm::Type::getVoidTy(context),
             {i64_ty(context), i64_ty(context), iter_ty->getPointerTo(), i32_ty(context)},
@@ -1670,6 +1687,18 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction(
       "li_par_reduce_sum_f64",
       llvm::FunctionType::get(f64, {f64_ptr, i64_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_par_reduce_acc_add_f64",
+      llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64}, false));
+  module->getOrInsertFunction(
+      "li_parallel_for_reduce_add_f64",
+      llvm::FunctionType::get(
+          llvm::Type::getVoidTy(context),
+          {i64_ty(context), i64_ty(context),
+           llvm::PointerType::getUnqual(llvm::FunctionType::get(
+               llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
+           f64_ptr, i32_ty(context)},
+          false));
   module->getOrInsertFunction("li_async_frame_enter",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
   module->getOrInsertFunction("li_async_frame_leave",

@@ -1,0 +1,22 @@
+# P-linalg: length-1 lhs broadcast mul — Lean Prop (Li.Discharge.broadcast_len1_mul_int4_spec).
+def broadcast_len1_mul4(s: array[1, int], v: array[4, int]) -> array[4, int]
+  requires true
+  ensures result[0] == s[0] * v[0] and result[1] == s[0] * v[1] and result[2] == s[0] * v[2] and result[3] == s[0] * v[3]
+  decreases 0
+=
+  return s * v
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var s: array[1, int]
+  var v: array[4, int]
+  s[0] = 3
+  v[0] = 2
+  v[1] = 2
+  v[2] = 2
+  v[3] = 2
+  var w: array[4, int] = broadcast_len1_mul4(s, v)
+  return 0

@@ -17,8 +17,8 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 
 | WP | Gap | Status |
 |----|-----|--------|
-| WP-PAR-20 | Programmed `hosts=[...]` cluster | **PENDING** |
-| WP-PAR-22 | scatter/gather/scan/barrier | **PENDING** |
+| WP-PAR-20 | Programmed `hosts=[...]` cluster | **IN PROGRESS** — exec plan embeds hosts; multi-node MD pending |
+| WP-PAR-22 | scatter/gather/scan/barrier | **IN PROGRESS** — collectives + 4-rank smoke; MD weak-scaling pending |
 
 ## Phase 4 — Benchmarks
 

@@ -21,6 +21,9 @@ Launch helper: `packages/li-parallel/scripts/lipar-run.sh`.
 | `rank()` | Current rank |
 | `world_size()` | Process count |
 | `barrier()` | Global barrier |
+| `scatter_f64(sendbuf, recvbuf, sendcount, root)` | Root scatters equal slices (WP-PAR-22) |
+| `gather_f64(sendbuf, recvbuf, sendcount, root)` | Root gathers equal slices (WP-PAR-22) |
+| `scan_sum_f64(local, out)` | Exclusive prefix sum (WP-PAR-22) |
 | `block_partition_begin(global_n, rank, world)` | Local range start |
 | `block_partition_end(global_n, rank, world)` | Local range end (exclusive) |
 
@@ -40,8 +43,9 @@ distributed for i in 0..<N
 |------------|--------|
 | `bcast` | **Implemented** (ring) |
 | `allreduce` | **Implemented** (ring pairwise) |
-| `scatter` / `gather` | **Pending** (WP-PAR-22) |
-| `scan` | **Pending** (WP-PAR-22) |
+| `scatter` / `gather` | **Implemented** (root hub, WP-PAR-22) |
+| `scan` | **Implemented** (gather + prefix scatter, WP-PAR-22) |
+| `barrier` | **Implemented** |
 
 ## Status
 

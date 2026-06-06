@@ -445,6 +445,7 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   std::string prop = "True";
   const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
   bool mat2_discharge_theorem = false;
+  bool broadcast_discharge_theorem = false;
   bool sqrt_discharge_theorem = false;
   bool dot4_discharge_theorem = false;
   bool vec3_len_sq_discharge_theorem = false;
@@ -465,6 +466,8 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       mat2_discharge_theorem = true;
     } else if (ctx.proc != nullptr && witness_matmul2_at2_spec(*ctx.proc, *c.expr)) {
       mat2_discharge_theorem = true;
+    } else if (ctx.proc != nullptr && witness_broadcast_len1_add_float4_spec(*ctx.proc, *c.expr)) {
+      broadcast_discharge_theorem = true;
     } else if (ctx.proc != nullptr && witness_vec3_len_sq_callproc(*ctx.proc, *c.expr)) {
       vec3_len_sq_discharge_theorem = true;
     } else if (ctx.proc != nullptr && witness_vec3_len_callproc_chain(*ctx.proc, *c.expr)) {
@@ -486,9 +489,10 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     } else {
       prop = "True";
     }
-  } else if (witnessed && !mat2_discharge_theorem && !sqrt_discharge_theorem &&
-             !dot4_discharge_theorem && !vec3_len_sq_discharge_theorem &&
-             !vec3_len_discharge_theorem && !proof_db_axiom_discharge) {
+  } else if (witnessed && !mat2_discharge_theorem && !broadcast_discharge_theorem &&
+             !sqrt_discharge_theorem && !dot4_discharge_theorem &&
+             !vec3_len_sq_discharge_theorem && !vec3_len_discharge_theorem &&
+             !proof_db_axiom_discharge) {
     prop = "True";
   } else if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
     prop = "Li.Discharge.mat2_at2_float_spec";
@@ -497,6 +501,18 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       prop += p.name;
     }
     prop += " (Li.Discharge.mat2_at2_eval";
+    for (const auto& p : proc.params) {
+      prop += ' ';
+      prop += p.name;
+    }
+    prop += ')';
+  } else if (broadcast_discharge_theorem && c.kind == ContractKind::Ensures) {
+    prop = "Li.Discharge.broadcast_len1_add_float4_spec";
+    for (const auto& p : proc.params) {
+      prop += ' ';
+      prop += p.name;
+    }
+    prop += " (Li.Discharge.broadcast_len1_add_float4_eval";
     for (const auto& p : proc.params) {
       prop += ' ';
       prop += p.name;
@@ -553,8 +569,8 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   }
 
   const bool semantic_ensures =
-      ((mat2_discharge_theorem || sqrt_discharge_theorem || dot4_discharge_theorem ||
-        vec3_len_sq_discharge_theorem || vec3_len_discharge_theorem) ||
+      ((mat2_discharge_theorem || broadcast_discharge_theorem || sqrt_discharge_theorem ||
+        dot4_discharge_theorem || vec3_len_sq_discharge_theorem || vec3_len_discharge_theorem) ||
        (proof_db_axiom_discharge && c.expr && !ensures_expr_mentions_result(*c.expr))) &&
       c.kind == ContractKind::Ensures;
   out << "def " << name;
@@ -587,6 +603,17 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     out << " : " << name;
     emit_args(false);
     out << " := Li.Discharge.mat2_at2_float_spec_proved";
+    for (const auto& p : proc.params) {
+      out << ' ' << lean_ident(p.name);
+    }
+    out << '\n';
+  } else if (broadcast_discharge_theorem && c.kind == ContractKind::Ensures) {
+    out << "/-! Phase 2f: P-linalg broadcast_len1 add — Li.Discharge.broadcast_len1_add_float4_spec (G-math) -/\n";
+    out << "theorem " << name << "_proved";
+    emit_formals(false);
+    out << " : " << name;
+    emit_args(false);
+    out << " := Li.Discharge.broadcast_len1_add_float4_spec_proved";
     for (const auto& p : proc.params) {
       out << ' ' << lean_ident(p.name);
     }

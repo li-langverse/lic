@@ -70,8 +70,8 @@ todos:
   handoff_implement: sim-p1-md-neighbor-cell
 
 - id: md-r3-oracle-plan
-  content: "sim-md-research: pending plan todo md-r3-oracle-plan — gap orchestrator"
-  status: pending
+  content: "External LAMMPS/GROMACS oracle column plan; update verticals.toml honesty"
+  status: completed
   study_only: true
 
 ---

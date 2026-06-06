@@ -114,6 +114,33 @@ if strict and warnings:
     stale = [w for w in warnings if "last_reviewed" in w]
     if stale:
         sys.exit(1)
+
+# Optional Layer B MD oracle registry (md-r3-oracle-plan)
+md_oracle = Path(os.environ.get("BENCHMARKS_ROOT", "")) / "competitive" / "md_oracle.toml"
+if not md_oracle.is_file():
+    md_oracle = registry.parent / "md_oracle.toml"
+if md_oracle.is_file():
+    md_data = tomllib.loads(md_oracle.read_text())
+    md_meta = md_data.get("meta") or {}
+    if md_meta.get("benchmark") != "md_lennard_jones":
+        errors.append("md_oracle.toml: meta.benchmark must be md_lennard_jones")
+    md_rows = md_data.get("oracle") or []
+    md_ids = {r.get("id") for r in md_rows if isinstance(r, dict)}
+    for required in ("lammps_lj_micro", "gromacs_lj_micro"):
+        if required not in md_ids:
+            errors.append(f"md_oracle.toml: missing oracle id {required}")
+    gate = md_meta.get("gate_script", "")
+    if gate:
+        root = registry.parents[2]
+        if not (root / gate).is_file():
+            errors.append(f"md_oracle.toml: gate_script not found: {gate}")
+else:
+    warnings.append("no md_oracle.toml — Layer B MD oracle check skipped")
+
+for e in errors:
+    print(f"error: {e}", file=sys.stderr)
+if errors:
+    sys.exit(1)
 sys.exit(0)
 PY
 rc=$?

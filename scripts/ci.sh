@@ -139,8 +139,9 @@ chmod +x "$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"   "$ROOT/li-tests/toolin
 "$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
 
 li_phase "8-sync toolchain"
-chmod +x "$ROOT/scripts/check-li-toolchain.sh"
+chmod +x "$ROOT/scripts/check-li-toolchain.sh" "$ROOT/scripts/check-lic-bin-select.sh"
 "$ROOT/scripts/check-li-toolchain.sh"
+"$ROOT/scripts/check-lic-bin-select.sh"
 
 li_phase "package scaffold smoke"
 chmod +x "$ROOT/li-tests/tooling/li_new_package_smoke.sh"

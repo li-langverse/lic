@@ -21,13 +21,9 @@ fi
 export PH_ML_STAGE5_INNER=1
 bash scripts/ph-ml-stage5-gates.sh
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-fi
-[[ -x "$LIC" ]] || { echo "ph-ml-stage6-gates: build lic"; exit 1; }
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_export_lic "$ROOT" || { echo "ph-ml-stage6-gates: build lic"; exit 1; }
 
 grep -q 'llm_trusted_httpd_native_generate_ok' packages/li-llm/src/lib.li \
   || { echo "6.1: missing native httpd generate"; exit 1; }

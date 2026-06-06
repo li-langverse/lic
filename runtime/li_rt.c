@@ -394,67 +394,17 @@ static int32_t li_rt_studio_mcp_tool_match_name(const char* name) {
   if (li_rt_str_eq(name, "demo_record_finish")) {
     return 19;
   }
+  if (li_rt_str_eq(name, "ui_session_start")) {
+    return 20;
+  }
+  if (li_rt_str_eq(name, "ui_session_stop")) {
+    return 21;
+  }
   return 0;
 }
 
 int32_t li_rt_studio_mcp_tool_from_name(const char* name) {
   return li_rt_studio_mcp_tool_match_name(name);
-}
-
-typedef struct {
-  int32_t tag;
-  const char* id;
-} LiUiSnapshotIdEntry;
-
-static const LiUiSnapshotIdEntry k_ui_snapshot_ids[] = {
-    {100, "shell.topbar"},
-    {101, "shell.topbar.profile_chip"},
-    {102, "shell.viewport"},
-    {110, "shell.dock.slot.0"},
-    {111, "shell.dock.slot.1"},
-    {112, "shell.dock.slot.2"},
-    {113, "shell.dock.slot.3"},
-    {120, "shell.outliner.row.0"},
-    {121, "shell.outliner.row.1"},
-    {122, "shell.outliner.row.root"},
-    {130, "shell.timeline.play_button"},
-    {131, "shell.timeline.track"},
-    {140, "shell.inspector.header"},
-    {141, "shell.inspector.field.selection_name"},
-    {150, "shell.agent.status"},
-    {151, "shell.agent.cancel_button"},
-    {152, "shell.agent.tool_trace"},
-    {153, "shell.agent.send_button"},
-    {160, "shell.palette.search"},
-    {161, "shell.palette.row.0"},
-    {162, "shell.palette.row.1"},
-};
-
-static size_t li_rt_ui_snapshot_id_count(void) {
-  return sizeof(k_ui_snapshot_ids) / sizeof(k_ui_snapshot_ids[0]);
-}
-
-int32_t li_rt_ui_snapshot_tag_from_id(const char* id) {
-  size_t i;
-  if (id == NULL) {
-    return 0;
-  }
-  for (i = 0; i < li_rt_ui_snapshot_id_count(); i++) {
-    if (li_rt_str_eq(id, k_ui_snapshot_ids[i].id)) {
-      return k_ui_snapshot_ids[i].tag;
-    }
-  }
-  return 0;
-}
-
-const char* li_rt_ui_snapshot_id_name(int32_t tag) {
-  size_t i;
-  for (i = 0; i < li_rt_ui_snapshot_id_count(); i++) {
-    if (k_ui_snapshot_ids[i].tag == tag) {
-      return k_ui_snapshot_ids[i].id;
-    }
-  }
-  return "";
 }
 
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
@@ -497,6 +447,10 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
       return "demo_record_step";
     case 19:
       return "demo_record_finish";
+    case 20:
+      return "ui_session_start";
+    case 21:
+      return "ui_session_stop";
     default:
       return "";
   }

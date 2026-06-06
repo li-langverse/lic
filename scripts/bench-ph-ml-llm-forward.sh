@@ -4,12 +4,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 source "$ROOT/scripts/lib/li-ui.sh"
-LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ ! -x "$LIC" && -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-fi
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_export_lic "$ROOT" || { echo "bench-ph-ml-llm-forward: no runnable lic"; exit 1; }
 OUT="$BENCHMARKS_RESULTS/ph-ml-llm-forward.json"
 SMOKE="$ROOT/packages/li-llm/li-tests/smoke/llm_forward.li"
 META_SMOKE="$ROOT/packages/li-llm/li-tests/smoke/llm_safetensors_parse_real.li"

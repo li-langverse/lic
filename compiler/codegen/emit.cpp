@@ -1809,6 +1809,23 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context),
                               i32_ty(context), i32_ty(context), i32_ty(context)},
                              false));
+  module->getOrInsertFunction(
+      "li_rt_studio_demo_set_output",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_demo_emit_scratch",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_demo_frame_count",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_demo_scenario_id_from_env",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_demo_trace_append",
+      llvm::FunctionType::get(i32_ty(context),
+                             {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                             false));
+  module->getOrInsertFunction("li_rt_studio_demo_trace_open",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
   module->getOrInsertFunction("li_rt_lig_device_kind",
                               llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction("li_rt_lig_backend_available",

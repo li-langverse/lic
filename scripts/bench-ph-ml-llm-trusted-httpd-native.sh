@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 cd "$(dirname "$0")/.."
 OUT="${PH_ML_LLM_TRUSTED_HTTPD_OUT:-benchmarks/results/ph-ml-llm-trusted-httpd.json}"
-LIC="${LIC:-build-wsl/compiler/lic/lic}"
+# shellcheck source=lib/lic-bin-select.sh
+source "$(dirname "$0")/lib/lic-bin-select.sh"
+li_export_lic "$(dirname "$0")/.." || { echo "bench-native: build lic"; exit 1; }
 SMOKE=packages/li-llm/li-tests/smoke/llm_trusted_httpd_route.li
 BIN="/tmp/ph-ml-httpd-native-bin/llm_trusted_httpd_route-$$"
 mkdir -p /tmp/ph-ml-httpd-native-bin

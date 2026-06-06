@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-31T06:57:25.355997+00:00",
-  "platform": "Windows",
+  "generated_at": "2026-06-06T21:35:11.462265+00:00",
+  "platform": "Linux",
   "summary": {
     "total": 1,
     "failing": 0,
@@ -13,10 +13,7 @@
       "repo": "lic",
       "surface": "gui",
       "surface_class": "gui_app",
-      "status": "pass",
-      "artifacts": [
-        "C:\\Users\\Julian\\Documents\\Programming\\li\\li-cursor-agents/ux-harness/artifacts/world-studio-demo/home.png"
-      ],
+      "artifacts": [],
       "axe_violations": [],
       "pixel_diff": {
         "max_ratio": 0.0,
@@ -25,7 +22,10 @@
       "contrast_failures": [],
       "baseline_status": "ok",
       "tokens_deviation": [],
-      "broken_links": 0
+      "broken_links": 0,
+      "status": "pass",
+      "fixture": "/app/data/workspaces/li-langverse/li-cursor-agents/1780781698185/repo/ux-harness/fixtures/world-studio-workspace.html",
+      "mode": "fixture"
     }
   ]
 }

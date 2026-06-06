@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-31T06:57:25.356509+00:00",
-  "platform": "Windows",
+  "generated_at": "2026-06-06T21:35:11.462378+00:00",
+  "platform": "Linux",
   "summary": {
     "total": 1,
     "failing": 0,
@@ -22,6 +22,20 @@
             "timeline",
             "inspector"
           ],
+          "step_trace": [
+            {
+              "step": "viewport",
+              "status": "pass"
+            },
+            {
+              "step": "timeline",
+              "status": "pass"
+            },
+            {
+              "step": "inspector",
+              "status": "pass"
+            }
+          ],
           "completed": true,
           "step_count": 3
         },
@@ -32,6 +46,20 @@
             "filter",
             "run_command"
           ],
+          "step_trace": [
+            {
+              "step": "open_palette",
+              "status": "pass"
+            },
+            {
+              "step": "filter",
+              "status": "pass"
+            },
+            {
+              "step": "run_command",
+              "status": "pass"
+            }
+          ],
           "completed": true,
           "step_count": 3
         },
@@ -41,15 +69,26 @@
             "switch_profile",
             "read_metrics"
           ],
+          "step_trace": [
+            {
+              "step": "switch_profile",
+              "status": "pass"
+            },
+            {
+              "step": "read_metrics",
+              "status": "pass"
+            }
+          ],
           "completed": true,
           "step_count": 2
         }
       ],
       "friction_points": [],
       "sota_refs": [
-        "mkdocs-material",
         "shadcn-ui",
-        "textual"
+        "cursor-agent",
+        "linear-app",
+        "github-copilot-workspace"
       ],
       "rubric_scores": {
         "nav_clarity": 0.85,
@@ -59,10 +98,13 @@
         "cognitive_load": 0.7
       },
       "rubric_threshold": 0.6,
+      "rubric_min": 0.7,
       "missing_states": [],
       "artifacts": [
-        "C:\\Users\\Julian\\Documents\\Programming\\li\\li-cursor-agents/ux-harness/artifacts/world-studio-demo/journey-log.json"
-      ]
+        "/app/data/workspaces/li-langverse/li-cursor-agents/1780781698185/repo/ux-harness/artifacts/world-studio-demo/journey-log.json"
+      ],
+      "mode": "fixture",
+      "fixture": "/app/data/workspaces/li-langverse/li-cursor-agents/1780781698185/repo/ux-harness/fixtures/world-studio-workspace.html"
     }
   ]
 }

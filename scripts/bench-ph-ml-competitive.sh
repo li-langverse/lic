@@ -18,6 +18,7 @@ bash "$ROOT/scripts/bench-ph-ml-mlp-train-step.sh"
 bash "$ROOT/scripts/bench-ph-ml-async-env-collect.sh"
 bash "$ROOT/scripts/bench-ph-ml-llm-forward.sh"
 bash "$ROOT/scripts/bench-ph-ml-llm-logits-oracle.sh" || true
+bash "$ROOT/scripts/bench-ph-ml-llm-transformer-multilayer-parity.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-competitor-llm-all.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-competitor-numpy-matmul.sh"
 bash "$ROOT/scripts/bench-ph-ml-competitor-all.sh"
@@ -94,6 +95,7 @@ llm = load("ph-ml-llm-forward.json")
 llamacpp = load("ph-ml-competitor-llamacpp.json")
 vllm = load("ph-ml-competitor-vllm.json")
 transformers_llm = load("ph-ml-competitor-transformers.json")
+multilayer = load("ph-ml-transformer-multilayer-parity.json")
 li_matmul_sec = matmul32.get("cpu_sec") if matmul32.get("executed") else matmul.get("cpu_sec")
 matmul_wc = "tier3_cpu" if matmul32.get("executed") and matmul32.get("validity_gate_pass") else "pilot"
 mlp_wc = "tier3_cpu" if train.get("autograd_mode") in ("pilot_backward", "full_backward") and train.get("executed") else "pilot"
@@ -177,6 +179,29 @@ rows = [
             comp_row(llamacpp, llm.get("cpu_sec"), "llamacpp", "llama.cpp", "reference_native", "when llama-cli installed"),
             comp_row(vllm, llm.get("cpu_sec"), "vllm", "vLLM", "gpu_labeled", "when vllm installed"),
             comp_row(transformers_llm, llm.get("cpu_sec"), "pytorch_transformers", "transformers", "blas_labeled", "when transformers installed"),
+        ],
+    },
+    {
+        "id": "llm_transformer_multilayer",
+        "kernel": "llm.forward_multilayer_matmul",
+        "workload_class": multilayer.get("workload_class") or ("tier3_cpu" if multilayer.get("validity_gate_pass") else "stub"),
+        "workload_note": "2-layer transformer forward via ml_matmul_f32; Li vs Python reference parity",
+        "executed": bool(multilayer.get("executed")),
+        "li": {
+            **li_row(multilayer, multilayer.get("workload_class") or "tier3_cpu"),
+            "reference_top_id": multilayer.get("reference_top_id"),
+            "li_top_id": multilayer.get("li_top_id"),
+            "hf_executed": multilayer.get("hf_executed"),
+        },
+        "competitors": [
+            comp_row(
+                transformers_llm,
+                None,
+                "pytorch_transformers",
+                "transformers tiny-GPT2 smoke",
+                "blas_labeled",
+                "HF shape smoke when transformers installed; not weight parity",
+            ),
         ],
     },
 ]

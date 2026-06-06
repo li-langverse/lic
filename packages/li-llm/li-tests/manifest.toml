@@ -87,3 +87,21 @@ suite = "smoke"
 file = "smoke/llm_kv_device_buffer.li"
 outcome = "verify_ok"
 note = "PH-ML Stage 8 KV device buffer honest skip"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_transformer_multilayer_parity.li"
+outcome = "verify_ok"
+note = "PH-ML Stage 9 multi-layer transformer reference parity"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_transformer_multilayer_top_probe.li"
+outcome = "verify_ok"
+note = "PH-ML Stage 9 multilayer top_id probe for parity bench"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_kv_cluster_gpu_decode.li"
+outcome = "verify_ok"
+note = "PH-ML Stage 9 cluster GPU KV decode honest skip"

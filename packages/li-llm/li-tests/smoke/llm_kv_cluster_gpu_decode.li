@@ -1,0 +1,23 @@
+import llm
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_llm_version() < 10:
+    return 1
+  var kv: int = llm_kv_device_buffer_progress()
+  if kv < 0:
+    return 2
+  if kv > 1:
+    return 3
+  var cluster: int = llm_kv_cluster_gpu_decode_progress()
+  if cluster < 0:
+    return 4
+  if cluster > 1:
+    return 5
+  if cluster == 1:
+    if kv != 1:
+      return 6
+  return 0

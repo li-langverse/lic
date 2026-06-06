@@ -1,0 +1,17 @@
+import llm
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_llm_version() < 10:
+    return 1
+  var top: int = llm_transformer_multilayer_fixture_top_id()
+  if top == 255:
+    return 2
+  if top < 0:
+    return 3
+  if top > 255:
+    return 4
+  return 0

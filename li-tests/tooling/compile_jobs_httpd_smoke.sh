@@ -22,13 +22,15 @@ wall_s() {
   awk -v s="$start" -v e="$end" 'BEGIN { printf "%.3f", e - s }'
 }
 
-"$LIC" build "$HTTPD_LIB" -o /dev/null --no-lean-verify --build-dir="$BUILD_DIR" --jobs=1 >/dev/null
-"$LIC" build "$HTTPD_LIB" -o /dev/null --no-lean-verify --build-dir="$BUILD_DIR" --jobs=4 >/dev/null
+BUILD_FLAGS=(--allow-open-vc --no-lean-verify --build-dir="$BUILD_DIR")
+
+"$LIC" build "$HTTPD_LIB" -o /dev/null "${BUILD_FLAGS[@]}" --jobs=1 >/dev/null
+"$LIC" build "$HTTPD_LIB" -o /dev/null "${BUILD_FLAGS[@]}" --jobs=4 >/dev/null
 
 cores="$(nproc 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)"
 if [[ "$cores" -ge 8 || "${LI_COMPILE_JOBS_BENCH:-}" == "1" ]]; then
-  t1="$(wall_s "$LIC" build "$HTTPD_LIB" -o /dev/null --no-lean-verify --build-dir="$BUILD_DIR" --jobs=1)"
-  t4="$(wall_s "$LIC" build "$HTTPD_LIB" -o /dev/null --no-lean-verify --build-dir="$BUILD_DIR" --jobs=4)"
+  t1="$(wall_s "$LIC" build "$HTTPD_LIB" -o /dev/null "${BUILD_FLAGS[@]}" --jobs=1)"
+  t4="$(wall_s "$LIC" build "$HTTPD_LIB" -o /dev/null "${BUILD_FLAGS[@]}" --jobs=4)"
   ratio="$(awk -v a="$t4" -v b="$t1" 'BEGIN { if (b <= 0) print 1; else print a / b }')"
   echo "compile_jobs_httpd_smoke: wall_s jobs=1=$t1 jobs=4=$t4 ratio=$ratio cores=$cores"
   awk -v r="$ratio" 'BEGIN { exit (r <= 0.75 ? 0 : 1) }' || {

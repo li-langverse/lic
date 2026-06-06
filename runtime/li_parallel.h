@@ -33,9 +33,15 @@ double li_par_reduce_min_f64(const double* data, long long n, int team_size);
 double li_par_reduce_max_f64(const double* data, long long n, int team_size);
 long long li_par_reduce_sum_i64(const long long* data, long long n, int team_size);
 
-/** Phase 1.1 — `parallel for` reduce(+:) accumulates via thread-local partials. */
+/** Phase 1.1–1.2 — `parallel for` reduce(+|min|max:) via thread-local partials. */
 void li_par_reduce_acc_add_f64(double delta);
+void li_par_reduce_acc_min_f64(double delta);
+void li_par_reduce_acc_max_f64(double delta);
 void li_parallel_for_reduce_add_f64(long long start, long long end, void (*body)(long long),
+                                    double* accum, int team_size);
+void li_parallel_for_reduce_min_f64(long long start, long long end, void (*body)(long long),
+                                    double* accum, int team_size);
+void li_parallel_for_reduce_max_f64(long long start, long long end, void (*body)(long long),
                                     double* accum, int team_size);
 
 #ifdef __cplusplus

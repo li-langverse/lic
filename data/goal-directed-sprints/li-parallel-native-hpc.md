@@ -26,7 +26,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 | **WP-PAR-12** | static/dynamic/guided schedulers | **DONE** — `LI_PAR_SCHEDULE` + pool API; dynamic atomic chunks + guided decreasing chunks; smoke `li_par_pool_schedule_smoke` |
 | **WP-PAR-13** | Tree reductions `li_par_reduce.c` | **DONE** — sum/min/max f64, sum i64 |
 | **WP-PAR-14** | Windows thread pool | **DONE** — no serial `_WIN32` fallback |
-| **WP-PAR-15** | Compiler `reduce` lowering | **DONE** — `par_sum(a)` → `ParReduceSumF64` / `li_par_reduce_sum_f64`; `parallel for reduce(+: var)` Phase 1.1 |
+| **WP-PAR-15** | Compiler `reduce` lowering | **DONE** — `par_sum(a)` → `ParReduceSumF64` / `li_par_reduce_sum_f64`; `parallel for reduce(+|min|max: var)` Phase 1.1–1.2 |
 | **WP-PAR-16** | Reduction policy | **DONE** — `reduce_tile_disjoint` proof helper ties tree reductions to G-par disjoint tiles |
 
 ## Phase 2 — Distributed runtime
@@ -81,3 +81,5 @@ Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and 
 **Gate evidence (2026-06-06, agent run 7):** WP-PAR-31 E0303 fix — `par_outer_elem_*` helpers with `ensures result == …`; `lic build packages/li-parallel/li-tests/smoke/kernels_ghost.li` → exit 0 (verify_ok); `bash li-tests/run_all.sh` → 269 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~12s).
 
 **Gate evidence (2026-06-06, agent run 8):** WP-PAR-15 Phase 1.1 — `parallel for reduce(+: total)` → `li_parallel_for_reduce_add_f64` + TLS partials; `bash li-tests/tooling/li_par_for_reduce_codegen_smoke.sh` → exit 0; `lic build li-tests/parallel_codegen/par_for_reduce_f64.li --cores=4` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~11s).
+
+**Gate evidence (2026-06-06, agent run 9):** WP-PAR-15 Phase 1.2 — `parallel for reduce(min:|max: var)` → `li_parallel_for_reduce_min_f64` / `li_parallel_for_reduce_max_f64` + TLS partials; `bash li-tests/tooling/li_par_for_reduce_minmax_codegen_smoke.sh` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~11s).

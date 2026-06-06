@@ -1133,15 +1133,21 @@ struct EmitCtx {
         }
         llvm::FunctionType* iter_ty =
             llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
-        if (ins.par_reduce_plus_f64 && !ins.par_reduce_var.empty()) {
+        if (ins.par_reduce_kind != ParReduceKind::None && !ins.par_reduce_var.empty()) {
           llvm::Type* f64 = llvm::Type::getDoubleTy(context);
           llvm::FunctionType* reduce_ty = llvm::FunctionType::get(
               llvm::Type::getVoidTy(context),
               {i64_ty(context), i64_ty(context), iter_ty->getPointerTo(), f64->getPointerTo(),
                i32_ty(context)},
               false);
+          const char* reduce_fn = "li_parallel_for_reduce_add_f64";
+          if (ins.par_reduce_kind == ParReduceKind::Min) {
+            reduce_fn = "li_parallel_for_reduce_min_f64";
+          } else if (ins.par_reduce_kind == ParReduceKind::Max) {
+            reduce_fn = "li_parallel_for_reduce_max_f64";
+          }
           llvm::FunctionCallee reduce_rt =
-              module->getOrInsertFunction("li_parallel_for_reduce_add_f64", reduce_ty);
+              module->getOrInsertFunction(reduce_fn, reduce_ty);
           llvm::Value* accum = ensure_float_local(ins.par_reduce_var);
           builder->CreateCall(
               reduce_rt,
@@ -1691,7 +1697,31 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       "li_par_reduce_acc_add_f64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64}, false));
   module->getOrInsertFunction(
+      "li_par_reduce_acc_min_f64",
+      llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64}, false));
+  module->getOrInsertFunction(
+      "li_par_reduce_acc_max_f64",
+      llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64}, false));
+  module->getOrInsertFunction(
       "li_parallel_for_reduce_add_f64",
+      llvm::FunctionType::get(
+          llvm::Type::getVoidTy(context),
+          {i64_ty(context), i64_ty(context),
+           llvm::PointerType::getUnqual(llvm::FunctionType::get(
+               llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
+           f64_ptr, i32_ty(context)},
+          false));
+  module->getOrInsertFunction(
+      "li_parallel_for_reduce_min_f64",
+      llvm::FunctionType::get(
+          llvm::Type::getVoidTy(context),
+          {i64_ty(context), i64_ty(context),
+           llvm::PointerType::getUnqual(llvm::FunctionType::get(
+               llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
+           f64_ptr, i32_ty(context)},
+          false));
+  module->getOrInsertFunction(
+      "li_parallel_for_reduce_max_f64",
       llvm::FunctionType::get(
           llvm::Type::getVoidTy(context),
           {i64_ty(context), i64_ty(context),

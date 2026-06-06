@@ -16,7 +16,7 @@
 ## Shared memory v1
 
 - Runtime: persistent pool (`li_par_pool.c`), static/dynamic/guided/steal scheduling (`LI_PAR_SCHEDULE`, `li_par_pool_set_schedule`)
-- Reductions: `li_par_reduce_sum_f64` tree API; compiler `reduce(+: var)` on `parallel for` (Phase 1.1)
+- Reductions: `li_par_reduce_sum_f64` tree API; compiler `reduce(+|min|max: var)` on `parallel for` (Phase 1.1–1.2)
 - Windows: Win32 thread pool (no serial fallback)
 
 ## Distributed v1

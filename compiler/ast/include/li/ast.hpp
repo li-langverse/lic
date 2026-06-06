@@ -55,6 +55,9 @@ enum class ContractKind { Requires, Ensures, Decreases, Invariant, ProbEnsures }
 
 enum class BinOp { Add, Sub, Mul, Div, Mod, FloorDiv, Pow, MatMul, Le, Lt, Ge, Gt, Eq, Ne, Implies, And, Or, BitXor, Shl, Shr };
 
+/** WP-PAR-15 — `reduce(+|min|max: var)` on `parallel for`. */
+enum class ParReduceKind { None, Add, Min, Max };
+
 struct Expr {
   enum class Kind {
     IntLit,
@@ -155,9 +158,9 @@ struct Stmt {
   std::int64_t par_end = 0;
   std::vector<Contract> par_contracts;
   std::vector<Stmt> par_body;
-  /** WP-PAR-15 Phase 1.1 — `reduce(+: var)` on float accumulator. */
+  /** WP-PAR-15 — `reduce(+|min|max: var)` on float accumulator. */
   std::string par_reduce_var;
-  bool par_reduce_plus = false;
+  ParReduceKind par_reduce_kind = ParReduceKind::None;
   std::vector<Decorator> decorators;
 };
 

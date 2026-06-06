@@ -148,6 +148,18 @@ void li_par_reduce_acc_add_f64(double delta) {
   }
 }
 
+void li_par_reduce_acc_min_f64(double delta) {
+  if (g_li_par_reduce_tls != NULL && delta < *g_li_par_reduce_tls) {
+    *g_li_par_reduce_tls = delta;
+  }
+}
+
+void li_par_reduce_acc_max_f64(double delta) {
+  if (g_li_par_reduce_tls != NULL && delta > *g_li_par_reduce_tls) {
+    *g_li_par_reduce_tls = delta;
+  }
+}
+
 typedef struct {
   void (*body)(long long);
   long long begin;
@@ -181,9 +193,28 @@ static void* li_par_reduce_pthread_worker(void* raw) {
 
 #endif
 
-void li_parallel_for_reduce_add_f64(long long start, long long end, void (*body)(long long),
-                                    double* accum, int team_size) {
-  if (body == NULL || accum == NULL || start >= end) {
+typedef void (*LiParReduceCombineFn)(double* accum, double partial);
+
+static void li_par_reduce_combine_add(double* accum, double partial) {
+  *accum += partial;
+}
+
+static void li_par_reduce_combine_min(double* accum, double partial) {
+  if (partial < *accum) {
+    *accum = partial;
+  }
+}
+
+static void li_par_reduce_combine_max(double* accum, double partial) {
+  if (partial > *accum) {
+    *accum = partial;
+  }
+}
+
+static void li_parallel_for_reduce_f64(long long start, long long end, void (*body)(long long),
+                                       double* accum, int team_size, double partial_init,
+                                       LiParReduceCombineFn combine) {
+  if (body == NULL || accum == NULL || combine == NULL || start >= end) {
     return;
   }
   const long long trip = end - start;
@@ -220,7 +251,7 @@ void li_parallel_for_reduce_add_f64(long long start, long long end, void (*body)
     if (len <= 0) {
       continue;
     }
-    partials[launched] = 0.0;
+    partials[launched] = partial_init;
     tasks[launched].body = body;
     tasks[launched].begin = cur;
     tasks[launched].end = cur + len;
@@ -251,8 +282,24 @@ void li_parallel_for_reduce_add_f64(long long start, long long end, void (*body)
 #endif
 
   for (int w = 0; w < launched; ++w) {
-    *accum += partials[w];
+    combine(accum, partials[w]);
   }
+}
+
+void li_parallel_for_reduce_add_f64(long long start, long long end, void (*body)(long long),
+                                    double* accum, int team_size) {
+  li_parallel_for_reduce_f64(start, end, body, accum, team_size, 0.0, li_par_reduce_combine_add);
+}
+
+void li_parallel_for_reduce_min_f64(long long start, long long end, void (*body)(long long),
+                                    double* accum, int team_size) {
+  li_parallel_for_reduce_f64(start, end, body, accum, team_size, DBL_MAX, li_par_reduce_combine_min);
+}
+
+void li_parallel_for_reduce_max_f64(long long start, long long end, void (*body)(long long),
+                                    double* accum, int team_size) {
+  li_parallel_for_reduce_f64(start, end, body, accum, team_size, -DBL_MAX,
+                             li_par_reduce_combine_max);
 }
 
 long long li_par_reduce_sum_i64(const long long* data, long long n, int team_size) {

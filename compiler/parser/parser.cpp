@@ -682,13 +682,22 @@ bool Parser::try_parse_par_reduce_clause(Stmt& s) {
     return true;
   }
   i++;
-  if (!at(TokenKind::Plus)) {
-    diags.error(loc(start), "reduce v1 supports '+' only");
+  ParReduceKind kind = ParReduceKind::None;
+  if (at(TokenKind::Plus)) {
+    kind = ParReduceKind::Add;
+    i++;
+  } else if (at(TokenKind::Ident) && cur().text == "min") {
+    kind = ParReduceKind::Min;
+    i++;
+  } else if (at(TokenKind::Ident) && cur().text == "max") {
+    kind = ParReduceKind::Max;
+    i++;
+  } else {
+    diags.error(loc(start), "reduce v1 supports '+', 'min', or 'max'");
     return true;
   }
-  i++;
   if (!at(TokenKind::Colon)) {
-    diags.error(loc(start), "expected ':' in reduce(+: var)");
+    diags.error(loc(start), "expected ':' in reduce(+|min|max: var)");
     return true;
   }
   i++;
@@ -696,12 +705,12 @@ bool Parser::try_parse_par_reduce_clause(Stmt& s) {
     diags.error(loc(start), "expected variable name in reduce clause");
     return true;
   }
-  if (s.par_reduce_plus) {
+  if (s.par_reduce_kind != ParReduceKind::None) {
     diags.error(loc(start), "only one reduce clause allowed on parallel for");
     return true;
   }
   s.par_reduce_var = std::string(cur().text);
-  s.par_reduce_plus = true;
+  s.par_reduce_kind = kind;
   i++;
   if (!at(TokenKind::RParen)) {
     diags.error(loc(start), "expected ')' after reduce clause");

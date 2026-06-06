@@ -137,8 +137,8 @@ struct MirInsn {
   std::int64_t simd_lanes = 0;
   /** Policy-accepted disjoint witness on this `OmpParallelFor` (**G-par**). */
   bool parallel_disjoint_proven = false;
-  /** `reduce(+: ident)` — float sum accumulator (WP-PAR-15 Phase 1.1). */
-  bool par_reduce_plus_f64 = false;
+  /** `reduce(+|min|max: ident)` — float accumulator (WP-PAR-15). */
+  ParReduceKind par_reduce_kind = ParReduceKind::None;
   std::string par_reduce_var;
   std::vector<MirArg> args;
   /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc

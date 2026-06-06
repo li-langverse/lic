@@ -184,6 +184,28 @@ bool assign_targets_outer_local(const Stmt& s, const std::vector<std::string>& l
   return false;
 }
 
+bool par_reduce_capture_allowed(const Stmt& par, const Stmt& s) {
+  if (par.par_reduce_kind == ParReduceKind::None || par.par_reduce_var.empty()) {
+    return false;
+  }
+  if (par.par_reduce_kind == ParReduceKind::Add && s.kind == Stmt::Kind::Assign && s.init &&
+      s.init->kind == Expr::Kind::Ident && s.init->ident == par.par_reduce_var && s.expr &&
+      s.expr->kind == Expr::Kind::BinOp && s.expr->bin_op == BinOp::Add && s.expr->lhs &&
+      s.expr->lhs->kind == Expr::Kind::Ident && s.expr->lhs->ident == par.par_reduce_var) {
+    return true;
+  }
+  if ((par.par_reduce_kind == ParReduceKind::Min || par.par_reduce_kind == ParReduceKind::Max) &&
+      s.kind == Stmt::Kind::If && !s.else_body && s.then_body.size() == 1) {
+    return par_reduce_capture_allowed(par, s.then_body[0]);
+  }
+  if ((par.par_reduce_kind == ParReduceKind::Min || par.par_reduce_kind == ParReduceKind::Max) &&
+      s.kind == Stmt::Kind::Assign && s.init && s.init->kind == Expr::Kind::Ident &&
+      s.init->ident == par.par_reduce_var) {
+    return true;
+  }
+  return false;
+}
+
 std::int64_t decorator_vectorized_lanes(const Decorator& d) {
   if (d.name != "vectorized") {
     return 0;
@@ -271,8 +293,8 @@ void check_stmt_parallel(const Stmt& stmt, const std::string& file, DiagnosticBa
                  "disjoint_elem(i, buf).");
     }
   }
-  /** WP-PAR-15 Phase 1.1: `reduce(+:)` uses TLS partials — no disjoint_elem on arrays required. */
-  if (stmt.par_reduce_plus) {
+  /** WP-PAR-15: `reduce(+|min|max:)` uses TLS partials — no disjoint_elem on arrays required. */
+  if (stmt.par_reduce_kind != ParReduceKind::None) {
     return;
   }
   for (const auto& c : stmt.par_contracts) {
@@ -322,10 +344,7 @@ void check_stmt_parallel_capture(const Stmt& stmt, const std::vector<std::string
   }
   for (const auto& s : stmt.par_body) {
     if (assign_targets_outer_local(s, outer_locals)) {
-      if (stmt.par_reduce_plus && s.kind == Stmt::Kind::Assign && s.init &&
-          s.init->kind == Expr::Kind::Ident && s.init->ident == stmt.par_reduce_var && s.expr &&
-          s.expr->kind == Expr::Kind::BinOp && s.expr->bin_op == BinOp::Add && s.expr->lhs &&
-          s.expr->lhs->kind == Expr::Kind::Ident && s.expr->lhs->ident == stmt.par_reduce_var) {
+      if (par_reduce_capture_allowed(stmt, s)) {
         continue;
       }
       diag_error(diags, SourceLoc{file, 1, 1, s.span.start}, ErrorCode::E0350,

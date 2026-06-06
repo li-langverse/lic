@@ -68,8 +68,8 @@ if ml.get("li_top_id") != ml.get("reference_top_id"):
 kv = json.loads((root / "ph-ml-llm-kv-gpu-cluster.json").read_text())
 if kv.get("note") is None:
     sys.exit("9.7: kv gpu cluster bench missing note")
-if kv.get("executed") and not kv.get("lig_emit_cuda"):
-    sys.exit("9.7: executed kv cluster requires LIG_EMIT")
+if kv.get("gpu_decode_progress") and not kv.get("lig_emit_cuda"):
+    sys.exit("9.7: gpu_decode_progress requires LIG_EMIT")
 
 for name in ("ph-ml-competitor-llamacpp.json", "ph-ml-competitor-vllm.json", "ph-ml-competitor-transformers.json"):
     row = json.loads((root / name).read_text())

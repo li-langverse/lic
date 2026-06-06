@@ -1545,6 +1545,12 @@ note = "WP-PAR-12: dynamic and guided schedulers on persistent pool"
 
 [[tests]]
 suite = "tooling"
+file = "tooling/li_par_reduce_sum_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-13: li_par_reduce_sum_f64 uses persistent pool partitions"
+
+[[tests]]
+suite = "tooling"
 file = "tooling/li_dpar_for_smoke.sh"
 outcome = "script_ok"
 note = "WP-PAR-23: li_distributed_for_i64 block partition runtime"

@@ -20,6 +20,15 @@ JOBS="${BENCH_JOBS:-$(nproc 2>/dev/null || echo 4)}"
 export BENCHMARKS_CSV="${BENCHMARKS_CSV:-$BENCHMARKS_RESULTS/latest.csv}"
 mkdir -p "$(dirname "$BENCHMARKS_CSV")"
 
+REDUCE_DEST="${BENCHMARKS_ROOT:-}/benchmarks/workloads/tier1_micro/reduce_sum/common/reduce_core.c"
+if [[ -n "${BENCHMARKS_ROOT:-}" && -d "$(dirname "$REDUCE_DEST")" ]]; then
+  if [[ "${LI_PARALLEL:-0}" == "1" ]]; then
+    cp "$ROOT/packages/li-parallel/benchmarks/overrides/reduce_core.c" "$REDUCE_DEST"
+  else
+    cp "$ROOT/packages/li-parallel/benchmarks/overrides/reduce_core_serial.c" "$REDUCE_DEST"
+  fi
+fi
+
 echo "==> lipar-run-class-a: tier1 Class A (runs=$RUNS jobs=$JOBS LI_PARALLEL=${LI_PARALLEL:-0})"
 python3 - "$RUNS" "$BENCHMARKS_CSV" <<'PY'
 import os

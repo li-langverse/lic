@@ -8,6 +8,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cstring>
 #include <cstdlib>
 #include <filesystem>
 #include <sstream>
@@ -165,6 +166,9 @@ bool compile_module(const Module& module, const std::string& output_path,
   mir_finalize_runtime_link_needs(rt_needs);
   const bool link_runtime_full =
       std::getenv("LI_LINK_RUNTIME_FULL") != nullptr && *std::getenv("LI_LINK_RUNTIME_FULL") != '0';
+  const char* li_parallel_env = std::getenv("LI_PARALLEL");
+  const bool link_par_rt_env =
+      li_parallel_env != nullptr && *li_parallel_env != '\0' && strcmp(li_parallel_env, "0") != 0;
   const std::filesystem::path rt_lig_path = resolve_runtime_c("li_rt_lig.c");
 
   std::ostringstream cmd;
@@ -173,6 +177,9 @@ bool compile_module(const Module& module, const std::string& output_path,
 #if defined(LLVM_VERSION_MAJOR) && LLVM_VERSION_MAJOR >= 15
   cmd << " -opaque-pointers";
 #endif
+  if (link_par_rt_env) {
+    cmd << " -DLI_PAR_REDUCE_RT";
+  }
   cmd << " -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
   if (link_runtime_full || rt_needs.needs_rt_httpd) {
     if (std::filesystem::exists(rt_httpd_path)) {
@@ -221,11 +228,11 @@ bool compile_module(const Module& module, const std::string& output_path,
     cmd << " -x c \"" << rt_studio_demo_path.string() << "\"";
   }
   const bool link_par_pool =
-      link_runtime_full || mir.uses_openmp || rt_needs.needs_rt_par_pool;
+      link_runtime_full || mir.uses_openmp || rt_needs.needs_rt_par_pool || link_par_rt_env;
   if (link_par_pool && std::filesystem::exists(rt_par_pool_path)) {
     cmd << " -x c \"" << rt_par_pool_path.string() << "\"";
   }
-  if ((link_runtime_full || rt_needs.needs_rt_par_reduce) &&
+  if ((link_runtime_full || rt_needs.needs_rt_par_reduce || link_par_rt_env) &&
       std::filesystem::exists(rt_par_reduce_path)) {
     cmd << " -x c \"" << rt_par_reduce_path.string() << "\"";
   }
@@ -249,7 +256,8 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (!extra_clang_flags.empty()) {
     cmd << " " << extra_clang_flags;
   }
-  if (mir.uses_openmp || rt_needs.needs_rt_par_pool || rt_needs.needs_rt_par_reduce) {
+  if (mir.uses_openmp || rt_needs.needs_rt_par_pool || rt_needs.needs_rt_par_reduce ||
+      link_par_rt_env) {
 #if defined(__linux__) || defined(__APPLE__)
     cmd << " -pthread";
 #endif

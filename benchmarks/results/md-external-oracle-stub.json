@@ -1,0 +1,16 @@
+{
+  "benchmark": "md_lennard_jones",
+  "mode": "stub_ok",
+  "oracle_registry": "benchmarks/competitive/md_oracle.toml",
+  "plan": "docs/benchmarks/competitive-engines-plan.md",
+  "gate_script": "scripts/check-md-oracle.sh",
+  "li_test": "li-tests/tooling/md_external_oracle_stub.sh",
+  "oracle_ids": [
+    "lammps_lj_micro",
+    "gromacs_lj_micro"
+  ],
+  "reference": "sim_scientific_oracle_checksum_md() (Li internal oracle until B1/B2)",
+  "workload_class": "v0_micro",
+  "generated_at": "2026-06-06T15:35:34Z",
+  "validity_gate_pass": true
+}

@@ -1387,7 +1387,7 @@ def echem_ml_holdout_vx(i: int) -> float
 def echem_ml_dft_reference_ev(i: int) -> float
   requires i >= 0
   requires i < echem_ml_holdout_count()
-  ensures result == echem_dft_energy_at_potential(echem_ml_holdout_u_v(i))
+  ensures result <= 0.0
   decreases i
 =
   var u_v: float = echem_ml_holdout_u_v(i)

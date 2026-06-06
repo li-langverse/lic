@@ -776,28 +776,28 @@ def ml_echem_surrogate_out_dim() -> int
 
 def ml_echem_surrogate_base_ev() -> float
   requires true
-  ensures true
+  ensures result == 7.37
   decreases 0
 =
   return 7.37
 
 def ml_echem_surrogate_slope_u_ev() -> float
   requires true
-  ensures true
+  ensures result == -0.42
   decreases 0
 =
   return -0.42
 
 def ml_echem_surrogate_coef_x_ev() -> float
   requires true
-  ensures true
+  ensures result == 0.0
   decreases 0
 =
   return 0.0
 
 def ml_echem_surrogate_coef_vx_ev() -> float
   requires true
-  ensures true
+  ensures result == 0.0
   decreases 0
 =
   return 0.0
@@ -840,7 +840,7 @@ def ml_echem_surrogate_init_weights(w1: var array[8, array[8, float]], w2: var a
 
 def ml_echem_surrogate_affine_ev(u_v: float, x: float, vx: float) -> float
   requires true
-  ensures true
+  ensures result == ml_echem_surrogate_base_ev() + ml_echem_surrogate_slope_u_ev() * u_v + ml_echem_surrogate_coef_x_ev() * x + ml_echem_surrogate_coef_vx_ev() * vx
   decreases 0
 =
   var base: float = ml_echem_surrogate_base_ev()
@@ -851,7 +851,7 @@ def ml_echem_surrogate_affine_ev(u_v: float, x: float, vx: float) -> float
 
 def ml_echem_surrogate_predict_ev(u_v: float, x: float, vx: float) -> float raises IO
   requires true
-  ensures true
+  ensures result == ml_echem_surrogate_affine_ev(u_v, x, vx)
   decreases 0
 =
   var x_feat: array[8, array[8, float]]

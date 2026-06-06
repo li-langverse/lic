@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-06-06T13:35:45Z",
+  "suite": "ph-sci-md-oracle-competitive",
+  "registry_path": "benchmarks/competitive/ph-sci-md-oracle.toml",
+  "registry_schema": "li_ph_sci_md_oracle_competitive_v1",
+  "gate_script": "scripts/ph-sci-md-oracle-competitive-gates.sh",
+  "rows": [
+    {
+      "id": "lj_chain_4atom_drift",
+      "kernel": "sim_scientific_oracle_checksum_md",
+      "algo_registry_id": 104,
+      "algo_registry_name": "md_oracle_external",
+      "workload_class": "pilot",
+      "workload_note": "4-atom LJ chain; 8-step velocity-Verlet; relative energy drift checksum",
+      "drift_tolerance": 0.001,
+      "drift_delta": null,
+      "parity_gate_pass": null,
+      "parity_note": "LAMMPS GPL oracle optional in CI \u2014 Li/python mirror always recorded",
+      "executed": false,
+      "li": {
+        "id": "li",
+        "incumbent": "Li sim_scientific_oracle_checksum_md",
+        "workload_class": "pilot",
+        "executed": false,
+        "cpu_sec": null,
+        "energy_drift_checksum": 6.9691228e-05,
+        "energy_drift_source": "li_python_mirror",
+        "validity_gate_pass": true,
+        "validity_ratio": 1.0,
+        "ratio_vs_li": 1.0,
+        "device": "cpu",
+        "workload": "lj_chain_4atom_8step_drift"
+      },
+      "competitors": [
+        {
+          "id": "lammps",
+          "incumbent": "LAMMPS lj/cut",
+          "workload_class": "external_oracle",
+          "executed": false,
+          "cpu_sec": null,
+          "energy_drift_checksum": null,
+          "validity_gate_pass": false,
+          "validity_ratio": 0.0,
+          "ratio_vs_li": null,
+          "note": "lammps/lmp not in PATH \u2014 install LAMMPS for external oracle; see benchmarks/competitive/README-md-oracle.md",
+          "framework_version": null,
+          "license": "GPL-2.0-only",
+          "device": "cpu",
+          "workload": "lj_chain_4atom_8step_drift"
+        },
+        {
+          "id": "gromacs",
+          "incumbent": "GROMACS mdrun",
+          "workload_class": "external_manual",
+          "executed": false,
+          "cpu_sec": null,
+          "energy_drift_checksum": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "license": "LGPL-2.1-or-later",
+          "note": "NOT bundled \u2014 future driver; see benchmarks/competitive/README-md-oracle.md",
+          "device": "cpu",
+          "workload": "lj_chain_4atom_8step_drift"
+        }
+      ]
+    }
+  ]
+}

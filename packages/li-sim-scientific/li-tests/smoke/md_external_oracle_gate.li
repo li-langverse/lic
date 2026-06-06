@@ -1,0 +1,25 @@
+import sim.scientific
+
+# md-r3-oracle-plan — harness cites external oracle gate (algo_registry 104).
+# Gate: scripts/ph-sci-md-oracle-competitive-gates.sh
+# Registry: benchmarks/competitive/ph-sci-md-oracle.toml
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var drift: float = sim_scientific_oracle_checksum_md()
+  if drift <= 0.0:
+    return 1
+  if drift >= 1.0e-3:
+    return 2
+  var algo_external: int = 104
+  if algo_external != 104:
+    return 3
+  var md_run: SimRunResult = run_md_lj_smoke(0)
+  if run_result_ok(md_run) != 1:
+    return 4
+  if md_run.checksum != drift:
+    return 5
+  return 0

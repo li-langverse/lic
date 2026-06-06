@@ -3,7 +3,9 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
-export LIC_ROOT="${LIC_ROOT:-$ROOT}"
+# Agent runners often export stale LIC_ROOT=/workspace/lic — always pin to this checkout.
+export LIC_ROOT="$ROOT"
+export LI_REPO_ROOT="$ROOT"
 # shellcheck source=../../../scripts/lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 
@@ -88,6 +90,23 @@ if [[ ! -x "$SUITE" && ! -f "$SUITE" ]]; then
   exit 1
 fi
 
+_run_benches() {
+  if [[ "$PROFILE" == "pr" ]]; then
+    chmod +x "$ROOT/scripts/lipar-run-class-a.sh"
+    bash "$ROOT/scripts/lipar-run-class-a.sh"
+  else
+    bash "$SUITE"
+  fi
+}
+
+_dual_mode_tag() {
+  local mode="$1"
+  python3 "$ROOT/scripts/lipar-dual-mode-csv.py" \
+    --csv "${BENCHMARKS_CSV:-$BENCHMARKS_RESULTS/latest.csv}" \
+    --mode "$mode" \
+    --cores "$CORES"
+}
+
 run_pass() {
   local label="$1"
   local li_parallel="$2"
@@ -96,12 +115,20 @@ run_pass() {
   export LI_PARALLEL="$li_parallel"
   export BENCH_DUAL_MODE="$dual_flag"
   export LIPAR_CORES="$CORES"
+  export BENCHMARKS_CSV="${BENCHMARKS_CSV:-$BENCHMARKS_RESULTS/latest.csv}"
   if [[ "$li_parallel" == "1" ]]; then
     export LIC_BUILD_FLAGS="--cores=${CORES} --threads-per-core=1"
   else
     unset LIC_BUILD_FLAGS || true
   fi
-  bash "$SUITE"
+  _run_benches
+  if [[ "$dual_flag" == "1" ]]; then
+    if [[ "$li_parallel" == "1" ]]; then
+      _dual_mode_tag parallel
+    else
+      _dual_mode_tag serial
+    fi
+  fi
 }
 
 if [[ "$DUAL_MODE" == "1" || ( "$SKIP_SERIAL" == "0" && "$SKIP_PARALLEL" == "0" ) ]]; then

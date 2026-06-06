@@ -2,6 +2,8 @@
 # WP-PAR-47 — li-parallel full-suite completion gate (PR profile, dual-mode).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+export LIC_ROOT="$ROOT"
+export LI_REPO_ROOT="$ROOT"
 SUITE="$ROOT/packages/li-parallel/scripts/lipar-suite.sh"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"

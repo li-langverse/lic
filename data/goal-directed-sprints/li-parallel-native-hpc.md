@@ -15,7 +15,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 | **WP-PAR-00** | Spec `docs/superpowers/specs/2026-06-06-li-parallel-design.md` + G-par-dist row | **DONE** — spec committed |
 | **WP-PAR-01** | Package `packages/li-parallel/` + workspace member | **DONE** — scaffold + import `parallel` |
 | **WP-PAR-02** | `lipar-suite.sh` wraps `run-full-benchmark-suite.sh` | **DONE** — serial + parallel passes |
-| **WP-PAR-47** | `check-li-parallel-full-suite.sh` CI gate | **DONE** — dual-mode tier1 Class A rows + linker fix |
+| **WP-PAR-47** | `check-li-parallel-full-suite.sh` CI gate | **DONE** — Class A PR profile via `lipar-run-class-a.sh`; LIC_ROOT pinned for agent workspaces |
 
 ## Phase 1 — Shared-memory runtime
 
@@ -53,7 +53,7 @@ Build **li-parallel** — zero-install OpenMP/MPI replacement: persistent thread
 |----|-------------|--------|
 | **WP-PAR-45** | Tier1 Class A parallel variants | **DONE** — matmul_blocked, reduce_sum, simd_dot, num_dot_axpy |
 | **WP-PAR-46** | Tier2 MD/FEA parallel variants | **DONE** — md_lennard_jones, fea_stiffness_assembly |
-| **WP-PAR-44** | Matrix report `li_serial`/`li_parallel` columns | **DONE** — `speedup_vs_serial` in report |
+| **WP-PAR-44** | Matrix report `li_serial`/`li_parallel` columns | **DONE** — `lipar-dual-mode-csv.py` tags serial/parallel passes; `num_dot_axpy` registry alias |
 | **WP-PAR-40–43** | Perf gates vs OpenMP/MPI | **DONE** — `check-li-parallel-perf-gate.sh` (speedup≥1.05× vs serial when wall≥5ms; li_parallel≤1.2× cpp); advisory CI via `.github/workflows/li-parallel-gate.yml` |
 
 ## Completion gate
@@ -65,3 +65,5 @@ bash scripts/check-li-parallel-full-suite.sh
 Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and verifies dual-mode CSV rows for Class A tier1+2.
 
 **Agent rules:** Do not weaken gates. Update this file honestly each loop.
+
+**Gate evidence (2026-06-06, agent run):** `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s); dual-mode rows for matmul_blocked, reduce_sum, simd_dot, num_dot_axpy; perf advisory (simd_dot vs cpp 1.598×, strict=0).

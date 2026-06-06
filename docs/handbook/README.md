@@ -6,6 +6,7 @@ Canonical **language** handbook: [li-language Pages](https://li-langverse.github
 
 | I want to… | Doc |
 |------------|-----|
+| Native parallel (li-parallel) | [li-parallel handbook](li-parallel.md) |
 | Install and first build | [Getting started](../guide/getting-started-tools.md) |
 | Language surface (honest status) | [Language overview](../language/overview.md) |
 | What `lic build` proves **today** | [Provability gaps](../verification/provability-gaps.md) |

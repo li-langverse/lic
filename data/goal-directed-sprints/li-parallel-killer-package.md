@@ -84,12 +84,12 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-50** | Handbook chapter | **PENDING** |
-| **WP-PAR-51** | API reference | **PENDING** |
-| **WP-PAR-52** | OpenMP/MPI migration guide | **PENDING** |
-| **WP-PAR-53** | Examples corpus | **PENDING** |
-| **WP-PAR-54** | mkdocs nav (DOC-PAR-01–14) | **PENDING** |
-| **WP-PAR-55** | Gap register | **PENDING** |
+| **WP-PAR-50** | Handbook chapter | **DONE** |
+| **WP-PAR-51** | API reference | **DONE** |
+| **WP-PAR-52** | OpenMP/MPI migration guide | **DONE** |
+| **WP-PAR-53** | Examples corpus | **DONE** |
+| **WP-PAR-54** | mkdocs nav (DOC-PAR-01–14) | **DONE** |
+| **WP-PAR-55** | Gap register | **DONE** |
 
 ### Phase 6 — Federated learning hardening
 
@@ -153,4 +153,4 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-06)
 
-Killer gate fails at first sub-gate (`check-li-parallel-docs-gate.sh`). Foundation (Phases 0–4 partial) is ~35% of killer scope. Previous `GOAL_COMPLETE` was false — PR gate passed with skip env; do not treat as ship-ready.
+Killer gate fails at `check-li-parallel-compile-smoke-gate.sh` (program-first `team()` / embedded plan pending WP-PAR-07–09). Phase 5 docs corpus is **DONE**. Foundation (Phases 0–4 partial) is ~40% of killer scope. Previous `GOAL_COMPLETE` was false — PR gate passed with skip env; do not treat as ship-ready.

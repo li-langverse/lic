@@ -18,7 +18,7 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 | Org repo | https://github.com/li-langverse/li-parallel |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
 
-See `PUBLISH.md` and `docs/traceability.md`.
+See `PUBLISH.md`, `docs/traceability.md`, and the [documentation corpus](docs/gap-register.md) (DOC-PAR-01–14).
 
 ## License
 

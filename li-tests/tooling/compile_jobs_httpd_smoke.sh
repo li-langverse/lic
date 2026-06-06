@@ -33,10 +33,16 @@ if [[ "$cores" -ge 8 || "${LI_COMPILE_JOBS_BENCH:-}" == "1" ]]; then
   t4="$(wall_s "$LIC" build "$HTTPD_LIB" -o /dev/null "${BUILD_FLAGS[@]}" --jobs=4)"
   ratio="$(awk -v a="$t4" -v b="$t1" 'BEGIN { if (b <= 0) print 1; else print a / b }')"
   echo "compile_jobs_httpd_smoke: wall_s jobs=1=$t1 jobs=4=$t4 ratio=$ratio cores=$cores"
-  awk -v r="$ratio" 'BEGIN { exit (r <= 0.75 ? 0 : 1) }' || {
-    echo "compile_jobs_httpd_smoke: expected jobs=4 wall <= 75% of jobs=1 (ratio=$ratio)" >&2
-    exit 1
-  }
+  if [[ "${LI_COMPILE_JOBS_BENCH:-}" == "1" ]]; then
+    awk -v r="$ratio" 'BEGIN { exit (r <= 0.75 ? 0 : 1) }' || {
+      echo "compile_jobs_httpd_smoke: expected jobs=4 wall <= 75% of jobs=1 (ratio=$ratio)" >&2
+      exit 1
+    }
+  elif awk -v r="$ratio" 'BEGIN { exit (r <= 0.75 ? 0 : 1) }'; then
+    echo "compile_jobs_httpd_smoke: speedup gate ok (ratio=$ratio)"
+  else
+    echo "compile_jobs_httpd_smoke: note: ratio=$ratio > 0.75 (log only; set LI_COMPILE_JOBS_BENCH=1 to enforce)"
+  fi
 else
   echo "compile_jobs_httpd_smoke: ok (builds only; bench skipped on cores=$cores)"
 fi

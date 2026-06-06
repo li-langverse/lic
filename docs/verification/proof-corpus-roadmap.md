@@ -37,6 +37,7 @@
 | `linalg_norm4_int_closed.li` | Int norm (sum of squares) | Fully discharged |
 | `linalg_axpy4_int_closed.li` | Scalar axpy `alpha*x+y` | Fully discharged |
 | `linalg_dot4_float_closed.li` | Float dot via prelude | Fully discharged |
+| `linalg_broadcast_len1_add_float4_closed.li` | Length-1 rhs broadcast add float[4] | Fully discharged (`broadcast_len1_add_float4_spec_proved`) |
 
 **Proof-db sweep reporter:**
 
@@ -77,7 +78,7 @@ See [proof-db/reporter.md](../../proof-db/reporter.md).
 
 | Suite | Result | Notes |
 |-------|--------|-------|
-| `run_all.sh contracts_verify` | **26 pass / 0 fail** (14 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
+| `run_all.sh contracts_verify` | **27 pass / 0 fail** (15 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
 | `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |

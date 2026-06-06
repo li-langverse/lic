@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **2i / G-math:** `Li.Discharge.broadcast_len1_add_float4_spec` + VC witness + `linalg_broadcast_len1_add_float4_closed.li` (`prove_lean_ok`) — closes #574 / BUG-C-03 Lean slice — `docs/release-notes/2026-06-06-broadcast-len1-lean-closed.md`.
+
 - **Docs:** GitHub Pages handbook hub at https://li-langverse.github.io/lic/ (`site/index.html`, `pages.yml`) — [2026-05-30-lic-handbook-pages.md](docs/release-notes/2026-05-30-lic-handbook-pages.md), [2026-05-30-lic-pages-site-artifact.md](docs/release-notes/2026-05-30-lic-pages-site-artifact.md) (fix missing `site/` artifact after #535).
 
 ### Changed

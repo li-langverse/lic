@@ -7607,9 +7607,9 @@ def blur_kernel_radius_from_sigma(sigma_px: float) -> int
   var r: int = 0
   if sigma_px >= 3.0:
     r = 3
-  elif sigma_px >= 2.0:
+  if r == 0 and sigma_px >= 2.0:
     r = 2
-  elif sigma_px >= 1.0:
+  if r == 0 and sigma_px >= 1.0:
     r = 1
   return r
 

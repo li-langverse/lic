@@ -110,6 +110,16 @@ bool ty_is_2d_float_matrix(const TyPtr& t, std::int64_t* rows, std::int64_t* col
   return true;
 }
 
+bool ty_is_2d_numeric_array(const TyPtr& t) {
+  if (!t || t->kind != TyKind::Array || !t->elem) {
+    return false;
+  }
+  if (t->elem->kind != TyKind::Array || !t->elem->elem) {
+    return false;
+  }
+  return t->elem->elem->kind == TyKind::Float || t->elem->elem->kind == TyKind::Int;
+}
+
 bool ty_is_1d_numeric_array(const TyPtr& t, bool* out_float, std::int64_t* out_n) {
   if (!t || t->kind != TyKind::Array || !t->elem) {
     return false;
@@ -881,7 +891,19 @@ struct Ctx {
             }
             diags.error(loc(e.span),
                         "element-wise arithmetic requires matching lengths or length-1 "
-                        "broadcast to a longer array");
+                        "broadcast to a longer array (NumPy rank broadcast is not supported)");
+            return l;
+          }
+          if (ty_is_2d_numeric_array(l) || ty_is_2d_numeric_array(r)) {
+            diags.error(loc(e.span),
+                        "element-wise arithmetic on rank-2 arrays requires matching shapes; "
+                        "NumPy rank broadcast is not supported");
+            if (ty_is_2d_float_matrix(l, nullptr, nullptr)) {
+              return l;
+            }
+            if (ty_is_2d_float_matrix(r, nullptr, nullptr)) {
+              return r;
+            }
             return l;
           }
           {

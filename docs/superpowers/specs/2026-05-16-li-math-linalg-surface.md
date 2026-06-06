@@ -16,6 +16,20 @@ Users never call `simd(...)` or lane intrinsics in normal code. There is no “s
 
 **Goal:** linear-algebra mistakes are **compile-time errors**, same class as type errors — not `ValueError` at run time.
 
+## Element-wise broadcast (2i policy)
+
+| Rule | Status |
+|------|--------|
+| Matching `array[N]` lengths for `+ - * / **` | **done** |
+| `float` × `array[N, float]` | **done** |
+| `array[1, T]` → `array[N, T]` only (1d length-1) | **done** — not NumPy general broadcast |
+| NumPy rank/length promotion (e.g. `array[2]` × `array[4]`, rank-2 `(M,N)` vs `(M,1)` or `(1,N)`) | **rejected** — `lic build` fails |
+| Full NumPy rank broadcast (nd align, trailing axes) | **deferred** — [#526](https://github.com/li-langverse/lic/issues/526) |
+
+Handbook: [linear-algebra.md](../../language/linear-algebra.md). Corpus: `li-tests/math_linalg/broadcast_len1_*.li` (allowed), `broadcast_invalid_*.li` (rejected).
+
+**Defer criteria for full rank broadcast:** requires `tensor[(M,N), T]` surface (**Phase 3**), Lean shape proofs per axis, and SIMD tile lowering — tracked in [#526](https://github.com/li-langverse/lic/issues/526); do not implement silent promotion before then.
+
 ---
 
 Users write `C += A @ B`, `y[i] = alpha * x[i] + y[i]`, `dot(x, y)` — not `simd(...)` or `__li_simd_*` in handbook or Tier 1 benchmarks.

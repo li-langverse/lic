@@ -218,6 +218,17 @@ std::int64_t decorator_vectorized_lanes(const Decorator& d) {
   return 4;
 }
 
+void check_offload_decorator(const Decorator& d, const std::string& file, DiagnosticBag& diags) {
+  if (d.name != "offload") {
+    return;
+  }
+  if (!d.args.empty()) {
+    diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+               "offload decorator: `@offload` takes no arguments in v1.",
+               "Use bare `@offload` on a parallel region; device selection is in the exec plan.");
+  }
+}
+
 void check_gpu_decorator(const Decorator& d, const std::string& file, DiagnosticBag& diags) {
   if (d.name != "gpu") {
     return;
@@ -249,6 +260,7 @@ void check_gpu_decorator(const Decorator& d, const std::string& file, Diagnostic
 void check_stmt_decorators(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
   for (const auto& d : stmt.decorators) {
     check_gpu_decorator(d, file, diags);
+    check_offload_decorator(d, file, diags);
     if (d.name == "parallel") {
       if (!decorator_has_disjoint_arg(d)) {
         diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
@@ -378,6 +390,7 @@ void check_proc_decorators(const std::vector<Decorator>& decos, const std::strin
                            DiagnosticBag& diags) {
   for (const auto& d : decos) {
     check_gpu_decorator(d, file, diags);
+    check_offload_decorator(d, file, diags);
     if (d.name == "parallel") {
       bool saw_disjoint_kw = false;
       for (const auto& arg : d.args) {

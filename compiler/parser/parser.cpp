@@ -1074,6 +1074,100 @@ Stmt Parser::parse_stmt() {
     s.while_body = parse_block();
     return s;
   }
+  if (at(TokenKind::Ident) && cur().text == "overlap") {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "comm") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'comm' after 'overlap'");
+      return s;
+    }
+    i++;
+    s.kind = Stmt::Kind::OverlapComm;
+    s.span = {start_tok.start, cur().start};
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "team") {
+    const Token start_tok = cur();
+    i++;
+    s.kind = Stmt::Kind::TeamBlock;
+    s.par_start = 0;
+    if (accept(TokenKind::LParen)) {
+      while (!at(TokenKind::RParen) && !at(TokenKind::Eof)) {
+        if (at(TokenKind::Ident) && cur().text == "cores") {
+          i++;
+          if (accept(TokenKind::Eq) && at(TokenKind::IntLit)) {
+            s.par_start = cur().int_value;
+            i++;
+          }
+        } else if (at(TokenKind::Ident)) {
+          i++;
+          if (accept(TokenKind::Eq)) {
+            (void)parse_decorator_value();
+          }
+        } else {
+          break;
+        }
+        accept(TokenKind::Comma);
+      }
+      expect(TokenKind::RParen, "')'");
+    }
+    skip_newlines();
+    if (accept(TokenKind::Eq)) {
+      skip_newlines();
+      if (at(TokenKind::Indent)) {
+        s.par_body = parse_block();
+      }
+    }
+    s.span = {start_tok.start, cur().start};
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "cluster") {
+    const Token start_tok = cur();
+    i++;
+    s.kind = Stmt::Kind::ClusterBlock;
+    s.par_start = 0;
+    if (accept(TokenKind::LParen)) {
+      while (!at(TokenKind::RParen) && !at(TokenKind::Eof)) {
+        if (at(TokenKind::Ident) && cur().text == "world") {
+          i++;
+          if (accept(TokenKind::Eq) && at(TokenKind::IntLit)) {
+            s.par_start = cur().int_value;
+            i++;
+          }
+        } else if (at(TokenKind::Ident) && cur().text == "hosts") {
+          i++;
+          if (accept(TokenKind::Eq) && at(TokenKind::StringLit)) {
+            const std::string raw(cur().text);
+            if (raw.size() >= 2 && raw.front() == '"' && raw.back() == '"') {
+              s.exec_hosts = raw.substr(1, raw.size() - 2);
+            } else {
+              s.exec_hosts = raw;
+            }
+            i++;
+          }
+        } else if (at(TokenKind::Ident)) {
+          i++;
+          if (accept(TokenKind::Eq)) {
+            (void)parse_decorator_value();
+          }
+        } else {
+          break;
+        }
+        accept(TokenKind::Comma);
+      }
+      expect(TokenKind::RParen, "')'");
+    }
+    skip_newlines();
+    if (accept(TokenKind::Eq)) {
+      skip_newlines();
+      if (at(TokenKind::Indent)) {
+        s.par_body = parse_block();
+      }
+    }
+    s.span = {start_tok.start, cur().start};
+    return s;
+  }
   if (at(TokenKind::Ident) && cur().text == "distributed") {
     const Token start_tok = cur();
     i++;

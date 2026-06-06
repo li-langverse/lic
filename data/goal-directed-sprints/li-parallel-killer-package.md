@@ -117,9 +117,9 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-07** | Embedded execution plan | **PENDING** |
-| **WP-PAR-08** | `team()` / `cluster()` parser | **PENDING** |
-| **WP-PAR-09** | Runtime reads compiled plan at main | **PENDING** |
+| **WP-PAR-07** | Embedded execution plan | **IN PROGRESS** — `__li_exec_plan` global + `li_exec_plan_apply` at main |
+| **WP-PAR-08** | `team()` / `cluster()` parser | **IN PROGRESS** — compile smokes green; scoped push/pop v1 |
+| **WP-PAR-09** | Runtime reads compiled plan at main | **IN PROGRESS** — `li_exec_plan_apply` reads embedded plan |
 | **WP-PAR-79** | Rename `lig` → `li-gpu` (`import ligpu`) | **PENDING** |
 | **WP-PAR-80** | Hetero orchestration API in li-parallel | **PENDING** |
 | **WP-PAR-83** | New `li-tpu` (`import litpu`) | **PENDING** |
@@ -153,4 +153,4 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-06)
 
-Killer gate fails at `check-li-parallel-compile-smoke-gate.sh` (program-first `team()` / embedded plan pending WP-PAR-07–09). Phase 5 docs corpus is **DONE**. Foundation (Phases 0–4 partial) is ~40% of killer scope. Previous `GOAL_COMPLETE` was false — PR gate passed with skip env; do not treat as ship-ready.
+Killer gate advances past `check-li-parallel-compile-smoke-gate.sh` (WP-PAR-07–09 compile slice landed). Next blocker: `audit-li-parallel-catalog-coverage.sh` / distributed / comm sub-gates until remaining WPs land.

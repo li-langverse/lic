@@ -166,6 +166,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_par_reduce_path = resolve_runtime_c("li_par_reduce.c");
   const std::filesystem::path rt_dpar_path = resolve_runtime_c("li_dpar.c");
   const std::filesystem::path rt_dpar_collective_path = resolve_runtime_c("li_dpar_collective.c");
+  const std::filesystem::path rt_exec_plan_path = resolve_runtime_c("li_exec_plan.c");
 
   MirModule rt_needs;
   mir_collect_runtime_link_needs(mir, rt_needs);
@@ -238,12 +239,17 @@ bool compile_module(const Module& module, const std::string& output_path,
       std::filesystem::exists(rt_par_reduce_path)) {
     cmd << " -x c \"" << rt_par_reduce_path.string() << "\"";
   }
-  if ((link_runtime_full || rt_needs.needs_rt_dpar) && std::filesystem::exists(rt_dpar_path)) {
+  if ((link_runtime_full || rt_needs.needs_rt_dpar || rt_needs.needs_rt_exec_plan) &&
+      std::filesystem::exists(rt_dpar_path)) {
     cmd << " -x c \"" << rt_dpar_path.string() << "\"";
   }
-  if ((link_runtime_full || rt_needs.needs_rt_dpar) &&
+  if ((link_runtime_full || rt_needs.needs_rt_dpar || rt_needs.needs_rt_exec_plan) &&
       std::filesystem::exists(rt_dpar_collective_path)) {
     cmd << " -x c \"" << rt_dpar_collective_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_exec_plan) &&
+      std::filesystem::exists(rt_exec_plan_path)) {
+    cmd << " -x c -DLI_EXEC_PLAN_DEFAULT=0 \"" << rt_exec_plan_path.string() << "\"";
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {

@@ -128,6 +128,12 @@ struct Stmt {
     ParallelFor,
     /** `distributed for i in start..<end` — block-partitioned per rank (**G-par-dist**). */
     DistributedFor,
+    /** `team(cores=N)` scoped thread team (**WP-PAR-08**). */
+    TeamBlock,
+    /** `cluster(world=N)` distributed scope (**WP-PAR-08**). */
+    ClusterBlock,
+    /** `overlap comm` — comm/compute overlap site (**WP-PAR-71** compile smoke). */
+    OverlapComm,
     Break,
     Continue,
     Expr,
@@ -161,6 +167,8 @@ struct Stmt {
   /** WP-PAR-15 — `reduce(+|min|max: var)` on float accumulator. */
   std::string par_reduce_var;
   ParReduceKind par_reduce_kind = ParReduceKind::None;
+  /** WP-PAR-08 — `cluster(hosts="a,b")` CSV for embedded exec plan. */
+  std::string exec_hosts;
   std::vector<Decorator> decorators;
 };
 

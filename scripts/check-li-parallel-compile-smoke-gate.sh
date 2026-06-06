@@ -10,7 +10,10 @@ missing=()
 for specimen in \
   li-tests/parallel_codegen/par_sum_f64.li \
   li-tests/parallel_codegen/par_for_reduce_f64.li \
-  li-tests/parallel_codegen/dpar_for_range.li
+  li-tests/parallel_codegen/dpar_for_range.li \
+  li-tests/parallel_codegen/team_block_par_for.li \
+  li-tests/parallel_codegen/cluster_block_dpar.li \
+  li-tests/parallel_codegen/program_first_exec_plan.li
 do
   [[ -f "$ROOT/$specimen" ]] || missing+=("$specimen (file)")
 done
@@ -23,11 +26,13 @@ fi
 for smoke in \
   li-tests/tooling/li_par_reduce_codegen_smoke.sh \
   li-tests/tooling/li_par_for_reduce_codegen_smoke.sh \
-  li-tests/tooling/li_dpar_for_codegen_smoke.sh
+  li-tests/tooling/li_dpar_for_codegen_smoke.sh \
+  li-tests/tooling/li_team_block_codegen_smoke.sh \
+  li-tests/tooling/li_cluster_block_codegen_smoke.sh \
+  li-tests/tooling/li_program_first_exec_plan_smoke.sh
 do
   chmod +x "$ROOT/$smoke"
   bash "$ROOT/$smoke"
 done
 
-li_fail "WP-PAR-07–09 pending — team()/cluster() blocks, embedded __li_exec_plan, @offload, overlap comm specimens"
-exit 1
+li_ok "check-li-parallel-compile-smoke-gate.sh: PASS (WP-PAR-07–09 team/cluster/exec plan/offload/overlap comm)"

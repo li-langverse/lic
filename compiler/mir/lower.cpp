@@ -78,6 +78,9 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
       md.gpu = true;
       md.gpu_devices = mir_gpu_devices_from_decorator(d);
     }
+    if (d.name == "offload") {
+      md.offload = true;
+    }
     if (d.name == "parallel") {
       md.parallel = true;
       md.disjoint_proven = mir_decorator_disjoint_proven(d);
@@ -217,6 +220,8 @@ struct LowerCtx {
   ParReduceKind par_reduce_kind = ParReduceKind::None;
   const std::string* par_reduce_var = nullptr;
 };
+
+void note_offload_decorators(const std::vector<Decorator>& decos, MirModule* mir);
 
 bool push_par_reduce_acc_arg(const Expr& candidate, const Module& module, std::vector<MirInsn>& out,
                              std::unordered_set<std::string>& float_names,
@@ -899,6 +904,8 @@ void collect_object_local_types_r(const Module& module, const std::vector<Stmt>&
         break;
       case Stmt::Kind::ParallelFor:
       case Stmt::Kind::DistributedFor:
+      case Stmt::Kind::TeamBlock:
+      case Stmt::Kind::ClusterBlock:
         collect_object_local_types_r(module, st.par_body, out);
         break;
       default:
@@ -2230,6 +2237,7 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       MirFn par_fn;
       par_fn.name = par_name;
       copy_decorators(stmt.decorators, par_fn.decorators);
+      note_offload_decorators(stmt.decorators, ctx.mir);
       MirParam ip;
       ip.name = stmt.par_iter;
       ip.is_i64 = true;
@@ -2295,6 +2303,54 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       call.parallel_disjoint_proven = true;
       out.push_back(std::move(call));
       ctx.mir->needs_rt_dpar = true;
+      break;
+    }
+    case Stmt::Kind::TeamBlock: {
+      if (!ctx.mir) {
+        break;
+      }
+      const std::int64_t cores = stmt.par_start;
+      if (cores > 0) {
+        ctx.mir->exec_plan.team_cores = cores;
+      }
+      ctx.mir->needs_rt_exec_plan = true;
+      ctx.mir->needs_rt_par_pool = true;
+      MirInsn push;
+      push.op = MirOp::TeamPush;
+      push.int_value = cores;
+      out.push_back(std::move(push));
+      lower_stmts(stmt.par_body, ctx, returns_float, out, float_names, simd_names, float_array_names,
+                  i64_locals);
+      MirInsn pop;
+      pop.op = MirOp::TeamPop;
+      out.push_back(std::move(pop));
+      break;
+    }
+    case Stmt::Kind::ClusterBlock: {
+      if (!ctx.mir) {
+        break;
+      }
+      if (stmt.par_start > 0) {
+        ctx.mir->exec_plan.cluster_world = stmt.par_start;
+      }
+      if (!stmt.exec_hosts.empty()) {
+        ctx.mir->exec_plan.cluster_hosts = stmt.exec_hosts;
+      }
+      ctx.mir->needs_rt_exec_plan = true;
+      ctx.mir->needs_rt_dpar = true;
+      lower_stmts(stmt.par_body, ctx, returns_float, out, float_names, simd_names, float_array_names,
+                  i64_locals);
+      break;
+    }
+    case Stmt::Kind::OverlapComm: {
+      if (!ctx.mir) {
+        break;
+      }
+      ctx.mir->exec_plan.overlap_comm_count++;
+      ctx.mir->needs_rt_exec_plan = true;
+      MirInsn oc;
+      oc.op = MirOp::OverlapComm;
+      out.push_back(std::move(oc));
       break;
     }
     case Stmt::Kind::If: {
@@ -2591,6 +2647,18 @@ void append_implicit_return(std::vector<MirInsn>& body) {
   }
 }
 
+void note_offload_decorators(const std::vector<Decorator>& decos, MirModule* mir) {
+  if (!mir) {
+    return;
+  }
+  for (const auto& d : decos) {
+    if (d.name == "offload") {
+      mir->exec_plan.offload_count++;
+      mir->needs_rt_exec_plan = true;
+    }
+  }
+}
+
 }  // namespace
 
 MirModule lower_to_mir(const Module& module) {
@@ -2734,6 +2802,11 @@ MirModule lower_to_mir(const Module& module) {
       if (!lowered_body) {
         lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
                     float_array_names, i64_locals);
+      }
+      if (proc.name == "main" && mir.needs_rt_exec_plan) {
+        MirInsn apply;
+        apply.op = MirOp::ExecPlanApply;
+        fn.body.insert(fn.body.begin(), std::move(apply));
       }
       g_object_locals = nullptr;
       g_mir_module = nullptr;

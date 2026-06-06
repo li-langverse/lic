@@ -33,7 +33,7 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 |----------|-----|--------|
 | WP-PAR-60–65 | Federated learning hardening | **PENDING** |
 | WP-PAR-70–75 | Compiler comm plan | **PENDING** |
-| WP-PAR-07–09 | Embedded execution plan | **PENDING** |
+| WP-PAR-07–09 | Embedded execution plan | **IN PROGRESS** — team/cluster/offload/overlap comm compile smokes land; runtime plan apply at main |
 | WP-PAR-79–86 | Chip packages + boundaries | **PENDING** |
 | WP-PAR-87–92 | Transfer plan | **PENDING** |
 

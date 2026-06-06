@@ -79,6 +79,14 @@ enum class MirOp {
   AsyncFrameLeave,
   /** Push/pop scoped array SIMD: int_value 1=enable, 0=pop (pairs with `@vectorized` on `for`). */
   ArraySimdScope,
+  /** WP-PAR-08 — push scoped team(cores=N). int_value = cores. */
+  TeamPush,
+  /** WP-PAR-08 — pop scoped team. */
+  TeamPop,
+  /** WP-PAR-71 — overlap comm site (compile-time intent). */
+  OverlapComm,
+  /** WP-PAR-09 — apply embedded __li_exec_plan at program entry. */
+  ExecPlanApply,
 };
 
 struct MirArg {
@@ -156,6 +164,8 @@ struct MirDecorator {
   bool gpu = false;
   /** Requested device count for `@gpu(devices=N)`; 1 means ordinary single-device placement. */
   std::int64_t gpu_devices = 0;
+  /** `@offload` hetero placement tag (**WP-PAR-07**). */
+  bool offload = false;
   bool parallel = false;
   bool disjoint_proven = false;
 };
@@ -179,6 +189,15 @@ struct MirFn {
   std::vector<MirInsn> body;
 };
 
+/** WP-PAR-07 — fields embedded as `__li_exec_plan` global at link time. */
+struct MirExecPlan {
+  std::int64_t team_cores = 0;
+  std::int64_t cluster_world = 0;
+  std::string cluster_hosts;
+  std::uint32_t offload_count = 0;
+  std::uint32_t overlap_comm_count = 0;
+};
+
 struct MirModule {
   std::vector<MirFn> functions;
   bool uses_openmp = false;
@@ -197,6 +216,9 @@ struct MirModule {
   bool needs_rt_par_reduce = false;
   /** runtime/li_dpar*.c — distributed TCP mesh. */
   bool needs_rt_dpar = false;
+  /** runtime/li_exec_plan.c — embedded execution plan (**WP-PAR-07–09**). */
+  bool needs_rt_exec_plan = false;
+  MirExecPlan exec_plan;
   /** When true: MIR stability pass + strict FP codegen (no fast-math reassociation). */
   bool fp_numerically_stable = false;
 };

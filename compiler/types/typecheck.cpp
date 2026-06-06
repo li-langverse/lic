@@ -1509,6 +1509,15 @@ struct Ctx {
       loop_index_vars = std::move(saved_loop);
       return;
     }
+    if (s.kind == Stmt::Kind::TeamBlock || s.kind == Stmt::Kind::ClusterBlock) {
+      for (const auto& inner : s.par_body) {
+        check_stmt(inner);
+      }
+      return;
+    }
+    if (s.kind == Stmt::Kind::OverlapComm) {
+      return;
+    }
     if (s.kind == Stmt::Kind::Borrow) {
       if (s.init && s.init->kind == Expr::Kind::Ident) {
         const auto it = locals.find(s.init->ident);

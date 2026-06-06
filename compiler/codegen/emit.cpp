@@ -1626,6 +1626,32 @@ struct EmitCtx {
         builder->CreateCall(leave, {});
         return true;
       }
+      case MirOp::TeamPush: {
+        llvm::FunctionType* ty =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i32_ty(context)}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_exec_team_push", ty);
+        const int cores = ins.int_value > 0 ? static_cast<int>(ins.int_value) : 0;
+        builder->CreateCall(rt, {llvm::ConstantInt::get(i32_ty(context), cores)});
+        return true;
+      }
+      case MirOp::TeamPop: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_exec_team_pop", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::OverlapComm: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_exec_overlap_comm", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::ExecPlanApply: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_exec_plan_apply", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
       case MirOp::ArraySimdScope:
         if (ins.int_value != 0) {
           array_simd_scope_stack.push_back(true);
@@ -1637,6 +1663,39 @@ struct EmitCtx {
     return true;
   }
 };
+
+void emit_exec_plan_global(llvm::Module* module, const MirExecPlan& plan) {
+  llvm::LLVMContext& ctx = module->getContext();
+  llvm::Type* i8 = llvm::Type::getInt8Ty(ctx);
+  llvm::ArrayType* hosts_arr = llvm::ArrayType::get(i8, 512);
+  llvm::StructType* st = llvm::StructType::get(
+      ctx, {i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), hosts_arr, i32_ty(ctx), i32_ty(ctx)});
+  std::string hosts = plan.cluster_hosts;
+  if (hosts.size() > 511) {
+    hosts.resize(511);
+  }
+  llvm::Constant* hosts_init = llvm::ConstantDataArray::getString(ctx, hosts, true);
+  const unsigned host_len = static_cast<unsigned>(hosts.size() + 1);
+  if (host_len < 512) {
+    std::vector<llvm::Constant*> pad(512 - host_len, llvm::ConstantInt::get(i8, 0));
+    std::vector<llvm::Constant*> chars;
+    for (unsigned i = 0; i < host_len; ++i) {
+      chars.push_back(hosts_init->getAggregateElement(i));
+    }
+    chars.insert(chars.end(), pad.begin(), pad.end());
+    hosts_init = llvm::ConstantArray::get(hosts_arr, chars);
+  }
+  llvm::Constant* init = llvm::ConstantStruct::get(
+      st,
+      {llvm::ConstantInt::get(i32_ty(ctx), 0x5045494cu),
+       llvm::ConstantInt::get(i32_ty(ctx), 1u),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.team_cores),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.cluster_world), hosts_init,
+       llvm::ConstantInt::get(i32_ty(ctx), plan.offload_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.overlap_comm_count)});
+  new llvm::GlobalVariable(*module, st, true, llvm::GlobalValue::ExternalLinkage, init,
+                           "__li_exec_plan");
+}
 
 }  // namespace
 
@@ -1975,6 +2034,19 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction("tcp_close",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context),
                                                       {i32_ty(context)}, false));
+
+  if (mir.needs_rt_exec_plan) {
+    emit_exec_plan_global(module.get(), mir.exec_plan);
+    module->getOrInsertFunction("li_exec_plan_apply",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction(
+        "li_exec_team_push",
+        llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i32_ty(context)}, false));
+    module->getOrInsertFunction("li_exec_team_pop",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_exec_overlap_comm",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+  }
 
   llvm::Function* user_main = nullptr;
   bool user_main_argv_wrapper = false;

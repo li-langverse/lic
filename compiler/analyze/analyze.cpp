@@ -107,6 +107,10 @@ void warn_unreachable(const std::vector<Stmt>& body, const std::string& file,
       warn_unreachable(stmt.par_body, file, diags);
     } else if (stmt.kind == Stmt::Kind::DistributedFor) {
       warn_unreachable(stmt.par_body, file, diags);
+    } else if (stmt.kind == Stmt::Kind::TeamBlock || stmt.kind == Stmt::Kind::ClusterBlock) {
+      warn_unreachable(stmt.par_body, file, diags);
+    } else if (stmt.kind == Stmt::Kind::OverlapComm) {
+      /* no body */
     }
     if (stmt_terminates(stmt)) {
       seen_terminator = true;

@@ -37,6 +37,9 @@ void note_one(std::string_view callee, MirModule& mir) {
     mir.needs_rt_par_pool = true;
     mir.needs_rt_par_reduce = true;
   }
+  if (starts_with(callee, "li_exec_")) {
+    mir.needs_rt_exec_plan = true;
+  }
 }
 
 }  // namespace
@@ -59,6 +62,12 @@ void mir_finalize_runtime_link_needs(MirModule& mir) {
   if (mir.needs_rt_dpar) {
     mir.needs_rt_net = true;
   }
+  if (mir.needs_rt_exec_plan) {
+    mir.needs_rt_par_pool = true;
+    if (mir.exec_plan.cluster_world > 0 || !mir.exec_plan.cluster_hosts.empty()) {
+      mir.needs_rt_dpar = true;
+    }
+  }
 }
 
 void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) {
@@ -77,6 +86,10 @@ void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) 
       }
       if (ins.op == MirOp::DParFor) {
         out_flags.needs_rt_dpar = true;
+      }
+      if (ins.op == MirOp::TeamPush || ins.op == MirOp::TeamPop || ins.op == MirOp::OverlapComm ||
+          ins.op == MirOp::ExecPlanApply) {
+        out_flags.needs_rt_exec_plan = true;
       }
       if (ins.op == MirOp::AsyncAwait || ins.op == MirOp::AsyncFrameEnter ||
           ins.op == MirOp::AsyncFrameLeave) {

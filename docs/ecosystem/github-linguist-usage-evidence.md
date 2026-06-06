@@ -84,7 +84,7 @@ Paste into upstream PR (template bullets):
 - Primary: `extension:li NOT is:fork` — state count and confirm manual spot-check of random repos.
 - Li-specific: `extension:li "requires" NOT is:fork` (and/or `ensures`, `proc`).
 - If needed: `-user:<your-account>` to show distribution beyond language owners.
-- Link [SAMPLES_LICENSES.md](../../contrib/linguist-samples/SAMPLES_LICENSES.md) commit and grammar MIT license.
+- Link [SAMPLES_LICENSES.md](https://github.com/li-langverse/lic/blob/main/contrib/linguist-samples/SAMPLES_LICENSES.md) commit and grammar MIT license.
 
 ## What agents may do
 
@@ -110,4 +110,4 @@ Paste into upstream PR (template bullets):
 ## Related
 
 - [Playbook G0–G8](./github-linguist.md)
-- [PATCH_INSTRUCTIONS.md](../../contrib/linguist-upstream/PATCH_INSTRUCTIONS.md)
+- [PATCH_INSTRUCTIONS.md](https://github.com/li-langverse/lic/blob/main/contrib/linguist-upstream/PATCH_INSTRUCTIONS.md)

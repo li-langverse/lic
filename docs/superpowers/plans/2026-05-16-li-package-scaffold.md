@@ -108,7 +108,7 @@ Templates: `scripts/templates/package/` — **generated from lip § A3** (single
 | [docs/ecosystem/overview.md](../../ecosystem/overview.md) | Pkg vs lip vs lit diagram |
 | [docs/ecosystem/governance.md](../../ecosystem/governance.md) | Org policy, standards, traceability (summary) |
 | [docs/ecosystem/official-packages.md](../../ecosystem/official-packages.md) | `PKG-*` registry + GitHub org repos |
-| [docs/ecosystem/lip.md](../../ecosystem/lip.md) | lip plan (8b–8d) |
+| [docs/ecosystem/lip.md](https://github.com/li-langverse/lip/blob/main/docs/lip.md) | lip plan (8b–8d) |
 | [2026-05-16-li-ecosystem-governance.md](2026-05-16-li-ecosystem-governance.md) | Full governance + intl standards |
 | mkdocs Guide + Ecosystem nav | All above |
 

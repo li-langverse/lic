@@ -1,7 +1,7 @@
 # PH-world-studio-program — master tracker
 
 **Status:** Planning  
-**Hub:** [WORLD-STUDIO-MASTER-PLAN.md](WORLD-STUDIO-MASTER-PLAN.md) � modes, agent flows, canvas, exports, WP index
+**Hub:** [WORLD-STUDIO-MASTER-PLAN.md](WORLD-STUDIO-MASTER-PLAN.md) — modes, agent flows, canvas, exports, WP index
 **Vision:** [world-studio-vision.md](world-studio-vision.md)
 
 Cross-cutting program IDs. Implementation order respects dependencies in the vision doc.

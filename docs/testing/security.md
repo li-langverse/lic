@@ -51,7 +51,7 @@ Li treats **compiler robustness** and **parallel safety** as security properties
 
 **Workflow:** `.github/workflows/cve-catalog.yml` validates the catalog on all three OSes on every PR; weekly NVD/OSV refresh opens a bot PR (human review only when mappings change).
 
-See also [SECURITY.md](../../SECURITY.md) for disclosure and refresh policy.
+See also [SECURITY.md](https://github.com/li-langverse/lic/blob/main/SECURITY.md) for disclosure and refresh policy.
 
 ### Historic failures (OS-ready)
 
@@ -111,7 +111,7 @@ Documented in [Tests overview](overview.md#race-exploit-suite-security-of-parall
 
 **Harness:** `li-tests/decorator_exploits/` — run via `./li-tests/run_all.sh decorator_exploits` (also in `scripts/ci.sh`).
 
-This complements Lean, not replaces it. See [Provability gaps](../verification/provability-gaps.md) (**G-dec**).
+This complements Lean, not replaces it. See [Provability gaps](../../verification/provability-gaps.md) (**G-dec**).
 
 ## 6. Memory CI (Linux)
 
@@ -138,7 +138,7 @@ This complements Lean, not replaces it. See [Provability gaps](../verification/p
 
 ## Reporting issues
 
-For security-sensitive reports, follow [SECURITY.md](../../SECURITY.md).
+For security-sensitive reports, follow [SECURITY.md](https://github.com/li-langverse/lic/blob/main/SECURITY.md).
 
 For general robustness bugs, open a GitHub issue with:
 

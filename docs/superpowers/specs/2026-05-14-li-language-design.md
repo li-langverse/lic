@@ -7,7 +7,7 @@
 **Milestone:** Tetris + proved physics kernels — **unproved code does not compile**
 **License:** Apache-2.0 OR MIT (open source)
 
-> **Implementation status:** Normative **target**. For what `lic` proves **today**, see [Provability gaps](../../verification/provability-gaps.md). Gaps are **compiler maturity**, not a user toggle to disable proof.
+> **Implementation status:** Normative **target**. For what `lic` proves **today**, see [Provability gaps](../../../verification/provability-gaps.md). Gaps are **compiler maturity**, not a user toggle to disable proof.
 
 ## Vision
 

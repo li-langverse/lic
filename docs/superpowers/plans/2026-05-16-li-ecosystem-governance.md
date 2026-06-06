@@ -4,7 +4,7 @@
 
 **Goal:** Official Li software and standard packages live under a **defined GitHub organization**, with documentation and metadata that meet **international conventions** and a **traceability chain** from requirements → design → tests → releases.
 
-**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability gaps](../../verification/provability-gaps.md) (honesty for `proof_digest` / release claims — **G-*** updated only with compiler evidence)
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability gaps](../../../verification/provability-gaps.md) (honesty for `proof_digest` / release claims — **G-*** updated only with compiler evidence)
 
 ---
 
@@ -52,7 +52,7 @@ git remote add origin git@github.com:li-langverse/li-foo.git
 
 **Templates:** `scripts/templates/github-repo/` — `README.md`, `SECURITY.md`, `CHANGELOG.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `PUBLISH.md`.
 
-**Agent skill:** extend [create-li-package](../../../.cursor/skills/create-li-package/SKILL.md) — if `official` or `std`, run org checklist and link traceability IDs.
+**Agent skill:** extend [create-li-package](https://github.com/li-langverse/li-cursor-agents/blob/main/.cursor/skills/create-li-package/SKILL.md) — if `official` or `std`, run org checklist and link traceability IDs.
 
 ---
 

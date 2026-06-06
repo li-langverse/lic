@@ -48,5 +48,5 @@ Studio timeline stepping calls `sim.scientific` MD smoke on `sim_scientific` pro
 
 ```markdown
 ### Added
-- **Vertical gap #4/#9 sim step physics** — `sim_scientific_tick_stub`, `studio_game_step_hook`, `studio_md_particle_tier_select_ok`, profile smokes — [2026-05-25-vertical-gap-sim-step-physics.md](docs/release-notes/2026-05-25-vertical-gap-sim-step-physics.md).
+- **Vertical gap #4/#9 sim step physics** — `sim_scientific_tick_stub`, `studio_game_step_hook`, `studio_md_particle_tier_select_ok`, profile smokes — [2026-05-25-vertical-gap-sim-step-physics.md](../release-notes/2026-05-25-vertical-gap-sim-step-physics.md).
 ```

@@ -6,7 +6,7 @@
 
 | Step | Run | Artifact |
 |------|-----|----------|
-| `survey_sota-1` | `numerics_researcher-1779916590880` | [Study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · [Whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) |
+| `survey_sota-1` | `numerics_researcher-1779916590880` | [Study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · [Whitepaper](https://github.com/li-langverse/research-findings/blob/main/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) |
 | `digest` | `numerics_researcher-1779940539765` | [Goal digest](../../research/goals/chem_sim_algorithms.md) |
 
 ## Queue (this cycle)

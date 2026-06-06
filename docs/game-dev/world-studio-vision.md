@@ -4,7 +4,7 @@
 **Audience:** Architects, agents, contributors  
 **Syntax:** Li uses Python-style **`def`** for functions (not `proc`). Contracts: `requires` / `ensures` / `decreases` unchanged.
 
-**Related:** [WORLD-STUDIO-MASTER-PLAN.md](WORLD-STUDIO-MASTER-PLAN.md) (production hub — modes, agents, canvas, exports), [GAME_DEV.md](../physics/GAME_DEV.md), [PH-world-studio-program.md](PH-world-studio-program.md), [competitive-landscape.md](competitive-landscape.md), [specs/](specs/), [philosophy.md](../language/philosophy.md), [master plan](../superpowers/plans/2026-05-14-li-master-plan.md)
+**Related:** [WORLD-STUDIO-MASTER-PLAN.md](WORLD-STUDIO-MASTER-PLAN.md) (production hub â€” modes, agents, canvas, exports), [GAME_DEV.md](../physics/GAME_DEV.md), [PH-world-studio-program.md](PH-world-studio-program.md), [competitive-landscape.md](competitive-landscape.md), [specs/](specs/), [philosophy.md](../language/philosophy.md), [master plan](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 ---
 
@@ -350,7 +350,7 @@ CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-c
 
 1. Land RFC stubs under [specs/](specs/) (this execution).  
 2. Tracker: [PH-world-studio-program.md](PH-world-studio-program.md).  
-3. Update [li-world-studio-vision.mdc](../../.cursor/rules/li-world-studio-vision.mdc).  
+3. Update [li-world-studio-vision.mdc](https://github.com/li-langverse/lic/blob/main/.cursor/rules/li-world-studio-vision.mdc).  
 4. Scaffold `li-studio` after GD-1 approval (separate PR).  
 5. **Do not** use `li-demo` for studio features.
 

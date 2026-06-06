@@ -1,7 +1,7 @@
 # C-host retirement plan (WP-UX-14b / WP-GD-05)
 
 **Status:** IN_PROGRESS — step 1–3 landed on plan-loop branch; step 4 (delete C hosts) pending `li-studio-demo` without paint_blit  
-**Policy:** [li-native-li-only.mdc](../../../.cursor/rules/li-native-li-only.mdc)
+**Policy:** [li-native-li-only.mdc](https://github.com/li-langverse/lic/blob/main/.cursor/rules/li-native-li-only.mdc)
 
 ## Current C hosts (`deploy/studio-demo/native/`)
 

@@ -59,5 +59,5 @@ N/A — stub only; no bench threshold changes.
 ## CHANGELOG entry (paste into Unreleased)
 
 ```markdown
-- **PH-HW viewport phase B:** `LIG_WGPU_READBACK=1` wgpu readback present stub (`native_pixel_source=3`, kid=4); studio vertical demo exit 54/55 — [2026-05-27-wgpu-readback-phase-b.md](docs/release-notes/2026-05-27-wgpu-readback-phase-b.md).
+- **PH-HW viewport phase B:** `LIG_WGPU_READBACK=1` wgpu readback present stub (`native_pixel_source=3`, kid=4); studio vertical demo exit 54/55 — [2026-05-27-wgpu-readback-phase-b.md](../release-notes/2026-05-27-wgpu-readback-phase-b.md).
 ```

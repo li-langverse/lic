@@ -317,14 +317,14 @@ def echem_gc_aimd_harmonic_k() -> float
 
 def echem_gc_aimd_dft_energy_at_potential(u_v: float) -> float
   requires true
-  ensures true
+  ensures result == echem_dft_energy_at_potential(u_v)
   decreases 0
 =
   return echem_dft_energy_at_potential(u_v)
 
 def echem_gc_aimd_kinetic_pe(x: float, vx: float) -> float
   requires true
-  ensures true
+  ensures result >= 0.0
   decreases 0
 =
   var k: float = echem_gc_aimd_harmonic_k()

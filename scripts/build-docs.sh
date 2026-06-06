@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Build handbook via lic-docs MkDocs with lic/docs sources overlaid.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

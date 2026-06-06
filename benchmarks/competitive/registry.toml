@@ -122,6 +122,26 @@ last_reviewed = "2026-05-16"
 notes = "Tier-0 stability + race rejects gate CI; not wall-time competitive."
 
 [[ecosystem]]
+id = "lammps_lj_micro"
+track = "watch"
+repo_url = "https://github.com/lammps/lammps"
+compare = ["md_lennard_jones", "md_oracle_external"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-06"
+notes = "Layer B MD oracle — md-r3-oracle-plan; driver benchmarks/harness/md_external_oracle.py; pinned in md_oracle.toml."
+
+[[ecosystem]]
+id = "gromacs_lj_micro"
+track = "watch"
+repo_url = "https://gitlab.com/gromacs/gromacs"
+compare = ["md_lennard_jones", "md_oracle_external"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-06"
+notes = "Layer B MD oracle — md-r3-oracle-plan; gromacs_mdlj.mdp stub; not bundled in default CI."
+
+[[ecosystem]]
 id = "sb3_vecenv"
 track = "watch"
 repo_url = "https://github.com/DLR-RM/stable-baselines3"

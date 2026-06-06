@@ -1,0 +1,9 @@
+; GROMACS mdp skeleton — md_oracle_external v0_micro (stub; not executed in CI)
+; Pinned: v2024.2 — align with lammps_mdlj.lammps contract at B2.
+
+integrator      = md
+dt              = 0.004
+nsteps          = 10000
+nstenergy       = 1000
+
+; NVE — no thermostat/barostat until IC parity with md_core

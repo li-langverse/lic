@@ -19,11 +19,11 @@ notes = "world-studio.toml gaming_rigid row; composable import_physics_rigid_gam
 id = "md_lennard_jones"
 incumbent = "LAMMPS / GROMACS"
 kernel_or_api = "LJ cutoff force + energy drift"
-workload_class = "stub"
-oracle = "cpp"
+workload_class = "v0_micro"
+oracle = "external_binary"
 li_package = "sim.scientific"
-last_reviewed = "2026-05-23"
-notes = "tier-2 verify green; Li oracle `sim_scientific_oracle_checksum_md()` (8-step 4-particle LJ chain); Layer B csv_lang lammps/gromacs stubs — not LAMMPS/GROMACS parity."
+last_reviewed = "2026-06-06"
+notes = "T0 Li oracle `sim_scientific_oracle_checksum_md()`; T2 external column via benchmarks/harness/md_external_oracle.py + md_oracle.toml (stub — not LAMMPS/GROMACS parity until B1/B2)."
 
 [[vertical]]
 id = "pde_heat_2d"

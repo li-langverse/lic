@@ -85,3 +85,5 @@ Runs `packages/li-parallel/scripts/lipar-suite.sh --dual-mode --profile pr` and 
 **Gate evidence (2026-06-06, agent run 9):** WP-PAR-15 Phase 1.2 — `parallel for reduce(min:|max: var)` → `li_parallel_for_reduce_min_f64` / `li_parallel_for_reduce_max_f64` + TLS partials; `bash li-tests/tooling/li_par_for_reduce_minmax_codegen_smoke.sh` → exit 0; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~11s).
 
 **Gate evidence (2026-06-06, agent run 10):** Sprint completion re-verify — `./scripts/build.sh` → exit 0; `bash li-tests/run_all.sh` → 270 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s); perf gate skips `simd_dot`/`num_dot_axpy` speedup (simd_intrathread per registry); all Class A dual-mode rows present.
+
+**Gate evidence (2026-06-06, agent run 11):** Completion gate re-verify — `./scripts/build.sh` → exit 0; `bash li-tests/run_all.sh` → 270 pass / 0 fail; `SKIP_BUILD=1 BENCH_RUNS=1 bash scripts/check-li-parallel-full-suite.sh` → exit 0 (~10s); dual-mode rows for matmul_blocked, reduce_sum, simd_dot, num_dot_axpy; perf advisory (strict=0, reduce_sum speedup gap noted).

@@ -1,0 +1,50 @@
+# MD external oracle driver registry (WP-PLAT-05 / md-r3-oracle-plan).
+# B0: plan + gate only — LAMMPS/GROMACS drivers are stub until B2/B3.
+# Validate: ./scripts/check-md-oracle-plan.sh
+
+[meta]
+version = 1
+updated = "2026-06-06"
+schema = "li_md_oracle_competitive_v1"
+study_doc = "docs/numerics/studies/2026-06-06-md-r3-oracle-plan.md"
+algo_registry_id = 104
+algo_registry_name = "md_oracle_external"
+catalog_path = "benchmarks/tier2_physics/md_oracle_external"
+
+[harness]
+gate_script = "scripts/check-md-oracle-plan.sh"
+li_oracle_fn = "sim_scientific_oracle_checksum_md"
+li_oracle_source = "packages/li-sim-scientific/src/lib.li"
+future_driver = "benchmarks/harness/md_external_oracle.py"
+
+[[li_tests_oracle_smoke]]
+path = "packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li"
+note = "WP-SCI-03 tier-2 MD/heat oracle checksums"
+
+[[li_tests_oracle_smoke]]
+path = "packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li"
+note = "WP-SCI-03 run_algo_registry MD/heat tier-2 dispatch"
+
+[[li_tests_oracle_smoke]]
+path = "packages/li-sim-scientific/li-tests/smoke/scientific_gpu_md_oracle.li"
+note = "PH-SCI-GPU-02 @gpu MD/heat oracle checksums"
+
+[[driver]]
+id = "lammps_lj_micro"
+engine = "lammps"
+status = "stub"
+workload_class = "v0_micro"
+pinned_version = "2024.06.13"
+compare_metric = "energy_drift_rel"
+driver_path = "benchmarks/tier2_physics/md_lennard_jones/external/lammps/run_lammps_lj_micro.sh"
+notes = "B2 — optional when LAMMPS_BIN set; not bundled in CI"
+
+[[driver]]
+id = "gromacs_lj_micro"
+engine = "gromacs"
+status = "stub"
+workload_class = "v0_micro"
+pinned_version = "2024.2"
+compare_metric = "force_checksum_l2"
+driver_path = "benchmarks/tier2_physics/md_lennard_jones/external/gromacs/run_gromacs_lj_micro.sh"
+notes = "B3 — optional when GMX_BIN set; not bundled in CI"

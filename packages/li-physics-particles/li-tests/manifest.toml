@@ -11,3 +11,9 @@ suite = "smoke"
 file = "smoke/physics_gpu_md_mini_step.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-03 @gpu MD mini step"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/echem_solvent_gr_smoke.li"
+outcome = "compile_open_ok"
+note = "WP-ECHEM-10 explicit water sphere g(r) peak smoke"

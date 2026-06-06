@@ -1,0 +1,15 @@
+# WP-ECHEM-10: explicit water sphere — radial g(r) peak vs reference JSON oracle.
+import physics.particles
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if echem_solvent_water_count() != 16:
+    return 1
+  if echem_solvent_gr_peak_reference_ang() != 2.8:
+    return 2
+  if echem_solvent_gr_peak_smoke() != 1:
+    return 3
+  return 0

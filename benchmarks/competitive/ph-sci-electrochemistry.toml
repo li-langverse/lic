@@ -1,0 +1,31 @@
+[meta]
+version = 1
+updated = "2026-06-05"
+schema = "li_ph_sci_echem_competitive_v1"
+
+[harness]
+script = "scripts/bench-ph-sci-echem-competitive.sh"
+output_competitive = "benchmarks/results/ph-sci-echem-competitive.json"
+competitor_drivers = "benchmarks/competitive/pyscf_echem_che_h.py"
+requirements = "scripts/requirements-ph-sci-chem-dft-competitive.txt"
+gate_script = "scripts/ph-sci-echem-competitive-gates.sh"
+
+[[row]]
+id = "echem_che_h"
+kernel = "echem.che_h_adsorption_energy"
+workload_class = "pilot"
+workload = "che_h_adsorption_u0"
+geometry_h_star = "H 0 0 0"
+geometry_h2 = "H 0 0 0; H 0 0 0.74"
+basis = "sto-3g"
+xc = "lda,vwn"
+potential_v = 0.0
+energy_tolerance_ev = 5.0
+incumbent = "PySCF RKS/LDA CHE proxy (Apache-2.0)"
+competitors = ["pyscf", "orca"]
+
+[competitor.orca]
+license = "academic-free-not-redistributable"
+bundled = false
+import_json_field = "competitors[id=orca].energy_ev"
+notes = "User-run only — see README-chem-dft.md"

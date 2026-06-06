@@ -155,7 +155,7 @@ def drug_litl_dft_energy_for_stage(stage: int) -> float
 =
   var s: int = stage
   if s == drug_litl_stage_dft():
-    return chem_dft_run_smoke()
+    return chem_dft_energy_kernel_hartree()
   return 0.0
 
 def drug_litl_admet_scores_hypothesis() -> array[4, float]
@@ -353,7 +353,7 @@ def run_drug_design_smoke() -> int
   if hyp.conformer_count != 0:
     return 3
   var dft: DrugLitlStagePayload = drug_litl_stage_payload(drug_litl_stage_dft())
-  if dft.dft_energy_hartree != chem_dft_run_smoke():
+  if dft.dft_energy_hartree != chem_dft_energy_kernel_hartree():
     return 4
   if dft.admet[2] <= 0.0:
     return 5

@@ -1,0 +1,29 @@
+[meta]
+version = 1
+updated = "2026-06-05"
+schema = "li_ph_sci_chem_dft_competitive_v1"
+
+[harness]
+script = "scripts/bench-ph-sci-chem-dft-competitive.sh"
+output_competitive = "benchmarks/results/ph-sci-chem-dft-competitive.json"
+competitor_drivers = "benchmarks/competitive/pyscf_sto3g_h_energy.py"
+requirements = "scripts/requirements-ph-sci-chem-dft-competitive.txt"
+gate_script = "scripts/ph-sci-chem-dft-competitive-gates.sh"
+
+[[row]]
+id = "sto3g_h_energy"
+kernel = "chem.dft_energy_kernel_hartree"
+workload_class = "pilot"
+workload = "sto3g_h_lda_energy"
+geometry = "H 0 0 0"
+basis = "sto-3g"
+xc = "lda,vwn"
+energy_tolerance_hartree = 0.35
+incumbent = "PySCF RKS/LDA (Apache-2.0)"
+competitors = ["pyscf", "psi4", "orca"]
+
+[competitor.orca]
+license = "academic-free-not-redistributable"
+bundled = false
+import_json_field = "competitors[id=orca].energy_hartree"
+notes = "User-run only — see README-chem-dft.md"

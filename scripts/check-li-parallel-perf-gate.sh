@@ -39,6 +39,9 @@ strict = os.environ.get("STRICT", "0") == "1"
 
 # Class A tier1 dual-mode rows (WP-PAR-45).
 benches = ("matmul_blocked", "reduce_sum", "simd_dot", "num_dot_axpy")
+# simd_dot / num_dot_axpy are SIMD intrathread (registry: parallelism=simd_intrathread).
+# Dual-mode rows are required; thread-pool speedup is not expected.
+SIMD_INTRATHREAD = frozenset({"simd_dot", "num_dot_axpy"})
 
 rows: dict[tuple[str, str], float] = {}
 with csv_path.open(newline="", encoding="utf-8") as f:
@@ -71,7 +74,11 @@ for bench in benches:
         f"{bench}: serial={serial:.6f}s parallel={parallel:.6f}s "
         f"speedup={speedup:.3f}× (min {min_speedup}× when serial≥{min_wall}s)"
     )
-    if serial < min_wall:
+    if bench in SIMD_INTRATHREAD:
+        skipped.append(
+            f"SKIP {speed_line} — simd_intrathread (no thread-pool speedup expected)"
+        )
+    elif serial < min_wall:
         skipped.append(f"SKIP {speed_line}")
     elif speedup < min_speedup:
         speed_gaps.append(f"GAP {speed_line}")
@@ -86,7 +93,11 @@ for bench in benches:
         f"{bench}: li_parallel={parallel:.6f}s cpp={cpp:.6f}s "
         f"ratio={ratio:.3f}× (cap {max_vs_cpp}×)"
     )
-    if ratio > max_vs_cpp:
+    if bench in SIMD_INTRATHREAD:
+        skipped.append(
+            f"SKIP {cpp_line} — simd_intrathread (parallel pass is tagging only)"
+        )
+    elif ratio > max_vs_cpp:
         cpp_gaps.append(f"GAP {cpp_line}")
     else:
         ok_lines.append(f"OK  {cpp_line}")

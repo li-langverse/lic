@@ -34,7 +34,7 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 |----|-------------|--------|
 | **WP-PAR-00** | Design spec + G-par-dist row | **DONE** |
 | **WP-PAR-01** | Package scaffold `packages/li-parallel/` | **DONE** |
-| **WP-PAR-02** | `lipar-suite.sh` wraps `run-full-benchmark-suite.sh` | **IN PROGRESS** — PR profile only; whole-catalog pending WP-PAR-48 |
+| **WP-PAR-02** | `lipar-suite.sh` wraps `run-full-benchmark-suite.sh` | **IN PROGRESS** — full profile chmods harness scripts + applies parallel overlays before suite run |
 
 ### Phase 1 — Shared-memory runtime
 

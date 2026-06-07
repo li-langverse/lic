@@ -40,6 +40,7 @@ if ! BENCH_ROOT="$(_ensure_full_benchmarks_root)"; then
   exit 1
 fi
 export BENCHMARKS_ROOT="$BENCH_ROOT"
+lipar_suite_ensure_bench_scripts "$BENCH_ROOT"
 PROFILE="full"
 CORES="${LIPAR_CORES:-8}"
 HOSTS=""
@@ -98,6 +99,9 @@ _run_benches() {
     bash "$ROOT/scripts/lipar-run-class-a.sh"
   else
     lipar_suite_ensure_prereqs "$ROOT"
+    lipar_suite_ensure_bench_scripts "$BENCH_ROOT"
+    chmod +x "$ROOT/scripts/lipar-apply-parallel-src.sh"
+    "$ROOT/scripts/lipar-apply-parallel-src.sh"
     bash "$SUITE"
   fi
 }

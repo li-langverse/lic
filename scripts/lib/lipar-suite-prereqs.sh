@@ -26,3 +26,12 @@ lipar_suite_ensure_prereqs() {
     echo "lipar-suite: WARN nginx not in PATH — tier5 exploits may fail (install nginx)" >&2
   fi
 }
+
+# Shallow-cloned benchmarks often ship scripts without +x (WP-PAR-02 / killer gate step 3).
+lipar_suite_ensure_bench_scripts() {
+  local bench_root="${1:?benchmarks root}"
+  if [[ ! -d "$bench_root/scripts" ]]; then
+    return 0
+  fi
+  find "$bench_root/scripts" -name '*.sh' -exec chmod +x {} + 2>/dev/null || true
+}

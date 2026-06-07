@@ -89,8 +89,7 @@ if [[ -z "${BENCH_ROOT:-}" || ! -f "$BENCH_ROOT/scripts/run-full-benchmark-suite
   li_fail "missing run-full-benchmark-suite.sh — clone benchmarks or populate .cache/li-benchmarks"
   exit 1
 fi
-chmod +x "$BENCH_ROOT/scripts/run-full-benchmark-suite.sh" 2>/dev/null || true
-chmod +x "$BENCH_ROOT/scripts/run-bench.sh" 2>/dev/null || true
+lipar_suite_ensure_bench_scripts "$BENCH_ROOT"
 
 echo "==> killer gate step 3: whole org suite dual-mode (tiers 0–7, no tier skips)"
 export BENCHMARKS_ROOT="$BENCH_ROOT"

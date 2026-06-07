@@ -8,7 +8,7 @@
   "last_gate": {
     "progress": "pass",
     "killer": "fail",
-    "killer_blocker": "check-li-parallel-compile-smoke-gate.sh"
+    "killer_blocker": "killer gate step 3 — full-suite dual-mode breadth (run-bench.sh +x fixed WP-PAR-02)"
   },
   "completed_phases": ["phase-5-docs"],
   "pending_phases": [

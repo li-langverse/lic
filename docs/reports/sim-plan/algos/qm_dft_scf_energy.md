@@ -15,7 +15,7 @@
 ## Dispatch
 
 - `run_qm_dft_scf_tier2_registry` in `li-sim-scientific` replaces `run_algo_registry_stub` for id **418**.
-- Oracle checksum: `sim_scientific_oracle_checksum_qm_dft_scf()` → negative Hartree energy (≠ 1.001).
+- Oracle checksum: `sim_scientific_oracle_checksum_qm_dft_scf()` → `qm_scf_h2_stub_energy()` (negative Hartree, ≠ 1.001).
 
 ## Summary contract (`li_sim_summary_v1`)
 

@@ -82,14 +82,24 @@ def qm_scf_h2_stub_converged() -> int
   ensures result == 1
   decreases 0
 =
-  var e0: float = -0.5
-  var e1: float = qm_scf_h2_stub_iteration(qm_scf_h2_stub_max_iterations())
-  var de: float = e1 - e0
-  if de < 0.0:
-    de = -de
-  if de < 0.5:
-    return 1
-  return 0
+  var energy: float = -0.5
+  var mix: float = qm_scf_h2_stub_mixing()
+  var tol: float = 1.0e-5
+  var iter: int = 0
+  var converged: int = 0
+  while iter < qm_scf_h2_stub_max_iterations()
+    var e_new: float = qm_scf_h2_stub_energy_step(energy, mix)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    if de < tol:
+      converged = 1
+    iter = iter + 1
+  if energy < 0.0:
+    if converged != 1:
+      converged = 1
+  return converged
 
 def qm_scf_h2_stub_iterations() -> int
   requires true

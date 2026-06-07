@@ -473,7 +473,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
 - [x] Phase Doc-d — Contributing / build skill requires gap-register updates
 - [x] Phase Doc-e — `scripts/check-doc-provability-claims.sh` in `scripts/ci.sh` (expand patterns over time)
-- [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../ecosystem/agent-handover-formats.md))
+- [x] **Vision-LLM** — Agent JSON diagnostics v1 ship gate — `diagnostic-v1`, handover manifest, CI smokes (`diagnose_json_smoke.sh`, `gen_li_agent_manifest_smoke.sh`, `agent_manifest_smoke.sh`) ([#464](https://github.com/li-langverse/lic/issues/464), [llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../ecosystem/agent-handover-formats.md))
 
 **Dashboards (Cursor):** `canvases/li-master-plan-progress.canvas.tsx` — phase tracker; `canvases/li-fuzz-security-dashboard.canvas.tsx` — updated by `scripts/export-fuzz-status.sh` after nightly fuzz.
 
@@ -506,7 +506,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |
 | **8b–8d v2** | — | Remote registry, full trust store; **blocked on PH-DB-4** ([PH-DB plan](ph-db-lidb-platform.md)) |
 | **PH-DB** | — | `lidb` engine + registry v2; phases 0–10 in [ph-db-lidb-platform.md](ph-db-lidb-platform.md) |
-| **Vision-LLM** | — | Agent JSON diagnostics completion |
+| **Vision-LLM** | — | v1 gate closed (#464); v2: `lic edit --patch=json`, structured `fix_hint`, terse-syntax RFC |
 | **8p** | — | Parallel `li-tests` / workspace / `lic --jobs`; CI wall-time SLO |
 | **Release containers** | — | GHCR images with **prebuilt `lic`** (toolchain-only images exist now; [§ deferred](#deferred--ghcr-release-images-prebuilt-lic)) |
 

@@ -1744,6 +1744,13 @@ outcome = "compile_open_ok"
 note = "WP-ECHEM-13 TDDFT/nonadiabatic — Marcus-coupled ET barrier + 2-state population stub"
 
 [[tests]]
+suite = "composable"
+file = "composable/import_chem_dft_smoke.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "compile_open_ok"
+note = "sim-p2 qm_dft_scf_energy (418) — H₂ STO-3G SCF oracle composable gate"
+
+[[tests]]
 suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/echem_solvent_gr_smoke.li"
 outcome = "compile_open_ok"

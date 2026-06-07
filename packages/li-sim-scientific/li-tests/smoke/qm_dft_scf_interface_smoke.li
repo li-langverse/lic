@@ -1,0 +1,27 @@
+# sim-p2 — qm_dft_scf_energy (418): H₂ STO-3G SCF oracle + vertical dispatch.
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var oracle: float = sim_scientific_oracle_checksum_qm_dft_scf()
+  if oracle >= 0.0:
+    return 1
+  var qm: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  if run_result_ok(qm) != 1:
+    return 2
+  if qm.algo_id != algo_qm_dft_scf_energy():
+    return 3
+  if qm.checksum != oracle:
+    return 4
+  if qm.checksum == 1.001:
+    return 5
+  var vert: SimRunResult = run_simulation(vertical_qm_dft(), 1)
+  if run_result_ok(vert) != 1:
+    return 6
+  if vert.checksum != oracle:
+    return 7
+  return 0

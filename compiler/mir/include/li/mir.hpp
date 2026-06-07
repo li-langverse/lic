@@ -276,6 +276,8 @@ struct MirModule {
   MirExecPlan exec_plan;
   MirCommPlan comm_plan;
   MirXferPlan xfer_plan;
+  /** li_rt_rng.c — OS CSPRNG fill (getrandom / arc4random_buf). */
+  bool needs_rt_rng = false;
   /** When true: MIR stability pass + strict FP codegen (no fast-math reassociation). */
   bool fp_numerically_stable = false;
 };

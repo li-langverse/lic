@@ -26,12 +26,12 @@ def prng_next(p: var Prng) -> int
 # OsCSPRNG: li_rt_rng_fill_bytes (getrandom) — runtime seam in li_rt_rng.c (G-runtime follow-up).
 # Uniform contract: docs/semantics/Probability.lean OsRngUniform + prob_ensures given OsRngUniform.
 
-extern proc li_rt_rng_fill_bytes(out_buf: int, n: int) -> int
+extern proc li_rt_rng_fill_bytes(out_buf: int, n: int) raises IO -> int
   requires 0 <= n
   ensures result == n or result < 0
   decreases 0
 
-def os_rng_fill4() -> int
+def os_rng_fill4() -> int raises IO
   requires true
   ensures result >= 0
   decreases 0

@@ -1,0 +1,23 @@
+import sim
+import sim.scientific
+import chem
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var stub_e: float = sim_scientific_oracle_checksum_qm_dft_scf()
+  if stub_e >= 0.0:
+    return 1
+  var chem_e: float = echem_dft_h2_energy_hartree()
+  if chem_e >= 0.0:
+    return 2
+  var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  if run_result_ok(qm418) != 1:
+    return 3
+  if qm418.checksum != stub_e:
+    return 4
+  if qm418.checksum == 1.001:
+    return 5
+  return 0

@@ -150,8 +150,14 @@ def main() -> None:
             "qm_job_queue_io",
         ],
         "qm",
-        impl=True,
+        impl=False,
     )
+    implemented_smoke_ids = {
+        418,  # qm_dft_scf_energy — WP-SIM-P2 / lic#478
+    }
+    for row in rows:
+        if row["id"] in implemented_smoke_ids:
+            row["implemented_smoke"] = True
     add(
         rows,
         501,

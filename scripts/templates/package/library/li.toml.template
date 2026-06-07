@@ -16,5 +16,5 @@ min_lic = "0.1.0"
 
 [package.repository]
 url = "https://github.com/li-langverse/{{NAME}}"
-documentation = "https://li-langverse.github.io/li-language/ecosystem/{{NAME}}/"
+documentation = "https://docs.lilangverse.xyz/ecosystem/{{NAME}}/"
 changelog = "https://github.com/li-langverse/{{NAME}}/blob/main/CHANGELOG.md"

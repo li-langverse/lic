@@ -73,6 +73,22 @@ if r.get("build_cpu_sec") is None:
     sys.exit("li-array matmul must record build_cpu_sec separately")
 print("li-array gate: matmul bench OK cpu_sec=", r.get("cpu_sec"))
 
+comp_path = Path("benchmarks/results/ph-ml-competitive.json")
+if comp_path.is_file():
+    comp = json.loads(comp_path.read_text())
+    rows = comp.get("rows") or []
+    li_row = next((row for row in rows if row.get("id") == "li_array_matmul_4x4"), None)
+    if li_row is None:
+        sys.exit("li-array competitive row li_array_matmul_4x4 missing from ph-ml-competitive.json")
+    li = li_row.get("li") or {}
+    if not li.get("executed"):
+        sys.exit("li_array_matmul_4x4 competitive row must have executed=true")
+    if li.get("validity_gate_pass") is not True:
+        sys.exit("li_array_matmul_4x4 competitive row must pass validity_gate_pass")
+    print("li-array gate: competitive row li_array_matmul_4x4 OK")
+else:
+    sys.exit("missing ph-ml-competitive.json for li_array_matmul_4x4 row gate")
+
 p32 = Path("benchmarks/results/ph-ml-li-array-matmul-32.json")
 if p32.is_file():
     r32 = json.loads(p32.read_text())

@@ -61,6 +61,16 @@ Close the gap between **master-plan / G-math “closed slice” wording** and **
 3. **benchmarks** PR: dashboard only — no threshold weakening.
 4. Close #463 when six rows green or waived with master-plan amendment.
 
+## Status (2026-06-07, code_implementer #463)
+
+| Sub | Status | Evidence |
+|-----|--------|----------|
+| A–E | **Green on dashboard** | `benchmarks/data/latest/ecosystem-audit.json` red `[]` (ingest 2026-06-01); six `#463` ids green in `summary.json` |
+| F | **Done** | `provability-gaps.md` — tier-1 perf advisory wording with measured ratios; no blanket “≤1.2× closed slice” |
+| G | **Done** | `2026-05-16-li-math-linalg-surface.md` exit gate checked with bench evidence |
+
+Local advisory (2026-06-07, `tier-tier1.csv`): `simd_dot` 0.823×, `matmul_naive` 1.167×, `matmul_blocked` 0.361×, `horner_pure_li` 0.648×.
+
 ## Human-only
 
 - [ ] Label **`plan-approved`** on #463 before codegen agents run.

@@ -136,7 +136,36 @@ run_pass() {
   else
     unset LIC_BUILD_FLAGS || true
   fi
+  local snap_backup=""
+  if [[ "$dual_flag" == "1" && "$li_parallel" == "1" ]]; then
+    local snap
+    snap="$(python3 - "$BENCHMARKS_CSV" <<'PY'
+from pathlib import Path
+import sys
+
+p = Path(sys.argv[1])
+print(p.with_suffix(p.suffix + ".lipar_serial.json"))
+PY
+)"
+    if [[ -f "$snap" ]]; then
+      snap_backup="$(mktemp)"
+      cp "$snap" "$snap_backup"
+    fi
+  fi
   _run_benches
+  if [[ -n "$snap_backup" && -f "$snap_backup" ]]; then
+    local snap
+    snap="$(python3 - "$BENCHMARKS_CSV" <<'PY'
+from pathlib import Path
+import sys
+
+p = Path(sys.argv[1])
+print(p.with_suffix(p.suffix + ".lipar_serial.json"))
+PY
+)"
+    cp "$snap_backup" "$snap"
+    rm -f "$snap_backup"
+  fi
   if [[ "$dual_flag" == "1" ]]; then
     if [[ "$li_parallel" == "1" ]]; then
       _dual_mode_tag parallel

@@ -516,6 +516,10 @@ def main() -> int:
 
         if todo["id"].startswith("gap-phase2-"):
             os.environ["HTTPD_RUN_PHASE2_GATES"] = "1"
+            os.environ["HTTPD_BENCH_SKIP_TIMING"] = "0"
+            os.environ.setdefault("HTTPD_BENCH_DURATION_SEC", "30")
+            # wrk soak + exploit compare needs headroom vs default 2700s agent cap.
+            os.environ.setdefault("LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC", "5400")
         else:
             os.environ.pop("HTTPD_RUN_PHASE2_GATES", None)
 

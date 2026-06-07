@@ -1,0 +1,43 @@
+Performing C++ SOURCE FILE Test LINKER_SUPPORTS_COLOR_DIAGNOSTICS failed with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780872550282/repo/build-agent/CMakeFiles/CMakeScratch/TryCompile-QkBqtR
+
+Run Build Command(s):/usr/bin/ninja cmTC_dd36a && [1/2] Building CXX object CMakeFiles/cmTC_dd36a.dir/src.cxx.o
+[2/2] Linking CXX executable cmTC_dd36a
+FAILED: cmTC_dd36a 
+: && /usr/bin/clang++-22 -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -Wl,--color-diagnostics CMakeFiles/cmTC_dd36a.dir/src.cxx.o -o cmTC_dd36a   && :
+/usr/bin/ld: unrecognized option '--color-diagnostics'
+/usr/bin/ld: use the --help option for usage information
+clang++-22: error: linker command failed with exit code 1 (use -v to see invocation)
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+int main() { return 0; }
+
+Determining if the os_signpost_interval_begin exist failed with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780872550282/repo/build-agent/CMakeFiles/CMakeScratch/TryCompile-7gCjda
+
+Run Build Command(s):/usr/bin/ninja cmTC_7a38f && [1/2] Building C object CMakeFiles/cmTC_7a38f.dir/CheckSymbolExists.c.o
+FAILED: CMakeFiles/cmTC_7a38f.dir/CheckSymbolExists.c.o 
+/usr/bin/clang-22   -fPIC -fno-semantic-interposition  -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -ffunction-sections -fdata-sections -MD -MT CMakeFiles/cmTC_7a38f.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_7a38f.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_7a38f.dir/CheckSymbolExists.c.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780872550282/repo/build-agent/CMakeFiles/CMakeScratch/TryCompile-7gCjda/CheckSymbolExists.c
+/app/data/workspaces/li-langverse/lic/code_implementer-1780872550282/repo/build-agent/CMakeFiles/CMakeScratch/TryCompile-7gCjda/CheckSymbolExists.c:2:10: fatal error: 'os/signpost.h' file not found
+    2 | #include <os/signpost.h>
+      |          ^~~~~~~~~~~~~~~
+1 error generated.
+ninja: build stopped: subcommand failed.
+
+
+File CheckSymbolExists.c:
+/* */
+#include <os/signpost.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef os_signpost_interval_begin
+  return ((int*)(&os_signpost_interval_begin))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}

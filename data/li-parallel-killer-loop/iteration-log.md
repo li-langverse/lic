@@ -61,6 +61,13 @@
 - Killer gate **PASS**: 152 benchmarks, dual-mode complete, all sub-gates green (~11 min local)
 - Progress gate **PASS** (advisory reduce_sum perf gap under non-strict mode)
 
+## 2026-06-07 — G-par decorator-inherit proof slice (code_implementer)
+
+- Added `def_disjoint_inherit_tile` lemma + proof-db entries `P-par-def-disjoint-inherit-*` under G-par
+- `li_parallel_def_disjoint_inherit_smoke.sh` wired into compile-smoke + proofs gates
+- Proofs gate now verifies G-par register rows alongside G-par-dist + G-hetero
+- Progress gate **PASS**; killer gate unchanged green (152 benchmarks dual-mode)
+
 ## 2026-06-07 — G-par team-reduce proof slice + gate re-verify (code_implementer)
 
 - Added `team_cores_bounded` + `team_reduce_tile_disjoint` lemmas in `parallel/proof.li` (WP-PAR-15/16/19)

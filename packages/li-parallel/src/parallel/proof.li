@@ -47,6 +47,15 @@ def team_cores_bounded(cores: int) -> bool
 =
   return cores >= 0 and cores <= 256
 
+# G-par — @parallel(disjoint=...) on def inherits tile disjoint policy for nested parallel for.
+def def_disjoint_inherit_tile(tile: int, tiles: int) -> bool
+  requires tile >= 0
+  requires tiles > 0
+  ensures result == reduce_tile_disjoint(tile, tiles)
+  decreases tiles
+=
+  return reduce_tile_disjoint(tile, tiles)
+
 # WP-PAR-15 — team-scoped parallel for reduce inherits tile disjoint policy (WP-PAR-16).
 def team_reduce_tile_disjoint(tile: int, tiles: int, cores: int) -> bool
   requires tile >= 0

@@ -34,7 +34,8 @@ for smoke in \
   li-tests/tooling/li_team_auto_cores_codegen_smoke.sh \
   li-tests/tooling/li_cluster_block_codegen_smoke.sh \
   li-tests/tooling/li_program_first_exec_plan_smoke.sh \
-  li-tests/tooling/li_parallel_def_callable_smoke.sh
+  li-tests/tooling/li_parallel_def_callable_smoke.sh \
+  li-tests/tooling/li_parallel_def_disjoint_inherit_smoke.sh
 do
   chmod +x "$ROOT/$smoke"
   bash "$ROOT/$smoke"

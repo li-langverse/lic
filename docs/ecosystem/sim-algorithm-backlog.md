@@ -18,10 +18,6 @@ todos:
   content: "sim: pending plan todo sim-p2-qm-dft-scf"
   status: pending
   gap_orchestrator: true
-
-
-
-
 - id: sim-p0-md-lj-li-parity
   content: "Tier-2 Li md_lennard_jones checksum parity vs native (fix runtime sink / driver)"
   status: pending
@@ -39,8 +35,8 @@ todos:
   status: pending
 
 - id: sim-p2-qm-dft-scf
-  content: "sim: pending plan todo sim-p2-qm-dft-scf — gap orchestrator"
-  status: pending
+  content: "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics — done lic#478"
+  status: completed
 
 ---
 

@@ -1,0 +1,35 @@
+# sim-p2-qm-dft-scf / lic#478: H₂ STO-3G LDA SCF energy oracle (algo 418).
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() != 7:
+    return 1
+  if qm_dft_scf_max_iter() != 8:
+    return 2
+  var oracle: float = sim_scientific_oracle_checksum_qm_dft_scf()
+  if oracle >= 0.0:
+    return 3
+  var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  if run_result_ok(qm418) != 1:
+    return 4
+  if qm418.algo_id != algo_qm_dft_scf_energy():
+    return 5
+  if qm418.vertical_id != vertical_qm_dft():
+    return 6
+  if qm418.checksum != oracle:
+    return 7
+  if qm418.checksum == 1.001:
+    return 8
+  var vert: SimRunResult = run_simulation(vertical_qm_dft(), 1)
+  if run_result_ok(vert) != 1:
+    return 9
+  if vert.algo_id != algo_qm_dft_scf_energy():
+    return 10
+  if vert.checksum != oracle:
+    return 11
+  return 0

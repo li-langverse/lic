@@ -42,7 +42,7 @@
 
 ### Proof-before-perf gates (do not skip)
 
-- **G-math** Partial — strict tier-1 and float `@` Props open ([provability-gaps.md](../verification/provability-gaps.md)).
+- **G-math** Partial — strict tier-1 and float `@` Props open ([provability-gaps.md](../../../verification/provability-gaps.md)).
 - **WP0-B runtime** blocked on Wave A **G-vc**, **G-lean**, **G-par**, **G-math** ([wave-a-stdlib-unblock-checklist.md](../wave-a-stdlib-unblock-checklist.md)).
 - No `trusted.lean` edits from this research pass.
 

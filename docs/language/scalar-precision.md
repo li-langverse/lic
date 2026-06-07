@@ -244,7 +244,7 @@ def configure_arcade_fast() -> PhysicsProfile
   return p
 ```
 
-Package README: [packages/li-physics-core/docs/scalar-precision.md](../../packages/li-physics-core/docs/scalar-precision.md)
+Package README: [packages/li-physics-core/docs/scalar-precision.md](https://github.com/li-langverse/lic/blob/main/packages/li-physics-core/docs/scalar-precision.md)
 
 ---
 
@@ -274,7 +274,7 @@ See [li.toml manifest](li-toml.md).
 | `float4` / `float8` packed | Yes | Logical; packed ops TBD |
 | `binary` type + `0b` literals | Yes | Stub / no dedicated runtime yet |
 
-Track gaps: [Provability gaps](../verification/provability-gaps.md).
+Track gaps: [Provability gaps](../../verification/provability-gaps.md).
 
 ---
 

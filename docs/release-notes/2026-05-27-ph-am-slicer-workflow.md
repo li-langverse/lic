@@ -57,5 +57,5 @@ N/A — composable stage stubs only; no bench oracle row.
 
 ```markdown
 ### Added
-- **PH-AM AM-0:** slicer workflow stages in `li-sim-additive` (slice/preview/export gates, `run_additive_slicer_workflow`) — [2026-05-27-ph-am-slicer-workflow.md](docs/release-notes/2026-05-27-ph-am-slicer-workflow.md).
+- **PH-AM AM-0:** slicer workflow stages in `li-sim-additive` (slice/preview/export gates, `run_additive_slicer_workflow`) — [2026-05-27-ph-am-slicer-workflow.md](../release-notes/2026-05-27-ph-am-slicer-workflow.md).
 ```

@@ -67,7 +67,7 @@ export PATH="$HOME/.elan/bin:$PATH"
 cd /home/s4il0r/Documents/Cursor/li-langverse/lic/docs/semantics && lake build
 ```
 
-Without `lake`, `lic build` still runs but skips semantics verification (see [provability-gaps.md](../verification/provability-gaps.md)).
+Without `lake`, `lic build` still runs but skips semantics verification (see [provability-gaps.md](../../verification/provability-gaps.md)).
 
 ## Your first build
 

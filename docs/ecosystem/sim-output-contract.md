@@ -1,7 +1,7 @@
 # Simulation output contract (machine-readable)
 
 **Status:** Active (2026-05-24)  
-**Parent:** [sim-packages-algorithm-plan.md](sim-packages-algorithm-plan.md) §6 · AL-15  
+**Parent:** [https://github.com/li-langverse/lic/blob/main/docs/ecosystem/https://github.com/li-langverse/lic/blob/main/docs/ecosystem/sim-packages-algorithm-plan.md](https://github.com/li-langverse/lic/blob/main/docs/ecosystem/https://github.com/li-langverse/lic/blob/main/docs/ecosystem/sim-packages-algorithm-plan.md) §6 · AL-15  
 **Harness today:** `benchmarks/harness/verify.py`, `bench.py`, `md_external_oracle.py`
 
 All `sim.*` runs and tier-2 physics benches should emit **structured, parser-friendly** artifacts. Humans read plots and Studio UI; agents, CI, and dashboards read **JSON** (and CSV where ingest already exists).
@@ -174,7 +174,7 @@ def main() -> int
 |-----|------|
 | `sim.output_spec_default()` / `output_spec_from_detail(n)` | Parameterize verbosity |
 | `run_simulation(vertical_id, detail)` | One entry per `verticals.toml` row; `detail` = `output_detail_*()` |
-| `run_algo(algo_id, detail)` | One entry per `algo_*` id in [sim-packages-algorithm-plan.md](sim-packages-algorithm-plan.md) |
+| `run_algo(algo_id, detail)` | One entry per `algo_*` id in [https://github.com/li-langverse/lic/blob/main/docs/ecosystem/https://github.com/li-langverse/lic/blob/main/docs/ecosystem/sim-packages-algorithm-plan.md](https://github.com/li-langverse/lic/blob/main/docs/ecosystem/https://github.com/li-langverse/lic/blob/main/docs/ecosystem/sim-packages-algorithm-plan.md) |
 | `output_spec_from_detail(n)` | Build `SimOutputSpec` when you need the struct (moves — do not reuse) |
 | `sim.run_result_ok(r)` | In-process gate (stdout not required) |
 

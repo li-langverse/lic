@@ -3,8 +3,8 @@
 **Status:** Active (rev. 1 — 2026-05-21)  
 **Audience:** Architects, package owners, agents  
 **Canonical product vision:** [world-studio-vision.md](../game-dev/world-studio-vision.md)  
-**Compiler truth:** [master plan](../superpowers/plans/2026-05-14-li-master-plan.md) · [provability-gaps.md](../verification/provability-gaps.md)  
-**Perf / validity:** [competitive-engines-plan.md](../benchmarks/competitive-engines-plan.md) · `benchmarks/competitive/registry.toml`
+**Compiler truth:** [master plan](../superpowers/plans/2026-05-14-li-master-plan.md) · [provability-gaps.md](../../../verification/provability-gaps.md)  
+**Perf / validity:** [competitive-engines-plan.md](https://github.com/li-langverse/lic/blob/main/docs/benchmarks/competitive-engines-plan.md) · `benchmarks/competitive/registry.toml`
 
 This page is the **algorithms-and-libraries** layer under World Studio — not the studio shell, not `lic` internals alone.
 
@@ -19,7 +19,7 @@ This page is the **algorithms-and-libraries** layer under World Studio — not t
 | **HPC language competitor intel** | Strong | `registry.toml`, tier-12 harness, ≤1.2× C++ policy, NumPy BLAS labeled |
 | **Domain-tool competitor intel** | Medium | [competitive-landscape.md](../game-dev/competitive-landscape.md) + [ui-ux-by-dimension.md](../game-dev/competitive-intel/ui-ux-by-dimension.md); thin on **library/API** parity per vertical |
 | **Algorithm implementation map** | Weak | No single table tying vertical → kernel family → incumbent library → Li package → bench id |
-| **`lic` maturity honesty** | Critical gap | Master tracker overstates proof gate; **2e/2f** open ([G-VERIFY-01](../verification/provability-gaps.md)) |
+| **`lic` maturity honesty** | Critical gap | Master tracker overstates proof gate; **2e/2f** open ([G-VERIFY-01](../../../verification/provability-gaps.md)) |
 | **Large-scale library build** | **Blocked** | Do not scale domain code until Wave A gates below |
 
 **Verdict:** The **studio + profile** plan is detailed enough to steer agents. The **algorithms/libraries** plan was implicit across RFCs — this document makes it explicit and adds missing competitor + scheduling discipline.
@@ -70,7 +70,7 @@ This page is the **algorithms-and-libraries** layer under World Studio — not t
 
 ### Layer A — HPC / language runtimes (mature)
 
-**Source:** `benchmarks/competitive/registry.toml`, [competitive-engines-plan.md](../benchmarks/competitive-engines-plan.md).
+**Source:** `benchmarks/competitive/registry.toml`, [competitive-engines-plan.md](https://github.com/li-langverse/lic/blob/main/docs/benchmarks/competitive-engines-plan.md).
 
 | Competitor | Compared today | Gap to close |
 |------------|----------------|--------------|
@@ -104,7 +104,7 @@ Each vertical needs a maintained row in **`benchmarks/competitive/verticals.toml
 - Cinematic (encode pipeline, color, audio sync)
 - DCC mesh ops (subdiv, UV, rig skinning)
 
-**Template:** copy structure from [competitive-bioengineering-plan.md](../game-dev/competitive-bioengineering-plan.md) §5 (benchmark registry slice).
+**Template:** copy structure from [competitive-bioengineering-plan.md](https://github.com/li-langverse/lic/blob/main/docs/game-dev/competitive-bioengineering-plan.md) §5 (benchmark registry slice).
 
 ---
 
@@ -227,7 +227,7 @@ flowchart TB
 | `scene` | `packages/scene` | exists-stub | **extend** — hierarchy, picks, transforms via `math` | D | `math` |
 | `assets` | `packages/assets` | exists-stub | **implement** — glTF + image ingest (trusted decode at edge) | D | `render` |
 | `ui` | `packages/ui` | exists-stub | **extend** — Studio chrome, ⌘K, agent cmds (no pixels) | D | — |
-| `gui` | — | **missing** | **new package** `packages/gui` — `UiDocument`, layout, hit-test, paint IR | D→E | [li-native-gui plan](../game-dev/plans/li-native-gui-plan.md) |
+| `gui` | — | **missing** | **new package** `packages/gui` — `UiDocument`, layout, hit-test, paint IR | D→E | [li-native-gui plan](https://github.com/li-langverse/lic/blob/main/docs/game-dev/plans/li-native-gui-plan.md) |
 | `studio` | `packages/studio` | exists-stub | **wire** — compose `ui` + `gui` + `render` + `world` | E | `gui`, `render` |
 | `player` | `packages/player` | exists-stub | **wire** — load `gui/*.li` HUD | E | `gui`, `render` |
 
@@ -331,8 +331,8 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 1. [vision-and-roadmap.md](vision-and-roadmap.md) — north star  
 2. **This file** — algorithms/libraries scheduling  
 3. [world-studio-vision.md](../game-dev/world-studio-vision.md) — product architecture  
-4. [provability-gaps.md](../verification/provability-gaps.md) — what is not proved today  
-5. [competitive-engines-plan.md](../benchmarks/competitive-engines-plan.md) — how to run benches  
+4. [provability-gaps.md](../../../verification/provability-gaps.md) — what is not proved today  
+5. [competitive-engines-plan.md](https://github.com/li-langverse/lic/blob/main/docs/benchmarks/competitive-engines-plan.md) — how to run benches  
 6. Vertical RFC under `docs/game-dev/specs/` when implementing one domain  
 
 ---

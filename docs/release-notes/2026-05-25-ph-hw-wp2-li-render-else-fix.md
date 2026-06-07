@@ -58,5 +58,5 @@ N/A — FPS math equivalent for uniform `dt_ms` ticks; no bench CSV update.
 
 ```markdown
 ### Fixed
-- **PH-HW WP2 li-render:** replace unsupported `else:` with sequential `if` + float FPS tick; `lic check` green on render smokes and `import_render_wgpu_fps.li` — [2026-05-25-ph-hw-wp2-li-render-else-fix.md](docs/release-notes/2026-05-25-ph-hw-wp2-li-render-else-fix.md).
+- **PH-HW WP2 li-render:** replace unsupported `else:` with sequential `if` + float FPS tick; `lic check` green on render smokes and `import_render_wgpu_fps.li` — [2026-05-25-ph-hw-wp2-li-render-else-fix.md](../release-notes/2026-05-25-ph-hw-wp2-li-render-else-fix.md).
 ```

@@ -59,5 +59,5 @@ N/A — phase A is contract + runtime stub; no bench threshold changes.
 
 ```markdown
 ### Added
-- **PH-HW viewport phase A:** `lig_present_blit_paint_summary` / `present_blit_rgba8` scaffold (`native_pixel_source`); studio vertical demo requires paint blit before host present — [2026-05-27-studio-wgpu-readback-a.md](docs/release-notes/2026-05-27-studio-wgpu-readback-a.md).
+- **PH-HW viewport phase A:** `lig_present_blit_paint_summary` / `present_blit_rgba8` scaffold (`native_pixel_source`); studio vertical demo requires paint blit before host present — [2026-05-27-studio-wgpu-readback-a.md](../release-notes/2026-05-27-studio-wgpu-readback-a.md).
 ```

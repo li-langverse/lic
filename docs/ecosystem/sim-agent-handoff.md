@@ -72,7 +72,7 @@ export LI_CURSOR_AGENTS_ROOT=../li-cursor-agents
 ./scripts/sim-plan-daily-report.sh  # manual
 ```
 
-Reports: `docs/reports/sim-plan/daily/YYYY-MM-DD.md`, live `docs/reports/sim-plan/STATUS.md`.
+Reports: `docs/reports/sim-plan/daily/YYYY-MM-DD.md`, live `docs/reports/sim-plan/https://github.com/li-langverse/lic/blob/main/docs/reports/sim-plan/https://github.com/li-langverse/lic/blob/main/docs/reports/sim-plan/STATUS.md`.
 
 Each iteration gates: **validity** + **performance** (`bench-package --timing`) + **memory** (`sim-bench-memory.sh`) + **docs** (`sim-plan-iteration-report.py`).
 

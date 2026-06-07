@@ -38,7 +38,7 @@ Today the repository ships **27 `.li` modules** under `std/` (compile harnesses 
 
 ## Planned `std/` tree (preview — not implemented)
 
-The [stdlib collections & algorithms plan](../ecosystem/stdlib-collections-algorithms-plan.md) defines Python-parity modules on top of prelude types. **Runtime and exports are WP1+**; blocked until [Wave A exit](../ecosystem/stdlib-collections-algorithms-plan.md#hard-rule--wp1-blocked-until-wp-wa) (**G-lean**, **G-vc**, **G-par**, **G-math** → **Done** in [provability-gaps](../verification/provability-gaps.md)).
+The [stdlib collections & algorithms plan](../ecosystem/stdlib-collections-algorithms-plan.md) defines Python-parity modules on top of prelude types. **Runtime and exports are WP1+**; blocked until [Wave A exit](../ecosystem/stdlib-collections-algorithms-plan.md#hard-rule--wp1-blocked-until-wp-wa) (**G-lean**, **G-vc**, **G-par**, **G-math** → **Done** in [provability-gaps](../../verification/provability-gaps.md)).
 
 ```text
 std/

@@ -7,7 +7,7 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | Layer | Repository | Path |
 |-------|------------|------|
 | **Master plan** (PH order, repo policy) | `lic` | [2026-05-14-li-master-plan.md](../superpowers/plans/2026-05-14-li-master-plan.md) |
-| **Provability gaps (G-*)** | `lic` | [provability-gaps.md](../verification/provability-gaps.md) |
+| **Provability gaps (G-*)** | `lic` | [provability-gaps.md](../../../verification/provability-gaps.md) |
 | **Phase plans** | `lic` | [docs/superpowers/plans/](../superpowers/plans/) (`2026-05-14-phase-*.md`, lip/httpd/math plans) |
 | **Handbook index** | `lic` | [docs/handbook/README.md](../handbook/README.md) |
 | **Ecosystem governance** | `roadmap` | [vision-and-roadmap.md](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/vision-and-roadmap.md) |

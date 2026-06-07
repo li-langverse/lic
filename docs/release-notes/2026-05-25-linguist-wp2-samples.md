@@ -55,5 +55,5 @@ N/A — no benchmark or codegen impact.
 
 ```markdown
 ### Added
-- **Linguist WP2 samples (staging):** `contrib/linguist-samples/Li/` (10 `.li` files), license manifest, WP6 copy README — [2026-05-25-linguist-wp2-samples.md](docs/release-notes/2026-05-25-linguist-wp2-samples.md).
+- **Linguist WP2 samples (staging):** `contrib/linguist-samples/Li/` (10 `.li` files), license manifest, WP6 copy README — [2026-05-25-linguist-wp2-samples.md](../release-notes/2026-05-25-linguist-wp2-samples.md).
 ```

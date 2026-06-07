@@ -59,5 +59,5 @@ N/A — no trusted axioms, stdlib seal policy, CVE catalog, or exploit harness c
 
 ```markdown
 ### Fixed
-- **Wave A tier-0 / AutoVC:** bounded AutoVC lock waits, atomic `AutoVC.lean` writes, open-VC manifest rows compile without Lean cross-talk, and tier-1 Horner verifies a finite stable value with native-comparable timing — [2026-05-26-wave-a-tier0-li-tests-hygiene.md](docs/release-notes/2026-05-26-wave-a-tier0-li-tests-hygiene.md).
+- **Wave A tier-0 / AutoVC:** bounded AutoVC lock waits, atomic `AutoVC.lean` writes, open-VC manifest rows compile without Lean cross-talk, and tier-1 Horner verifies a finite stable value with native-comparable timing — [2026-05-26-wave-a-tier0-li-tests-hygiene.md](../release-notes/2026-05-26-wave-a-tier0-li-tests-hygiene.md).
 ```

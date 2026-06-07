@@ -74,4 +74,4 @@ Exploit rows (e.g. `request_smuggling_cl_te.toml`) are **integration tests** aft
 
 - [Security audits](security.md)
 - [Historic bug classes](security.md#historic-failures-os-ready)
-- [Provability gaps](../verification/provability-gaps.md) — honest limits until Lean/httpd land
+- [Provability gaps](../../verification/provability-gaps.md) — honest limits until Lean/httpd land

@@ -6,7 +6,7 @@
 **Navigation hub:** [WORLD-STUDIO-MASTER-PLAN.md](WORLD-STUDIO-MASTER-PLAN.md)
 **Canonical vision:** [world-studio-vision.md](world-studio-vision.md) · [PH-world-studio-program.md](PH-world-studio-program.md) · [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md)
 
-**Honesty rule:** `lic check` composable green = **interface landed**, not product parity. Wave A compiler gates ([provability-gaps.md](../verification/provability-gaps.md) G-VERIFY-01) block “production” domain kernels.
+**Honesty rule:** `lic check` composable green = **interface landed**, not product parity. Wave A compiler gates ([provability-gaps.md](../../verification/provability-gaps.md) G-VERIFY-01) block “production” domain kernels.
 
 ---
 

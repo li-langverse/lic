@@ -56,5 +56,5 @@ N/A for merge gate — WP7 `bench.py --tier 7` family aliases may report red vs 
 
 ```markdown
 ### Added
-- **Bench fill WP4:** compile smokes for `qm_*`, `auto_*`, `ml_*`, `viz_*` catalog rows (`catalog_smoke.py`, 45× `li/main.li`) — [2026-05-25-bench-fill-wp4-qm-auto-ml-viz.md](docs/release-notes/2026-05-25-bench-fill-wp4-qm-auto-ml-viz.md).
+- **Bench fill WP4:** compile smokes for `qm_*`, `auto_*`, `ml_*`, `viz_*` catalog rows (`catalog_smoke.py`, 45× `li/main.li`) — [2026-05-25-bench-fill-wp4-qm-auto-ml-viz.md](../release-notes/2026-05-25-bench-fill-wp4-qm-auto-ml-viz.md).
 ```

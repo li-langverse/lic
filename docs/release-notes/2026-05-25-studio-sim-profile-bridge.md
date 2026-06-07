@@ -47,5 +47,5 @@ PH-SIM SIM-0 read-only bridge: map `studio_profile_*` ids to `sim_contract_*`, a
 
 ```markdown
 ### Added
-- **PH-SIM SIM-0 studio→sim profile bridge** — `li_sim_profile_from_studio_id`, `SimSessionStub`, `studio_apply_profile_to_sim`; smokes `studio_profile_bridge.li`, `import_studio_sim_profile_bridge.li` — [2026-05-25-studio-sim-profile-bridge.md](docs/release-notes/2026-05-25-studio-sim-profile-bridge.md).
+- **PH-SIM SIM-0 studio→sim profile bridge** — `li_sim_profile_from_studio_id`, `SimSessionStub`, `studio_apply_profile_to_sim`; smokes `studio_profile_bridge.li`, `import_studio_sim_profile_bridge.li` — [2026-05-25-studio-sim-profile-bridge.md](../release-notes/2026-05-25-studio-sim-profile-bridge.md).
 ```

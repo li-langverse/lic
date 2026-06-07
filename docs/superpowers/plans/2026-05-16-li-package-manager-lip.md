@@ -218,11 +218,11 @@ REST index, `lip publish` (local `lic build` + `lit test --coverage`), registry 
 | [docs/ecosystem/governance.md](../../ecosystem/governance.md) | GitHub org, SemVer/SPDX/Changelog, traceability IDs |
 | [docs/ecosystem/official-packages.md](../../ecosystem/official-packages.md) | `PKG-*` ↔ [`li-langverse/*`](https://github.com/li-langverse) repos |
 | [2026-05-16-li-ecosystem-governance.md](2026-05-16-li-ecosystem-governance.md) | Normative governance plan |
-| [docs/ecosystem/lip.md](../../ecosystem/lip.md) | `init`, `add`, `publish`, trust flags |
-| [docs/ecosystem/lit.md](../../ecosystem/lit.md) | Coverage gate, CLI |
-| [docs/ecosystem/registry.md](../../ecosystem/registry.md) | API, signing, attestation; index includes `PKG-` + `proof_digest` |
+| [docs/ecosystem/lip.md](https://github.com/li-langverse/lip/blob/main/docs/lip.md) | `init`, `add`, `publish`, trust flags |
+| [docs/ecosystem/lit.md](https://github.com/li-langverse/lit/blob/main/docs/lit.md) | Coverage gate, CLI |
+| [docs/ecosystem/registry.md](https://github.com/li-langverse/lip/blob/main/docs/registry.md) | API, signing, attestation; index includes `PKG-` + `proof_digest` |
 | [docs/guide/creating-packages.md](../../guide/creating-packages.md) | User tutorial (starts with `li-new-package`) |
-| [docs/verification/packages.md](../../verification/packages.md) | Threat model |
+| [docs/verification/packages.md](https://github.com/li-langverse/lic/blob/main/docs/verification/packages.md) | Threat model |
 
 **Publish metadata (8d):** registry entries MUST include `pkg_id` (`PKG-`), `spdx_license`, `changelog_url`, `repository` (GitHub org URL), `proof_digest`, `coverage_pct`.
 

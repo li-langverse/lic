@@ -41,4 +41,4 @@ Evidence: `horner_pure_li` sub-second → `n=200` capped by `BENCH_MAX_RUNS` (�
 
 ### Changed
 
-- Harness timing uses **mean ± sample stddev** with `stddev` / `sample_runs` CSV columns; default ≥6 runs, ≥20 when mean wall &lt; 1s — [2026-05-28-bench-mean-std-timing.md](docs/release-notes/2026-05-28-bench-mean-std-timing.md).
+- Harness timing uses **mean ± sample stddev** with `stddev` / `sample_runs` CSV columns; default ≥6 runs, ≥20 when mean wall &lt; 1s — [2026-05-28-bench-mean-std-timing.md](../../release-notes/2026-05-28-bench-mean-std-timing.md).

@@ -47,5 +47,5 @@ PH-SIM SIM-1 adds `sim_reset` / `sim_step` on `SimSessionStub` (deterministic ti
 
 ```markdown
 ### Added
-- **PH-SIM SIM-1 sim step stub** — `sim_reset` / `sim_step` on `SimSessionStub`, `studio_sim_step_hook`; smokes `sim_step_stub.li`, `import_studio_sim_step_stub.li` — [2026-05-25-sim-step-sim1-stub.md](docs/release-notes/2026-05-25-sim-step-sim1-stub.md).
+- **PH-SIM SIM-1 sim step stub** — `sim_reset` / `sim_step` on `SimSessionStub`, `studio_sim_step_hook`; smokes `sim_step_stub.li`, `import_studio_sim_step_stub.li` — [2026-05-25-sim-step-sim1-stub.md](../release-notes/2026-05-25-sim-step-sim1-stub.md).
 ```

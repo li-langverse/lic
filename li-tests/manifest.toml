@@ -80,6 +80,36 @@ expected_substr = "gpu decorator"
 
 [[tests]]
 suite = "decorators"
+file = "decorators/schedule_task_ok.li"
+outcome = "verify_ok"
+note = "lic#125 REQ-7d: @schedule(task, pool=physics) MIR tag stub"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/schedule_par_disjoint_ok.li"
+outcome = "verify_ok"
+note = "lic#125 REQ-7d: @schedule(par_unseq, disjoint=) policy + MIR tag"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/schedule_missing_mode_fail.li"
+outcome = "compile_fail"
+expected_substr = "schedule decorator"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/schedule_par_missing_disjoint_fail.li"
+outcome = "compile_fail"
+expected_substr = "schedule_requires_disjoint"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/schedule_bad_pool_fail.li"
+outcome = "compile_fail"
+expected_substr = "pool="
+
+[[tests]]
+suite = "decorators"
 file = "decorators/parallel_with_disjoint.li"
 outcome = "verify_ok"
 
@@ -810,6 +840,24 @@ suite = "effects"
 file = "effects/await_outside_async.li"
 outcome = "compile_fail"
 expected_substr = "async proc"
+
+[[tests]]
+suite = "effects"
+file = "effects/when_all_disjoint_ok.li"
+outcome = "compile_open_ok"
+note = "lic#125 REQ-async-when-all: disjoint var args pass policy"
+
+[[tests]]
+suite = "effects"
+file = "effects/when_all_conflicting_var_fail.li"
+outcome = "compile_fail"
+expected_substr = "when_all: conflicting mutable borrow"
+
+[[tests]]
+suite = "effects"
+file = "effects/when_all_conflicting_var_param_fail.li"
+outcome = "compile_fail"
+expected_substr = "when_all: conflicting mutable borrow"
 
 [[tests]]
 suite = "effects"

@@ -220,6 +220,82 @@ std::int64_t decorator_vectorized_lanes(const Decorator& d) {
   return 4;
 }
 
+bool schedule_mode_ok(const std::string& mode) {
+  return mode == "task" || mode == "par" || mode == "par_unseq";
+}
+
+bool schedule_pool_ok(const std::string& pool) {
+  return pool == "physics" || pool == "io" || pool == "default";
+}
+
+void check_schedule_decorator(const Decorator& d, const std::string& file, DiagnosticBag& diags) {
+  if (d.name != "schedule") {
+    return;
+  }
+  if (d.args.empty()) {
+    diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+               "schedule decorator: requires mode `task`, `par`, or `par_unseq`.",
+               "Use `@schedule(task, pool=physics)`, `@schedule(par, disjoint=disjoint_elem)`, "
+               "or `@schedule(par_unseq, disjoint=disjoint_elem)`.");
+    return;
+  }
+  const std::string mode = d.args[0].name;
+  if (!schedule_mode_ok(mode)) {
+    diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+               "schedule decorator: unsupported mode `" + mode + "`.",
+               "Use `task`, `par`, or `par_unseq` as the first argument.");
+    return;
+  }
+  bool saw_disjoint = false;
+  for (const auto& arg : d.args) {
+    if (arg.name == mode) {
+      continue;
+    }
+    if (arg.name == "disjoint") {
+      saw_disjoint = true;
+      if (mode == "task") {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                   "schedule decorator: `disjoint=` is only valid for `par` or `par_unseq`.",
+                   "Use `@schedule(task, pool=physics)` without `disjoint=`.");
+        continue;
+      }
+      if (arg.value && !decorator_disjoint_value_ok(*arg.value)) {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
+                   "`@schedule(disjoint=...)` must be a disjoint_* call or `disjoint_elem` / "
+                   "`disjoint_slice` proof function.",
+                   "Use `disjoint=disjoint_elem` or `disjoint=disjoint_row(i, buf)`; bare "
+                   "`disjoint_row` is not a proof.");
+      }
+      continue;
+    }
+    if (arg.name == "pool") {
+      if (mode != "task") {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                   "schedule decorator: `pool=` is only valid for `@schedule(task, ...)`.",
+                   "Use `@schedule(task, pool=physics)` or omit `pool` for `default`.");
+        continue;
+      }
+      if (!arg.value || arg.value->kind != Expr::Kind::Ident ||
+          !schedule_pool_ok(arg.value->ident)) {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                   "schedule decorator: `pool=` must be `physics`, `io`, or `default`.",
+                   "Use `@schedule(task, pool=physics)` with a closed-table pool name.");
+      }
+      continue;
+    }
+    diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+               "schedule decorator: unsupported argument `" + arg.name + "`.",
+               "Use only mode + optional `pool=` (task) or `disjoint=` (par/par_unseq).");
+  }
+  if ((mode == "par" || mode == "par_unseq") && !saw_disjoint) {
+    diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
+               "schedule_requires_disjoint: `@schedule(par|par_unseq)` must include a "
+               "`disjoint=` proof argument.",
+               "Use `@schedule(par, disjoint=disjoint_elem)` or "
+               "`@schedule(par_unseq, disjoint=disjoint_row(i, grid))`.");
+  }
+}
+
 void check_offload_decorator(const Decorator& d, const std::string& file, DiagnosticBag& diags) {
   if (d.name != "offload") {
     return;
@@ -261,6 +337,7 @@ void check_gpu_decorator(const Decorator& d, const std::string& file, Diagnostic
 
 void check_stmt_decorators(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
   for (const auto& d : stmt.decorators) {
+    check_schedule_decorator(d, file, diags);
     check_gpu_decorator(d, file, diags);
     check_offload_decorator(d, file, diags);
     if (d.name == "parallel") {
@@ -390,7 +467,20 @@ void walk_stmts(const std::vector<Stmt>& stmts, const std::vector<std::string>& 
 
 void check_proc_decorators(const std::vector<Decorator>& decos, const std::string& file,
                            DiagnosticBag& diags) {
+  std::size_t schedule_count = 0;
   for (const auto& d : decos) {
+    if (d.name == "schedule") {
+      ++schedule_count;
+    }
+  }
+  if (schedule_count > 1) {
+    diag_error(diags, SourceLoc{file, 1, 1, decos.front().span.start}, ErrorCode::E0322,
+               "schedule decorator: at most one `@schedule(...)` per `def`.",
+               "Stack `@schedule(task)` with `@parallel` / `@vectorized`, not multiple "
+               "`@schedule` modes on the same procedure.");
+  }
+  for (const auto& d : decos) {
+    check_schedule_decorator(d, file, diags);
     check_gpu_decorator(d, file, diags);
     check_offload_decorator(d, file, diags);
     if (d.name == "parallel") {

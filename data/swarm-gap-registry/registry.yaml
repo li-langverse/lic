@@ -955,6 +955,22 @@ gaps:
   ph_id: PH-7e
   handoff_to:
   - numerics_researcher
+- id: gap-hpc-chapel-28-portability-rubric
+  gap_kind: competitor_feature
+  title: 'Chapel 2.8 HPC portability checklist vs Li std/execution + tier-2 physics'
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - https://chapel-lang.org/blog/posts/announcing-chapel-2.8/
+  - https://github.com/chapel-lang/chapel/releases/tag/2.8.0
+  - https://hpsf.io/blog/2026/chapel-2-8-released/
+  - docs/superpowers/plans/2026-06-07-li-chapel-28-hpc-portability-rubric.md
+  - lic issue 113
+  ph_id: PH-7e
+  handoff_to:
+  - issue_planner
+  - numerics_researcher
 - id: gap-competitor-chapel-hpsf-productivity
   gap_kind: competitor_feature
   title: Chapel 2.x HPSF productivity parallel language vs Li PH-7d execution
@@ -965,6 +981,7 @@ gaps:
   - https://chapel-lang.org/blog/posts/announcing-chapel-2.0/
   - https://github.com/chapel-lang/chapel/releases/tag/2.8.0
   - https://hpsf.io/blog/2025/hpsf-welcomes-chapel/
+  - docs/superpowers/specs/2026-06-07-li-chapel-28-portability-checklist.md
   ph_id: PH-7d
   handoff_to:
   - gap_explorer

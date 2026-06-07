@@ -255,6 +255,36 @@ theorem array_grid_cell_indices_disjoint {α : Type} {rows cols : Nat}
     (⟨li, hi⟩ : Fin (rows * cols)) ≠ ⟨lj, hj⟩ :=
   array_elem_indices_disjoint grid li lj hi hj hne
 
+/-- **Dependent array aliasing (7d-c slice):** two distinct in-range indices with
+    `disjoint_elem` policy on the same flat buffer target memory-disjoint slots. -/
+theorem dependent_flat_array_aliasing {α : Type} {n : Nat}
+    (buf : LiArray α n) (i j : Nat)
+    (hi : i < n) (hj : j < n) (hne : i ≠ j)
+    (_pi : disjoint_elem_spec (Int.ofNat i) buf)
+    (_pj : disjoint_elem_spec (Int.ofNat j) buf) :
+    memory_disjoint_elems_spec i j n :=
+  memory_disjoint_elems_witness i j n
+
+/-- **Dependent array aliasing (7d-c slice):** two distinct in-range row indices with
+    `disjoint_row` policy on the same nested grid target memory-disjoint row slots. -/
+theorem dependent_grid_row_aliasing {α : Type} {m rows : Nat}
+    (grid : LiArray (LiArray α m) rows) (i j : Nat)
+    (hi : i < rows) (hj : j < rows) (hne : i ≠ j)
+    (_pi : disjoint_row_spec (Int.ofNat i) grid)
+    (_pj : disjoint_row_spec (Int.ofNat j) grid) :
+    memory_disjoint_grid_rows_spec i j rows :=
+  memory_disjoint_grid_rows_witness i j rows
+
+/-- **Dependent array aliasing (7d-c slice):** two distinct linearized cell indices with
+    `disjoint_elem` policy on the same nested grid target memory-disjoint cell slots. -/
+theorem dependent_grid_cell_aliasing {α : Type} {rows cols : Nat}
+    (grid : LiArray (LiArray α cols) rows) (li lj : Nat)
+    (hi : li < rows * cols) (hj : lj < rows * cols) (hne : li ≠ lj)
+    (_pi : disjoint_elem_spec (Int.ofNat li) grid)
+    (_pj : disjoint_elem_spec (Int.ofNat lj) grid) :
+    memory_disjoint_grid_elems_spec li lj (rows * cols) :=
+  memory_disjoint_grid_elems_witness li lj (rows * cols)
+
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
 

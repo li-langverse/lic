@@ -44,6 +44,7 @@ for smoke in \
   li-tests/tooling/li_par_memory_disjoint_elems_smoke.sh \
   li-tests/tooling/li_par_memory_disjoint_grid_rows_smoke.sh \
   li-tests/tooling/li_par_memory_disjoint_grid_elems_smoke.sh \
+  li-tests/tooling/li_par_dependent_array_aliasing_smoke.sh \
   li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh
 do
   chmod +x "$ROOT/$smoke"

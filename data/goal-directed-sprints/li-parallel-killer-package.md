@@ -153,4 +153,4 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-07)
 
-None — killer gate **PASS** (152 benchmarks dual-mode complete, all sub-gates green). Remaining proof gaps: G-par partial — dependent array aliasing Lean specs beyond flat/nested grid compositional slices (`memory_disjoint_elems_spec`, `array_elem_indices_disjoint`, `memory_disjoint_grid_rows_spec`, `array_row_indices_disjoint`; see gap register).
+None — killer gate **PASS** (152 benchmarks dual-mode complete, all sub-gates green). Remaining proof gaps: G-par partial — index-bound refinement of `disjoint_elem_spec` / `disjoint_row_spec` beyond compositional `dependent_*_aliasing` bridges (see gap register).

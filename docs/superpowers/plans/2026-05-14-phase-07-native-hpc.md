@@ -85,7 +85,7 @@
 | **7e-b** | Lower `A @ B` for Tier 1 matmul benches | **partial:** `matmul_naive` / `matmul_blocked` pure-Li; **≤1.2× C++** advisory |
 | **7e-c** | `docs/language/linear-algebra.md`, `docs/guide/math-hpc-examples.md` | **done** on `main` |
 | **7e-d/e** | `ArrayDotF64` / `ArrayBinOpF64` gather SIMD | **partial** on `main` (#148) |
-| **2f / P-linalg** | Contract corpus for dot/sum/matmul entry | **partial:** #151 closed + loop open — **G-math**, **G-lean** |
+| **2f / P-linalg** | Contract corpus for dot/sum/matmul entry | **partial:** #151 + fixed-trip loop witnesses (#696, BUG-C-06) closed; float / N×N open — **G-math**, **G-lean** — [reconcile plan](./2026-06-07-p-linalg-loop-ensures-reconcile-ph2i.md) |
 
 - [x] `./li-tests/run_all.sh math_linalg`
 - [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`)

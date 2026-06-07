@@ -110,7 +110,7 @@ flowchart LR
 | **2i-a** | Infix `*`, `+`, `-`, `/`, `**` on numeric arrays; `sum`; parse + types | `li-tests/math_linalg/scalar_elementwise/` |
 | **2i-b** | `dot`, `norm`, `axpy`, `**`, reductions | **partial** — prelude `dot`/`norm`/`axpy`; `math_linalg/reductions/`; float Lean Props open |
 | **2i-c** | Binary `@` for 2D matmul desugar (fixed small shapes + `tensor` when ready) | **done** — `matmul_*.li` on `main` |
-| **2f / P-linalg** | `requires`/`ensures` on fixed dot/sum/matmul entry | **partial (#151)** — closed int specimens; loop dot open |
+| **2f / P-linalg** | `requires`/`ensures` on fixed dot/sum/matmul entry | **partial (#151, #696)** — closed int specimens + fixed-trip loop witnesses; float / N×N open — [reconcile plan](./2026-06-07-p-linalg-loop-ensures-reconcile-ph2i.md) |
 | **7e-a** | Connect math expr lowering to existing 7a SIMD MIR | `simd_dot` Li source has **zero** `__li_simd_*` in user file |
 | **7e-b** | Matmul math + decorators in Tier 1 benches | `bench.py --tier 1` CSV: li vs cpp/rust/julia |
 | **7e-c** | Docs + gallery | See below |
@@ -172,5 +172,5 @@ Use existing [benchmarks plan](2026-05-14-benchmarks-and-simulations.md) harness
 - [x] No user-facing doc recommends `__li_simd_*` as the default path
 - [x] **2i-b** `norm`, `sum`/`dot`, `reductions/` suite; same-length `**` / prelude `axpy` / scalar×array (no broadcast) — float Lean Props still open
 - [x] **2i-broadcast** length-1 element-wise broadcast (`broadcast_len1_*.li`); non-broadcast length mismatch (`broadcast_invalid_len2_vs_len4.li`, `elementwise_len_mismatch.li`) — full NumPy rank rules open
-- [x] **P-linalg** loop implementation ≡ closed-form `ensures` in Lean (**G-lean**) (`linalg_dot4_int_loop_open.li` + `discharge_linalg_int_lean.sh`; float Props still **G-math** open)
+- [x] **P-linalg** loop implementation ≡ closed-form `ensures` in Lean (**G-lean**) — **fixed-trip slices closed** (`linalg_dot4_int_loop_open.li`, `matmul2_at2_loop_eval_spec`, `discharge_linalg_int_lean.sh`); float / N×N / parametric loops tracked in [P-linalg loop backlog](../verification/proof-corpus-roadmap.md#p-linalg-loop-backlog) — [reconcile plan](./2026-06-07-p-linalg-loop-ensures-reconcile-ph2i.md) (#472)
 - [ ] Tier 1 perf ≤1.2× C++ (benchmarks dashboard)

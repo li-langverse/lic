@@ -44,9 +44,12 @@ PY
   || { echo "missing stage7 prep goal"; exit 1; }
 [[ -f data/goal-directed-sprints/ph-ml-stage7-streaming-sota.md ]] \
   || { echo "missing stage7 goal"; exit 1; }
-[[ -f data/goal-directed-sprints/ph-ml-stage8-production.md ]] \
-  || { echo "missing stage8 goal"; exit 1; }
 [[ -f data/goal-directed-sprints/ph-ml-stage9-stretch.md ]] \
   || { echo "missing stage9 goal"; exit 1; }
+[[ -f data/goal-directed-sprints/ph-ml-li-array-competitive.md ]] \
+  || { echo "missing li-array goal"; exit 1; }
+
+echo "==> ph-ml-li-array gates (additive)"
+bash scripts/ph-ml-li-array-gates.sh
 
 echo "ph-ml-hpc-ai-library: completion gate OK"

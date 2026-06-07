@@ -1,0 +1,19 @@
+import array
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var a: array[64, float]
+  var b: array[64, float]
+  var c: array[64, float]
+  var ad: ArrayDesc = array_desc_2d(4, 4, 8, array_storage_flat())
+  var bd: ArrayDesc = array_desc_2d(4, 1, 8, array_storage_flat())
+  if array_shape_equal(ad, bd) != 0:
+    return 1
+  if array_matmul_shape_ok(ad, bd) != 0:
+    return 2
+  if array_add(ad, a, bd, b, c) != 0:
+    return 3
+  return 0

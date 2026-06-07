@@ -1,0 +1,22 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var fea214: SimRunResult = run_algo(214, 1)
+  if run_result_ok(fea214) != 1:
+    return 3
+  if fea214.checksum != sim_scientific_oracle_checksum_fea():
+    return 4
+  if fea214.checksum == 1.001:
+    return 5
+  var cfd206: SimRunResult = run_algo(206, 1)
+  if run_result_ok(cfd206) != 1:
+    return 6
+  if cfd206.checksum != sim_scientific_oracle_checksum_cfd():
+    return 7
+  if cfd206.checksum == 1.001:
+    return 8
+  return 0

@@ -193,6 +193,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 
 #### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID)
 
+- **Status:** partial (2026-06-07) — FEA ids 211–216 + CFD ids 205–210 tier-2 oracles (`sim_scientific_oracle_checksum_fea/cfd`, `run_fea/cfd_tier2_registry`); heat narrowed to 201–204; smoke `fea_cfd_oracle_bench.li`; QM 401–432 remain documented stub (1.001).
 - **Goal:** Replace `run_algo_registry_stub` for CFD/FEA/QM rows with real dispatch or tier-2 oracles.
 - **Scope:** `li-sim-scientific/src/lib.li`, `benchmarks/competitive/algo_registry.json`, `verticals.toml`.
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.

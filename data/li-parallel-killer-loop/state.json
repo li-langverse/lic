@@ -1,14 +1,17 @@
 {
   "sprint": "li-parallel-killer-package",
-  "phase_key": "phase-99-killer-gate",
-  "phase_index": 99,
+  "phase_key": "phase-10-proofs-complete",
+  "phase_index": 10,
   "branch": "cursor/li-parallel-native-hpc",
   "started": "2026-06-06",
-  "updated_at": "2026-06-07T02:00:00Z",
+  "updated_at": "2026-06-07T12:00:00Z",
   "last_gate": {
     "progress": "pass",
     "killer": "pass",
-    "killer_blocker": null
+    "proofs_complete": "pending",
+    "goal_complete": "pending",
+    "killer_blocker": null,
+    "proofs_blocker": "WP-PAR-100–102: G-par Done markers + proofs-complete + goal-complete gates"
   },
   "completed_phases": [
     "phase-0-program-first",
@@ -23,13 +26,23 @@
     "phase-8b-xfer",
     "phase-99-killer-gate"
   ],
-  "pending_phases": [],
-  "current_wps": [],
+  "pending_phases": [
+    "phase-10-proofs-complete"
+  ],
+  "current_wps": [
+    "WP-PAR-100",
+    "WP-PAR-101",
+    "WP-PAR-102"
+  ],
   "north_star_fit": {
     "domain": "HPC parallel runtime",
     "ph_ids": ["G-par", "G-par-dist", "PH-PAR-1"]
   },
   "progress_gate": "scripts/check-li-parallel-full-suite.sh",
-  "completion_gate": "scripts/check-li-parallel-killer-gate.sh",
-  "goal_file": "data/goal-directed-sprints/li-parallel-killer-package.md"
+  "completion_gate": "scripts/check-li-parallel-goal-complete-gate.sh",
+  "proofs_gate": "scripts/check-li-parallel-proofs-complete-gate.sh",
+  "goal_file": "data/goal-directed-sprints/li-parallel-killer-package.md",
+  "plan_file": "data/goal-directed-sprints/li-parallel-killer-plan.md",
+  "k8s_deployment": "li-li-parallel",
+  "k8s_namespace": "li-swarm"
 }

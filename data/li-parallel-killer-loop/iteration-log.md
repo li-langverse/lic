@@ -244,7 +244,14 @@
 - **Gates (local):** `./scripts/build.sh` exit 0; `check-li-parallel-full-suite.sh` **PASS** (~96s); `check-li-parallel-proofs-gate.sh` **PASS** (~170s); `check-li-parallel-killer-gate.sh` **PASS** (~28m, 152 benchmarks dual-mode, all sub-gates green)
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (fully general dependent subscripts beyond implemented surface open)
 
-## 2026-06-07 — Killer gate re-verify (code_implementer-1780829414259)
+## 2026-06-07 — Phase 10 proofs 100% + K8s self-unblock worker (code_implementer)
+
+- **Goal extension:** completion gate → `check-li-parallel-goal-complete-gate.sh` (killer + proofs-complete); plan loop `li-parallel-killer-plan.md`
+- **WP-PAR-100:** G-par **Done** in `gap-register.md` + `proofs-table.md` (compiler-supported surface)
+- **Gates added:** `check-li-parallel-proofs-complete-gate.sh`, `check-li-parallel-goal-complete-gate.sh`
+- **K8s:** `li-li-parallel` worker wired with `LI_GOAL_SELF_UNBLOCK=1`, bundle entrypoint, `li-goal-worker` RBAC, scale-down on `GOAL_COMPLETE`
+- **Agent loop target:** green goal-complete gate (engineering + proofs 100%), then auto scale to 0
+
 
 - **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry (`gap-missing-std-std-io` status=closed) — fixture briefing stale; no std module work required
 - **Sprint status:** All WP-PAR phases **DONE**; no engineering blocker for killer gate

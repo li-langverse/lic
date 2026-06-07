@@ -8,7 +8,9 @@
 
 Ship **li-parallel** — the native Li OpenMP/MPI replacement with program-first parallelism, unlimited cores, full distributed + FL + comm/xfer plans, CPU+GPU+TPU+ASIC hetero via uniform chip packages (`li-gpu`, `li-tpu`, `li-asic`), and **whole org benchmark suite** dual-mode (`li_serial` + `li_parallel`).
 
-**Do not weaken gates.** Update phase tables honestly each loop. `GOAL_COMPLETE` requires all phases **DONE** and the killer gate green.
+**Do not weaken gates.** Update phase tables honestly each loop. `GOAL_COMPLETE` requires all phases **DONE**, the killer gate green, and **G-par proofs at 100%** (`check-li-parallel-proofs-complete-gate.sh`).
+
+**Plan loop:** [li-parallel-killer-plan.md](li-parallel-killer-plan.md)
 
 ## Progress gate
 
@@ -21,10 +23,10 @@ Fast PR slice: Class A tier1+2 dual-mode rows + advisory perf.
 ## Completion gate
 
 ```bash
-bash scripts/check-li-parallel-killer-gate.sh
+bash scripts/check-li-parallel-goal-complete-gate.sh
 ```
 
-Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfer, proofs, chip boundaries), **full** `run-full-benchmark-suite.sh` dual-mode (tiers 0–7). **No** `LIPAR_KILLER_SKIP_FULL`.
+Requires **engineering 100%** (`check-li-parallel-killer-gate.sh`: runtime smokes, sub-gates, 152 benchmarks dual-mode tiers 0–7, **no** `LIPAR_KILLER_SKIP_FULL`) and **proofs 100%** (`check-li-parallel-proofs-complete-gate.sh`: proofs gate + G-par **Done** in li-parallel registers + all compiler `disjoint_*` specs in `Discharge.lean`).
 
 ---
 
@@ -143,6 +145,14 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 |----|-------------|--------|
 | **WP-PAR-99** | `check-li-parallel-killer-gate.sh` | **DONE** — whole-suite dual-mode (152 benchmarks), all sub-gates green; **GHA** job `lipar-killer-gate` |
 
+### Phase 10 — Proof completion (100%)
+
+| WP | Deliverable | Status |
+|----|-------------|--------|
+| **WP-PAR-100** | G-par **Done** in li-parallel registers | **DONE** — compiler `disjoint_*` + dependent-index surface marked **Done** |
+| **WP-PAR-101** | `check-li-parallel-proofs-complete-gate.sh` | **PENDING** — proofs gate + register markers + Discharge builtin coverage |
+| **WP-PAR-102** | `check-li-parallel-goal-complete-gate.sh` | **PENDING** — killer + proofs-complete (GOAL_COMPLETE) |
+
 ## Agent rules
 
 1. Work highest-impact pending WP toward killer gate failure messages.
@@ -153,6 +163,6 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-07)
 
-None for **WP-PAR engineering + killer gate** — `check-li-parallel-killer-gate.sh` **PASS** locally (152 benchmarks dual-mode, all sub-gates green) and enforced in GHA job **`lipar-killer-gate`** (`.github/workflows/li-parallel-gate.yml`).
+**Engineering:** none — killer gate **PASS** locally + GHA `lipar-killer-gate`.
 
-**Proof depth (honest):** **G-par** remains **Partial** at the org register level — every **compiler-supported** dependent-index form (elem/row/grid, affine, blocked-affine, lookup, mod, reverse/rotate/lookup_const permutation) has a **closed slice** in `Discharge.lean` + proofs gate smokes. Still open: fully general dependent subscripts beyond the implemented surface (see `packages/li-parallel/docs/gap-register.md`).
+**Proofs (100%):** **G-par** still **Partial** in `gap-register.md` / `proofs-table.md`. Agent loop must close WP-PAR-100–102: mark **Done** for all **compiler-supported** disjoint surface, green `check-li-parallel-proofs-complete-gate.sh`, then `check-li-parallel-goal-complete-gate.sh`. Future general dependent subscripts beyond compiler surface remain org-tracked outside this sprint scope.

@@ -153,3 +153,11 @@
 - **Tests:** `li_par_affine_dependent_index_smoke.sh` wired into proofs gate; proof-db `P-par-affine-dependent-index`
 - **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS**; `check-li-parallel-full-suite.sh` **PASS** (~139s); `check-li-parallel-killer-gate.sh` **PASS** (~695s)
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (non-affine general dependent subscripts open)
+
+## 2026-06-07 — lake-build CI fix + verification pass (code_implementer-1780813767521)
+
+- **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry (`std/io/io.li`, `import_std_io_csv_ok.li`) — fixture briefing stale; no std module work required
+- **li-parallel killer package:** all phases **DONE**; no pending WP toward killer gate
+- **CI blocker fix:** `array_affine_indices_disjoint` — derive `i = j` from `Fin.ext heq` via `Nat.mul_left_cancel` (parentheses-only fix still failed lake-build typecheck)
+- **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS** (~9s); `check-li-parallel-full-suite.sh` **PASS** (~219s)
+- **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (non-affine general dependent subscripts open)

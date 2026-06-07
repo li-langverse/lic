@@ -31,7 +31,7 @@ else
   li_export_lic "$ROOT" || { echo "ph-ml-stage9-gates: build lic"; exit 1; }
 fi
 
-grep -q 'return 10' packages/li-llm/src/lib.li \
+grep -A5 'def li_llm_version()' packages/li-llm/src/lib.li | grep -qE 'return 10$' \
   || { echo "9.1: li_llm_version must be 10"; exit 1; }
 grep -q 'llm_transformer_multilayer_fixture_top_id' packages/li-llm/src/lib.li \
   || { echo "9.2: missing multi-layer transformer parity"; exit 1; }

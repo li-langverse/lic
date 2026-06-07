@@ -40,3 +40,23 @@ todos:
 - Gates: `./scripts/swarm-observer-plan-gates.sh`
 - Output: gap registry updates, `benchmarks/data/latest/swarm-gap-actions.json`, backlog patches.
 - Push branch `cursor/swarm-observer-plan-loop` each iteration.
+
+### Environment variables
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `LI_LANGVERSE_ROOT` | `lic` repo parent (`ROOT.parent`) | Sibling repo resolution |
+| `BENCHMARKS_ROOT` | `$LI_LANGVERSE_ROOT/benchmarks` | Read `data/latest/ecosystem-explorer.json`, `plan-completion-audit.json` |
+| `BENCHMARKS_COMPETITIVE` | `$BENCHMARKS_ROOT/workloads/competitive` or `$BENCHMARKS_ROOT/competitive` | `verticals.toml` stub ingest |
+| `--registry` CLI | `data/swarm-gap-registry/registry.yaml` | Override registry path |
+
+**Minimal checkout (lic only):**
+
+```bash
+export LI_LANGVERSE_ROOT=/path/to/langverse   # parent of lic + benchmarks
+export BENCHMARKS_ROOT="${BENCHMARKS_ROOT:-$LI_LANGVERSE_ROOT/benchmarks}"
+python3 scripts/swarm-gap-ingest.py --dry-run
+python3 scripts/swarm-gap-apply-actions.py --dry-run
+```
+
+`plan_verifier` step 6 runs ingest after audit; `swarm_observer` runs ingest then apply-actions before each loop iteration.

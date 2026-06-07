@@ -160,22 +160,6 @@ def sim_scientific_oracle_checksum_md() -> float
     diff = -diff
   return diff / denom
 
-# sim-p1-md-neighbor-cell — composable checksum for algo 105 (8-particle cell-shell sum).
-# F-parity proof: scripts/md-neighbor-cell-parity.c @ N=256 (Phase A).
-def md_neighbor_cell_list_smoke_checksum() -> float
-  requires true
-  ensures true
-  decreases 0
-=
-  return 31.74696821343867
-
-def sim_scientific_oracle_checksum_md_neighbor_cell() -> float
-  requires true
-  ensures true
-  decreases 0
-=
-  return md_neighbor_cell_list_smoke_checksum()
-
 # WP-SCI-03 — tier-2 Li oracle: explicit 1D heat stencil (8-point grid).
 def heat_oracle_stencil_step(u: var array[8, float], v: var array[8, float], r: float) -> unit
   requires r > 0.0
@@ -580,23 +564,6 @@ def run_md_lj_smoke(detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
-def run_md_neighbor_cell_smoke(detail: int) -> SimRunResult
-  requires detail >= 0
-  requires detail <= 3
-  ensures result.ok == 1
-  ensures result.algo_id == 105
-  ensures result.detail_emitted == detail
-  decreases 0
-=
-  var chk: float = md_neighbor_cell_list_smoke_checksum()
-  var r: SimRunResult
-  r.ok = 1
-  r.algo_id = 105
-  r.vertical_id = vertical_md_lennard_jones()
-  r.checksum = chk
-  r.detail_emitted = detail
-  return r
-
 def run_heat_smoke(detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -800,9 +767,6 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_md_integrator_verlet():
     var d1: int = detail
     return run_md_lj_smoke(d1)
-  if algo_id == 105:
-    var d105: int = detail
-    return run_md_neighbor_cell_smoke(d105)
   if algo_id == algo_pde_heat_explicit_2d():
     var d2: int = detail
     return run_heat_smoke(d2)

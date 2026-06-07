@@ -23,7 +23,7 @@ id = "li_array_matmul_32x32"
 kernel = "array.matmul"
 workload_class = "tier3_cpu"
 workload_sizes = [32]
-workload_note = "32x32 f32 via ArrayDesc -> ml_matmul_lkir_logical_32; ratio_vs_li vs NumPy"
+workload_note = "32x32 f32 via ArrayDesc -> ml_matmul_cpu_logical_32; ratio_vs_li vs NumPy"
 incumbent = "NumPy BLAS matmul 32x32"
 competitors = ["python_numpy"]
 

@@ -199,6 +199,7 @@ struct EmitCtx {
   bool returns_float = false;
   bool returns_i64 = false;
   bool returns_object = false;
+  bool returns_matrix = false;
   bool fp_numerically_stable = false;
   int runtime_team_size = 0;
   bool enable_array_simd = true;
@@ -870,8 +871,13 @@ struct EmitCtx {
         builder->CreateRet(llvm::ConstantFP::get(llvm::Type::getDoubleTy(context),
                                                     ins.float_value));
         return false;
-      case MirOp::ReturnIdent:
-        if (ins.ret_is_float || returns_float || float_locals.count(ins.ident) > 0) {
+      case MirOp::ReturnIdent: {
+        auto arr_it = arrays.find(ins.ident);
+        if (arr_it != arrays.end() && arr_it->second.is_matrix) {
+          llvm::Type* arr_ty = array_slot_ty(arr_it->second);
+          builder->CreateRet(
+              builder->CreateLoad(arr_ty, array_slot_base(arr_it->second)));
+        } else if (ins.ret_is_float || returns_float || float_locals.count(ins.ident) > 0) {
           builder->CreateRet(load_float(ins.ident));
         } else if (ins.ret_is_i64 || returns_i64 || i64_locals.count(ins.ident) > 0) {
           llvm::Value* wide = load_i64(ins.ident);
@@ -884,6 +890,7 @@ struct EmitCtx {
           builder->CreateRet(load_int(ins.ident));
         }
         return false;
+      }
       case MirOp::ReturnObject: {
         auto* st = llvm::dyn_cast<llvm::StructType>(ret_ty);
         if (!st || ins.object_layout.empty()) {
@@ -2367,6 +2374,13 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       ret_ty = llvm::Type::getVoidTy(context);
     } else if (fn.returns_object && !fn.return_object_layout.empty()) {
       ret_ty = llvm_struct_from_layout(context, fn.return_object_layout);
+    } else if (fn.returns_matrix && fn.return_matrix_rows > 0 && fn.return_matrix_cols > 0) {
+      MirParam mp;
+      mp.fixed_array_elems = fn.return_matrix_rows;
+      mp.matrix_cols = fn.return_matrix_cols;
+      mp.is_matrix = true;
+      mp.is_float = true;
+      ret_ty = llvm_array_type(context, mp);
     } else if (fn.returns_i64) {
       ret_ty = i8_ptr(context);
     } else {
@@ -2431,6 +2445,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                 fn.returns_float,
                 fn.returns_i64,
                 fn.returns_object,
+                fn.returns_matrix,
                 mir.fp_numerically_stable,
                 runtime_team_size,
                 !fn.no_vectorize,

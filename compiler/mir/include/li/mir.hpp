@@ -203,6 +203,10 @@ struct MirFn {
   bool returns_void = false;
   /** When true, LLVM return type is a struct; `return_object_layout` lists leaf fields. */
   bool returns_object = false;
+  /** When true, LLVM return type is `array[M, array[K, float]]` by value. */
+  bool returns_matrix = false;
+  std::int64_t return_matrix_rows = 0;
+  std::int64_t return_matrix_cols = 0;
   bool is_extern = false;
   bool is_async = false;
   /** When true, `ArrayDotF64` / `ArrayBinOpF64` use scalar loops only. */

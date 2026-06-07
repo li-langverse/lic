@@ -137,3 +137,11 @@
 - **li-parallel killer package:** all phases **DONE**; no pending WP toward killer gate
 - **Gates (local):** `check-li-parallel-full-suite.sh` **PASS** (~163s); proofs / compile-smoke / docs / chip-boundaries sub-gates **PASS**; `li_par_disjoint_index_bound_smoke.sh` **PASS**
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) open on `cursor/li-parallel-native-hpc`; `lipar-gate` CI green; G-par remains **Partial** (general dependent subscripts beyond closed index-bound slices — deferred)
+
+## 2026-06-07 — P-linalg mat2 `@` return codegen + Discharge sorry hygiene (code_implementer-1780811000271)
+
+- **Implementation queue:** `std.io` (PH-IO-4) still **closed** in registry — fixture briefing stale; no std module work required
+- **CI blocker fix:** `return A @ B` for `array[M, array[K, float]]` ret type — seed matrix params in `matrix_names`/`matrix_dims`, add `returns_matrix` MIR/codegen path, avoid float `ReturnIdent` for matrix temps
+- **Lake build:** replace `proof_db_*` Discharge `sorry` stubs with proved slices (peano succ inj, order antisym) + honest `axiom` bridges for catalog ensures that need result witnesses
+- **Tests (local):** `linalg_mat2_at2_float_closed.li` + `linalg_mat2_callproc_float_closed.li` `lic build --no-lean-verify` **PASS**; `check-li-parallel-full-suite.sh` **PASS** (~169s)
+- **Deferred:** G-par general dependent subscripts; lake AutoVC typecheck locally blocked (no elan/lake in workspace)

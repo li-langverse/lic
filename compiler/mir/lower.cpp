@@ -1316,7 +1316,13 @@ void seed_array_params(const MirFn& fn, LowerArrayCtx& arr_ctx,
       continue;
     }
     float_array_names.insert(p.name);
-    if (p.is_float) {
+    // Value matrix params participate in `@` matmul lowering; `var` byref params keep 1d paths.
+    if (p.is_matrix && p.matrix_cols > 0 && !p.is_var) {
+      if (arr_ctx.matrix_names) {
+        arr_ctx.matrix_names->insert(p.name);
+      }
+      arr_ctx.matrix_dims[p.name] = MatrixDims{p.fixed_array_elems, p.matrix_cols};
+    } else if (p.is_float) {
       arr_ctx.float_array_sizes[p.name] = p.fixed_array_elems;
     } else if (!p.is_matrix) {
       arr_ctx.int_array_sizes[p.name] = p.fixed_array_elems;
@@ -1833,6 +1839,7 @@ void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
     ins.op = MirOp::ReturnFloat;
     ins.float_value = e.float_value;
   } else if (e.kind == Expr::Kind::Ident) {
+    const bool ident_is_matrix = matrix_slot_dims(e.ident, nullptr);
     if (ret_obj) {
       ins.op = MirOp::ReturnObject;
       ins.ident = std::string("__li_o_") + e.ident;
@@ -1840,15 +1847,18 @@ void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
     } else {
       ins.op = MirOp::ReturnIdent;
       ins.ident = e.ident;
-      ins.ret_is_float = returns_float || float_names.count(e.ident) > 0;
+      ins.ret_is_float =
+          !ident_is_matrix && (returns_float || float_names.count(e.ident) > 0);
       ins.ret_is_i64 =
-          i64_locals.count(e.ident) > 0 ||
-          (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name));
+          !ident_is_matrix &&
+          (i64_locals.count(e.ident) > 0 ||
+           (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name)));
     }
   } else if (e.kind == Expr::Kind::Call || e.kind == Expr::Kind::MethodCall ||
              e.kind == Expr::Kind::BinOp || e.kind == Expr::Kind::Index ||
              e.kind == Expr::Kind::FieldAccess) {
     const std::string tmp = lower_expr_to(e, module, out, float_names, simd_names, i64_locals);
+    const bool tmp_is_matrix = matrix_slot_dims(tmp, nullptr);
     if (ret_obj) {
       ins.op = MirOp::ReturnObject;
       ins.ident = tmp;
@@ -1856,10 +1866,12 @@ void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
     } else {
       ins.op = MirOp::ReturnIdent;
       ins.ident = tmp;
-      ins.ret_is_float = returns_float || is_float_expr(e, float_names);
+      ins.ret_is_float =
+          !tmp_is_matrix && (returns_float || is_float_expr(e, float_names));
       ins.ret_is_i64 =
-          i64_locals.count(tmp) > 0 ||
-          (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name));
+          !tmp_is_matrix &&
+          (i64_locals.count(tmp) > 0 ||
+           (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name)));
     }
   } else {
     ins.op = MirOp::ReturnVoid;
@@ -2790,16 +2802,26 @@ MirModule lower_to_mir(const Module& module) {
     copy_decorators(proc.decorators, fn.decorators);
     apply_fn_decorator_codegen_flags(fn);
     if (proc.ret_type) {
-      fn.returns_float = is_float_type_name(proc.ret_type->name);
-      fn.returns_i64 = mir_ptr_param_type_name(proc.ret_type->name) ||
-                        is_i64_type_name(proc.ret_type->name) ||
-                        proc.ret_type->name == "StringView";
-      fn.returns_void = proc.ret_type->name == "unit";
-      if (object_alias_for_named_type(module, *proc.ret_type)) {
-        fn.returns_object = true;
+      std::int64_t m_rows = 0;
+      std::int64_t m_cols = 0;
+      if (is_2d_float_matrix_type(*proc.ret_type, &m_rows, &m_cols)) {
+        fn.returns_matrix = true;
+        fn.return_matrix_rows = m_rows;
+        fn.return_matrix_cols = m_cols;
         fn.returns_float = false;
         fn.returns_void = false;
-        collect_object_return_layout_r(module, *proc.ret_type, "", fn.return_object_layout);
+      } else {
+        fn.returns_float = is_float_type_name(proc.ret_type->name);
+        fn.returns_i64 = mir_ptr_param_type_name(proc.ret_type->name) ||
+                          is_i64_type_name(proc.ret_type->name) ||
+                          proc.ret_type->name == "StringView";
+        fn.returns_void = proc.ret_type->name == "unit";
+        if (object_alias_for_named_type(module, *proc.ret_type)) {
+          fn.returns_object = true;
+          fn.returns_float = false;
+          fn.returns_void = false;
+          collect_object_return_layout_r(module, *proc.ret_type, "", fn.return_object_layout);
+        }
       }
     } else if (proc.is_extern) {
       fn.returns_void = true;

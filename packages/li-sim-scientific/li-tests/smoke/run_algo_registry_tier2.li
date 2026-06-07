@@ -34,7 +34,7 @@ def main() -> int
   if rigid302.checksum == 1.001:
     return 11
   var qm_oracle: float = sim_scientific_oracle_checksum_qm()
-  if qm_oracle <= 0.0:
+  if qm_oracle < 1.0e-6:
     return 12
   if qm_oracle >= 1.0:
     return 13

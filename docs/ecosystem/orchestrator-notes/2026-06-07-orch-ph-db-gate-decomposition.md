@@ -23,3 +23,15 @@ After [lic#765](https://github.com/li-langverse/lic/pull/765) merges: `python3 s
 ## North star
 
 **G-proof-db** (Partial) · **PH-DB-1…10** · proof before perf
+
+## Verification (code_implementer, 2026-06-07)
+
+| Check | Result |
+|-------|--------|
+| Open checkbox count (`ph-db-battle-plan.md`) | **36** |
+| Open checkbox count (`ph-db-execution-tracker.md`) | **44** |
+| Total mapped gates in decomposition §5–6 | **80** |
+| Rebase on `main` | `71474827` → post-#1061 |
+| CI (PR #1012) | build-and-test / lake-build / memory-linux **pass** |
+
+Command: `python3 -c "import re,pathlib; ..."` on plan paths — counts match decomposition registry.

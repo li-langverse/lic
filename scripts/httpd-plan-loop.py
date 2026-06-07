@@ -153,7 +153,7 @@ def pick_next(todos: list[dict], state: dict) -> dict | None:
 def run_gates() -> tuple[bool, str]:
     if not GATES.is_file():
         return False, f"missing gates script: {GATES}"
-    env = {**os.environ, "LI_REPO_ROOT": str(ROOT)}
+    env = {**os.environ, "LI_REPO_ROOT": str(ROOT), "LIC_ROOT": str(ROOT)}
     proc = subprocess.run(
         ["bash", str(GATES)],
         cwd=ROOT,

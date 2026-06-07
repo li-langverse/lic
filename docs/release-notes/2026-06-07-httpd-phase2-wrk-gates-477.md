@@ -7,6 +7,8 @@ Fixes pre-soak CI failure and refocuses phase2 perf gates so `httpd-phase2-night
 | Area | Fix |
 |------|-----|
 | `check-rng-concepts.sh` blocker | `os_rng_fill4` declares `raises IO` (extern fill seam) |
+| `check-tier5-exploit-owasp-cwe-suite.sh` | Reads `tier5_http` from sibling `BENCHMARKS_WORKLOADS` (not `lic/benchmarks`) |
+| `httpd-phase2-nightly.yml` | Exports `LIC_ROOT` + `BENCHMARKS_ROOT` for gate scripts |
 | `check-tier5-perf-wrk-soak.sh` | Focused 30s wrk on parity + parity_streaming + nextjs (not full exploit regression — covered by `check-tier5-exploit-nginx-regression.sh`) |
 | `check-tier5-streaming-soak.sh` | Default soak duration 30s when timing enabled |
 | Plan loop | Phase2 todos set `LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC=5400`; until-deadline default raised |

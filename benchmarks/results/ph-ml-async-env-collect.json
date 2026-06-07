@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-04T10:26:50Z",
+  "generated_at": "2026-06-07T11:08:36Z",
   "suite": "ph-ml-async-env-collect",
   "workload": "async_env_collect_4",
   "smoke": "packages/li-ml-rl/li-tests/smoke/env_pool_async_four.li",
@@ -19,7 +19,7 @@
   "executed": true,
   "validity_gate_pass": true,
   "run_exit_code": 0,
-  "cpu_sec": 0.638232,
+  "cpu_sec": 0.309891,
   "envs": [
     {
       "env_index": 0,

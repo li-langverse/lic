@@ -1,6 +1,6 @@
 # RFC: li-array — typed ndarray surface (PH-ML competitive foundation)
 
-**Status:** pilot (Stage A)  
+**Status:** complete (Phases A–F; gate `scripts/ph-ml-li-array-gates.sh`)  
 **Package:** `packages/li-array` (`import array`)  
 **Replaces:** ad-hoc `MlTensorDesc` in `li-ml` over time  
 **Gate:** `scripts/ph-ml-li-array-gates.sh`
@@ -65,7 +65,14 @@ def li_array_matmul_f32(a, af, b, bf, c) -> int  # delegates ml_tensor_matmul_64
 | C | `@vectorized` blocked matmul on flat storage | tier-1 `matmul_blocked` |
 | D | LKIR/GPU tile dispatch from `ArrayDesc` | lig parity gate |
 | E | Batch matmul API (explicit leading dim) | transformer forward |
-| F | BLAS/OpenBLAS backend hook | numpy parity row |
+| F | BLAS/OpenBLAS backend hook | numpy parity row (`ph-ml-li-array-matmul-32.json`, `ratio_vs_li` ≤2.0) |
+
+**Phase F BLAS parity path (honest bench):**
+
+1. `bench-ph-ml-li-array-matmul-32.sh` — 32×32 LKIR matmul via `ArrayDesc` → `ml_matmul_lkir_logical_32`; run-only `cpu_sec`.
+2. NumPy reference from `bench_ph_ml_competitor_numpy_matmul.py` (`ph-ml-competitor-numpy-matmul-32.json`).
+3. `ratio_vs_li = numpy_cpu_sec / li_cpu_sec`; gate records `target_met` when ≤2.0 (no stub bar).
+4. Future: optional `LI_ARRAY_BLAS=1` hook to delegate flat buffers to OpenBLAS `cblas_sgemm` when linked; keep E0201-safe flat path as fallback for m,n,k≤16.
 
 Run-only timing: bench scripts record `cpu_sec` on binary execution only; `build_cpu_sec` is separate (already in `bench-ph-ml-lkir-matmul.sh`).
 

@@ -11,5 +11,5 @@
   "compile_ok": true,
   "executed": true,
   "validity_gate_pass": true,
-  "cpu_sec": 0.012442
+  "cpu_sec": 0.006632
 }

@@ -1,0 +1,9 @@
+{
+  "generated_at": "2026-06-07T00:35:30Z",
+  "catalog_row": "qm_dft_scf_energy",
+  "algo_id": 418,
+  "family_template": "schrodinger_1d_barrier",
+  "external_oracle": "skip",
+  "oracles": {},
+  "note": "external oracle skipped (CI default without chem-external-oracle profile)"
+}

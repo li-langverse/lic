@@ -64,6 +64,7 @@ Li scaffold energy is typically **~1–2 Hartree** away from PySCF STO-3G LDA be
 | `benchmarks/competitive/psi4_sto3g_h_energy.py` | Psi4 H atom driver (optional) |
 | `benchmarks/competitive/pyscf_sto3g_h2_energy.py` | PySCF H₂ driver (chem-r2 / algo 418) |
 | `benchmarks/competitive/psi4_sto3g_h2_energy.py` | Psi4 H₂ driver (chem-r2 / algo 418, optional LGPL) |
+| `benchmarks/harness/qm_external_oracle.py` | Psi4/PySCF subprocess oracle hook (`--external-oracle psi4\|pyscf\|skip`) |
 | `scripts/bench-qm-dft-scf-energy.sh` | Validity harness for `qm_dft_scf_energy` (418) |
 | `scripts/bench-qm-dft-scf-energy-gates.sh` | CI gate for chem-r2 harness JSON |
 | `benchmarks/competitive/chem_dft_competitive_common.py` | Shared workload + Li mirror |

@@ -33,10 +33,15 @@ if [[ -n "$LIC_BIN" ]]; then
   fi
 fi
 
-export PH_SCI_CHEM_PYSCF_H2_OUT="$BENCHMARKS_RESULTS/ph-sci-chem-competitor-pyscf-h2.json"
-export PH_SCI_CHEM_PSI4_H2_OUT="$BENCHMARKS_RESULTS/ph-sci-chem-competitor-psi4-h2.json"
-python3 "$COMP_DIR/pyscf_sto3g_h2_energy.py"
-python3 "$COMP_DIR/psi4_sto3g_h2_energy.py" || true
+ORACLE_MODE="${QM_DFT_EXTERNAL_ORACLE:-auto}"
+if [[ -f "$ROOT/benchmarks/harness/qm_external_oracle.py" ]]; then
+  python3 "$ROOT/benchmarks/harness/qm_external_oracle.py" --external-oracle "$ORACLE_MODE"
+else
+  export PH_SCI_CHEM_PYSCF_H2_OUT="$BENCHMARKS_RESULTS/ph-sci-chem-competitor-pyscf-h2.json"
+  export PH_SCI_CHEM_PSI4_H2_OUT="$BENCHMARKS_RESULTS/ph-sci-chem-competitor-psi4-h2.json"
+  python3 "$COMP_DIR/pyscf_sto3g_h2_energy.py"
+  python3 "$COMP_DIR/psi4_sto3g_h2_energy.py" || true
+fi
 
 OUT="$BENCHMARKS_RESULTS/qm_dft_scf_energy-harness.json"
 export QM_DFT_SCF_HARNESS_OUT="$OUT" QM_DFT_SCF_HARNESS_ROOT="$ROOT"

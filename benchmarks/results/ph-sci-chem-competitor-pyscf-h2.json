@@ -1,0 +1,22 @@
+{
+  "competitor_id": "pyscf",
+  "suite": "ph-sci-chem-competitor-pyscf-h2",
+  "workload": "sto3g_h2_lda_energy",
+  "executed": false,
+  "cpu_sec": null,
+  "energy_hartree": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
+  "device": "cpu",
+  "note": "pyscf not installed \u2014 pip install -r scripts/requirements-ph-sci-chem-dft-competitive.txt",
+  "geometry": "H 0 0 0; H 0 0 0.74",
+  "basis": "sto-3g",
+  "xc": "lda,vwn",
+  "generated_at": "2026-06-07T00:05:23Z",
+  "license": "Apache-2.0",
+  "charge": 0,
+  "spin": 0,
+  "algo_id": 418,
+  "catalog_row": "qm_dft_scf_energy"
+}

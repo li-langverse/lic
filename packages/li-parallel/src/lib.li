@@ -1,5 +1,4 @@
 import parallel.kernels
-import parallel.proof
 import parallel.distributed
 import parallel.ghost
 

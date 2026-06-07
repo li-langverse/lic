@@ -114,6 +114,13 @@ template = "cwe676_extern_no_contract.li"
 notes = "Dangerous function seam — extern without contracts rejected"
 
 [[pattern]]
+cwe = "CWE-20"
+li_obligation = "httpd_runtime_reject"
+suite = "contracts_verify"
+template = "http_parse_forward_closed.li"
+notes = "Improper input validation — HTTP parse witness + tier5 bad_method stricter-or-equal"
+
+[[pattern]]
 cwe = "CWE-UNKNOWN"
 li_obligation = "compile_fail"
 suite = "prove_reject"

@@ -15,6 +15,8 @@ on:
     paths:
       - compiler/parser/**
       - compiler/fuzz/**
+      - runtime/li_rt_net.c
+      - runtime/li_rt.h
       - compiler/types/**
       - compiler/lexer/**
       - security/**
@@ -54,7 +56,12 @@ jobs:
         run: |
           cmake -B build-fuzz -G Ninja -DLI_BUILD_FUZZ=ON -DLLVM_DIR="$LLVM_DIR" \
             -DCMAKE_C_COMPILER=clang-22 -DCMAKE_CXX_COMPILER=clang++-22
-          cmake --build build-fuzz --target parse_fuzz check_fuzz
+          cmake --build build-fuzz --target parse_fuzz check_fuzz http_parse_fuzz
+
+      - name: HTTP parse fuzz smoke
+        run: |
+          chmod +x scripts/http-parse-fuzz-smoke.sh
+          HTTPD_FUZZ_SMOKE=1 ./scripts/http-parse-fuzz-smoke.sh
 
       - name: Prepare corpus workspace
         run: |

@@ -67,6 +67,16 @@ if [[ "$STUDY_ONLY" == "1" ]]; then
       gate_log="${gate_log}; missing study: ${SECURITY_RESEARCH_REQUIRE_STUDY}"
     fi
   fi
+  if [[ "${HTTPD_FUZZ_SMOKE:-0}" == "1" || "${SECURITY_RESEARCH_HTTP_FUZZ_SMOKE:-0}" == "1" ]]; then
+    if [[ -x "$ROOT/scripts/http-parse-fuzz-smoke.sh" ]]; then
+      if ! "$ROOT/scripts/http-parse-fuzz-smoke.sh" 2>&1 | tail -n 10; then
+        posture_ok=0
+        gate_log="${gate_log}; http_parse_fuzz smoke failed"
+      else
+        gate_log="${gate_log}; http_parse_fuzz smoke ok"
+      fi
+    fi
+  fi
   cwe_feed_ok=1
 else
   if [[ -x "$ROOT/li-tests/run_security.sh" ]]; then
@@ -78,6 +88,14 @@ else
   elif [[ -x "$ROOT/scripts/ci-security.sh" ]]; then
     security_note="ci-security.sh"
     if ! "$ROOT/scripts/ci-security.sh" 2>&1 | tail -n 30; then
+      asan_ok=0
+      posture_ok=0
+    fi
+  fi
+  if [[ -x "$ROOT/li-tests/run_security_asan_slice.sh" ]]; then
+    if LI_SECURITY_ASAN="${LI_SECURITY_ASAN:-1}" "$ROOT/li-tests/run_security_asan_slice.sh" 2>&1 | tail -n 15; then
+      asan_ok=1
+    elif [[ "${LI_SECURITY_ASAN:-0}" == "1" ]]; then
       asan_ok=0
       posture_ok=0
     fi

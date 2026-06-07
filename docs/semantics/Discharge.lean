@@ -149,16 +149,34 @@ theorem dimensional_homogeneity_placeholder : True := trivial
 AST `policy_module` accepts `disjoint_*` on `parallel for`; AutoVC `_par*` obligations discharge here.
 -/
 
-def disjoint_elem_spec {α : Type} {n : Nat} (i : Int) (_buf : LiArray α n) : Prop := True
+/-- Index-bound slice (7d-c): flat `disjoint_elem` path requires in-range slot index. -/
+def index_bound_elem_spec {α : Type} {n : Nat} (i : Int) (_buf : LiArray α n) : Prop :=
+  (0 : Int) ≤ i ∧ i < (n : Int)
 
-theorem disjoint_elem_policy_witness {α : Type} {n : Nat} (i : Int) (buf : LiArray α n) :
-    disjoint_elem_spec i buf := trivial
+/-- Index-bound slice (7d-c): nested `disjoint_row` path requires in-range row index. -/
+def index_bound_row_spec {α : Type} {n m : Nat} (i : Int) (_grid : LiArray (LiArray α m) n) : Prop :=
+  (0 : Int) ≤ i ∧ i < (n : Int)
 
-def disjoint_row_spec {α : Type} {n m : Nat} (i : Int) (_grid : LiArray (LiArray α m) n) : Prop :=
-  True
+def disjoint_elem_spec {α : Type} {n : Nat} (i : Int) (buf : LiArray α n) : Prop :=
+  index_bound_elem_spec i buf
+
+theorem disjoint_elem_policy_witness {α : Type} {n : Nat} (i : Int) (buf : LiArray α n)
+    (h_range : index_bound_elem_spec i buf) : disjoint_elem_spec i buf := h_range
+
+theorem disjoint_elem_of_nat {α : Type} {n : Nat} (ii : Nat) (buf : LiArray α n) (h : ii < n) :
+    disjoint_elem_spec (Int.ofNat ii) buf :=
+  ⟨Int.ofNat_zero.le, Int.ofNat_lt.mpr h⟩
+
+def disjoint_row_spec {α : Type} {n m : Nat} (i : Int) (grid : LiArray (LiArray α m) n) : Prop :=
+  index_bound_row_spec i grid
 
 theorem disjoint_row_policy_witness {α : Type} {n m : Nat} (i : Int)
-    (grid : LiArray (LiArray α m) n) : disjoint_row_spec i grid := trivial
+    (grid : LiArray (LiArray α m) n) (h_range : index_bound_row_spec i grid) :
+    disjoint_row_spec i grid := h_range
+
+theorem disjoint_row_of_nat {α : Type} {n m : Nat} (ii : Nat) (grid : LiArray (LiArray α m) n)
+    (h : ii < n) : disjoint_row_spec (Int.ofNat ii) grid :=
+  ⟨Int.ofNat_zero.le, Int.ofNat_lt.mpr h⟩
 
 def disjoint_slice_spec {α : Type} {n : Nat} (tile : Int) (_buf : LiArray α n) : Prop := True
 
@@ -259,9 +277,7 @@ theorem array_grid_cell_indices_disjoint {α : Type} {rows cols : Nat}
     `disjoint_elem` policy on the same flat buffer target memory-disjoint slots. -/
 theorem dependent_flat_array_aliasing {α : Type} {n : Nat}
     (buf : LiArray α n) (i j : Nat)
-    (hi : i < n) (hj : j < n) (hne : i ≠ j)
-    (_pi : disjoint_elem_spec (Int.ofNat i) buf)
-    (_pj : disjoint_elem_spec (Int.ofNat j) buf) :
+    (hi : i < n) (hj : j < n) (hne : i ≠ j) :
     memory_disjoint_elems_spec i j n :=
   memory_disjoint_elems_witness i j n
 
@@ -269,9 +285,7 @@ theorem dependent_flat_array_aliasing {α : Type} {n : Nat}
     `disjoint_row` policy on the same nested grid target memory-disjoint row slots. -/
 theorem dependent_grid_row_aliasing {α : Type} {m rows : Nat}
     (grid : LiArray (LiArray α m) rows) (i j : Nat)
-    (hi : i < rows) (hj : j < rows) (hne : i ≠ j)
-    (_pi : disjoint_row_spec (Int.ofNat i) grid)
-    (_pj : disjoint_row_spec (Int.ofNat j) grid) :
+    (hi : i < rows) (hj : j < rows) (hne : i ≠ j) :
     memory_disjoint_grid_rows_spec i j rows :=
   memory_disjoint_grid_rows_witness i j rows
 
@@ -279,9 +293,7 @@ theorem dependent_grid_row_aliasing {α : Type} {m rows : Nat}
     `disjoint_elem` policy on the same nested grid target memory-disjoint cell slots. -/
 theorem dependent_grid_cell_aliasing {α : Type} {rows cols : Nat}
     (grid : LiArray (LiArray α cols) rows) (li lj : Nat)
-    (hi : li < rows * cols) (hj : lj < rows * cols) (hne : li ≠ lj)
-    (_pi : disjoint_elem_spec (Int.ofNat li) grid)
-    (_pj : disjoint_elem_spec (Int.ofNat lj) grid) :
+    (hi : li < rows * cols) (hj : lj < rows * cols) (hne : li ≠ lj) :
     memory_disjoint_grid_elems_spec li lj (rows * cols) :=
   memory_disjoint_grid_elems_witness li lj (rows * cols)
 

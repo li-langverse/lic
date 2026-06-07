@@ -99,6 +99,23 @@ def par_memory_disjoint_grid_elems(i: int, j: int, cells: int) -> bool
 =
   return par_memory_disjoint_elems(i, j, cells)
 
+# G-par — index-bound refinement: disjoint_elem/disjoint_row specs require in-range indices (7d-c slice).
+def par_disjoint_elem_index_bound(i: int, n: int) -> bool
+  requires i >= 0
+  requires n > 0
+  ensures result == (i < n)
+  decreases n + i
+=
+  return i < n
+
+def par_disjoint_row_index_bound(i: int, rows: int) -> bool
+  requires i >= 0
+  requires rows > 0
+  ensures result == par_disjoint_elem_index_bound(i, rows)
+  decreases rows + i
+=
+  return par_disjoint_elem_index_bound(i, rows)
+
 # G-par — dependent array aliasing: distinct parallel iterations with disjoint policy → memory-disjoint slots.
 def par_dependent_flat_array_aliasing(i: int, j: int, n: int) -> bool
   requires i >= 0

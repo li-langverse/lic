@@ -109,6 +109,14 @@
 - `li_par_dependent_array_aliasing_smoke.sh` wired into proofs gate
 - Proofs gate **PASS**; progress gate **PASS**; killer gate **PASS**
 
+## 2026-06-07 — G-par disjoint index-bound refinement (code_implementer)
+
+- Refined `disjoint_elem_spec` / `disjoint_row_spec` to `index_bound_*_spec` in `Discharge.lean`
+- Added `par_disjoint_elem_index_bound` + `par_disjoint_row_index_bound` in `parallel/proof.li`
+- AutoVC par requires emit `h_range` hypothesis + policy witness discharge (`vc_emit_lean.cpp`)
+- `li_par_disjoint_index_bound_smoke.sh` wired into proofs gate
+- Proofs gate **PASS**; killer gate unchanged green
+
 ## 2026-06-07 — G-par nested grid row aliasing proof slice (code_implementer)
 
 - Added `memory_disjoint_grid_rows_spec` + witness + bridge + `array_row_indices_disjoint` in `Discharge.lean`

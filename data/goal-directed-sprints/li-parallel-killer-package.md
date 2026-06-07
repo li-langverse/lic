@@ -153,4 +153,4 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-07)
 
-None — killer gate **PASS** (152 benchmarks dual-mode complete, all sub-gates green). Remaining proof gaps: G-par partial — index-bound refinement of `disjoint_elem_spec` / `disjoint_row_spec` beyond compositional `dependent_*_aliasing` bridges (see gap register).
+None — killer gate **PASS** (152 benchmarks dual-mode complete, all sub-gates green). Remaining proof gaps: G-par partial — full dependent-index refinement beyond `index_bound_*_spec` closed slice (see gap register).

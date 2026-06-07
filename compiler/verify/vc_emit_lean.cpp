@@ -379,6 +379,16 @@ std::optional<std::string> par_disjoint_discharge_ref(const Expr& e) {
   return std::nullopt;
 }
 
+struct ParLoopBounds {
+  std::int64_t start = 0;
+  std::int64_t end = 0;
+};
+
+bool par_disjoint_index_bound_policy(const Expr& e) {
+  const auto tag = par_disjoint_policy_witness(e);
+  return tag && (*tag == "disjoint_elem" || *tag == "disjoint_row");
+}
+
 void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
                              const Contract& c, const std::string* loop_iter);
 
@@ -388,7 +398,8 @@ void emit_par_policy_args(std::ostream& out, const ProcDecl& proc, const Contrac
 void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& proc,
                        const char* kind, std::size_t idx, const Contract& c,
                        const std::string& vc_suffix = "",
-                       const std::string* loop_iter = nullptr) {
+                       const std::string* loop_iter = nullptr,
+                       const ParLoopBounds* loop_bounds = nullptr) {
   const std::string sec = proc_section(proc.name) + vc_suffix;
   const std::string name = "vc_" + sec + '_' + kind + '_' + std::to_string(idx);
   const auto emit_formals = [&](bool include_result) {
@@ -692,8 +703,30 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
   } else if (par_policy && c.expr) {
     out << "/-! Phase 2f: P-par disjoint policy witness (**G-par**) -/\n";
+    const bool index_bound =
+        c.kind == ContractKind::Requires && loop_bounds != nullptr && loop_iter != nullptr &&
+        par_disjoint_index_bound_policy(*c.expr);
+    const auto index_bound_tag = index_bound ? par_disjoint_policy_witness(*c.expr) : std::nullopt;
     out << "theorem " << name << "_proved";
     emit_formals(c.kind != ContractKind::Requires);
+    if (index_bound && index_bound_tag) {
+      const char* bound_spec =
+          *index_bound_tag == "disjoint_elem" ? "index_bound_elem_spec" : "index_bound_row_spec";
+      out << " (h_range : Li.Discharge." << bound_spec << ' ';
+      if (c.expr->args[0]) {
+        const VcCtx par_ctx;
+        if (const auto a0 = expr_to_lean(*c.expr->args[0], par_ctx)) {
+          out << *a0;
+        }
+      }
+      if (c.expr->args[1]) {
+        const VcCtx par_ctx;
+        if (const auto a1 = expr_to_lean(*c.expr->args[1], par_ctx)) {
+          out << ' ' << *a1;
+        }
+      }
+      out << ')';
+    }
     out << " : " << name;
     emit_args(c.kind != ContractKind::Requires);
     if (auto discharge = par_disjoint_discharge_ref(*c.expr)) {
@@ -709,6 +742,9 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
         if (const auto a1 = expr_to_lean(*c.expr->args[1], par_ctx)) {
           out << ' ' << *a1;
         }
+      }
+      if (index_bound) {
+        out << " h_range";
       }
       out << '\n';
     } else {
@@ -1001,7 +1037,7 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
 
 void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
                     const std::vector<Contract>& contracts, const std::string& vc_suffix,
-                    const std::string* loop_iter);
+                    const std::string* loop_iter, const ParLoopBounds* loop_bounds);
 
 void walk_par_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
                         const std::vector<Stmt>& stmts, std::size_t& par_idx) {
@@ -1009,8 +1045,9 @@ void walk_par_contracts(std::ostream& out, const Module& module, const ProcDecl&
     if ((stmt.kind == Stmt::Kind::ParallelFor || stmt.kind == Stmt::Kind::DistributedFor) &&
         !stmt.par_contracts.empty()) {
       const std::string suffix = "_par" + std::to_string(par_idx++);
+      ParLoopBounds bounds{stmt.par_start, stmt.par_end};
       walk_contracts(out, module, proc, stmt.par_contracts, suffix,
-                     stmt.par_iter.empty() ? nullptr : &stmt.par_iter);
+                     stmt.par_iter.empty() ? nullptr : &stmt.par_iter, &bounds);
     }
     walk_par_contracts(out, module, proc, stmt.then_body, par_idx);
     if (stmt.else_body) {
@@ -1025,7 +1062,8 @@ void walk_par_contracts(std::ostream& out, const Module& module, const ProcDecl&
 void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
                     const std::vector<Contract>& contracts,
                     const std::string& vc_suffix = "",
-                    const std::string* loop_iter = nullptr) {
+                    const std::string* loop_iter = nullptr,
+                    const ParLoopBounds* loop_bounds = nullptr) {
   std::size_t req = 0;
   std::size_t ens = 0;
   std::size_t dec = 0;
@@ -1033,19 +1071,24 @@ void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& pro
   for (const auto& c : contracts) {
     switch (c.kind) {
       case ContractKind::Requires:
-        emit_contract_def(out, module, proc, "requires", req++, c, vc_suffix, loop_iter);
+        emit_contract_def(out, module, proc, "requires", req++, c, vc_suffix, loop_iter,
+                          loop_bounds);
         break;
       case ContractKind::Ensures:
-        emit_contract_def(out, module, proc, "ensures", ens++, c, vc_suffix, loop_iter);
+        emit_contract_def(out, module, proc, "ensures", ens++, c, vc_suffix, loop_iter,
+                          loop_bounds);
         break;
       case ContractKind::Decreases:
-        emit_contract_def(out, module, proc, "decreases", dec++, c, vc_suffix, loop_iter);
+        emit_contract_def(out, module, proc, "decreases", dec++, c, vc_suffix, loop_iter,
+                          loop_bounds);
         break;
       case ContractKind::Invariant:
-        emit_contract_def(out, module, proc, "invariant", inv++, c, vc_suffix, loop_iter);
+        emit_contract_def(out, module, proc, "invariant", inv++, c, vc_suffix, loop_iter,
+                          loop_bounds);
         break;
       case ContractKind::ProbEnsures:
-        emit_contract_def(out, module, proc, "prob_ensures", ens++, c, vc_suffix, loop_iter);
+        emit_contract_def(out, module, proc, "prob_ensures", ens++, c, vc_suffix, loop_iter,
+                          loop_bounds);
         break;
     }
   }

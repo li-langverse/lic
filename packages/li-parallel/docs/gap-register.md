@@ -52,7 +52,7 @@ Open work packages blocking killer gate completion. Updated 2026-06-07.
 
 | Gap | Status |
 |-----|--------|
-| G-par | Partial |
+| G-par | Partial — **closed slice:** `index_bound_elem_spec` / `index_bound_row_spec` refine `disjoint_*_spec`; `par_disjoint_*_index_bound` + AutoVC `h_range` discharge |
 | G-par-dist | Closed slice |
 | G-hetero | Closed slice |
 | P-par iteration independence (7d-c) | **Closed slice** — `par_iteration_independent_tile` + `iteration_independent_tile_spec` |

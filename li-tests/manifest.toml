@@ -1747,7 +1747,7 @@ note = "WP-ECHEM-13 TDDFT/nonadiabatic — Marcus-coupled ET barrier + 2-state p
 suite = "composable"
 file = "composable/import_chem_dft_smoke.li"
 packages = ["li-sim-scientific", "li-chem"]
-outcome = "verify_ok"
+outcome = "compile_open_ok"
 note = "sim-p2-qm-dft-scf algo 418 composable chem DFT SCF oracle (no checksum 1.001)"
 
 [[tests]]

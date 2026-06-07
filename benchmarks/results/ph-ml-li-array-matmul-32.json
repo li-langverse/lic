@@ -1,0 +1,17 @@
+{
+  "suite": "ph-ml-li-array-matmul-32",
+  "id": "li_array_matmul_32x32",
+  "workload_size": 32,
+  "workload_note": "32x32 f32 via ArrayDesc -> ml_matmul_lkir_logical_32; ratio_vs_li = numpy/cpu",
+  "compile_ok": true,
+  "executed": true,
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "cpu_sec": 0.016386,
+  "build_cpu_sec": null,
+  "numpy_cpu_sec": 1e-06,
+  "ratio_vs_li": 6.1e-05,
+  "ratio_target": 2.0,
+  "ratio_target_met": false,
+  "li_over_numpy": 16386.0
+}

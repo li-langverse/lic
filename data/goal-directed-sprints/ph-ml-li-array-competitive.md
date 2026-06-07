@@ -35,11 +35,11 @@ pilot 4×4 tiles to BLAS parity — replacing ad-hoc `MlTensorDesc` over time.
 | Phase | Status |
 |-------|--------|
 | A | **DONE** — package + RFC + gate green |
-| B | **IN PROGRESS** — flat CPU matmul hot path (no nested bridge ≤16) |
-| C | pending — `@vectorized` array_add / array_sum |
-| D | pending — rank-3 batch matmul |
-| E | pending — li-llm forward via `import array` |
-| F | pending — `ratio_vs_li ≤ 2.0` @ 32×32+ |
+| B | **DONE** — `array_matmul_flat_cpu` → `ml_matmul_cpu_ref` (E0201-safe flat path ≤16) |
+| C | **DONE** — `@vectorized(lanes=4)` on `array_add` / `array_sum` |
+| D | **DONE** — `array_matmul_batch` rank-3 explicit batch (no broadcast) |
+| E | **DONE** — `li-llm` `import array`; `llm_matmul_block_contrib` → `li_array_matmul_f32` |
+| F | **DONE** — `bench-ph-ml-li-array-matmul-32.sh` records `ratio_vs_li` (target ≤2.0, honest) |
 
 ## Competitive targets
 

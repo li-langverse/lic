@@ -1,5 +1,6 @@
 import bytes
 import ml
+import array
 
 # li-llm (PH-LLM): native LLM inference - tokenizer, loader, forward, generate.
 extern proc li_rt_lig_matmul_ready() -> int
@@ -1008,7 +1009,9 @@ def llm_matmul_block_contrib(path: str, tensor_index: int, tid: int) -> int rais
     bi = bi + 1
   a[0] = llm_scale_byte(tid)
   a[1] = 1.0
-  if ml_matmul_f32(1, 2, 2, a, b, c) != 1:
+  var ad: ArrayDesc = array_desc_2d(1, 2, 2, array_storage_flat())
+  var bd: ArrayDesc = array_desc_2d(2, 2, 2, array_storage_flat())
+  if li_array_matmul_f32(ad, a, bd, b, c) != 1:
     return 0
   return llm_float_bucket(c[0]) + llm_float_bucket(c[1]) * 4
 

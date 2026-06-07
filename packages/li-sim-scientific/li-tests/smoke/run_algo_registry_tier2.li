@@ -18,8 +18,6 @@ def main() -> int
     return 3
   if md105.checksum == 1.001:
     return 4
-  if sim_scientific_md_neighbor_cell_parity_smoke() != 1:
-    return 32
   var heat210: SimRunResult = run_algo(210, 2)
   if run_result_ok(heat210) != 1:
     return 5

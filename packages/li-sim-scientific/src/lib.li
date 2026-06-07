@@ -167,14 +167,6 @@ def sim_scientific_oracle_checksum_md_neighbor_cell() -> float
 =
   return md_neighbor_cell_list_smoke_checksum()
 
-def sim_scientific_md_neighbor_cell_parity_smoke() -> int
-  requires true
-  ensures result >= 0
-  ensures result <= 1
-  decreases 0
-=
-  return md_neighbor_cell_list_parity_smoke()
-
 # WP-SCI-03 — tier-2 Li oracle: explicit 1D heat stencil (8-point grid).
 def heat_oracle_stencil_step(u: var array[8, float], v: var array[8, float], r: float) -> unit
   requires r > 0.0

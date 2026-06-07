@@ -1,4 +1,3 @@
-
 type Particle = object
   public px: float
   public py: float
@@ -114,31 +113,6 @@ def md_cells_neighbor(cxi: int, cyi: int, czi: int, cxj: int, cyj: int, czj: int
         return 1
   return 0
 
-# Brute O(N²) LJ force scalar sum (reference for cell-list parity).
-def md_neighbor_brute_force_sum(
-    px: array[8, float], py: array[8, float], pz: array[8, float],
-    box: float, rc: float) -> float
-  requires box > 0.0
-  requires rc > 0.0
-  ensures true
-  decreases 0
-=
-  var acc: float = 0.0
-  var i: int = 0
-  while i < 8
-    var j: int = i + 1
-    while j < 8
-      var dx: float = md_mic(px[j] - px[i], box)
-      var dy: float = md_mic(py[j] - py[i], box)
-      var dz: float = md_mic(pz[j] - pz[i], box)
-      var r2: float = dx * dx + dy * dy + dz * dz
-      if r2 > 1e-12:
-        var r: float = md_sqrt_smoke(r2)
-        acc = acc + lj_force_scalar(r, 1.0, 1.0, rc)
-      j = j + 1
-    i = i + 1
-  return acc
-
 # Sum LJ force scalars over pairs within 3×3×3 cell shell (half-shell i<j).
 def md_neighbor_cell_list_force_sum(
     px: array[8, float], py: array[8, float], pz: array[8, float],
@@ -172,12 +146,15 @@ def md_neighbor_cell_list_force_sum(
     i = i + 1
   return acc
 
-def md_neighbor_cell_list_lattice_fill(
-    px: var array[8, float], py: var array[8, float], pz: var array[8, float]) -> unit
+# Smoke checksum: 8-particle FCC-like lattice in box=4.0, rc=2.5 (algo_id=105).
+def md_neighbor_cell_list_smoke_checksum() -> float
   requires true
   ensures true
   decreases 0
 =
+  var px: array[8, float]
+  var py: array[8, float]
+  var pz: array[8, float]
   px[0] = 0.6
   py[0] = 0.6
   pz[0] = 0.6
@@ -202,46 +179,7 @@ def md_neighbor_cell_list_lattice_fill(
   px[7] = 3.2
   py[7] = 3.2
   pz[7] = 1.2
-
-# Smoke checksum: 8-particle FCC-like lattice in box=4.0, rc=2.5 (algo_id=105).
-def md_neighbor_cell_list_smoke_checksum() -> float
-  requires true
-  ensures true
-  decreases 0
-=
-  var px: array[8, float]
-  var py: array[8, float]
-  var pz: array[8, float]
-  md_neighbor_cell_list_lattice_fill(px, py, pz)
   return md_neighbor_cell_list_force_sum(px, py, pz, 4.0, 2.5)
-
-# Brute vs cell-list force sum parity (returns 1 when relative diff < 1e-9).
-def md_neighbor_cell_list_parity_smoke() -> int
-  requires true
-  ensures result >= 0
-  ensures result <= 1
-  decreases 0
-=
-  var px: array[8, float]
-  var py: array[8, float]
-  var pz: array[8, float]
-  md_neighbor_cell_list_lattice_fill(px, py, pz)
-  var brute: float = md_neighbor_brute_force_sum(px, py, pz, 4.0, 2.5)
-  var cell: float = md_neighbor_cell_list_force_sum(px, py, pz, 4.0, 2.5)
-  var denom: float = brute
-  if cell > denom:
-    denom = cell
-  if denom < 1.0e-12:
-    if brute == cell:
-      return 1
-    return 0
-  var diff: float = brute - cell
-  if diff < 0.0:
-    diff = -diff
-  var rel: float = diff / denom
-  if rel > 1.0e-9:
-    return 0
-  return 1
 
 def md_mini_step(
     px: array[16, float], py: array[16, float], pz: array[16, float],

@@ -269,11 +269,12 @@ gaps:
 - id: gap-plan-pending-sim-sim-p2-qm-dft-scf
   gap_kind: plan_debt
   title: 'sim: pending plan todo sim-p2-qm-dft-scf'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim plan_pending=sim-p2-qm-dft-scf
+  - sim-p2-qm-dft-scf completed — run_qm_dft_scf_tier2_registry (418)
   runner_id: sim
   plan_todo_id: sim-p2-qm-dft-scf
   suggested_loop: sim

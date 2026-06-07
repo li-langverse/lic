@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# WP-T10-01: library.json lic_commit matches lic origin/main HEAD.
+# WP-T10-01: library.json lic_commit matches lic origin/main or branch HEAD.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 # shellcheck source=_lib.sh

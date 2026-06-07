@@ -1,6 +1,6 @@
 ---
 name: Li secure webserver
-overview: li-httpd — AI/agent gateway with easy TOML, streaming, limits, LB, auto-TLS. M1/M1.5/M2 config done; parity milestones (m0/m1/m15/m2 *-runtime, w0/w1) close nginx-class agent-gateway behavior. Nginx = bench/CVE oracle, not nginx.conf clone.
+overview: li-httpd — AI/agent gateway with easy TOML, streaming, limits, LB, auto-TLS. M1/M1.5/M2 config done; parity milestones (m0/m1/m15/m2 *-runtime, w0/w1) close nginx-class agent-gateway behavior. Phase H M1 `.li` exit gates — [2026-06-07-ph-h-m1-li-gateway-exit-gates.md](2026-06-07-ph-h-m1-li-gateway-exit-gates.md) ([#18](https://github.com/li-langverse/lic/issues/18)). Nginx = bench/CVE oracle, not nginx.conf clone.
 todos:
   - id: w0-lean-gate
     content: "P0 blocker: 2e–2f VC+Lean on lic build — unlocks spec-first li-httpd"
@@ -170,6 +170,50 @@ Config/oracle todos may be `completed` while **runtime parity** rows stay `pendi
 | M2 runtime | `m2-tls-h2-runtime`, `m2-websocket-runtime`, `m2-circuit-queue-runtime`, `m2-webhook-egress-runtime` | TLS/H2/WS + saturation policy |
 
 **Non-goals (unchanged):** nginx.conf drop-in, regex `location`, Lua/modules, HTTP/3, mail.
+
+## Phase H — M1 `.li` gateway ordered exit gates ([#18](https://github.com/li-langverse/lic/issues/18))
+
+> Full dependency graph and T-tier definitions: [2026-06-07-ph-h-m1-li-gateway-exit-gates.md](2026-06-07-ph-h-m1-li-gateway-exit-gates.md) · [#30 exit graph](2026-06-07-ph-h-httpd-m1-blocked-by-exit-graph.md)
+
+**Hard rule:** Do **not** start new M1 `.li` gateway implementation until **PH-2e** / **PH-2f** tracker rows are **Done**, or remain **Partial** with the documented downgrade below **and** P0-lean httpd slice gates (T2) green.
+
+### 2e–2f downgrade path (when tracker stays Partial)
+
+| PH phase | G-* rows | Downgrade allowed | Required before M1 `.li` start |
+|----------|----------|-------------------|--------------------------------|
+| **2e** | [**G-vc**](../../verification/provability-gaps.md#g-vc) | Call-site `requires`, const-local discharge; `http_parse_forward_closed.li` witness | `check-httpd-lean-gate.sh`, `discharge_http_forward_lean.sh` |
+| **2f** | [**G-lean**](../../verification/provability-gaps.md#g-lean), [**G-trust**](../../verification/provability-gaps.md#g-trust) | Open VC ≤ `HTTPD_LEAN_GATE_MAX_OPEN` (default 8) with `--allow-open-vc` on httpd smokes only | `check-httpd-server-lean-gate.sh` before T5 close |
+
+P0-lean **pass** = **T2** (httpd slice). **G-lean Done** = **T6** ([#32](https://github.com/li-langverse/lic/issues/32)) — do not conflate.
+
+### P0 prerequisites — ordered exit gates
+
+From [httpd-prerequisites](../../ecosystem/httpd-prerequisites.md). Run **in order**:
+
+| Order | P0 ID | PH | G-* (Doc-c) | Exit gate | Status |
+|-------|-------|-----|-------------|-----------|--------|
+| 1 | **P0-lean** | **2e**, **2f** | [**G-vc**](../../verification/provability-gaps.md#g-vc), [**G-lean**](../../verification/provability-gaps.md#g-lean), [**G-trust**](../../verification/provability-gaps.md#g-trust) | `check-httpd-lean-gate.sh`, `discharge_http_forward_lean.sh` | **Gated (httpd slice)** |
+| 2 | **P0-bytes** | **4** | [**G-stdlib**](../../verification/provability-gaps.md#g-stdlib) | `check-w0-bytes-io.sh` | **Shipped** |
+| 3 | **P0-net** | **H**, **2f** | [**G-net**](../../verification/provability-gaps.md#g-net), [**G-trust**](../../verification/provability-gaps.md#g-trust) | `li-tests/net_trusted/` | **Shipped** |
+| 4 | **P0-async** | **H**, **7d** | [**G-async**](../../verification/provability-gaps.md#g-async) | `check-w1-async-reactor.sh`, tier5 `tcp_echo` | **Shipped** |
+| 5 | **P0-http** | **H** | [**G-vc**](../../verification/provability-gaps.md#g-vc) | `http_parse_forward_closed.li`; Li reactor FSM next | **Partial** |
+
+**T1 (P0 aggregate):** rows 1–4 ≥ Gated/Shipped. Row 5 Partial blocks full Li reactor parity only.
+
+### M1 `.li` ship checklist (after P0)
+
+| Step | Todo id | Gate | G-* |
+|------|---------|------|-----|
+| 1 | `w0-lean-gate` | `check-httpd-lean-gate.sh` | **G-lean**, **G-vc** |
+| 2 | `w0-bytes-io` | `check-w0-bytes-io.sh` | **G-net**, **G-stdlib** |
+| 3 | `w1-async-reactor` | `check-w1-async-reactor.sh` | **G-async** |
+| 4 | `h-lean-server-modules` | `check-httpd-server-lean-gate.sh` | **G-lean** |
+| 5 | `m0-ship-gate-full` | `build-li-httpd.sh`, `test-auth-bearer.sh` | compile |
+| 6 | `m1-exploit-runtime` | `check-tier5-exploit-runtime.sh` | trusted seam |
+| 7 | `m1-serve-production` | `test-serve-production.sh` | **G-net**, **G-async** |
+| 8 | Config/oracle | `run_httpd_config.sh`, validate/overlap scripts | **G-vc** |
+
+**Aggregate:** `./scripts/httpd-plan-gates.sh`. Phase H M1 `.li` tracker closes at **T5** when steps 1–8 pass.
 
 ## Honest starting point
 

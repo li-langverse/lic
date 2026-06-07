@@ -168,6 +168,33 @@ def par_dependent_grid_cell_aliasing(i: int, j: int, cells: int) -> bool
 =
   return par_memory_disjoint_grid_elems(i, j, cells)
 
+# G-par — affine dependent subscript index-bound: stride*i+offset in range (7d-c slice).
+def par_disjoint_affine_index_bound(stride: int, offset: int, i: int, tiles: int, buf_n: int) -> bool
+  requires stride > 0
+  requires offset >= 0
+  requires i >= 0
+  requires tiles > 0
+  requires buf_n > 0
+  ensures result == (i < tiles and stride * i + offset >= 0 and stride * i + offset < buf_n)
+  decreases tiles + buf_n + i
+=
+  if i >= tiles:
+    return false
+  var slot: int = stride * i + offset
+  return slot >= 0 and slot < buf_n
+
+# G-par — affine dependent aliasing: distinct iterations with positive stride → memory-disjoint slots.
+def par_dependent_affine_array_aliasing(i: int, j: int, stride: int, offset: int, buf_n: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires stride > 0
+  requires offset >= 0
+  requires buf_n > 0
+  ensures result == par_memory_disjoint_elems(stride * i + offset, stride * j + offset, buf_n)
+  decreases buf_n + i + j
+=
+  return par_memory_disjoint_elems(stride * i + offset, stride * j + offset, buf_n)
+
 # G-par — @parallel(disjoint=...) on def inherits tile disjoint policy for nested parallel for.
 def def_disjoint_inherit_tile(tile: int, tiles: int) -> bool
   requires tile >= 0

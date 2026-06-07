@@ -325,6 +325,46 @@ theorem dependent_grid_cell_aliasing {α : Type} {rows cols : Nat}
     memory_disjoint_grid_elems_spec li lj (rows * cols) :=
   memory_disjoint_grid_elems_witness li lj (rows * cols)
 
+/-- Affine dependent subscript (7d-c slice): `stride * i + offset` for strided parallel loops. -/
+def affine_index (stride offset i : Nat) : Nat := stride * i + offset
+
+/-- Index-bound slice: affine slot index stays below buffer length when iteration and stride params are bounded. -/
+def index_bound_affine_spec (stride offset i tiles buf_n : Nat) : Prop :=
+  0 < stride ∧ 0 < tiles ∧ i < tiles ∧ affine_index stride offset (tiles - 1) < buf_n ∧
+    affine_index stride offset i < buf_n
+
+theorem affine_index_in_range (stride offset i tiles buf_n : Nat)
+    (hs : 0 < stride) (ht : 0 < tiles) (hi : i < tiles)
+    (hmax : affine_index stride offset (tiles - 1) < buf_n) :
+    affine_index stride offset i < buf_n := by
+  unfold affine_index at hmax ⊢
+  have hle : i ≤ tiles - 1 := Nat.le_pred_of_lt hi
+  calc
+    stride * i + offset ≤ stride * (tiles - 1) + offset :=
+      Nat.add_le_add_right (Nat.mul_le_mul_left stride hle) offset
+    _ < buf_n := hmax
+
+/-- Distinct iteration indices with positive stride yield distinct affine slot indices. -/
+theorem affine_index_injective (stride offset i j : Nat) (hs : 0 < stride) (hne : i ≠ j) :
+    affine_index stride offset i ≠ affine_index stride offset j := by
+  unfold affine_index
+  intro heq
+  exact hne (Nat.mul_left_cancel hs (Nat.add_right_cancel heq))
+
+/-- **Affine dependent aliasing (7d-c slice):** distinct iterations with positive stride target distinct Fin slots. -/
+theorem array_affine_indices_disjoint {α : Type} {n : Nat}
+    (_buf : LiArray α n) (stride offset i j : Nat)
+    (hs : 0 < stride) (hi : affine_index stride offset i < n) (hj : affine_index stride offset j < n)
+    (hne : i ≠ j) :
+    (⟨affine_index stride offset i, hi⟩ : Fin n) ≠ ⟨affine_index stride offset j, hj⟩ :=
+  fun heq => affine_index_injective stride offset i j hs hne (Fin.ext heq)
+
+/-- **Dependent array aliasing (7d-c slice):** distinct iterations with affine index map to memory-disjoint slots. -/
+theorem dependent_affine_array_aliasing {α : Type} {n : Nat}
+    (stride offset : Nat) (_buf : LiArray α n) (i j : Nat) (hs : 0 < stride) :
+    memory_disjoint_elems_spec (affine_index stride offset i) (affine_index stride offset j) n :=
+  fun _ _ hne heq => affine_index_injective stride offset i j hs hne (Fin.ext heq)
+
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
 

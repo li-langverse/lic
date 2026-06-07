@@ -145,3 +145,11 @@
 - **Lake build:** replace `proof_db_*` Discharge `sorry` stubs with proved slices (peano succ inj, order antisym) + honest `axiom` bridges for catalog ensures that need result witnesses
 - **Tests (local):** `linalg_mat2_at2_float_closed.li` + `linalg_mat2_callproc_float_closed.li` `lic build --no-lean-verify` **PASS**; `check-li-parallel-full-suite.sh` **PASS** (~169s)
 - **Deferred:** G-par general dependent subscripts; lake AutoVC typecheck locally blocked (no elan/lake in workspace)
+
+## 2026-06-07 — G-par affine dependent subscript proof slice (code_implementer-1780812126803)
+
+- **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required
+- **G-par proof slice:** `affine_index` + `index_bound_affine_spec` + `affine_index_in_range` + `affine_index_injective` + `dependent_affine_array_aliasing` in `Discharge.lean`; `par_disjoint_affine_index_bound` + `par_dependent_affine_array_aliasing` in `parallel/proof.li`
+- **Tests:** `li_par_affine_dependent_index_smoke.sh` wired into proofs gate; proof-db `P-par-affine-dependent-index`
+- **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS**; `check-li-parallel-full-suite.sh` **PASS** (~139s); `check-li-parallel-killer-gate.sh` **PASS** (~695s)
+- **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (non-affine general dependent subscripts open)

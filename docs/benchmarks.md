@@ -36,6 +36,8 @@ Sim agents: [sim-agent-handoff.md](ecosystem/sim-agent-handoff.md).
 | 4 | HTTP exploit grid (CVE-style harness) | same suite (`SKIP_EXPLOITS=1` to skip) |
 | 5 | Ecosystem: compile time, lip/lit smoke, security timing | **deferred** — `RUN_TIER5_ECOSYSTEM=1` |
 
+**Implicit PDE preconditioner rubric** (Jacobi / `PCBJKOKKOS`; AMG deferred to [lic#108](https://github.com/li-langverse/lic/issues/108)): [numerics/tier2-implicit-pde-preconditioner-rubric.md](numerics/tier2-implicit-pde-preconditioner-rubric.md) ([lic#117](https://github.com/li-langverse/lic/issues/117)).
+
 ## Stability vs speed
 
 - **Throughput** rows use low-density lattice params (`params.toml` `[perf]`).

@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-31T00:53:15Z'
+updated_at: '2026-06-07T15:10:00Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -969,6 +969,22 @@ gaps:
   handoff_to:
   - gap_explorer
   - issue_planner
+- id: gap-ai-chapel-23-python-interop-reference
+  gap_kind: competitor_feature
+  title: 'Chapel 2.3+ Python/NumPy interop reference policy vs Li AI-first foreign bindings'
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - https://chapel-lang.org/blog/posts/announcing-chapel-2.3/
+  - https://github.com/chapel-lang/chapel/releases/tag/2.3.0
+  - https://chapel-lang.org/docs/modules/packages/Python.html
+  - docs/superpowers/plans/2026-06-07-li-chapel-23-python-interop-reference-policy.md
+  - lic issue 54
+  ph_id: PH-IO-4
+  handoff_to:
+  - issue_planner
+  - numerics_researcher
 - id: gap-vertical-stub-drug-litl
   gap_kind: competitor_feature
   title: 'verticals.toml stub/honesty: drug_litl'

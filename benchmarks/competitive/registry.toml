@@ -68,8 +68,8 @@ repo_url = "https://github.com/chapel-lang/chapel"
 compare = ["md_lennard_jones", "matmul_blocked"]
 csv_lang = ""
 kernel_honesty = "n/a"
-last_reviewed = "2026-05-16"
-notes = "HPC PGAS reference; manual release-note review quarterly."
+last_reviewed = "2026-06-07"
+notes = "HPC PGAS reference; Chapel 2.3+ Python/NumPy interop → lic#54 G-ai policy; manual release-note review quarterly."
 
 [[ecosystem]]
 id = "kokkos"

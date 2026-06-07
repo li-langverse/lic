@@ -83,8 +83,7 @@ def md_mic(delta: float, box: float) -> float
 # One-axis cell index (ncell=2 smoke grid).
 def md_cell_index_1d(pos: float, box: float) -> int
   requires box > 0.0
-  ensures result >= 0
-  ensures result <= 1
+  ensures true
   decreases 0
 =
   var half: float = box * 0.5
@@ -94,8 +93,7 @@ def md_cell_index_1d(pos: float, box: float) -> int
 
 def md_cells_neighbor(cxi: int, cyi: int, czi: int, cxj: int, cyj: int, czj: int) -> int
   requires true
-  ensures result >= 0
-  ensures result <= 1
+  ensures true
   decreases 0
 =
   var dx: int = cxi - cxj

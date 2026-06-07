@@ -211,6 +211,26 @@ theorem array_elem_indices_disjoint {α : Type} {n : Nat} (_a : LiArray α n) (i
     (hi : i < n) (hj : j < n) (hne : i ≠ j) : (⟨i, hi⟩ : Fin n) ≠ ⟨j, hj⟩ :=
   fun heq => hne (Fin.ext heq)
 
+/-- Memory-disjoint grid rows (7d-c slice): distinct in-range row indices into nested grids. -/
+def memory_disjoint_grid_rows_spec (i j rows : Nat) : Prop :=
+  memory_disjoint_rows_spec i j rows
+
+theorem memory_disjoint_grid_rows_witness (i j rows : Nat) :
+    memory_disjoint_grid_rows_spec i j rows :=
+  memory_disjoint_rows_witness i j rows
+
+/-- Compositional bridge: iteration independence implies memory-disjoint grid row slots. -/
+theorem iteration_independent_implies_memory_disjoint_grid_rows (i j rows : Nat)
+    (_h : iteration_independent_tile_spec i j rows) : memory_disjoint_grid_rows_spec i j rows :=
+  memory_disjoint_grid_rows_witness i j rows
+
+/-- **Nested grid aliasing (7d-c slice):** distinct in-range row indices into `LiArray (LiArray α m) rows`
+    refer to distinct `Fin rows` slots (the `disjoint_row` parallel-for path). -/
+theorem array_row_indices_disjoint {α : Type} {m rows : Nat} (_grid : LiArray (LiArray α m) rows)
+    (i j : Nat) (hi : i < rows) (hj : j < rows) (hne : i ≠ j) :
+    (⟨i, hi⟩ : Fin rows) ≠ ⟨j, hj⟩ :=
+  array_elem_indices_disjoint _grid i j hi hj hne
+
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
 

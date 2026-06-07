@@ -526,7 +526,7 @@ int32_t tcp_listen(int32_t port) {
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
   addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
   addr.sin_port = htons((uint16_t)port);
   if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
     li_rt_sock_close(fd);
@@ -706,7 +706,7 @@ static int httpd_m2_policy_blocks_proxy_snap(void) {
 }
 
 static int httpd_proxy_snap_disabled(void) {
-  return httpd_m2_policy_blocks_proxy_snap() || g_lb_mode == HTTPD_LB_MODE_COOKIE;
+  return httpd_m2_policy_blocks_proxy_snap() || g_lb_mode == HTTPD_LB_MODE_COOKIE || g_route_count > 1;
 }
 
 static int httpd_m2_webhook_url_allowed(const char* url) {
@@ -3195,6 +3195,9 @@ static void httpd_proxy_finish_ok(int epfd, int32_t slot) {
 }
 
 static void httpd_proxy_finish_err(int epfd, int32_t slot) {
+  if (slot >= 0 && slot < HTTPD_MAX_CONN && g_slots[slot].fd >= 0 && g_slots[slot].proxy_active) {
+    httpd_send_status(g_slots[slot].fd, 502, "Bad Gateway", NULL, 0);
+  }
   if (g_slots[slot].proxy_active) {
     g_slots[slot].proxy_up_reuse = 0;
     if (g_slots[slot].proxy_peer_port > 0) {

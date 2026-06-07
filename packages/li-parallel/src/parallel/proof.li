@@ -59,6 +59,16 @@ def par_iteration_independent_tile(i: int, j: int, tiles: int) -> bool
     return true
   return disjoint_tile(i, tiles) and disjoint_tile(j, tiles)
 
+# G-par — memory-disjoint rows: distinct in-range row indices target separate array slots (7d-c slice).
+def par_memory_disjoint_rows(i: int, j: int, rows: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires rows > 0
+  ensures result == par_iteration_independent_tile(i, j, rows)
+  decreases rows + i + j
+=
+  return par_iteration_independent_tile(i, j, rows)
+
 # G-par — @parallel(disjoint=...) on def inherits tile disjoint policy for nested parallel for.
 def def_disjoint_inherit_tile(tile: int, tiles: int) -> bool
   requires tile >= 0

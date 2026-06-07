@@ -68,8 +68,22 @@
 - Proofs gate now verifies G-par register rows alongside G-par-dist + G-hetero
 - Progress gate **PASS**; killer gate unchanged green (152 benchmarks dual-mode)
 
+## 2026-06-07 — G-par memory-disjoint rows proof slice (code_implementer)
+
+- Added `memory_disjoint_rows_spec` + witness + bridge lemma in `Discharge.lean`
+- Added `par_memory_disjoint_rows` lemma in `parallel/proof.li` + proof-db entry `P-par-memory-disjoint-rows`
+- `li_par_memory_disjoint_rows_smoke.sh` wired into proofs gate
+- Progress gate **PASS**; killer gate re-verify pending (lic build)
+
 ## 2026-06-07 — G-par team-reduce proof slice + gate re-verify (code_implementer)
 
 - Added `team_cores_bounded` + `team_reduce_tile_disjoint` lemmas in `parallel/proof.li` (WP-PAR-15/16/19)
 - Proof-db entries `P-par-team-reduce-smoke` + `P-par-team-reduce-tile-disjoint` under G-par
 - Re-ran killer gate **PASS** (~11 min) and progress gate **PASS** (reduce_sum 159.5× advisory)
+
+## 2026-06-07 — G-par memory-disjoint rows proof slice (code_implementer)
+
+- Added `memory_disjoint_rows_spec` + witness + bridge lemma in `Discharge.lean`
+- Added `par_memory_disjoint_rows` lemma in `parallel/proof.li` + proof-db entry `P-par-memory-disjoint-rows`
+- `li_par_memory_disjoint_rows_smoke.sh` wired into proofs gate
+- Progress gate **PASS**; killer gate re-verify pending (lic build)

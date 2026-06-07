@@ -40,6 +40,7 @@ for smoke in \
   li-tests/tooling/li_dpar_for_codegen_smoke.sh \
   li-tests/tooling/li_hetero_gate_smoke.sh \
   li-tests/tooling/li_par_iteration_independent_tile_smoke.sh \
+  li-tests/tooling/li_par_memory_disjoint_rows_smoke.sh \
   li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh
 do
   chmod +x "$ROOT/$smoke"

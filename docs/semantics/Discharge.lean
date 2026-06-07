@@ -182,6 +182,18 @@ theorem iteration_independent_tile_witness (i j tiles : Nat) :
     iteration_independent_tile_spec i j tiles :=
   fun _ _ hne => hne
 
+/-- Memory-disjoint rows (7d-c slice): distinct in-range indices map to distinct `Fin n` slots. -/
+def memory_disjoint_rows_spec (i j n : Nat) : Prop :=
+  i < n → j < n → i ≠ j → (i : Fin n) ≠ (j : Fin n)
+
+theorem memory_disjoint_rows_witness (i j n : Nat) : memory_disjoint_rows_spec i j n :=
+  fun hi hj hne heq => hne (Fin.ext heq)
+
+/-- Compositional bridge: iteration independence implies memory-disjoint row slots. -/
+theorem iteration_independent_implies_memory_disjoint_rows (i j n : Nat)
+    (_h : iteration_independent_tile_spec i j n) : memory_disjoint_rows_spec i j n :=
+  memory_disjoint_rows_witness i j n
+
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
 

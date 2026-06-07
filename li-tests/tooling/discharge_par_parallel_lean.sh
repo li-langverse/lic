@@ -3,6 +3,10 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
+case "$LIC" in
+  /*) ;;
+  *) LIC="$ROOT/$LIC" ;;
+esac
 SAMPLE="$ROOT/li-tests/race_shared_memory/good_disjoint_parallel.li"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT

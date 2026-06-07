@@ -538,6 +538,46 @@ GPU side (with numeric Phase 3):
 | `hostbuffer[T]` | Pinned/pageable host mirror |
 | `ndview[Shape, T]` | View with strides (non-contiguous) |
 
+#### Strided buffer ABI (#128 — spec-only, no codegen)
+
+Kokkos 4.6+ moved `Kokkos::View` onto `std::mdspan`. Li tier-2 field buffers must match this ABI before pure-Li kernels replace `shared_c_kernel` catalog rows. Full rubric: [kokkos-mdspan-tier2-rubric.md](../../hpc/kokkos-mdspan-tier2-rubric.md).
+
+**Layout enums** (map to mdspan mapping):
+
+| Li layout | mdspan analogue | Default for |
+|-----------|-----------------|-------------|
+| `layout_right` | row-major contiguous | `grid[N, M, T]`, `tensor[Shape, T]` |
+| `layout_left` | column-major contiguous | Fortran-interop stubs |
+| `layout_stride[Strides]` | `layout_stride::mapping` | Ghost-cell padding, SoA field slices |
+
+**`ndview[Shape, T, Layout]`** — non-owning view over contiguous or strided storage:
+
+```text
+# Spec sketch (not parsed yet)
+var v: ndview[(N, M), f64, layout_stride=(M, 1)]  # row-major 2D
+var row: ndview[(M,), f64, layout_stride=(1,)] = v.slice(2, i)  # row i
+```
+
+- Strides are **static** in the type when possible; dynamic strides require a proven constructor.
+- Silent re-interpret cast between layouts → **compile error** (E-layout-stride).
+- **G-par:** `parallel for` over one stride dimension requires `disjoint=` on that dimension; strided slices inherit disjoint obligations per [provability-gaps §G-par](../../verification/provability-gaps.md#g-par).
+
+**`hostbuffer[T]` / `devicebuffer[T]`** — owning buffers with explicit memory-space tags (lifecycle policy in [#110](https://github.com/li-langverse/lic/issues/110)):
+
+| Buffer | Space | Copy/sync |
+|--------|-------|-----------|
+| `hostbuffer[T]` | Host RAM (pageable or pinned) | Authoritative for `@cpu` kernels |
+| `devicebuffer[T]` | GPU device memory | Requires `@sync_device` after host write; `@sync_host` before host read |
+
+No implicit DualView sync — decorator lowering ([#15](https://github.com/li-langverse/lic/issues/15)) emits named sync MIR tags. Reading `devicebuffer` without prior sync → **compile error** (E-mem-sync).
+
+**Tier-2 field bundles** — SoA vs AoS aliases for physics kernels:
+
+| Alias | Layout | Example bench |
+|-------|--------|---------------|
+| `FieldSoA[N, T]` | Separate `ndview[(N,), T]` per field | `md_lennard_jones` (`px`, `py`, `vx`, `vy`) |
+| `FieldAoS[N, T]` | `ndview[(N,), Particle[T]]` struct array | `rigid_body_stack`, single-field `heat_equation_2d` |
+
 ---
 
 ### Phase 4 — advanced & domain structures

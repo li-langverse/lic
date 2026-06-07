@@ -1,4 +1,5 @@
 #include "li/emit.hpp"
+#include "li/platform.hpp"
 
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Constants.h>
@@ -13,11 +14,16 @@
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/raw_ostream.h>
 
+#include <algorithm>
+#include <atomic>
 #include <cstdint>
 #include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -1572,6 +1578,116 @@ struct EmitCtx {
   }
 };
 
+  struct UserFnEmit {
+    const MirFn* mir_fn = nullptr;
+    llvm::Function* llvm_fn = nullptr;
+    llvm::Type* ret_ty = nullptr;
+    bool is_par_fn = false;
+  };
+
+  void emit_user_fn_body(llvm::LLVMContext& context, llvm::Module* module, const MirModule& mir,
+                         const UserFnEmit& ufe, int runtime_team_size) {
+    // LLVMContext is not thread-safe; one lock per function body (Pass 2 workers).
+    static std::mutex emit_ir_mutex;
+    std::lock_guard<std::mutex> guard(emit_ir_mutex);
+    const MirFn& fn = *ufe.mir_fn;
+    llvm::Function* func = ufe.llvm_fn;
+    llvm::Type* ret_ty = ufe.ret_ty;
+    const bool is_par_fn = ufe.is_par_fn;
+
+    llvm::BasicBlock* entry = llvm::BasicBlock::Create(context, "entry", func);
+    llvm::IRBuilder<> builder(entry);
+    llvm::FastMathFlags saved_fmf = builder.getFastMathFlags();
+    if (mir.fp_numerically_stable) {
+      builder.setFastMathFlags(llvm::FastMathFlags());
+    } else {
+      llvm::FastMathFlags fmf;
+      fmf.setFast();
+      fmf.setAllowContract(true);
+      fmf.setAllowReassoc(true);
+      builder.setFastMathFlags(fmf);
+    }
+
+    if (fn.name == "mm_blocked_512" || fn.name == "mm_naive_256") {
+      builder.CreateRetVoid();
+      builder.setFastMathFlags(saved_fmf);
+      return;
+    }
+
+    EmitCtx ctx{context,
+                module,
+                func,
+                &builder,
+                ret_ty,
+                fn.returns_float,
+                fn.returns_i64,
+                fn.returns_object,
+                mir.fp_numerically_stable,
+                runtime_team_size,
+                !fn.no_vectorize,
+                {},
+                {},
+                {},
+                {},
+                {},
+                {}};
+
+    unsigned idx = 0;
+    for (auto& arg : func->args()) {
+      if (idx < fn.params.size()) {
+        arg.setName(fn.params[idx].name);
+        const auto& mp = fn.params[idx];
+        if (mp.fixed_array_elems > 0) {
+          llvm::Type* arr_ty = llvm_array_type(context, mp);
+          llvm::AllocaInst* ap = builder.CreateAlloca(arr_ty, nullptr, mp.name);
+          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, mp.matrix_cols, mp.is_float,
+                                          mp.is_matrix};
+          llvm::Type* elem = llvm_scalar(context, mp.is_float, mp.is_i64, mp.is_string);
+          llvm::Value* zero = llvm::ConstantInt::get(builder.getInt32Ty(), 0);
+          if (mp.is_matrix && mp.matrix_cols > 0) {
+            const unsigned m = static_cast<unsigned>(mp.fixed_array_elems);
+            const unsigned n = static_cast<unsigned>(mp.matrix_cols);
+            for (unsigned i = 0; i < m; ++i) {
+              llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
+              for (unsigned j = 0; j < n; ++j) {
+                llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
+                llvm::Value* gep_idx[] = {zero, ri, rj};
+                llvm::Value* from_p = builder.CreateInBoundsGEP(arr_ty, &arg, gep_idx);
+                llvm::Value* to_p = builder.CreateInBoundsGEP(arr_ty, ap, gep_idx);
+                llvm::Value* v = builder.CreateLoad(elem, from_p);
+                builder.CreateStore(v, to_p);
+              }
+            }
+          } else {
+            const auto len = static_cast<unsigned>(mp.fixed_array_elems);
+            for (unsigned i = 0; i < len; ++i) {
+              llvm::Value* ai = llvm::ConstantInt::get(i32_ty(context), i);
+              llvm::Value* gep_idx[] = {zero, ai};
+              llvm::Value* from_p = builder.CreateInBoundsGEP(arr_ty, &arg, gep_idx);
+              llvm::Value* to_p = builder.CreateInBoundsGEP(arr_ty, ap, gep_idx);
+              llvm::Value* v = builder.CreateLoad(elem, from_p);
+              builder.CreateStore(v, to_p);
+            }
+          }
+        } else if (mp.is_string) {
+          builder.CreateStore(&arg, ctx.ensure_ptr_local(mp.name));
+        } else if (is_par_fn || mp.is_i64) {
+          builder.CreateStore(&arg, ctx.ensure_i64_local(mp.name));
+        } else if (mp.is_float) {
+          builder.CreateStore(&arg, ctx.ensure_float_local(mp.name));
+        } else {
+          builder.CreateStore(&arg, ctx.ensure_int_local(mp.name));
+        }
+      }
+      idx++;
+    }
+
+    for (const auto& ins : fn.body) {
+      ctx.emit_insn(ins);
+    }
+    builder.setFastMathFlags(saved_fmf);
+  }
+
 }  // namespace
 
 bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime_team_size,
@@ -1866,12 +1982,6 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   llvm::Function* user_main = nullptr;
   bool user_main_argv_wrapper = false;
 
-  struct UserFnEmit {
-    const MirFn* mir_fn = nullptr;
-    llvm::Function* llvm_fn = nullptr;
-    llvm::Type* ret_ty = nullptr;
-    bool is_par_fn = false;
-  };
   std::vector<UserFnEmit> user_fns;
 
   // Pass 1: declare every MIR function before any body references callees.
@@ -1929,104 +2039,36 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
     user_fns.push_back(UserFnEmit{&fn, func, ret_ty, is_par_fn});
   }
 
+  const unsigned jobs = compile_jobs_from_options();
+  if (const char* log_env = std::getenv("LI_COMPILE_JOBS_LOG"); log_env != nullptr &&
+      log_env[0] == '1') {
+    std::cerr << "lic: compile_jobs=" << jobs << " user_fns=" << user_fns.size() << '\n';
+  }
+
   // Pass 2: emit bodies (all callees already declared).
-  for (const UserFnEmit& ufe : user_fns) {
-    const MirFn& fn = *ufe.mir_fn;
-    llvm::Function* func = ufe.llvm_fn;
-    llvm::Type* ret_ty = ufe.ret_ty;
-    const bool is_par_fn = ufe.is_par_fn;
-
-    llvm::BasicBlock* entry = llvm::BasicBlock::Create(context, "entry", func);
-    llvm::IRBuilder<> builder(entry);
-    llvm::FastMathFlags saved_fmf = builder.getFastMathFlags();
-    if (mir.fp_numerically_stable) {
-      builder.setFastMathFlags(llvm::FastMathFlags());
-    } else {
-      llvm::FastMathFlags fmf;
-      fmf.setFast();
-      fmf.setAllowContract(true);
-      fmf.setAllowReassoc(true);
-      builder.setFastMathFlags(fmf);
+  if (jobs <= 1 || user_fns.size() <= 1) {
+    for (const UserFnEmit& ufe : user_fns) {
+      emit_user_fn_body(context, module.get(), mir, ufe, runtime_team_size);
     }
-
-    if (fn.name == "mm_blocked_512" || fn.name == "mm_naive_256") {
-      builder.CreateRetVoid();
-      builder.setFastMathFlags(saved_fmf);
-      continue;
-    }
-
-    EmitCtx ctx{context,
-                module.get(),
-                func,
-                &builder,
-                ret_ty,
-                fn.returns_float,
-                fn.returns_i64,
-                fn.returns_object,
-                mir.fp_numerically_stable,
-                runtime_team_size,
-                !fn.no_vectorize,
-                {},
-                {},
-                {},
-                {},
-                {},
-                {}};
-
-    unsigned idx = 0;
-    for (auto& arg : func->args()) {
-      if (idx < fn.params.size()) {
-        arg.setName(fn.params[idx].name);
-        const auto& mp = fn.params[idx];
-        if (mp.fixed_array_elems > 0) {
-          llvm::Type* arr_ty = llvm_array_type(context, mp);
-          llvm::AllocaInst* ap = builder.CreateAlloca(arr_ty, nullptr, mp.name);
-          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, mp.matrix_cols, mp.is_float,
-                                          mp.is_matrix};
-          llvm::Type* elem = llvm_scalar(context, mp.is_float, mp.is_i64, mp.is_string);
-          llvm::Value* zero = llvm::ConstantInt::get(builder.getInt32Ty(), 0);
-          if (mp.is_matrix && mp.matrix_cols > 0) {
-            const unsigned m = static_cast<unsigned>(mp.fixed_array_elems);
-            const unsigned n = static_cast<unsigned>(mp.matrix_cols);
-            for (unsigned i = 0; i < m; ++i) {
-              llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
-              for (unsigned j = 0; j < n; ++j) {
-                llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
-                llvm::Value* gep_idx[] = {zero, ri, rj};
-                llvm::Value* from_p = builder.CreateInBoundsGEP(arr_ty, &arg, gep_idx);
-                llvm::Value* to_p = builder.CreateInBoundsGEP(arr_ty, ap, gep_idx);
-                llvm::Value* v = builder.CreateLoad(elem, from_p);
-                builder.CreateStore(v, to_p);
-              }
-            }
-          } else {
-            const auto len = static_cast<unsigned>(mp.fixed_array_elems);
-            for (unsigned i = 0; i < len; ++i) {
-              llvm::Value* ai = llvm::ConstantInt::get(i32_ty(context), i);
-              llvm::Value* gep_idx[] = {zero, ai};
-              llvm::Value* from_p = builder.CreateInBoundsGEP(arr_ty, &arg, gep_idx);
-              llvm::Value* to_p = builder.CreateInBoundsGEP(arr_ty, ap, gep_idx);
-              llvm::Value* v = builder.CreateLoad(elem, from_p);
-              builder.CreateStore(v, to_p);
-            }
+  } else {
+    const unsigned nworkers = std::min(jobs, static_cast<unsigned>(user_fns.size()));
+    std::atomic<std::size_t> next{0};
+    std::vector<std::thread> workers;
+    workers.reserve(nworkers);
+    for (unsigned w = 0; w < nworkers; ++w) {
+      workers.emplace_back([&]() {
+        while (true) {
+          const std::size_t i = next.fetch_add(1, std::memory_order_relaxed);
+          if (i >= user_fns.size()) {
+            break;
           }
-        } else if (mp.is_string) {
-          builder.CreateStore(&arg, ctx.ensure_ptr_local(mp.name));
-        } else if (is_par_fn || mp.is_i64) {
-          builder.CreateStore(&arg, ctx.ensure_i64_local(mp.name));
-        } else if (mp.is_float) {
-          builder.CreateStore(&arg, ctx.ensure_float_local(mp.name));
-        } else {
-          builder.CreateStore(&arg, ctx.ensure_int_local(mp.name));
+          emit_user_fn_body(context, module.get(), mir, user_fns[i], runtime_team_size);
         }
-      }
-      idx++;
+      });
     }
-
-    for (const auto& ins : fn.body) {
-      ctx.emit_insn(ins);
+    for (auto& t : workers) {
+      t.join();
     }
-    builder.setFastMathFlags(saved_fmf);
   }
 
   if (user_main && user_main_argv_wrapper) {

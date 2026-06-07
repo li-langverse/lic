@@ -686,12 +686,11 @@ gaps:
   gap_kind: plan_debt
   title: "Phase 8p \u2014 Parallel compile + CI throughput \u2014 **partial (8p-a/b/c/d):**\
     \ 8p-a parallel `run_all` + isolated `LI_BUILD_DIR"
-  status: open
+  status: closed
   priority: 5
   discovered_by: plan_verifier
   evidence:
-  - "lic:master_plan: Phase 8p \u2014 Parallel compile + CI throughput \u2014 **partial\
-    \ (8p-a/b/c/d):** 8p-a parallel `run_all` + isolated `LI_BUILD_DIR"
+  - "lic:master_plan: Phase 8p \u2014 8p-c wired compile_jobs_from_options parallel emit Pass 2 (#525)"
   target_backlog: null
   suggested_loop: null
   handoff_to:

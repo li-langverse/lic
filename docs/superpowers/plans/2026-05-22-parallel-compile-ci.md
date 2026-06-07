@@ -43,7 +43,7 @@ On a Linux devbox with **≥8 logical cores** and LLVM 22 + Lean installed:
 
 **Files:** `compiler/lic/main.cpp`, `compiler/codegen/include/li/platform.hpp`, language design § parallelism
 
-1. Wire `LI_COMPILE_JOBS` / `--jobs=N` to any embarrassingly parallel MIR/LLVM passes (start with documented no-op → real work in follow-up PRs).
+1. Wire `LI_COMPILE_JOBS` / `--jobs=N` to parallel LLVM emit Pass 2 (per-`MirFn` bodies); Pass 1 + Lean verify stay serial.
 2. Do not confuse with `lic build --threads=N` (OpenMP **runtime**).
 
 ### 8p-d — CI defaults & observability
@@ -60,7 +60,7 @@ On a Linux devbox with **≥8 logical cores** and LLVM 22 + Lean installed:
 |----------|--------|---------|
 | `LI_BUILD_JOBS` | CMake/Ninja C++ build | host cores |
 | `LI_TEST_JOBS` | `run_all.sh`, workspace smoke | host cores (8p-a); until shipped: **1** |
-| `LI_COMPILE_JOBS` | `lic build` frontend (8p-c) | host cores when wired |
+| `LI_COMPILE_JOBS` | `lic build` frontend (8p-c) | `--jobs=N` effective budget; parallel emit Pass 2 when >1 |
 | `lic build --threads=N` | **Runtime** OpenMP only | not compile parallelism |
 
 ## Out of scope (v1)

@@ -1,0 +1,13 @@
+import physics.particles
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if md_neighbor_cell_list_parity_smoke() != 1:
+    return 1
+  var chk: float = md_neighbor_cell_list_smoke_checksum()
+  if chk < 0.01:
+    return 2
+  return 0

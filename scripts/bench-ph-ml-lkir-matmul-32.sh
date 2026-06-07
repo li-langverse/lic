@@ -2,6 +2,8 @@
 # Wave 13 T6: 32×32 logical blocked LKIR matmul vs NumPy CPU competitive ratio.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
@@ -26,7 +28,7 @@ run_in_wsl() {
 }
 
 if [[ "${PH_ML_MATMUL32_INNER:-0}" != "1" ]] \
-  && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] \
+  && ! li_has_runnable_lic "$ROOT" \
   && command -v wsl.exe >/dev/null 2>&1; then
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
   if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
@@ -35,8 +37,6 @@ if [[ "${PH_ML_MATMUL32_INNER:-0}" != "1" ]] \
   fi
 fi
 
-# shellcheck source=lib/lic-bin-select.sh
-source "$ROOT/scripts/lib/lic-bin-select.sh"
 li_ensure_lic "$ROOT" "bench-ph-ml-lkir-matmul-32: build lic (./scripts/build.sh)" || exit 1
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul-32.json"
 NUMPY_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-matmul-32.json"

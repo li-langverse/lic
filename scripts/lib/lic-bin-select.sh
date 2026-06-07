@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
 # Pick the first lic binary that executes on this host (build-wsl may exist but need newer glibc).
+li_lic_is_runnable() {
+  local bin="$1"
+  [[ -n "$bin" && -x "$bin" ]] && "$bin" --version &>/dev/null
+}
+
 li_pick_lic_bin() {
   local root="${1:?root required}"
+  local lic_root="${LIC_ROOT:-${LI_REPO_ROOT:-}}"
   local cand rel
   for cand in \
     "$root/build/compiler/lic/lic" \
-    "$root/build-wsl/compiler/lic/lic" \
-    "$root/build/compiler/lic/lic.exe"; do
-    if [[ -x "$cand" ]] && "$cand" --version &>/dev/null; then
+    "$root/build/compiler/lic/lic.exe" \
+    "$root/build-wsl/compiler/lic/lic"; do
+    if li_lic_is_runnable "$cand"; then
       case "$cand" in
         "$root/build/compiler/lic/lic") rel="./build/compiler/lic/lic" ;;
         "$root/build-wsl/compiler/lic/lic") rel="./build-wsl/compiler/lic/lic" ;;
@@ -17,13 +23,28 @@ li_pick_lic_bin() {
       return 0
     fi
   done
+  if [[ -n "$lic_root" ]]; then
+    for cand in \
+      "$lic_root/build/compiler/lic/lic" \
+      "$lic_root/build/compiler/lic/lic.exe" \
+      "$lic_root/build-wsl/compiler/lic/lic"; do
+      if li_lic_is_runnable "$cand"; then
+        echo "$cand"
+        return 0
+      fi
+    done
+  fi
   return 1
+}
+
+li_has_runnable_lic() {
+  li_pick_lic_bin "${1:?root required}" >/dev/null 2>&1
 }
 
 # Export LIC to a compiler that runs on this host (skips build-wsl when glibc mismatches).
 li_export_lic() {
   local root="${1:?root required}"
-  if [[ -n "${LIC:-}" ]] && "$LIC" --version &>/dev/null; then
+  if [[ -n "${LIC:-}" ]] && li_lic_is_runnable "$LIC"; then
     export LIC
     return 0
   fi
@@ -68,7 +89,7 @@ li_ensure_lic() {
   local msg="${2:-build lic (./scripts/build.sh)}"
   # shellcheck disable=SC1091
   source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lic-bin-select.sh"
-  if [[ -n "${LIC:-}" ]] && "$LIC" --version &>/dev/null && ! li_lic_needs_rebuild "$root"; then
+  if [[ -n "${LIC:-}" ]] && li_lic_is_runnable "$LIC" && ! li_lic_needs_rebuild "$root"; then
     return 0
   fi
   if li_lic_needs_rebuild "$root"; then

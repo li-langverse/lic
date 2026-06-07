@@ -20,6 +20,7 @@ cd "$ROOT"
 mkdir -p "$OUT_DIR"
 emit() {
   local algo="$1" ok="$2" checksum="$3" vert="$4" bench="${5:-}"
+  shift 5 || true
   local extra=()
   if [[ -n "$bench" ]]; then
     extra+=(--benchmark "$bench")
@@ -27,7 +28,7 @@ emit() {
   python3 "$ROOT/scripts/sim-write-summary.py" \
     --algo-id "$algo" --ok "$ok" --checksum "$checksum" --vertical-id "$vert" \
     --output-detail "$DETAIL" --format "$FORMAT" \
-    "${extra[@]}" \
+    "${extra[@]}" "$@" \
     -o "$OUT_DIR/${bench:-algo_${algo}}.li.summary.json"
 }
 
@@ -37,5 +38,14 @@ emit 201 1 1.0 2 pde_heat_explicit_2d
 
 # Registry stub spot-check (robo family)
 emit 801 1 0.801 0 robo_multibody_step
+
+# WP-SIM-P2: qm_dft_scf_energy (418) — QM summary keys (checksum band; runtime smokes assert oracle)
+emit 418 1 1.117658 4 qm_dft_scf_energy \
+  --workload-class smoke \
+  --total-energy-hartree -1.117658 \
+  --converged 1 \
+  --scf-iterations 8 \
+  --method "RKS/LDA" \
+  --basis "STO-3G"
 
 echo "sim_li_run_summary: wrote summaries under $OUT_DIR (format=$FORMAT)"

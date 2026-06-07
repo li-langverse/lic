@@ -1,0 +1,40 @@
+# WP-SIM-P2: qm_dft_scf_energy (418) — minimal SCF stub + summary oracle.
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() != 7:
+    return 1
+  if qm_scf_h2_stub_converged() != 1:
+    return 2
+  if qm_scf_h2_stub_iterations() < 1:
+    return 3
+  var e_kernel: float = qm_scf_h2_stub_energy()
+  if e_kernel >= 0.0:
+    return 4
+  var oracle: float = sim_scientific_oracle_checksum_qm_dft_scf()
+  if oracle <= 0.0:
+    return 5
+  if oracle == 1.001:
+    return 6
+  var qm: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 1)
+  if run_result_ok(qm) != 1:
+    return 7
+  if qm.algo_id != algo_qm_dft_scf_energy():
+    return 8
+  if qm.vertical_id != vertical_qm_dft():
+    return 9
+  if qm.checksum != oracle:
+    return 10
+  if qm.checksum == 1.001:
+    return 11
+  var vert: SimRunResult = run_simulation(vertical_qm_dft(), 0)
+  if run_result_ok(vert) != 1:
+    return 12
+  if vert.checksum != oracle:
+    return 13
+  return 0

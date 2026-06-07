@@ -36,6 +36,11 @@ def main() -> int:
     p.add_argument("--variant", default=os.environ.get("LI_SIM_VARIANT", "pure_li"))
     p.add_argument("--workload-class", default=os.environ.get("LI_SIM_WORKLOAD_CLASS", ""))
     p.add_argument("--output-detail", default=None)
+    p.add_argument("--total-energy-hartree", type=float, default=None)
+    p.add_argument("--converged", type=int, choices=(0, 1), default=None)
+    p.add_argument("--scf-iterations", type=int, default=None)
+    p.add_argument("--method", default=None)
+    p.add_argument("--basis", default=None)
     p.add_argument(
         "--format",
         choices=SUMMARY_FORMATS,
@@ -68,6 +73,17 @@ def main() -> int:
         workload_class=wl,
         benchmark=bench,
     )
+
+    if args.total_energy_hartree is not None:
+        summary["metrics"]["total_energy_hartree"] = args.total_energy_hartree
+    if args.converged is not None:
+        summary["metrics"]["converged"] = bool(args.converged)
+    if args.scf_iterations is not None:
+        summary["metrics"]["scf_iterations"] = args.scf_iterations
+    if args.method:
+        summary["metrics"]["method"] = args.method
+    if args.basis:
+        summary["metrics"]["basis"] = args.basis
 
     out = args.output
     if out is None:

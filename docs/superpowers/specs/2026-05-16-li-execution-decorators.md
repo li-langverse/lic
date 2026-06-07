@@ -36,3 +36,7 @@ User `decorator def` names: strict package-prefixed snake_case; typosquat ban; e
 This is **placement metadata only**. It does not yet lower kernels to LKIR, allocate device buffers, prove address-space separation, or emit CUDA/HIP/Metal/SPIR-V. Those remain **G-gpu** work.
 
 See master plan Phase **7d** and `li-tests/decorator_exploits/` (to land with 7d-e).
+
+## Kokkos / PETSc exascale mapping
+
+Normative requirements for execution spaces, memory spaces, data movement, async fences, and PH-7d proof attachment on portable loops: [PETSc–Kokkos execution/memory model](2026-05-31-li-petsc-kokkos-execution-memory-model.md) ([lic#28](https://github.com/li-langverse/lic/issues/28)). Compiler lowering tracked in [lic#15](https://github.com/li-langverse/lic/issues/15).

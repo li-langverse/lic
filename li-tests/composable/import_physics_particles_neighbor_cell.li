@@ -1,4 +1,4 @@
-import physics.particles
+import sim.scientific
 
 def main() -> int
   requires true

@@ -142,6 +142,51 @@ suite = "decorator_exploits"
 file = "decorator_exploits/missing_disjoint_at_parallel.li"
 outcome = "compile_fail"
 
+[[tests]]
+suite = "decorator_exploits"
+file = "decorator_exploits/openmp_typo_variant.li"
+outcome = "compile_fail"
+expected_substr = "openmp="
+
+# --- execution_openmp_rubric (#124 — prescriptive vs descriptive policy) ---
+
+[[tests]]
+suite = "execution_openmp_rubric"
+file = "execution/openmp_rubric/host_only.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "execution_openmp_rubric"
+file = "execution/openmp_rubric/prescriptive_teams_simd.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "execution_openmp_rubric"
+file = "execution/openmp_rubric/descriptive_auto.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "execution_openmp_rubric"
+file = "execution/openmp_rubric/target_prescriptive_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "execution_openmp_rubric"
+file = "execution/openmp_rubric/parallel_schedule_static.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "execution_openmp_rubric"
+file = "execution/openmp_rubric/reject_target_descriptive.li"
+outcome = "compile_fail"
+expected_substr = "openmp_rubric"
+
+[[tests]]
+suite = "execution_openmp_rubric"
+file = "execution/openmp_rubric/reject_bad_openmp_variant.li"
+outcome = "compile_fail"
+expected_substr = "openmp="
+
 # --- advisory (WP1 check/diagnose warnings+notes) ---
 
 [[tests]]

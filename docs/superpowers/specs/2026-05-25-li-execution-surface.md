@@ -40,6 +40,23 @@ lic check --workspace --jobs=8 --max-memory=4096
 
 Deprecated: `--threads` alias; `LI_*` env (one-release warn).
 
+## Layer 4 — OpenMP variant + divergent backend fork (#124)
+
+When `@parallel` / `parallel for` lowers to OpenMP (Phase 2, blocked on [#34](https://github.com/li-langverse/lic/issues/34)), Li chooses **prescriptive** (explicit directive stacks) vs **descriptive** (compiler-discovered loops) per the normative rubric:
+
+- **Spec:** [2026-06-07-li-openmp-prescriptive-descriptive-rubric.md](2026-06-07-li-openmp-prescriptive-descriptive-rubric.md)
+- **Surface knobs (policy v1):** `@cpu(openmp=prescriptive|descriptive|auto|target)`, `@parallel(schedule=static|auto|dynamic)`
+- **Divergent branches:** heterogeneous builds may emit separate host OpenMP and device TU forks; shared MIR must retain the same **G-par** `disjoint=` proofs on every branch.
+- **Reject:** `@cpu(openmp=descriptive)` on the same `def` as `@gpu` — offload requires prescriptive or `openmp=target`.
+
+```toml
+[execution]
+parallel_style = "auto"   # prescriptive | descriptive | auto
+backends = ["openmp_host"]  # future: ["openmp_host", "cuda"]
+```
+
+`lic build -v` will log `openmp variant=prescriptive|descriptive` once codegen lands (Phase 2).
+
 ## Phase 2 — `team(cores=4) { ... }`
 
 Spec only until parser lands.

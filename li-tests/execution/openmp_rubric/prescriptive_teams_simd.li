@@ -1,0 +1,16 @@
+@cpu(openmp=prescriptive)
+@parallel(disjoint=disjoint_elem)
+def prescriptive_teams_simd(buf: var array[8, f64]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  parallel for i in 0..<8
+    requires disjoint_elem(i, buf)
+    decreases 8 - i
+  =
+    @vectorized(lanes=4)
+    for k in 0..<4
+      decreases 4 - k
+    =
+      buf[i] = buf[i] + 1.0

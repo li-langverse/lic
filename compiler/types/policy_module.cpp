@@ -220,6 +220,92 @@ std::int64_t decorator_vectorized_lanes(const Decorator& d) {
   return 4;
 }
 
+bool decorator_ident_arg(const Decorator& d, const std::string& key, std::string* out) {
+  for (const auto& arg : d.args) {
+    if (arg.name == key && arg.value && arg.value->kind == Expr::Kind::Ident) {
+      if (out) {
+        *out = arg.value->ident;
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+bool cpu_openmp_variant_ok(const std::string& variant) {
+  return variant == "prescriptive" || variant == "descriptive" || variant == "auto" ||
+         variant == "target";
+}
+
+bool parallel_schedule_ok(const std::string& schedule) {
+  return schedule == "static" || schedule == "auto" || schedule == "dynamic";
+}
+
+void check_cpu_decorator(const Decorator& d, const std::string& file, DiagnosticBag& diags) {
+  if (d.name != "cpu") {
+    return;
+  }
+  for (const auto& arg : d.args) {
+    if (arg.name == "openmp") {
+      std::string variant;
+      if (!decorator_ident_arg(d, "openmp", &variant) || !cpu_openmp_variant_ok(variant)) {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                   "cpu decorator: `openmp=` must be prescriptive, descriptive, auto, or target.",
+                   "See docs/superpowers/specs/2026-06-07-li-openmp-prescriptive-descriptive-"
+                   "rubric.md (#124).");
+      }
+      continue;
+    }
+    diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+               "cpu decorator: unsupported argument `" + arg.name + "`.",
+               "Use `@cpu`, `@cpu(openmp=prescriptive|descriptive|auto|target)`, or stack with "
+               "`@parallel` / `@vectorized`.");
+  }
+}
+
+void check_parallel_schedule_arg(const Decorator& d, const std::string& file,
+                                 DiagnosticBag& diags) {
+  if (d.name != "parallel") {
+    return;
+  }
+  for (const auto& arg : d.args) {
+    if (arg.name != "schedule") {
+      continue;
+    }
+    std::string schedule;
+    if (!decorator_ident_arg(d, "schedule", &schedule) || !parallel_schedule_ok(schedule)) {
+      diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                 "`@parallel(schedule=...)` must be static, auto, or dynamic.",
+                 "Prescriptive OpenMP schedule hints are documented in #124 rubric.");
+    }
+  }
+}
+
+void check_proc_openmp_rubric_conflicts(const std::vector<Decorator>& decos,
+                                        const std::string& file, DiagnosticBag& diags) {
+  bool has_gpu = false;
+  std::string cpu_openmp;
+  SourceLoc conflict_loc{file, 1, 1, 0};
+  for (const auto& d : decos) {
+    if (d.name == "gpu") {
+      has_gpu = true;
+      conflict_loc = SourceLoc{file, 1, 1, d.span.start};
+    }
+    if (d.name == "cpu") {
+      std::string variant;
+      if (decorator_ident_arg(d, "openmp", &variant)) {
+        cpu_openmp = variant;
+        conflict_loc = SourceLoc{file, 1, 1, d.span.start};
+      }
+    }
+  }
+  if (has_gpu && cpu_openmp == "descriptive") {
+    diag_error(diags, conflict_loc, ErrorCode::E0322,
+               "openmp_rubric: `@cpu(openmp=descriptive)` is incompatible with `@gpu`.",
+               "GPU/offload builds require prescriptive or `@cpu(openmp=target)` (#124).");
+  }
+}
+
 void check_offload_decorator(const Decorator& d, const std::string& file, DiagnosticBag& diags) {
   if (d.name != "offload") {
     return;
@@ -263,6 +349,8 @@ void check_stmt_decorators(const Stmt& stmt, const std::string& file, Diagnostic
   for (const auto& d : stmt.decorators) {
     check_gpu_decorator(d, file, diags);
     check_offload_decorator(d, file, diags);
+    check_cpu_decorator(d, file, diags);
+    check_parallel_schedule_arg(d, file, diags);
     if (d.name == "parallel") {
       if (!decorator_has_disjoint_arg(d)) {
         diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
@@ -390,9 +478,12 @@ void walk_stmts(const std::vector<Stmt>& stmts, const std::vector<std::string>& 
 
 void check_proc_decorators(const std::vector<Decorator>& decos, const std::string& file,
                            DiagnosticBag& diags) {
+  check_proc_openmp_rubric_conflicts(decos, file, diags);
   for (const auto& d : decos) {
     check_gpu_decorator(d, file, diags);
     check_offload_decorator(d, file, diags);
+    check_cpu_decorator(d, file, diags);
+    check_parallel_schedule_arg(d, file, diags);
     if (d.name == "parallel") {
       bool saw_disjoint_kw = false;
       for (const auto& arg : d.args) {

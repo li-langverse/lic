@@ -1,0 +1,13 @@
+@gpu
+@cpu(openmp=descriptive)
+@parallel(disjoint=disjoint_elem)
+def reject_target_descriptive(buf: var array[8, f64]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  parallel for i in 0..<8
+    requires disjoint_elem(i, buf)
+    decreases 8 - i
+  =
+    buf[i] = buf[i] + 1.0

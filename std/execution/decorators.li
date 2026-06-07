@@ -13,6 +13,17 @@
 #   --threads=N        — total runtime team (overrides --cores when both set)
 #   @vectorized(lanes=4) — SIMD vector width in one core; never spawns li_parallel_for_i64
 #
+# OpenMP variant policy (#124 — prescriptive vs descriptive rubric):
+#   @cpu(openmp=prescriptive|descriptive|auto|target) — select OpenMP lowering variant
+#     prescriptive: explicit teams/target/SIMD directive stacks (competitive on offload)
+#     descriptive:  compiler-discovered parallel loops (default host path until #34 IR)
+#     auto:         compiler chooses; logs variant under lic build -v (Phase 2 codegen)
+#     target:       OpenMP target teams prescriptive stack (#116 offload track)
+#   @parallel(schedule=static|auto|dynamic) — schedule hint for prescriptive parallel for
+#   Reject: @cpu(openmp=descriptive) on same def as @gpu (offload needs prescriptive/target)
+#   li.toml [execution] parallel_style mirrors @cpu(openmp=…); backends = divergent TU fork
+#   Spec: docs/superpowers/specs/2026-06-07-li-openmp-prescriptive-descriptive-rubric.md
+#
 # User decorators must use multi-segment names (e.g. li_math_tiled_parallel).
 
 def __execution_decorators_doc() -> int

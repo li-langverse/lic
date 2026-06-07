@@ -28,6 +28,7 @@ Single suite:
 | `borrow` | `borrow/` | Use-after-move, double `mut` |
 | `race_shared_memory` | `race_shared_memory/` | **Exploit races** — must fail compile |
 | `decorator_exploits` | `decorator_exploits/` | **Decorator hijack** — reserved names, typosquat, missing `disjoint=` |
+| `execution_openmp_rubric` | `execution/openmp_rubric/` | **OpenMP prescriptive/descriptive** — `@cpu(openmp=…)` policy (#124) |
 | `decorators` | `decorators/` | `@cpu` / `@parallel(disjoint=...)` compile + verify |
 | `cve_patterns` | `cve_patterns/` | **C CVE + historic bugs** — Heartbleed/Ariane/goto-fail class rejections |
 | `parity_python` | `parity_python/` | `.li` vs `.pyi` / mypy baseline |

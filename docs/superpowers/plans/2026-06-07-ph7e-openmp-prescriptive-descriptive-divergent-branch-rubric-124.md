@@ -8,7 +8,7 @@ master_plan: docs/superpowers/plans/2026-05-14-li-master-plan.md
 issues: [li-langverse/lic#124]
 related_issues: [li-langverse/lic#15, li-langverse/lic#34, li-langverse/lic#116, li-langverse/lic#110, li-langverse/lic#129]
 north_star_fit: "HPC/scientific computing (PH-7e, G-par) — proof-before-perf; portable codegen must document when prescriptive OpenMP directives vs descriptive compiler discovery win, and when divergent backend branches are required"
-status: draft
+status: phase-0-1-landed
 ---
 
 # PH-7e / G-par: OpenMP prescriptive vs descriptive divergent-branch rubric (#124)

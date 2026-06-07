@@ -1,0 +1,17 @@
+import gpu
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gpu_version() < 1:
+    return 1
+  if gpu_wgpu_readback_active() != 1:
+    return 2
+  var smoke: GpuWgpuSmoke = gpu_wgpu_readback_smoke_run()
+  if gpu_wgpu_readback_passed(smoke) != 1:
+    return 3
+  if smoke.surface_ok != 1:
+    return 4
+  return 0

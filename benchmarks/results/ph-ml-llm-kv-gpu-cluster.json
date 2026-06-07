@@ -1,0 +1,10 @@
+{
+  "suite": "ph-ml-llm-kv-gpu-cluster",
+  "generated_at": "2026-06-06T18:40:54Z",
+  "workload_class": "stub",
+  "lig_emit_cuda": false,
+  "executed": true,
+  "gpu_decode_progress": false,
+  "validity_gate_pass": true,
+  "note": "LIG_EMIT not set \u2014 honest skip (no GPU vendor emit)"
+}

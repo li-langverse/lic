@@ -1,0 +1,435 @@
+import ml
+
+# li-array — strict-shape array descriptors and ops (no NumPy-style broadcasting).
+# See docs/game-dev/specs/li-array-rfc.md
+
+def array_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def array_dtype_f32() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def array_dtype_i32() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def array_storage_flat() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def array_storage_nested() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def array_max_rank() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def array_max_dim() -> int
+  requires true
+  ensures result == 32
+  decreases 0
+=
+  return 32
+
+def array_err_ok() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def array_err_shape() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def array_err_rank() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def array_err_dtype() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+type ArrayDesc = object
+  public rank: int
+  public shape0: int
+  public shape1: int
+  public shape2: int
+  public shape3: int
+  public dtype: int
+  public storage: int
+  public ld: int
+
+type LiArray = object
+  public desc: ArrayDesc
+
+def array_desc_make(
+    rank: int, shape0: int, shape1: int, shape2: int, shape3: int,
+    dtype: int, storage: int, ld: int) -> ArrayDesc
+  requires rank >= 1
+  requires rank <= 4
+  requires shape0 >= 1
+  requires dtype >= 0
+  requires storage >= 0
+  requires storage <= 1
+  requires ld >= 1
+  ensures result.rank == rank
+  ensures result.dtype == dtype
+  ensures result.storage == storage
+  ensures result.ld == ld
+  decreases 0
+=
+  var d: ArrayDesc
+  d.rank = rank
+  d.shape0 = shape0
+  d.shape1 = shape1
+  d.shape2 = shape2
+  d.shape3 = shape3
+  d.dtype = dtype
+  d.storage = storage
+  d.ld = ld
+  return d
+
+def array_desc_1d(n: int, storage: int) -> ArrayDesc
+  requires n >= 1
+  requires n <= 64
+  requires storage >= 0
+  requires storage <= 1
+  ensures result.rank == 1
+  ensures result.shape0 == n
+  ensures result.dtype == array_dtype_f32()
+  decreases 0
+=
+  return array_desc_make(1, n, 1, 1, 1, array_dtype_f32(), storage, n)
+
+def array_desc_2d(rows: int, cols: int, ld: int, storage: int) -> ArrayDesc
+  requires rows >= 1
+  requires cols >= 1
+  requires rows <= 32
+  requires cols <= 32
+  requires ld >= cols
+  requires ld <= 64
+  requires storage >= 0
+  requires storage <= 1
+  ensures result.rank == 2
+  ensures result.shape0 == rows
+  ensures result.shape1 == cols
+  ensures result.dtype == array_dtype_f32()
+  decreases 0
+=
+  return array_desc_make(2, rows, cols, 1, 1, array_dtype_f32(), storage, ld)
+
+def array_dim_at(desc: ArrayDesc, axis: int) -> int
+  requires axis >= 0
+  requires axis < 4
+  ensures result >= 1
+  decreases axis
+=
+  if axis == 0:
+    return desc.shape0
+  if axis == 1:
+    return desc.shape1
+  if axis == 2:
+    return desc.shape2
+  return desc.shape3
+
+def array_desc_dim_ok(desc: ArrayDesc) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if desc.rank < 1 or desc.rank > array_max_rank():
+    return 0
+  if desc.dtype != array_dtype_f32():
+    return 0
+  if desc.shape0 > array_max_dim() or desc.shape0 < 1:
+    return 0
+  if desc.rank >= 2 and (desc.shape1 > array_max_dim() or desc.shape1 < 1):
+    return 0
+  if desc.ld < 1 or desc.ld > 64:
+    return 0
+  return 1
+
+def array_shape_equal(a: ArrayDesc, b: ArrayDesc) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if a.rank != b.rank:
+    return 0
+  if a.dtype != b.dtype:
+    return 0
+  if a.shape0 != b.shape0:
+    return 0
+  if a.rank >= 2 and a.shape1 != b.shape1:
+    return 0
+  if a.rank >= 3 and a.shape2 != b.shape2:
+    return 0
+  if a.rank >= 4 and a.shape3 != b.shape3:
+    return 0
+  return 1
+
+# Trailing-dimension broadcast: equal sizes, or either side is 1 (mathematically valid NumPy rule).
+def array_broadcast_dim_ok(a: int, b: int) -> int
+  requires a >= 0
+  requires b >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases a + b
+=
+  if a == b:
+    return 1
+  if a == 1 or b == 1:
+    return 1
+  return 0
+
+def array_broadcast_reject_unmathematical(a: int, b: int) -> int
+  requires a >= 0
+  requires b >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases a + b
+=
+  if a > 1 and b > 1 and a != b:
+    return 1
+  return 0
+
+def array_broadcast_compatible_2d(a0: int, a1: int, b0: int, b1: int) -> int
+  requires a0 >= 0
+  requires a1 >= 0
+  requires b0 >= 0
+  requires b1 >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases a0 + a1 + b0 + b1
+=
+  if array_broadcast_reject_unmathematical(a0, b0) == 1:
+    return 0
+  if array_broadcast_reject_unmathematical(a1, b1) == 1:
+    return 0
+  if array_broadcast_dim_ok(a0, b0) != 1:
+    return 0
+  if array_broadcast_dim_ok(a1, b1) != 1:
+    return 0
+  return 1
+
+def array_broadcast_compatible(a: ArrayDesc, b: ArrayDesc) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if array_desc_dim_ok(a) != 1 or array_desc_dim_ok(b) != 1:
+    return 0
+  if a.dtype != b.dtype:
+    return 0
+  if a.rank == 1 and b.rank == 1:
+    if array_broadcast_reject_unmathematical(a.shape0, b.shape0) == 1:
+      return 0
+    return array_broadcast_dim_ok(a.shape0, b.shape0)
+  if a.rank == 2 and b.rank == 2:
+    return array_broadcast_compatible_2d(a.shape0, a.shape1, b.shape0, b.shape1)
+  if a.rank == 1 and b.rank == 2:
+    return array_broadcast_compatible_2d(1, a.shape0, b.shape0, b.shape1)
+  if a.rank == 2 and b.rank == 1:
+    return array_broadcast_compatible_2d(a.shape0, a.shape1, 1, b.shape0)
+  return 0
+
+def li_array_broadcast_compatible(a: ArrayDesc, b: ArrayDesc) -> int
+  requires true
+  ensures result == array_broadcast_compatible(a, b)
+  decreases 0
+=
+  return array_broadcast_compatible(a, b)
+
+def array_matmul_shape_ok(a: ArrayDesc, b: ArrayDesc) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if array_desc_dim_ok(a) != 1 or array_desc_dim_ok(b) != 1:
+    return 0
+  if a.rank != 2 or b.rank != 2:
+    return 0
+  if a.dtype != b.dtype:
+    return 0
+  if a.shape1 != b.shape0:
+    return 0
+  return 1
+
+def array_elements(desc: ArrayDesc) -> int
+  requires desc.rank >= 1
+  requires desc.rank <= 4
+  ensures result >= 1
+  decreases desc.rank
+=
+  var n: int = desc.shape0
+  if desc.rank >= 2:
+    n = n * desc.shape1
+  if desc.rank >= 3:
+    n = n * desc.shape2
+  if desc.rank >= 4:
+    n = n * desc.shape3
+  return n
+
+def array_flat_idx(row: int, col: int, ld: int) -> int
+  requires row >= 0
+  requires col >= 0
+  requires ld >= 1
+  ensures result >= 0
+  decreases row + col
+=
+  return row * ld + col
+
+def array_liarray_from_desc(desc: ArrayDesc) -> LiArray
+  requires true
+  ensures result.desc.rank == desc.rank
+  decreases 0
+=
+  var a: LiArray
+  a.desc = desc
+  return a
+
+def array_add(
+    a: ArrayDesc, af: array[64, float], b: ArrayDesc, bf: array[64, float],
+    c: var array[64, float]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if array_desc_dim_ok(a) != 1 or array_desc_dim_ok(b) != 1:
+    return 0
+  if array_shape_equal(a, b) != 1:
+    return 0
+  var n: int = array_elements(a)
+  if n > 64:
+    return 0
+  var i: int = 0
+  while i < n
+    c[i] = af[i] + bf[i]
+    i = i + 1
+  return 1
+
+def array_sum(desc: ArrayDesc, buf: array[64, float]) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  if array_desc_dim_ok(desc) != 1:
+    return 0.0
+  var n: int = array_elements(desc)
+  if n > 64:
+    return 0.0
+  var acc: float = 0.0
+  var i: int = 0
+  while i < n
+    acc = acc + buf[i]
+    i = i + 1
+  return acc
+
+# Phase B: CPU matmul hot path for flat buffers — bypass LKIR/ml_tensor_matmul_64 for m,n,k <= 16.
+def array_matmul_small_ok(m: int, n: int, k: int) -> int
+  requires m >= 1
+  requires n >= 1
+  requires k >= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if m <= 16 and n <= 16 and k <= 16:
+    return 1
+  return 0
+
+def array_matmul_flat_cpu(
+    m: int, n: int, k: int,
+    af: var array[64, float], bf: var array[64, float], c: var array[64, float]) -> int
+  requires m >= 1
+  requires n >= 1
+  requires k >= 1
+  requires m <= 16
+  requires n <= 16
+  requires k <= 16
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  return ml_matmul_cpu_ref(m, n, k, af, bf, c)
+
+def array_matmul(
+    a: ArrayDesc, af: var array[64, float], b: ArrayDesc, bf: var array[64, float],
+    c: var array[64, float]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if array_matmul_shape_ok(a, b) != 1:
+    return 0
+  var m: int = a.shape0
+  var n: int = b.shape1
+  var k: int = a.shape1
+  if a.storage == array_storage_flat() and b.storage == array_storage_flat():
+    if array_matmul_small_ok(m, n, k) == 1:
+      return array_matmul_flat_cpu(m, n, k, af, bf, c)
+  var ad: MlTensorDesc = ml_tensor_desc_2d(a.shape0, a.shape1, a.ld)
+  var bd: MlTensorDesc = ml_tensor_desc_2d(b.shape0, b.shape1, b.ld)
+  return ml_tensor_matmul_64(ad, af, bd, bf, c)
+
+def li_array_matmul_f32(
+    a: ArrayDesc, af: var array[64, float], b: ArrayDesc, bf: var array[64, float],
+    c: var array[64, float]) -> int
+  requires true
+  ensures result == array_matmul(a, af, b, bf, c)
+  decreases 0
+=
+  return array_matmul(a, af, b, bf, c)
+
+def array_matmul_nested(
+    a: ArrayDesc, an: var array[8, array[8, float]], b: ArrayDesc, bn: var array[8, array[8, float]],
+    c: var array[8, array[8, float]]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if array_matmul_shape_ok(a, b) != 1:
+    return 0
+  if a.storage != array_storage_nested() or b.storage != array_storage_nested():
+    return 0
+  var ad: MlTensorDesc = ml_tensor_desc_2d(a.shape0, a.shape1, a.ld)
+  var bd: MlTensorDesc = ml_tensor_desc_2d(b.shape0, b.shape1, b.ld)
+  return ml_tensor_matmul_nested(ad, an, bd, bn, c)

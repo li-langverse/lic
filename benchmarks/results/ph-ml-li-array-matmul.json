@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-06-07T06:52:56Z",
+  "suite": "ph-ml-li-array-matmul",
+  "id": "li_array_matmul_4x4",
+  "smoke": "packages/li-array/li-tests/smoke/array_matmul_4.li",
+  "workload_class": "tier3_cpu",
+  "compile_ok": true,
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "executed": true,
+  "cpu_sec": 0.000955,
+  "build_cpu_sec": 0.948674,
+  "run_exit_code": 0
+}

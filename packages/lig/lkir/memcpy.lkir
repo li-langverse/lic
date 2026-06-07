@@ -1,0 +1,2 @@
+; lig.kernel.memcpy_h2d_f32 / lig.kernel.memcpy_d2h_f32
+; alignment=256 async=false validity_ref=cpu

@@ -16,6 +16,6 @@ def main() -> int
   if sim_drug_design_litl_advance(drug_litl_stage_hypothesis()) != drug_litl_stage_generate():
     return 4
   var insp: DrugLitlStagePayload = sim_drug_design_inspector_payload(drug_litl_stage_dft())
-  if insp.dft_energy_hartree != chem_dft_run_smoke():
+  if insp.dft_energy_hartree != chem_dft_energy_kernel_hartree():
     return 5
   return 0

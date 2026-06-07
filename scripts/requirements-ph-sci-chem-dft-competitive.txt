@@ -1,0 +1,4 @@
+# PH-SCI chem DFT competitive oracle (Apache-2.0 primary).
+# Psi4 is optional — gate allows executed:false when skipped.
+pyscf==2.13.1
+numpy>=1.26,<3

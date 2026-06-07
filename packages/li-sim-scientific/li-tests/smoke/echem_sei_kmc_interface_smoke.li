@@ -1,0 +1,37 @@
+# WP-ECHEM-15: multiscale SEI growth kMC — 48-step deposition vs mean-field growth oracle.
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() != 6:
+    return 1
+  if echem_sei_kmc_step_count() != 48:
+    return 2
+  if echem_sei_kmc_growth_smoke() != 1:
+    return 3
+  var rel_err: float = sim_scientific_oracle_checksum_echem_sei_kmc()
+  if rel_err <= 0.0:
+    return 4
+  if rel_err >= 0.35:
+    return 5
+  var kmc: SimRunResult = run_algo(algo_echem_sei_kmc(), 1)
+  if run_result_ok(kmc) != 1:
+    return 6
+  if kmc.algo_id != algo_echem_sei_kmc():
+    return 7
+  if kmc.vertical_id != vertical_echem_sei_kmc():
+    return 8
+  if kmc.checksum != rel_err:
+    return 9
+  if kmc.checksum == 1.001:
+    return 10
+  var vert: SimRunResult = run_simulation(vertical_echem_sei_kmc(), 0)
+  if run_result_ok(vert) != 1:
+    return 11
+  if vert.checksum != rel_err:
+    return 12
+  return 0

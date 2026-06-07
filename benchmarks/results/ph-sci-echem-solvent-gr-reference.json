@@ -1,0 +1,11 @@
+{
+  "suite": "ph-sci-echem-solvent-gr",
+  "workload": "echem_solvent_shell",
+  "peak_r_ang": 2.8,
+  "peak_tolerance_ang": 0.35,
+  "water_count": 16,
+  "water_spacing_ang": 2.8,
+  "lj_model": "TIP3P-like stub",
+  "ewald": "damped Coulomb stub (kappa=0.4)",
+  "note": "O-O g(r) peak for explicit water sphere around echem slab (WP-ECHEM-10); Li 4x4 grid placement"
+}

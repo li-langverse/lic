@@ -1,0 +1,52 @@
+# Weekly phase-2 httpd gates: wrk soak + streaming soak with timing enabled.
+name: httpd-phase2-nightly
+
+on:
+  schedule:
+    - cron: "0 6 * * 0"
+  workflow_dispatch:
+
+concurrency:
+  group: httpd-phase2-nightly
+  cancel-in-progress: false
+
+jobs:
+  phase2-gates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout benchmarks sibling
+        env:
+          BENCHMARKS_REF: fix/tier5-slowloris-nginx-flake-retry
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
+
+      - name: Install LLVM 22, nginx, wrk, node
+        run: |
+          chmod +x scripts/ci-install-llvm.sh
+          sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq nginx wrk nodejs curl openssl
+
+      - name: Build lic + li-httpd
+        env:
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+          CC: clang-22
+          CXX: clang++-22
+        run: |
+          chmod +x scripts/build.sh scripts/build-li-httpd.sh
+          ./scripts/build.sh
+          ./scripts/build-li-httpd.sh
+          test -x build/li-httpd
+
+      - name: Phase-2 httpd plan gates
+        env:
+          HTTPD_RUN_PHASE2_GATES: "1"
+          HTTPD_BENCH_SKIP_TIMING: "0"
+          HTTPD_BENCH_DURATION_SEC: "30"
+        run: |
+          chmod +x scripts/httpd-plan-gates.sh scripts/check-tier5-*.sh
+          HTTPD_GATES_SKIP_LIC_BUILD=1 ./scripts/httpd-plan-gates.sh

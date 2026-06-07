@@ -4,9 +4,14 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
+# shellcheck source=../lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_ensure_lic "$ROOT" "wp-compiler-gap-regression: build lic (./scripts/build.sh)" || exit 1
+li_export_lic "$ROOT" || exit 1
+export LIC="$ROOT/build/compiler/lic/lic"
+
 fail=0
 open=0
-LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
 shopt -s nullglob
 gaps=(li-tests/tooling/*_gap.sh)
 if [[ ${#gaps[@]} -eq 0 ]]; then
@@ -19,11 +24,6 @@ for script in "${gaps[@]}"; do
   set +e
   bash "$script"
   code=$?
-  if [[ "$name" == "dot4_loop_ensures_lean_stub_gap.sh" && ! -x "$LIC" ]]; then
-    echo "wp-compiler-gap-regression: SKIP $name (lic not built — phase9 incomplete)" >&2
-    fail=1
-    continue
-  fi
   set -e
   if [[ "$code" -eq 0 ]]; then
     echo "wp-compiler-gap-regression: PASS $name"

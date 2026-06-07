@@ -3,8 +3,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 source "$ROOT/scripts/lib/li-ui.sh"
-LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
-[[ -x "$ROOT/build-wsl/compiler/lic/lic" ]] && LIC="$ROOT/build-wsl/compiler/lic/lic"
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_export_lic "$ROOT" || { echo "bench-ph-ml-lkir-matmul-16: no runnable lic"; exit 1; }
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul-16.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_matmul_16_lkir.li"
 mkdir -p "$BENCHMARKS_RESULTS"

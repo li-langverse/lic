@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT = ROOT / "packages" / "li-llm" / "fixtures" / "ph-ml-weights"
+ROOT_FIXTURE = ROOT / "fixtures" / "ph-ml-weights"
 
 
 def write_safetensors(path: Path) -> None:
@@ -28,7 +29,7 @@ def write_gguf(path: Path) -> None:
     with path.open("wb") as fh:
         fh.write(b"GGUF")
         fh.write(struct.pack("<I", 3))
-        fh.write(struct.pack("<Q", 0))
+        fh.write(struct.pack("<Q", 2))
         fh.write(struct.pack("<Q", 0))
 
 
@@ -36,6 +37,9 @@ def main() -> int:
     out = Path(os.environ.get("PH_ML_WEIGHTS_FIXTURE", DEFAULT_OUT))
     write_safetensors(out / "model.safetensors")
     write_gguf(out / "model.gguf")
+    if out != ROOT_FIXTURE:
+        write_safetensors(ROOT_FIXTURE / "model.safetensors")
+        write_gguf(ROOT_FIXTURE / "model.gguf")
     print(out)
     return 0
 

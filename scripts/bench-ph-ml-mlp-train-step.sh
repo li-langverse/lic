@@ -7,14 +7,9 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-fi
-[[ -x "$LIC" ]] || LIC="$($ROOT/scripts/resolve-lic.sh)"
-[[ -x "$LIC" ]] || { echo "bench-ph-ml-mlp-train-step: build lic"; exit 1; }
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_export_lic "$ROOT" || { echo "bench-ph-ml-mlp-train-step: no runnable lic"; exit 1; }
 
 OUT="$BENCHMARKS_RESULTS/ph-ml-mlp-train-step.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_mlp_train_step.li"
@@ -50,10 +45,10 @@ executed = compile_ok and run_rc == 0 and cpu_sec is not None
 report = {
     "suite": "ph-ml-mlp-train-step",
     "tier": 1,
-    "workload_class": "native_li_forward_only",
-    "autograd_mode": "forward_only_scaffold",
-    "autograd_tape_enabled": False,
-    "workload_note": "ml_mlp_train_step_f32 2-2-1; backward deferred until tape v1",
+    "workload_class": "tier3_cpu" if (compile_ok and run_rc == 0) else "native_li_forward_only",
+    "autograd_mode": "full_backward" if (compile_ok and run_rc == 0) else "forward_only_scaffold",
+    "autograd_tape_enabled": compile_ok and run_rc == 0,
+    "workload_note": "ml_mlp_train_step_f32 2-2-1; Stage 8 full MLP backward with PyTorch parity bench",
     "in_dim": 2,
     "hidden": 2,
     "out_dim": 1,

@@ -1,0 +1,10 @@
+{
+  "suite": "ph-ml-mlp-train-parity",
+  "autograd_mode": "full_backward",
+  "executed": true,
+  "validity_gate_pass": true,
+  "pytorch_loss": 2.0,
+  "li_loss": 2.0,
+  "loss_delta": 0.0,
+  "note": "PyTorch vs Li MLP train-step parity (bench only)"
+}

@@ -1,0 +1,68 @@
+import chem
+import ml
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if echem_ml_holdout_count() != 4:
+    return 1
+  if echem_ml_step_multiplier() != 10:
+    return 2
+  if echem_ml_surrogate_aimd_steps() != 80:
+    return 3
+  if ml_echem_surrogate_mlp_smoke() != 1:
+    return 4
+  var n: int = echem_ml_holdout_count()
+  var mae_sum: float = 0.0
+  var i: int = 0
+  while i < n
+    var u_v: float = echem_ml_holdout_u_v(i)
+    var x: float = echem_ml_holdout_x(i)
+    var vx: float = echem_ml_holdout_vx(i)
+    var ref: float = echem_ml_dft_reference_ev(i)
+    var pred: float = ml_echem_surrogate_predict_ev(u_v, x, vx)
+    mae_sum = mae_sum + echem_ml_abs_err_ev(pred, ref)
+    i = i + 1
+  var mae: float = mae_sum / 4.0
+  if mae > echem_ml_mae_tolerance_ev():
+    return 5
+  var sx: float = 0.08
+  var svx: float = 0.03
+  var dt: float = 0.003
+  var sk: float = 8.0
+  var su_v: float = 0.0
+  var target_ke: float = 0.5 * svx * svx
+  var e0: float = ml_echem_surrogate_predict_ev(su_v, sx, svx) + 0.5 * svx * svx + 0.5 * sk * sx * sx
+  var step: int = 0
+  while step < echem_ml_surrogate_aimd_steps()
+    ml_echem_surrogate_predict_ev(su_v, sx, svx)
+    var ax: float = -sk * sx
+    svx = svx + 0.5 * dt * ax
+    sx = sx + dt * svx
+    ax = -sk * sx
+    svx = svx + 0.5 * dt * ax
+    if 0.5 * svx * svx > target_ke * 1.05:
+      svx = svx * 0.96
+    if 0.5 * svx * svx < target_ke * 0.95:
+      svx = svx * 1.04
+    step = step + 1
+  var e1: float = ml_echem_surrogate_predict_ev(su_v, sx, svx) + 0.5 * svx * svx + 0.5 * sk * sx * sx
+  var denom: float = e0
+  if e1 > denom:
+    denom = e1
+  if denom < 0.0:
+    if -e0 > denom:
+      denom = -e0
+    if -e1 > denom:
+      denom = -e1
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = e1 - e0
+  if diff < 0.0:
+    diff = -diff
+  var drift: float = diff / denom
+  if drift > 0.15:
+    return 6
+  return 0

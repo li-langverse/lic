@@ -203,7 +203,9 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
         for i, line in enumerate(lines):
             if line.startswith("tls_cert_dir="):
                 lines[i] = f"tls_cert_dir={cert_dir.resolve()}"
-                break
+            elif line.startswith("tls_dhparam_file="):
+                dh_name = Path(line.split("=", 1)[1]).name
+                lines[i] = f"tls_dhparam_file={cert_dir.resolve() / dh_name}"
     try:
         lines.extend(m2_flatten_lines(data, cfg_path))
     except M2Error as e:

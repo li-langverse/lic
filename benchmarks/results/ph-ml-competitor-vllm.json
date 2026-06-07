@@ -1,0 +1,12 @@
+{
+  "competitor_id": "vllm",
+  "suite": "ph-ml-competitor-vllm",
+  "workload": "llm_forward_fixture",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
+  "device": null,
+  "note": "vllm not installed"
+}

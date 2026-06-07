@@ -41,8 +41,8 @@
       "autovc_name": "autovc_std_triangle_ineq_scalar",
       "lean_theorem": "Li.ProofDB.std_triangle_ineq_float_scalar",
       "discharge_link": null,
-      "status": "sorry",
-      "gap": "P-float: Float.abs order not in semantics slice"
+      "status": "discrepancy",
+      "gap": "P-float: Float.abs order not in semantics slice; Lean sorry"
     },
     {
       "id": "std_dot4_bilinear_right",
@@ -50,8 +50,8 @@
       "autovc_name": "autovc_std_dot4_bilinear_right",
       "lean_theorem": "Li.ProofDB.std_dot4_bilinear_right",
       "discharge_link": "Li.Discharge.dot4_int_loop_eval_spec",
-      "status": "proved",
-      "gap": null
+      "status": "open",
+      "gap": "P-linalg: dot4 bilinear_right Lean sorry"
     },
     {
       "id": "std_dot4_comm",

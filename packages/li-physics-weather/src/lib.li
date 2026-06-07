@@ -4,8 +4,11 @@ def li_std_physics_weather_version() -> int
   decreases 0
 =
   return 1
+
+type Idx8 = {i: int | 0 <= i and i < 8}
+
 def advect_scalar_1d(
-    field: array[8, float], wind: array[8, float], dt: float, dx: float) -> unit
+    field: var array[8, float], wind: var array[8, float], dt: float, dx: float) -> unit
   requires dt > 0.0
   requires dx > 0.0
   ensures true
@@ -15,23 +18,42 @@ def advect_scalar_1d(
   while i < 8
     field[i] = field[i] - wind[i] * dt / dx
     i = i + 1
+
 def diffuse_explicit(
-    field: array[8, float], kappa: float, dt: float, dx: float) -> unit
+    field: var array[8, float], kappa: float, dt: float, dx: float) -> unit
   requires dt > 0.0
   requires dx > 0.0
   ensures true
   decreases 0
 =
   var inv_dx2: float = 1.0 / (dx * dx)
-  var i: int = 1
-  while i < 7
-    var lap: float = field[i + 1] - 2.0 * field[i] + field[i - 1]
-    field[i] = field[i] + kappa * dt * lap * inv_dx2
-    i = i + 1
-def sample_wind_at(wind_x: array[8, float], wind_y: array[8, float], ix: int) -> float
-  requires ix >= 0
-  requires ix < 8
+  var scale: float = kappa * dt * inv_dx2
+  var lap1: float = field[2] - 2.0 * field[1] + field[0]
+  field[1] = field[1] + scale * lap1
+  var lap2: float = field[3] - 2.0 * field[2] + field[1]
+  field[2] = field[2] + scale * lap2
+  var lap3: float = field[4] - 2.0 * field[3] + field[2]
+  field[3] = field[3] + scale * lap3
+  var lap4: float = field[5] - 2.0 * field[4] + field[3]
+  field[4] = field[4] + scale * lap4
+  var lap5: float = field[6] - 2.0 * field[5] + field[4]
+  field[5] = field[5] + scale * lap5
+  var lap6: float = field[7] - 2.0 * field[6] + field[5]
+  field[6] = field[6] + scale * lap6
+
+def sample_wind_at(wind_x: array[8, float], wind_y: array[8, float], ix: Idx8) -> float
+  requires true
   ensures result == wind_x[ix]
-  decreases ix
+  decreases 0
 =
   return wind_x[ix]
+
+def physics_weather_gpu_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var field: array[8, float]
+  diffuse_explicit(field, 0.1, 0.01, 0.1)
+  return 1

@@ -5,7 +5,8 @@
 **Goal:** Top-notch, on-brand figures for X, blog posts, and README — generated from `latest.csv` and `li-tests` manifest results.
 
 **Depends on:** `benchmarks/harness/bench.py`, `li-tests/run_all.sh`  
-**Blocks:** Phase 5b exit gate (publishable benchmark story)
+**Blocks:** Phase 5b exit gate (publishable benchmark story)  
+**Gate-close plan:** [2026-06-07-ph-5b-plots-exit-gates-close.md](2026-06-07-ph-5b-plots-exit-gates-close.md) ([lic#459](https://github.com/li-langverse/lic/issues/459))
 
 ---
 

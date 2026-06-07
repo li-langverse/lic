@@ -176,3 +176,11 @@
 - **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required
 - **Gates (local):** `check-pkg-workspace.py` **PASS**; killer gates blocked (no LLVM 22 in agent sandbox) — CI re-triggered on push
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) @ `16334634`; G-par remains **Partial** (non-affine general dependent subscripts open)
+
+## 2026-06-07 — G-par blocked affine dependent subscript proof slice (code_implementer-1780816200516)
+
+- **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required
+- **G-par proof slice:** `blocked_affine_index` + `index_bound_blocked_affine_spec` + `blocked_affine_index_injective` + `dependent_blocked_affine_array_aliasing` in `Discharge.lean`; `par_disjoint_blocked_affine_index_bound` + `par_dependent_blocked_affine_array_aliasing` in `parallel/proof.li`
+- **Tests:** `li_par_blocked_affine_dependent_index_smoke.sh` wired into proofs gate; proof-db `P-par-blocked-affine-dependent-index`
+- **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS**; `check-li-parallel-full-suite.sh` **PASS**
+- **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (non-affine/non-blocked-affine general dependent subscripts open)

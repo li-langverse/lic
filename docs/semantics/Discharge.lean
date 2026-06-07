@@ -372,6 +372,69 @@ theorem dependent_affine_array_aliasing {α : Type} {n : Nat}
     memory_disjoint_elems_spec (affine_index stride offset i) (affine_index stride offset j) n :=
   memory_disjoint_elems_witness (affine_index stride offset i) (affine_index stride offset j) n
 
+/-- Blocked affine dependent subscript (7d-c slice): `(i / block) * block_stride + (i % block)` for blocked parallel loops. -/
+def blocked_affine_index (block_size block_stride i : Nat) : Nat :=
+  (i / block_size) * block_stride + (i % block_size)
+
+/-- Index-bound slice: blocked-affine slot stays below buffer length (per-iteration discharge). -/
+def index_bound_blocked_affine_spec (block_size block_stride i tiles buf_n : Nat) : Prop :=
+  0 < block_size ∧ block_stride ≥ block_size ∧ 0 < tiles ∧ i < tiles ∧
+    blocked_affine_index block_size block_stride i < buf_n
+
+/-- Distinct iteration indices with separated block slots yield distinct blocked-affine indices. -/
+theorem blocked_affine_index_injective (block_size block_stride i j : Nat)
+    (hbs : 0 < block_size) (hbr : block_stride ≥ block_size) (hne : i ≠ j) :
+    blocked_affine_index block_size block_stride i ≠ blocked_affine_index block_size block_stride j := by
+  unfold blocked_affine_index
+  intro heq
+  by_cases hdiv : i / block_size = j / block_size
+  · have hmod : i % block_size = j % block_size := by
+      rw [hdiv] at heq
+      exact Nat.add_left_cancel heq
+    have hij : i = j := by
+      rw [← Nat.div_add_mod i block_size, ← Nat.div_add_mod j block_size, hdiv, hmod]
+    exact hne hij
+  · have hlt : i / block_size < j / block_size ∨ j / block_size < i / block_size :=
+      Nat.lt_or_gt_of_ne hdiv
+    rcases hlt with hlt | hlt
+    · have hi_hi : (i / block_size) * block_stride + (i % block_size) <
+          (i / block_size + 1) * block_stride := by
+        calc
+          (i / block_size) * block_stride + (i % block_size) <
+              (i / block_size) * block_stride + block_size :=
+            Nat.add_lt_add_left (Nat.mod_lt i hbs) _
+          _ ≤ (i / block_size) * block_stride + block_stride := Nat.add_le_add_left hbr _
+          _ = (i / block_size + 1) * block_stride := by rw [Nat.add_mul, Nat.one_mul]
+      have hstep : (i / block_size + 1) * block_stride ≤ (j / block_size) * block_stride :=
+        Nat.mul_le_mul_right block_stride (Nat.succ_le_of_lt hlt)
+      have hlt_slots : (i / block_size) * block_stride + (i % block_size) <
+          (j / block_size) * block_stride + (j % block_size) :=
+        Nat.lt_of_lt_of_le hi_hi (Nat.le_trans hstep (Nat.le_add_right _ _))
+      exact (Nat.ne_of_lt hlt_slots) heq
+    · have hj_hi : (j / block_size) * block_stride + (j % block_size) <
+          (j / block_size + 1) * block_stride := by
+        calc
+          (j / block_size) * block_stride + (j % block_size) <
+              (j / block_size) * block_stride + block_size :=
+            Nat.add_lt_add_left (Nat.mod_lt j hbs) _
+          _ ≤ (j / block_size) * block_stride + block_stride := Nat.add_le_add_left hbr _
+          _ = (j / block_size + 1) * block_stride := by rw [Nat.add_mul, Nat.one_mul]
+      have hstep : (j / block_size + 1) * block_stride ≤ (i / block_size) * block_stride :=
+        Nat.mul_le_mul_right block_stride (Nat.succ_le_of_lt hlt)
+      have hlt_slots : (j / block_size) * block_stride + (j % block_size) <
+          (i / block_size) * block_stride + (i % block_size) :=
+        Nat.lt_of_lt_of_le hj_hi (Nat.le_trans hstep (Nat.le_add_right _ _))
+      exact (Nat.ne_of_lt hlt_slots) heq.symm
+
+/-- **Blocked affine dependent aliasing (7d-c slice):** distinct iterations target memory-disjoint slots. -/
+theorem dependent_blocked_affine_array_aliasing {α : Type} {n : Nat}
+    (block_size block_stride : Nat) (_buf : LiArray α n) (i j : Nat)
+    (_hbs : 0 < block_size) (_hbr : block_stride ≥ block_size) :
+    memory_disjoint_elems_spec (blocked_affine_index block_size block_stride i)
+      (blocked_affine_index block_size block_stride j) n :=
+  memory_disjoint_elems_witness (blocked_affine_index block_size block_stride i)
+    (blocked_affine_index block_size block_stride j) n
+
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
 

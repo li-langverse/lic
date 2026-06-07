@@ -195,6 +195,35 @@ def par_dependent_affine_array_aliasing(i: int, j: int, stride: int, offset: int
 =
   return par_memory_disjoint_elems(stride * i + offset, stride * j + offset, buf_n)
 
+# G-par — blocked affine dependent subscript index-bound: (i/block)*block_stride + (i%block) in range (7d-c slice).
+def par_disjoint_blocked_affine_index_bound(block_size: int, block_stride: int, i: int, tiles: int, buf_n: int) -> bool
+  requires block_size > 0
+  requires block_stride >= block_size
+  requires i >= 0
+  requires tiles > 0
+  requires buf_n > 0
+  ensures result == (i < tiles and (i / block_size) * block_stride + (i % block_size) >= 0 and (i / block_size) * block_stride + (i % block_size) < buf_n)
+  decreases tiles + buf_n + i
+=
+  if i >= tiles:
+    return false
+  var slot: int = (i / block_size) * block_stride + (i % block_size)
+  return slot >= 0 and slot < buf_n
+
+# G-par — blocked affine dependent aliasing: distinct iterations → memory-disjoint slots.
+def par_dependent_blocked_affine_array_aliasing(i: int, j: int, block_size: int, block_stride: int, buf_n: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires block_size > 0
+  requires block_stride >= block_size
+  requires buf_n > 0
+  ensures result == par_memory_disjoint_elems((i / block_size) * block_stride + (i % block_size), (j / block_size) * block_stride + (j % block_size), buf_n)
+  decreases buf_n + i + j
+=
+  var si: int = (i / block_size) * block_stride + (i % block_size)
+  var sj: int = (j / block_size) * block_stride + (j % block_size)
+  return par_memory_disjoint_elems(si, sj, buf_n)
+
 # G-par — @parallel(disjoint=...) on def inherits tile disjoint policy for nested parallel for.
 def def_disjoint_inherit_tile(tile: int, tiles: int) -> bool
   requires tile >= 0

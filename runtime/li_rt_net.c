@@ -2949,8 +2949,11 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
       if (req.body_mode == 1 && (g_slots[slot].len - hdr_end) < req.content_length) {
         return 0;
       }
-      hdr_end = httpd_inject_traceparent_if_missing(slot, hdr_end);
-      hdr_end = httpd_proxy_compact_req_hdr(slot, hdr_end);
+      /* Do not inject/compact bodied requests — memmove can desync CL from body bytes. */
+      if (req.body_mode == 0) {
+        hdr_end = httpd_inject_traceparent_if_missing(slot, hdr_end);
+        hdr_end = httpd_proxy_compact_req_hdr(slot, hdr_end);
+      }
       httpd_proxy_client_epoll_mod(g_httpd_epfd, slot, EPOLLIN | EPOLLET);
       if (httpd_proxy_start_async(g_httpd_epfd, conn, slot, hdr_end, &req, keep) < 0) {
         httpd_m2_queue_release_slot(slot);

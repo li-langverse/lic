@@ -32,10 +32,17 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
+**Agent verification (2026-06-04):** run `code_implementer-84435488` — rebase of PR [#781](https://github.com/li-langverse/lic/pull/781) onto `main`; `scripts/lib/lic-bin-select.sh` extended with `LIC`/`LIC_ROOT` runnable probing (consolidates `lic-runnable.sh`).
+
 **Agent verification (2026-06-04):** run `code_implementer-1780540275403` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~122s) on Debian glibc 2.36 with `scripts/lib/lic-bin-select.sh` (prefers `build/compiler/lic` when runnable; falls back to `build-wsl` only when native lic is missing or not loadable).
 
-**Agent verification (2026-06-01):** latest run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green, await human `merge-approved`.
+**Agent verification (2026-06-03):** run `code_implementer-1780524210825` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~120s); `ratio_vs_li` 0.00026; `live_proxy` true.
 
+**Agent verification (2026-06-01):** latest run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) merged to `main`.
+
+**Agent verification (2026-06-03):** run `code_implementer-1780527704582` — `LIC_ROOT=/workspace/lic bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~122s); `ratio_vs_li` 0.000242; SB3/Ray `executed:true`; `live_proxy` true.
+
+**Agent verification (2026-06-03):** run `code_implementer-1780526966202` — `LIC_ROOT=/workspace/lic bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~122s); `ratio_vs_li` 0.000123; SB3/Ray `executed:true`; `live_proxy` true; runnable lic probing via `scripts/lib/lic-bin-select.sh`.
 **Prior run `code_implementer-1780279881936`:** `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~116s); `ratio_vs_li` 0.0044 (T6), `live_proxy` true (T8).
 
 **Prior run `code_implementer-1780279148925`:** exit 0 (~113s); all CI green (build-and-test linux/macos/windows, studio-ui native capture).

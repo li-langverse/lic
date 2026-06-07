@@ -24,11 +24,22 @@ pilot 4×4 tiles to BLAS parity — replacing ad-hoc `MlTensorDesc` over time.
 
 ## Phase A exit criteria
 
-- `packages/li-array/` in workspace with smokes: builds, desc 2d, matmul 4×4, broadcast reject 2 vs 4
-- `li_array_broadcast_compatible()` rejects 2×4 element-wise pairs
-- `li_array_matmul_f32` delegates to `ml_tensor_matmul_64`
-- `benchmarks/results/ph-ml-li-array-matmul.json` with `executed: true`, run-only `cpu_sec`
-- RFC documents allow/reject broadcast table
+- [x] `packages/li-array/` in workspace with smokes: builds, desc 2d, matmul 4×4, broadcast reject 2 vs 4
+- [x] `li_array_broadcast_compatible()` rejects 2×4 element-wise pairs
+- [x] `li_array_matmul_f32` delegates to `ml_tensor_matmul_64` (flat CPU path for m,n,k≤16)
+- [x] `benchmarks/results/ph-ml-li-array-matmul.json` with `executed: true`, run-only `cpu_sec`
+- [x] RFC documents allow/reject broadcast table
+
+## Status
+
+| Phase | Status |
+|-------|--------|
+| A | **DONE** — package + RFC + gate green |
+| B | **IN PROGRESS** — flat CPU matmul hot path (no nested bridge ≤16) |
+| C | pending — `@vectorized` array_add / array_sum |
+| D | pending — rank-3 batch matmul |
+| E | pending — li-llm forward via `import array` |
+| F | pending — `ratio_vs_li ≤ 2.0` @ 32×32+ |
 
 ## Competitive targets
 

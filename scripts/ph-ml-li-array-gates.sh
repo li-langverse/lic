@@ -25,6 +25,8 @@ grep -q 'array_broadcast_compatible' packages/li-array/src/lib.li \
   || { echo "missing array_broadcast_compatible"; exit 1; }
 grep -q 'li_array_matmul_f32' packages/li-array/src/lib.li \
   || { echo "missing li_array_matmul_f32"; exit 1; }
+grep -q 'array_matmul_flat_cpu' packages/li-array/src/lib.li \
+  || { echo "missing Phase B flat matmul hot path"; exit 1; }
 
 for f in \
   packages/li-array/li-tests/smoke/builds.li \

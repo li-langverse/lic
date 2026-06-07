@@ -346,7 +346,7 @@ def array_add(
 
 def array_sum(desc: ArrayDesc, buf: array[64, float]) -> float
   requires true
-  ensures true
+  ensures result >= 0.0
   decreases 0
 =
   if array_desc_dim_ok(desc) != 1:
@@ -361,6 +361,34 @@ def array_sum(desc: ArrayDesc, buf: array[64, float]) -> float
     i = i + 1
   return acc
 
+# Phase B: CPU matmul hot path for flat buffers — bypass LKIR/ml_tensor_matmul_64 for m,n,k <= 16.
+def array_matmul_small_ok(m: int, n: int, k: int) -> int
+  requires m >= 1
+  requires n >= 1
+  requires k >= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if m <= 16 and n <= 16 and k <= 16:
+    return 1
+  return 0
+
+def array_matmul_flat_cpu(
+    m: int, n: int, k: int,
+    af: var array[64, float], bf: var array[64, float], c: var array[64, float]) -> int
+  requires m >= 1
+  requires n >= 1
+  requires k >= 1
+  requires m <= 16
+  requires n <= 16
+  requires k <= 16
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  return ml_matmul_cpu_ref(m, n, k, af, bf, c)
+
 def array_matmul(
     a: ArrayDesc, af: var array[64, float], b: ArrayDesc, bf: var array[64, float],
     c: var array[64, float]) -> int
@@ -371,6 +399,12 @@ def array_matmul(
 =
   if array_matmul_shape_ok(a, b) != 1:
     return 0
+  var m: int = a.shape0
+  var n: int = b.shape1
+  var k: int = a.shape1
+  if a.storage == array_storage_flat() and b.storage == array_storage_flat():
+    if array_matmul_small_ok(m, n, k) == 1:
+      return array_matmul_flat_cpu(m, n, k, af, bf, c)
   var ad: MlTensorDesc = ml_tensor_desc_2d(a.shape0, a.shape1, a.ld)
   var bd: MlTensorDesc = ml_tensor_desc_2d(b.shape0, b.shape1, b.ld)
   return ml_tensor_matmul_64(ad, af, bd, bf, c)

@@ -3,8 +3,10 @@
 # Users write @cpu, @parallel(disjoint=disjoint_elem), @vectorized on def/for/while.
 # The compiler elaborates these at compile time; they are NOT runtime calls.
 #
-# Reserved (cannot user decorator def): parallel, vectorized, async, cpu, gpu, tpu,
+# Reserved (cannot user decorator def): parallel, vectorized, async, schedule, cpu, gpu, tpu,
 # user_defined, serial, no_vectorize.
+#
+# @schedule(task|par|par_unseq) — sender/receiver tier-2 scheduling (spec lic#125; MIR tag stub).
 #
 # Resource knobs (lic build, not decorators):
 #   --jobs=N           — parallel compile workers (frontend), not runtime threads

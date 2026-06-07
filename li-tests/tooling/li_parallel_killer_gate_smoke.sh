@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smoke: killer gate script + sub-gates exist; runtime smokes pass (not full killer gate — that is ship-only).
+# Smoke: killer gate script + sub-gates exist (runtime smokes run sequentially in GHA lipar-killer-gate).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 GATE="$ROOT/scripts/check-li-parallel-killer-gate.sh"
@@ -24,17 +24,6 @@ for sub in \
   check-chip-package-boundaries.sh
 do
   [[ -f "$ROOT/scripts/$sub" ]] || { echo "li_parallel_killer_gate_smoke: missing scripts/$sub" >&2; exit 1; }
-done
-
-export LIC_ROOT="$ROOT"
-export SKIP_BUILD=1
-for smoke in \
-  li-tests/tooling/li_par_pool_smoke.sh \
-  li-tests/tooling/li_par_reduce_sum_smoke.sh \
-  li-tests/tooling/li_dpar_for_smoke.sh
-do
-  chmod +x "$ROOT/$smoke"
-  bash "$ROOT/$smoke"
 done
 
 echo "li_parallel_killer_gate_smoke: ok (sub-gates present; full stack enforced by GHA lipar-killer-gate)"

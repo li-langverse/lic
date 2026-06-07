@@ -40,7 +40,7 @@ Proof Explorer phases 1–8 grew the **proof-db catalog** and research corpus. C
 | BUG-C-05 | `mat2_at2_mir_codegen_lean_gap.sh` | Open | OPEN |
 | BUG-C-06 | `matmul_loop_codegen_witness_gap.sh` | Open | OPEN |
 | BUG-C-07 | `method_call_requires_lean_gap.sh` | Open (witness-only) | PASS |
-| BUG-C-08 | `parallel_disjoint_lean_opaque_gap.sh` | Open | OPEN |
+| BUG-C-08 | `parallel_disjoint_lean_opaque_gap.sh` | **Resolved** — G-par (#387) | PASS |
 | BUG-C-09 | `prelude_linalg_manifest_tier_gap.sh` | Open (manifest tier) | PASS |
 | BUG-C-10 | `sum_dot_product_equiv_gap.sh` | Open (no Lean equiv) | PASS |
 | BUG-C-11 | `vec3_dot_opaque_ensures_gap.sh` | Open (opaque ensures) | PASS |

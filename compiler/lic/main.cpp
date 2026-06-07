@@ -419,6 +419,8 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
                                std::to_string(vc.ensures_witnessed));
     li::print_verify_telemetry(std::cout, "mir_return_linked",
                                std::to_string(vc.mir_return_linked));
+    li::print_verify_telemetry(std::cout, "mir_parallel_disjoint",
+                               std::to_string(mir_parallel_disjoint));
     li::print_verify_telemetry(std::cout, "mir_vectorized_proc",
                                std::to_string(mir_vectorized_proc));
     li::print_verify_telemetry(std::cout, "mir_gpu_def",

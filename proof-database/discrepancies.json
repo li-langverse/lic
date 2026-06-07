@@ -80,13 +80,14 @@
       "kind": "missing_lemma",
       "gap_id": "G-par",
       "backlog_id": "P-par",
-      "summary": "G-par policy_module heuristics; no disjoint_par_spec in Discharge.",
-      "proof_db_ref": "compiler/policy/policy_module.cpp",
-      "reference_ref": "provability-gaps.md",
+      "summary": "Closed slice: Li.Discharge.disjoint_*_spec + policy witnesses in AutoVC (iteration-independence Lean specs still open).",
+      "proof_db_ref": "docs/semantics/Discharge.lean",
+      "reference_ref": "li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh",
       "evidence": [
-        "race_shared_memory/"
+        "race_shared_memory/",
+        "parallel_disjoint_lean_opaque_gap.sh"
       ],
-      "resolution": "pending"
+      "resolution": "closed_slice"
     },
     {
       "id": "disc-linalg-loop-manifest-drift",

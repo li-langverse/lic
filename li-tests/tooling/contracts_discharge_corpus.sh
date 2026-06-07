@@ -11,7 +11,9 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_caller_requires_local_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_refinement_lean.sh" \
+  "$ROOT/li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh" \
   "$ROOT/scripts/check-mir-parallel-decorator.sh" \
+  "$ROOT/scripts/check-mir-parallel-for-disjoint.sh" \
   "$ROOT/scripts/check-mir-gpu-decorator.sh" \
   "$ROOT/scripts/check-mir-vectorized-decorator.sh" \
   "$ROOT/li-tests/tooling/check_release_bounds_ir.sh"
@@ -21,6 +23,9 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
 "$ROOT/li-tests/tooling/discharge_caller_requires_local_lean.sh"
 "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh"
 "$ROOT/li-tests/tooling/discharge_refinement_lean.sh"
+"$ROOT/li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh"
+"$ROOT/scripts/check-mir-parallel-decorator.sh"
+"$ROOT/scripts/check-mir-parallel-for-disjoint.sh"
 "$ROOT/scripts/check-mir-gpu-decorator.sh"
 "$ROOT/li-tests/tooling/check_release_bounds_ir.sh"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"

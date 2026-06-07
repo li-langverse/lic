@@ -25,9 +25,18 @@ Use a **layered handover**:
 2. **`docs/ecosystem/li-agent-manifest.toml`** — canonical commands (`check_json`, `diagnose`, `tests`, `bench`).
 3. **`docs/schemas/diagnostic-v1.json`** — stable error envelope for fix loops.
 4. **`.cursor/rules/*.mdc`** — editor policy (provability, llm-first token discipline).
-5. **Generated (optional):** `scripts/gen-li-agent-manifest.sh` → `li-agent.json` + `.cursor/AGENTS.generated.md`.
+5. **Generated (CI-backed when Vision-LLM Done):** `scripts/gen-li-agent-manifest.sh` → `li-agent.json` + `.cursor/AGENTS.generated.md` — see [Done gates](../superpowers/plans/2026-06-07-vision-llm-done-gates.md) gate A.
 
 Do **not** duplicate full language spec in handover files — link to `docs/superpowers/specs/`.
+
+### Vision-LLM Done gates (summary)
+
+| Layer | Smoke / artifact |
+|-------|------------------|
+| Diagnostics | `li-tests/tooling/diagnose_json_smoke.sh`, `check_workspace_cache_smoke.sh` |
+| Test export | `li-tests/tooling/agent_manifest_smoke.sh` → `li-tests/agent-manifest.json` |
+| Agent entry | `li-tests/tooling/agent_manifest_gen_smoke.sh` (planned, #464) |
+| Studio handoff | `packages/li-studio-ai/li-tests/smoke/studio_ai_apply_patch_loop.li` |
 
 ### Agent fix loop (recommended)
 

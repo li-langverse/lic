@@ -38,6 +38,26 @@ def reduce_tile_disjoint(tile: int, tiles: int) -> bool
 =
   return disjoint_tile(tile, tiles)
 
+# WP-PAR-15/19 — team(cores=N) stays within li_par_max_threads cap (256).
+def team_cores_bounded(cores: int) -> bool
+  requires cores >= 0
+  requires cores <= 256
+  ensures result == (cores >= 0 and cores <= 256)
+  decreases cores
+=
+  return cores >= 0 and cores <= 256
+
+# WP-PAR-15 — team-scoped parallel for reduce inherits tile disjoint policy (WP-PAR-16).
+def team_reduce_tile_disjoint(tile: int, tiles: int, cores: int) -> bool
+  requires tile >= 0
+  requires tiles > 0
+  requires cores > 0
+  requires cores <= 256
+  ensures result == reduce_tile_disjoint(tile, tiles)
+  decreases tiles
+=
+  return reduce_tile_disjoint(tile, tiles)
+
 # G-par-dist — rank-local block partition stays within global iteration space.
 def partition_block_in_range(local_i: int, global_n: int, rank: int, world: int) -> bool
   requires local_i >= 0

@@ -60,3 +60,9 @@
 - Updated gap register + goal phase tables: WP-PAR-15/17/19/40/48/07–09/99 **DONE**
 - Killer gate **PASS**: 152 benchmarks, dual-mode complete, all sub-gates green (~11 min local)
 - Progress gate **PASS** (advisory reduce_sum perf gap under non-strict mode)
+
+## 2026-06-07 — G-par team-reduce proof slice + gate re-verify (code_implementer)
+
+- Added `team_cores_bounded` + `team_reduce_tile_disjoint` lemmas in `parallel/proof.li` (WP-PAR-15/16/19)
+- Proof-db entries `P-par-team-reduce-smoke` + `P-par-team-reduce-tile-disjoint` under G-par
+- Re-ran killer gate **PASS** (~11 min) and progress gate **PASS** (reduce_sum 159.5× advisory)

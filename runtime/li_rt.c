@@ -6,6 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#endif
+
 #if !defined(_WIN32)
 #include <sys/stat.h>
 #include <unistd.h>
@@ -90,8 +97,86 @@ static int li_clamp_team(int team_size, long long trip_count) {
   return team_size;
 }
 
+static int g_li_occupancy_warned = 0;
+
+static int li_physical_cores(void) {
+#if defined(_WIN32)
+  SYSTEM_INFO info;
+  GetSystemInfo(&info);
+  const int cores = (int)info.dwNumberOfProcessors;
+#else
+  const long cores = sysconf(_SC_NPROCESSORS_ONLN);
+#endif
+  if (cores < 1) {
+    return 1;
+  }
+  if (cores > LI_MAX_THREADS) {
+    return LI_MAX_THREADS;
+  }
+  return (int)cores;
+}
+
+static int li_mpi_ranks(void) {
+  const char* ompi = getenv("OMPI_COMM_WORLD_SIZE");
+  if (ompi && *ompi) {
+    const int ranks = atoi(ompi);
+    if (ranks > 0) {
+      return ranks;
+    }
+  }
+  const char* pmi = getenv("PMI_SIZE");
+  if (pmi && *pmi) {
+    const int ranks = atoi(pmi);
+    if (ranks > 0) {
+      return ranks;
+    }
+  }
+  return 1;
+}
+
+static int li_warn_oversubscribe_enabled(void) {
+  const char* v = getenv("LI_EXEC_WARN_OVERSUBSCRIBE");
+  if (v == NULL) {
+    return 1;
+  }
+  if (v[0] == '0' && v[1] == '\0') {
+    return 0;
+  }
+  return 1;
+}
+
+static int li_effective_team_for_occupancy(int team_size) {
+  team_size = li_resolve_team_size(team_size);
+  if (team_size > LI_MAX_THREADS) {
+    team_size = LI_MAX_THREADS;
+  }
+  if (team_size < 1) {
+    team_size = 1;
+  }
+  return team_size;
+}
+
+static void li_warn_occupancy_once(int team_size) {
+  if (g_li_occupancy_warned || !li_warn_oversubscribe_enabled()) {
+    return;
+  }
+  const int physical = li_physical_cores();
+  const int ranks = li_mpi_ranks();
+  const int effective_team = li_effective_team_for_occupancy(team_size);
+  const int total = effective_team * ranks;
+  if (total <= physical) {
+    return;
+  }
+  fprintf(stderr,
+          "lic: warning: parallel team (%d) × mpi_ranks (%d) = %d exceeds physical cores (%d); "
+          "see docs/language/parallelism.md#hybrid-mpi-openmp\n",
+          effective_team, ranks, total, physical);
+  g_li_occupancy_warned = 1;
+}
+
 void li_parallel_for_i64(long long start, long long end, void (*body)(long long),
                          int team_size) {
+  li_warn_occupancy_once(team_size);
   li_par_pool_fork_join(start, end, body, li_clamp_team(team_size, end - start));
 }
 

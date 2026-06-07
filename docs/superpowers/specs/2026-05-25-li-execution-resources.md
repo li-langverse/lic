@@ -20,9 +20,20 @@
 cores = 8
 threads_per_core = 1
 memory_mb = 4096
+# parallel_backend = "portable_pthread"   # default; Phase 3 (#129)
+# affinity_profile = "none"               # OpenMP prescriptive path only (#129 Phase 2)
 ```
 
 Flags win over manifest; env vars deprecated.
+
+### Occupancy diagnostic (lic#129 Phase 1)
+
+| Env | Default | Meaning |
+| --- | ------- | ------- |
+| `LI_EXEC_WARN_OVERSUBSCRIBE` | `1` | Warn once when `mpi_ranks × team > physical_cores` |
+| `OMPI_COMM_WORLD_SIZE` / `PMI_SIZE` | unset → 1 | MPI rank count for occupancy math (read-only) |
+
+See [OpenMP affinity + occupancy rubric](2026-06-07-li-openmp-affinity-occupancy-rubric.md).
 
 ## Agent quick-check
 

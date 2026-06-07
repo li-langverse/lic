@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-7e / G-par (#129):** MPI×threads occupancy guard + OpenMP affinity rubric docs — [2026-06-07-ph7e-openmp-occupancy-guard-129.md](docs/release-notes/2026-06-07-ph7e-openmp-occupancy-guard-129.md); `li-tests/execution_occupancy/`.
+
 - **Docs:** GitHub Pages handbook hub at https://li-langverse.github.io/lic/ (`site/index.html`, `pages.yml`) — [2026-05-30-lic-handbook-pages.md](docs/release-notes/2026-05-30-lic-handbook-pages.md), [2026-05-30-lic-pages-site-artifact.md](docs/release-notes/2026-05-30-lic-pages-site-artifact.md) (fix missing `site/` artifact after #535).
 
 ### Changed

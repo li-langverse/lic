@@ -356,8 +356,13 @@ theorem array_affine_indices_disjoint {α : Type} {n : Nat}
     (_buf : LiArray α n) (stride offset i j : Nat)
     (hs : 0 < stride) (hi : affine_index stride offset i < n) (hj : affine_index stride offset j < n)
     (hne : i ≠ j) :
-    (⟨affine_index stride offset i, hi⟩ : Fin n) ≠ ⟨affine_index stride offset j, hj⟩ :=
-  fun heq => hne (Nat.mul_left_cancel hs (Nat.add_right_cancel (Fin.ext heq)))
+    (⟨affine_index stride offset i, hi⟩ : Fin n) ≠ ⟨affine_index stride offset j, hj⟩ := by
+  intro heq
+  apply hne
+  have heq' : affine_index stride offset i = affine_index stride offset j :=
+    (Fin.mk.injEq _ _ _ _).mp heq
+  unfold affine_index at heq'
+  exact Nat.mul_left_cancel hs (Nat.add_right_cancel heq')
 
 /-- **Dependent array aliasing (7d-c slice):** distinct iterations with affine index map to memory-disjoint slots. -/
 theorem dependent_affine_array_aliasing {α : Type} {n : Nat}

@@ -158,6 +158,6 @@
 
 - **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry (`std/io/io.li`, `import_std_io_csv_ok.li`) — fixture briefing stale; no std module work required
 - **li-parallel killer package:** all phases **DONE**; no pending WP toward killer gate
-- **CI blocker fix:** `array_affine_indices_disjoint` — derive `i = j` from `Fin.ext heq` via `Nat.mul_left_cancel` (parentheses-only fix still failed lake-build typecheck)
+- **CI blocker fix:** `array_affine_indices_disjoint` — use `Fin.mk.injEq` to extract slot equality, then `Nat.mul_left_cancel` / `Nat.add_right_cancel` (parentheses-only and raw `Fin.ext` fixes failed lake-build)
 - **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS** (~9s); `check-li-parallel-full-suite.sh` **PASS** (~219s)
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (non-affine general dependent subscripts open)

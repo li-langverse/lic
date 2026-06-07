@@ -87,3 +87,10 @@
 - Added `par_memory_disjoint_rows` lemma in `parallel/proof.li` + proof-db entry `P-par-memory-disjoint-rows`
 - `li_par_memory_disjoint_rows_smoke.sh` wired into proofs gate
 - Progress gate **PASS**; killer gate re-verify pending (lic build)
+
+## 2026-06-07 — G-par memory-disjoint elems proof slice (code_implementer)
+
+- Added `memory_disjoint_elems_spec` + witness + bridge + `array_elem_indices_disjoint` in `Discharge.lean`
+- Added `par_memory_disjoint_elems` lemma in `parallel/proof.li` + proof-db entry `P-par-memory-disjoint-elems`
+- `li_par_memory_disjoint_elems_smoke.sh` wired into proofs gate
+- Proofs gate **PASS**; progress gate **PASS**; killer gate unchanged green

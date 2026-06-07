@@ -42,12 +42,20 @@ if [[ -f "$LIC" && -f "$SMOKE" ]]; then
     PH_ML_LI_ARRAY32_COMPILE_OK=1
   fi
   if [[ "$PH_ML_LI_ARRAY32_COMPILE_OK" == "1" && -x "$PH_ML_LI_ARRAY32_BIN" ]]; then
+    PH_ML_LI_ARRAY32_WARMUP="${PH_ML_LI_ARRAY32_WARMUP:-3}"
+    PH_ML_LI_ARRAY32_RUNS="${PH_ML_LI_ARRAY32_RUNS:-50}"
+    for _w in $(seq 1 "$PH_ML_LI_ARRAY32_WARMUP"); do
+      "$PH_ML_LI_ARRAY32_BIN" >/dev/null 2>&1 || true
+    done
     t0="$(python3 -c 'import time; print(time.perf_counter())')"
-    if "$PH_ML_LI_ARRAY32_BIN" >/dev/null 2>&1; then
-      PH_ML_LI_ARRAY32_RUN_RC=0
-    fi
+    PH_ML_LI_ARRAY32_RUN_RC=0
+    for _r in $(seq 1 "$PH_ML_LI_ARRAY32_RUNS"); do
+      if ! "$PH_ML_LI_ARRAY32_BIN" >/dev/null 2>&1; then
+        PH_ML_LI_ARRAY32_RUN_RC=1
+      fi
+    done
     t1="$(python3 -c 'import time; print(time.perf_counter())')"
-    PH_ML_LI_ARRAY32_CPU_SEC="$(python3 -c "print(round(float('$t1') - float('$t0'), 6))")"
+    PH_ML_LI_ARRAY32_CPU_SEC="$(python3 -c "print(round((float('$t1') - float('$t0')) / int('$PH_ML_LI_ARRAY32_RUNS'), 6))")"
   fi
 fi
 export PH_ML_BENCH_ROOT="$ROOT" PH_ML_BENCH_OUT="$OUT" PH_ML_BENCH_NUMPY="$NUMPY_OUT"
@@ -69,7 +77,7 @@ report = {
     "suite": "ph-ml-li-array-matmul-32",
     "id": "li_array_matmul_32x32",
     "workload_size": 32,
-    "workload_note": "32x32 f32 via ArrayDesc -> ml_matmul_lkir_logical_32; ratio_vs_li = numpy/cpu",
+    "workload_note": "32x32 logical f32 via ArrayDesc -> ml_matmul_cpu_logical_32; run-only 50x mean; ratio_vs_li = numpy/cpu",
     "compile_ok": compile_ok,
     "executed": executed,
     "validity_gate_pass": validity,

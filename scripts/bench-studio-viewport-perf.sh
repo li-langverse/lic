@@ -144,6 +144,7 @@ def bench_wgpu_swapchain_hook() -> dict | None:
 
     probe_src = root / "deploy/studio-demo/native/lig_swapchain_bench_probe.c"
     rt_c = root / "runtime/li_rt.c"
+    rt_par = root / "runtime/li_par_pool.c"
     if not probe_src.is_file() or not rt_c.is_file():
         status = "blocked_runner" if not swap_env else "pending"
         return {
@@ -171,7 +172,10 @@ def bench_wgpu_swapchain_hook() -> dict | None:
         str(probe_src),
         str(rt_c),
         "-lm",
+        "-pthread",
     ]
+    if rt_par.is_file():
+        compile_cmd.append(str(rt_par))
     rt_lig = root / "runtime/li_rt_lig.c"
     if rt_lig.is_file():
         compile_cmd.append(str(rt_lig))

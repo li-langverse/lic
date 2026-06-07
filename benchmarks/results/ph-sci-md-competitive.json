@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-06-07T21:59:17Z",
+  "suite": "ph-sci-md-competitive",
+  "registry_path": "/app/data/workspaces/li-langverse/lic/code_implementer-1780869437585/repo/benchmarks/competitive/md_oracle.toml",
+  "registry_schema": "li_ph_sci_md_competitive_v1",
+  "rows": [
+    {
+      "id": "lj_chain_micro",
+      "kernel": "sim.scientific.oracle_checksum_md",
+      "workload_class": "v0_micro",
+      "workload_note": "4-particle LJ chain, 8 velocity-Verlet steps; LAMMPS/GROMACS columns stub until B1 micro drivers",
+      "n_particles": 4,
+      "vv_steps": 8,
+      "spacing": 1.12,
+      "dt": 0.004,
+      "drift_tolerance": 0.001,
+      "energy_drift_delta": 0.0,
+      "parity_gate_pass": true,
+      "parity_note": "External columns stub \u2014 Li native drift is tier-2 reference; LAMMPS/GROMACS parity deferred to B1",
+      "executed": true,
+      "li": {
+        "id": "li",
+        "incumbent": "Li native (li-sim-scientific 4-particle LJ chain)",
+        "workload_class": "v0_micro",
+        "executed": false,
+        "cpu_sec": 0.002532,
+        "energy_drift": 6.9691228e-05,
+        "energy_source": "li_native_python_mirror",
+        "validity_gate_pass": false,
+        "validity_ratio": 0.0,
+        "ratio_vs_li": 1.0,
+        "device": "cpu",
+        "workload": "md_lj_chain_4p_8vv"
+      },
+      "competitors": [
+        {
+          "id": "lammps",
+          "incumbent": "LAMMPS pair/lj/cut micro",
+          "workload_class": "external_stub",
+          "executed": false,
+          "cpu_sec": 4.4e-05,
+          "energy_drift": null,
+          "reference_energy_drift": 6.9691228e-05,
+          "validity_gate_pass": false,
+          "validity_ratio": 0.0,
+          "ratio_vs_li": 0.017378,
+          "note": "LAMMPS not bundled \u2014 stub column records Li oracle reference; set LI_MD_ORACLE_LAMMPS=1 with lmp on PATH for B1 driver attempts",
+          "framework_version": null,
+          "license": "GPL-2.0",
+          "pinned_version": "2024.06.27",
+          "device": "cpu",
+          "workload": "md_lj_chain_4p_8vv",
+          "parity_note": "stub until LAMMPS micro matches Li drift < 0.001"
+        },
+        {
+          "id": "gromacs",
+          "incumbent": "GROMACS LJ micro",
+          "workload_class": "external_stub",
+          "executed": false,
+          "cpu_sec": 4.6e-05,
+          "energy_drift": null,
+          "reference_energy_drift": 6.9691228e-05,
+          "validity_gate_pass": false,
+          "validity_ratio": 0.0,
+          "ratio_vs_li": 0.018167,
+          "note": "GROMACS not bundled \u2014 stub column records Li oracle reference; set LI_MD_ORACLE_GROMACS=1 with gmx on PATH for B1 driver attempts",
+          "framework_version": null,
+          "license": "LGPL-2.1",
+          "pinned_version": "2024.2",
+          "device": "cpu",
+          "workload": "md_lj_chain_4p_8vv",
+          "parity_note": "stub until GROMACS micro matches Li drift < 0.001"
+        }
+      ]
+    }
+  ]
+}

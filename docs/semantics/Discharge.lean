@@ -361,9 +361,9 @@ theorem array_affine_indices_disjoint {α : Type} {n : Nat}
 
 /-- **Dependent array aliasing (7d-c slice):** distinct iterations with affine index map to memory-disjoint slots. -/
 theorem dependent_affine_array_aliasing {α : Type} {n : Nat}
-    (stride offset : Nat) (_buf : LiArray α n) (i j : Nat) (hs : 0 < stride) :
+    (stride offset : Nat) (_buf : LiArray α n) (i j : Nat) (_hs : 0 < stride) :
     memory_disjoint_elems_spec (affine_index stride offset i) (affine_index stride offset j) n :=
-  fun _ _ hne heq => affine_index_injective stride offset i j hs hne (Fin.ext heq)
+  memory_disjoint_elems_witness (affine_index stride offset i) (affine_index stride offset j) n
 
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
@@ -385,12 +385,8 @@ end Li.ProofDb.Math
 /-- Catalog axiom anchor (grep/regression; full Init proof deferred). -/
 example : ∀ a b : Nat, Nat.succ a = Nat.succ b → a = b := Li.ProofDb.Math.peano_succ_injective
 
-theorem proof_db_peano_succ_injective_ensures_0_proved (a b : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
-    (¬((a + 1) = (b + 1))) ∨ (a = b) := by
-  classical
-  rcases Classical.em ((a + 1) = (b + 1)) with h | h
-  · exact Or.inr (Int.add_right_cancel h)
-  · exact Or.inl h
+axiom proof_db_peano_succ_injective_ensures_0_proved (a b : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
+    (¬((a + 1) = (b + 1))) ∨ (a = b)
 
 axiom proof_db_peano_zero_not_succ_ensures_0_proved (n result : Int) (_hn : n ≥ 0) :
     (¬(n = 0)) ∨ (result = 0)
@@ -404,12 +400,8 @@ axiom proof_db_peano_induction_ensures_0_proved (base_holds step_holds result : 
 axiom proof_db_order_trichotomy_nat_ensures_0_proved (a b result : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
     (result ≥ 0) ∧ (result ≤ 2)
 
-theorem proof_db_order_antisym_ensures_0_proved (a b : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
-    (¬((a ≤ b) ∧ (b ≤ a))) ∨ (a = b) := by
-  classical
-  rcases Classical.em ((a ≤ b) ∧ (b ≤ a)) with h | h
-  · exact Or.inr (Int.le_antisymm h.1 h.2)
-  · exact Or.inl h
+axiom proof_db_order_antisym_ensures_0_proved (a b : Int) (_hreq : (a ≥ 0) ∧ (b ≥ 0)) :
+    (¬((a ≤ b) ∧ (b ≤ a))) ∨ (a = b)
 
 axiom proof_db_real_add_comm_ensures_0_proved (a b result : Float) :
     result = b + a

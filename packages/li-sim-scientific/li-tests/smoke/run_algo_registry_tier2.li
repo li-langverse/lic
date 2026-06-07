@@ -8,12 +8,13 @@ def main() -> int
 =
   var md_oracle: float = sim_scientific_oracle_checksum_md()
   var heat_oracle: float = sim_scientific_oracle_checksum_heat()
+  var md105_oracle: float = sim_scientific_oracle_checksum_md_neighbor_cell()
   var md105: SimRunResult = run_algo(105, 1)
   if run_result_ok(md105) != 1:
     return 1
   if md105.algo_id != 105:
     return 2
-  if md105.checksum != md_oracle:
+  if md105.checksum != md105_oracle:
     return 3
   if md105.checksum == 1.001:
     return 4

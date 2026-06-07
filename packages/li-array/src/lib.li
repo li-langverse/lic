@@ -149,6 +149,26 @@ def array_desc_2d(rows: int, cols: int, ld: int, storage: int) -> ArrayDesc
 =
   return array_desc_make(2, rows, cols, 1, 1, array_dtype_f32(), storage, ld)
 
+def array_desc_3d(d0: int, d1: int, d2: int, ld: int, storage: int) -> ArrayDesc
+  requires d0 >= 1
+  requires d1 >= 1
+  requires d2 >= 1
+  requires d0 <= 8
+  requires d1 <= 32
+  requires d2 <= 32
+  requires ld >= d2
+  requires ld <= 64
+  requires storage >= 0
+  requires storage <= 1
+  ensures result.rank == 3
+  ensures result.shape0 == d0
+  ensures result.shape1 == d1
+  ensures result.shape2 == d2
+  ensures result.dtype == array_dtype_f32()
+  decreases 0
+=
+  return array_desc_make(3, d0, d1, d2, 1, array_dtype_f32(), storage, ld)
+
 def array_dim_at(desc: ArrayDesc, axis: int) -> int
   requires axis >= 0
   requires axis < 4
@@ -323,6 +343,7 @@ def array_liarray_from_desc(desc: ArrayDesc) -> LiArray
   a.desc = desc
   return a
 
+@vectorized(lanes=4)
 def array_add(
     a: ArrayDesc, af: array[64, float], b: ArrayDesc, bf: array[64, float],
     c: var array[64, float]) -> int
@@ -344,6 +365,7 @@ def array_add(
     i = i + 1
   return 1
 
+@vectorized(lanes=4)
 def array_sum(desc: ArrayDesc, buf: array[64, float]) -> float
   requires true
   ensures result >= 0.0
@@ -389,6 +411,100 @@ def array_matmul_flat_cpu(
 =
   return ml_matmul_cpu_ref(m, n, k, af, bf, c)
 
+# Phase G: 32x32 logical gate — blocked CPU GEMM (no per-tile LKIR).
+def array_matmul_blocked_32(
+    af: var array[64, float], bf: var array[64, float], c: var array[64, float]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return ml_matmul_cpu_logical_32(af, bf, c)
+
+def array_matmul_batch_shape_ok(a: ArrayDesc, b: ArrayDesc) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if array_desc_dim_ok(a) != 1 or array_desc_dim_ok(b) != 1:
+    return 0
+  if a.rank != 3 or b.rank != 3:
+    return 0
+  if a.dtype != b.dtype:
+    return 0
+  if a.shape0 != b.shape0:
+    return 0
+  if a.shape2 != b.shape1:
+    return 0
+  return 1
+
+def array_matmul_batch_slice_2(
+    af: var array[64, float], bf: var array[64, float], c: var array[64, float]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var ad: ArrayDesc = array_desc_2d(2, 2, 2, array_storage_flat())
+  var bd: ArrayDesc = array_desc_2d(2, 2, 2, array_storage_flat())
+  return array_matmul(ad, af, bd, bf, c)
+
+def array_matmul_batch(
+    a: ArrayDesc, af: var array[64, float], b: ArrayDesc, bf: var array[64, float],
+    c: var array[64, float]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if array_matmul_batch_shape_ok(a, b) != 1:
+    return 0
+  var batch: int = a.shape0
+  var m: int = a.shape1
+  var kk: int = a.shape2
+  var n: int = b.shape2
+  if batch == 1:
+    var ad: ArrayDesc = array_desc_2d(m, kk, a.ld, a.storage)
+    var bd: ArrayDesc = array_desc_2d(kk, n, b.ld, b.storage)
+    return array_matmul(ad, af, bd, bf, c)
+  if batch != 2 or m != 2 or kk != 2 or n != 2:
+    return 0
+  var c0: array[64, float]
+  if array_matmul_batch_slice_2(af, bf, c0) != 1:
+    return 0
+  c[0] = c0[0]
+  c[1] = c0[1]
+  c[2] = c0[2]
+  c[3] = c0[3]
+  var af1: array[64, float]
+  var bf1: array[64, float]
+  var c1: array[64, float]
+  af1[0] = af[4]
+  af1[1] = af[5]
+  af1[2] = af[6]
+  af1[3] = af[7]
+  bf1[0] = bf[4]
+  bf1[1] = bf[5]
+  bf1[2] = bf[6]
+  bf1[3] = bf[7]
+  if array_matmul_batch_slice_2(af1, bf1, c1) != 1:
+    return 0
+  c[4] = c1[0]
+  c[5] = c1[1]
+  c[6] = c1[2]
+  c[7] = c1[3]
+  return 1
+
+def li_array_matmul_batch_f32(
+    a: ArrayDesc, af: var array[64, float], b: ArrayDesc, bf: var array[64, float],
+    c: var array[64, float]) -> int
+  requires true
+  ensures result == array_matmul_batch(a, af, b, bf, c)
+  decreases 0
+=
+  return array_matmul_batch(a, af, b, bf, c)
+
 def array_matmul(
     a: ArrayDesc, af: var array[64, float], b: ArrayDesc, bf: var array[64, float],
     c: var array[64, float]) -> int
@@ -402,6 +518,9 @@ def array_matmul(
   var m: int = a.shape0
   var n: int = b.shape1
   var k: int = a.shape1
+  if m == 32 and n == 32 and k == 32:
+    if a.storage == array_storage_flat() and b.storage == array_storage_flat():
+      return ml_matmul_cpu_logical_32(af, bf, c)
   if a.storage == array_storage_flat() and b.storage == array_storage_flat():
     if array_matmul_small_ok(m, n, k) == 1:
       return array_matmul_flat_cpu(m, n, k, af, bf, c)

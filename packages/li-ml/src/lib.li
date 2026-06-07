@@ -341,6 +341,24 @@ def ml_tensor_matmul_nested(
   return ml_matmul_cpu_nested(a.rows, b.cols, a.cols, an, bn, c)
 
 
+# Phase G: native CPU 32x32 logical gate — one @vectorized 8x8 nested GEMM, zero LKIR.
+def ml_matmul_cpu_logical_32(a: var array[64, float], b: var array[64, float], c: var array[64, float]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_matmul_blocked_tile_ok(32, 32, 32) != 1:
+    return 0
+  var an: array[8, array[8, float]]
+  var bn: array[8, array[8, float]]
+  var cn: array[8, array[8, float]]
+  if ml_matmul_flat_to_nested_8(a, b, an, bn) != 1:
+    return 0
+  if ml_matmul_cpu_nested(8, 8, 8, an, bn, cn) != 1:
+    return 0
+  return ml_matmul_nested_to_flat_8(8, 8, cn, c)
+
 def ml_matmul_lkir_logical_16(a: var array[64, float], b: var array[64, float], c: var array[64, float]) -> int
   requires true
   ensures result >= 0
@@ -357,6 +375,8 @@ def ml_matmul_lkir_logical_32(a: var array[64, float], b: var array[64, float], 
 =
   if ml_matmul_blocked_tile_ok(32, 32, 32) != 1:
     return 0
+  if ml_use_lkir() == 0:
+    return ml_matmul_cpu_logical_32(a, b, c)
   if ml_matmul_lkir_tile_run() != 1:
     return 0
   if ml_matmul_lkir_tile_run() != 1:

@@ -68,6 +68,9 @@ li_lic_needs_rebuild() {
   for src in \
     "$root/compiler/codegen/compile.cpp" \
     "$root/compiler/mir/mir_runtime_link.cpp" \
+    "$root/compiler/verify/vc_emit_lean.cpp" \
+    "$root/compiler/verify/vc_witness.cpp" \
+    "$root/compiler/verify/vc_emit.cpp" \
     "$marker"; do
     if [[ -f "$src" ]] && [[ "$src" -nt "$lic_bin" ]]; then
       return 0

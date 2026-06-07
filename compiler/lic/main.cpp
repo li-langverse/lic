@@ -4,6 +4,7 @@
 #include "li/platform.hpp"
 #include "li/prelude.hpp"
 #include "li/smoke_llvm.hpp"
+#include "li/smoke_kernel.hpp"
 #include "li/vc_emit.hpp"
 #include "li/mir.hpp"
 #include "li/vc_summary.hpp"
@@ -16,6 +17,7 @@
 
 #include "li_rt.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -118,6 +120,7 @@ int usage() {
             << "                       [--threads=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
+            << "  lic smoke-kernel <elf> [--timeout SEC]  run freestanding kernel on COM1 via QEMU\n"
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
             << "  lic httpd validate-config <file.toml>  validate [routes] (E0501–E0504)\n"
             << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"
@@ -501,6 +504,30 @@ int main(int argc, char** argv) {
       return 1;
     }
     std::cout << "smoke-llvm: ok (main returns 0)\n";
+    return 0;
+  }
+  if (cmd == "smoke-kernel") {
+    if (argc < 3) {
+      std::cerr << "usage: lic smoke-kernel <elf> [--timeout SEC]\n";
+      return 1;
+    }
+    li::SmokeKernelOptions smoke_opts;
+    smoke_opts.elf_path = argv[2];
+    for (int i = 3; i < argc; ++i) {
+      const std::string_view arg = argv[i];
+      if (arg == "--timeout" && i + 1 < argc) {
+        smoke_opts.timeout_sec = std::max(1, std::atoi(argv[++i]));
+      } else {
+        std::cerr << "usage: lic smoke-kernel <elf> [--timeout SEC]\n";
+        return 1;
+      }
+    }
+    std::string err;
+    if (!li::smoke_kernel(smoke_opts, &err)) {
+      std::cerr << "smoke-kernel failed: " << err << '\n';
+      return 1;
+    }
+    std::cerr << "smoke-kernel: PASS (hello_kern on COM1)\n";
     return 0;
   }
   if (cmd == "parse") {

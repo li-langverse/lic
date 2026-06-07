@@ -15,9 +15,14 @@ Build kernel artifacts from **lik**:
 
 ```bash
 export LIC_ROOT=/path/to/lic
+export LIK_ROOT=/path/to/lik
 cd /path/to/lik
 bash scripts/build-hello-kern.sh
+bash scripts/smoke-hello-kern.sh ../build/hello_kern.elf
 ```
+
+Serial smoke is **`lic smoke-kernel <elf>`** — Li-native verification via QEMU COM1
+(0x3F8), wrapped by `lik/scripts/smoke-hello-kern.sh` for gates and `dev-vm.sh`.
 
 ## `@hw` intrinsics (compiler lowering)
 

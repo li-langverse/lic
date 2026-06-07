@@ -1704,6 +1704,13 @@ note = "WP-ECHEM-09 AIMD interface — 8-step chem_dft_energy_kernel_hartree dri
 
 [[tests]]
 suite = "composable"
+file = "composable/import_chem_dft_smoke.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "compile_open_ok"
+note = "sim-p2-qm-dft-scf — chem DFT H₂ energy ↔ algo 418 dispatch honesty"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_echem_solvent_smoke.li"
 packages = ["li-chem", "li-physics-particles"]
 outcome = "compile_open_ok"

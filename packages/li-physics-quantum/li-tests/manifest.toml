@@ -14,6 +14,12 @@ note = "PH-SCI-GPU-07 @gpu wavefunction normalize"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/qm_scf_h2_stub_smoke.li"
+outcome = "verify_ok"
+note = "sim-p2-qm-dft-scf T0 H₂ SCF scaffold in li-physics-quantum"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/echem_tddft_nonadiabatic_smoke.li"
 outcome = "compile_open_ok"
 note = "WP-ECHEM-13 2-state nonadiabatic population transfer stub"

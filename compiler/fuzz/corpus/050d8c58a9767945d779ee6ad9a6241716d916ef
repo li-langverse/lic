@@ -1,6 +1,0 @@
-proc p() -> int
-  requires true
-  ensures true
-  deCreases 0
-=
-  return 0

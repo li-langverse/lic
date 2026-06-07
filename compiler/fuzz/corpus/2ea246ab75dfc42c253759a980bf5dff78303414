@@ -1,3 +1,0 @@
-@cpu
-@pal(disjoint=disjointow)
-proc f() -> ()

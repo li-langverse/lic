@@ -1,6 +1,0 @@
-@cpu
-@parallel(disow)
-proc f() -> int
-  requires true
-  ensures true
-turn 0

@@ -1,8 +1,0 @@
-@cpu
-@parallel(dtru 
-e decru 
-e decreases 0=
-  return e3es 0
-=
-toi   returpu
-@parallel(dtrn 0

@@ -38,4 +38,7 @@ emit 201 1 1.0 2 pde_heat_explicit_2d
 # Registry stub spot-check (robo family)
 emit 801 1 0.801 0 robo_multibody_step
 
+# sim-p2-qm-dft-scf (418): H₂ SCF energy oracle (echem_dft_h2_energy_hartree)
+emit 418 1 -0.21996099817018688 4 qm_dft_scf_energy
+
 echo "sim_li_run_summary: wrote summaries under $OUT_DIR (format=$FORMAT)"

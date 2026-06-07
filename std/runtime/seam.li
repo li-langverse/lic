@@ -432,6 +432,11 @@ extern proc httpd_li_proxy_init_req_i(slot: var int, he: var int) -> int
   ensures true
   decreases 0
 
+extern proc httpd_li_proxy_req_body_ready_i(slot: var int, hdr_end: int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
 extern proc httpd_li_proxy_snap_ready_i() -> int
   requires true
   ensures true

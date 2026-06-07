@@ -1,0 +1,6 @@
+proc p
+  requires true
+  ensures true
+  decreases 0
+=
+  reasproc p(esi->r

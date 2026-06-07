@@ -17,6 +17,7 @@ description: >-
 4. Every `proc` needs `requires`, `ensures`, `decreases` (no `sorry`, no `Any`).
 5. Add **`PKG-*`** to [official-packages.md](../../../docs/ecosystem/official-packages.md) when `--official`.
 6. **`min_coverage`:** default **80** in `li.toml`; **`li-std-*` / in-tree `std/`** slices use **100** (see engineering-standards).
+7. **Composable API:** `src/lib.li` with lifecycle `proc`s; `src/main.li` demo-only — [composable-by-default.md](../../../docs/ecosystem/composable-by-default.md) + `composable-li-library` skill.
 
 ## Commands
 

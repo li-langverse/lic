@@ -14,7 +14,7 @@ Li tracks **effects** explicitly — what a procedure is allowed to do besides p
 ## Declaring effects
 
 ```nim
-proc main() raises IO -> int
+def main() raises IO -> int
   requires true
   ensures result == 0
   decreases 0
@@ -34,7 +34,7 @@ Low-level I/O is axiomatized in `docs/semantics/trusted.lean`. User code proves 
 ```nim
 extern proc puts(s: str) -> int
 
-proc main() raises IO -> int
+def main() raises IO -> int
   ...
 =
   puts("from C runtime")

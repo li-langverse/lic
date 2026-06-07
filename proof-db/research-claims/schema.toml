@@ -1,0 +1,48 @@
+# Research claims schema (Phase 3)
+
+[schema]
+version = 1
+claims_root = "proof-db/research-claims"
+claims_file = "claims.jsonl"
+reviews_file = "reviews.jsonl"
+
+[epistemic_status]
+values = [
+  "li_proved",
+  "li_open",
+  "literature_proved",
+  "heuristic",
+  "model_consensus",
+  "model_conflict",
+  "refuted",
+]
+
+[review_verdict]
+values = ["plausible", "proved", "wrong", "unclear"]
+
+[claim.required]
+fields = ["claim_id", "problem_id", "statement_plain", "author_agent", "created_at", "epistemic_status"]
+
+[claim.optional]
+fields = [
+  "parent_claim_id",
+  "statement_latex",
+  "author_model",
+  "li_specimen",
+  "lean_thm",
+  "sources",
+  "notes",
+  "erdos_id",
+  "catalog_id",
+]
+
+[review.required]
+fields = ["claim_id", "reviewer_model", "verdict", "reviewed_at"]
+
+[review.optional]
+fields = ["confidence", "rationale_plain"]
+
+[rules]
+# Reviewer "proved" without li_proved or literature_proved → compare-claims flags unprovable_language
+no_proved_without_li = true
+min_reviewers_per_claim = 2

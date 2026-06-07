@@ -1,0 +1,5 @@
+@cpu
+@rallel(disjoint=disjoint_row,
+proc fs%s 0
+=
+  rbjecteturn 0

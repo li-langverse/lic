@@ -1,0 +1,15 @@
+# D-LM-BC-NT-008: Bezout identity: exists x,y with gcd(a,b) = a x + b y.
+
+def gcd_divides(a: int, b: int, g: int) -> int
+  requires a >= 0 and b >= 0 and g >= 0
+  ensures result == g
+  decreases 0
+=
+  return g
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

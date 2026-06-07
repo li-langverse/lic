@@ -1,0 +1,179 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinringert/language-json-schema/master/schemas/tmLanguage.schema.json",
+  "name": "Li",
+  "scopeName": "source.li",
+  "fileTypes": ["li"],
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#decorator" },
+    { "include": "#string" },
+    { "include": "#number" },
+    { "include": "#parallel-for" },
+    { "include": "#contract" },
+    { "include": "#keyword" },
+    { "include": "#type" },
+    { "include": "#operator" },
+    { "include": "#identifier" }
+  ],
+  "repository": {
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.li",
+          "match": "#.*$"
+        }
+      ]
+    },
+    "decorator": {
+      "patterns": [
+        {
+          "name": "entity.name.function.decorator.li",
+          "match": "@[A-Za-z_][\\w.]*(?:\\([^)]*\\))?"
+        }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.li",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.li",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "number": {
+      "patterns": [
+        {
+          "name": "constant.numeric.binary.li",
+          "match": "\\b0[bB][01_]+(?:[iuf][0-9]+|u)?\\b"
+        },
+        {
+          "name": "constant.numeric.hex.li",
+          "match": "\\b0[xX][0-9A-Fa-f_]+(?:[iuf][0-9]+|u)?\\b"
+        },
+        {
+          "name": "constant.numeric.float.li",
+          "match": "\\b\\d[\\d_]*\\.\\d[\\d_]*(?:[eE][+-]?\\d+)?(?:f32|f64)?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.li",
+          "match": "\\b\\d[\\d_]*(?:[iuf][0-9]+|u64|u32|u16|u8|i64|i32|i16|i8|f32|f64)?\\b"
+        }
+      ]
+    },
+    "parallel-for": {
+      "patterns": [
+        {
+          "name": "keyword.control.parallel-for.li",
+          "match": "\\bparallel\\s+for\\b"
+        }
+      ]
+    },
+    "contract": {
+      "patterns": [
+        {
+          "name": "keyword.other.contract.li",
+          "match": "\\b(requires|ensures|prob_ensures|decreases|invariant|result)\\b"
+        }
+      ]
+    },
+    "keyword": {
+      "patterns": [
+        {
+          "name": "keyword.control.import.li",
+          "match": "\\bimport\\b"
+        },
+        {
+          "name": "keyword.declaration.li",
+          "match": "\\b(def|proc|type|object|enum|var|let|extern|async|await)\\b"
+        },
+        {
+          "name": "keyword.control.li",
+          "match": "\\b(if|else|elif|while|for|in|break|continue|return|raises|echo|error)\\b"
+        },
+        {
+          "name": "keyword.operator.word.li",
+          "match": "\\b(and|or|not|is)\\b"
+        },
+        {
+          "name": "keyword.other.visibility.li",
+          "match": "\\b(public|private)\\b"
+        },
+        {
+          "name": "constant.language.boolean.li",
+          "match": "\\b(true|false)\\b"
+        },
+        {
+          "name": "keyword.other.block.li",
+          "match": "^\\s*=\\s*$"
+        }
+      ]
+    },
+    "type": {
+      "patterns": [
+        {
+          "name": "storage.type.primitive.li",
+          "match": "\\b(int|int8|int16|int32|int64|uint|uint8|uint16|uint32|uint64|float|float32|float64|f32|f64|bool|unit|str|ptr|array)\\b"
+        },
+        {
+          "name": "storage.type.protocol.li",
+          "match": "\\b(Protocol|Callable)\\b"
+        },
+        {
+          "name": "storage.type.generic.li",
+          "match": "\\barray\\b(?=\\s*\\[)"
+        }
+      ]
+    },
+    "operator": {
+      "patterns": [
+        {
+          "name": "keyword.operator.range.li",
+          "match": "\\.\\.<"
+        },
+        {
+          "name": "keyword.operator.ellipsis.li",
+          "match": "\\.\\.\\."
+        },
+        {
+          "name": "keyword.operator.arrow.li",
+          "match": "->"
+        },
+        {
+          "name": "keyword.operator.comparison.li",
+          "match": "==|!=|<=|>=|<|>"
+        },
+        {
+          "name": "keyword.operator.arithmetic.li",
+          "match": "\\*\\*|//|[+\\-*/%|@]"
+        },
+        {
+          "name": "keyword.operator.assignment.li",
+          "match": "="
+        },
+        {
+          "name": "punctuation.bracket.li",
+          "match": "[\\[\\]{}(),.:]"
+        }
+      ]
+    },
+    "identifier": {
+      "patterns": [
+        {
+          "name": "entity.name.function.li",
+          "match": "\\b[A-Za-z_][\\w]*(?=\\s*\\()"
+        },
+        {
+          "name": "variable.other.li",
+          "match": "\\b[A-Za-z_][\\w]*\\b"
+        }
+      ]
+    }
+  }
+}

@@ -44,6 +44,14 @@ struct Parser {
     }
   }
 
+  /// Newlines and indents inside `(...)` parameter lists (not proc bodies).
+  void skip_param_layout() {
+    skip_newlines();
+    while (at(TokenKind::Indent)) {
+      i++;
+    }
+  }
+
   SourceLoc loc(const Token& t) const {
     return SourceLoc{file, t.line, t.column, t.start};
   }
@@ -52,10 +60,13 @@ struct Parser {
   std::unique_ptr<Expr> parse_primary();
   std::unique_ptr<Expr> parse_postfix(std::unique_ptr<Expr> base);
   TypeExpr parse_type();
-  std::vector<std::string> parse_type_params();
+  std::vector<std::string> parse_type_params(std::vector<std::string>* bounds_out = nullptr);
+  std::vector<ProcDecl> parse_trait_methods();
+  ProcDecl parse_trait_method();
   std::vector<TypeField> parse_type_fields();
   Param parse_param();
   std::unique_ptr<Expr> parse_contract_expr();
+  void parse_prob_ensures_tail(Contract& c);
   Contract parse_contract();
   std::unique_ptr<Expr> parse_decorator_value();
   Decorator parse_decorator();
@@ -64,9 +75,27 @@ struct Parser {
   Stmt parse_stmt();
   ProcDecl parse_proc(bool is_extern = false);
   TypeAlias parse_type_alias();
+  ErrorDecl parse_error_decl();
   ImportDecl parse_import();
-  bool accept_proc_kw() {
-    if (at(TokenKind::KwProc) || at(TokenKind::KwDef)) {
+  bool accept_def_kw() {
+    if (at(TokenKind::KwDef)) {
+      i++;
+      return true;
+    }
+    if (at(TokenKind::KwProc)) {
+      diags.error(loc(cur()),
+                  "use 'def' for Li procedures; 'proc' is only allowed after 'extern'");
+      i++;
+      return false;
+    }
+    return false;
+  }
+  bool at_fn_kw() const { return at(TokenKind::KwDef) || at(TokenKind::KwProc); }
+  bool at_for_kw() const {
+    return at(TokenKind::KwFor) || (at(TokenKind::Ident) && cur().text == "for");
+  }
+  bool consume_for_kw() {
+    if (at_for_kw()) {
       i++;
       return true;
     }
@@ -94,19 +123,43 @@ struct Parser {
         skip_newlines();
       } else if (at(TokenKind::At)) {
         std::vector<Decorator> decos = parse_decorator_list();
-        if (!at(TokenKind::KwProc) && !at(TokenKind::KwDef)) {
-          diags.error(loc(cur()), "expected proc or def after decorators");
+        if (!at_fn_kw()) {
+          diags.error(loc(cur()), "expected 'def' after decorators");
           return false;
         }
         ProcDecl proc = parse_proc(false);
         proc.decorators = std::move(decos);
         out.procs.push_back(std::move(proc));
         skip_newlines();
-      } else if (at(TokenKind::KwProc) || at(TokenKind::KwDef)) {
+      } else if (at(TokenKind::KwPrivate) || at(TokenKind::KwPublic)) {
+        if (peek(1).kind == TokenKind::KwDef || at_fn_kw()) {
+          out.procs.push_back(parse_proc(false));
+        } else {
+          diags.error(loc(cur()), "expected 'def' after visibility");
+          return false;
+        }
+        skip_newlines();
+      } else if (at(TokenKind::Ident) && std::string_view(cur().text) == "decorator") {
+        i++;
+        if (!at(TokenKind::KwDef) && !at_fn_kw()) {
+          diags.error(loc(cur()), "expected 'def' after decorator");
+          return false;
+        }
         out.procs.push_back(parse_proc(false));
+        skip_newlines();
+      } else if (at(TokenKind::KwDef)) {
+        out.procs.push_back(parse_proc(false));
+        skip_newlines();
+      } else if (at(TokenKind::KwProc)) {
+        diags.error(loc(cur()),
+                    "use 'def' for Li procedures; 'proc' is only allowed after 'extern'");
+        i++;
         skip_newlines();
       } else if (at(TokenKind::KwType)) {
         out.types.push_back(parse_type_alias());
+        skip_newlines();
+      } else if (at(TokenKind::KwError)) {
+        out.errors.push_back(parse_error_decl());
         skip_newlines();
       } else {
         diags.error(loc(cur()), "expected top-level declaration");
@@ -161,6 +214,7 @@ std::unique_ptr<Expr> Parser::parse_primary() {
     e->kind = Expr::Kind::IntLit;
     e->span = {t.start, t.end};
     e->int_value = t.int_value;
+    e->lit_suffix = t.lit_suffix;
     return parse_postfix(std::move(e));
   }
   if (t.kind == TokenKind::FloatLit) {
@@ -169,6 +223,16 @@ std::unique_ptr<Expr> Parser::parse_primary() {
     e->kind = Expr::Kind::FloatLit;
     e->span = {t.start, t.end};
     e->float_value = t.float_value;
+    e->lit_suffix = t.lit_suffix;
+    return parse_postfix(std::move(e));
+  }
+  if (t.kind == TokenKind::BinaryLit) {
+    i++;
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::BinaryLit;
+    e->span = {t.start, t.end};
+    e->int_value = t.int_value;
+    e->str_value = std::string(t.text);
     return parse_postfix(std::move(e));
   }
   if (t.kind == TokenKind::Ident || t.kind == TokenKind::KwResult ||
@@ -205,6 +269,24 @@ std::unique_ptr<Expr> Parser::parse_primary() {
   return nullptr;
 }
 
+namespace {
+
+bool peel_method_receiver(Expr* field_access, std::string* method_name,
+                          std::unique_ptr<Expr>* receiver_out) {
+  if (!field_access || field_access->kind != Expr::Kind::FieldAccess || !method_name ||
+      !receiver_out) {
+    return false;
+  }
+  *method_name = field_access->field_name;
+  if (field_access->base->kind == Expr::Kind::FieldAccess) {
+    return peel_method_receiver(field_access->base.get(), method_name, receiver_out);
+  }
+  *receiver_out = std::move(field_access->base);
+  return true;
+}
+
+}  // namespace
+
 std::unique_ptr<Expr> Parser::parse_postfix(std::unique_ptr<Expr> base) {
   while (accept(TokenKind::Dot)) {
     if (!at(TokenKind::Ident)) {
@@ -232,27 +314,53 @@ std::unique_ptr<Expr> Parser::parse_postfix(std::unique_ptr<Expr> base) {
     node->index = std::move(idx);
     base = std::move(node);
   }
+  if (base && base->kind == Expr::Kind::FieldAccess && accept(TokenKind::LParen)) {
+    std::string method_name;
+    std::unique_ptr<Expr> receiver;
+    if (peel_method_receiver(base.get(), &method_name, &receiver)) {
+      auto call = std::make_unique<Expr>();
+      call->kind = Expr::Kind::MethodCall;
+      call->span = base->span;
+      call->field_name = method_name;
+      call->base = std::move(receiver);
+      if (!at(TokenKind::RParen)) {
+        do {
+          call->args.push_back(parse_expr());
+        } while (accept(TokenKind::Comma));
+      }
+      if (!expect(TokenKind::RParen, "')'")) {
+        return nullptr;
+      }
+      call->span.end = tokens[i - 1].end;
+      return parse_postfix(std::move(call));
+    }
+  }
   return base;
 }
 
 int prec(TokenKind k) {
   switch (k) {
+    case TokenKind::KwImplies: return 0;
     case TokenKind::KwOr: return 1;
-    case TokenKind::KwAnd: return 2;
+    case TokenKind::KwXor:
+    case TokenKind::Caret: return 2;
+    case TokenKind::KwAnd: return 3;
     case TokenKind::EqEq:
     case TokenKind::Ne:
     case TokenKind::Lt:
     case TokenKind::Le:
     case TokenKind::Gt:
-    case TokenKind::Ge: return 3;
+    case TokenKind::Ge: return 4;
     case TokenKind::Plus:
-    case TokenKind::Minus: return 4;
+    case TokenKind::Minus: return 5;
+    case TokenKind::Shl:
+    case TokenKind::Shr: return 6;
     case TokenKind::Star:
     case TokenKind::Slash:
     case TokenKind::Percent:
-    case TokenKind::SlashSlash: return 5;
-    case TokenKind::StarStar: return 6;
-    case TokenKind::At: return 6;
+    case TokenKind::SlashSlash: return 7;
+    case TokenKind::StarStar: return 8;
+    case TokenKind::At: return 8;
     default: return -1;
   }
 }
@@ -273,7 +381,12 @@ BinOp binop(TokenKind k) {
     case TokenKind::Gt: return BinOp::Gt;
     case TokenKind::EqEq: return BinOp::Eq;
     case TokenKind::Ne: return BinOp::Ne;
+    case TokenKind::KwImplies: return BinOp::Implies;
     case TokenKind::KwAnd: return BinOp::And;
+    case TokenKind::KwXor:
+    case TokenKind::Caret: return BinOp::BitXor;
+    case TokenKind::Shl: return BinOp::Shl;
+    case TokenKind::Shr: return BinOp::Shr;
     case TokenKind::KwOr: return BinOp::Or;
     default: return BinOp::Add;
   }
@@ -286,6 +399,13 @@ std::unique_ptr<Expr> Parser::parse_expr(int min_prec) {
     i++;
     left = std::make_unique<Expr>();
     left->kind = Expr::Kind::UnaryNot;
+    left->span = {t.start, t.end};
+    left->operand = parse_expr(100);
+  } else if (at(TokenKind::Tilde)) {
+    const Token t = cur();
+    i++;
+    left = std::make_unique<Expr>();
+    left->kind = Expr::Kind::UnaryBitNot;
     left->span = {t.start, t.end};
     left->operand = parse_expr(100);
   } else if (at(TokenKind::Minus)) {
@@ -454,7 +574,7 @@ TypeExpr Parser::parse_type() {
   return ty;
 }
 
-std::vector<std::string> Parser::parse_type_params() {
+std::vector<std::string> Parser::parse_type_params(std::vector<std::string>* bounds_out) {
   std::vector<std::string> params;
   if (!accept(TokenKind::LBracket)) {
     return params;
@@ -467,6 +587,17 @@ std::vector<std::string> Parser::parse_type_params() {
       }
       params.push_back(std::string(cur().text));
       i++;
+      if (bounds_out) {
+        bounds_out->push_back({});
+        if (accept(TokenKind::Colon)) {
+          if (!at(TokenKind::Ident)) {
+            diags.error(loc(cur()), "expected trait name after ':' in type parameter");
+          } else {
+            bounds_out->back() = std::string(cur().text);
+            i++;
+          }
+        }
+      }
     } while (accept(TokenKind::Comma));
   }
   expect(TokenKind::RBracket, "']'");
@@ -474,6 +605,7 @@ std::vector<std::string> Parser::parse_type_params() {
 }
 
 Param Parser::parse_param() {
+  skip_param_layout();
   const Token& t = cur();
   Param p;
   p.span = {t.start, t.end};
@@ -489,6 +621,33 @@ std::unique_ptr<Expr> Parser::parse_contract_expr() {
   return parse_expr();
 }
 
+void Parser::parse_prob_ensures_tail(Contract& c) {
+  if (c.kind != ContractKind::ProbEnsures) {
+    return;
+  }
+  skip_newlines();
+  while (at(TokenKind::Ident) && (cur().text == "given" || cur().text == "samples")) {
+    const std::string tag = std::string(cur().text);
+    i++;
+    if (tag == "given") {
+      if (!at(TokenKind::Ident)) {
+        diags.error(loc(cur()), "expected axiom name after 'given'");
+        return;
+      }
+      c.prob_given = std::string(cur().text);
+      i++;
+    } else {
+      if (!at(TokenKind::IntLit)) {
+        diags.error(loc(cur()), "expected sample count after 'samples'");
+        return;
+      }
+      c.prob_samples = cur().int_value;
+      i++;
+    }
+    skip_newlines();
+  }
+}
+
 Contract Parser::parse_contract() {
   Contract c;
   const Token kw = cur();
@@ -496,6 +655,8 @@ Contract Parser::parse_contract() {
     c.kind = ContractKind::Requires;
   } else if (kw.kind == TokenKind::KwEnsures) {
     c.kind = ContractKind::Ensures;
+  } else if (kw.kind == TokenKind::KwProbEnsures) {
+    c.kind = ContractKind::ProbEnsures;
   } else if (kw.kind == TokenKind::KwDecreases) {
     c.kind = ContractKind::Decreases;
   } else {
@@ -504,6 +665,7 @@ Contract Parser::parse_contract() {
   c.span = {kw.start, kw.end};
   i++;
   c.expr = parse_contract_expr();
+  parse_prob_ensures_tail(c);
   skip_newlines();
   return c;
 }
@@ -544,6 +706,7 @@ std::unique_ptr<Expr> Parser::parse_decorator_value() {
     e->kind = Expr::Kind::IntLit;
     e->span = {t.start, t.end};
     e->int_value = t.int_value;
+    e->lit_suffix = t.lit_suffix;
     i++;
     return e;
   }
@@ -552,6 +715,16 @@ std::unique_ptr<Expr> Parser::parse_decorator_value() {
     e->kind = Expr::Kind::FloatLit;
     e->span = {t.start, t.end};
     e->float_value = t.float_value;
+    e->lit_suffix = t.lit_suffix;
+    i++;
+    return e;
+  }
+  if (t.kind == TokenKind::BinaryLit) {
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::BinaryLit;
+    e->span = {t.start, t.end};
+    e->int_value = t.int_value;
+    e->str_value = std::string(t.text);
     i++;
     return e;
   }
@@ -640,11 +813,9 @@ Stmt Parser::parse_stmt() {
       const Token start_tok = cur();
       s.decorators = std::move(decos);
       i++;
-      if (!at(TokenKind::Ident) || cur().text != "for") {
+      if (!consume_for_kw()) {
         diags.error({file, start_tok.line, 1, start_tok.start},
                     "expected 'for' after 'parallel'");
-      } else {
-        i++;
       }
       s.kind = Stmt::Kind::ParallelFor;
       if (!at(TokenKind::Ident)) {
@@ -678,7 +849,8 @@ Stmt Parser::parse_stmt() {
       if (accept(TokenKind::Indent)) {
         skip_newlines();
         while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
-               at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
+               at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+               at(TokenKind::KwInvariant)) {
           s.par_contracts.push_back(parse_contract());
         }
         expect(TokenKind::Dedent, "dedent");
@@ -693,7 +865,45 @@ Stmt Parser::parse_stmt() {
       s.span = {start_tok.start, cur().start};
       return s;
     }
-    diags.error(loc(cur()), "expected while or parallel for after decorators");
+    if (at(TokenKind::KwFor)) {
+      const Token start_tok = cur();
+      s.kind = Stmt::Kind::For;
+      s.decorators = std::move(decos);
+      i++;
+      if (!at(TokenKind::Ident)) {
+        diags.error({file, start_tok.line, 1, start_tok.start},
+                    "expected loop variable after 'for'");
+      } else {
+        s.for_iter = std::string(cur().text);
+        i++;
+      }
+      if (!at(TokenKind::Ident) || cur().text != "in") {
+        diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'in' in for loop");
+      } else {
+        i++;
+      }
+      if (at(TokenKind::IntLit)) {
+        s.for_start = cur().int_value;
+        i++;
+      }
+      if (at(TokenKind::DotDotLt)) {
+        i++;
+      } else {
+        diags.error({file, start_tok.line, 1, start_tok.start}, "for loop requires '..<' range");
+      }
+      if (at(TokenKind::IntLit)) {
+        s.for_end = cur().int_value;
+        i++;
+      }
+      if (at(TokenKind::Colon)) {
+        i++;
+      }
+      skip_newlines();
+      s.for_body = parse_block();
+      s.span = {start_tok.start, cur().start};
+      return s;
+    }
+    diags.error(loc(cur()), "expected while, for, or parallel for after decorators");
     return s;
   }
   if (at(TokenKind::Ident) && cur().text == "discard") {
@@ -741,6 +951,58 @@ Stmt Parser::parse_stmt() {
     skip_newlines();
     return s;
   }
+  if (at(TokenKind::KwBreak)) {
+    const Token t = cur();
+    s.kind = Stmt::Kind::Break;
+    s.span = {t.start, t.end};
+    i++;
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::KwContinue)) {
+    const Token t = cur();
+    s.kind = Stmt::Kind::Continue;
+    s.span = {t.start, t.end};
+    i++;
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::KwFor)) {
+    const Token start_tok = cur();
+    s.kind = Stmt::Kind::For;
+    i++;
+    if (!at(TokenKind::Ident)) {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected loop variable after 'for'");
+    } else {
+      s.for_iter = std::string(cur().text);
+      i++;
+    }
+    if (!at(TokenKind::Ident) || cur().text != "in") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'in' in for loop");
+    } else {
+      i++;
+    }
+    if (at(TokenKind::IntLit)) {
+      s.for_start = cur().int_value;
+      i++;
+    }
+    if (at(TokenKind::DotDotLt)) {
+      i++;
+    } else {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "for loop requires '..<' range");
+    }
+    if (at(TokenKind::IntLit)) {
+      s.for_end = cur().int_value;
+      i++;
+    }
+    if (at(TokenKind::Colon)) {
+      i++;
+    }
+    skip_newlines();
+    s.for_body = parse_block();
+    s.span = {start_tok.start, cur().start};
+    return s;
+  }
   if (at(TokenKind::KwWhile)) {
     const Token t = cur();
     s.kind = Stmt::Kind::While;
@@ -757,11 +1019,9 @@ Stmt Parser::parse_stmt() {
   if (at(TokenKind::Ident) && cur().text == "parallel") {
     const Token start_tok = cur();
     i++;
-    if (!at(TokenKind::Ident) || cur().text != "for") {
+    if (!consume_for_kw()) {
       diags.error({file, start_tok.line, 1, start_tok.start},
                   "expected 'for' after 'parallel'");
-    } else {
-      i++;
     }
     s.kind = Stmt::Kind::ParallelFor;
     if (!at(TokenKind::Ident)) {
@@ -795,7 +1055,8 @@ Stmt Parser::parse_stmt() {
     if (accept(TokenKind::Indent)) {
       skip_newlines();
       while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
-             at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
+             at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+             at(TokenKind::KwInvariant)) {
         s.par_contracts.push_back(parse_contract());
       }
       expect(TokenKind::Dedent, "dedent");
@@ -815,7 +1076,9 @@ Stmt Parser::parse_stmt() {
     s.kind = Stmt::Kind::Return;
     s.span = {t.start, t.end};
     i++;
-    s.expr = parse_expr();
+    if (!at(TokenKind::Newline) && !at(TokenKind::Dedent) && !at(TokenKind::Eof)) {
+      s.expr = parse_expr();
+    }
     skip_newlines();
     return s;
   }
@@ -853,20 +1116,31 @@ Stmt Parser::parse_stmt() {
 ProcDecl Parser::parse_proc(bool is_extern) {
   ProcDecl proc;
   proc.is_extern = is_extern;
-  if (!is_extern && !accept_proc_kw()) {
-    diags.error(loc(cur()), "expected 'proc' or 'def'");
+  if (!is_extern) {
+    if (at(TokenKind::KwPrivate)) {
+      proc.visibility = Visibility::Private;
+      i++;
+    } else if (at(TokenKind::KwPublic)) {
+      i++;
+    }
+    if (!accept_def_kw()) {
+      diags.error(loc(cur()), "expected 'def'");
+    }
   }
   const Token name = cur();
   proc.span = {name.start, name.end};
   proc.name = std::string(name.text);
   i++;
-  proc.type_params = parse_type_params();
+  proc.type_params = parse_type_params(&proc.type_param_bounds);
   expect(TokenKind::LParen, "'('");
+  skip_param_layout();
   if (!at(TokenKind::RParen)) {
     do {
       proc.params.push_back(parse_param());
+      skip_param_layout();
     } while (accept(TokenKind::Comma));
   }
+  skip_param_layout();
   expect(TokenKind::RParen, "')'");
   auto parse_raises = [&]() {
     if (!at(TokenKind::KwRaises)) {
@@ -890,7 +1164,8 @@ ProcDecl Parser::parse_proc(bool is_extern) {
   skip_newlines();
   parse_raises();
   while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
-         at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
+         at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+         at(TokenKind::KwInvariant)) {
     proc.contracts.push_back(parse_contract());
   }
   if (is_extern) {
@@ -901,6 +1176,28 @@ ProcDecl Parser::parse_proc(bool is_extern) {
   skip_newlines();
   proc.body = parse_block();
   return proc;
+}
+
+ErrorDecl Parser::parse_error_decl() {
+  ErrorDecl err;
+  const Token kw = cur();
+  err.span = {kw.start, kw.end};
+  i++;
+  if (!at(TokenKind::Ident)) {
+    diags.error(loc(cur()), "expected error type name after 'error'");
+    return err;
+  }
+  err.name = std::string(cur().text);
+  i++;
+  expect(TokenKind::Colon, "':'");
+  if (!at(TokenKind::StringLit)) {
+    diags.error(loc(cur()), "expected string message template after error name");
+    return err;
+  }
+  err.message_template = std::string(cur().text);
+  err.span.end = cur().end;
+  i++;
+  return err;
 }
 
 TypeAlias Parser::parse_type_alias() {
@@ -933,10 +1230,28 @@ TypeAlias Parser::parse_type_alias() {
     }
     return alias;
   }
+  if (at(TokenKind::Ident) && cur().text == "trait") {
+    alias.alias_kind = AliasKind::Trait;
+    i++;
+    skip_newlines();
+    alias.trait_methods = parse_trait_methods();
+    skip_newlines();
+    return alias;
+  }
   if (at(TokenKind::KwObject)) {
     alias.alias_kind = AliasKind::Object;
     i++;
     skip_newlines();
+    if (at(TokenKind::Ident) && cur().text == "of") {
+      i++;
+      if (!at(TokenKind::Ident)) {
+        diags.error(loc(cur()), "expected base type name after 'object of'");
+      } else {
+        alias.base_object = std::string(cur().text);
+        i++;
+      }
+      skip_newlines();
+    }
     alias.fields = parse_type_fields();
     skip_newlines();
     return alias;
@@ -980,11 +1295,64 @@ ImportDecl Parser::parse_import() {
   return imp;
 }
 
+ProcDecl Parser::parse_trait_method() {
+  ProcDecl proc;
+  if (at(TokenKind::KwPrivate)) {
+    proc.visibility = Visibility::Private;
+    i++;
+  } else if (at(TokenKind::KwPublic)) {
+    i++;
+  }
+  if (!accept_def_kw()) {
+    diags.error(loc(cur()), "expected 'def' in trait method");
+    return proc;
+  }
+  const Token name = cur();
+  proc.span = {name.start, name.end};
+  proc.name = std::string(name.text);
+  i++;
+  expect(TokenKind::LParen, "'('");
+  skip_param_layout();
+  if (!at(TokenKind::RParen)) {
+    do {
+      proc.params.push_back(parse_param());
+      skip_param_layout();
+    } while (accept(TokenKind::Comma));
+  }
+  skip_param_layout();
+  expect(TokenKind::RParen, "')'");
+  if (accept(TokenKind::Arrow)) {
+    proc.ret_type = parse_type();
+  }
+  skip_newlines();
+  while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+         at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+         at(TokenKind::KwInvariant)) {
+    proc.contracts.push_back(parse_contract());
+  }
+  skip_newlines();
+  return proc;
+}
+
+std::vector<ProcDecl> Parser::parse_trait_methods() {
+  std::vector<ProcDecl> methods;
+  skip_newlines();
+  while (at(TokenKind::KwPrivate) || at(TokenKind::KwPublic) || at_fn_kw()) {
+    methods.push_back(parse_trait_method());
+    skip_newlines();
+  }
+  return methods;
+}
+
 std::vector<TypeField> Parser::parse_type_fields() {
   std::vector<TypeField> fields;
   skip_newlines();
   while (at(TokenKind::KwPrivate) || at(TokenKind::KwPublic) ||
          (at(TokenKind::Ident) && peek(1).kind == TokenKind::Colon)) {
+    if ((at(TokenKind::KwPrivate) || at(TokenKind::KwPublic)) &&
+        (peek(1).kind == TokenKind::KwDef || at_fn_kw())) {
+      break;
+    }
     TypeField field;
     field.visibility = Visibility::Public;
     if (at(TokenKind::KwPrivate)) {

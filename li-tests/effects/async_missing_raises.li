@@ -1,6 +1,6 @@
 @async
-proc worker() -> int
+def worker() -> int
   requires true
-  ensures true
+  ensures result == 0
 =
   return 0

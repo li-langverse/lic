@@ -1,0 +1,48 @@
+import player
+import sim
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_player_version() < 1:
+    return 1
+  if li_std_studio_version() < 31:
+    return 2
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_game())
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_apply_config_to_sim(cfg, sess)
+  if player_headless_play(cfg, sess, player_headless_dt_default(), 4) != 4:
+    return 3
+  if sess.tick < 4:
+    return 4
+  if sess.game_physics_steps < 4:
+    return 5
+  var ship: PlayerShipResult = player_publish_from_game(cfg, sess, 9.0, 8, 1)
+  if ship.ok != 1:
+    return 6
+  if ship.bundle_magic != studio_publish_bundle_magic_zip():
+    return 7
+  if ship.entry_count != 2:
+    return 8
+  if ship.world_tick != sess.tick:
+    return 9
+  if ship.world_sha256 <= 0.0:
+    return 10
+  var demo: PlayerShipResult = player_ship_game_demo(1)
+  if demo.ok != 1:
+    return 11
+  if demo.headless_ticks != player_headless_tick_budget_default():
+    return 12
+  if demo.bundle_magic != studio_publish_bundle_magic_zip():
+    return 13
+  var no_proof: PlayerShipResult = player_ship_game_demo(0)
+  if no_proof.ok != 0:
+    return 14
+  var sci_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_scientific())
+  var sci_sess: SimSessionStub = sim_session_stub_default()
+  if player_publish_from_game(sci_cfg, sci_sess, 1.0, 8, 1).ok != 0:
+    return 15
+  return 0

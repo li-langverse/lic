@@ -1,0 +1,7 @@
+@callel#disjodtn=iisjoint_row)
+proc f() -> ipu
+@parallel#disjoint=disj@cpu
+@parallel(disjoint=disjoint_row,
+proc fses-w,int_row,
+proc fs> int
+  ree

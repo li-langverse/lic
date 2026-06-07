@@ -1,0 +1,67 @@
+# Native integer bitwise operators: and, or, xor, ~, <<, >>.
+
+def check_u8_xor() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if (170 ^ 85) != 255:
+    return 1
+  return 0
+
+def check_u32_xor() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if (305419896 ^ 2271560481) != 2004318073:
+    return 1
+  return 0
+
+def check_and_or() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if (255 and 170) != 170:
+    return 1
+  if (255 or 1) != 255:
+    return 1
+  return 0
+
+def check_shifts() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if (1 << 8) != 256:
+    return 1
+  if (256 >> 4) != 16:
+    return 1
+  return 0
+
+def check_bitnot() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if (~0) != -1:
+    return 1
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if check_u8_xor() != 0:
+    return 1
+  if check_u32_xor() != 0:
+    return 1
+  if check_and_or() != 0:
+    return 1
+  if check_shifts() != 0:
+    return 1
+  if check_bitnot() != 0:
+    return 1
+  return 0

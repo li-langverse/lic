@@ -1,0 +1,5 @@
+@cpu
+@parallel(dis)
+proc decreases 0
+=
+  reoc f(((-@cepqu

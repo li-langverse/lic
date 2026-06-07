@@ -1,11 +1,22 @@
 #include "li/borrowck.hpp"
 
+#include "li/error_codes.hpp"
+
 #include <map>
 #include <set>
 #include <string>
 
 namespace li {
 namespace {
+
+bool type_mentions_heap(const TypeExpr& te);
+
+const TypeExpr* unwrap_refinement_type(const TypeExpr* ty) {
+  while (ty && ty->kind == TypeKind::Refinement && ty->refinement_base) {
+    ty = ty->refinement_base.get();
+  }
+  return ty;
+}
 
 struct LocalState {
   bool moved = false;
@@ -31,11 +42,15 @@ struct BorrowCtx {
       return;
     }
     if (it->second.moved) {
-      diags.error(loc(span), "use after move of `" + name + "`");
+      diag_error(diags, loc(span), ErrorCode::E0311,
+                 "Variable `" + name + "` was moved and cannot be used again.",
+                 "Use the new owner, or borrow before the move if you need shared access.");
       return;
     }
     if (it->second.mut_borrows > 0) {
-      diags.error(loc(span), "cannot use `" + name + "` while mut borrow is active");
+      diag_error(diags, loc(span), ErrorCode::E0310,
+                 "Cannot read `" + name + "` while a mutable borrow is still active.",
+                 "End the `borrow mut` scope (or drop the binding) before using the value.");
     }
   }
 
@@ -60,6 +75,16 @@ struct BorrowCtx {
         }
         check_call_moves(e);
         break;
+      case Expr::Kind::MethodCall:
+        if (e.base) {
+          check_expr_uses(*e.base);
+        }
+        for (const auto& arg : e.args) {
+          if (arg) {
+            check_expr_uses(*arg);
+          }
+        }
+        break;
       case Expr::Kind::Index:
         if (e.base) {
           check_expr_uses(*e.base);
@@ -68,6 +93,7 @@ struct BorrowCtx {
           check_expr_uses(*e.index);
         }
         break;
+      case Expr::Kind::UnaryBitNot:
       case Expr::Kind::UnaryNot:
         if (e.operand) {
           check_expr_uses(*e.operand);
@@ -85,6 +111,17 @@ struct BorrowCtx {
 
   bool param_is_var(const TypeExpr& ty) { return ty.is_var; }
 
+  bool param_invalidate_on_pass(const TypeExpr& te) {
+    const TypeExpr* ut = unwrap_refinement_type(&te);
+    if (!ut) {
+      return true;
+    }
+    if (ut->kind == TypeKind::Array) {
+      return true;
+    }
+    return type_mentions_heap(te);
+  }
+
   void check_call_moves(const Expr& call) {
     const auto it = procs.find(call.ident);
     if (it == procs.end()) {
@@ -96,6 +133,9 @@ struct BorrowCtx {
         continue;
       }
       if (param_is_var(callee.params[n].type)) {
+        continue;
+      }
+      if (!param_invalidate_on_pass(callee.params[n].type)) {
         continue;
       }
       const std::string& name = call.args[n]->ident;
@@ -116,12 +156,17 @@ struct BorrowCtx {
     auto& state = locals[src];
     if (s.borrow_mut) {
       if (state.mut_borrows > 0 || state.imm_borrows > 0) {
-        diags.error(loc(s.span), "cannot borrow mut while existing borrow of `" + src + "` is active");
+        diag_error(diags, loc(s.span), ErrorCode::E0310,
+                   "Cannot take `borrow mut` of `" + src +
+                       "` while another borrow is still active.",
+                   "Wait until existing `borrow` / `borrow mut` bindings go out of scope.");
       }
       state.mut_borrows++;
     } else {
       if (state.mut_borrows > 0) {
-        diags.error(loc(s.span), "cannot borrow imm while mut borrow of `" + src + "` is active");
+        diag_error(diags, loc(s.span), ErrorCode::E0310,
+                   "Cannot take `borrow imm` of `" + src + "` while a mutable borrow is active.",
+                   "Release the `borrow mut` binding first.");
       }
       state.imm_borrows++;
     }
@@ -269,6 +314,16 @@ bool expr_has_await(const Expr& e) {
         }
       }
       return false;
+    case Expr::Kind::MethodCall:
+      if (e.base && expr_has_await(*e.base)) {
+        return true;
+      }
+      for (const auto& arg : e.args) {
+        if (arg && expr_has_await(*arg)) {
+          return true;
+        }
+      }
+      return false;
     case Expr::Kind::UnaryNot:
       return e.operand && expr_has_await(*e.operand);
     case Expr::Kind::Index:
@@ -303,6 +358,11 @@ bool stmt_has_await(const Stmt& s) {
     }
   }
   for (const auto& child : s.while_body) {
+    if (stmt_has_await(child)) {
+      return true;
+    }
+  }
+  for (const auto& child : s.for_body) {
     if (stmt_has_await(child)) {
       return true;
     }
@@ -362,12 +422,23 @@ void borrow_check_module(const Module& module, DiagnosticBag& diags) {
   }
 }
 
+bool extern_call_skips_io_effect(const std::string& callee) {
+  if (callee == "li_rt_volatile_sink_f64") {
+    return true;
+  }
+  if (callee.rfind("li_reduce_sum_", 0) == 0) {
+    return true;
+  }
+  return false;
+}
+
 bool proc_mentions_extern_call(const ProcDecl& p,
                                const std::map<std::string, const ProcDecl*>& proc_map) {
   for (const auto& s : p.body) {
     if (s.expr && s.expr->kind == Expr::Kind::Call && s.expr->ident != "echo") {
       const auto it = proc_map.find(s.expr->ident);
-      if (it != proc_map.end() && it->second->is_extern) {
+      if (it != proc_map.end() && it->second->is_extern &&
+          !extern_call_skips_io_effect(s.expr->ident)) {
         return true;
       }
     }

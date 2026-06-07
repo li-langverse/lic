@@ -12,6 +12,7 @@
 | `PKG-roadmap` | [`li-langverse/roadmap`](https://github.com/li-langverse/roadmap) | Governance + agent-kit |
 | `PKG-benchmarks` | [`li-langverse/benchmarks`](https://github.com/li-langverse/benchmarks) | Benchmark dashboard + ingest |
 | `PKG-li-net` | [`li-langverse/li-net`](https://github.com/li-langverse/li-net) | Trusted TCP / `raises Net` (httpd P0) |
+| `PKG-limq` | [li-langverse/limq](https://github.com/li-langverse/limq) | Swarm message queue (memory + disk, capability ACL) |
 | `PKG-li-std-core` | [`li-langverse/li-std-core`](https://github.com/li-langverse/li-std-core) | Std prelude slice (monorepo mirror) |
 | `PKG-li-std-math` | [`li-langverse/li-std-math`](https://github.com/li-langverse/li-std-math) | Math / linalg slice (monorepo mirror) |
 | `PKG-li-demo` | [`li-langverse/li-demo`](https://github.com/li-langverse/li-demo) | Package scaffold example |

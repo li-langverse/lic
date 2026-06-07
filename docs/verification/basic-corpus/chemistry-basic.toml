@@ -1,0 +1,405 @@
+# Phase-8 basic corpus plan — field "chemistry"
+version = 1
+field = "chemistry"
+target_count = 50
+last_verified_lic_commit = "708c67b8"
+
+[[planned]]
+id = "CHEM-LM-BC-IG-001"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Ideal gas law PV=nRT (form 1)."
+
+[[planned]]
+id = "CHEM-LM-BC-RX-002"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Rate law first order -dA/dt = k A (form 2)."
+
+[[planned]]
+id = "CHEM-LM-BC-EQ-003"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 3)."
+
+[[planned]]
+id = "CHEM-LM-BC-TH-004"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 4)."
+
+[[planned]]
+id = "CHEM-AX-BC-AX-005"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "physical-chemistry"
+statement = "Conservation of mass in closed reaction (form 5)."
+
+[[planned]]
+id = "CHEM-LM-BC-IG-006"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Ideal gas law PV=nRT (form 6)."
+
+[[planned]]
+id = "CHEM-LM-BC-RX-007"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Rate law first order -dA/dt = k A (form 7)."
+
+[[planned]]
+id = "CHEM-LM-BC-EQ-008"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 8)."
+
+[[planned]]
+id = "CHEM-LM-BC-TH-009"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 9)."
+
+[[planned]]
+id = "CHEM-AX-BC-AX-010"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "physical-chemistry"
+statement = "Conservation of mass in closed reaction (form 10)."
+
+[[planned]]
+id = "CHEM-LM-BC-IG-011"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Ideal gas law PV=nRT (form 11)."
+
+[[planned]]
+id = "CHEM-LM-BC-RX-012"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Rate law first order -dA/dt = k A (form 12)."
+
+[[planned]]
+id = "CHEM-LM-BC-EQ-013"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 13)."
+
+[[planned]]
+id = "CHEM-LM-BC-TH-014"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 14)."
+
+[[planned]]
+id = "CHEM-AX-BC-AX-015"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "physical-chemistry"
+statement = "Conservation of mass in closed reaction (form 15)."
+
+[[planned]]
+id = "CHEM-LM-BC-IG-016"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Ideal gas law PV=nRT (form 16)."
+
+[[planned]]
+id = "CHEM-LM-BC-RX-017"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Rate law first order -dA/dt = k A (form 17)."
+
+[[planned]]
+id = "CHEM-LM-BC-EQ-018"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 18)."
+
+[[planned]]
+id = "CHEM-LM-BC-TH-019"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 19)."
+
+[[planned]]
+id = "CHEM-AX-BC-AX-020"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "physical-chemistry"
+statement = "Conservation of mass in closed reaction (form 20)."
+
+[[planned]]
+id = "CHEM-LM-BC-IG-021"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Ideal gas law PV=nRT (form 21)."
+
+[[planned]]
+id = "CHEM-LM-BC-RX-022"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Rate law first order -dA/dt = k A (form 22)."
+
+[[planned]]
+id = "CHEM-LM-BC-EQ-023"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 23)."
+
+[[planned]]
+id = "CHEM-LM-BC-TH-024"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 24)."
+
+[[planned]]
+id = "CHEM-AX-BC-AX-025"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "physical-chemistry"
+statement = "Conservation of mass in closed reaction (form 25)."
+
+[[planned]]
+id = "CHEM-LM-BC-IG-026"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Ideal gas law PV=nRT (form 26)."
+
+[[planned]]
+id = "CHEM-LM-BC-RX-027"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Rate law first order -dA/dt = k A (form 27)."
+
+[[planned]]
+id = "CHEM-LM-BC-EQ-028"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 28)."
+
+[[planned]]
+id = "CHEM-LM-BC-TH-029"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 29)."
+
+[[planned]]
+id = "CHEM-AX-BC-AX-030"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "physical-chemistry"
+statement = "Conservation of mass in closed reaction (form 30)."
+
+[[planned]]
+id = "CHEM-LM-BC-IG-031"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Ideal gas law PV=nRT (form 31)."
+
+[[planned]]
+id = "CHEM-LM-BC-RX-032"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Rate law first order -dA/dt = k A (form 32)."
+
+[[planned]]
+id = "CHEM-LM-BC-EQ-033"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 33)."
+
+[[planned]]
+id = "CHEM-LM-BC-TH-034"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 34)."
+
+[[planned]]
+id = "CHEM-AX-BC-AX-035"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "physical-chemistry"
+statement = "Conservation of mass in closed reaction (form 35)."
+
+[[planned]]
+id = "CHEM-LM-BC-IG-036"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Ideal gas law PV=nRT (form 36)."
+
+[[planned]]
+id = "CHEM-LM-BC-RX-037"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Rate law first order -dA/dt = k A (form 37)."
+
+[[planned]]
+id = "CHEM-LM-BC-EQ-038"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 38)."
+
+[[planned]]
+id = "CHEM-LM-BC-TH-039"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 39)."
+
+[[planned]]
+id = "CHEM-AX-BC-AX-040"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "physical-chemistry"
+statement = "Conservation of mass in closed reaction (form 40)."
+
+[[planned]]
+id = "CHEM-LM-BC-IG-041"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Ideal gas law PV=nRT (form 41)."
+
+[[planned]]
+id = "CHEM-LM-BC-RX-042"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Rate law first order -dA/dt = k A (form 42)."
+
+[[planned]]
+id = "CHEM-LM-BC-EQ-043"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 43)."
+
+[[planned]]
+id = "CHEM-LM-BC-TH-044"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 44)."
+
+[[planned]]
+id = "CHEM-AX-BC-AX-045"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "physical-chemistry"
+statement = "Conservation of mass in closed reaction (form 45)."
+
+[[planned]]
+id = "CHEM-LM-BC-IG-046"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Ideal gas law PV=nRT (form 46)."
+
+[[planned]]
+id = "CHEM-LM-BC-RX-047"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Rate law first order -dA/dt = k A (form 47)."
+
+[[planned]]
+id = "CHEM-LM-BC-EQ-048"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 48)."
+
+[[planned]]
+id = "CHEM-LM-BC-TH-049"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "physical-chemistry"
+statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 49)."
+
+[[planned]]
+id = "CHEM-AX-BC-AX-050"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "physical-chemistry"
+statement = "Conservation of mass in closed reaction (form 50)."

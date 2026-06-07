@@ -1,0 +1,4 @@
+procp( -> int
+ quirerequires @true  
+ensures trs 0
+=)rn 0

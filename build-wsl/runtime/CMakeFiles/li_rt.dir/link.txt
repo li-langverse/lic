@@ -1,0 +1,2 @@
+/usr/bin/ar Dqc libli_rt.a CMakeFiles/li_rt.dir/li_rt.c.o CMakeFiles/li_rt.dir/li_rt_httpd.c.o CMakeFiles/li_rt.dir/li_rt_log.c.o CMakeFiles/li_rt.dir/li_rt_net.c.o CMakeFiles/li_rt.dir/li_rt_tls.c.o CMakeFiles/li_rt.dir/li_rt_h2.c.o
+/usr/bin/ranlib -D libli_rt.a

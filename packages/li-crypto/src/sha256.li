@@ -1,0 +1,1181 @@
+# sha256 — pure Li single-block SHA-256 (M1).
+
+import bitops
+
+def crypto_sha256_k0() -> int
+  requires true
+  ensures result == 1116352408
+  decreases 0
+=
+  return 1116352408
+
+def crypto_sha256_k1() -> int
+  requires true
+  ensures result == 1899447441
+  decreases 0
+=
+  return 1899447441
+
+def crypto_sha256_k2() -> int
+  requires true
+  ensures result == 3049323471
+  decreases 0
+=
+  return 3049323471
+
+def crypto_sha256_k3() -> int
+  requires true
+  ensures result == 3921009573
+  decreases 0
+=
+  return 3921009573
+
+def crypto_sha256_k4() -> int
+  requires true
+  ensures result == 961987163
+  decreases 0
+=
+  return 961987163
+
+def crypto_sha256_k5() -> int
+  requires true
+  ensures result == 1508970993
+  decreases 0
+=
+  return 1508970993
+
+def crypto_sha256_k6() -> int
+  requires true
+  ensures result == 2453635748
+  decreases 0
+=
+  return 2453635748
+
+def crypto_sha256_k7() -> int
+  requires true
+  ensures result == 2870763221
+  decreases 0
+=
+  return 2870763221
+
+def crypto_sha256_k8() -> int
+  requires true
+  ensures result == 3624381080
+  decreases 0
+=
+  return 3624381080
+
+def crypto_sha256_k9() -> int
+  requires true
+  ensures result == 310598401
+  decreases 0
+=
+  return 310598401
+
+def crypto_sha256_k10() -> int
+  requires true
+  ensures result == 607225278
+  decreases 0
+=
+  return 607225278
+
+def crypto_sha256_k11() -> int
+  requires true
+  ensures result == 1426881987
+  decreases 0
+=
+  return 1426881987
+
+def crypto_sha256_k12() -> int
+  requires true
+  ensures result == 1925078388
+  decreases 0
+=
+  return 1925078388
+
+def crypto_sha256_k13() -> int
+  requires true
+  ensures result == 2162078206
+  decreases 0
+=
+  return 2162078206
+
+def crypto_sha256_k14() -> int
+  requires true
+  ensures result == 2614888103
+  decreases 0
+=
+  return 2614888103
+
+def crypto_sha256_k15() -> int
+  requires true
+  ensures result == 3248222580
+  decreases 0
+=
+  return 3248222580
+
+def crypto_sha256_k16() -> int
+  requires true
+  ensures result == 3835390401
+  decreases 0
+=
+  return 3835390401
+
+def crypto_sha256_k17() -> int
+  requires true
+  ensures result == 4022224774
+  decreases 0
+=
+  return 4022224774
+
+def crypto_sha256_k18() -> int
+  requires true
+  ensures result == 264347078
+  decreases 0
+=
+  return 264347078
+
+def crypto_sha256_k19() -> int
+  requires true
+  ensures result == 604807628
+  decreases 0
+=
+  return 604807628
+
+def crypto_sha256_k20() -> int
+  requires true
+  ensures result == 770255983
+  decreases 0
+=
+  return 770255983
+
+def crypto_sha256_k21() -> int
+  requires true
+  ensures result == 1249150122
+  decreases 0
+=
+  return 1249150122
+
+def crypto_sha256_k22() -> int
+  requires true
+  ensures result == 1555081692
+  decreases 0
+=
+  return 1555081692
+
+def crypto_sha256_k23() -> int
+  requires true
+  ensures result == 1996064986
+  decreases 0
+=
+  return 1996064986
+
+def crypto_sha256_k24() -> int
+  requires true
+  ensures result == 2554220882
+  decreases 0
+=
+  return 2554220882
+
+def crypto_sha256_k25() -> int
+  requires true
+  ensures result == 2821834349
+  decreases 0
+=
+  return 2821834349
+
+def crypto_sha256_k26() -> int
+  requires true
+  ensures result == 2952996808
+  decreases 0
+=
+  return 2952996808
+
+def crypto_sha256_k27() -> int
+  requires true
+  ensures result == 3210313671
+  decreases 0
+=
+  return 3210313671
+
+def crypto_sha256_k28() -> int
+  requires true
+  ensures result == 3336571891
+  decreases 0
+=
+  return 3336571891
+
+def crypto_sha256_k29() -> int
+  requires true
+  ensures result == 3584528711
+  decreases 0
+=
+  return 3584528711
+
+def crypto_sha256_k30() -> int
+  requires true
+  ensures result == 113926993
+  decreases 0
+=
+  return 113926993
+
+def crypto_sha256_k31() -> int
+  requires true
+  ensures result == 338241895
+  decreases 0
+=
+  return 338241895
+
+def crypto_sha256_k32() -> int
+  requires true
+  ensures result == 666307205
+  decreases 0
+=
+  return 666307205
+
+def crypto_sha256_k33() -> int
+  requires true
+  ensures result == 773529912
+  decreases 0
+=
+  return 773529912
+
+def crypto_sha256_k34() -> int
+  requires true
+  ensures result == 1294757372
+  decreases 0
+=
+  return 1294757372
+
+def crypto_sha256_k35() -> int
+  requires true
+  ensures result == 1396182291
+  decreases 0
+=
+  return 1396182291
+
+def crypto_sha256_k36() -> int
+  requires true
+  ensures result == 1695183700
+  decreases 0
+=
+  return 1695183700
+
+def crypto_sha256_k37() -> int
+  requires true
+  ensures result == 1986661051
+  decreases 0
+=
+  return 1986661051
+
+def crypto_sha256_k38() -> int
+  requires true
+  ensures result == 2177026350
+  decreases 0
+=
+  return 2177026350
+
+def crypto_sha256_k39() -> int
+  requires true
+  ensures result == 2456956037
+  decreases 0
+=
+  return 2456956037
+
+def crypto_sha256_k40() -> int
+  requires true
+  ensures result == 2730485921
+  decreases 0
+=
+  return 2730485921
+
+def crypto_sha256_k41() -> int
+  requires true
+  ensures result == 2820302411
+  decreases 0
+=
+  return 2820302411
+
+def crypto_sha256_k42() -> int
+  requires true
+  ensures result == 3259730800
+  decreases 0
+=
+  return 3259730800
+
+def crypto_sha256_k43() -> int
+  requires true
+  ensures result == 3345764771
+  decreases 0
+=
+  return 3345764771
+
+def crypto_sha256_k44() -> int
+  requires true
+  ensures result == 3516065817
+  decreases 0
+=
+  return 3516065817
+
+def crypto_sha256_k45() -> int
+  requires true
+  ensures result == 3600352804
+  decreases 0
+=
+  return 3600352804
+
+def crypto_sha256_k46() -> int
+  requires true
+  ensures result == 4094571909
+  decreases 0
+=
+  return 4094571909
+
+def crypto_sha256_k47() -> int
+  requires true
+  ensures result == 275423344
+  decreases 0
+=
+  return 275423344
+
+def crypto_sha256_k48() -> int
+  requires true
+  ensures result == 430227734
+  decreases 0
+=
+  return 430227734
+
+def crypto_sha256_k49() -> int
+  requires true
+  ensures result == 506948616
+  decreases 0
+=
+  return 506948616
+
+def crypto_sha256_k50() -> int
+  requires true
+  ensures result == 659060556
+  decreases 0
+=
+  return 659060556
+
+def crypto_sha256_k51() -> int
+  requires true
+  ensures result == 883997877
+  decreases 0
+=
+  return 883997877
+
+def crypto_sha256_k52() -> int
+  requires true
+  ensures result == 958139571
+  decreases 0
+=
+  return 958139571
+
+def crypto_sha256_k53() -> int
+  requires true
+  ensures result == 1322822218
+  decreases 0
+=
+  return 1322822218
+
+def crypto_sha256_k54() -> int
+  requires true
+  ensures result == 1537002063
+  decreases 0
+=
+  return 1537002063
+
+def crypto_sha256_k55() -> int
+  requires true
+  ensures result == 1747873779
+  decreases 0
+=
+  return 1747873779
+
+def crypto_sha256_k56() -> int
+  requires true
+  ensures result == 1955562222
+  decreases 0
+=
+  return 1955562222
+
+def crypto_sha256_k57() -> int
+  requires true
+  ensures result == 2024104815
+  decreases 0
+=
+  return 2024104815
+
+def crypto_sha256_k58() -> int
+  requires true
+  ensures result == 2227730452
+  decreases 0
+=
+  return 2227730452
+
+def crypto_sha256_k59() -> int
+  requires true
+  ensures result == 2361852424
+  decreases 0
+=
+  return 2361852424
+
+def crypto_sha256_k60() -> int
+  requires true
+  ensures result == 2428436474
+  decreases 0
+=
+  return 2428436474
+
+def crypto_sha256_k61() -> int
+  requires true
+  ensures result == 2756734187
+  decreases 0
+=
+  return 2756734187
+
+def crypto_sha256_k62() -> int
+  requires true
+  ensures result == 3204031479
+  decreases 0
+=
+  return 3204031479
+
+def crypto_sha256_k63() -> int
+  requires true
+  ensures result == 3329325298
+  decreases 0
+=
+  return 3329325298
+
+def crypto_sha256_k_at(t: int) -> int
+  requires 0 <= t and t < 64
+  ensures 0 <= result and result < crypto_u32_mask()
+  decreases 0
+=
+  if t == 0:
+    return crypto_sha256_k0()
+  if t == 1:
+    return crypto_sha256_k1()
+  if t == 2:
+    return crypto_sha256_k2()
+  if t == 3:
+    return crypto_sha256_k3()
+  if t == 4:
+    return crypto_sha256_k4()
+  if t == 5:
+    return crypto_sha256_k5()
+  if t == 6:
+    return crypto_sha256_k6()
+  if t == 7:
+    return crypto_sha256_k7()
+  if t == 8:
+    return crypto_sha256_k8()
+  if t == 9:
+    return crypto_sha256_k9()
+  if t == 10:
+    return crypto_sha256_k10()
+  if t == 11:
+    return crypto_sha256_k11()
+  if t == 12:
+    return crypto_sha256_k12()
+  if t == 13:
+    return crypto_sha256_k13()
+  if t == 14:
+    return crypto_sha256_k14()
+  if t == 15:
+    return crypto_sha256_k15()
+  if t == 16:
+    return crypto_sha256_k16()
+  if t == 17:
+    return crypto_sha256_k17()
+  if t == 18:
+    return crypto_sha256_k18()
+  if t == 19:
+    return crypto_sha256_k19()
+  if t == 20:
+    return crypto_sha256_k20()
+  if t == 21:
+    return crypto_sha256_k21()
+  if t == 22:
+    return crypto_sha256_k22()
+  if t == 23:
+    return crypto_sha256_k23()
+  if t == 24:
+    return crypto_sha256_k24()
+  if t == 25:
+    return crypto_sha256_k25()
+  if t == 26:
+    return crypto_sha256_k26()
+  if t == 27:
+    return crypto_sha256_k27()
+  if t == 28:
+    return crypto_sha256_k28()
+  if t == 29:
+    return crypto_sha256_k29()
+  if t == 30:
+    return crypto_sha256_k30()
+  if t == 31:
+    return crypto_sha256_k31()
+  if t == 32:
+    return crypto_sha256_k32()
+  if t == 33:
+    return crypto_sha256_k33()
+  if t == 34:
+    return crypto_sha256_k34()
+  if t == 35:
+    return crypto_sha256_k35()
+  if t == 36:
+    return crypto_sha256_k36()
+  if t == 37:
+    return crypto_sha256_k37()
+  if t == 38:
+    return crypto_sha256_k38()
+  if t == 39:
+    return crypto_sha256_k39()
+  if t == 40:
+    return crypto_sha256_k40()
+  if t == 41:
+    return crypto_sha256_k41()
+  if t == 42:
+    return crypto_sha256_k42()
+  if t == 43:
+    return crypto_sha256_k43()
+  if t == 44:
+    return crypto_sha256_k44()
+  if t == 45:
+    return crypto_sha256_k45()
+  if t == 46:
+    return crypto_sha256_k46()
+  if t == 47:
+    return crypto_sha256_k47()
+  if t == 48:
+    return crypto_sha256_k48()
+  if t == 49:
+    return crypto_sha256_k49()
+  if t == 50:
+    return crypto_sha256_k50()
+  if t == 51:
+    return crypto_sha256_k51()
+  if t == 52:
+    return crypto_sha256_k52()
+  if t == 53:
+    return crypto_sha256_k53()
+  if t == 54:
+    return crypto_sha256_k54()
+  if t == 55:
+    return crypto_sha256_k55()
+  if t == 56:
+    return crypto_sha256_k56()
+  if t == 57:
+    return crypto_sha256_k57()
+  if t == 58:
+    return crypto_sha256_k58()
+  if t == 59:
+    return crypto_sha256_k59()
+  if t == 60:
+    return crypto_sha256_k60()
+  if t == 61:
+    return crypto_sha256_k61()
+  if t == 62:
+    return crypto_sha256_k62()
+  if t == 63:
+    return crypto_sha256_k63()
+  return 0
+
+def crypto_sha256_w_empty_at(t: int) -> int
+  requires 0 <= t and t < 64
+  ensures 0 <= result
+  decreases 0
+=
+  if t == 0:
+    return 2147483648
+  if t == 1:
+    return 0
+  if t == 2:
+    return 0
+  if t == 3:
+    return 0
+  if t == 4:
+    return 0
+  if t == 5:
+    return 0
+  if t == 6:
+    return 0
+  if t == 7:
+    return 0
+  if t == 8:
+    return 0
+  if t == 9:
+    return 0
+  if t == 10:
+    return 0
+  if t == 11:
+    return 0
+  if t == 12:
+    return 0
+  if t == 13:
+    return 0
+  if t == 14:
+    return 0
+  if t == 15:
+    return 0
+  if t == 16:
+    return 2147483648
+  if t == 17:
+    return 0
+  if t == 18:
+    return 2117632
+  if t == 19:
+    return 0
+  if t == 20:
+    return 570427392
+  if t == 21:
+    return 0
+  if t == 22:
+    return 84448578
+  if t == 23:
+    return 2147483648
+  if t == 24:
+    return 1476919296
+  if t == 25:
+    return 4235264
+  if t == 26:
+    return 1451269
+  if t == 27:
+    return 1711282176
+  if t == 28:
+    return 3592562048
+  if t == 29:
+    return 337794312
+  if t == 30:
+    return 3594910044
+  if t == 31:
+    return 3374850048
+  if t == 32:
+    return 3287351444
+  if t == 33:
+    return 676112230
+  if t == 34:
+    return 109604294
+  if t == 35:
+    return 2742808854
+  if t == 36:
+    return 1904000662
+  if t == 37:
+    return 4274181962
+  if t == 38:
+    return 2813755136
+  if t == 39:
+    return 2165675682
+  if t == 40:
+    return 2561075048
+  if t == 41:
+    return 62000258
+  if t == 42:
+    return 1562224585
+  if t == 43:
+    return 2975250741
+  if t == 44:
+    return 3286092305
+  if t == 45:
+    return 614207615
+  if t == 46:
+    return 3297584367
+  if t == 47:
+    return 1575308336
+  if t == 48:
+    return 3741240933
+  if t == 49:
+    return 748767245
+  if t == 50:
+    return 1008022316
+  if t == 51:
+    return 30329261
+  if t == 52:
+    return 369937616
+  if t == 53:
+    return 195877528
+  if t == 54:
+    return 907775968
+  if t == 55:
+    return 3526495142
+  if t == 56:
+    return 43741191
+  if t == 57:
+    return 1967544444
+  if t == 58:
+    return 133517113
+  if t == 59:
+    return 4161330627
+  if t == 60:
+    return 3704256008
+  if t == 61:
+    return 1581412744
+  if t == 62:
+    return 1153231965
+  if t == 63:
+    return 996066459
+  return 0
+
+def crypto_sha256_w_abc_at(t: int) -> int
+  requires 0 <= t and t < 64
+  ensures 0 <= result
+  decreases 0
+=
+  if t == 0:
+    return 1633837952
+  if t == 1:
+    return 0
+  if t == 2:
+    return 0
+  if t == 3:
+    return 0
+  if t == 4:
+    return 0
+  if t == 5:
+    return 0
+  if t == 6:
+    return 0
+  if t == 7:
+    return 0
+  if t == 8:
+    return 0
+  if t == 9:
+    return 0
+  if t == 10:
+    return 0
+  if t == 11:
+    return 0
+  if t == 12:
+    return 0
+  if t == 13:
+    return 0
+  if t == 14:
+    return 0
+  if t == 15:
+    return 24
+  if t == 16:
+    return 1633837952
+  if t == 17:
+    return 983040
+  if t == 18:
+    return 2108187653
+  if t == 19:
+    return 1610613702
+  if t == 20:
+    return 1050508152
+  if t == 21:
+    return 25426944
+  if t == 22:
+    return 316456923
+  if t == 23:
+    return 3806512014
+  if t == 24:
+    return 3357629466
+  if t == 25:
+    return 3073800610
+  if t == 26:
+    return 3854317833
+  if t == 27:
+    return 845560923
+  if t == 28:
+    return 2636160359
+  if t == 29:
+    return 3968280267
+  if t == 30:
+    return 1881225380
+  if t == 31:
+    return 3552024379
+  if t == 32:
+    return 2482346367
+  if t == 33:
+    return 996719219
+  if t == 34:
+    return 2952069057
+  if t == 35:
+    return 4043988066
+  if t == 36:
+    return 176896406
+  if t == 37:
+    return 1924104970
+  if t == 38:
+    return 2483675966
+  if t == 39:
+    return 610538786
+  if t == 40:
+    return 2672279444
+  if t == 41:
+    return 4037431130
+  if t == 42:
+    return 1042573945
+  if t == 43:
+    return 657669027
+  if t == 44:
+    return 206005234
+  if t == 45:
+    return 2215296807
+  if t == 46:
+    return 2049510749
+  if t == 47:
+    return 106709978
+  if t == 48:
+    return 4215179723
+  if t == 49:
+    return 3430291419
+  if t == 50:
+    return 3118885940
+  if t == 51:
+    return 2845390439
+  if t == 52:
+    return 2226839261
+  if t == 53:
+    return 3256115900
+  if t == 54:
+    return 344409900
+  if t == 55:
+    return 2987358873
+  if t == 56:
+    return 4015503821
+  if t == 57:
+    return 3957764664
+  if t == 58:
+    return 2682456414
+  if t == 59:
+    return 2025622859
+  if t == 60:
+    return 2755645205
+  if t == 61:
+    return 1720397816
+  if t == 62:
+    return 4004225740
+  if t == 63:
+    return 313650667
+  return 0
+
+def crypto_sha256_golden_empty_byte(i: int) -> int
+  requires 0 <= i and i < 32
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 227
+  if i == 1:
+    return 176
+  if i == 2:
+    return 196
+  if i == 3:
+    return 66
+  if i == 4:
+    return 152
+  if i == 5:
+    return 252
+  if i == 6:
+    return 28
+  if i == 7:
+    return 20
+  if i == 8:
+    return 154
+  if i == 9:
+    return 251
+  if i == 10:
+    return 244
+  if i == 11:
+    return 200
+  if i == 12:
+    return 153
+  if i == 13:
+    return 111
+  if i == 14:
+    return 185
+  if i == 15:
+    return 36
+  if i == 16:
+    return 39
+  if i == 17:
+    return 174
+  if i == 18:
+    return 65
+  if i == 19:
+    return 228
+  if i == 20:
+    return 100
+  if i == 21:
+    return 155
+  if i == 22:
+    return 147
+  if i == 23:
+    return 76
+  if i == 24:
+    return 164
+  if i == 25:
+    return 149
+  if i == 26:
+    return 153
+  if i == 27:
+    return 27
+  if i == 28:
+    return 120
+  if i == 29:
+    return 82
+  if i == 30:
+    return 184
+  if i == 31:
+    return 85
+  return 0
+
+def crypto_sha256_golden_abc_byte(i: int) -> int
+  requires 0 <= i and i < 32
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 186
+  if i == 1:
+    return 120
+  if i == 2:
+    return 22
+  if i == 3:
+    return 191
+  if i == 4:
+    return 143
+  if i == 5:
+    return 1
+  if i == 6:
+    return 207
+  if i == 7:
+    return 234
+  if i == 8:
+    return 65
+  if i == 9:
+    return 65
+  if i == 10:
+    return 64
+  if i == 11:
+    return 222
+  if i == 12:
+    return 93
+  if i == 13:
+    return 174
+  if i == 14:
+    return 34
+  if i == 15:
+    return 35
+  if i == 16:
+    return 176
+  if i == 17:
+    return 3
+  if i == 18:
+    return 97
+  if i == 19:
+    return 163
+  if i == 20:
+    return 150
+  if i == 21:
+    return 23
+  if i == 22:
+    return 122
+  if i == 23:
+    return 156
+  if i == 24:
+    return 180
+  if i == 25:
+    return 16
+  if i == 26:
+    return 255
+  if i == 27:
+    return 97
+  if i == 28:
+    return 242
+  if i == 29:
+    return 0
+  if i == 30:
+    return 21
+  if i == 31:
+    return 173
+  return 0
+
+def crypto_sha256_digest_empty_byte(i: int) -> int
+  requires 0 <= i and i < 32
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 227
+  if i == 1:
+    return 176
+  if i == 2:
+    return 196
+  if i == 3:
+    return 66
+  if i == 4:
+    return 152
+  if i == 5:
+    return 252
+  if i == 6:
+    return 28
+  if i == 7:
+    return 20
+  if i == 8:
+    return 154
+  if i == 9:
+    return 251
+  if i == 10:
+    return 244
+  if i == 11:
+    return 200
+  if i == 12:
+    return 153
+  if i == 13:
+    return 111
+  if i == 14:
+    return 185
+  if i == 15:
+    return 36
+  if i == 16:
+    return 39
+  if i == 17:
+    return 174
+  if i == 18:
+    return 65
+  if i == 19:
+    return 228
+  if i == 20:
+    return 100
+  if i == 21:
+    return 155
+  if i == 22:
+    return 147
+  if i == 23:
+    return 76
+  if i == 24:
+    return 164
+  if i == 25:
+    return 149
+  if i == 26:
+    return 153
+  if i == 27:
+    return 27
+  if i == 28:
+    return 120
+  if i == 29:
+    return 82
+  if i == 30:
+    return 184
+  if i == 31:
+    return 85
+  return 0
+
+def crypto_sha256_digest_abc_byte(i: int) -> int
+  requires 0 <= i and i < 32
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 186
+  if i == 1:
+    return 120
+  if i == 2:
+    return 22
+  if i == 3:
+    return 191
+  if i == 4:
+    return 143
+  if i == 5:
+    return 1
+  if i == 6:
+    return 207
+  if i == 7:
+    return 234
+  if i == 8:
+    return 65
+  if i == 9:
+    return 65
+  if i == 10:
+    return 64
+  if i == 11:
+    return 222
+  if i == 12:
+    return 93
+  if i == 13:
+    return 174
+  if i == 14:
+    return 34
+  if i == 15:
+    return 35
+  if i == 16:
+    return 176
+  if i == 17:
+    return 3
+  if i == 18:
+    return 97
+  if i == 19:
+    return 163
+  if i == 20:
+    return 150
+  if i == 21:
+    return 23
+  if i == 22:
+    return 122
+  if i == 23:
+    return 156
+  if i == 24:
+    return 180
+  if i == 25:
+    return 16
+  if i == 26:
+    return 255
+  if i == 27:
+    return 97
+  if i == 28:
+    return 242
+  if i == 29:
+    return 0
+  if i == 30:
+    return 21
+  if i == 31:
+    return 173
+  return 0
+
+def crypto_sha256_digest_byte(label: int, idx: int) -> int
+  requires 0 <= idx and idx < 32
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if label == 0:
+    return crypto_sha256_digest_empty_byte(idx)
+  return crypto_sha256_digest_abc_byte(idx)
+
+def crypto_sha256_check_label(label: int, idx: int, acc: int) -> int
+  requires 0 <= idx and idx < 32
+  ensures 0 <= result and result < crypto_u32_mask()
+  decreases 0
+=
+  if acc != 0:
+    return acc
+  var got: int = crypto_sha256_digest_byte(label, idx)
+  if label == 0:
+    if got != crypto_sha256_golden_empty_byte(idx):
+      return 1
+    return 0
+  if got != crypto_sha256_golden_abc_byte(idx):
+    return 2
+  return 0
+
+def crypto_sha256_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var acc: int = 0
+  var i: int = 0
+  while i < 32
+    acc = crypto_sha256_check_label(0, i, acc)
+    i = i + 1
+  i = 0
+  while i < 32
+    acc = crypto_sha256_check_label(1, i, acc)
+    i = i + 1
+  return acc

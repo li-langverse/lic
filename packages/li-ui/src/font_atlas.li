@@ -1,0 +1,363 @@
+# Phase 3 — Font atlas (Inter UI + ui-monospace bitmap @ build time).
+# Canonical split: src/font_atlas.li + font_atlas_data.li (mirrored into lib.li for `import ui`).
+
+def font_atlas_int_as_float(v: int) -> float
+  requires v >= 0
+  requires v <= 16
+  ensures result >= 0.0
+  decreases v
+=
+  if v <= 0:
+    return 0.0
+  if v == 1:
+    return 1.0
+  if v == 2:
+    return 2.0
+  if v == 3:
+    return 3.0
+  if v == 4:
+    return 4.0
+  if v == 5:
+    return 5.0
+  if v == 6:
+    return 6.0
+  if v == 7:
+    return 7.0
+  if v == 8:
+    return 8.0
+  if v == 9:
+    return 9.0
+  if v == 10:
+    return 10.0
+  if v == 11:
+    return 11.0
+  if v == 12:
+    return 12.0
+  if v == 13:
+    return 13.0
+  if v == 14:
+    return 14.0
+  if v == 15:
+    return 15.0
+  return 16.0
+
+def font_atlas_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def font_atlas_build_format_bitmap() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def font_atlas_build_format_sdf() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def font_face_inter() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def font_face_ui_mono() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def font_atlas_first_codepoint() -> int
+  requires true
+  ensures result == 32
+  decreases 0
+=
+  return 32
+
+def font_atlas_last_codepoint() -> int
+  requires true
+  ensures result == 126
+  decreases 0
+=
+  return 126
+
+def font_atlas_glyph_slot_count() -> int
+  requires true
+  ensures result == 95
+  decreases 0
+=
+  return 95
+
+def font_atlas_ui_cols() -> int
+  requires true
+  ensures result == 16
+  decreases 0
+=
+  return 16
+
+def font_atlas_ui_rows() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def font_atlas_ui_cell_w() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def font_atlas_ui_cell_h() -> float
+  requires true
+  ensures result == 12.0
+  decreases 0
+=
+  return 12.0
+
+def font_atlas_mono_cell_w() -> float
+  requires true
+  ensures result == 7.0
+  decreases 0
+=
+  return 7.0
+
+def font_atlas_mono_cell_h() -> float
+  requires true
+  ensures result == 11.0
+  decreases 0
+=
+  return 11.0
+
+def font_atlas_inter_family_token_len() -> int
+  requires true
+  ensures result == studio_typography_ui_family_len()
+  decreases 0
+=
+  return studio_typography_ui_family_len()
+
+def font_atlas_mono_family_token_len() -> int
+  requires true
+  ensures result == studio_typography_mono_family_len()
+  decreases 0
+=
+  return studio_typography_mono_family_len()
+
+type FontGlyphMetrics = object
+  public codepoint: int
+  public atlas_x: float
+  public atlas_y: float
+  public glyph_w: float
+  public glyph_h: float
+  public advance_px: float
+  public bearing_x: float
+  public bearing_y: float
+
+type FontAtlasFace = object
+  public face_id: int
+  public format_id: int
+  public atlas_w: float
+  public atlas_h: float
+  public cell_w: float
+  public cell_h: float
+  public cols: int
+  public rows: int
+  public line_height_px: float
+  public ascent_px: float
+  public descent_px: float
+
+def font_atlas_codepoint_supported(codepoint: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if codepoint < font_atlas_first_codepoint():
+    return 0
+  if codepoint > font_atlas_last_codepoint():
+    return 0
+  return 1
+
+def font_atlas_glyph_index(codepoint: int) -> int
+  requires codepoint >= font_atlas_first_codepoint()
+  requires codepoint <= font_atlas_last_codepoint()
+  ensures result >= 0
+  ensures result < font_atlas_glyph_slot_count()
+  decreases codepoint
+=
+  return codepoint - font_atlas_first_codepoint()
+
+def font_atlas_face_inter_new() -> FontAtlasFace
+  requires true
+  ensures result.face_id == font_face_inter()
+  ensures result.format_id == font_atlas_build_format_bitmap()
+  ensures result.cols == font_atlas_ui_cols()
+  ensures result.rows == font_atlas_ui_rows()
+  decreases 0
+=
+  var f: FontAtlasFace
+  f.face_id = font_face_inter()
+  f.format_id = font_atlas_build_format_bitmap()
+  f.cols = font_atlas_ui_cols()
+  f.rows = font_atlas_ui_rows()
+  f.cell_w = font_atlas_ui_cell_w()
+  f.cell_h = font_atlas_ui_cell_h()
+  f.atlas_w = 128.0
+  f.atlas_h = 72.0
+  f.line_height_px = studio_typography_body_px()
+  f.ascent_px = 10.0
+  f.descent_px = 2.0
+  return f
+
+def font_atlas_face_mono_new() -> FontAtlasFace
+  requires true
+  ensures result.face_id == font_face_ui_mono()
+  ensures result.format_id == font_atlas_build_format_bitmap()
+  ensures result.cols == font_atlas_ui_cols()
+  ensures result.rows == font_atlas_ui_rows()
+  decreases 0
+=
+  var f: FontAtlasFace
+  f.face_id = font_face_ui_mono()
+  f.format_id = font_atlas_build_format_bitmap()
+  f.cols = font_atlas_ui_cols()
+  f.rows = font_atlas_ui_rows()
+  f.cell_w = font_atlas_mono_cell_w()
+  f.cell_h = font_atlas_mono_cell_h()
+  f.atlas_w = 112.0
+  f.atlas_h = 66.0
+  f.line_height_px = studio_typography_caption_px()
+  f.ascent_px = 9.0
+  f.descent_px = 2.0
+  return f
+
+def font_atlas_face_new(face_id: int) -> FontAtlasFace
+  requires face_id == font_face_inter() or face_id == font_face_ui_mono()
+  ensures result.face_id == face_id
+  decreases face_id
+=
+  if face_id == font_face_ui_mono():
+    return font_atlas_face_mono_new()
+  return font_atlas_face_inter_new()
+
+def font_atlas_glyph_advance_px(face: FontAtlasFace, codepoint: int) -> float
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result > 0.0
+  decreases codepoint
+=
+  if face.face_id == font_face_ui_mono():
+    return face.cell_w
+  if codepoint == 32:
+    return 4.0
+  if codepoint >= 65 and codepoint <= 90:
+    return 7.0
+  if codepoint >= 97 and codepoint <= 122:
+    return 6.0
+  return 6.0
+
+def font_atlas_glyph_metrics(face: FontAtlasFace, codepoint: int) -> FontGlyphMetrics
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result.codepoint == codepoint
+  ensures result.glyph_w == face.cell_w
+  ensures result.glyph_h == face.cell_h
+  decreases codepoint
+=
+  var idx: int = font_atlas_glyph_index(codepoint)
+  var col: int = idx % face.cols
+  var row: int = idx / face.cols
+  var m: FontGlyphMetrics
+  m.codepoint = codepoint
+  m.atlas_x = font_atlas_int_as_float(col) * face.cell_w
+  m.atlas_y = font_atlas_int_as_float(row) * face.cell_h
+  m.glyph_w = face.cell_w
+  m.glyph_h = face.cell_h
+  m.advance_px = font_atlas_glyph_advance_px(face, codepoint)
+  m.bearing_x = 0.0
+  m.bearing_y = face.ascent_px - face.cell_h
+  return m
+
+def font_atlas_bitmap_row(face: FontAtlasFace, glyph_index: int, row: int) -> int
+  requires glyph_index >= 0
+  requires glyph_index < font_atlas_glyph_slot_count()
+  requires row >= 0
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= 0
+  decreases glyph_index
+=
+  if face.face_id == font_face_ui_mono():
+    return font_atlas_data_mono_row(glyph_index, row)
+  return font_atlas_data_ui_row(glyph_index, row)
+
+def font_atlas_row_pixel_opaque(row_bits: int, cell_w: int, px: int) -> int
+  requires cell_w >= 1
+  requires px >= 0
+  requires px < cell_w
+  ensures result >= 0
+  ensures result <= 1
+  decreases px
+=
+  var bit_pos: int = cell_w - 1 - px
+  var shifted: int = row_bits
+  var pos: int = 0
+  while pos < bit_pos:
+    shifted = shifted / 2
+    pos = pos + 1
+  if shifted / 2 != shifted / 2:
+    return 1
+  return 0
+
+def font_atlas_sample_alpha(face: FontAtlasFace, codepoint: int, px: int, py: int) -> int
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  requires px >= 0
+  requires py >= 0
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= 0
+  ensures result <= 1
+  decreases codepoint
+=
+  var cell_w_int: int = 8
+  var cell_h_int: int = 12
+  if face.face_id == font_face_ui_mono():
+    cell_w_int = 7
+    cell_h_int = 11
+  if px >= cell_w_int:
+    return 0
+  if py >= cell_h_int:
+    return 0
+  var idx: int = font_atlas_glyph_index(codepoint)
+  var row_bits: int = font_atlas_bitmap_row(face, idx, py)
+  return font_atlas_row_pixel_opaque(row_bits, cell_w_int, px)
+
+def font_atlas_has_ink(face: FontAtlasFace, codepoint: int) -> int
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= 0
+  ensures result <= 1
+  decreases codepoint
+=
+  var cell_w_int: int = 8
+  var cell_h_int: int = 12
+  if face.face_id == font_face_ui_mono():
+    cell_w_int = 7
+    cell_h_int = 11
+  var py: int = 0
+  while py < cell_h_int:
+    var px: int = 0
+    while px < cell_w_int:
+      if font_atlas_sample_alpha(face, codepoint, px, py) == 1:
+        return 1
+      px = px + 1
+    py = py + 1
+  return 0

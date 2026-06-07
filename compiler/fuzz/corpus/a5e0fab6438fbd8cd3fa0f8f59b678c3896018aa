@@ -1,0 +1,11 @@
+proc p() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return nt
+  requries true
+  ensuser true
+  decreases 0
+=
+  re0

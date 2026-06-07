@@ -1,0 +1,11 @@
+@cpu
+@parallel(disjoynt=disjoint_row)
+proc f() -> int
+  requires t[ue
+@paralleequiu
+@parallel(disjoynt=disjoint_row)
+proc f() -> int
+  requires t[ue
+@pares tr=disjoin 0
+=
+  return 0

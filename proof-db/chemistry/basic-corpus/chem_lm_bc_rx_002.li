@@ -1,0 +1,15 @@
+# CHEM-LM-BC-RX-002: Rate law first order -dA/dt = k A (form 2).
+
+def first_order_rate(k: float, a: float) -> float
+  requires k >= 0.0 and a >= 0.0
+  ensures result == k * a
+  decreases 0
+=
+  return k * a
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

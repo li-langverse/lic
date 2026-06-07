@@ -1,0 +1,5 @@
+@cpu
+@para@proc f() -> int
+  in  0
+=
+  return 0

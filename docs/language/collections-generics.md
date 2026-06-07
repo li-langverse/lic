@@ -5,7 +5,7 @@ Li mirrors **Python 3.14** collection typing where possible, compiled to native 
 ## `list[T]`
 
 ```nim
-proc sum(xs: list[int]) -> int
+def sum(xs: list[int]) -> int
 ```
 
 Dynamic length; allocation may `raises Alloc`.
@@ -13,7 +13,7 @@ Dynamic length; allocation may `raises Alloc`.
 ## `dict[K, V]`
 
 ```nim
-proc lookup(m: dict[str, int], key: str) -> int
+def lookup(m: dict[str, int], key: str) -> int
 ```
 
 Arity and key types are checked statically.
@@ -44,7 +44,7 @@ type Mode = enum
 ## Generics (PEP 695)
 
 ```nim
-proc box[T](x: T) -> T
+def box[T](x: T) -> T
   requires true
   ensures result == x
   decreases 0
@@ -52,7 +52,7 @@ proc box[T](x: T) -> T
   return x
 ```
 
-Type parameters in square brackets on `proc` and `type`.
+Type parameters in square brackets on `def` and `type`.
 
 ## `Protocol` and `Callable`
 

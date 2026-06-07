@@ -4,6 +4,9 @@
 > **Blocks:** Tier 1 `matmul_*` / `simd_dot` benchmarks with **pure math source** (no user `simd(...)` / intrinsics)  
 > **Design spec addendum:** `docs/superpowers/specs/2026-05-16-li-math-linalg-surface.md` (to land with phase)
 
+**Proof gaps (Doc-c):** [G-math](../../verification/provability-gaps.md#g-math) · [G-math-syn](../../verification/provability-gaps.md#g-math-syn) · [G-dec](../../verification/provability-gaps.md#g-dec) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)  
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
+
 ## Principle (binding)
 
 **Users write mathematics.** The compiler and stdlib lower to `simd`, `parallel for`, OpenMP, and (later) GPU — same as today’s proved cores.
@@ -105,8 +108,9 @@ flowchart LR
 | Sub | Deliverable | Exit |
 |-----|-------------|------|
 | **2i-a** | Infix `*`, `+`, `-`, `/`, `**` on numeric arrays; `sum`; parse + types | `li-tests/math_linalg/scalar_elementwise/` |
-| **2i-b** | `dot`, `norm`; reduction lowering | `li-tests/math_linalg/reductions/` |
-| **2i-c** | Binary `@` for 2D matmul desugar (fixed small shapes + `tensor` when ready) | `li-tests/math_linalg/matmul/` |
+| **2i-b** | `dot`, `norm`, `axpy`, `**`, reductions | **partial** — prelude `dot`/`norm`/`axpy`; `math_linalg/reductions/`; float Lean Props open |
+| **2i-c** | Binary `@` for 2D matmul desugar (fixed small shapes + `tensor` when ready) | **done** — `matmul_*.li` on `main` |
+| **2f / P-linalg** | `requires`/`ensures` on fixed dot/sum/matmul entry | **partial (#151)** — closed int specimens; loop dot open |
 | **7e-a** | Connect math expr lowering to existing 7a SIMD MIR | `simd_dot` Li source has **zero** `__li_simd_*` in user file |
 | **7e-b** | Matmul math + decorators in Tier 1 benches | `bench.py --tier 1` CSV: li vs cpp/rust/julia |
 | **7e-c** | Docs + gallery | See below |
@@ -162,7 +166,11 @@ Use existing [benchmarks plan](2026-05-14-benchmarks-and-simulations.md) harness
 
 ## Exit gate
 
-- [ ] `./li-tests/run_all.sh math_linalg`
-- [ ] Tier 1 Li benchmarks use math-only sources; `bench.py --tier 1` smoke in CI
-- [ ] Handbook pages published with samples above
-- [ ] No user-facing doc recommends `__li_simd_*` as the default path
+- [x] `./li-tests/run_all.sh math_linalg`
+- [x] Tier 1 Li benchmarks use math-only sources (`li_pure=True` on `simd_dot`, `matmul_*`)
+- [x] Handbook pages published (`linear-algebra.md`, `math-hpc-examples.md`)
+- [x] No user-facing doc recommends `__li_simd_*` as the default path
+- [x] **2i-b** `norm`, `sum`/`dot`, `reductions/` suite; same-length `**` / prelude `axpy` / scalar×array (no broadcast) — float Lean Props still open
+- [x] **2i-broadcast** length-1 element-wise broadcast (`broadcast_len1_*.li`); non-broadcast length mismatch (`broadcast_invalid_len2_vs_len4.li`, `elementwise_len_mismatch.li`) — full NumPy rank rules open
+- [x] **P-linalg** loop implementation ≡ closed-form `ensures` in Lean (**G-lean**) (`linalg_dot4_int_loop_open.li` + `discharge_linalg_int_lean.sh`; float Props still **G-math** open)
+- [ ] Tier 1 perf ≤1.2× C++ (benchmarks dashboard)

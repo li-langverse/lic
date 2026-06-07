@@ -1,0 +1,5 @@
+@cpu
+@paralell(disjoint=disjoint_row,
+proc fses 0
+=
+  robj 0

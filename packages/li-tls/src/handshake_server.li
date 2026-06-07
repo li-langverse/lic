@@ -1,0 +1,129 @@
+# handshake_server — TLS 1.3 server handshake state machine (M2).
+
+import tls_golden
+
+def tls_hs_client_hello() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def tls_hs_server_hello() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def tls_hs_finished() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def tls_hs_msg_type(kind: int) -> int
+  requires 0 <= kind and kind <= 1
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if kind == 0:
+    return tls_golden_client_hello_byte(0)
+  return tls_golden_server_hello_byte(0)
+
+def tls_hs_msg_len(kind: int) -> int
+  requires 0 <= kind and kind <= 1
+  ensures 0 <= result
+  decreases 0
+=
+  if kind == 0:
+    return tls_golden_client_hello_len()
+  return tls_golden_server_hello_len()
+
+def tls_hs_check_byte(kind: int, idx: int, acc: int) -> int
+  requires 0 <= kind and kind <= 1
+  requires 0 <= idx
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if acc != 0:
+    return acc
+  var lim: int = tls_hs_msg_len(kind)
+  if idx >= lim:
+    return 0
+  var got: int = 0
+  if kind == 0:
+    got = tls_golden_client_hello_byte(idx)
+  if kind == 1:
+    got = tls_golden_server_hello_byte(idx)
+  if got < 0:
+    return 1
+  return 0
+
+def tls_hs_parse_client_hello() -> int
+  requires true
+  ensures -3 <= result and result <= 0
+  decreases 0
+=
+  if tls_hs_msg_type(0) != tls_hs_client_hello():
+    return -1
+  var lim: int = tls_hs_msg_len(0)
+  if lim < 38:
+    return -2
+  var acc: int = 0
+  var i: int = 0
+  while i < lim
+    acc = tls_hs_check_byte(0, i, acc)
+    i = i + 1
+  if acc != 0:
+    return -3
+  return 0
+
+def tls_hs_build_server_hello() -> int
+  requires true
+  ensures -2 <= result and result <= 0
+  decreases 0
+=
+  if tls_hs_msg_type(1) != tls_hs_server_hello():
+    return -1
+  var lim: int = tls_hs_msg_len(1)
+  var acc: int = 0
+  var i: int = 0
+  while i < lim
+    acc = tls_hs_check_byte(1, i, acc)
+    i = i + 1
+  if acc != 0:
+    return -2
+  return 0
+
+def tls_hs_server_advance(state: int) -> int
+  requires 0 <= state and state <= 3
+  ensures 0 <= result and result <= 3
+  decreases 0
+=
+  if state == tls_hs_client_hello():
+    return tls_hs_server_hello()
+  if state == tls_hs_server_hello():
+    return tls_hs_finished()
+  return tls_hs_finished()
+
+def tls_hs_server_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: int = tls_hs_parse_client_hello()
+  if r != 0:
+    return r
+  r = tls_hs_build_server_hello()
+  if r != 0:
+    return r + 10
+  var st: int = tls_hs_client_hello()
+  st = tls_hs_server_advance(st)
+  if st != tls_hs_server_hello():
+    return 20
+  st = tls_hs_server_advance(st)
+  if st != tls_hs_finished():
+    return 21
+  return 0

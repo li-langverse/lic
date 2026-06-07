@@ -1,0 +1,10 @@
+@cpu
+@parallel(disj_row)
+proc f() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  returres tru
+  eensures true
+  decr

@@ -33,6 +33,11 @@ if [[ -d "$ROOT/packages" ]]; then
     fi
     check_file "$(dirname "$pub")/CHANGELOG.md"
     check_file "$(dirname "$pub")/SECURITY.md"
+    ci="$(dirname "$pub")/.github/workflows/ci.yml"
+    if [[ ! -f "$ci" ]]; then
+      echo "FAIL $ci: missing (run ./scripts/ensure-package-ci.sh)"
+      FAIL=1
+    fi
   done
 fi
 

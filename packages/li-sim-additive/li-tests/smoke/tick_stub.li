@@ -1,0 +1,10 @@
+import sim.additive
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_additive_tick_stub(2) != 1:
+    return 1
+  return 0

@@ -1,0 +1,2 @@
+proc p() -> int
+  requires aparallel(disjoin)res urn 0

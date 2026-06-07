@@ -4,6 +4,8 @@
 
 **Goal:** Official Li software and standard packages live under a **defined GitHub organization**, with documentation and metadata that meet **international conventions** and a **traceability chain** from requirements → design → tests → releases.
 
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability gaps](../../verification/provability-gaps.md) (honesty for `proof_digest` / release claims — **G-*** updated only with compiler evidence)
+
 ---
 
 ## GitHub organization policy
@@ -212,10 +214,10 @@ Third-party packages are **not** listed here; they appear only in the public `li
 
 ## Exit gate (governance slice)
 
-- [ ] Confirm org access: `gh api orgs/li-langverse` (or org owner invites bot/users)
-- [ ] `docs/ecosystem/official-packages.md` with `PKG-` table (all repos under `li-langverse`)
+- [x] Confirm org access: `gh api orgs/li-langverse` (or org owner invites bot/users)
+- [x] `docs/ecosystem/official-packages.md` with `PKG-` table (all repos under `li-langverse`)
 - [ ] On execute: align `mkdocs.yml` `repo_url` / GitHub Pages with `li-langverse/li-language` when repo home moves
-- [ ] `docs/ecosystem/governance.md` user-facing summary (links here)
-- [ ] `scripts/templates/github-repo/` + `scripts/check-traceability.sh`
-- [ ] `create-li-package` skill: `--official` → org checklist
-- [ ] At least one example package `PUBLISH.md` with full traceability block in monorepo
+- [x] `docs/ecosystem/governance.md` user-facing summary (links here)
+- [x] `scripts/templates/github-repo/` + `scripts/check-traceability.sh`
+- [x] `create-li-package` skill: `--official` → org checklist
+- [x] At least one example package `PUBLISH.md` with full traceability block in monorepo (`packages/li-demo/PUBLISH.md`, …)

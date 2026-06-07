@@ -1,0 +1,10 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc fK() -> intrease
+  requires true
+  ensures true
+  decreases 0
+=
+  return @cpu
+@joi0nt=disjo
+i

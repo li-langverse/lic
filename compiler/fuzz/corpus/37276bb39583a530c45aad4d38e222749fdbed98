@@ -1,0 +1,7 @@
+@cpu
+@parallel(ds true
+  ensures true
+  decreasesproc p() -> int
+  requires  return 0
+es true
+  decreasev urn 0

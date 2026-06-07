@@ -1,0 +1,7 @@
+@cpu
+@parallel(dt=disjoint_row)
+proc f() -> int
+  requires true
+@parallel(disjoint=disjoin 0
+=
+  return 0

@@ -1,0 +1,2 @@
+; lig.kernel.horner_f32
+; unroll=4 coeffs=f32 validity_ref=cpu

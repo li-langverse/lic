@@ -1,0 +1,31 @@
+# key — KeyKind loaders (Ed25519 live; ECDSA/RSA verify stubs Phase 2+).
+
+def crypto_key_kind_ed25519() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def crypto_key_kind_ecdsa_p256() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def crypto_key_kind_rsa2048() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def crypto_key_kind_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if crypto_key_kind_ed25519() != 1:
+    return 1
+  return 0

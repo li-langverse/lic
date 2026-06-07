@@ -1,0 +1,18 @@
+# WP0-D: Python bisect parity sketch (compile-only until WP-WA + WP1).
+# Maps: bisect_left/bisect_right → std/algorithms/search.li (WP2b).
+# Bench: stdlib_binary_search.
+
+def bisect_left_proxy(sorted: array[8, int], x: int) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var data: array[8, int]
+  return bisect_left_proxy(data, 42)

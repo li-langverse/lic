@@ -1,0 +1,22 @@
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var run: StudioAgentRun = studio_agent_run_complete(studio_agent_context_world())
+  if studio_agent_run_complete_ok(run) != 1:
+    return 1
+  var request: StudioAgentToolRequest = studio_agent_tool_request_for_run(run)
+  if request.tool_id != studio_mcp_lic_build():
+    return 2
+  if request.status != studio_mcp_tool_status_ok():
+    return 3
+  if run.used_html_mock != 0:
+    return 4
+  if run.check_step_done != 1:
+    return 5
+  if run.build_step_done != 1:
+    return 6
+  return 0

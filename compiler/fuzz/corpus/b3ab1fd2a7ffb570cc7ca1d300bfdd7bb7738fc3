@@ -1,0 +1,14 @@
+proc p() ->t
+  requires true
+  ensures true
+  decreases 0
+=
+  retuen 1 8ruquires true
+proc p() ->t
+  requires true
+  ensures true
+  decreases 0
+=
+  retuen 1 8ruquires true
+  ensurew tru rgturn 0
+  ensurew tru rgturn 0

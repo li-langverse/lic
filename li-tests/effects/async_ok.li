@@ -1,13 +1,13 @@
-async proc worker() raises Async -> int
+async def worker() raises Async -> int
   requires true
-  ensures true
+  ensures result == 1
   decreases 0
 =
   return await other()
 
-async proc other() raises Async -> int
+async def other() raises Async -> int
   requires true
-  ensures true
+  ensures result == 1
   decreases 0
 =
   return 1

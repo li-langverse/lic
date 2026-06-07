@@ -3,12 +3,12 @@
 Li is **provable-only** by design: if proof obligations are not discharged, there should be **no binary**.
 
 !!! note "Implementation status"
-    **Today:** contracts are required in the surface grammar and checked for well-formedness, but **Lean 4 discharge is not wired into `lic build` yet**. See **[Provability gaps](../verification/provability-gaps.md)** for the live gap register.
+    **Today:** every `lic build` emits `build/generated/AutoVC.lean` and runs **Lean typecheck** when `lake` is installed; **open** obligations fail the build unless `--allow-open-vc`. Kernel discharge of all ensures is still **partial** — see **[Provability gaps](../verification/provability-gaps.md)**.
 
 ## On every procedure
 
 ```nim
-proc sqrt_pos(x: float) -> float
+def sqrt_pos(x: float) -> float
   requires x >= 0.0
   ensures result >= 0.0
   decreases 0
@@ -19,6 +19,7 @@ proc sqrt_pos(x: float) -> float
 | Clause | Role |
 |--------|------|
 | `requires` | Precondition — caller must establish this |
+| `implies` | Material implication in contract expressions (`P implies Q` ≡ `not P or Q`) |
 | `ensures` | Postcondition — true on return (`result` names the return value) |
 | `decreases` | Termination measure for the procedure body |
 
@@ -45,8 +46,9 @@ while n < limit
 |----------|-----|
 | Type safety | Static checker |
 | Index bounds | Refinements + checks |
+| Value domains (`{x: int \| …}`) | Refinement types — **E0305** when provably violated; VC otherwise ([refinement-types](refinement-types.md)) |
 | Memory / borrow | Borrow checker |
-| Contract obligations | Lean 4 VC generation (**planned** — Phase 2e–2f) |
+| Contract obligations | Lean 4 VC generation (**partial** — proc + call-site `requires` + refinement VCs; see [gaps](../verification/provability-gaps.md)) |
 | Parallel races | Disjointness + `Send`/`Sync` (**partial** — policy heuristics today) |
 | No `Any` / `sorry` | Hard reject |
 
@@ -72,6 +74,7 @@ Proofs are checked by the **Lean 4 kernel**, not by “we ran tests and it looke
 | Mistake | What Li does |
 |---------|----------------|
 | Missing `decreases` | Compile error |
+| `ensures true` on `-> float` / `-> int` / struct | **Compile error E0303** — postcondition must mention `result` |
 | `ensures` too weak | May still prove, but you lied — review specs |
 | `ensures` too strong | Proof fails — strengthen code or weaken spec honestly |
 | Using `sorry` | Rejected |

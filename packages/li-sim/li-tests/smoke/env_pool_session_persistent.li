@@ -1,0 +1,43 @@
+import sim
+
+# WP-SIM-03 — pool counters survive on SimSessionStub across batched steps (not stack-only stub).
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var sess: SimSessionStub = sim_session_stub_default()
+  sim_session_apply_studio_profile(2, sess)
+  if sess.env_pool_size != 0:
+    return 1
+  if sim_rl_session_env_pool_step(sess, 0.02) != sim_status_ok():
+    return 2
+  var psz: int = sim_rl_env_pool_size_default()
+  if sess.env_pool_size != psz:
+    return 3
+  var steps0: int = sess.env_pool_steps_emitted
+  var reward0: float = sess.env_pool_total_reward
+  if steps0 != psz:
+    return 4
+  if reward0 <= 0.0:
+    return 5
+  if sim_reset(sess) != sim_status_ok():
+    return 6
+  if sess.env_pool_size != psz:
+    return 7
+  if sess.env_pool_steps_emitted != 0:
+    return 8
+  if sim_rl_session_env_pool_step(sess, 0.02) != sim_status_ok():
+    return 9
+  if sess.env_pool_steps_emitted != psz:
+    return 10
+  if sess.env_pool_total_reward <= 0.0:
+    return 11
+  if sess.env_pool_total_reward <= reward0:
+    return 12
+  var obs: EnvStepResult = env_obs_from_session(sess)
+  if obs.obs1 != sess.last_dt:
+    return 13
+  if obs.env_index != psz - 1:
+    return 14
+  return 0

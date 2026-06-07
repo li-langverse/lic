@@ -1,0 +1,8 @@
+import tls
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return li_tls_m2_selftest()

@@ -1,0 +1,30 @@
+# PH-SCI-GPU-13: @gpu bicycle kinematic integration loop.
+import sim.automotive
+
+@gpu
+def auto_gpu_bicycle_smoke() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var pose: AutomotivePose
+  automotive_pose_init(pose)
+  pose.speed_mps = 10.0
+  var wheelbase: float = sim_automotive_bicycle_wheelbase_default()
+  var n: int = 0
+  while n < 32:
+    sim_automotive_pose_integrate(pose, 0.02, wheelbase, 0.01)
+    n = n + 1
+  if pose.x_m <= 0.0:
+    return 0
+  return 1
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if auto_gpu_bicycle_smoke() != 1:
+    return 1
+  return 0

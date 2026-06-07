@@ -1,0 +1,4 @@
+@pu
+@parallel(disSjoint=disjoint_row)
+proc f() -> int
+  requires truuires turn 1

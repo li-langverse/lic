@@ -1,0 +1,1063 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake:233 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Linux - 6.6.87.2-microsoft-standard-WSL2 - x86_64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /usr/bin/clang-22 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is Clang, found in:
+        /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/3.28.3/CompilerIdC/a.out
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /usr/bin/clang++-22 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+      
+      The CXX compiler identification is Clang, found in:
+        /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/3.28.3/CompilerIdCXX/a.out
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-EUFtkL"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-EUFtkL"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-EUFtkL'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_c906b
+        [1/2] /usr/bin/clang-22   -v -MD -MT CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.28/Modules/CMakeCCompilerABI.c
+        Ubuntu clang version 22.1.6 (++20260516103140+fc4aad7b5db3-1~exp1~20260516103204.74)
+        Target: x86_64-pc-linux-gnu
+        Thread model: posix
+        InstalledDir: /usr/lib/llvm-22/bin
+        Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13
+        Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13
+        Candidate multilib: .;@m64
+        Selected multilib: .;@m64
+         (in-process)
+         "/usr/lib/llvm-22/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-EUFtkL -v -fcoverage-compilation-dir=/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-EUFtkL -resource-dir /usr/lib/llvm-22/lib/clang/22 -dependency-file CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/llvm-22/lib/clang/22/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -ferror-limit 19 -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -faddrsig -fdwarf2-cfi-asm -o CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.28/Modules/CMakeCCompilerABI.c
+        clang -cc1 version 22.1.6 based upon LLVM 22.1.6 default target x86_64-pc-linux-gnu
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include"
+        ignoring nonexistent directory "/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/lib/llvm-22/lib/clang/22/include
+         /usr/local/include
+         /usr/include/x86_64-linux-gnu
+         /usr/include
+        End of search list.
+        [2/2] : && /usr/bin/clang-22  -v CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -o cmTC_c906b   && :
+        Ubuntu clang version 22.1.6 (++20260516103140+fc4aad7b5db3-1~exp1~20260516103204.74)
+        Target: x86_64-pc-linux-gnu
+        Thread model: posix
+        InstalledDir: /usr/lib/llvm-22/bin
+        Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13
+        Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13
+        Candidate multilib: .;@m64
+        Selected multilib: .;@m64
+         "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -pie -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_c906b /lib/x86_64-linux-gnu/Scrt1.o /lib/x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/13 -L/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64 -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib64 -L/lib -L/usr/lib CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o /lib/x86_64-linux-gnu/crtn.o
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake:127 (message)"
+      - "/usr/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed C implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/lib/llvm-22/lib/clang/22/include]
+          add: [/usr/local/include]
+          add: [/usr/include/x86_64-linux-gnu]
+          add: [/usr/include]
+        end of search list found
+        collapse include dir [/usr/lib/llvm-22/lib/clang/22/include] ==> [/usr/lib/llvm-22/lib/clang/22/include]
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+        collapse include dir [/usr/include] ==> [/usr/include]
+        implicit include dirs: [/usr/lib/llvm-22/lib/clang/22/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake:159 (message)"
+      - "/usr/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld\\.lld-22|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        ignore line: [Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-EUFtkL']
+        ignore line: []
+        ignore line: [Run Build Command(s): /usr/bin/ninja -v cmTC_c906b]
+        ignore line: [[1/2] /usr/bin/clang-22   -v -MD -MT CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.28/Modules/CMakeCCompilerABI.c]
+        ignore line: [Ubuntu clang version 22.1.6 (++20260516103140+fc4aad7b5db3-1~exp1~20260516103204.74)]
+        ignore line: [Target: x86_64-pc-linux-gnu]
+        ignore line: [Thread model: posix]
+        ignore line: [InstalledDir: /usr/lib/llvm-22/bin]
+        ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13]
+        ignore line: [Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13]
+        ignore line: [Candidate multilib: .]
+        ignore line: [@m64]
+        ignore line: [Selected multilib: .]
+        ignore line: [@m64]
+        ignore line: [ (in-process)]
+        ignore line: [ "/usr/lib/llvm-22/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-EUFtkL -v -fcoverage-compilation-dir=/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-EUFtkL -resource-dir /usr/lib/llvm-22/lib/clang/22 -dependency-file CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/llvm-22/lib/clang/22/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -ferror-limit 19 -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -faddrsig -fdwarf2-cfi-asm -o CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.28/Modules/CMakeCCompilerABI.c]
+        ignore line: [clang -cc1 version 22.1.6 based upon LLVM 22.1.6 default target x86_64-pc-linux-gnu]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include"]
+        ignore line: [ignoring nonexistent directory "/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/lib/llvm-22/lib/clang/22/include]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /usr/include/x86_64-linux-gnu]
+        ignore line: [ /usr/include]
+        ignore line: [End of search list.]
+        ignore line: [[2/2] : && /usr/bin/clang-22  -v CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -o cmTC_c906b   && :]
+        ignore line: [Ubuntu clang version 22.1.6 (++20260516103140+fc4aad7b5db3-1~exp1~20260516103204.74)]
+        ignore line: [Target: x86_64-pc-linux-gnu]
+        ignore line: [Thread model: posix]
+        ignore line: [InstalledDir: /usr/lib/llvm-22/bin]
+        ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13]
+        ignore line: [Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13]
+        ignore line: [Candidate multilib: .]
+        ignore line: [@m64]
+        ignore line: [Selected multilib: .]
+        ignore line: [@m64]
+        link line: [ "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -pie -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_c906b /lib/x86_64-linux-gnu/Scrt1.o /lib/x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/13 -L/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64 -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib64 -L/lib -L/usr/lib CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o /lib/x86_64-linux-gnu/crtn.o]
+          arg [/usr/bin/ld] ==> ignore
+          arg [-zrelro] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_c906b] ==> ignore
+          arg [/lib/x86_64-linux-gnu/Scrt1.o] ==> obj [/lib/x86_64-linux-gnu/Scrt1.o]
+          arg [/lib/x86_64-linux-gnu/crti.o] ==> obj [/lib/x86_64-linux-gnu/crti.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/13] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/13]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64]
+          arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+          arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+          arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+          arg [-L/usr/lib64] ==> dir [/usr/lib64]
+          arg [-L/lib] ==> dir [/lib]
+          arg [-L/usr/lib] ==> dir [/usr/lib]
+          arg [CMakeFiles/cmTC_c906b.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [-lgcc] ==> lib [gcc]
+          arg [--as-needed] ==> ignore
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [--no-as-needed] ==> ignore
+          arg [-lc] ==> lib [c]
+          arg [-lgcc] ==> lib [gcc]
+          arg [--as-needed] ==> ignore
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [--no-as-needed] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o]
+          arg [/lib/x86_64-linux-gnu/crtn.o] ==> obj [/lib/x86_64-linux-gnu/crtn.o]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/13] ==> [/usr/lib/gcc/x86_64-linux-gnu/13]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64] ==> [/usr/lib64]
+        collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+        collapse library dir [/lib/../lib64] ==> [/lib64]
+        collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib64] ==> [/usr/lib64]
+        collapse library dir [/lib] ==> [/lib]
+        collapse library dir [/usr/lib] ==> [/usr/lib]
+        implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+        implicit objs: [/lib/x86_64-linux-gnu/Scrt1.o;/lib/x86_64-linux-gnu/crti.o;/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o;/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o;/lib/x86_64-linux-gnu/crtn.o]
+        implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/13;/usr/lib64;/lib/x86_64-linux-gnu;/lib64;/usr/lib/x86_64-linux-gnu;/lib;/usr/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-qrJu4O"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-qrJu4O"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-qrJu4O'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_db2c2
+        [1/2] /usr/bin/clang++-22   -v -MD -MT CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp
+        Ubuntu clang version 22.1.6 (++20260516103140+fc4aad7b5db3-1~exp1~20260516103204.74)
+        Target: x86_64-pc-linux-gnu
+        Thread model: posix
+        InstalledDir: /usr/lib/llvm-22/bin
+        Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13
+        Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13
+        Candidate multilib: .;@m64
+        Selected multilib: .;@m64
+         (in-process)
+         "/usr/lib/llvm-22/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-qrJu4O -v -fcoverage-compilation-dir=/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-qrJu4O -resource-dir /usr/lib/llvm-22/lib/clang/22 -dependency-file CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward -internal-isystem /usr/lib/llvm-22/lib/clang/22/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdeprecated-macro -ferror-limit 19 -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -faddrsig -fdwarf2-cfi-asm -o CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp
+        clang -cc1 version 22.1.6 based upon LLVM 22.1.6 default target x86_64-pc-linux-gnu
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include"
+        ignoring nonexistent directory "/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13
+         /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13
+         /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward
+         /usr/lib/llvm-22/lib/clang/22/include
+         /usr/local/include
+         /usr/include/x86_64-linux-gnu
+         /usr/include
+        End of search list.
+        [2/2] : && /usr/bin/clang++-22  -v CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_db2c2   && :
+        Ubuntu clang version 22.1.6 (++20260516103140+fc4aad7b5db3-1~exp1~20260516103204.74)
+        Target: x86_64-pc-linux-gnu
+        Thread model: posix
+        InstalledDir: /usr/lib/llvm-22/bin
+        Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13
+        Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13
+        Candidate multilib: .;@m64
+        Selected multilib: .;@m64
+         "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -pie -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_db2c2 /lib/x86_64-linux-gnu/Scrt1.o /lib/x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/13 -L/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64 -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib64 -L/lib -L/usr/lib CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o /lib/x86_64-linux-gnu/crtn.o
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake:127 (message)"
+      - "/usr/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13]
+          add: [/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13]
+          add: [/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward]
+          add: [/usr/lib/llvm-22/lib/clang/22/include]
+          add: [/usr/local/include]
+          add: [/usr/include/x86_64-linux-gnu]
+          add: [/usr/include]
+        end of search list found
+        collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13] ==> [/usr/include/c++/13]
+        collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13] ==> [/usr/include/x86_64-linux-gnu/c++/13]
+        collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward] ==> [/usr/include/c++/13/backward]
+        collapse include dir [/usr/lib/llvm-22/lib/clang/22/include] ==> [/usr/lib/llvm-22/lib/clang/22/include]
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+        collapse include dir [/usr/include] ==> [/usr/include]
+        implicit include dirs: [/usr/include/c++/13;/usr/include/x86_64-linux-gnu/c++/13;/usr/include/c++/13/backward;/usr/lib/llvm-22/lib/clang/22/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake:159 (message)"
+      - "/usr/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld\\.lld-22|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        ignore line: [Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-qrJu4O']
+        ignore line: []
+        ignore line: [Run Build Command(s): /usr/bin/ninja -v cmTC_db2c2]
+        ignore line: [[1/2] /usr/bin/clang++-22   -v -MD -MT CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Ubuntu clang version 22.1.6 (++20260516103140+fc4aad7b5db3-1~exp1~20260516103204.74)]
+        ignore line: [Target: x86_64-pc-linux-gnu]
+        ignore line: [Thread model: posix]
+        ignore line: [InstalledDir: /usr/lib/llvm-22/bin]
+        ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13]
+        ignore line: [Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13]
+        ignore line: [Candidate multilib: .]
+        ignore line: [@m64]
+        ignore line: [Selected multilib: .]
+        ignore line: [@m64]
+        ignore line: [ (in-process)]
+        ignore line: [ "/usr/lib/llvm-22/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-qrJu4O -v -fcoverage-compilation-dir=/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-qrJu4O -resource-dir /usr/lib/llvm-22/lib/clang/22 -dependency-file CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward -internal-isystem /usr/lib/llvm-22/lib/clang/22/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdeprecated-macro -ferror-limit 19 -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -faddrsig -fdwarf2-cfi-asm -o CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [clang -cc1 version 22.1.6 based upon LLVM 22.1.6 default target x86_64-pc-linux-gnu]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include"]
+        ignore line: [ignoring nonexistent directory "/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13]
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13]
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward]
+        ignore line: [ /usr/lib/llvm-22/lib/clang/22/include]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /usr/include/x86_64-linux-gnu]
+        ignore line: [ /usr/include]
+        ignore line: [End of search list.]
+        ignore line: [[2/2] : && /usr/bin/clang++-22  -v CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_db2c2   && :]
+        ignore line: [Ubuntu clang version 22.1.6 (++20260516103140+fc4aad7b5db3-1~exp1~20260516103204.74)]
+        ignore line: [Target: x86_64-pc-linux-gnu]
+        ignore line: [Thread model: posix]
+        ignore line: [InstalledDir: /usr/lib/llvm-22/bin]
+        ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13]
+        ignore line: [Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/13]
+        ignore line: [Candidate multilib: .]
+        ignore line: [@m64]
+        ignore line: [Selected multilib: .]
+        ignore line: [@m64]
+        link line: [ "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -pie -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_db2c2 /lib/x86_64-linux-gnu/Scrt1.o /lib/x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/13 -L/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64 -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib64 -L/lib -L/usr/lib CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o /lib/x86_64-linux-gnu/crtn.o]
+          arg [/usr/bin/ld] ==> ignore
+          arg [-zrelro] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_db2c2] ==> ignore
+          arg [/lib/x86_64-linux-gnu/Scrt1.o] ==> obj [/lib/x86_64-linux-gnu/Scrt1.o]
+          arg [/lib/x86_64-linux-gnu/crti.o] ==> obj [/lib/x86_64-linux-gnu/crti.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/13] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/13]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64]
+          arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+          arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+          arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+          arg [-L/usr/lib64] ==> dir [/usr/lib64]
+          arg [-L/lib] ==> dir [/lib]
+          arg [-L/usr/lib] ==> dir [/usr/lib]
+          arg [CMakeFiles/cmTC_db2c2.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+          arg [-lstdc++] ==> lib [stdc++]
+          arg [-lm] ==> lib [m]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o]
+          arg [/lib/x86_64-linux-gnu/crtn.o] ==> obj [/lib/x86_64-linux-gnu/crtn.o]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/13] ==> [/usr/lib/gcc/x86_64-linux-gnu/13]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64] ==> [/usr/lib64]
+        collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+        collapse library dir [/lib/../lib64] ==> [/lib64]
+        collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib64] ==> [/usr/lib64]
+        collapse library dir [/lib] ==> [/lib]
+        collapse library dir [/usr/lib] ==> [/usr/lib]
+        implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+        implicit objs: [/lib/x86_64-linux-gnu/Scrt1.o;/lib/x86_64-linux-gnu/crti.o;/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o;/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o;/lib/x86_64-linux-gnu/crtn.o]
+        implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/13;/usr/lib64;/lib/x86_64-linux-gnu;/lib64;/usr/lib/x86_64-linux-gnu;/lib;/usr/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/FindFFI.cmake:62 (check_c_source_compiles)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/LLVMConfig.cmake:295 (find_package)"
+      - "CMakeLists.txt:24 (find_package)"
+    checks:
+      - "Performing Test HAVE_FFI_CALL"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-4q11oH"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-4q11oH"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "HAVE_FFI_CALL"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-4q11oH'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_fd6ff
+        [1/2] /usr/bin/clang-22 -DHAVE_FFI_CALL   -MD -MT CMakeFiles/cmTC_fd6ff.dir/src.c.o -MF CMakeFiles/cmTC_fd6ff.dir/src.c.o.d -o CMakeFiles/cmTC_fd6ff.dir/src.c.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-4q11oH/src.c
+        [2/2] : && /usr/bin/clang-22   CMakeFiles/cmTC_fd6ff.dir/src.c.o -o cmTC_fd6ff  /usr/lib/x86_64-linux-gnu/libffi.so && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CheckIncludeFile.cmake:90 (try_compile)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/FindLibEdit.cmake:28 (check_include_file)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/LLVMConfig.cmake:302 (find_package)"
+      - "CMakeLists.txt:24 (find_package)"
+    checks:
+      - "Looking for histedit.h"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-pDN8wB"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-pDN8wB"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "HAVE_HISTEDIT_H"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-pDN8wB'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_18b3d
+        [1/2] /usr/bin/clang-22    -MD -MT CMakeFiles/cmTC_18b3d.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_18b3d.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_18b3d.dir/CheckIncludeFile.c.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-pDN8wB/CheckIncludeFile.c
+        [2/2] : && /usr/bin/clang-22   CMakeFiles/cmTC_18b3d.dir/CheckIncludeFile.c.o -o cmTC_18b3d  /usr/lib/x86_64-linux-gnu/libedit.so && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/CheckCompilerVersion.cmake:77 (check_cxx_source_compiles)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:9 (include)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test LLVM_LIBSTDCXX_MIN"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-k91fwZ"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-k91fwZ"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "LLVM_LIBSTDCXX_MIN"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-k91fwZ'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_8f7de
+        [1/2] /usr/bin/clang++-22 -DLLVM_LIBSTDCXX_MIN  -std=c++0x -std=gnu++17 -MD -MT CMakeFiles/cmTC_8f7de.dir/src.cxx.o -MF CMakeFiles/cmTC_8f7de.dir/src.cxx.o.d -o CMakeFiles/cmTC_8f7de.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-k91fwZ/src.cxx
+        [2/2] : && /usr/bin/clang++-22 -std=c++0x  CMakeFiles/cmTC_8f7de.dir/src.cxx.o -o cmTC_8f7de   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/CheckCompilerVersion.cmake:90 (check_cxx_source_compiles)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:9 (include)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test LLVM_LIBSTDCXX_SOFT_ERROR"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-v2Tvdh"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-v2Tvdh"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "LLVM_LIBSTDCXX_SOFT_ERROR"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-v2Tvdh'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_fbb09
+        [1/2] /usr/bin/clang++-22 -DLLVM_LIBSTDCXX_SOFT_ERROR  -std=c++0x -std=gnu++17 -MD -MT CMakeFiles/cmTC_fbb09.dir/src.cxx.o -MF CMakeFiles/cmTC_fbb09.dir/src.cxx.o.d -o CMakeFiles/cmTC_fbb09.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-v2Tvdh/src.cxx
+        [2/2] : && /usr/bin/clang++-22 -std=c++0x  CMakeFiles/cmTC_fbb09.dir/src.cxx.o -o cmTC_fbb09   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:172 (CHECK_CXX_SOURCE_COMPILES)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test LLVM_USES_LIBSTDCXX"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-NJUSq1"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-NJUSq1"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "LLVM_USES_LIBSTDCXX"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-NJUSq1'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_9acca
+        [1/2] /usr/bin/clang++-22 -DLLVM_USES_LIBSTDCXX  -std=gnu++17 -MD -MT CMakeFiles/cmTC_9acca.dir/src.cxx.o -MF CMakeFiles/cmTC_9acca.dir/src.cxx.o.d -o CMakeFiles/cmTC_9acca.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-NJUSq1/src.cxx
+        [2/2] : && /usr/bin/clang++-22   CMakeFiles/cmTC_9acca.dir/src.cxx.o -o cmTC_9acca   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:180 (CHECK_CXX_SOURCE_COMPILES)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test LLVM_DEFAULT_TO_GLIBCXX_USE_CXX11_ABI"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Hq4Dcn"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Hq4Dcn"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "LLVM_DEFAULT_TO_GLIBCXX_USE_CXX11_ABI"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Hq4Dcn'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_d0d3a
+        [1/2] /usr/bin/clang++-22 -DLLVM_DEFAULT_TO_GLIBCXX_USE_CXX11_ABI  -std=gnu++17 -MD -MT CMakeFiles/cmTC_d0d3a.dir/src.cxx.o -MF CMakeFiles/cmTC_d0d3a.dir/src.cxx.o.d -o CMakeFiles/cmTC_d0d3a.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Hq4Dcn/src.cxx
+        [2/2] : && /usr/bin/clang++-22   CMakeFiles/cmTC_d0d3a.dir/src.cxx.o -o cmTC_d0d3a   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCCompilerFlag.cmake:51 (cmake_check_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:373 (check_c_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:441 (add_flag_or_print_warning)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test C_SUPPORTS_FPIC"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-vcIguw"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-vcIguw"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "C_SUPPORTS_FPIC"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-vcIguw'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_f6945
+        [1/2] /usr/bin/clang-22 -DC_SUPPORTS_FPIC  -Werror -fPIC -MD -MT CMakeFiles/cmTC_f6945.dir/src.c.o -MF CMakeFiles/cmTC_f6945.dir/src.c.o.d -o CMakeFiles/cmTC_f6945.dir/src.c.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-vcIguw/src.c
+        [2/2] : && /usr/bin/clang-22   CMakeFiles/cmTC_f6945.dir/src.c.o -o cmTC_f6945   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:374 (check_cxx_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:441 (add_flag_or_print_warning)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test CXX_SUPPORTS_FPIC"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-l1Xg9K"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-l1Xg9K"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "CXX_SUPPORTS_FPIC"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-l1Xg9K'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_cfa59
+        [1/2] /usr/bin/clang++-22 -DCXX_SUPPORTS_FPIC  -std=gnu++17   -Werror -fPIC -MD -MT CMakeFiles/cmTC_cfa59.dir/src.cxx.o -MF CMakeFiles/cmTC_cfa59.dir/src.cxx.o.d -o CMakeFiles/cmTC_cfa59.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-l1Xg9K/src.cxx
+        [2/2] : && /usr/bin/clang++-22   CMakeFiles/cmTC_cfa59.dir/src.cxx.o -o cmTC_cfa59   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCCompilerFlag.cmake:51 (cmake_check_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:366 (check_c_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:455 (add_flag_if_supported)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test C_SUPPORTS_FNO_SEMANTIC_INTERPOSITION"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-9YrvV3"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-9YrvV3"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_C_FLAGS: " -fPIC"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "C_SUPPORTS_FNO_SEMANTIC_INTERPOSITION"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-9YrvV3'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_ebfc2
+        [1/2] /usr/bin/clang-22 -DC_SUPPORTS_FNO_SEMANTIC_INTERPOSITION  -fPIC    -Werror -fno-semantic-interposition -MD -MT CMakeFiles/cmTC_ebfc2.dir/src.c.o -MF CMakeFiles/cmTC_ebfc2.dir/src.c.o.d -o CMakeFiles/cmTC_ebfc2.dir/src.c.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-9YrvV3/src.c
+        [2/2] : && /usr/bin/clang-22 -fPIC  CMakeFiles/cmTC_ebfc2.dir/src.c.o -o cmTC_ebfc2   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:368 (check_cxx_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:455 (add_flag_if_supported)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test CXX_SUPPORTS_FNO_SEMANTIC_INTERPOSITION"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-1DMUYV"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-1DMUYV"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: " -fPIC"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "CXX_SUPPORTS_FNO_SEMANTIC_INTERPOSITION"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-1DMUYV'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_87f7d
+        [1/2] /usr/bin/clang++-22 -DCXX_SUPPORTS_FNO_SEMANTIC_INTERPOSITION  -fPIC  -std=gnu++17   -Werror -fno-semantic-interposition -MD -MT CMakeFiles/cmTC_87f7d.dir/src.cxx.o -MF CMakeFiles/cmTC_87f7d.dir/src.cxx.o.d -o CMakeFiles/cmTC_87f7d.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-1DMUYV/src.cxx
+        [2/2] : && /usr/bin/clang++-22 -fPIC  CMakeFiles/cmTC_87f7d.dir/src.cxx.o -o cmTC_87f7d   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:480 (check_cxx_compiler_flag)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test SUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-YKC6ak"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-YKC6ak"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: " -fPIC -fno-semantic-interposition"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "SUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-YKC6ak'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_925b5
+        [1/2] /usr/bin/clang++-22 -DSUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG  -fPIC -fno-semantic-interposition  -std=gnu++17   -fvisibility-inlines-hidden -MD -MT CMakeFiles/cmTC_925b5.dir/src.cxx.o -MF CMakeFiles/cmTC_925b5.dir/src.cxx.o.d -o CMakeFiles/cmTC_925b5.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-YKC6ak/src.cxx
+        [2/2] : && /usr/bin/clang++-22 -fPIC -fno-semantic-interposition  CMakeFiles/cmTC_925b5.dir/src.cxx.o -o cmTC_925b5   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:910 (check_cxx_compiler_flag)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test CXX_SUPPORTS_SUGGEST_OVERRIDE_FLAG"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-L3XKqt"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-L3XKqt"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: " -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "CXX_SUPPORTS_SUGGEST_OVERRIDE_FLAG"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-L3XKqt'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_57125
+        [1/2] /usr/bin/clang++-22 -DCXX_SUPPORTS_SUGGEST_OVERRIDE_FLAG  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor  -std=gnu++17   -Wsuggest-override -MD -MT CMakeFiles/cmTC_57125.dir/src.cxx.o -MF CMakeFiles/cmTC_57125.dir/src.cxx.o.d -o CMakeFiles/cmTC_57125.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-L3XKqt/src.cxx
+        [2/2] : && /usr/bin/clang++-22 -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor  CMakeFiles/cmTC_57125.dir/src.cxx.o -o cmTC_57125   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:914 (CHECK_CXX_SOURCE_COMPILES)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test CXX_WSUGGEST_OVERRIDE_ALLOWS_ONLY_FINAL"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Rr1XeF"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Rr1XeF"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: " -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "CXX_WSUGGEST_OVERRIDE_ALLOWS_ONLY_FINAL"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Rr1XeF'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_f5c4f
+        [1/2] /usr/bin/clang++-22 -DCXX_WSUGGEST_OVERRIDE_ALLOWS_ONLY_FINAL  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor  -Werror=suggest-override -std=gnu++17 -MD -MT CMakeFiles/cmTC_f5c4f.dir/src.cxx.o -MF CMakeFiles/cmTC_f5c4f.dir/src.cxx.o.d -o CMakeFiles/cmTC_f5c4f.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Rr1XeF/src.cxx
+        /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Rr1XeF/src.cxx:1:7: warning: 'base' has virtual functions but non-virtual destructor [-Wnon-virtual-dtor]
+            1 | class base {public: virtual void anchor();};
+              |       ^
+        /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Rr1XeF/src.cxx:2:38: warning: 'derived' has virtual functions but non-virtual destructor [-Wnon-virtual-dtor]
+            2 |                                class derived : base {public: void anchor() final;};
+              |                                      ^
+        2 warnings generated.
+        [2/2] : && /usr/bin/clang++-22 -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor  -Werror=suggest-override  CMakeFiles/cmTC_f5c4f.dir/src.cxx.o -o cmTC_f5c4f   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:926 (CHECK_C_SOURCE_COMPILES)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test C_WCOMMENT_ALLOWS_LINE_WRAP"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-ok8W3z"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-ok8W3z"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_C_FLAGS: " -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "C_WCOMMENT_ALLOWS_LINE_WRAP"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-ok8W3z'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_fc6e0
+        [1/2] /usr/bin/clang-22 -DC_WCOMMENT_ALLOWS_LINE_WRAP  -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default  -Werror -Wcomment -MD -MT CMakeFiles/cmTC_fc6e0.dir/src.c.o -MF CMakeFiles/cmTC_fc6e0.dir/src.c.o.d -o CMakeFiles/cmTC_fc6e0.dir/src.c.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-ok8W3z/src.c
+        [2/2] : && /usr/bin/clang-22 -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default  -Werror -Wcomment  CMakeFiles/cmTC_fc6e0.dir/src.c.o -o cmTC_fc6e0   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCCompilerFlag.cmake:51 (cmake_check_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:366 (check_c_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:954 (add_flag_if_supported)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test C_SUPPORTS_MISLEADING_INDENTATION_FLAG"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-X5oUVa"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-X5oUVa"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_C_FLAGS: " -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "C_SUPPORTS_MISLEADING_INDENTATION_FLAG"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-X5oUVa'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_6de2c
+        [1/2] /usr/bin/clang-22 -DC_SUPPORTS_MISLEADING_INDENTATION_FLAG  -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion    -Werror -Wmisleading-indentation -MD -MT CMakeFiles/cmTC_6de2c.dir/src.c.o -MF CMakeFiles/cmTC_6de2c.dir/src.c.o.d -o CMakeFiles/cmTC_6de2c.dir/src.c.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-X5oUVa/src.c
+        [2/2] : && /usr/bin/clang-22 -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion  CMakeFiles/cmTC_6de2c.dir/src.c.o -o cmTC_6de2c   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:368 (check_cxx_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:954 (add_flag_if_supported)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test CXX_SUPPORTS_MISLEADING_INDENTATION_FLAG"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-087itT"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-087itT"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: " -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "CXX_SUPPORTS_MISLEADING_INDENTATION_FLAG"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-087itT'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_bee51
+        [1/2] /usr/bin/clang++-22 -DCXX_SUPPORTS_MISLEADING_INDENTATION_FLAG  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed  -std=gnu++17   -Werror -Wmisleading-indentation -MD -MT CMakeFiles/cmTC_bee51.dir/src.cxx.o -MF CMakeFiles/cmTC_bee51.dir/src.cxx.o.d -o CMakeFiles/cmTC_bee51.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-087itT/src.cxx
+        [2/2] : && /usr/bin/clang++-22 -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed  CMakeFiles/cmTC_bee51.dir/src.cxx.o -o cmTC_bee51   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCCompilerFlag.cmake:51 (cmake_check_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:366 (check_c_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:958 (add_flag_if_supported)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test C_SUPPORTS_CTAD_MAYBE_UNSPPORTED_FLAG"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-imLleD"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-imLleD"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_C_FLAGS: " -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "C_SUPPORTS_CTAD_MAYBE_UNSPPORTED_FLAG"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-imLleD'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_4409a
+        [1/2] /usr/bin/clang-22 -DC_SUPPORTS_CTAD_MAYBE_UNSPPORTED_FLAG  -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation    -Werror -Wctad-maybe-unsupported -MD -MT CMakeFiles/cmTC_4409a.dir/src.c.o -MF CMakeFiles/cmTC_4409a.dir/src.c.o.d -o CMakeFiles/cmTC_4409a.dir/src.c.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-imLleD/src.c
+        [2/2] : && /usr/bin/clang-22 -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation  CMakeFiles/cmTC_4409a.dir/src.c.o -o cmTC_4409a   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:368 (check_cxx_compiler_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:958 (add_flag_if_supported)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test CXX_SUPPORTS_CTAD_MAYBE_UNSPPORTED_FLAG"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-h7mPV2"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-h7mPV2"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: " -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed -Wmisleading-indentation"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "CXX_SUPPORTS_CTAD_MAYBE_UNSPPORTED_FLAG"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-h7mPV2'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_e69dc
+        [1/2] /usr/bin/clang++-22 -DCXX_SUPPORTS_CTAD_MAYBE_UNSPPORTED_FLAG  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed -Wmisleading-indentation  -std=gnu++17   -Werror -Wctad-maybe-unsupported -MD -MT CMakeFiles/cmTC_e69dc.dir/src.cxx.o -MF CMakeFiles/cmTC_e69dc.dir/src.cxx.o.d -o CMakeFiles/cmTC_e69dc.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-h7mPV2/src.cxx
+        [2/2] : && /usr/bin/clang++-22 -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed -Wmisleading-indentation  CMakeFiles/cmTC_e69dc.dir/src.cxx.o -o cmTC_e69dc   && :
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/Internal/CheckLinkerFlag.cmake:37 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.28/Modules/CheckLinkerFlag.cmake:44 (cmake_check_linker_flag)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:1140 (check_linker_flag)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Performing Test LINKER_SUPPORTS_COLOR_DIAGNOSTICS"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-JaJZRO"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-JaJZRO"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_CXX_FLAGS: " -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "LINKER_SUPPORTS_COLOR_DIAGNOSTICS"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-JaJZRO'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_41671
+        [1/2] /usr/bin/clang++-22 -DLINKER_SUPPORTS_COLOR_DIAGNOSTICS  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color  -std=gnu++17 -MD -MT CMakeFiles/cmTC_41671.dir/src.cxx.o -MF CMakeFiles/cmTC_41671.dir/src.cxx.o.d -o CMakeFiles/cmTC_41671.dir/src.cxx.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-JaJZRO/src.cxx
+        [2/2] : && /usr/bin/clang++-22 -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -Wl,--color-diagnostics CMakeFiles/cmTC_41671.dir/src.cxx.o -o cmTC_41671   && :
+        FAILED: cmTC_41671 
+        : && /usr/bin/clang++-22 -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -Wl,--color-diagnostics CMakeFiles/cmTC_41671.dir/src.cxx.o -o cmTC_41671   && :
+        /usr/bin/ld: unrecognized option '--color-diagnostics'
+        /usr/bin/ld: use the --help option for usage information
+        clang++-22: error: linker command failed with exit code 1 (use -v to see invocation)
+        ninja: build stopped: subcommand failed.
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CheckSymbolExists.cmake:140 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckSymbolExists.cmake:66 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:1414 (check_symbol_exists)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Looking for os_signpost_interval_begin"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-jphSzE"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-jphSzE"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_C_FLAGS: " -fPIC -fno-semantic-interposition  -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -ffunction-sections -fdata-sections"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "macos_signposts_available"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-jphSzE'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_04df6
+        [1/2] /usr/bin/clang-22   -fPIC -fno-semantic-interposition  -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -ffunction-sections -fdata-sections -MD -MT CMakeFiles/cmTC_04df6.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_04df6.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_04df6.dir/CheckSymbolExists.c.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-jphSzE/CheckSymbolExists.c
+        FAILED: CMakeFiles/cmTC_04df6.dir/CheckSymbolExists.c.o 
+        /usr/bin/clang-22   -fPIC -fno-semantic-interposition  -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -ffunction-sections -fdata-sections -MD -MT CMakeFiles/cmTC_04df6.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_04df6.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_04df6.dir/CheckSymbolExists.c.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-jphSzE/CheckSymbolExists.c
+        /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-jphSzE/CheckSymbolExists.c:2:10: fatal error: 'os/signpost.h' file not found
+            2 | #include <os/signpost.h>
+              |          ^~~~~~~~~~~~~~~
+        1 error generated.
+        ninja: build stopped: subcommand failed.
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/CheckSymbolExists.cmake:140 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/CheckSymbolExists.cmake:66 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "/usr/lib/llvm-22/lib/cmake/llvm/HandleLLVMOptions.cmake:1492 (check_symbol_exists)"
+      - "CMakeLists.txt:32 (include)"
+    checks:
+      - "Looking for flock"
+    directories:
+      source: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Drb07A"
+      binary: "/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Drb07A"
+    cmakeVariables:
+      CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS: "/usr/bin/clang-scan-deps-22"
+      CMAKE_C_FLAGS: " -fPIC -fno-semantic-interposition  -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -ffunction-sections -fdata-sections"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/usr/lib/llvm-22/lib/cmake/llvm;/usr/lib/llvm-22/lib/cmake/llvm"
+    buildResult:
+      variable: "HAVE_FLOCK"
+      cached: true
+      stdout: |
+        Change Dir: '/mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Drb07A'
+        
+        Run Build Command(s): /usr/bin/ninja -v cmTC_a2e08
+        [1/2] /usr/bin/clang-22   -fPIC -fno-semantic-interposition  -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -ffunction-sections -fdata-sections -MD -MT CMakeFiles/cmTC_a2e08.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_a2e08.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_a2e08.dir/CheckSymbolExists.c.o -c /mnt/c/Users/Julian/Documents/Programming/li/lic/build-wsl/CMakeFiles/CMakeScratch/TryCompile-Drb07A/CheckSymbolExists.c
+        [2/2] : && /usr/bin/clang-22 -fPIC -fno-semantic-interposition  -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -fdiagnostics-color -ffunction-sections -fdata-sections  CMakeFiles/cmTC_a2e08.dir/CheckSymbolExists.c.o -o cmTC_a2e08   && :
+        
+      exitCode: 0
+...

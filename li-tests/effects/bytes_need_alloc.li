@@ -1,4 +1,4 @@
-proc use_bytes(b: bytes) -> int
+def use_bytes(b: bytes) -> int
   requires true
   ensures true
 =

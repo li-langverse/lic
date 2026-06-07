@@ -1,0 +1,82 @@
+# std.collections — Phase 2 Python collections parity (WP0-B compile-only stubs).
+#
+# Target: collections.deque, OrderedDict, Counter, defaultdict on prelude list/dict.
+# Runtime: not implemented — WP2 after WP-WA + WP1 prelude heap types.
+#
+# Import: `import std.collections`
+
+type Deque = object
+  public len: int
+
+type OrderedDict = object
+  public len: int
+
+type Counter = object
+  public len: int
+
+type DefaultDict = object
+  public len: int
+
+def collections_std_tag() -> int
+  requires true
+  ensures result == 20
+  decreases 0
+=
+  return 20
+
+def deque_new_stub() -> Deque
+  requires true
+  ensures result.len == 0
+  decreases 0
+=
+  var d: Deque
+  d.len = 0
+  return d
+
+def deque_append_stub(d: var Deque) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  return
+
+def deque_popleft_stub(d: var Deque) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def ordered_dict_new_stub() -> OrderedDict
+  requires true
+  ensures result.len == 0
+  decreases 0
+=
+  var m: OrderedDict
+  m.len = 0
+  return m
+
+def counter_new_stub() -> Counter
+  requires true
+  ensures result.len == 0
+  decreases 0
+=
+  var c: Counter
+  c.len = 0
+  return c
+
+def counter_inc_stub(c: var Counter, key: int) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  return
+
+def defaultdict_new_stub() -> DefaultDict
+  requires true
+  ensures result.len == 0
+  decreases 0
+=
+  var m: DefaultDict
+  m.len = 0
+  return m

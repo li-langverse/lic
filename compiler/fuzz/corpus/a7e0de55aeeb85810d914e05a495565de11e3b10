@@ -1,0 +1,5 @@
+ispu
+@par%llel(ds true
+  ensures true
+  decreases urn 0 -> int
+  requires@@cputycl(d trudisje

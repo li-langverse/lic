@@ -1,0 +1,34 @@
+# P-linalg / G-vc: local-alias ensures witnesses structurally but omits field semantics.
+type Vec3 = object
+  public x: float
+  public y: float
+  public z: float
+
+def vec3_dot(a: Vec3, b: Vec3) -> float
+  requires true
+  ensures result == ax * bx + ay * by + az * bz
+  decreases 0
+=
+  var ax: float = a.x
+  var ay: float = a.y
+  var az: float = a.z
+  var bx: float = b.x
+  var by: float = b.y
+  var bz: float = b.z
+  return ax * bx + ay * by + az * bz
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var a: Vec3
+  var b: Vec3
+  a.x = 1.0
+  a.y = 0.0
+  a.z = 0.0
+  b.x = 0.0
+  b.y = 1.0
+  b.z = 0.0
+  var s: float = vec3_dot(a, b)
+  return 0

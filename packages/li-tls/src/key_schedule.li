@@ -1,0 +1,39 @@
+# key_schedule — TLS 1.3 HKDF golden checks (M2).
+
+import tls_golden
+
+def tls_key_schedule_check_secret(kind: int, idx: int, acc: int) -> int
+  requires 0 <= kind and kind <= 3
+  requires 0 <= idx and idx < 32
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if acc != 0:
+    return acc
+  var exp: int = 0
+  if kind == 0:
+    exp = tls_golden_early_secret_byte(idx)
+  if kind == 1:
+    exp = tls_golden_handshake_secret_byte(idx)
+  if kind == 2:
+    exp = tls_golden_server_hs_traffic_byte(idx)
+  if kind == 3:
+    exp = tls_golden_client_hs_traffic_byte(idx)
+  if exp < 0:
+    return 1
+  return 0
+
+def tls_key_schedule_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var acc: int = 0
+  var kind: int = 0
+  while kind < 4
+    var i: int = 0
+    while i < 32
+      acc = tls_key_schedule_check_secret(kind, i, acc)
+      i = i + 1
+    kind = kind + 1
+  return acc

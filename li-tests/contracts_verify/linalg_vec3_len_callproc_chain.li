@@ -1,0 +1,44 @@
+# P-linalg / P-float / G-vc: vec3_len ensures chains li_rt_sqrt(vec3_len_sq(a));
+# CallProc in ensures opaque in AutoVC; no Discharge spec (contrast sqrt_open_bound intentional open).
+type Vec3 = object
+  public x: float
+  public y: float
+  public z: float
+
+extern proc li_rt_sqrt(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+
+def vec3_dot(a: Vec3, b: Vec3) -> float
+  requires true
+  ensures result == a.x * b.x + a.y * b.y + a.z * b.z
+  decreases 0
+=
+  return a.x * b.x + a.y * b.y + a.z * b.z
+
+def vec3_len_sq(a: Vec3) raises IO -> float
+  requires true
+  ensures result == vec3_dot(a, a)
+  decreases 0
+=
+  return vec3_dot(a, a)
+
+def vec3_len(a: Vec3) raises IO -> float
+  requires true
+  ensures result == li_rt_sqrt(vec3_len_sq(a))
+  decreases 0
+=
+  return li_rt_sqrt(vec3_len_sq(a))
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var v: Vec3
+  v.x = 3.0
+  v.y = 4.0
+  v.z = 0.0
+  var l: float = vec3_len(v)
+  return 0

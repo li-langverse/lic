@@ -1,0 +1,250 @@
+
+
+import sim
+
+def li_sim_additive_version() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def li_sim_additive_profile_contract() -> int
+  requires true
+  ensures result == sim_contract_sim_additive()
+  decreases 0
+=
+  return sim_contract_sim_additive()
+
+def li_sim_additive_studio_profile_id() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+# PH-AM AM-0 — slicer workflow stages (slice → preview → export); not Prusa/Cura parity.
+def am_slicer_stage_slice() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def am_slicer_stage_preview() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def am_slicer_stage_export() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def am_slicer_stage_valid(stage: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases stage
+=
+  if stage == am_slicer_stage_slice():
+    return 1
+  if stage == am_slicer_stage_preview():
+    return 1
+  if stage == am_slicer_stage_export():
+    return 1
+  return 0
+
+def am_export_format_stl() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def am_export_format_3mf() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def am_export_format_gcode() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def sim_additive_export_format_ok(fmt: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases fmt
+=
+  if fmt == am_export_format_stl():
+    return 1
+  if fmt == am_export_format_3mf():
+    return 1
+  if fmt == am_export_format_gcode():
+    return 1
+  return 0
+
+def sim_additive_require_sim_pass_ok(sim_pass: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases sim_pass
+=
+  if sim_pass == 1:
+    return 1
+  return 0
+
+def run_am_slicer_stage(stage: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires am_slicer_stage_valid(stage) == 1
+  ensures result.ok == 1
+  ensures result.detail_emitted == detail
+  decreases stage
+=
+  var algo: int = algo_am_slice_layers()
+  if stage == am_slicer_stage_preview():
+    algo = algo_am_thermal_warp()
+  if stage == am_slicer_stage_export():
+    algo = algo_am_export_gcode_3mf()
+  var checksum: float = 1.0
+  if stage == am_slicer_stage_preview():
+    checksum = 1.01
+  if stage == am_slicer_stage_export():
+    checksum = 1.02
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo
+  r.vertical_id = sim_contract_sim_additive()
+  r.checksum = checksum
+  r.detail_emitted = detail
+  return r
+
+def sim_additive_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var d: int = detail
+  var r: SimRunResult = run_am_slicer_stage(am_slicer_stage_slice(), d)
+  if run_result_ok(r) != 1:
+    return 0
+  return 1
+
+def run_additive_slicer_workflow(detail: int, sim_pass: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var d: int = detail
+  if run_am_slicer_stage(am_slicer_stage_slice(), d).ok != 1:
+    return 1
+  if run_am_slicer_stage(am_slicer_stage_preview(), d).ok != 1:
+    return 2
+  if sim_additive_require_sim_pass_ok(sim_pass) != 1:
+    return 3
+  if run_am_slicer_stage(am_slicer_stage_export(), d).ok != 1:
+    return 4
+  return 0
+
+def run_additive_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if run_additive_slicer_workflow(0, 1) != 0:
+    return 1
+  if sim_additive_export_format_ok(am_export_format_3mf()) != 1:
+    return 2
+  if sim_additive_export_format_ok(am_export_format_gcode()) != 1:
+    return 3
+  return 0
+
+# WP-AM-03 — sim.export.print contract (3MF / G-code headers; not printer I/O).
+type AmExportPrintResult = object
+  public ok: int
+  public format: int
+  public printer_slot: int
+  public layer_count: int
+  public byte_checksum: float
+  public magic_tag: int
+
+def am_export_magic_3mf() -> int
+  requires true
+  ensures result == 16141
+  decreases 0
+=
+  return 16141
+
+def am_export_magic_gcode() -> int
+  requires true
+  ensures result == 18243
+  decreases 0
+=
+  return 18243
+
+def am_export_magic_stl() -> int
+  requires true
+  ensures result == 21324
+  decreases 0
+=
+  return 21324
+
+def am_export_magic_for_format(fmt: int) -> int
+  requires sim_additive_export_format_ok(fmt) == 1
+  ensures result > 0
+  decreases fmt
+=
+  if fmt == am_export_format_stl():
+    return am_export_magic_stl()
+  if fmt == am_export_format_gcode():
+    return am_export_magic_gcode()
+  return am_export_magic_3mf()
+
+def sim_export_print(format: int, sim_pass: int, printer_slot: int, detail: int) -> AmExportPrintResult
+  requires detail >= 0
+  requires detail <= 3
+  requires printer_slot >= 0
+  requires printer_slot <= 2
+  ensures result.format == format
+  ensures result.printer_slot == printer_slot
+  decreases format
+=
+  var r: AmExportPrintResult
+  r.ok = 0
+  r.format = format
+  r.printer_slot = printer_slot
+  r.layer_count = 0
+  r.byte_checksum = 0.0
+  r.magic_tag = 0
+  if sim_additive_export_format_ok(format) != 1:
+    return r
+  if sim_additive_require_sim_pass_ok(sim_pass) != 1:
+    return r
+  if run_additive_slicer_workflow(detail, sim_pass) != 0:
+    return r
+  var export_run: SimRunResult = run_am_slicer_stage(am_slicer_stage_export(), detail)
+  if export_run.ok != 1:
+    return r
+  var slice_run: SimRunResult = run_am_slicer_stage(am_slicer_stage_slice(), detail)
+  r.layer_count = 64
+  if slice_run.ok == 1:
+    r.layer_count = 128
+  r.byte_checksum = export_run.checksum
+  r.magic_tag = am_export_magic_for_format(format)
+  r.ok = 1
+  return r

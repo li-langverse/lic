@@ -1,0 +1,78 @@
+import math
+
+# li-geometry (PH-GEOM / AL-13): mesh predicates + CAD boundary stubs — no OCCT/CGAL FFI in v1.
+# See docs/ecosystem/cad-fundamentals.md
+
+def li_geometry_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+# PH-GEOM GEO-0 — orientation predicate class (coplanar stub; CGAL-style exact later)
+def geom_orient3d_class_coplanar() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def geom_orient3d_class_positive() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def geom_orient3d_class_negative() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+# PH-GEOM GEO-1 — mesh watertight / manifold gate (stub until Manifold-class booleans)
+def geom_mesh_watertight_stub() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return 1
+
+def geom_mesh_triangle_count_stub(n: int) -> int
+  requires n >= 0
+  ensures result == n
+  decreases n
+=
+  return n
+
+def geom_vec3_unit_x() -> Vec3
+  requires true
+  ensures result.x == 1.0
+  ensures result.y == 0.0
+  ensures result.z == 0.0
+  decreases 0
+=
+  var v: Vec3
+  v.x = 1.0
+  v.y = 0.0
+  v.z = 0.0
+  return v
+
+def geometry_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if geom_mesh_watertight_stub() != 1:
+    return 1
+  if geom_mesh_triangle_count_stub(3) != 3:
+    return 2
+  if geom_orient3d_class_coplanar() != 0:
+    return 3
+  var u: Vec3 = geom_vec3_unit_x()
+  if u.x != 1.0:
+    return 4
+  return 0

@@ -1,5 +1,6 @@
 #include "li/policy.hpp"
 
+#include "li/error_codes.hpp"
 #include "li/prelude.hpp"
 
 #include <cctype>
@@ -22,20 +23,12 @@ std::string strip_comments(const std::string& source) {
   return out.str();
 }
 
-bool has_disjoint_proof(const std::string& code) {
-  return code.find("disjoint_row") != std::string::npos ||
-         code.find("disjoint_elem") != std::string::npos ||
-         code.find("disjoint_slice") != std::string::npos ||
-         code.find("disjoint ") != std::string::npos ||
-         code.find("disjoint=") != std::string::npos;
-}
-
 bool is_ident_char(char c) {
   return std::isalnum(static_cast<unsigned char>(c)) || c == '_';
 }
 
 void check_decorator_policies(const std::string& code, const std::string& file,
-                              DiagnosticBag& diags) {
+                              const CheckConfig& cfg, DiagnosticBag& diags) {
   struct Typosquat {
     const char* typo;
     const char* reserved;
@@ -62,7 +55,14 @@ void check_decorator_policies(const std::string& code, const std::string& file,
       for (const Typosquat* row = kTyposquat; row->typo != nullptr; ++row) {
         if (seg == row->typo) {
           SourceLoc loc{file, 1, 1, 0};
-          diags.error(loc, std::string("typosquat_reserved: ") + row->reserved);
+          const std::string message = std::string("typosquat_reserved: ") + row->reserved;
+          if (cfg.typosquat == CheckRuleLevel::Deny) {
+            diag_error(diags, loc, ErrorCode::E0330, message,
+                       "rename the decorator to avoid reserved-name typosquats");
+          } else {
+            diag_warning(diags, loc, WarningCode::W0403, message,
+                         "set [check].typosquat = \"deny\" in li.toml to make this an error");
+          }
         }
       }
     };
@@ -105,34 +105,15 @@ void check_decorator_policies(const std::string& code, const std::string& file,
 }  // namespace
 
 void check_source_policies(const std::string& source, const std::string& file,
-                           DiagnosticBag& diags) {
+                           const CheckConfig& cfg, DiagnosticBag& diags) {
   const std::string code = strip_comments(source);
-  const bool has_par_slice = code.find("par_slice") != std::string::npos;
-  const bool has_parallel = code.find("parallel for") != std::string::npos;
-  const bool has_disjoint = has_disjoint_proof(code);
-  if (has_par_slice && has_parallel && !has_disjoint) {
-    SourceLoc loc{file, 1, 1, 0};
-    diags.error(loc, "parallel for with par_slice requires proved disjoint slices");
-  }
-  if (has_parallel) {
-    SourceLoc loc{file, 1, 1, 0};
-    if (code.find("buf[0]") != std::string::npos) {
-      diags.error(loc, "overlapping shared mutable memory in parallel for");
-    }
-    if (code.find("counter = counter") != std::string::npos) {
-      diags.error(loc, "parallel mutable capture requires Sync proof");
-    }
-    if (code.find("borrow mut") != std::string::npos) {
-      diags.error(loc, "borrow mut forbidden across parallel iterations");
-    }
-    if (has_disjoint && code.find("grid[0][0]") != std::string::npos) {
-      diags.error(loc, "false_disjoint_proof");
-    }
-  }
+  /* Parallel race patterns: AST checks in policy_module.cpp (7d-c). */
   if (code.find("-> Any") != std::string::npos ||
       code.find(": Any") != std::string::npos) {
     SourceLoc loc{file, 1, 1, 0};
-    diags.error(loc, "type 'Any' is forbidden");
+    diag_error(diags, loc, ErrorCode::E0340,
+               "The type `Any` is not allowed in Li — every value must be provably typed.",
+               "Replace `Any` with a concrete type or a generic parameter.");
   }
   // Historic bug classes (Ariane 5, prove_reject, Apple goto fail hygiene)
   if (code.find("cast[") != std::string::npos) {
@@ -152,7 +133,7 @@ void check_source_policies(const std::string& source, const std::string& file,
     SourceLoc loc{file, 1, 1, 0};
     diags.error(loc, "goto is forbidden; use structured control flow with contracts");
   }
-  check_decorator_policies(code, file, diags);
+  check_decorator_policies(code, file, cfg, diags);
 }
 
 }  // namespace li

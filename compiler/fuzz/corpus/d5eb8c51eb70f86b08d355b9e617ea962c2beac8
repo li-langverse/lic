@@ -1,0 +1,7 @@
+@cpu
+@para
+proc f() -> int
+  
+proc f() -> int
+  requirpec  decreases 0
+= trisje

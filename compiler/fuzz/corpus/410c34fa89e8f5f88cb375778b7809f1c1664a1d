@@ -1,0 +1,8 @@
+@cpu
+@parallel(disjint_row)
+proc f(( -> int
+  requires tr
+@p(disjoint=disjoint_row)
+proc f() -> int
+  requires nsures true
+r decreases 5urn 0

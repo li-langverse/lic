@@ -12,15 +12,18 @@ Li’s type system follows **Python 3.14 typing** habits, but programs compile t
 | `bool` | `bool` | Not a number |
 | `str` | string | UTF-8 at runtime |
 | `unit` | void-like | “No useful value” |
+| `binary` | bit-packed | Quantized masks / weights (`0b…` literals); not `bytes` |
 
 ## Fixed-width integers and floats
 
-| Signed | Unsigned | Float |
-|--------|----------|-------|
-| `i8` … `i128` | `u8` … `u128` | `f32`, `f64` |
-| `isize` | `usize` | `float32`, `float64` |
+Full tables (including `float4` … `float512`, `int4` … `int512`): **[Scalar precision](scalar-precision.md)**.
 
-Mixing widths without a cast is an error.
+| Signed | Unsigned | Float (examples) |
+|--------|----------|-------------------|
+| `i8` … `i128`, `int32` | `u8` … `u128`, `uint32` | `float16`, `float32`, `float64` (`float`) |
+| `int4` … `int512` | `uint4` … `uint512` | `float4`, `float8`, … `float512` |
+
+Mixing widths without a cast is an error. The ecosystem does **not** enforce one global accuracy — projects and physics profiles choose per module.
 
 ## Complex numbers
 
@@ -62,6 +65,8 @@ Allocation may carry `raises Alloc`.
 
 ## Named shapes
 
+Type and object names use **PascalCase** (`ClassName`) — see [Naming conventions](naming-conventions.md). Fields use **snake_case**.
+
 ```nim
 type Point = object
   x: float
@@ -71,13 +76,19 @@ type Color = enum
   Red, Green, Blue
 ```
 
-## Refinement types (indexed safety)
+## Refinement types (value domains)
 
-```nim
+```li
+type NonNeg = {x: int | x >= 0}
 type Index = {i: int | 0 <= i and i < N}
 ```
 
-Refinements tie indices to bounds so out-of-range access is a **compile-time** failure when the proof goes through.
+A refinement declares **which values** a name may take. Parameters and `var` bindings of that type are checked at **calls** and **initializers**:
+
+- Provably **outside** the predicate → **E0305** (compile error).
+- **Inside** but not yet provable → proof obligation (see [Refinement types](refinement-types.md)).
+
+Index refinements (`Index`, `Index10`, …) use the same syntax for array safety; see `li-tests/contracts_verify/index_refinement.li`.
 
 ## Callable and Protocol
 
@@ -89,7 +100,7 @@ type Sized = Protocol["__len__", int]
 Generics use PEP 695 style:
 
 ```nim
-proc identity[T](x: T) -> T
+def identity[T](x: T) -> T
 ```
 
 ## What is forbidden

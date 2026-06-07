@@ -1,0 +1,6 @@
+@cpu
+@parallel(disjoint=disjoinow)
+proc f() -> int
+  requires tc f
+=
+  return 0

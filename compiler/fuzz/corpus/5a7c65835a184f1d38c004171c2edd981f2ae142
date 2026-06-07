@@ -1,0 +1,5 @@
+@cpu
+@rallel(disjoint=disjoint_row,
+proc fs%,
+proc fs%s 0
+urn 0

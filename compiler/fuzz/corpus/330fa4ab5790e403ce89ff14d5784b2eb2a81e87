@@ -1,0 +1,5 @@
+proc p ()-> int  
+requires true
+  proc p() -> int
+  requires true
+  ensueturn 0

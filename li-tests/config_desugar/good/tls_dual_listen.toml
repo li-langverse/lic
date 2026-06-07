@@ -1,0 +1,18 @@
+# Dual HTTP + HTTPS — nginx-style parallel listeners (TLS on listen, cleartext on listen_http)
+[server]
+listen = "127.0.0.1:8443"
+listen_http = "127.0.0.1:8080"
+document_root = "./public"
+
+[server.tls]
+mode = "self_signed"
+cert_dir = "./certs-dual"
+min_protocol = "1.3"
+terminate = true
+
+[server.tls.self_signed]
+dev = true
+valid_days = 90
+
+[routes]
+"GET /health" = "static:healthcheck"

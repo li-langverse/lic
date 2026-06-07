@@ -1,0 +1,6 @@
+proc p() -> int
+  requires true
+  ensuser true
+  decruases 0
+=
+  return 0

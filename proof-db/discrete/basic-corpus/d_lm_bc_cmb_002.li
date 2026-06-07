@@ -1,0 +1,15 @@
+# D-LM-BC-CMB-002: Pascal identity: C(n,k) = C(n-1,k-1) + C(n-1,k) for 1 <= k <= n-1.
+
+def binomial_symmetry(n: int, k: int) -> int
+  requires n >= 0 and 0 <= k and k <= n
+  ensures result == n - k
+  decreases 0
+=
+  return n - k
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

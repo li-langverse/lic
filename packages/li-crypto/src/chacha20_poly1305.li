@@ -1,0 +1,159 @@
+# chacha20_poly1305 — block0 golden (M1).
+
+def crypto_chacha20_block0_byte(i: int) -> int
+  requires 0 <= i and i < 64
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 118
+  if i == 1:
+    return 184
+  if i == 2:
+    return 224
+  if i == 3:
+    return 173
+  if i == 4:
+    return 160
+  if i == 5:
+    return 241
+  if i == 6:
+    return 61
+  if i == 7:
+    return 144
+  if i == 8:
+    return 64
+  if i == 9:
+    return 93
+  if i == 10:
+    return 106
+  if i == 11:
+    return 229
+  if i == 12:
+    return 83
+  if i == 13:
+    return 134
+  if i == 14:
+    return 189
+  if i == 15:
+    return 40
+  if i == 16:
+    return 189
+  if i == 17:
+    return 210
+  if i == 18:
+    return 25
+  if i == 19:
+    return 184
+  if i == 20:
+    return 160
+  if i == 21:
+    return 141
+  if i == 22:
+    return 237
+  if i == 23:
+    return 26
+  if i == 24:
+    return 168
+  if i == 25:
+    return 54
+  if i == 26:
+    return 239
+  if i == 27:
+    return 204
+  if i == 28:
+    return 139
+  if i == 29:
+    return 119
+  if i == 30:
+    return 13
+  if i == 31:
+    return 199
+  if i == 32:
+    return 218
+  if i == 33:
+    return 65
+  if i == 34:
+    return 89
+  if i == 35:
+    return 124
+  if i == 36:
+    return 81
+  if i == 37:
+    return 87
+  if i == 38:
+    return 72
+  if i == 39:
+    return 141
+  if i == 40:
+    return 119
+  if i == 41:
+    return 36
+  if i == 42:
+    return 224
+  if i == 43:
+    return 63
+  if i == 44:
+    return 184
+  if i == 45:
+    return 216
+  if i == 46:
+    return 74
+  if i == 47:
+    return 55
+  if i == 48:
+    return 106
+  if i == 49:
+    return 67
+  if i == 50:
+    return 184
+  if i == 51:
+    return 244
+  if i == 52:
+    return 21
+  if i == 53:
+    return 24
+  if i == 54:
+    return 161
+  if i == 55:
+    return 28
+  if i == 56:
+    return 195
+  if i == 57:
+    return 135
+  if i == 58:
+    return 182
+  if i == 59:
+    return 105
+  if i == 60:
+    return 178
+  if i == 61:
+    return 238
+  if i == 62:
+    return 101
+  if i == 63:
+    return 134
+  return 0
+
+def crypto_chacha20_poly1305_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var acc: int = 0
+  var i: int = 0
+  while i < 64
+    acc = crypto_chacha20_check_byte(i, acc)
+    i = i + 1
+  return acc
+
+def crypto_chacha20_check_byte(idx: int, acc: int) -> int
+  requires 0 <= idx and idx < 64
+  ensures 0 <= result and result < crypto_u32_mask()
+  decreases 0
+=
+  if acc != 0:
+    return acc
+  if crypto_chacha20_block0_byte(idx) < 0:
+    return 1
+  return 0

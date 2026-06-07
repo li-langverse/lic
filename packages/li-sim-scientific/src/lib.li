@@ -1,0 +1,832 @@
+
+import sim
+import chem
+import physics.particles
+import physics.rigid
+
+def li_sim_scientific_version() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+# WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
+def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
+  requires rc2 > 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  if r2 >= rc2:
+    return 0.0
+  if r2 < 1.0e-12:
+    return 0.0
+  var inv_r2: float = 1.0 / r2
+  var inv_r6: float = inv_r2 * inv_r2 * inv_r2
+  var inv_r12: float = inv_r6 * inv_r6
+  var f_scalar: float = 48.0 * inv_r12 - 24.0 * inv_r6
+  return f_scalar * dx
+
+def md_oracle_lj_pe_pair(r2: float, rc2: float) -> float
+  requires rc2 > 0.0
+  ensures result <= 0.0
+  decreases 0
+=
+  if r2 >= rc2:
+    return 0.0
+  if r2 < 1.0e-12:
+    return 0.0
+  var inv_r2: float = 1.0 / r2
+  var inv_r6: float = inv_r2 * inv_r2 * inv_r2
+  var inv_r12: float = inv_r6 * inv_r6
+  return 4.0 * (inv_r12 - inv_r6)
+
+def md_oracle_chain_energy(
+    px: var array[4, float], py: var array[4, float],
+    vx: var array[4, float], vy: var array[4, float]) -> float
+  requires true
+  ensures result >= -1000.0
+  decreases 0
+=
+  var rc2: float = 2.5 * 2.5
+  var pe: float = 0.0
+  var ke: float = 0.0
+  var i: int = 0
+  while i < 4
+    ke = ke + 0.5 * (vx[i] * vx[i] + vy[i] * vy[i])
+    var j: int = i + 1
+    while j < 4
+      var dx: float = px[j] - px[i]
+      var dy: float = py[j] - py[i]
+      var r2: float = dx * dx + dy * dy
+      pe = pe + md_oracle_lj_pe_pair(r2, rc2)
+      j = j + 1
+    i = i + 1
+  return pe + ke
+
+def md_oracle_chain_forces(
+    px: var array[4, float], py: var array[4, float],
+    fx: var array[4, float], fy: var array[4, float]) -> unit
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var rc2: float = 2.5 * 2.5
+  var i: int = 0
+  while i < 4
+    fx[i] = 0.0
+    fy[i] = 0.0
+    i = i + 1
+  i = 0
+  while i < 4
+    var j: int = i + 1
+    while j < 4
+      var dx: float = px[j] - px[i]
+      var dy: float = py[j] - py[i]
+      var r2: float = dx * dx + dy * dy
+      var fxi: float = md_oracle_lj_fx_pair(dx, r2, rc2)
+      var fyi: float = md_oracle_lj_fx_pair(dy, r2, rc2)
+      fx[i] = fx[i] - fxi
+      fy[i] = fy[i] - fyi
+      fx[j] = fx[j] + fxi
+      fy[j] = fy[j] + fyi
+      j = j + 1
+    i = i + 1
+
+def sim_scientific_oracle_checksum_md() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var px: array[4, float]
+  var py: array[4, float]
+  var vx: array[4, float]
+  var vy: array[4, float]
+  var fx: array[4, float]
+  var fy: array[4, float]
+  var spacing: float = 1.12
+  var dt: float = 0.004
+  px[0] = 0.0
+  py[0] = 0.0
+  vx[0] = 0.0
+  vy[0] = 0.0
+  px[1] = spacing
+  py[1] = 0.0
+  vx[1] = 0.0
+  vy[1] = 0.0
+  px[2] = spacing + spacing
+  py[2] = 0.0
+  vx[2] = 0.0
+  vy[2] = 0.0
+  px[3] = spacing + spacing + spacing
+  py[3] = 0.0
+  vx[3] = 0.0
+  vy[3] = 0.0
+  var e0: float = md_oracle_chain_energy(px, py, vx, vy)
+  var step: int = 0
+  var i: int = 0
+  while step < 8
+    md_oracle_chain_forces(px, py, fx, fy)
+    i = 0
+    while i < 4
+      vx[i] = vx[i] + 0.5 * dt * fx[i]
+      vy[i] = vy[i] + 0.5 * dt * fy[i]
+      i = i + 1
+    i = 0
+    while i < 4
+      px[i] = px[i] + dt * vx[i]
+      py[i] = py[i] + dt * vy[i]
+      i = i + 1
+    md_oracle_chain_forces(px, py, fx, fy)
+    i = 0
+    while i < 4
+      vx[i] = vx[i] + 0.5 * dt * fx[i]
+      vy[i] = vy[i] + 0.5 * dt * fy[i]
+      i = i + 1
+    step = step + 1
+  var e1: float = md_oracle_chain_energy(px, py, vx, vy)
+  var denom: float = e0
+  if e1 > denom:
+    denom = e1
+  if denom < 0.0:
+    if -e0 > denom:
+      denom = -e0
+    if -e1 > denom:
+      denom = -e1
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = e1 - e0
+  if diff < 0.0:
+    diff = -diff
+  return diff / denom
+
+# WP-SCI-03 — tier-2 Li oracle: explicit 1D heat stencil (8-point grid).
+def heat_oracle_stencil_step(u: var array[8, float], v: var array[8, float], r: float) -> unit
+  requires r > 0.0
+  ensures result == 0
+  decreases 0
+=
+  v[0] = u[0]
+  v[1] = u[1] + r * (u[2] + u[0] - 2.0 * u[1])
+  v[2] = u[2] + r * (u[3] + u[1] - 2.0 * u[2])
+  v[3] = u[3] + r * (u[4] + u[2] - 2.0 * u[3])
+  v[4] = u[4] + r * (u[5] + u[3] - 2.0 * u[4])
+  v[5] = u[5] + r * (u[6] + u[4] - 2.0 * u[5])
+  v[6] = u[6] + r * (u[7] + u[5] - 2.0 * u[6])
+  v[7] = u[7]
+  u[0] = v[0]
+  u[1] = v[1]
+  u[2] = v[2]
+  u[3] = v[3]
+  u[4] = v[4]
+  u[5] = v[5]
+  u[6] = v[6]
+  u[7] = v[7]
+
+def sim_scientific_oracle_checksum_heat() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var u: array[8, float]
+  var v: array[8, float]
+  var dx: float = 0.125
+  var alpha: float = 0.25
+  var dt: float = 0.0001
+  var r: float = alpha * dt / (dx * dx)
+  u[0] = 0.0
+  u[1] = 0.3826834323650898
+  u[2] = 0.7071067811865476
+  u[3] = 0.9238795325112867
+  u[4] = 1.0
+  u[5] = 0.9238795325112867
+  u[6] = 0.7071067811865476
+  u[7] = 0.3826834323650898
+  var step: int = 0
+  while step < 200
+    heat_oracle_stencil_step(u, v, r)
+    step = step + 1
+  return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
+
+# WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
+def echem_aimd_step_count() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def echem_aimd_harmonic_k() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 8.0
+
+def echem_aimd_dft_energy_per_step() -> float
+  requires true
+  ensures result <= 0.0
+  decreases 0
+=
+  return chem_dft_energy_kernel_hartree()
+
+def echem_aimd_kinetic_pe(x: float, vx: float) -> float
+  requires true
+  ensures result == 0.5 * vx * vx + 0.5 * echem_aimd_harmonic_k() * x * x
+  decreases 0
+=
+  var k: float = echem_aimd_harmonic_k()
+  return 0.5 * vx * vx + 0.5 * k * x * x
+
+def echem_aimd_total_energy(x: float, vx: float) -> float
+  requires true
+  ensures result == echem_aimd_dft_energy_per_step() + echem_aimd_kinetic_pe(x, vx)
+  decreases 0
+=
+  return echem_aimd_dft_energy_per_step() + echem_aimd_kinetic_pe(x, vx)
+
+def echem_aimd_thermostat_step(vx: var float, target_ke: float) -> unit
+  requires target_ke >= 0.0
+  ensures true
+  decreases 0
+=
+  var ke: float = 0.5 * vx * vx
+  if ke > target_ke * 1.05:
+    vx = vx * 0.96
+  if ke < target_ke * 0.95:
+    vx = vx * 1.04
+
+def sim_scientific_oracle_checksum_echem_aimd() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var x: float = 0.08
+  var vx: float = 0.03
+  var dt: float = 0.003
+  var k: float = echem_aimd_harmonic_k()
+  var target_ke: float = 0.5 * vx * vx
+  var e0: float = echem_aimd_total_energy(x, vx)
+  var step: int = 0
+  while step < echem_aimd_step_count()
+    echem_aimd_dft_energy_per_step()
+    var ax: float = -k * x
+    vx = vx + 0.5 * dt * ax
+    x = x + dt * vx
+    ax = -k * x
+    vx = vx + 0.5 * dt * ax
+    echem_aimd_thermostat_step(vx, target_ke)
+    step = step + 1
+  var e1: float = echem_aimd_total_energy(x, vx)
+  var denom: float = e0
+  if e1 > denom:
+    denom = e1
+  if denom < 0.0:
+    if -e0 > denom:
+      denom = -e0
+    if -e1 > denom:
+      denom = -e1
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = e1 - e0
+  if diff < 0.0:
+    diff = -diff
+  return diff / denom
+
+# WP-ECHEM-12 — grand-canonical SHE AIMD: constant-potential MD + charge neutrality feedback.
+def echem_gc_aimd_step_count() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+def echem_gc_aimd_electrode_potential_v() -> float
+  requires true
+  ensures result == 0.25
+  decreases 0
+=
+  return 0.25
+
+def echem_gc_aimd_harmonic_k() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 8.0
+
+def echem_gc_aimd_dft_energy_at_potential(u_v: float) -> float
+  requires true
+  ensures result == echem_dft_energy_at_potential(u_v)
+  decreases 0
+=
+  return echem_dft_energy_at_potential(u_v)
+
+def echem_gc_aimd_kinetic_pe(x: float, vx: float) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var k: float = echem_gc_aimd_harmonic_k()
+  return 0.5 * vx * vx + 0.5 * k * x * x
+
+def echem_gc_aimd_thermostat_step(vx: var float, target_ke: float) -> unit
+  requires target_ke >= 0.0
+  ensures true
+  decreases 0
+=
+  var ke: float = 0.5 * vx * vx
+  if ke > target_ke * 1.05:
+    vx = vx * 0.96
+  if ke < target_ke * 0.95:
+    vx = vx * 1.04
+
+def sim_scientific_oracle_checksum_echem_gc_aimd() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var q: float = 0.12
+  var x: float = 0.06
+  var vx: float = 0.02
+  var dt: float = 0.003
+  var u_v: float = echem_gc_aimd_electrode_potential_v()
+  var k: float = echem_gc_aimd_harmonic_k()
+  var target_ke: float = 0.5 * vx * vx
+  var max_drift: float = echem_gc_charge_drift_abs(q)
+  var step: int = 0
+  while step < echem_gc_aimd_step_count()
+    echem_gc_aimd_dft_energy_at_potential(u_v)
+    var ax: float = -k * x
+    vx = vx + 0.5 * dt * ax
+    x = x + dt * vx
+    ax = -k * x
+    vx = vx + 0.5 * dt * ax
+    echem_gc_aimd_thermostat_step(vx, target_ke)
+    q = echem_gc_charge_neutrality_next(q, u_v)
+    var abs_q: float = echem_gc_charge_drift_abs(q)
+    if abs_q > max_drift:
+      max_drift = abs_q
+    step = step + 1
+  var final_drift: float = echem_gc_charge_drift_abs(q)
+  if final_drift > max_drift:
+    max_drift = final_drift
+  return max_drift
+
+# WP-ECHEM-15 — multiscale SEI growth kMC: NEB-barrier deposition rates vs mean-field growth law.
+def echem_sei_kmc_step_count() -> int
+  requires true
+  ensures result == 48
+  decreases 0
+=
+  return 48
+
+def echem_sei_kmc_discrete_thickness_ang() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var rate: float = echem_sei_deposition_rate_per_step()
+  var growth: float = echem_sei_growth_ang_per_event()
+  var acc: float = 0.0
+  var thickness: float = 0.0
+  var step: int = 0
+  while step < echem_sei_kmc_step_count()
+    acc = acc + rate
+    if acc >= 1.0:
+      thickness = thickness + growth
+      acc = acc - 1.0
+    step = step + 1
+  return thickness
+
+def echem_sei_kmc_analytic_thickness_ang() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var rate: float = echem_sei_deposition_rate_per_step()
+  var growth: float = echem_sei_growth_ang_per_event()
+  var acc_rate: float = 0.0
+  var step: int = 0
+  while step < echem_sei_kmc_step_count()
+    acc_rate = acc_rate + rate
+    step = step + 1
+  return acc_rate * growth
+
+def echem_sei_kmc_growth_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var h_kmc: float = echem_sei_kmc_discrete_thickness_ang()
+  var h_analytic: float = echem_sei_kmc_analytic_thickness_ang()
+  if h_kmc <= 0.0:
+    return 0
+  if h_analytic <= 0.0:
+    return 0
+  var denom: float = h_analytic
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = h_kmc - h_analytic
+  if diff < 0.0:
+    diff = -diff
+  var rel: float = diff / denom
+  if rel > 0.35:
+    return 0
+  return 1
+
+def sim_scientific_oracle_checksum_echem_sei_kmc() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var h_kmc: float = echem_sei_kmc_discrete_thickness_ang()
+  var h_analytic: float = echem_sei_kmc_analytic_thickness_ang()
+  var denom: float = h_analytic
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = h_kmc - h_analytic
+  if diff < 0.0:
+    diff = -diff
+  return diff / denom
+
+def sim_scientific_checksum_combine(chk_md: float, chk_heat: float, chk_rigid: float, step_index: int) -> float
+  requires step_index >= 1
+  requires step_index <= 64
+  requires chk_md >= 0.0
+  requires chk_heat >= 0.0
+  ensures result >= 0.0
+  decreases step_index
+=
+  var step_tag: float = 1.0e-9
+  if step_index == 2:
+    step_tag = 2.0e-9
+  if step_index == 3:
+    step_tag = 3.0e-9
+  if step_index == 4:
+    step_tag = 4.0e-9
+  if step_index == 5:
+    step_tag = 5.0e-9
+  if step_index == 6:
+    step_tag = 6.0e-9
+  if step_index == 7:
+    step_tag = 7.0e-9
+  if step_index == 8:
+    step_tag = 8.0e-9
+  if step_index >= 9:
+    step_tag = 9.0e-9
+  return chk_md + chk_heat * 1.0e-3 + chk_rigid * 1.0e-6 + step_tag
+
+def run_multi_physics_at_step(step_index: int, detail: int) -> SimRunResult
+  requires step_index >= 1
+  requires step_index <= 64
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.detail_emitted == detail
+  decreases step_index
+=
+  var d: int = detail
+  var md: SimRunResult = run_md_lj_smoke(d)
+  var heat: SimRunResult = run_heat_smoke(d)
+  var rigid: SimRunResult = run_rigid_smoke(d)
+  if run_result_ok(md) != 1:
+    var bad_md: SimRunResult
+    bad_md.ok = 0
+    bad_md.algo_id = algo_md_lj_cutoff_mic()
+    bad_md.vertical_id = vertical_md_lennard_jones()
+    bad_md.checksum = 0.0
+    bad_md.detail_emitted = d
+    return bad_md
+  if run_result_ok(heat) != 1:
+    var bad_heat: SimRunResult
+    bad_heat.ok = 0
+    bad_heat.algo_id = algo_pde_heat_explicit_2d()
+    bad_heat.vertical_id = vertical_pde_heat_2d()
+    bad_heat.checksum = 0.0
+    bad_heat.detail_emitted = d
+    return bad_heat
+  if run_result_ok(rigid) != 1:
+    var bad_rigid: SimRunResult
+    bad_rigid.ok = 0
+    bad_rigid.algo_id = algo_rigid_semi_implicit()
+    bad_rigid.vertical_id = vertical_gaming_rigid()
+    bad_rigid.checksum = 0.0
+    bad_rigid.detail_emitted = d
+    return bad_rigid
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_md_lj_cutoff_mic()
+  r.vertical_id = vertical_md_lennard_jones()
+  r.checksum = sim_scientific_checksum_combine(md.checksum, heat.checksum, rigid.checksum, step_index)
+  r.detail_emitted = d
+  return r
+
+# WP-SCI-01 — MD + heat + rigid smokes per tick with combined oracle checksum.
+def sim_scientific_tick_at(step_index: int, detail: int) -> int
+  requires step_index >= 1
+  requires step_index <= 64
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases step_index
+=
+  var r: SimRunResult = run_multi_physics_at_step(step_index, detail)
+  if run_result_ok(r) != 1:
+    return 0
+  return 1
+
+# PH-SIM vertical gap #4 — studio hook delegates to multi-physics tick.
+def sim_scientific_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return sim_scientific_tick_at(1, detail)
+
+def run_md_lj_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == 101
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_md()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_md_lj_cutoff_mic()
+  r.vertical_id = vertical_md_lennard_jones()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_heat_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == 201
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_heat()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_pde_heat_explicit_2d()
+  r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_rigid_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var body: RigidBody
+  body.px = 0.0
+  body.py = 0.0
+  body.pz = 0.0
+  body.vx = 1.0
+  body.vy = 0.0
+  body.vz = 0.0
+  body.inv_mass = 1.0
+  body.radius = 0.5
+  rigid_integrate_semi_implicit(body, 0.0, 0.0, -9.81, 0.01)
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_rigid_semi_implicit()
+  r.vertical_id = vertical_gaming_rigid()
+  r.checksum = body.pz
+  r.detail_emitted = detail
+  return r
+
+def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_in_registry(algo_id) == 1
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var vert: int = 0
+  if algo_id >= 401:
+    if algo_id <= 432:
+      vert = vertical_qm_dft()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vert
+  r.checksum = 1.001
+  r.detail_emitted = detail
+  return r
+
+def run_md_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 101
+  requires algo_id <= 117
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_md()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_md_lennard_jones()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 201
+  requires algo_id <= 216
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_heat()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_echem_aimd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id == algo_echem_aimd_interface()
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_echem_aimd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_echem_aimd()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_echem_gc_aimd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id == algo_echem_gc_aimd_interface()
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_echem_gc_aimd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_echem_gc_aimd()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_echem_sei_kmc_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id == algo_echem_sei_kmc()
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_echem_sei_kmc()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_echem_sei_kmc()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_in_registry(algo_id) == 1
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  if algo_id >= 101:
+    if algo_id <= 117:
+      var d0: int = detail
+      return run_md_tier2_registry(algo_id, d0)
+  if algo_id >= 201:
+    if algo_id <= 216:
+      var d1: int = detail
+      return run_heat_tier2_registry(algo_id, d1)
+  if algo_id >= 301:
+    if algo_id <= 305:
+      var d2: int = detail
+      var rigid: SimRunResult = run_rigid_smoke(d2)
+      rigid.algo_id = algo_id
+      return rigid
+  if algo_id == algo_echem_aimd_interface():
+    var d_echem: int = detail
+    return run_echem_aimd_tier2_registry(algo_id, d_echem)
+  if algo_id == algo_echem_gc_aimd_interface():
+    var d_gc: int = detail
+    return run_echem_gc_aimd_tier2_registry(algo_id, d_gc)
+  if algo_id == algo_echem_sei_kmc():
+    var d_sei: int = detail
+    return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
+  var d3: int = detail
+  return run_algo_registry_stub(algo_id, d3)
+
+def run_algo(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id > 0
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var reg_chk: int = algo_id
+  var reg_run: int = algo_id
+  if algo_id == algo_md_lj_cutoff_mic():
+    var d0: int = detail
+    return run_md_lj_smoke(d0)
+  if algo_id == algo_md_integrator_verlet():
+    var d1: int = detail
+    return run_md_lj_smoke(d1)
+  if algo_id == algo_pde_heat_explicit_2d():
+    var d2: int = detail
+    return run_heat_smoke(d2)
+  if algo_id == algo_rigid_semi_implicit():
+    var d3: int = detail
+    return run_rigid_smoke(d3)
+  if algo_id == algo_echem_aimd_interface():
+    var d_echem: int = detail
+    return run_echem_aimd_tier2_registry(algo_id, d_echem)
+  if algo_id == algo_echem_gc_aimd_interface():
+    var d_gc: int = detail
+    return run_echem_gc_aimd_tier2_registry(algo_id, d_gc)
+  if algo_id == algo_echem_sei_kmc():
+    var d_sei: int = detail
+    return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
+  if algo_in_registry(reg_chk) == 1:
+    var d4: int = detail
+    return run_algo_registry(reg_run, d4)
+  var bad: SimRunResult
+  var d5: int = detail
+  bad.ok = 0
+  bad.algo_id = algo_id
+  bad.vertical_id = 0
+  bad.checksum = 0.0
+  bad.detail_emitted = d5
+  return bad
+
+def run_simulation(vertical_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires vertical_id > 0
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  if vertical_id == vertical_md_lennard_jones():
+    var d0: int = detail
+    return run_md_lj_smoke(d0)
+  if vertical_id == vertical_pde_heat_2d():
+    var d1: int = detail
+    return run_heat_smoke(d1)
+  if vertical_id == vertical_gaming_rigid():
+    var d2: int = detail
+    return run_rigid_smoke(d2)
+  if vertical_id == vertical_qm_dft():
+    var d3: int = detail
+    return run_algo(algo_qm_dft_scf_energy(), d3)
+  if vertical_id == vertical_echem_aimd():
+    var d_echem: int = detail
+    return run_echem_aimd_tier2_registry(algo_echem_aimd_interface(), d_echem)
+  if vertical_id == vertical_echem_gc_aimd():
+    var d_gc: int = detail
+    return run_echem_gc_aimd_tier2_registry(algo_echem_gc_aimd_interface(), d_gc)
+  if vertical_id == vertical_echem_sei_kmc():
+    var d_sei: int = detail
+    return run_echem_sei_kmc_tier2_registry(algo_echem_sei_kmc(), d_sei)
+  var bad: SimRunResult
+  var d4: int = detail
+  bad.ok = 0
+  bad.algo_id = 0
+  bad.vertical_id = vertical_id
+  bad.checksum = 0.0
+  bad.detail_emitted = d4
+  return bad

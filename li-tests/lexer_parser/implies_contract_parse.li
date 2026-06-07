@@ -1,0 +1,6 @@
+def smoke(a: int, b: int) -> int
+  requires (a >= 0) implies (b >= 0)
+  ensures ((a + 1) == (b + 1)) implies (a == b)
+  decreases 0
+=
+  return a

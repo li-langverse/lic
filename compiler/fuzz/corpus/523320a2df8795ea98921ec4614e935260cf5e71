@@ -1,0 +1,5 @@
+@cpu
+@parallel(disjoiuncpu
+@parallel(disjoint=disnjoit_row)
+proc f() -> int
+  requires t@caraltel(ditel(dis@rueparallel(disjoint=d  ensures truntrun 0

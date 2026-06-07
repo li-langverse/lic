@@ -1,0 +1,13 @@
+@cpu
+@el(disjoint=disw)
+proc decreases 0
+=
+  reoc f()(-equires true
+  ensurtu
+@parallel(dint=disjoint_row)
+proc@cpu
+@pa
+proc f() -> @@cpcllel(disjoint=disjoint_row)
+proc@cpu
+@pa
+proc f() -> @@cprn 0

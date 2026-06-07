@@ -1,0 +1,19 @@
+import scene
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var ledger: LigMemoryLedger = scene_md_particle_memory_ledger_default()
+  if ledger.budget_mib != 512:
+    return 1
+  if ledger.allocated_bytes <= 0:
+    return 2
+  if scene_md_particle_tier_refuse_md_100k_over_budget(ledger) != 1:
+    return 3
+  if scene_md_particle_tier_would_fit(scene_md_tier_100k(), ledger) != 0:
+    return 4
+  if scene_md_particle_tier_would_fit(scene_md_tier_1k(), ledger) != 1:
+    return 5
+  return 0

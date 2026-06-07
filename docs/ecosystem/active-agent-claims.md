@@ -12,6 +12,7 @@
 
 | Claim ID | Owner | Repo / path | Branch | Scope | Do not touch |
 |----------|-------|-------------|--------|-------|--------------|
+| `httpd-p0-bench` | lic agent | `benchmarks/harness/bench_ecosystem.py`, `tier3_ecosystem/` | `dev` | Tier-3 CSV for dashboard ingest | `benchmarks/results/*.csv` format |
 | `httpd-p0-async-codegen` | lic agent | `compiler/mir`, `compiler/codegen`, `runtime/li_rt.*` | `dev` | MIR `AsyncAwait`, `li_async_*` reactor stubs | Same paths without coordinating |
 | `httpd-p0-net` | lic agent | `packages/li-net/` | `dev` | Trusted TCP `extern` surface (stable) | `packages/li-net` API changes |
 | `httpd-p0-org` | lic agent | `scripts/push-official-package-repo.sh` | `dev` | **Done** — org mirrors pushed (see table below) | `gh repo delete`, uncoordinated force-push |

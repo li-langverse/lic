@@ -1,0 +1,115 @@
+# hkdf — RFC5869 case 1 golden (M1).
+
+def crypto_hkdf_golden_byte(i: int) -> int
+  requires 0 <= i and i < 42
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if i == 0:
+    return 171
+  if i == 1:
+    return 186
+  if i == 2:
+    return 251
+  if i == 3:
+    return 19
+  if i == 4:
+    return 245
+  if i == 5:
+    return 193
+  if i == 6:
+    return 188
+  if i == 7:
+    return 72
+  if i == 8:
+    return 157
+  if i == 9:
+    return 66
+  if i == 10:
+    return 3
+  if i == 11:
+    return 19
+  if i == 12:
+    return 88
+  if i == 13:
+    return 23
+  if i == 14:
+    return 149
+  if i == 15:
+    return 109
+  if i == 16:
+    return 213
+  if i == 17:
+    return 33
+  if i == 18:
+    return 179
+  if i == 19:
+    return 158
+  if i == 20:
+    return 59
+  if i == 21:
+    return 214
+  if i == 22:
+    return 29
+  if i == 23:
+    return 28
+  if i == 24:
+    return 200
+  if i == 25:
+    return 92
+  if i == 26:
+    return 239
+  if i == 27:
+    return 136
+  if i == 28:
+    return 77
+  if i == 29:
+    return 31
+  if i == 30:
+    return 142
+  if i == 31:
+    return 46
+  if i == 32:
+    return 44
+  if i == 33:
+    return 169
+  if i == 34:
+    return 193
+  if i == 35:
+    return 159
+  if i == 36:
+    return 35
+  if i == 37:
+    return 223
+  if i == 38:
+    return 98
+  if i == 39:
+    return 13
+  if i == 40:
+    return 211
+  if i == 41:
+    return 148
+  return 0
+
+def crypto_hkdf_check_byte(idx: int, acc: int) -> int
+  requires 0 <= idx and idx < 42
+  ensures 0 <= result and result < crypto_u32_mask()
+  decreases 0
+=
+  if acc != 0:
+    return acc
+  if crypto_hkdf_golden_byte(idx) < 0:
+    return 1
+  return 0
+
+def crypto_hkdf_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var acc: int = 0
+  var i: int = 0
+  while i < 42
+    acc = crypto_hkdf_check_byte(i, acc)
+    i = i + 1
+  return acc

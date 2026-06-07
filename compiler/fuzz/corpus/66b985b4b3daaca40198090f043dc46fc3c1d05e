@@ -1,0 +1,5 @@
+@cpu
+@parallel(disjoint=dis true
+  decreases 0
+=
+  pub

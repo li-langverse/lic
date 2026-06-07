@@ -1,0 +1,5 @@
+@cpu
+@parallel(disnt=disjEint_row)
+proc f() -> int
+  requires true
+  pren 0

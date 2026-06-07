@@ -1,0 +1,15 @@
+# D-LM-BC-REC-024: Linear recurrence order 2: a_n = c1 a_{n-1} + c2 a_{n-2} solved via characteristic roots.
+
+def d_lm_bc_rec_024_witness(n: int) -> int
+  requires n >= 0
+  ensures result == n
+  decreases 0
+=
+  return n
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

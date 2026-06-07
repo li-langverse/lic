@@ -1,0 +1,15 @@
+# Draft entry for lib/linguist/languages.yml (github-linguist/linguist).
+# Insert in alphabetical order under "L" (after "LigoLANG", before "LilyPond" or as maintainers direct).
+# Omit language_id until script/update-ids runs on the linguist fork.
+
+Li:
+  type: programming
+  color: "#3dd6ff"
+  extensions:
+    - ".li"
+  tm_scope: source.li
+  ace_mode: text
+  interpreters:
+    - lic
+  aliases:
+    - li

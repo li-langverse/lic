@@ -1,0 +1,7 @@
+@cpu
+@parallel(disjoint=disjocpu
+@parallel(disjoint=disjoint_row,int_row,
+proc fses 0
+=
+  robjl(dip@parall_l(disjoint=disjoint_row)
+proc t_rourn 0

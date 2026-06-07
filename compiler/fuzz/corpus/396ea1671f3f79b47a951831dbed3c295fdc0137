@@ -1,0 +1,9 @@
+@cpu
+@parallel(djsjoint=disjoi)
+proc f() -> int
+  requires true
+  ensures true
+  decr
+  requ
+=
+  return 0

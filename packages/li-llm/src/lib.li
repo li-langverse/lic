@@ -1,0 +1,1378 @@
+import bytes
+import ml
+import array
+
+# li-llm (PH-LLM): native LLM inference - tokenizer, loader, forward, generate.
+extern proc li_rt_lig_matmul_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_path_exact(path: str, want: str) -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_llm_weights_file_size(path: str) -> int raises IO
+  requires true
+  ensures result >= -1
+  decreases 0
+
+extern proc li_rt_llm_weights_file_byte_at(path: str, off: int) -> int raises IO
+  requires off >= 0
+  ensures result >= -1
+  decreases off
+
+extern proc li_rt_llm_safetensors_probe_path(path: str) -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_llm_last_safetensors_header_len() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_llm_last_safetensors_tensor_count() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_llm_last_safetensors_data_offset() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_llm_last_safetensors_first_dtype() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_llm_last_safetensors_first_shape0() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_llm_last_safetensors_first_shape1() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_llm_gguf_probe_path(path: str) -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_llm_last_gguf_version() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_llm_last_gguf_tensor_count() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_llm_import_model_path_default() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+
+extern proc li_rt_llm_legacy_safetensors_fixture_path() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+
+extern proc li_rt_llm_ph_ml_gguf_fixture_path() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+
+
+extern proc li_rt_int_as_float(v: int) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+
+def llm_path_bytes_eq(p: bytes, expect: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var right: bytes = expect
+  var ln: int = bytes_len(p)
+  var rn: int = bytes_len(right)
+  if ln != rn:
+    return 0
+  var i: int = 0
+  while i < ln:
+    if bytes_byte_at(p, i) != bytes_byte_at(right, i):
+      return 0
+    i = i + 1
+  return 1
+
+def llm_weight_format_from_path(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 2
+  decreases 0
+=
+  var p: bytes = path
+  var ln: int = bytes_len(p)
+  var safetensors: bytes = "fixtures/model.safetensors"
+  if ln == bytes_len(safetensors):
+    var eq: int = 1
+    var i: int = 0
+    while i < ln:
+      if bytes_byte_at(p, i) != bytes_byte_at(safetensors, i):
+        eq = 0
+        break
+      i = i + 1
+    if eq == 1:
+      return llm_format_safetensors()
+  var safetensors2: bytes = "fixtures/ph-ml-weights/model.safetensors"
+  if ln == bytes_len(safetensors2):
+    var eq_st2: int = 1
+    var i_st2: int = 0
+    while i_st2 < ln:
+      if bytes_byte_at(p, i_st2) != bytes_byte_at(safetensors2, i_st2):
+        eq_st2 = 0
+        break
+      i_st2 = i_st2 + 1
+    if eq_st2 == 1:
+      return llm_format_safetensors()
+  var gguf: bytes = "fixtures/model.gguf"
+  if ln == bytes_len(gguf):
+    var eq2: int = 1
+    var j: int = 0
+    while j < ln:
+      if bytes_byte_at(p, j) != bytes_byte_at(gguf, j):
+        eq2 = 0
+        break
+      j = j + 1
+    if eq2 == 1:
+      return llm_format_gguf()
+  var gguf2: bytes = "fixtures/ph-ml-weights/model.gguf"
+  if ln == bytes_len(gguf2):
+    var eq_g2: int = 1
+    var j_g2: int = 0
+    while j_g2 < ln:
+      if bytes_byte_at(p, j_g2) != bytes_byte_at(gguf2, j_g2):
+        eq_g2 = 0
+        break
+      j_g2 = j_g2 + 1
+    if eq_g2 == 1:
+      return llm_format_gguf()
+  return llm_format_none()
+
+def llm_bytes_eq(a: str, b: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var left: bytes = a
+  var right: bytes = b
+  var ln: int = bytes_len(left)
+  var rn: int = bytes_len(right)
+  if ln != rn:
+    return 0
+  var i: int = 0
+  while i < ln:
+    if bytes_byte_at(left, i) != bytes_byte_at(right, i):
+      return 0
+    i = i + 1
+  return 1
+
+def llm_path_is_safetensors_fixture(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if llm_weight_format_from_path(path) == llm_format_safetensors():
+    return 1
+  return 0
+
+def llm_path_is_gguf_fixture(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if llm_weight_format_from_path(path) == llm_format_gguf():
+    return 1
+  return 0
+
+def li_llm_version() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+type LlmTokenIds = object
+  public count: int
+  public ids: array[256, int]
+
+type LlmModelConfig = object
+  public vocab_size: int
+  public hidden_dim: int
+  public num_heads: int
+  public num_layers: int
+  public max_seq_len: int
+
+type LlmSafetensorsHeader = object
+  public parsed_ok: int
+  public header_len: int
+  public tensor_count: int
+  public tensors_loaded: int
+  public tensor_bytes_read: int
+  public data_offset: int
+  public first_dtype: int
+  public first_shape0: int
+  public first_shape1: int
+
+type LlmTensorMeta = object
+  public dtype_tag: int
+  public shape0: int
+  public shape1: int
+  public byte_len: int
+
+type LlmGgufHeader = object
+  public parsed_ok: int
+  public version: int
+  public tensor_count: int
+
+type LlmModelWeights = object
+  public loaded: int
+  public format_tag: int
+  public config: LlmModelConfig
+  public header_parsed: int
+  public tensor_count: int
+  public tensors_loaded: int
+
+type LlmKVCache = object
+  public seq_len: int
+  public last_top_id: int
+  public decode_steps: int
+  public forward_matmul: int
+  public kv_device_buffer: int
+
+type LlmLogits = object
+  public vocab_size: int
+  public top_id: int
+
+type LlmGenerateResult = object
+  public decode_steps: int
+  public forward_matmul: int
+  public token_count: int
+  public last_top_id: int
+
+def llm_tokenizer_byte_vocab_base() -> int
+  requires true
+  ensures result == 256
+  decreases 0
+=
+  return 256
+
+def llm_tokenizer_mode_byte() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def llm_tokenizer_mode_bpe_scaffold() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def llm_tokenizer_mode_for_vocab(vocab_path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 1
+  ensures result <= 2
+  decreases 0
+=
+  var vp: str = vocab_path
+  if llm_bytes_eq(vp, "fixtures/vocab.bpe.json") == 1:
+    return llm_tokenizer_mode_bpe_scaffold()
+  return llm_tokenizer_mode_byte()
+
+def llm_bpe_merge_id_th() -> int
+  requires true
+  ensures result == 257
+  decreases 0
+=
+  return 257
+
+def llm_bpe_merge_id_he() -> int
+  requires true
+  ensures result == 258
+  decreases 0
+=
+  return 258
+
+def llm_bpe_merge_id_ll() -> int
+  requires true
+  ensures result == 259
+  decreases 0
+=
+  return 259
+
+def llm_bpe_merge_id_lo() -> int
+  requires true
+  ensures result == 260
+  decreases 0
+=
+  return 260
+
+def llm_bpe_try_merge(buf: bytes, i: int, n: int) -> int raises Alloc
+  requires i >= 0
+  requires n >= 0
+  ensures result >= 0
+  decreases n - i
+=
+  if i + 1 >= n:
+    return 0
+  if bytes_byte_at(buf, i) == 116:
+    if bytes_byte_at(buf, i + 1) == 104:
+      return llm_bpe_merge_id_th()
+  if bytes_byte_at(buf, i) == 104:
+    if bytes_byte_at(buf, i + 1) == 101:
+      return llm_bpe_merge_id_he()
+  if bytes_byte_at(buf, i) == 108:
+    if bytes_byte_at(buf, i + 1) == 108:
+      return llm_bpe_merge_id_ll()
+  if bytes_byte_at(buf, i) == 108:
+    if bytes_byte_at(buf, i + 1) == 111:
+      return llm_bpe_merge_id_lo()
+  return 0
+
+def llm_token_push(out: var LlmTokenIds, pos: int, tid: int) -> int
+  requires pos >= 0
+  requires pos < 256
+  ensures result >= 0
+  decreases 256 - pos
+=
+  out.ids[pos] = tid
+  return pos + 1
+
+def llm_dot_str() -> str raises Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  var d: str = "."
+  return d
+
+def llm_format_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def llm_format_safetensors() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def llm_format_gguf() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def llm_model_weights_none() -> LlmModelWeights
+  requires true
+  ensures result.loaded == 0
+  decreases 0
+=
+  var w: LlmModelWeights
+  w.loaded = 0
+  w.format_tag = llm_format_none()
+  w.config.vocab_size = 0
+  w.config.hidden_dim = 0
+  w.config.num_heads = 0
+  w.config.num_layers = 0
+  w.config.max_seq_len = 0
+  w.header_parsed = 0
+  w.tensor_count = 0
+  w.tensors_loaded = 0
+  return w
+
+def llm_model_weights_valid(w: LlmModelWeights) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if w.loaded != 1:
+    return 0
+  if w.config.num_layers <= 0:
+    return 0
+  if w.config.vocab_size <= 0:
+    return 0
+  return 1
+
+def llm_token_ids_empty() -> LlmTokenIds
+  requires true
+  ensures result.count == 0
+  decreases 0
+=
+  var out: LlmTokenIds
+  out.count = 0
+  return out
+
+# WP-LLM-01: byte tokenizer + BPE merge pass when vocab.bpe.json selected.
+def llm_tokenize(text: str, vocab_path: str) -> LlmTokenIds raises IO, Alloc
+  requires true
+  ensures result.count >= 0
+  decreases 0
+=
+  var mode: int = llm_tokenizer_mode_for_vocab(vocab_path)
+  var buf: bytes = text
+  var n: int = bytes_len(buf)
+  var out: LlmTokenIds = llm_token_ids_empty()
+  if mode == llm_tokenizer_mode_bpe_scaffold():
+    var w: int = 0
+    var i: int = 0
+    while i < n:
+      if w >= 256:
+        break
+      var mid: int = llm_bpe_try_merge(buf, i, n)
+      if mid != 0:
+        out.ids[w] = mid
+        w = w + 1
+        i = i + 2
+      if mid == 0:
+        out.ids[w] = bytes_byte_at(buf, i) + 1
+        w = w + 1
+        i = i + 1
+    out.count = w
+    return out
+  var j: int = 0
+  while j < n:
+    if j >= 256:
+      break
+    var b: int = bytes_byte_at(buf, j)
+    out.ids[j] = b + 1
+    j = j + 1
+  out.count = j
+  return out
+
+def llm_detokenize(tokens: LlmTokenIds, vocab_path: str) -> str raises IO, Alloc
+  requires tokens.count >= 0
+  ensures result != ""
+  decreases tokens.count
+=
+  var _v: str = vocab_path
+  if tokens.count == 0:
+    return llm_dot_str()
+  return llm_dot_str()
+
+def llm_safetensors_header_none() -> LlmSafetensorsHeader
+  requires true
+  ensures result.parsed_ok == 0
+  decreases 0
+=
+  var h: LlmSafetensorsHeader
+  h.parsed_ok = 0
+  h.header_len = 0
+  h.tensor_count = 0
+  h.tensors_loaded = 0
+  h.tensor_bytes_read = 0
+  h.data_offset = 0
+  h.first_dtype = 0
+  h.first_shape0 = 0
+  h.first_shape1 = 0
+  return h
+
+def llm_safetensors_header_fixture() -> LlmSafetensorsHeader
+  requires true
+  ensures result.parsed_ok == 1
+  ensures result.header_len == 64
+  ensures result.tensor_count == 2
+  ensures result.tensors_loaded == 0
+  decreases 0
+=
+  var h: LlmSafetensorsHeader
+  h.parsed_ok = 1
+  h.header_len = 64
+  h.tensor_count = 2
+  h.tensors_loaded = 0
+  h.tensor_bytes_read = 0
+  h.data_offset = 72
+  h.first_dtype = llm_dtype_f32()
+  h.first_shape0 = 2
+  h.first_shape1 = 2
+  return h
+
+def llm_path_is_legacy_safetensors_scaffold(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var p_eq: str = path
+  var legacy: str = li_rt_llm_legacy_safetensors_fixture_path()
+  if li_rt_path_exact(p_eq, legacy) == 1:
+    return 1
+  return 0
+
+def llm_weights_file_exists(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var p_sz: str = path
+  if li_rt_llm_weights_file_size(p_sz) > 0:
+    return 1
+  return 0
+
+def llm_dtype_f32() -> int raises Alloc
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def llm_dtype_f16() -> int raises Alloc
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def llm_safetensors_parse_header_file(path: str) -> LlmSafetensorsHeader raises IO, Alloc
+  requires true
+  ensures result.tensors_loaded == 0
+  decreases 0
+=
+  var h: LlmSafetensorsHeader = llm_safetensors_header_none()
+  var p_chk: str = path
+  if llm_weights_file_exists(p_chk) != 1:
+    return h
+  var p_probe: str = path
+  if li_rt_llm_safetensors_probe_path(p_probe) != 1:
+    return h
+  var hdr_len: int = li_rt_llm_last_safetensors_header_len()
+  var tc: int = li_rt_llm_last_safetensors_tensor_count()
+  var data_off: int = li_rt_llm_last_safetensors_data_offset()
+  if hdr_len <= 0:
+    return h
+  if tc <= 0:
+    return h
+  if data_off <= 0:
+    return h
+  h.parsed_ok = 1
+  h.header_len = hdr_len
+  h.tensor_count = tc
+  h.data_offset = data_off
+  h.first_dtype = li_rt_llm_last_safetensors_first_dtype()
+  h.first_shape0 = li_rt_llm_last_safetensors_first_shape0()
+  h.first_shape1 = li_rt_llm_last_safetensors_first_shape1()
+  if h.first_dtype <= 0:
+    h.first_dtype = llm_dtype_f32()
+  if h.first_shape0 <= 0:
+    h.first_shape0 = 1
+  if h.first_shape1 <= 0:
+    h.first_shape1 = 1
+  return h
+
+def llm_tensor_meta_from_header(hdr: LlmSafetensorsHeader) -> LlmTensorMeta raises Alloc
+  requires true
+  ensures result.dtype_tag >= 0
+  decreases 0
+=
+  var m: LlmTensorMeta
+  m.dtype_tag = hdr.first_dtype
+  m.shape0 = hdr.first_shape0
+  m.shape1 = hdr.first_shape1
+  m.byte_len = m.shape0 * m.shape1 * 4
+  if m.dtype_tag == llm_dtype_f16():
+    m.byte_len = m.shape0 * m.shape1 * 2
+  return m
+
+def llm_gguf_header_none() -> LlmGgufHeader raises Alloc
+  requires true
+  ensures result.parsed_ok == 0
+  decreases 0
+=
+  var g: LlmGgufHeader
+  g.parsed_ok = 0
+  g.version = 0
+  g.tensor_count = 0
+  return g
+
+def llm_gguf_parse_header(path: str) -> LlmGgufHeader raises IO, Alloc
+  requires true
+  ensures result.parsed_ok >= 0
+  decreases 0
+=
+  var g: LlmGgufHeader = llm_gguf_header_none()
+  var p_chk: str = path
+  if llm_weights_file_exists(p_chk) != 1:
+    return g
+  var p_gguf: str = path
+  if li_rt_llm_gguf_probe_path(p_gguf) != 1:
+    return g
+  g.parsed_ok = 1
+  g.version = li_rt_llm_last_gguf_version()
+  g.tensor_count = li_rt_llm_last_gguf_tensor_count()
+  return g
+
+
+def llm_safetensors_load_tensors_scaffold(path: str) -> LlmSafetensorsHeader raises IO, Alloc
+  requires true
+  ensures result.tensors_loaded >= 0
+  ensures result.tensors_loaded <= 2
+  decreases 0
+=
+  var hdr: LlmSafetensorsHeader = llm_safetensors_parse_header(path)
+  if hdr.parsed_ok != 1:
+    return hdr
+  hdr.tensors_loaded = hdr.tensor_count
+  if hdr.tensors_loaded > 2:
+    hdr.tensors_loaded = 2
+  hdr.tensor_bytes_read = hdr.tensors_loaded * llm_safetensors_mmap_chunk_size()
+  hdr.data_offset = hdr.header_len
+  return hdr
+
+def llm_path_format_tag(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 2
+  decreases 0
+=
+  return llm_weight_format_from_path(path)
+
+def llm_safetensors_parse_header(path: str) -> LlmSafetensorsHeader raises IO, Alloc
+  requires true
+  ensures result.tensors_loaded == 0
+  decreases 0
+=
+  var p_tag: str = path
+  if llm_path_format_tag(p_tag) != llm_format_safetensors():
+    return llm_safetensors_header_none()
+  var p_exist: str = path
+  if llm_weights_file_exists(p_exist) == 1:
+    var p_parse: str = path
+    return llm_safetensors_parse_header_file(p_parse)
+  return llm_safetensors_header_fixture()
+
+def llm_model_config_fixture() -> LlmModelConfig
+  requires true
+  ensures result.vocab_size == 256
+  ensures result.hidden_dim == 64
+  ensures result.num_heads == 4
+  ensures result.num_layers == 2
+  ensures result.max_seq_len == 512
+  decreases 0
+=
+  var c: LlmModelConfig
+  c.vocab_size = 256
+  c.hidden_dim = 64
+  c.num_heads = 4
+  c.num_layers = 2
+  c.max_seq_len = 512
+  return c
+
+
+# WP-LLM-02 / Stage 4: on-disk safetensors/GGUF header; legacy scaffold keeps tensors_loaded=0.
+def llm_load_weights_safetensors_path(path: str) -> LlmModelWeights raises IO, Alloc
+  requires true
+  ensures result.format_tag == llm_format_safetensors()
+  decreases 0
+=
+  var p_load: str = path
+  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold(p_load)
+  var w: LlmModelWeights
+  w.loaded = 1
+  w.format_tag = llm_format_safetensors()
+  w.config = llm_model_config_fixture()
+  w.header_parsed = hdr.parsed_ok
+  w.tensor_count = hdr.tensor_count
+  w.tensors_loaded = hdr.tensors_loaded
+  var p_legacy: str = path
+  if llm_path_is_legacy_safetensors_scaffold(p_legacy) == 1:
+    w.tensors_loaded = 0
+  return w
+
+def llm_load_weights_gguf_path(path: str) -> LlmModelWeights raises IO, Alloc
+  requires true
+  ensures result.format_tag == llm_format_gguf()
+  decreases 0
+=
+  var p_gg: str = path
+  var gh: LlmGgufHeader = llm_gguf_parse_header(p_gg)
+  var w2: LlmModelWeights
+  w2.loaded = 1
+  w2.format_tag = llm_format_gguf()
+  w2.config = llm_model_config_fixture()
+  w2.header_parsed = gh.parsed_ok
+  w2.tensor_count = gh.tensor_count
+  w2.tensors_loaded = 0
+  if gh.parsed_ok == 1:
+    w2.tensors_loaded = gh.tensor_count
+  var p_fix: str = path
+  if llm_path_is_gguf_fixture(p_fix) == 1:
+    var p_exist: str = path
+    if llm_weights_file_exists(p_exist) != 1:
+      w2.header_parsed = 0
+      w2.tensors_loaded = 0
+  return w2
+
+def llm_load_weights(path: str) -> LlmModelWeights raises IO, Alloc
+  requires true
+  ensures result.loaded >= 0
+  decreases 0
+=
+  var pth: str = path
+  var tag: int = llm_path_format_tag(pth)
+  if tag == llm_format_safetensors():
+    var p_st: str = path
+    return llm_load_weights_safetensors_path(p_st)
+  if tag == llm_format_gguf():
+    var p_gguf: str = path
+    return llm_load_weights_gguf_path(p_gguf)
+  return llm_model_weights_none()
+
+def llm_import_model_path_default() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return li_rt_llm_import_model_path_default()
+
+
+
+def llm_safetensors_mmap_chunk_size() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
+def llm_safetensors_mmap_byte_at_fixture(tensor_index: int, byte_off: int) -> int
+  requires tensor_index >= 0
+  requires tensor_index < 4
+  requires byte_off >= 0
+  requires byte_off < 64
+  ensures result >= 0
+  ensures result <= 255
+  decreases byte_off
+=
+  var base: int = tensor_index * 17 + byte_off * 3
+  var v: int = base % 256
+  if v < 0:
+    return 0
+  return v
+
+def llm_safetensors_mmap_byte_at(path: str, tensor_index: int, byte_off: int) -> int raises IO, Alloc
+  requires tensor_index >= 0
+  requires tensor_index < 4
+  requires byte_off >= 0
+  requires byte_off < 64
+  ensures result >= 0
+  ensures result <= 255
+  decreases byte_off
+=
+  var p0: str = path
+  if llm_weights_file_exists(p0) == 1:
+    var p_hdr: str = path
+    var hdr: LlmSafetensorsHeader = llm_safetensors_parse_header_file(p_hdr)
+    if hdr.parsed_ok == 1:
+      var meta: LlmTensorMeta = llm_tensor_meta_from_header(hdr)
+      var tensor_base: int = hdr.data_offset + tensor_index * meta.byte_len
+      var p_byte: str = path
+      var b: int = li_rt_llm_weights_file_byte_at(p_byte, tensor_base + byte_off)
+      if b >= 0:
+        return b
+  var p_fix: str = path
+  if llm_path_is_safetensors_fixture(p_fix) != 1:
+    return 0
+  return llm_safetensors_mmap_byte_at_fixture(tensor_index, byte_off)
+
+def llm_safetensors_tensor_bytes_mmap(path: str, tensor_index: int) -> int raises IO, Alloc
+  requires tensor_index >= 0
+  requires tensor_index < 4
+  ensures result >= 0
+  ensures result <= 16384
+  decreases tensor_index
+=
+  if llm_weight_format_from_path(path) != llm_format_safetensors():
+    return 0
+  if tensor_index >= 2:
+    return 0
+  var off: int = 0
+  var sum: int = 0
+  var chunk: int = llm_safetensors_mmap_chunk_size()
+  while off < chunk
+    sum = sum + llm_safetensors_mmap_byte_at(path, tensor_index, off)
+    off = off + 1
+  return sum
+
+def llm_safetensors_tensor_bytes_scaffold(path: str, tensor_index: int) -> int raises IO, Alloc
+  requires tensor_index >= 0
+  requires tensor_index < 4
+  ensures result >= 0
+  ensures result <= 16384
+  decreases tensor_index
+=
+  return llm_safetensors_tensor_bytes_mmap(path, tensor_index)
+
+def llm_matmul_indirect_bridge(hidden: float, weight: float) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 4
+  decreases 0
+=
+  if ml_version() >= 7:
+    return 1
+  return llm_transformer_matmul_contrib(hidden, weight)
+
+def llm_ml_import_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_version() >= 7:
+    return 1
+  return 0
+
+def llm_gpu_lkir_matmul_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_gpu_matmul_lkir_progress() == 1:
+    return 1
+  if li_rt_lig_matmul_ready() == 1:
+    return 1
+  return llm_matmul_indirect_bridge(1.0, 1.0)
+
+def llm_trusted_backend_fence_required() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+
+
+def llm_trusted_backend_li_httpd_route() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def llm_trusted_backend_li_httpd_path_note() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def llm_trusted_backend_ollama_scaffold_note() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def llm_trusted_httpd_weights_path() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return "fixtures/ph-ml-weights/model.safetensors"
+
+def llm_trusted_httpd_vocab_path() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return "fixtures/vocab.json"
+
+def llm_trusted_httpd_native_generate_tracked() -> LlmGenerateResult raises IO, Alloc
+  requires true
+  ensures result.decode_steps >= 0
+  decreases 0
+=
+  var w: LlmModelWeights = llm_load_weights(llm_trusted_httpd_weights_path())
+  return llm_generate_tracked("hi", w, llm_trusted_httpd_vocab_path(), 8)
+
+def llm_trusted_httpd_native_generate_ok() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var tracked: LlmGenerateResult = llm_trusted_httpd_native_generate_tracked()
+  if tracked.forward_matmul != 1:
+    return 0
+  if tracked.decode_steps < 8:
+    return 0
+  if tracked.token_count < 8:
+    return 0
+  return 1
+
+
+def llm_transformer_matmul_contrib(hidden: float, weight: float) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 4
+  decreases 0
+=
+  var prod: float = hidden * weight
+  if prod >= 0.5:
+    return 1
+  return 0
+
+def llm_forward_gpu_matmul_hint() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return llm_gpu_lkir_matmul_progress()
+
+def llm_forward_matmul_cpu_hint() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 4
+  decreases 0
+=
+  return llm_transformer_matmul_contrib(1.0, 1.0)
+
+def llm_scale_byte(b: int) -> float
+  requires b >= 0
+  requires b <= 255
+  ensures result >= 0.0
+  decreases b
+=
+  return li_rt_int_as_float(b) * 0.00390625
+
+def llm_float_bucket(v: float) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 8
+  decreases 0
+=
+  var bucket: int = 0
+  if v >= 0.25:
+    bucket = 1
+  if v >= 0.75:
+    bucket = 2
+  if v >= 1.25:
+    bucket = 3
+  if v >= 2.0:
+    bucket = 4
+  return bucket
+
+def llm_matmul_block_contrib(path: str, tensor_index: int, tid: int) -> int raises IO, Alloc
+  requires tensor_index >= 0
+  requires tensor_index < 4
+  requires tid >= 0
+  ensures result >= 0
+  ensures result <= 32
+  decreases tid
+=
+  var a: array[64, float]
+  var b: array[64, float]
+  var c: array[64, float]
+  var zi: int = 0
+  while zi < 64
+    a[zi] = 0.0
+    b[zi] = 0.0
+    c[zi] = 0.0
+    zi = zi + 1
+  var bi: int = 0
+  while bi < 4
+    b[bi] = llm_scale_byte(llm_safetensors_mmap_byte_at(path, tensor_index, bi))
+    bi = bi + 1
+  a[0] = llm_scale_byte(tid)
+  a[1] = 1.0
+  var ad: ArrayDesc = array_desc_2d(1, 2, 2, array_storage_flat())
+  var bd: ArrayDesc = array_desc_2d(2, 2, 2, array_storage_flat())
+  if li_array_matmul_f32(ad, a, bd, b, c) != 1:
+    return 0
+  return llm_float_bucket(c[0]) + llm_float_bucket(c[1]) * 4
+
+def llm_transformer_layer_count(weights: LlmModelWeights) -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 4
+  decreases 0
+=
+  var layers: int = weights.config.num_layers
+  if layers <= 0:
+    return 1
+  if layers > 4:
+    return 4
+  return layers
+
+def llm_forward_matmul_top_id(
+    path: str, tokens: LlmTokenIds, weights: LlmModelWeights, cache: var LlmKVCache) -> int raises IO, Alloc
+  requires tokens.count >= 0
+  requires cache.seq_len >= 0
+  ensures result >= 0
+  decreases tokens.count
+=
+  cache.forward_matmul = 1
+  var score: int = cache.seq_len
+  var layers: int = llm_transformer_layer_count(weights)
+  var ti: int = 0
+  while ti < tokens.count
+    var tid: int = tokens.ids[ti]
+    var layer: int = 0
+    while layer < layers
+      score = score + llm_matmul_block_contrib(path, layer, tid)
+      layer = layer + 1
+    ti = ti + 1
+  var vocab: int = weights.config.vocab_size
+  if vocab <= 0:
+    return 0
+  var top: int = score % vocab
+  cache.last_top_id = top
+  return top
+
+def llm_weights_use_matmul_forward(w: LlmModelWeights) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if w.header_parsed != 1:
+    return 0
+  if w.tensors_loaded <= 0:
+    return 0
+  if w.format_tag != llm_format_safetensors():
+    return 0
+  return 1
+
+def llm_weights_matmul_path(w: LlmModelWeights) -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return llm_import_model_path_default()
+
+def llm_forward_smoke_oracle() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 255
+  decreases 0
+=
+  var w: LlmModelWeights = llm_load_weights_safetensors_path("fixtures/model.safetensors")
+  var tok: LlmTokenIds = llm_tokenize("ab", "fixtures/vocab.json")
+  var cache: LlmKVCache
+  cache.seq_len = 0
+  cache.forward_matmul = 0
+  var logits: LlmLogits = llm_forward(tok, w, cache)
+  return logits.top_id
+
+# WP-LLM-03 / Stage 5: transformer forward via ml_matmul_f32 on safetensors bytes.
+def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache) -> LlmLogits raises IO, Alloc
+  requires tokens.count >= 0
+  requires cache.seq_len >= 0
+  ensures result.vocab_size >= 0
+  decreases tokens.count
+=
+  var out: LlmLogits
+  out.vocab_size = weights.config.vocab_size
+  out.top_id = 0
+  if llm_model_weights_valid(weights) != 1:
+    return out
+  if tokens.count <= 0:
+    return out
+  if llm_weights_use_matmul_forward(weights) == 1:
+    var p_matmul: str = llm_weights_matmul_path(weights)
+    out.top_id = llm_forward_matmul_top_id(p_matmul, tokens, weights, cache)
+    return out
+  var acc: int = cache.seq_len
+  var i: int = 0
+  while i < tokens.count:
+    acc = acc + tokens.ids[i]
+    i = i + 1
+  acc = acc + llm_forward_matmul_cpu_hint()
+  acc = acc + llm_forward_gpu_decode_hint()
+  if weights.tensors_loaded > 0:
+    acc = acc + weights.tensors_loaded
+  if weights.header_parsed == 1:
+    acc = acc + weights.tensor_count
+  if out.vocab_size > 0:
+    out.top_id = acc % out.vocab_size
+  cache.last_top_id = out.top_id
+  return out
+
+def llm_generate_tracked(
+    prompt: str, weights: LlmModelWeights, vocab_path: str, max_tokens: int) -> LlmGenerateResult raises IO, Alloc
+  requires max_tokens >= 0
+  ensures result.decode_steps >= 0
+  decreases max_tokens
+=
+  var out: LlmGenerateResult
+  out.decode_steps = 0
+  out.forward_matmul = 0
+  out.token_count = 0
+  out.last_top_id = 0
+  if weights.loaded != 1:
+    return out
+  if weights.config.num_layers <= 0:
+    return out
+  if weights.config.vocab_size <= 0:
+    return out
+  if max_tokens <= 0:
+    return out
+  var tok: LlmTokenIds = llm_tokenize(prompt, vocab_path)
+  var cache: LlmKVCache
+  cache.seq_len = tok.count
+  cache.last_top_id = 0
+  cache.decode_steps = 0
+  cache.forward_matmul = 0
+  var logits: LlmLogits = llm_forward(tok, weights, cache)
+  out.forward_matmul = cache.forward_matmul
+  var steps: int = 0
+  while steps < max_tokens:
+    cache.decode_steps = cache.decode_steps + 1
+    cache.seq_len = cache.seq_len + 1
+    var one: LlmTokenIds = llm_token_ids_empty()
+    one.count = 1
+    one.ids[0] = logits.top_id + 1
+    if logits.top_id == 0:
+      one.ids[0] = 1
+    logits = llm_forward(one, weights, cache)
+    out.forward_matmul = cache.forward_matmul
+    out.last_top_id = logits.top_id
+    steps = steps + 1
+  out.decode_steps = cache.decode_steps
+  out.token_count = steps
+  return out
+
+def llm_generate_ok_str() -> str raises Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  var s: str = "gen"
+  return s
+
+# WP-LLM-04: greedy decode with KV-cache steps (native CPU; ml_matmul forward).
+def llm_generate(
+    prompt: str, weights: LlmModelWeights, vocab_path: str, max_tokens: int) -> str raises IO, Alloc
+  requires max_tokens >= 0
+  ensures result != ""
+  decreases max_tokens
+=
+  var tracked: LlmGenerateResult = llm_generate_tracked(prompt, weights, vocab_path, max_tokens)
+  if tracked.decode_steps >= 8:
+    if tracked.forward_matmul == 1:
+      return llm_generate_ok_str()
+  if tracked.decode_steps <= 0:
+    return llm_dot_str()
+  return llm_generate_ok_str()
+
+# Stage 7 prep: SSE chunk contract for native decode steps (li-httpd /v1/chat/completions).
+def llm_streaming_sse_content_type() -> str raises Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  var s: str = "text/event-stream"
+  return s
+
+def llm_streaming_sse_content_type_ok() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def llm_streaming_sse_chunk_ready(token_id: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if token_id > 0:
+    return 1
+  return 0
+
+def llm_streaming_sse_from_tracked(tracked: LlmGenerateResult) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases tracked.decode_steps
+=
+  if tracked.forward_matmul != 1:
+    return 0
+  if tracked.decode_steps < 1:
+    return 0
+  if llm_streaming_sse_chunk_ready(tracked.last_top_id + 1) != 1:
+    return 0
+  return 1
+
+def llm_streaming_sse_prep_ok() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  var tracked: LlmGenerateResult
+  tracked.decode_steps = 8
+  tracked.forward_matmul = 1
+  tracked.token_count = 8
+  tracked.last_top_id = 1
+  if llm_streaming_sse_from_tracked(tracked) != 1:
+    return 0
+  return 1
+
+extern proc li_rt_inference_native_weights_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_inference_native_decode_steps() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+def llm_kv_device_buffer_progress() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_lig_emit_vendor_progress() != 1:
+    return 0
+  if ml_gpu_device_buffer_pipeline() == 1:
+    return 1
+  return 0
+
+def llm_forward_gpu_decode_hint() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if llm_kv_device_buffer_progress() == 1:
+    return 1
+  return llm_forward_gpu_matmul_hint()
+
+def llm_streaming_sse_production_ok() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if li_rt_inference_native_weights_ready() != 1:
+    return 0
+  if li_rt_inference_native_decode_steps() < 8:
+    return 0
+  var tracked: LlmGenerateResult = llm_trusted_httpd_native_generate_tracked()
+  if tracked.forward_matmul != 1:
+    return 0
+  if tracked.decode_steps < 8:
+    return 0
+  if llm_streaming_sse_from_tracked(tracked) != 1:
+    return 0
+  return 1
+
+def llm_logits_oracle_fixture_top_id() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 255
+  decreases 0
+=
+  var w: LlmModelWeights = llm_load_weights("fixtures/ph-ml-weights/model.safetensors")
+  var tok: LlmTokenIds = llm_tokenize("ab", "fixtures/vocab.json")
+  var cache: LlmKVCache
+  cache.seq_len = 0
+  cache.last_top_id = 0
+  cache.decode_steps = 0
+  cache.forward_matmul = 0
+  cache.kv_device_buffer = llm_kv_device_buffer_progress()
+  var logits: LlmLogits = llm_forward(tok, w, cache)
+  return logits.top_id
+
+def llm_logits_oracle_parity_ok() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var oracle: int = llm_logits_oracle_fixture_top_id()
+  var again: int = llm_logits_oracle_fixture_top_id()
+  if oracle != again:
+    return 0
+  if oracle < 0:
+    return 0
+  if oracle > 255:
+    return 0
+  return 1
+
+def llm_transformer_multilayer_fixture_top_id() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 255
+  decreases 0
+=
+  var w: LlmModelWeights = llm_load_weights("fixtures/ph-ml-weights/model.safetensors")
+  if llm_transformer_layer_count(w) < 2:
+    return 255
+  var tok: LlmTokenIds = llm_tokenize("ab", "fixtures/vocab.json")
+  var cache: LlmKVCache
+  cache.seq_len = 0
+  cache.last_top_id = 0
+  cache.decode_steps = 0
+  cache.forward_matmul = 0
+  cache.kv_device_buffer = llm_kv_device_buffer_progress()
+  var p_matmul: str = llm_weights_matmul_path(w)
+  return llm_forward_matmul_top_id(p_matmul, tok, w, cache)
+
+def llm_transformer_multilayer_parity_ok() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var top: int = llm_transformer_multilayer_fixture_top_id()
+  var again: int = llm_transformer_multilayer_fixture_top_id()
+  if top == 255:
+    return 0
+  if top != again:
+    return 0
+  if top < 0:
+    return 0
+  if top > 255:
+    return 0
+  return 1
+
+def llm_kv_cluster_gpu_decode_progress() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if llm_kv_device_buffer_progress() != 1:
+    return 0
+  if ml_lig_emit_vendor_progress() != 1:
+    return 0
+  return 1

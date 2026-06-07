@@ -1,0 +1,15 @@
+# M-AX-ORDER-TRICHOTOMY: on Nat, exactly one of a < b, a = b, b < a holds.
+
+def proof_db_order_trichotomy_nat(a: int, b: int)-> int
+  requires a >= 0 and b >= 0
+  ensures result >= 0 and result <= 2
+  decreases 0
+=
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,18 @@
+# WP0-D: Python collections parity sketch (compile-only until WP-WA + WP1).
+# Maps: collections.deque, OrderedDict, Counter, defaultdict → std/collections (WP2a).
+# Bench: stdlib_deque_rotate, stdlib_ordered_dict_iter.
+
+def counter_get(counts: dict[str, int], key: str) raises Alloc -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() raises Alloc -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var counts: dict[str, int]
+  return counter_get(counts, "k")

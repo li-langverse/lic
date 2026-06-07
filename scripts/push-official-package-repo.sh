@@ -24,7 +24,14 @@ if [[ ! -d "$PKG" ]]; then
 fi
 
 ORG="${LI_ORG:-li-langverse}"
-REPO="${ORG}/${NAME}"
+GITHUB_REPO="$NAME"
+if [[ -f "$PKG/li.toml" ]]; then
+  gr="$(grep -E '^github_repo\s*=' "$PKG/li.toml" | head -1 | sed -E 's/^github_repo\s*=\s*"([^"]*)".*/\1/' || true)"
+  if [[ -n "$gr" ]]; then
+    GITHUB_REPO="$gr"
+  fi
+fi
+REPO="${ORG}/${GITHUB_REPO}"
 DESC="Li package ${NAME}"
 if [[ -f "$PKG/li.toml" ]]; then
   line="$(grep -E '^description\s*=' "$PKG/li.toml" | head -1 || true)"
@@ -55,7 +62,12 @@ fi
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-rsync -a --delete --exclude='.git' "$PKG/" "$TMP/"
+if command -v rsync >/dev/null 2>&1; then
+  rsync -a --delete --exclude='.git' "$PKG/" "$TMP/"
+else
+  rm -rf "$TMP"/*
+  cp -a "$PKG/." "$TMP/"
+fi
 cd "$TMP"
 git init -q -b main
 git add -A

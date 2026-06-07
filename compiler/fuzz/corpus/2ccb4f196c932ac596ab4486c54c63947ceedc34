@@ -1,0 +1,5 @@
+@cpu
+@parallel(disjoin=disjoint_row)
+proc f()
+  decreases 0
+=re@parallel(disjoiases 5@cpucpu

@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "N-LM-SQRT-BOUND",
+      "status": "open",
+      "requires_axioms": ["N-AX-FP-ROUND"],
+      "li_file": "proof-db/numerics/lemmas/sqrt_open_bound_stub.li"
+    },
+    {
+      "id": "N-LM-HORNER-FP-ROUND",
+      "status": "target",
+      "requires_axioms": ["N-AX-FP-ROUND"],
+      "li_file": "proof-db/numerics/lemmas/fp_horner_round_stub.li"
+    },
+    {
+      "id": "N-LM-DOT4-INT-CLOSED",
+      "status": "target",
+      "li_file": "proof-db/math/lemmas/linalg_dot4_int_closed.li"
+    }
+  ]
+}

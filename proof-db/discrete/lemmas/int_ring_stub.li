@@ -1,0 +1,30 @@
+# D-LM-ADD-COMM-INT / D-LM-ADD-ASSOC-INT / D-LM-MUL-DIST-INT: integer ring specimens (phase12 enrichment).
+def add_assoc_int(a: int, b: int, c: int) -> int
+  requires true
+  ensures result == (a + b) + c
+  decreases 0
+=
+  return a + (b + c)
+
+def add_comm_int(a: int, b: int) -> int
+  requires true
+  ensures result == a + b
+  decreases 0
+=
+  return b + a
+
+def mul_distrib_int(a: int, b: int, c: int) -> int
+  requires true
+  ensures result == a * (b + c)
+  decreases 0
+=
+  return a * b + a * c
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var x: int = add_comm_int(2, 3)
+  var y: int = mul_distrib_int(2, 3, 4)
+  return 0

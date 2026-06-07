@@ -1,0 +1,32 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if icon_atlas_version() != 1:
+    return 1
+  if studio_icon_token_count() != icon_atlas_slot_count():
+    return 2
+  if studio_icon_token_image_id(studio_icon_token_id_dock_scene()) != paint_image_id_dock_scene():
+    return 3
+  if studio_icon_token_image_id(studio_icon_token_id_dock_settings()) != paint_image_id_dock_settings():
+    return 4
+  if icon_atlas_image_for_dock_slot(0) != paint_image_id_dock_scene():
+    return 5
+  if icon_atlas_has_ink(paint_image_id_dock_sim()) != 1:
+    return 6
+  if icon_atlas_data_checksum() <= 0:
+    return 7
+  var src: Rect = icon_atlas_src_rect(paint_image_id_dock_timeline())
+  if src.w != 8.0:
+    return 8
+  if src.x != 24.0:
+    return 9
+  var cmd: PaintCmd = paint_cmd_draw_image(rect_make(0.0, 0.0, 36.0, 36.0), paint_image_id_dock_assets(), src, studio_color_text_primary())
+  if cmd.kind != paint_op_draw_image():
+    return 10
+  if cmd.image_id != paint_image_id_dock_assets():
+    return 11
+  return 0

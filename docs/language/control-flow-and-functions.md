@@ -1,9 +1,9 @@
 # Control flow and functions
 
-## Functions (`proc`)
+## Functions (`def`)
 
 ```nim
-proc add(a: int, b: int) -> int
+def add(a: int, b: int) -> int
   requires true
   ensures result == a + b
   decreases 0
@@ -14,7 +14,7 @@ proc add(a: int, b: int) -> int
 ### Parameters
 
 - Positional parameters with types.
-- Generic parameters: `proc id[T](x: T) -> T`.
+- Generic parameters: `def id[T](x: T) -> T`.
 - `extern proc` for C linkage (runtime or libraries).
 
 ### Return
@@ -71,8 +71,8 @@ var row: array[64, float]
 ## Borrowing (memory)
 
 ```nim
-proc use(readonly: imm array[N, int]) -> unit
-proc fill(writable: mut array[N, int]) -> unit
+def use(readonly: imm array[N, int]) -> unit
+def fill(writable: mut array[N, int]) -> unit
 ```
 
 | Modifier | Meaning |

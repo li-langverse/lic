@@ -1,11 +1,11 @@
 # Hello world
 
-Li programs are made of **procedures** (`proc`). Each procedure states what it needs, what it guarantees, and how it stops.
+Li programs are made of **procedures** (`def`). Each function states what it needs, what it guarantees, and how it stops.
 
 ## Minimal program
 
 ```nim
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
@@ -16,7 +16,7 @@ proc main() -> int
 
 | Line | Meaning |
 |------|---------|
-| `proc main() -> int` | Entry procedure; returns an integer exit code |
+| `def main() -> int` | Entry function; returns an integer exit code |
 | `requires true` | Precondition (here: always allowed to run) |
 | `ensures result == 0` | Postcondition: return value is 0 |
 | `decreases 0` | This procedure does not loop — trivially finishes |
@@ -44,7 +44,7 @@ Li uses these promises during **`lic build`**. If Li cannot see that your promis
 `echo` works on integers and strings (when the runtime supports them):
 
 ```nim
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
@@ -56,7 +56,7 @@ proc main() -> int
 ## Calling other procedures
 
 ```nim
-proc greet() -> int
+def greet() -> int
   requires true
   ensures result == 0
   decreases 0
@@ -64,7 +64,7 @@ proc greet() -> int
   echo "Hi"
   return 0
 
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

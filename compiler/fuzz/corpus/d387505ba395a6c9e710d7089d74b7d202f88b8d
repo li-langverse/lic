@@ -1,0 +1,5 @@
+@cpu
+@parallel(disjoint=disrow,
+proc fses 0HHH_rowHH
+=
+  rob@rnjecteturn 0

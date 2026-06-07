@@ -1,0 +1,17 @@
+# WP0-E: hash-flood design — compile gate only until dict runtime (WP1).
+# Bench id: stdlib_hash_flood. Runtime must cap probe chains / use robust hashing.
+
+def ingest_keys(table: dict[str, int]) raises Alloc -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() raises Alloc -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var table: dict[str, int]
+  return ingest_keys(table)

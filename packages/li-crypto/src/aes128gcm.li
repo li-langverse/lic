@@ -1,0 +1,8 @@
+# aes128gcm — AES-128-GCM AEAD (Phase 4; ChaCha20-Poly1305 is M1 default).
+
+def crypto_aes128gcm_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

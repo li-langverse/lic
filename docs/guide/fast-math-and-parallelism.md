@@ -1,55 +1,35 @@
 # Fast math and parallelism
 
 !!! note "Status"
-    User-facing **math notation** (`A @ B`, no manual `simd`) is **planned** (Phase 2i/7e). **Decorators** parse but do not elaborate yet. Parallel disjointness uses **heuristic** checks today. See **[Provability gaps](../verification/provability-gaps.md)**.
+    **Math surface** (`dot`, `a @ b`, 2d `C = A @ B`, `sum`, element-wise ops) is **implemented** on fixed `array` tiles. **`@vectorized(lanes=4)`** on `def` is validated; **`@no_vectorize`** disables f64×4 array SIMD in codegen. **`@vectorized` on `for`** parses but does not elaborate loops yet. **`@parallel`** requires `disjoint=`. See **[Provability gaps](../verification/provability-gaps.md)**.
 
-Li is built for **scientific and high-performance** work. Two features matter most:
+Li is built for **scientific and high-performance** work. Prefer:
 
-1. **SIMD** — do the same operation on several numbers in one step (vector lanes).
-2. **`parallel for`** — use many CPU cores with proof that threads do not corrupt shared memory.
+1. **Math on arrays** — `dot(x, y)`, `x @ y`, `C = A @ B`, `sum(a)`, scalar loops for AXPY.
+2. **`parallel for`** — many CPU cores with proof that iterations do not alias shared memory.
 
 You do **not** install NumPy, OpenMP bindings, or a thread library yourself — Li’s compiler wires native vector instructions and (on Linux) OpenMP when your program passes the proof gate.
 
+**Start here:** [Math-first HPC examples](math-hpc-examples.md) · [Linear algebra](../language/linear-algebra.md)
+
 ---
 
-## Vector types (`simd`)
+## Math surface (preferred)
 
-A SIMD value is a small bundle of numbers that move together:
+| You write | Meaning |
+|-----------|---------|
+| `dot(x, y)` or `x @ y` | Inner product of matching `array[N, float]` |
+| `C = A @ B` | 2d matmul on `array[M, array[K, float]]` tiles |
+| `sum(a)` | Reduction over fixed `array[N, int]` or `array[N, float]` |
+| `y[i] = alpha * x[i] + y[i]` | AXPY via index loop (element-wise arrays planned) |
 
-```nim
-var v: simd[f64, 4] = __li_simd_splat_f64(1.5)
-```
-
-| Piece | Meaning |
-|-------|---------|
-| `simd[f64, 4]` | Four `float64` lanes in one value |
-| `__li_simd_splat_f64(x)` | Copy one scalar into all four lanes |
-
-### Operations (v1 intrinsics)
-
-| Call | Effect |
-|------|--------|
-| `__li_simd_splat_f64(x)` | Broadcast scalar to all lanes |
-| `__li_simd_mul_f64(a, b)` | Lane-wise multiply |
-| `__li_simd_add_f64(a, b)` | Lane-wise add |
-| `__li_horiz_sum_f64(v)` | Add all lanes into one `float` |
-
-Example kernel (from the `simd_dot` benchmark):
-
-```nim
-var v: simd[f64, 4] = __li_simd_splat_f64(x)
-var w: simd[f64, 4] = __li_simd_splat_f64(x)
-var p: simd[f64, 4] = __li_simd_mul_f64(v, w)
-acc = acc + __li_horiz_sum_f64(p)
-```
-
-Lane counts **4 and 8** are supported in the current compiler; other sizes are rejected at compile time.
+Tier 1 benchmarks use this style — see `benchmarks/tier1_micro/simd_dot/li/main.li` and `matmul_naive/li/main.li` (no `__li_simd_*` in user sources).
 
 ---
 
 ## Parallel loops
 
-```nim
+```li
 parallel for j in 0..<8
   requires disjoint_elem(j, buf)
   decreases 8 - j
@@ -78,13 +58,36 @@ Or set `LI_OMP_THREADS=8` in the environment before running the binary (Linux wi
 
 ## Putting it together
 
-A tiny simulation might:
+A typical HPC workflow:
 
-1. Store fields in `array[N, float]`.
-2. Zero forces with `parallel for` (disjoint writes per index).
-3. Update inner physics with scalar or SIMD loops.
+1. Store fields in `array[N, float]` or 2d `array[M, array[K, float]]`.
+2. Express kernels with `dot` / `@` / `sum` or proved `parallel for`.
+3. Let the compiler lower to scalar/SIMD/OpenMP (see appendix for MIR names).
 
-See `benchmarks/tier2_physics/md_lennard_jones/li/main.li` for a pure-Li driver example in the repository.
+See `benchmarks/tier2_physics/md_lennard_jones/li/main.li` for a pure-Li MD driver.
+
+---
+
+## Compiler intrinsics appendix
+
+Low-level SIMD types remain for **compiler tests and codegen debugging** — not for new handbook or benchmark sources.
+
+```li
+var v: simd[f64, 4] = __li_simd_splat_f64(1.5)
+```
+
+| Call | Effect |
+|------|--------|
+| `__li_simd_splat_f64(x)` | Broadcast scalar to all lanes |
+| `__li_simd_mul_f64(a, b)` | Lane-wise multiply |
+| `__li_simd_add_f64(a, b)` | Lane-wise add |
+| `__li_horiz_sum_f64(v)` | Add all lanes into one `float` |
+
+Lane counts **4 and 8** are supported; other sizes are rejected at compile time.
+
+**Migration:** replace manual intrinsic loops with `dot` / `@` on `array` tiles; see [Examples gallery](examples-gallery.md#math-vs-intrinsics).
+
+More detail: [SIMD & parallel reference](../language/simd-parallel.md).
 
 ---
 
@@ -96,5 +99,3 @@ See `benchmarks/tier2_physics/md_lennard_jones/li/main.li` for a pure-Li driver 
 | Mix `int` and `float` silently | Catches science bugs |
 | Skip `requires` / `ensures` / `decreases` | No proof without promises |
 | Use `Any` or `unsafe` | Breaks the guarantee story |
-
-More detail: [SIMD & parallel reference](../language/simd-parallel.md).

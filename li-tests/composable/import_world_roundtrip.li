@@ -1,0 +1,22 @@
+import world
+
+def main() raises Alloc, IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var snap: WorldSnapshot
+  snap.name = world_name_slot_arena()
+  snap.tick = 42
+  snap.entity_count = 3
+  snap.asset_ref_count = 1
+  var ckpt_path: str = world_checkpoint_path_default()
+  if world_file_roundtrip_ok_fields(snap.name, snap.tick, snap.entity_count, snap.asset_ref_count, ckpt_path) != 1:
+    return 1
+  var load_path: str = world_checkpoint_path_default()
+  var loaded: WorldSnapshot = world_load_from_path(load_path)
+  if world_snapshot_fields_match(snap, loaded) != 1:
+    return 2
+  if world_default_asset_ref_path() == "":
+    return 3
+  return 0

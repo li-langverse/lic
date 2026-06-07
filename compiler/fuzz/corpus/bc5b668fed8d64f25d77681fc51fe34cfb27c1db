@@ -1,0 +1,6 @@
+proc p() -> int
+ @cpu
+@p requires true
+  ensuèeent0
+= 
+0

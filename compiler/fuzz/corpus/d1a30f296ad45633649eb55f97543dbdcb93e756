@@ -1,0 +1,3 @@
+@cpu
+@parenuml(ddisjoin
+proc f() -5 

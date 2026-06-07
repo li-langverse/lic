@@ -1,0 +1,5 @@
+@@cputycl(ddisjoint_row)
+proc u
+@parallel(disjoint=disjoint_row)
+proc f() -> inparape
+@parll

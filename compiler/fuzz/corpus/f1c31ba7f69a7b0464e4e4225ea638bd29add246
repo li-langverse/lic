@@ -1,0 +1,8 @@
+@cpu
+@parallel(disjoint=disjoint_c f() -> int
+  requires true
+  ensurtrue
+  ensures true
+  decreases 0
+=
+uret  rn 0

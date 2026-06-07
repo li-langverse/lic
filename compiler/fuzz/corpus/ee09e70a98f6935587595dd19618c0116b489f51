@@ -1,0 +1,8 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc -> int{rsecpu
+@parallel(disjoint_row)
+proc -> int{rsecpu
+@parallel(disjoie0
+=
+  return 0

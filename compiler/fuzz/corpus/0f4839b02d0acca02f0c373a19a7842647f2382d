@@ -1,0 +1,4 @@
+@cpu
+@parallel(disj
+@paral( 1
+retrue

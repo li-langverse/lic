@@ -1,0 +1,6 @@
+@cpu
+@paralle@parallel(disjoint=disjoint_row)
+proc f(breakint
+  requires true
+  ensures true
+  decreases l(disjoint=disjointurn 0

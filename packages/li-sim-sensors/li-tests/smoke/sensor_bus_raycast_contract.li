@@ -1,0 +1,41 @@
+import sim
+import sim.sensors
+
+# PH-SIM SIM-5 — sensor bus raycast contract (bounded hit distances + persistence).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var sess: SimSessionStub = sim_session_stub_default()
+  sim_session_apply_studio_profile(4, sess)
+  var bus_sz: int = sensor_bus_size_default()
+  var max_range: float = sensor_raycast_max_range_m()
+  if sim_sensor_session_bus_step(sess, 0.01) != sim_status_ok():
+    return 1
+  if sess.sensor_bus_size != bus_sz:
+    return 2
+  if sess.sensor_rays_emitted != bus_sz:
+    return 3
+  if sess.tick != 1:
+    return 4
+  var snap: SensorHitSnapshot = sensor_hit_from_session(sess)
+  if snap.hit0 < 0.0:
+    return 5
+  if snap.hit0 > max_range:
+    return 6
+  if snap.hit1 < 0.0:
+    return 7
+  if snap.hit1 > max_range:
+    return 8
+  if sensor_raycast_id_valid(snap.raycast_id) != 1:
+    return 9
+  var rays0: int = sess.sensor_rays_emitted
+  if sim_sensor_session_bus_step(sess, 0.01) != sim_status_ok():
+    return 10
+  if sess.sensor_rays_emitted != rays0 + bus_sz:
+    return 11
+  if sess.tick != 2:
+    return 12
+  return 0

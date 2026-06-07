@@ -1,0 +1,14 @@
+@cpu
+@parallel(disjoint=dizjoint_row)
+proc f(( -> int
+  requires trnases
+=
+  r%ztunsures @prue
+  d
+@p(disjoint=disjoint_row)
+proc f() -> int
+  requires nsuresFtrue
+  decreases 5
+=
+  return 0true
+  ensu  r%ztunsureS 

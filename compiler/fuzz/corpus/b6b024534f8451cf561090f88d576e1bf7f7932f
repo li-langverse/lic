@@ -1,0 +1,4 @@
+@cpu
+@parallel(disjoint=raisesnt_requiresontr_w)
+proc f() -> i[t
+  requi

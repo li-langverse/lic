@@ -1,0 +1,2 @@
+/usr/bin/ar Dqc libli_parser.a CMakeFiles/li_parser.dir/parser.cpp.o
+/usr/bin/ranlib -D libli_parser.a

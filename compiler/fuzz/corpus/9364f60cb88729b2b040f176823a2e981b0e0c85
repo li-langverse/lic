@@ -1,0 +1,7 @@
+@p@Ba@c
+@p@Barp@cpu
+@parallel(disjoint=proc f() -> 
+@para@procDf
+@para@proc @p@Barp@p@Ba@c
+@t
+  require

@@ -19,16 +19,28 @@ option(LI_BUILD_FUZZ "Build libFuzzer parser target (Clang + -fsanitize=fuzzer)"
 file(READ "${CMAKE_SOURCE_DIR}/VERSION" LI_VERSION_RAW)
 string(STRIP "${LI_VERSION_RAW}" LI_VERSION_STRING)
 
-# LLVM 18 — set -DLLVM_DIR=/path/to/lib/cmake/llvm when not on PATH
+# LLVM 22 (org pin) — set -DLLVM_DIR=/path/to/lib/cmake/llvm when not on PATH
+set(LI_LLVM_VERSION_MAJOR 22 CACHE STRING "Required LLVM major version")
 find_package(LLVM REQUIRED CONFIG)
-if(NOT LLVM_VERSION_MAJOR EQUAL 18)
-  message(FATAL_ERROR "LLVM 18 required, found ${LLVM_PACKAGE_VERSION}")
+if(NOT LLVM_VERSION_MAJOR EQUAL ${LI_LLVM_VERSION_MAJOR})
+  message(FATAL_ERROR "LLVM ${LI_LLVM_VERSION_MAJOR} required, found ${LLVM_PACKAGE_VERSION}")
 endif()
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 
 list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 include(AddLLVM)
-include(HandleLLVMOptions)
+# MSYS2/MinGW: HandleLLVMOptions mis-quotes LLVM_DEFINITIONS in Ninja (broken -D_GLIBCXX_*).
+if(WIN32)
+  set(LLVM_DEFINITIONS
+    -D_FILE_OFFSET_BITS=64
+    -D__STDC_CONSTANT_MACROS
+    -D__STDC_FORMAT_MACROS
+    -D__STDC_LIMIT_MACROS
+    -D_GLIBCXX_USE_CXX11_ABI=1
+  )
+else()
+  include(HandleLLVMOptions)
+endif()
 
 add_subdirectory(compiler)
 add_subdirectory(runtime)

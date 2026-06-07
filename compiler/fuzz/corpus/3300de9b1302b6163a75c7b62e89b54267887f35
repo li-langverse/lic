@@ -1,0 +1,4 @@
+proc p() -> int
+  requires tr
+=
+  ieturn 0

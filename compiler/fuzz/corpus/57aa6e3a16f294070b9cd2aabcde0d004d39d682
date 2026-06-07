@@ -1,0 +1,7 @@
+@cpu
+@p@cpu
+@pdisarallel(disjoint=d6isjoint_row)
+proc f() -> int
+  requires tpu
+@parallel(sjoint_row)
+proc f() - f() ->j@

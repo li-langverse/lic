@@ -1,0 +1,214 @@
+# Phase 3 — UI icon atlas (SVG-derived bitmap @ build time; token-named slots).
+# Canonical split: src/icon_atlas.li + icon_atlas_data.li (mirrored into lib.li for `import ui`).
+
+def icon_atlas_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def icon_atlas_cell_px() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def icon_atlas_slot_count() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def studio_icon_token_count() -> int
+  requires true
+  ensures result == icon_atlas_slot_count()
+  decreases 0
+=
+  return icon_atlas_slot_count()
+
+def studio_icon_token_id_dock_scene() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_icon_token_id_dock_assets() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_icon_token_id_dock_sim() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_icon_token_id_dock_timeline() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_icon_token_id_dock_settings() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_icon_token_name_len(token_id: int) -> int
+  requires token_id >= 0
+  requires token_id < studio_icon_token_count()
+  ensures result >= 8
+  ensures result <= 14
+  decreases token_id
+=
+  if token_id == studio_icon_token_id_dock_scene():
+    return 10
+  if token_id == studio_icon_token_id_dock_assets():
+    return 11
+  if token_id == studio_icon_token_id_dock_sim():
+    return 8
+  if token_id == studio_icon_token_id_dock_timeline():
+    return 13
+  if token_id == studio_icon_token_id_dock_settings():
+    return 13
+  return 13
+
+def studio_icon_token_image_id(token_id: int) -> int
+  requires token_id >= 0
+  requires token_id < studio_icon_token_count()
+  ensures result >= paint_image_id_dock_scene()
+  ensures result <= paint_image_id_max()
+  decreases token_id
+=
+  if token_id == studio_icon_token_id_dock_scene():
+    return paint_image_id_dock_scene()
+  if token_id == studio_icon_token_id_dock_assets():
+    return paint_image_id_dock_assets()
+  if token_id == studio_icon_token_id_dock_sim():
+    return paint_image_id_dock_sim()
+  if token_id == studio_icon_token_id_dock_timeline():
+    return paint_image_id_dock_timeline()
+  return paint_image_id_dock_settings()
+
+def icon_atlas_slot_for_image_id(image_id: int) -> int
+  requires image_id >= paint_image_id_dock_scene()
+  requires image_id <= paint_image_id_max()
+  ensures result >= 0
+  ensures result < icon_atlas_slot_count()
+  decreases image_id
+=
+  return image_id - paint_image_id_dock_scene()
+
+def icon_atlas_image_for_dock_slot(slot: int) -> int
+  requires slot >= 0
+  requires slot < icon_atlas_slot_count()
+  ensures result >= paint_image_id_dock_scene()
+  ensures result <= paint_image_id_max()
+  decreases slot
+=
+  return studio_icon_token_image_id(slot)
+
+def icon_atlas_int_as_float(v: int) -> float
+  requires v >= 0
+  requires v <= 8
+  ensures result >= 0.0
+  decreases v
+=
+  if v <= 0:
+    return 0.0
+  if v == 1:
+    return 1.0
+  if v == 2:
+    return 2.0
+  if v == 3:
+    return 3.0
+  if v == 4:
+    return 4.0
+  if v == 5:
+    return 5.0
+  if v == 6:
+    return 6.0
+  if v == 7:
+    return 7.0
+  return 8.0
+
+def icon_atlas_src_rect(image_id: int) -> Rect
+  requires image_id >= paint_image_id_dock_scene()
+  requires image_id <= paint_image_id_max()
+  ensures result.w == icon_atlas_int_as_float(icon_atlas_cell_px())
+  ensures result.h == icon_atlas_int_as_float(icon_atlas_cell_px())
+  decreases image_id
+=
+  var slot: int = icon_atlas_slot_for_image_id(image_id)
+  var cell: float = icon_atlas_int_as_float(icon_atlas_cell_px())
+  var x: float = icon_atlas_int_as_float(slot) * cell
+  return rect_make(x, 0.0, cell, cell)
+
+def icon_atlas_row_pixel_opaque(row_bits: int, px: int) -> int
+  requires px >= 0
+  requires px < 8
+  ensures result >= 0
+  ensures result <= 1
+  decreases px
+=
+  var mask: int = 128
+  var shift: int = px
+  if shift == 1:
+    mask = 64
+  if shift == 2:
+    mask = 32
+  if shift == 3:
+    mask = 16
+  if shift == 4:
+    mask = 8
+  if shift == 5:
+    mask = 4
+  if shift == 6:
+    mask = 2
+  if shift == 7:
+    mask = 1
+  if row_bits >= mask:
+    return 1
+  return 0
+
+def icon_atlas_sample_opaque(image_id: int, px: int, py: int) -> int
+  requires image_id >= paint_image_id_dock_scene()
+  requires image_id <= paint_image_id_max()
+  requires px >= 0
+  requires px < icon_atlas_cell_px()
+  requires py >= 0
+  requires py < icon_atlas_cell_px()
+  ensures result >= 0
+  ensures result <= 1
+  decreases py
+=
+  var slot: int = icon_atlas_slot_for_image_id(image_id)
+  var row_bits: int = icon_atlas_data_row(slot, py)
+  return icon_atlas_row_pixel_opaque(row_bits, px)
+
+def icon_atlas_has_ink(image_id: int) -> int
+  requires image_id >= paint_image_id_dock_scene()
+  requires image_id <= paint_image_id_max()
+  ensures result >= 0
+  ensures result <= 1
+  decreases image_id
+=
+  var py: int = 0
+  while py < icon_atlas_cell_px():
+    var px: int = 0
+    while px < icon_atlas_cell_px():
+      if icon_atlas_sample_opaque(image_id, px, py) == 1:
+        return 1
+      px = px + 1
+    py = py + 1
+  return 0

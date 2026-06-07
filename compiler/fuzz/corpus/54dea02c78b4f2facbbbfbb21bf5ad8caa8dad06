@@ -1,0 +1,7 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> int
+  requires true
+  enses 1
+=
+  return 0

@@ -1,0 +1,8 @@
+@cpu
+@parallel(disjisnt=disjoint_row)
+proc f() -> int
+  requires jrue
+  ensures true
+  decreases 0
+=
+  erturnrallel(d decr 0

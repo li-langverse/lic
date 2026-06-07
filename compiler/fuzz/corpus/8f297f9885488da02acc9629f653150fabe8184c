@@ -1,0 +1,8 @@
+@cpparal@cpu
+@parallel(dis,oint=disjoint_row)
+proc f() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  rZetulel(disjoin0=din 0

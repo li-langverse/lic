@@ -1,0 +1,108 @@
+# pem — BEGIN/END scanner over golden wire bytes (M1b).
+
+import pem_golden
+import base64
+
+def crypto_pem_match_begin(kind: int, pos: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= pos
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if pos + 11 > crypto_pem_wire_len(kind):
+    return 0
+  if crypto_pem_wire_byte(kind, pos) != 45:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 1) != 45:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 2) != 45:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 3) != 45:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 4) != 45:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 5) != 66:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 6) != 69:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 7) != 71:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 8) != 73:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 9) != 78:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 10) != 32:
+    return 0
+  return 1
+
+def crypto_pem_match_end(kind: int, pos: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= pos
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if pos + 9 > crypto_pem_wire_len(kind):
+    return 0
+  if crypto_pem_wire_byte(kind, pos) != 45:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 1) != 45:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 2) != 45:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 3) != 45:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 4) != 45:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 5) != 69:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 6) != 78:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 7) != 68:
+    return 0
+  if crypto_pem_wire_byte(kind, pos + 8) != 32:
+    return 0
+  return 1
+
+def crypto_pem_scan_selftest(kind: int) -> int
+  requires kind == 0 or kind == 1
+  ensures result >= 0
+  decreases 0
+=
+  if crypto_pem_match_begin(kind, 0) != 1:
+    return 1
+  var end_pos: int = 0
+  if kind == 0:
+    end_pos = crypto_pem_pkcs8_b64_end()
+  if kind == 1:
+    end_pos = crypto_pem_cert_b64_end()
+  var i: int = end_pos
+  while i < crypto_pem_wire_len(kind)
+    if crypto_pem_match_end(kind, i) == 1:
+      return 0
+    i = i + 1
+  return 2
+
+def crypto_pem_b64_der_selftest(kind: int) -> int
+  requires kind == 0 or kind == 1
+  ensures result >= 0
+  decreases 0
+=
+  var n: int = 0
+  if kind == 0:
+    n = crypto_pem_pkcs8_der_len()
+  if kind == 1:
+    n = crypto_pem_cert_der_len()
+  var i: int = 0
+  while i < n
+    var got: int = crypto_base64_der_check(kind, i)
+    var exp: int = 0
+    if kind == 0:
+      exp = crypto_pem_pkcs8_der_golden_byte(i)
+    if kind == 1:
+      exp = crypto_pem_cert_der_golden_byte(i)
+    if got != exp:
+      return i + 10
+    i = i + 1
+  return 0

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "vertical": "discrete",
+  "entries": [
+    {
+      "id": "D-AX-INT-RING",
+      "status": "target",
+      "family": "integer_algebra",
+      "statement": "Integers form a commutative ring",
+      "li_stub": "proof-db/discrete/lemmas/int_ring_stub.li",
+      "lean_stub": "proof-db/discrete/axioms/DiscreteAxioms.lean#int_add_comm",
+      "mathlib_ref": "Mathlib.Data.Int.Basic"
+    }
+  ]
+}

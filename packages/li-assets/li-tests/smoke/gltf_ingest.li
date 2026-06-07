@@ -1,0 +1,21 @@
+import assets
+import scene
+
+def main() raises Alloc, IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_assets_version() < 1:
+    return 1
+  var mesh: GltfIngestMesh = assets_gltf_ingest_default()
+  if assets_gltf_ingest_ok(mesh) != 1:
+    return 2
+  if mesh.vertex_count != assets_gltf_vertex_count_stub():
+    return 3
+  var sc: Scene = scene_new()
+  if assets_gltf_scene_attach(mesh, sc) != 1:
+    return 4
+  if sc.node_count != 1:
+    return 5
+  return 0

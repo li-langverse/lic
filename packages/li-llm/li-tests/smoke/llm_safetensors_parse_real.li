@@ -1,0 +1,26 @@
+import llm
+
+# Stage 4 — on-disk safetensors: header len, tensor count, dtype F32, shape 2x2.
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var path: str = llm_import_model_path_default()
+  var hdr: LlmSafetensorsHeader = llm_safetensors_parse_header(path)
+  if hdr.parsed_ok != 1:
+    return 2
+  if hdr.tensor_count != 2:
+    return 3
+  if hdr.first_dtype != llm_dtype_f32():
+    return 4
+  if hdr.first_shape0 != 2:
+    return 5
+  if hdr.first_shape1 != 2:
+    return 6
+  if hdr.data_offset != 8 + hdr.header_len:
+    return 7
+  var meta: LlmTensorMeta = llm_tensor_meta_from_header(hdr)
+  if meta.byte_len != 16:
+    return 8
+  return 0

@@ -1,0 +1,15 @@
+# P-LM-BC-MEC-006: Kinetic energy T = (1/2) m v^2 for point mass.
+
+def kinetic_energy(m: float, v: float) -> float
+  requires m > 0.0
+  ensures result == 0.5 * m * v * v
+  decreases 0
+=
+  return 0.5 * m * v * v
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

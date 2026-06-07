@@ -1,13 +1,13 @@
 # RFC: Trusted `Net` surface for li-httpd (P0)
 
-**Status:** draft — required before `raises Net` ships in user code.  
+**Status:** accepted (2026-05-22) — ships with `w0-bytes-io` on `lic`.  
 **Phase:** H / httpd P0 (`w0-bytes-io`, `w1-async-reactor`).
 
 ## Goal
 
 Socket I/O lives outside user proofs. User handlers prove against **abstract** `Net`/`Async` in Lean; implementations are **trusted** + audited like `trusted.lean` SDL axioms.
 
-## Allowed axioms (v1 proposal)
+## Allowed axioms (v1)
 
 | Axiom family | Operations | Bounds |
 |--------------|------------|--------|
@@ -33,6 +33,12 @@ raises Async  — await reactor readiness (spec: execution-decorators / effects)
 - Connection state machine: `decreases` on phase depth
 - Timeouts: task eventually completes or closes (no infinite await without timer)
 
+## Implementation seam
+
+- Li surface: `std/runtime/seam.li` (`extern proc tcp_* raises Net`)
+- C implementation: `runtime/li_rt_net.c` (single audited syscall shim)
+- Package re-export: `packages/li-net`
+
 ## Learned from
 
 | Source | Keep | Reject |
@@ -43,7 +49,7 @@ raises Async  — await reactor readiness (spec: execution-decorators / effects)
 
 ## Exit gate
 
-- [ ] Row in `docs/semantics/trusted.lean` (minimal)
-- [ ] `li-tests/net_trusted/` compile policy tests
-- [ ] Provability gaps **G-async** / Net row updated
-- [ ] li-httpd plan `w0-bytes-io` unblocked for `li-net` package
+- [x] Row in `docs/semantics/trusted.lean` (minimal v1 TcpListen/TcpConn)
+- [x] `li-tests/net_trusted/` compile policy tests
+- [x] Provability gaps **G-net** row documents partial codegen + effect propagation
+- [x] li-httpd plan `w0-bytes-io` ships `std/bytes` Reader/Writer + `raises Net`

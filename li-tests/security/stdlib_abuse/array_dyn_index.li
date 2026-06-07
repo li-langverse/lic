@@ -1,0 +1,9 @@
+# WP0-E: dynamic index without bounds proof — must not compile.
+type Row = array[4, int]
+
+def read_dyn(row: Row, i: int) -> int
+  requires true
+  ensures result == row[i]
+  decreases 0
+=
+  return row[i]

@@ -1,0 +1,2 @@
+; lig.kernel.heat_stencil_2d_f32
+; halo=1 stencil=5pt tile=8x8 validity_ref=cpu

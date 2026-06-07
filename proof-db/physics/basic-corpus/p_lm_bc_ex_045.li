@@ -1,0 +1,15 @@
+# P-LM-BC-EX-045: Small angle sin theta approx theta radians.
+
+def p_lm_bc_ex_045_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

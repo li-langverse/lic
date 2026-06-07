@@ -1,0 +1,10 @@
+@cpu
+@parallel(proc f() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  r%ztunsures @true
+  decrnases 0
+=
+  return 0

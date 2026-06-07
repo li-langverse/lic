@@ -1,5 +1,8 @@
 #include "li/prelude.hpp"
 
+#include "li/error_codes.hpp"
+#include "li/numeric_types.hpp"
+
 #include <set>
 #include <string>
 #include <string_view>
@@ -22,13 +25,16 @@ bool in_set(std::string_view name, std::initializer_list<const char*> names) {
 }  // namespace
 
 bool is_prelude_type_name(const std::string_view name) {
-  return in_set(name, {"int",   "float", "bool", "str",  "unit", "int64",
-                       "list",  "dict",  "tuple", "Option", "simd",
-                       "bytes", "stringview", nullptr});
+  if (is_numeric_scalar_type_name(name)) {
+    return true;
+  }
+  return in_set(name, {"bool", "str", "binary", "Binary", "unit", "list", "dict", "tuple",
+                       "Option", "simd", "bytes", "stringview", "ptr", nullptr});
 }
 
 bool is_prelude_proc_name(const std::string_view name) {
-  return in_set(name, {"echo", "sum", nullptr});
+  return in_set(name, {"echo", "sum", "dot", "norm", "axpy", "disjoint_elem", "disjoint_row",
+                       "disjoint_slice", "row_ok", nullptr});
 }
 
 bool is_reserved_decorator_name(const std::string_view name) {
@@ -40,7 +46,33 @@ bool is_reserved_decorator_name(const std::string_view name) {
 bool is_std_module_symbol(const std::string_view name) {
   // Sync with std/**/*.li top-level symbols (see scripts/gen-stdlib-manifest.sh).
   return in_set(name, {"__execution_decorators_doc", "Bytes", "StringView", "Reader",
-                       "Writer", "bytes_len", "bytes_slice", nullptr});
+                       "Writer", "bytes_len", "bytes_slice", "bytes_append", "bytes_byte_at",
+                       "bytes_push_byte", "stringview_len", "stringview_byte_at", "reader_new",
+                       "reader_remaining", "reader_read_byte", "reader_read_chunk", "writer_new",
+                       "writer_push_byte", "writer_len",
+                       // std.collections (WP0-B)
+                       "Deque", "OrderedDict", "Counter", "DefaultDict", "collections_std_tag",
+                       "deque_new_stub", "deque_append_stub", "deque_popleft_stub",
+                       "ordered_dict_new_stub", "counter_new_stub", "counter_inc_stub",
+                       "defaultdict_new_stub",
+                       // std.heap (WP0-B)
+                       "PriorityQueue", "heap_std_tag", "priority_queue_new_stub", "heappush_stub",
+                       "heappop_stub", "heapify_stub", "heapreplace_stub",
+                       // std.algorithms (WP0-B)
+                       "algorithms_std_tag", "sort_list_stub", "bisect_left_stub",
+                       "bisect_right_stub", "insort_left_stub", "binary_search_stub",
+                       // std.io / std.csv (PH-IO-4)
+                       "Path", "FileHandle", "IoError", "io_tag", "file_open_read",
+                       "file_close", "file_read_all_stub", "path_join",
+                       "CsvRow", "CsvTable", "csv_tag", "csv_parse_row_stub",
+                       "csv_read_table_stub",
+                       // std.summary (PH-IO-7)
+                       "SummaryRow", "SummaryStats", "summary_tag",
+                       "build_summary_json_stub", "summary_row_count_stub",
+                       // std.plot (PH-IO-5)
+                       "PlotSpec", "PlotCanvas", "plot_tag",
+                       "render_static_dashboard_stub", "plot_canvas_new_stub",
+                       nullptr});
 }
 
 void check_duplicate_definitions(const Module& module, const std::string& file,
@@ -66,8 +98,14 @@ void check_duplicate_definitions(const Module& module, const std::string& file,
 
 void check_stdlib_seal(const Module& module, const std::string& file,
                        DiagnosticBag& diags) {
-  auto report = [&](const Span& span, const std::string& msg) {
-    diags.error(SourceLoc{file, 1, 1, span.start}, msg);
+  auto report_shadow = [&](const Span& span, const std::string& name) {
+    diag_error(diags, SourceLoc{file, 1, 1, span.start}, ErrorCode::E0330,
+               "The name `" + name +
+                   "` is reserved for the standard library — pick a different name "
+                   "(stdlib_symbol_shadow: " +
+                   name + ").",
+               "Rename this symbol, or move it into a module under `std/` if you are extending "
+               "the prelude.");
   };
   const bool defining_std =
       file.find("/std/") != std::string::npos || file.find("\\std\\") != std::string::npos ||
@@ -75,22 +113,22 @@ void check_stdlib_seal(const Module& module, const std::string& file,
 
   for (const auto& alias : module.types) {
     if (is_prelude_type_name(alias.name)) {
-      report(alias.span, "stdlib_symbol_shadow: " + alias.name);
+      report_shadow(alias.span, alias.name);
     }
     if (!defining_std && is_std_module_symbol(alias.name)) {
-      report(alias.span, "stdlib_symbol_shadow: " + alias.name);
+      report_shadow(alias.span, alias.name);
     }
   }
 
   for (const auto& proc : module.procs) {
     if (is_prelude_proc_name(proc.name)) {
-      report(proc.span, "stdlib_symbol_shadow: " + proc.name);
+      report_shadow(proc.span, proc.name);
     }
     if (!defining_std && is_std_module_symbol(proc.name)) {
-      report(proc.span, "stdlib_symbol_shadow: " + proc.name);
+      report_shadow(proc.span, proc.name);
     }
     if (is_prelude_type_name(proc.name)) {
-      report(proc.span, "stdlib_symbol_shadow: " + proc.name);
+      report_shadow(proc.span, proc.name);
     }
   }
 }

@@ -1,0 +1,32 @@
+import studio
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_version() < 5:
+    return 1
+  var dock: StudioDockCompose
+  dock.rect = rect_make(0.0, 0.0, 56.0, 720.0)
+  dock.slot_count = studio_dock_slot_count()
+  dock.active_slot = 0
+  dock.active_slot_rect = rect_make(12.0, 12.0, 36.0, 36.0)
+  var frame: PaintFrame = paint_frame_new()
+  studio_paint_dock(frame, dock)
+  if frame.cmd_count != studio_paint_dock_cmds():
+    return 2
+  if frame.last_kind != paint_op_draw_image():
+    return 3
+  var timeline: StudioTimelineCompose
+  timeline.track_rect = rect_make(56.0, 540.0, 800.0, 48.0)
+  timeline.playhead_rect = rect_make(200.0, 552.0, 4.0, 24.0)
+  timeline.play_btn_rect = rect_make(64.0, 552.0, 24.0, 24.0)
+  var tframe: PaintFrame = paint_frame_new()
+  studio_paint_timeline(tframe, timeline)
+  if tframe.cmd_count != studio_paint_timeline_cmds():
+    return 4
+  if tframe.last_kind != paint_op_stroke_round_rect():
+    return 5
+  return 0

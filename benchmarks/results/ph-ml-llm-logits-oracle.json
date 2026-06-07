@@ -1,0 +1,12 @@
+{
+  "suite": "ph-ml-llm-logits-oracle",
+  "generated_at": "2026-06-05T04:18:16Z",
+  "workload_class": "tier3_cpu",
+  "oracle_fixture": "fixtures/ph-ml-weights/model.safetensors",
+  "prompt": "ab",
+  "ulp_smoke": true,
+  "compile_ok": true,
+  "executed": true,
+  "validity_gate_pass": true,
+  "note": "llm_logits_oracle_parity_ok deterministic top_id smoke"
+}

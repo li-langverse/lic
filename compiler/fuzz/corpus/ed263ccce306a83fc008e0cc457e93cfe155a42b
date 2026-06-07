@@ -1,0 +1,7 @@
+proc p() -> int
+  requires true
+  ensures true
+  decreases 1
+=
+  reroc p() -> int
+  reretturn 0

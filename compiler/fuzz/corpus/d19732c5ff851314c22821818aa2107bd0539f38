@@ -1,0 +1,4 @@
+@cpu
+@psu
+@parallel(disjoint=dint
+proc fveturn 0

@@ -1,0 +1,8 @@
+@@cputycp@cputtypeycpu
+@parallel(disjoint=disjointt_row)
+proc u
+@parallel(disjoint=disjo_row)
+proc u
+@parallel(disjoint=disjoint_row)
+proc f() -> inparape
+@parll

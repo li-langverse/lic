@@ -6,6 +6,13 @@
 # Reserved (cannot user decorator def): parallel, vectorized, async, cpu, gpu, tpu,
 # user_defined, serial, no_vectorize.
 #
+# Resource knobs (lic build, not decorators):
+#   --jobs=N           — parallel compile workers (frontend), not runtime threads
+#   --cores=N          — hardware cores for runtime parallel team
+#   --threads-per-core=M — logical threads per core (default 1); team = min(N*M, 64)
+#   --threads=N        — total runtime team (overrides --cores when both set)
+#   @vectorized(lanes=4) — SIMD vector width in one core; never spawns li_parallel_for_i64
+#
 # User decorators must use multi-segment names (e.g. li_math_tiled_parallel).
 
 def __execution_decorators_doc() -> int

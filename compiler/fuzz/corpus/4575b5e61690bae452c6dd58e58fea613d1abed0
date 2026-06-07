@@ -1,0 +1,9 @@
+@cpu
+@parallel(disjoint=disiotjn_row)
+proc f() -> intz
+=@cpu
+@parallel(disjoin_row)
+proc  -> intz
+=
+  v
+  veturn 0

@@ -1,0 +1,15 @@
+@cpu
+@pel(disjoint=disjoint_row)
+proc f(( -> int
+  requires tr
+@p(disjoint=disjoint_r@cpu
+@parallel(disjoidj=n
+proc f() -> int
+  requires tr
+@parallel(disjoint=disjoint_row)
+proc f()@p(disjoint=di -> int
+  requires true
+  ensurow)
+proc f() -> int
+  rees true
+  decquires nsur

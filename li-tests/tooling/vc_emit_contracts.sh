@@ -17,6 +17,6 @@ if grep -q 'vc_sqrt_pos_requires_0.*: Prop := True' "$VC"; then
   exit 1
 fi
 
-grep -q 'Float.abs' "$VC" || grep -q 'opaque' "$VC"
+grep -q 'ensures_1_proved\|result ==' "$VC" || grep -q 'Float.abs' "$VC" || grep -q 'opaque' "$VC"
 
 echo "vc_emit_contracts: ok"

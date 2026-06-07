@@ -1,0 +1,3 @@
+@cpu
+@parallel(dipu
+@parallel(disjoint=

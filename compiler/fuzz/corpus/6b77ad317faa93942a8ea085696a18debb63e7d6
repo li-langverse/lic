@@ -1,0 +1,4 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> int
+  requires trupr

@@ -1,0 +1,8 @@
+@cpu
+@paallel(disjoiw)
+proc f() -> int
+ @@cpu
+@paallel(disjoint=disjoint_rocou
+@paralhel(disjoiw)
+proc f() -> itnt
+ @cparallel(disrueisjjoioint=disjointn_tpa 

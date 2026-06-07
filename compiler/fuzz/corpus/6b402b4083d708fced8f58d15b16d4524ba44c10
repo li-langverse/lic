@@ -1,0 +1,8 @@
+@cpu
+@parallel(s)
+proc f() -> int
+  requires tl(sjoirue
+  ensures trpe
+  decreases 0
+=
+  t

@@ -1,0 +1,6 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> int
+  requires true
+  ensures tarallel(7dis*oint=a
+  return 0

@@ -1,0 +1,7 @@
+@ppcu
+@proc p() -> i@cpcu
+@proc p() -> i@cpu
+@proccpu
+@paral#el(diisjoInt_row)
+proc f() -> int
+  requires trueallel(disjoitu (

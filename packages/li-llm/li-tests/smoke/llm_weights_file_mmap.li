@@ -1,0 +1,29 @@
+import llm
+
+# PH-ML Wave 13 T7 — mmap safetensors/GGUF from on-disk PH_ML_WEIGHTS_FIXTURE files.
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if llm_path_format_tag("fixtures/ph-ml-weights/model.safetensors") != llm_format_safetensors():
+    return 1
+  if llm_path_format_tag("fixtures/ph-ml-weights/model.gguf") != llm_format_gguf():
+    return 2
+  var b0: int = llm_safetensors_tensor_bytes_mmap("fixtures/ph-ml-weights/model.safetensors", 0)
+  if b0 <= 0:
+    return 3
+  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold("fixtures/ph-ml-weights/model.safetensors")
+  if hdr.tensor_bytes_read != 128:
+    return 4
+  var w: LlmModelWeights = llm_load_weights("fixtures/ph-ml-weights/model.safetensors")
+  if llm_model_weights_valid(w) != 1:
+    return 5
+  if w.format_tag != llm_format_safetensors():
+    return 6
+  var g: LlmModelWeights = llm_load_weights("fixtures/ph-ml-weights/model.gguf")
+  if g.format_tag != llm_format_gguf():
+    return 7
+  if g.loaded != 1:
+    return 8
+  return 0

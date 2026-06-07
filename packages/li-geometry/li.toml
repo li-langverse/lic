@@ -1,0 +1,21 @@
+[package]
+name = "li-geometry"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Geometry mesh predicates and CAD boundary types (stub — no kernel FFI)"
+
+[dependencies]
+li-math = { path = "../li-math" }
+
+[package.metadata.li]
+github_repo = "li-geometry"
+import_name = "geometry"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-geometry"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-geometry"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-geometry/"
+changelog = "https://github.com/li-langverse/li-geometry/blob/main/CHANGELOG.md"

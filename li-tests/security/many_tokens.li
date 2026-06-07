@@ -1,4 +1,4 @@
-proc noisy() -> int
+def noisy() -> int
   requires true
   ensures true
   decreases 0

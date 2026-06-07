@@ -1,0 +1,2 @@
+; lig.kernel.md_force_full
+; cutoff=full neighbor=all_pairs validity_ref=cpu

@@ -1,0 +1,9 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc  true
+  ensures cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> int
+irerueeases 0
+=
+  retu nr5

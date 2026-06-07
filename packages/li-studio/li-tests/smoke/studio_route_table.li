@@ -1,0 +1,58 @@
+import studio
+import ui
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_studio_version() < 38:
+    return 1
+  if studio_route_table_version() != 1:
+    return 2
+  if studio_route_table_count() != 9:
+    return 3
+  var author: StudioRoute = studio_route_lookup(studio_route_author_game())
+  if author.mode != studio_mode_author():
+    return 4
+  if author.primary_region != studio_region_inspector():
+    return 5
+  var sci: StudioRoute = studio_route_lookup(studio_route_simulate_scientific())
+  if sci.profile_id != studio_profile_sim_scientific():
+    return 6
+  if sci.mode != studio_mode_analyze():
+    return 7
+  if sci.layout_variant != studio_route_layout_sim_hud():
+    return 8
+  var litl2: StudioRoute = studio_route_lookup(studio_route_adaptive_drug_litl_2())
+  if litl2.litl_stage != drug_litl_stage_dft():
+    return 9
+  if litl2.layout_variant != studio_route_layout_drug_litl():
+    return 10
+  if studio_route_adaptive_drug_litl_for_stage(drug_litl_stage_dft()) != studio_route_adaptive_drug_litl_2():
+    return 11
+  if studio_route_for_profile(studio_profile_sim_drug_design()) != studio_route_adaptive_drug_litl_0():
+    return 12
+  if studio_route_for_profile(studio_profile_sim_scientific()) != studio_route_simulate_scientific():
+    return 13
+  if studio_route_for_profile(studio_profile_game()) != studio_route_author_game():
+    return 14
+  var shell: StudioShellCompose = studio_compose_shell_route(1280.0, 720.0, 0, 1, studio_route_adaptive_drug_litl_2(), studio_profile_game())
+  if shell.config.active_profile != studio_profile_sim_drug_design():
+    return 15
+  if shell.mode != studio_mode_adaptive():
+    return 16
+  if shell.inspector.field_rows != studio_drug_litl_inspector_field_rows(drug_litl_stage_dft()):
+    return 17
+  var agent_shell: StudioShellCompose = studio_compose_shell_route(1280.0, 720.0, 0, 1, studio_route_agent(), studio_profile_game())
+  if agent_shell.mode != studio_mode_agent():
+    return 18
+  if agent_shell.panel.active_region != studio_region_agent_strip():
+    return 19
+  var bench_shell: StudioShellCompose = studio_compose_shell_route(1280.0, 720.0, 0, 1, studio_route_bench(), studio_profile_game())
+  if bench_shell.mode != studio_mode_bench():
+    return 20
+  var demo_route: int = studio_route_for_demo_frame(studio_profile_sim_drug_design(), 2)
+  if demo_route != studio_route_adaptive_drug_litl_2():
+    return 21
+  return 0

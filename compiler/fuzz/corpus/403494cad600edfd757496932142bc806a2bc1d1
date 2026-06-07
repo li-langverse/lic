@@ -1,0 +1,5 @@
+@cpu
+@lel(disjoinisjoint_row)
+proc ) -> int
+  requires t return 0
+rn 0

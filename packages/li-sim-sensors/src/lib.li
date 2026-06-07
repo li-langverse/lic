@@ -1,0 +1,288 @@
+
+import sim
+
+# PH-SIM SIM-5 — sensor raycast bus stub (automotive + robotics profiles).
+
+def li_sim_sensors_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sensor_raycast_id_lidar_front() -> int
+  requires true
+  ensures result == algo_auto_sensor_raycast()
+  decreases 0
+=
+  return algo_auto_sensor_raycast()
+
+def sensor_raycast_id_proximity() -> int
+  requires true
+  ensures result == 904
+  decreases 0
+=
+  return 904
+
+def sensor_raycast_id_depth() -> int
+  requires true
+  ensures result == 905
+  decreases 0
+=
+  return 905
+
+def sensor_raycast_id_robo_scan() -> int
+  requires true
+  ensures result == 806
+  decreases 0
+=
+  return 806
+
+def sensor_raycast_id_valid(sensor_id: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sensor_id == sensor_raycast_id_lidar_front():
+    return 1
+  if sensor_id == sensor_raycast_id_proximity():
+    return 1
+  if sensor_id == sensor_raycast_id_depth():
+    return 1
+  if sensor_id == sensor_raycast_id_robo_scan():
+    return 1
+  return 0
+
+def sensor_raycast_max_range_m() -> float
+  requires true
+  ensures result == 100.0
+  decreases 0
+=
+  return 100.0
+
+def sensor_bus_size_default() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+type SensorRaycastHit = object
+  public sensor_id: int
+  public hit_distance_m: float
+  public hit_x_m: float
+  public hit_y_m: float
+  public did_hit: int
+
+type SensorHitSnapshot = object
+  public hit0: float
+  public hit1: float
+  public hit2: float
+  public hit3: float
+  public raycast_id: int
+
+def sensor_raycast_id_for_slot(slot: int) -> int
+  requires slot >= 0
+  requires slot < sensor_bus_size_default()
+  ensures sensor_raycast_id_valid(result) == 1
+  decreases slot
+=
+  if slot == 0:
+    return sensor_raycast_id_lidar_front()
+  if slot == 1:
+    return sensor_raycast_id_proximity()
+  if slot == 2:
+    return sensor_raycast_id_depth()
+  return sensor_raycast_id_robo_scan()
+
+def sensor_raycast_distance_stub(
+    origin_x: float, origin_y: float, max_range_m: float, sensor_id: int, tick: int) -> float
+  requires max_range_m > 0.0
+  requires tick >= 0
+  requires tick <= 64
+  requires sensor_raycast_id_valid(sensor_id) == 1
+  ensures result >= 0.0
+  ensures result <= max_range_m
+  decreases tick
+=
+  var t_obs: float = 0.0
+  if tick == 0:
+    t_obs = 0.0
+  if tick == 1:
+    t_obs = 1.0
+  if tick == 2:
+    t_obs = 2.0
+  if tick == 3:
+    t_obs = 3.0
+  if tick >= 4:
+    t_obs = 5.0
+  var sid: float = 0.0
+  if sensor_id == sensor_raycast_id_proximity():
+    sid = 1.0
+  if sensor_id == sensor_raycast_id_depth():
+    sid = 2.0
+  if sensor_id == sensor_raycast_id_robo_scan():
+    sid = 3.0
+  var dist: float = 0.05 * t_obs + 0.01 * sid + 0.02 * origin_x + 0.01 * origin_y
+  if dist > max_range_m:
+    dist = max_range_m * 0.5
+  if dist < 0.0:
+    dist = 0.0
+  return dist
+
+def sensor_raycast_stub(
+    origin_x: float, origin_y: float, heading_rad: float,
+    max_range_m: float, sensor_id: int, tick: int) -> SensorRaycastHit
+  requires max_range_m > 0.0
+  requires tick >= 0
+  requires tick <= 64
+  requires sensor_raycast_id_valid(sensor_id) == 1
+  ensures result.sensor_id == sensor_id
+  ensures result.hit_distance_m >= 0.0
+  ensures result.hit_distance_m <= max_range_m
+  ensures result.did_hit >= 0
+  ensures result.did_hit <= 1
+  decreases tick
+=
+  var dist: float = sensor_raycast_distance_stub(origin_x, origin_y, max_range_m, sensor_id, tick)
+  var hit: SensorRaycastHit
+  hit.sensor_id = sensor_id
+  hit.hit_distance_m = dist
+  hit.hit_x_m = origin_x + dist * 0.9
+  hit.hit_y_m = origin_y + dist * 0.1 + heading_rad * 0.01
+  hit.did_hit = 1
+  if dist <= 0.0:
+    hit.did_hit = 0
+  return hit
+
+def sensor_hit_store_on_session(session: var SimSessionStub, slot: int, hit: SensorRaycastHit) -> unit
+  requires slot >= 0
+  requires slot < sensor_bus_size_default()
+  requires hit.hit_distance_m >= 0.0
+  requires hit.hit_distance_m <= sensor_raycast_max_range_m()
+  ensures session.sensor_last_raycast_id == hit.sensor_id
+  decreases slot
+=
+  if slot == 0:
+    session.sensor_last_hit0 = hit.hit_distance_m
+  if slot == 1:
+    session.sensor_last_hit1 = hit.hit_distance_m
+  if slot == 2:
+    session.sensor_last_hit2 = hit.hit_distance_m
+  if slot == 3:
+    session.sensor_last_hit3 = hit.hit_distance_m
+  session.sensor_last_raycast_id = hit.sensor_id
+
+def sensor_hit_from_session(session: SimSessionStub) -> SensorHitSnapshot
+  requires true
+  ensures result.hit0 == session.sensor_last_hit0
+  ensures result.hit1 == session.sensor_last_hit1
+  ensures result.raycast_id == session.sensor_last_raycast_id
+  decreases 0
+=
+  var snap: SensorHitSnapshot
+  snap.hit0 = session.sensor_last_hit0
+  snap.hit1 = session.sensor_last_hit1
+  snap.hit2 = session.sensor_last_hit2
+  snap.hit3 = session.sensor_last_hit3
+  snap.raycast_id = session.sensor_last_raycast_id
+  return snap
+
+def sim_session_sensor_bus_init(session: var SimSessionStub) -> unit
+  requires true
+  ensures session.sensor_bus_size == sensor_bus_size_default()
+  ensures session.sensor_rays_emitted == 0
+  ensures session.sensor_last_raycast_id == 0
+  decreases 0
+=
+  session.sensor_bus_size = sensor_bus_size_default()
+  session.sensor_rays_emitted = 0
+  session.sensor_last_hit0 = 0.0
+  session.sensor_last_hit1 = 0.0
+  session.sensor_last_hit2 = 0.0
+  session.sensor_last_hit3 = 0.0
+  session.sensor_last_raycast_id = 0
+
+def sensor_bus_stub_emit(session: var SimSessionStub) -> int
+  requires session.tick >= 0
+  requires session.tick <= 64
+  requires session.sensor_bus_size > 0
+  ensures result >= 0
+  ensures result <= 1
+  ensures session.sensor_rays_emitted >= 0
+  decreases session.sensor_bus_size
+=
+  var max_range: float = sensor_raycast_max_range_m()
+  var origin_x: float = session.game_px
+  var origin_y: float = session.game_py
+  var heading: float = session.game_vx
+  var tick0: int = session.tick
+  var i: int = 0
+  while i < session.sensor_bus_size
+    var sid: int = sensor_raycast_id_for_slot(i)
+    var hit: SensorRaycastHit = sensor_raycast_stub(origin_x, origin_y, heading, max_range, sid, tick0)
+    if hit.hit_distance_m < 0.0:
+      return 0
+    if hit.hit_distance_m > max_range:
+      return 0
+    sensor_hit_store_on_session(session, i, hit)
+    session.sensor_rays_emitted = session.sensor_rays_emitted + 1
+    i = i + 1
+  return 1
+
+# PH-SIM SIM-5 — session-backed sensor bus step (raycast contract + sim_step + replay).
+def sim_sensor_session_bus_step(session: var SimSessionStub, dt: float) -> int
+  requires session.tick >= 0
+  requires session.tick <= 64
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  if session.sensor_bus_size <= 0:
+    sim_session_sensor_bus_init(session)
+  var rays_before: int = session.sensor_rays_emitted
+  var bus_sz: int = session.sensor_bus_size
+  if sensor_bus_stub_emit(session) != 1:
+    return sim_status_invalid_dt()
+  if session.sensor_rays_emitted != rays_before + bus_sz:
+    return sim_status_invalid_dt()
+  if sensor_raycast_id_valid(session.sensor_last_raycast_id) != 1:
+    return sim_status_invalid_dt()
+  var snap: SensorHitSnapshot = sensor_hit_from_session(session)
+  if snap.hit0 < 0.0:
+    return sim_status_invalid_dt()
+  if snap.hit0 > sensor_raycast_max_range_m():
+    return sim_status_invalid_dt()
+  if sim_step(session, dt) != sim_status_ok():
+    return sim_status_invalid_dt()
+  if sim_session_replay_last_tick(session) != session.tick:
+    return sim_status_invalid_dt()
+  return sim_status_ok()
+
+def run_sensors_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var sess: SimSessionStub = sim_session_stub_default()
+  sim_session_apply_studio_profile(3, sess)
+  if sim_sensor_session_bus_step(sess, 0.02) != sim_status_ok():
+    return 1
+  if sess.sensor_bus_size != sensor_bus_size_default():
+    return 2
+  if sess.sensor_rays_emitted != sensor_bus_size_default():
+    return 3
+  if sensor_raycast_id_valid(sess.sensor_last_raycast_id) != 1:
+    return 4
+  var snap0: SensorHitSnapshot = sensor_hit_from_session(sess)
+  if snap0.hit0 > sensor_raycast_max_range_m():
+    return 5
+  if sim_sensor_session_bus_step(sess, 0.02) != sim_status_ok():
+    return 6
+  if sess.sensor_rays_emitted != sensor_bus_size_default() + sensor_bus_size_default():
+    return 7
+  return 0

@@ -1,0 +1,10 @@
+@cpu
+@pintz
+=@cpu
+@parallel(disjoz
+=@cpu
+@parallel(d=isjoin_row)
+proc f(/) -> intz
+=
+  v
+  vetur ------------------m------/-----------------------------n 0

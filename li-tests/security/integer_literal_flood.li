@@ -1,5 +1,4 @@
-# CWE-190 class: many large integer literals in one expression.
-proc flood() -> int
+def flood() -> int
   requires true
   ensures true
   decreases 0

@@ -1,0 +1,6 @@
+@@@@@@@@@@@@@@@@@@@@@@
+@parallel(disj_row)
+proc f() -> @@@@@@@@@@@@@@@@@@@@@@
+@parallel(disj_row)
+proc f() -> int
+  requires tru@@@@@@@@@@@@p

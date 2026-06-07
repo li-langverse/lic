@@ -1,0 +1,4 @@
+@cpu
+@parallel(proc f() ->s   decreases 0
+=
+  r%zrn 0

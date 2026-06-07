@@ -1,0 +1,21 @@
+import ml
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var a: array[64, float]
+  var b: array[64, float]
+  var c: array[64, float]
+  var i: int = 0
+  while i < 16
+    var fi: int = ml_matmul_flat_idx(i, i, 16)
+    a[fi] = 1.0
+    b[fi] = 1.0
+    i = i + 1
+  if ml_matmul_lkir_logical_16(a, b, c) != 1:
+    return 1
+  if c[0] < 0.9 or c[0] > 1.1:
+    return 2
+  return 0

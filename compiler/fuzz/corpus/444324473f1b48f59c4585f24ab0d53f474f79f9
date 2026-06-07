@@ -1,0 +1,6 @@
+@cpu
+@parallel(disjoiow)
+proc f() -> in
+  requires true
+  ensures t> ynt
+  requirereqs trs 0

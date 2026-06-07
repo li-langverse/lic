@@ -1,0 +1,29 @@
+import gui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gui_version() < 1:
+    return 1
+  if gui_keyboard_tab_step_count() != 3:
+    return 2
+  var t1: KeyboardJourneyTiming = gui_keyboard_journey_timing(1, 8.0)
+  if gui_keyboard_journey_within_budget(t1) != 1:
+    return 3
+  if t1.region != studio_region_dock():
+    return 4
+  var t2: KeyboardJourneyTiming = gui_keyboard_journey_timing(2, 10.0)
+  if gui_keyboard_journey_within_budget(t2) != 1:
+    return 5
+  if t2.region != studio_region_viewport():
+    return 6
+  var slow: KeyboardJourneyTiming = gui_keyboard_journey_timing(3, 20.0)
+  if gui_keyboard_journey_within_budget(slow) != 0:
+    return 7
+  if gui_keyboard_palette_shortcut_matches(gui_keyboard_key_k(), gui_keyboard_mod_cmd()) != 1:
+    return 8
+  if gui_keyboard_palette_shortcut_matches(gui_keyboard_key_k(), 0) != 0:
+    return 9
+  return 0

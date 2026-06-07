@@ -2,6 +2,7 @@
 // Build: cmake -B build-fuzz -DLI_BUILD_FUZZ=ON ...
 // Run:   ./build-fuzz/compiler/fuzz/check_fuzz corpus/ -max_len=65536
 #include "li/parser.hpp"
+#include "li/check_config.hpp"
 #include "li/policy.hpp"
 #include "li/typecheck.hpp"
 
@@ -16,7 +17,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
   std::string source(reinterpret_cast<const char*>(data), size);
   li::DiagnosticBag policy_diags;
-  li::check_source_policies(source, "fuzz.li", policy_diags);
+  li::check_source_policies(source, "fuzz.li", li::CheckConfig{}, policy_diags);
   if (!policy_diags.empty()) {
     return 0;
   }

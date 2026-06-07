@@ -1,0 +1,3 @@
+@cpu
+@parallel(disjt_row)
+proc f() -> i@paraleqses 0n 0,

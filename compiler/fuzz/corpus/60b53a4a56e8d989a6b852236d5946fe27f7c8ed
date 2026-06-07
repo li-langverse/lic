@@ -1,0 +1,5 @@
+@cpu
+@el(disjoint=disw)
+proc decreases 0
+=
+  reoc f()(-uireurn 0

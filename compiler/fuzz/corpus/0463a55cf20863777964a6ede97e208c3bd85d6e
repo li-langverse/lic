@@ -1,0 +1,9 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc typedictnt
+  requires tr
+@p@carallel(disjoint=disjoint_row)
+proc f()async -> iCallablent
+  requipu
+@paralres true
+  ensuzes trlel(diuesjo

@@ -2,7 +2,8 @@
 
 > **Part of the ecosystem track.** Canonical **`li.toml` schema** and long-term UX live in [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md) (§ A3). This plan covers **day-one scaffolding** before `lip init` ships in phase **8b**.
 
-**Master plan ID:** **Pkg** (prerequisite for **8a** layout consistency and **8b** `lip init`).
+**Master plan ID:** **Pkg** (prerequisite for **8a** layout consistency and **8b** `lip init`).  
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [governance](2026-05-16-li-ecosystem-governance.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) (docs/traceability; no **G-*** closure in Pkg alone)
 
 ---
 
@@ -119,13 +120,13 @@ Templates: `scripts/templates/package/` — **generated from lip § A3** (single
 
 ## Exit gate (Pkg)
 
-- [ ] `li-new-package` emits li.toml valid against lip § A3
-- [ ] `create-li-package` skill committed (incl. `--official` + org checklist)
-- [ ] Guide + ecosystem overview + governance summary in mkdocs
-- [ ] `scripts/templates/github-repo/` for org repos
-- [ ] `docs/ecosystem/official-packages.md` stub with `PKG-li-language`
-- [ ] Smoke test in `scripts/ci.sh`
-- [ ] lip + governance + master plan cross-linked
+- [x] `li-new-package` emits li.toml valid against lip § A3 (`scripts/li-new-package`)
+- [x] `create-li-package` skill committed (incl. `--official` + org checklist)
+- [x] Guide + ecosystem overview + governance summary in mkdocs
+- [x] `scripts/templates/github-repo/` for org repos
+- [x] `docs/ecosystem/official-packages.md` stub with `PKG-li-language`
+- [x] Smoke test in `scripts/ci.sh`
+- [x] lip + governance + master plan cross-linked
 
 **Not in Pkg exit gate:** `import`, `li.lock`, registry (8a–8d).
 

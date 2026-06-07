@@ -1,0 +1,7 @@
+@cpu
+@parallel(disjoint=disiotAn_row)
+proc fcpu
+@parallel(disjoint=di -> intz
+=
+  v
+  veturn 0

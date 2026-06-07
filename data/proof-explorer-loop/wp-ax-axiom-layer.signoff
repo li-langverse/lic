@@ -1,0 +1,6 @@
+# WP-AX-12 — phase 10 axiom layer (completion sign-off)
+
+Gate: scripts/proof-explorer-phase10-completion-gate.sh exit 0
+Branch: cursor/proof-explorer-phase10-axiom-layer
+Signed: 2026-06-03
+Notes: WP-AX-01..12 complete; lic #740 merged; proof-library library.json rebuild (1538 entries); BUG-C-13 RFC for Julian.

@@ -1,0 +1,10 @@
+@cpu
+@paralel(disjoint_row)
+proc f()->  decreas@cpu
+@paralel(disjoint_row)
+proc f()->  decreases 0
+=
+  rres 0
+=
+  etu(n0rretu((n0(rr
+

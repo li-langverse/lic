@@ -1,0 +1,11 @@
+@cpu
+@parallel(proc f() -> int
+  requires true
+  ensures true
+  decreases 5
+=
+  r%ztunsures @true
+  decrnases 0roc f() -> int
+  requires   dehoreturn 
+=
+  return 0

@@ -1,0 +1,24 @@
+import llm
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var hdr: LlmSafetensorsHeader = llm_safetensors_parse_header("fixtures/model.safetensors")
+  if hdr.parsed_ok != 1:
+    return 1
+  if hdr.header_len != 64:
+    return 2
+  if hdr.tensor_count != 2:
+    return 3
+  if hdr.tensors_loaded != 0:
+    return 4
+  var w: LlmModelWeights = llm_load_weights("fixtures/model.safetensors")
+  if w.header_parsed != 1:
+    return 5
+  if w.tensor_count != 2:
+    return 6
+  if w.tensors_loaded != 0:
+    return 7
+  return 0

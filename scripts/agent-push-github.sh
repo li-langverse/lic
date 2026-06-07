@@ -3,6 +3,8 @@
 # Agents: run after gates pass; user rule — do not ask human to push manually.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/li-ui.sh
+source "$ROOT/scripts/lib/li-ui.sh"
 cd "$ROOT"
 WRAPPER="$ROOT/scripts/with-github-env.sh"
 
@@ -29,13 +31,13 @@ fi
 "$WRAPPER" gh auth setup-git 2>/dev/null || true
 
 if git remote get-url origin &>/dev/null; then
-  echo "==> push origin $branch"
+  li_phase "push origin $branch"
   "$WRAPPER" git push -u origin "$branch"
 fi
 
 if git remote get-url langverse &>/dev/null; then
-  echo "==> push langverse $branch -> main"
+  li_phase "push langverse → main"
   "$WRAPPER" git push langverse "${branch}:main"
 fi
 
-echo "agent-push-github: ok"
+li_ok "agent-push-github"

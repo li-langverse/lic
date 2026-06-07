@@ -1,0 +1,6 @@
+@cpu
+@parallel1(di@c
+@parallel(breakisjoint
+@parallel(csu
+@parallel(disjntoint=dis@cpu
+@parja

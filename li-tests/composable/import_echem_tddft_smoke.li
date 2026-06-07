@@ -1,0 +1,28 @@
+import chem
+import physics.quantum
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if echem_tddft_stub_honesty_tag() != 13:
+    return 1
+  if echem_tddft_excitation_energy_ev() <= 0.0:
+    return 2
+  var coupling: float = echem_tddft_nonadiabatic_coupling_ev()
+  if coupling <= 0.0:
+    return 3
+  var barrier: float = echem_tddft_et_barrier_ev()
+  if barrier <= coupling:
+    return 4
+  if echem_tddft_nonadiabatic_smoke() != 1:
+    return 5
+  if li_std_physics_quantum_version() != 2:
+    return 6
+  if quantum_tddft_nonadiabatic_smoke() != 1:
+    return 7
+  var lam: float = echem_marcus_lambda_stub()
+  if coupling >= lam:
+    return 8
+  return 0

@@ -1,0 +1,33 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_studio_composables_version() < 3:
+    return 1
+  var closed: StudioCommandPaletteCompose = studio_compose_palette(1920.0, 1080.0, studio_palette_closed_flag(), 0)
+  if studio_palette_ok(closed) != 1:
+    return 2
+  var open_all: StudioCommandPaletteCompose = studio_compose_palette(1920.0, 1080.0, studio_palette_open_flag(), 0)
+  if open_all.result_count != studio_palette_cmd_catalog_count():
+    return 3
+  if open_all.open_latency_ms != studio_palette_open_latency_ms():
+    return 4
+  var filtered: StudioCommandPaletteCompose = studio_compose_palette(1920.0, 1080.0, studio_palette_open_flag(), 11)
+  if filtered.result_count != 1:
+    return 5
+  if filtered.filter_latency_ms != studio_palette_filter_latency_ms(11):
+    return 6
+  var mut: StudioCommandPaletteCompose = open_all
+  studio_palette_apply_filter(mut, 12)
+  if mut.result_count != 1:
+    return 7
+  if studio_palette_fuzzy_match(studio_palette_cmd_keyword(2), 12) != 1:
+    return 8
+  var frame: PaintFrame = paint_frame_new()
+  paint_studio_palette(frame, open_all)
+  if frame.cmd_count != studio_paint_palette_cmds(studio_palette_open_flag()):
+    return 9
+  return 0

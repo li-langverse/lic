@@ -1,0 +1,10 @@
+@cpu
+@parallelBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB(disjoint=disjo@cp@cpu
+@parallel(disjoint=disjoint_vrow)
+proc f() -> int
+  requires truu
+@pau
+@prBBBBBBBBBBBBBBB@crequuu
+@pau
+@prBc
+@pelBBBBBBBBBBBBBBBBBBBllent=dresisejointt

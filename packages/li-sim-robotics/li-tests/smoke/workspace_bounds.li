@@ -1,0 +1,18 @@
+import sim.robotics
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var spec: RoboArmSpec = robo_arm_spec_default()
+  var st: RoboArmState = robo_arm_state_default()
+  if sim_robotics_workspace_bounds_ok(spec, st) != 1:
+    return 1
+  if sim_robotics_joint_angles_tick(0, st, spec, 0.01) != 1:
+    return 2
+  if sim_robotics_joint_angles_tick(1, st, spec, 0.01) != 1:
+    return 3
+  if robo_workspace_contains(-0.2, -0.2, 0.9, 0.9, 1.5, 0.0) != 0:
+    return 4
+  return 0

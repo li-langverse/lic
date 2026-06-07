@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-06-05T07:26:38Z",
+  "suite": "ph-sci-echem-competitive",
+  "registry_path": "/app/data/workspaces/li-langverse/lic/code_implementer-1780643491091/repo/benchmarks/competitive/ph-sci-electrochemistry.toml",
+  "registry_schema": "li_ph_sci_echem_competitive_v1",
+  "rows": [
+    {
+      "id": "echem_che_h",
+      "kernel": "echem.che_h_adsorption_energy",
+      "workload_class": "pilot",
+      "workload_note": "CHE H* vs RHE at U=0; Li mini radial SCF vs PySCF E(H)-0.5*E(H2) STO-3G",
+      "potential_v": 0.0,
+      "energy_tolerance_ev": 5.0,
+      "energy_delta_ev": -20.408583,
+      "parity_gate_pass": false,
+      "parity_note": "Radial mini SCF \u2260 Gaussian DFT \u2014 large delta OK until slab/full-basis parity",
+      "executed": true,
+      "li": {
+        "id": "li",
+        "incumbent": "Li native (li-chem echem_che_h_adsorption_energy DFT SCF)",
+        "workload_class": "pilot",
+        "executed": true,
+        "cpu_sec": 0.000718,
+        "energy_ev": -17.008988,
+        "energy_source": "li_echem_dft_scf_mirror",
+        "validity_gate_pass": true,
+        "validity_ratio": 1.0,
+        "ratio_vs_li": 1.0,
+        "device": "cpu",
+        "workload": "echem_che_h",
+        "potential_v": 0.0
+      },
+      "competitors": [
+        {
+          "id": "pyscf",
+          "incumbent": "PySCF RKS/LDA CHE proxy",
+          "workload_class": "oss_oracle",
+          "executed": true,
+          "cpu_sec": 9.941437,
+          "energy_ev": 3.399595,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 13846.012535,
+          "note": "PySCF RKS/LDA CHE proxy: E(H) - 0.5*E(H2) - U (Li radial SCF coupled at WP-ECHEM-05)",
+          "framework_version": "pyscf",
+          "license": "Apache-2.0",
+          "device": "cpu",
+          "workload": "echem_che_h",
+          "potential_v": 0.0
+        },
+        {
+          "id": "orca",
+          "incumbent": "ORCA RKS/LDA",
+          "workload_class": "external_manual",
+          "executed": false,
+          "cpu_sec": null,
+          "energy_ev": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "license": "academic-free-not-redistributable",
+          "note": "NOT bundled in CI \u2014 user-run oracle; see benchmarks/competitive/README-chem-dft.md",
+          "device": "cpu",
+          "workload": "echem_che_h"
+        }
+      ]
+    }
+  ]
+}

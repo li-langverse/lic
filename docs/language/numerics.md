@@ -11,13 +11,21 @@ Li uses **Python-like names** with **compiled fixed-width** behavior. This catch
 | `42` | integer literal → `i64` |
 | `3.14` | float literal → `f64` |
 
+**Full width tables, suffixes, `binary`, and physics metadata:** [Scalar precision](scalar-precision.md) (canonical).
+
+**You choose precision** — explicit types (`float32`), suffixes (`3.14f32`), optional `li.toml` `[numerics]`, and physics `float_bits` are all **per-project / per-module** choices; the org does not enforce one global width. See [You set precision yourself](scalar-precision.md#you-set-precision-yourself).
+
 ## Literal suffixes
 
 ```
-42       # int
-42u      # uint
-42i32    # i32
-3.14f32  # f32
+42       # int (i64)
+42u      # uint (u64)
+42i32    # int32
+255u8    # uint8
+3.14     # float64
+3.14f32  # float32
+1.0f16   # float16
+0b1011   # binary
 2.0 + 1.0i   # complex
 ```
 

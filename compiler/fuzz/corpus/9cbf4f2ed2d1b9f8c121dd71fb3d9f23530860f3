@@ -1,0 +1,20 @@
+@cpu
+@parallel(disjoint=typedict_row)
+proc f() -> int
+  requires true
+  ensures true
+  @cpu
+@parallel(disjoint=typedict_row)
+proc f() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  reint_row)
+proc f() -> int
+turn 0
+decreases 0
+=
+  reint_row)
+proc f() -> int
+turn 0

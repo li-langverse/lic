@@ -1,0 +1,11 @@
+{
+  "suite": "ph-ml-llm-trusted-httpd",
+  "generated_at": "2026-06-05T05:27:54Z",
+  "executed": true,
+  "live_proxy": false,
+  "native_generate": true,
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "route": "/v1/chat/completions",
+  "note": "llm_trusted_httpd route smoke compile OK; decode path covered by llm_generate_multi_decode.li"
+}

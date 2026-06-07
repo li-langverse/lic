@@ -1,0 +1,5 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> in  0
+=
+  return 0

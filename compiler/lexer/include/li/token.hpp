@@ -14,6 +14,7 @@ enum class TokenKind {
   Ident,
   IntLit,
   FloatLit,
+  BinaryLit,
   StringLit,
   KwProc,
   KwDef,
@@ -29,6 +30,10 @@ enum class TokenKind {
   KwElse,
   KwElif,
   KwWhile,
+  KwFor,
+  KwBreak,
+  KwContinue,
+  KwError,
   KwReturn,
   KwRaises,
   KwEcho,
@@ -37,12 +42,15 @@ enum class TokenKind {
   KwAwait,
   KwTrue,
   KwFalse,
+  KwImplies,
   KwAnd,
   KwOr,
+  KwXor,
   KwNot,
   KwIs,
   KwRequires,
   KwEnsures,
+  KwProbEnsures,
   KwDecreases,
   KwInvariant,
   KwResult,
@@ -71,6 +79,10 @@ enum class TokenKind {
   Gt,
   EqEq,
   Ne,
+  Caret,
+  Shl,
+  Shr,
+  Tilde,
   Dot,
   DotDotLt,
   Pipe,
@@ -87,6 +99,8 @@ struct Token {
   std::size_t column = 1;
   std::int64_t int_value = 0;
   double float_value = 0.0;
+  /// Suffix after numeric literal (`f32`, `i32`, `u`, …). Empty = default width.
+  std::string lit_suffix;
 };
 
 const char* token_kind_name(TokenKind kind);

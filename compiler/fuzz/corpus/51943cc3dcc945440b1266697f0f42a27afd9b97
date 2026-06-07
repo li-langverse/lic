@@ -1,0 +1,11 @@
+@cpu
+@parallel(disjoint=disnjoit_row)
+proc f() -> int
+  requires t@caraltel(ditel(dis@rue
+  ensures truncpu
+@parallel(disjoint=disnjoit_row)
+proc f() ->tu@cpu
+@parallel(di_row)
+proc fK() -> intreasvar requires tr@crallel(disjoint=disjoue
+  ensures tr int
+  requires t@caraintl_tel

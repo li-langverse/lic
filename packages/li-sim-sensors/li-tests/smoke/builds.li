@@ -1,0 +1,16 @@
+import sim.sensors
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_sensors_version() != 1:
+    return 1
+  if sensor_raycast_id_lidar_front() != algo_auto_sensor_raycast():
+    return 2
+  if sensor_raycast_id_valid(sensor_raycast_id_proximity()) != 1:
+    return 3
+  if run_sensors_smoke() != 0:
+    return 4
+  return 0

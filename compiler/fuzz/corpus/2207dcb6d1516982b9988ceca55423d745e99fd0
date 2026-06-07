@@ -1,0 +1,10 @@
+@cpu
+@parallel(disjoint=disiotAn_row)
+proc fcpu
+@parallel(disjoint=disiotAn_row)
+proc f() -> intz
+=@cpu
+@parallel(disjqqqqqq_row)
+pr@cpuocqqqqqqqqqqqqqoint=disiotjn_row)
+
+@parallel(disjprocoin 

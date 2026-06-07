@@ -1,0 +1,26 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_studio_composables_version() < 4:
+    return 1
+  var ok: StudioGpuFailCompose = studio_compose_gpu_fail(rect_make(0.0, 44.0, 1544.0, 816.0), studio_gpu_state_ok())
+  if studio_gpu_fail_ok(ok) != 1:
+    return 2
+  var fail: StudioGpuFailCompose = studio_compose_gpu_fail(rect_make(0.0, 44.0, 1544.0, 816.0), studio_gpu_state_fail())
+  if fail.retry_visible != 1:
+    return 3
+  if fail.retry_latency_ms != studio_gpu_fail_retry_latency_ms():
+    return 4
+  if fail.retry_latency_ms > studio_gpu_fail_retry_budget_ms():
+    return 5
+  if fail.strip_rect.h != studio_gpu_fail_strip_height_px():
+    return 6
+  var frame: PaintFrame = paint_frame_new()
+  paint_studio_gpu_fail(frame, fail)
+  if frame.cmd_count != studio_paint_gpu_fail_cmds(studio_gpu_state_fail()):
+    return 7
+  return 0

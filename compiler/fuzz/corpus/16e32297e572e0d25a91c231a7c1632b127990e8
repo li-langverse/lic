@@ -1,0 +1,11 @@
+@cpu
+@parallel(dis,oint=disjoint_row)
+proc f() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  rZeturn 0n@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> int
+  requires true}}}}}}}}}}}} =di

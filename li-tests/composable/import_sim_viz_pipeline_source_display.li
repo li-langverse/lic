@@ -1,0 +1,31 @@
+import sim.viz
+
+def smoke_viz_pipeline_viewport() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var s0: VizPipelineState = viz_pipeline_init()
+  var s1: VizPipelineState = viz_pipeline_add_source(s0, viz_source_kind_sphere())
+  var s2: VizPipelineState = viz_pipeline_set_display_rep(s1, viz_display_rep_wireframe())
+  var s3: VizPipelineState = viz_pipeline_apply(s2)
+  if s3.pending_apply != 0:
+    return 1
+  var fields: VizViewportFields = viz_pipeline_to_viewport_fields(s3)
+  if fields.particle_dots_visible != 1:
+    return 1
+  if viz_pipeline_viewport_ok(s3, 1, 1000) != 1:
+    return 1
+  if viz_smoke_entry() != 7024:
+    return 1
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if smoke_viz_pipeline_viewport() != 0:
+    return 1
+  return 0

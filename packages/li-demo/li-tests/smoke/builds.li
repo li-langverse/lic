@@ -1,6 +1,6 @@
 import li_demo
 
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 3
   decreases 0

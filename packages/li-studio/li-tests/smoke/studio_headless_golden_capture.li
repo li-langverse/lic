@@ -1,0 +1,18 @@
+import studio
+
+# wsg-w4-headless-golden — headless PPM capture via Li rasterizer (no paint_fb).
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var path_game: str = "/tmp/studio_headless_golden_game_0.ppm"
+  var path_sci: str = "/tmp/studio_headless_golden_sci_1.ppm"
+  var path_auto: str = "/tmp/studio_headless_golden_auto.ppm"
+  if studio_vertical_capture_ppm(studio_profile_game(), 0, path_game, 320, 180) != 1:
+    return 1
+  if studio_vertical_capture_ppm(studio_profile_sim_scientific(), 1, path_sci, 320, 180) != 1:
+    return 2
+  if studio_vertical_capture_ppm_auto(studio_profile_game(), 0, path_auto, 320, 180) != 1:
+    return 3
+  return 0

@@ -1,0 +1,5 @@
+proc p() -> i requires true
+  ensuras true
+  decreasEs 0
+=
+  return 0

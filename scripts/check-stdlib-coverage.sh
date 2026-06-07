@@ -29,7 +29,7 @@ if [[ ! -f "$harness" ]]; then
 fi
 
 echo "check-stdlib-coverage: instrument $harness (imports std)"
-if ! "$LIC" build "$harness" -o /dev/null --coverage-instrument 2>&1; then
+if ! "$LIC" build --allow-open-vc "$harness" -o /dev/null --coverage-instrument 2>&1; then
   echo "check-stdlib-coverage: FAIL" >&2
   exit 1
 fi

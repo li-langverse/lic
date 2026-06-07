@@ -1,0 +1,11 @@
+proc p() -> int
+  requires true
+  proc p() -> int
+  requires true
+  ensures true
+  recsdesensures true
+  aerecsdes 0 0
+=
+  
+=
+  retureturrnn 

@@ -1,0 +1,83 @@
+
+extern proc li_rt_sqrt(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+
+type FluidCell = object
+  public rho: float
+  public vx: float
+  public vy: float
+
+type Idx4 = {i: int | 0 <= i and i < 4}
+
+def li_std_physics_fluids_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sph_kernel_poly6(r: float, h: float) -> float
+  requires h > 0.0
+  requires r >= 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  if r >= h:
+    return 0.0
+  var x: float = (h * h - r * r) / (h * h * h)
+  return 315.0 / (64.0 * 3.14159265) * x * x * x
+
+def euler_advect_scalar(field: var array[8, float], vx: var array[8, float], dt: float, dx: float) -> unit
+  requires dt > 0.0
+  requires dx > 0.0
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < 8
+    field[i] = field[i] - vx[i] * dt / dx
+    i = i + 1
+
+def heat_step_explicit(
+    u: var array[8, float], lap: var array[8, float], alpha: float, dt: float) -> unit
+  requires dt > 0.0
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < 8
+    u[i] = u[i] + alpha * dt * lap[i]
+    i = i + 1
+
+def cloth_pbd_distance(
+    px: var array[4, float], py: var array[4, float],
+    i: Idx4, j: Idx4, rest: float, stiffness: float) -> unit
+  requires rest > 0.0
+  requires stiffness >= 0.0
+  requires stiffness <= 1.0
+  ensures true
+  decreases 0
+=
+  var dx: float = px[j] - px[i]
+  var dy: float = py[j] - py[i]
+  var len: float = li_rt_sqrt(dx * dx + dy * dy)
+  if len == 0.0:
+    return
+  var corr: float = stiffness * (len - rest) / len
+  px[i] = px[i] + 0.5 * corr * dx
+  py[i] = py[i] + 0.5 * corr * dy
+  px[j] = px[j] - 0.5 * corr * dx
+  py[j] = py[j] - 0.5 * corr * dy
+
+def physics_fluids_gpu_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var u: array[8, float]
+  var lap: array[8, float]
+  heat_step_explicit(u, lap, 0.1, 0.01)
+  return 1

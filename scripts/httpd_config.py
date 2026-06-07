@@ -6,9 +6,18 @@ from __future__ import annotations
 import re
 import sys
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
+from httpd_m15 import ConfigError as M15ConfigError
+from httpd_m15 import validate_inference_require, validate_m15_limits
+from httpd_leak_censor import ConfigError as LeakConfigError
+from httpd_leak_censor import validate_leak_censor
+from httpd_tls import ConfigError as TlsConfigError
+from httpd_tls import validate_tls_config
+from httpd_rng import ConfigError as RngConfigError
+from httpd_rng import validate_rng_config_raise
 
 
 class ConfigError(Exception):
@@ -20,6 +29,9 @@ ROUTE_KEY_RE = re.compile(
 )
 HEADER_EXTRA_RE = re.compile(r"^([a-zA-Z0-9_-]+)=([^\s]+)$")
 
+ROUTE_REQUIRE_ALLOW = frozenset({"traceparent", "websocket"})
+UPSTREAM_BALANCE_ALLOW = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})
+
 
 @dataclass
 class CanonicalRoute:
@@ -30,10 +42,28 @@ class CanonicalRoute:
     action: str
     headers: dict[str, str]
     priority: int
+    requires: list[str] = field(default_factory=list)
+
+
+@dataclass
+class HttpdConfig:
+    listen: str
+    host: str
+    tls: str | None
+    max_body: str | None
+    upstreams: dict[str, list[str]]
+    routes: list[CanonicalRoute]
+    warnings: list[str] = field(default_factory=list)
 
 
 def slug_route_name(method: str, path: str) -> str:
-    s = f"{method.lower()}_{path.strip('/')}".replace("/", "_").replace("*", "wild")
+    # Mirror runtime/li_rt_httpd.c slug_route_name (/** → _rest, /* → _wild).
+    slug_path = path
+    if path.endswith("/**"):
+        slug_path = f"{path[:-3]}_rest"
+    elif path.endswith("/*"):
+        slug_path = f"{path[:-2]}_wild"
+    s = f"{method.lower()}_{slug_path.strip('/')}".replace("/", "_").replace("*", "wild")
     s = re.sub(r"[^a-z0-9_]+", "_", s).strip("_")
     return s or "route"
 
@@ -54,8 +84,18 @@ def parse_route_key(key: str, action: str, priority: int) -> CanonicalRoute:
     raw_path = m.group("path")
     extras = (m.group("extras") or "").strip()
     headers: dict[str, str] = {}
+    requires: list[str] = []
     if extras:
         for part in extras.split():
+            req_m = re.match(r"^require=([a-z0-9_-]+)$", part)
+            if req_m:
+                req_name = req_m.group(1).lower()
+                if req_name not in ROUTE_REQUIRE_ALLOW:
+                    raise ConfigError(
+                        f"unsupported require={req_name!r} in {key!r} (allowed: {sorted(ROUTE_REQUIRE_ALLOW)})"
+                    )
+                requires.append(req_name)
+                continue
             hm = HEADER_EXTRA_RE.match(part)
             if not hm:
                 raise ConfigError(f"invalid route extra: {part!r} in {key!r}")
@@ -71,6 +111,7 @@ def parse_route_key(key: str, action: str, priority: int) -> CanonicalRoute:
         action=str(action).strip().strip('"'),
         headers=headers,
         priority=priority,
+        requires=requires,
     )
 
 
@@ -108,18 +149,178 @@ def validate_routes(routes: list[CanonicalRoute]) -> None:
                 )
 
 
+def _validate_upstream_balance(spec: dict[str, Any], pool_id: str) -> None:
+    bal = spec.get("balance")
+    if bal is None:
+        return
+    bal_s = str(bal).strip()
+    if not bal_s:
+        return
+    if bal_s not in UPSTREAM_BALANCE_ALLOW:
+        allowed = ", ".join(sorted(UPSTREAM_BALANCE_ALLOW))
+        raise ConfigError(
+            f"[upstreams.{pool_id}] unsupported balance={bal_s!r} (allowed: {allowed})"
+        )
+
+
+def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
+    raw = data.get("upstreams")
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict):
+        raise ConfigError("[upstreams] must be a table")
+    out: dict[str, list[str]] = {}
+    for upstream_id, spec in raw.items():
+        if not isinstance(spec, dict):
+            raise ConfigError(f"[upstreams.{upstream_id}] must be a table")
+        _validate_upstream_balance(spec, str(upstream_id))
+        peers = spec.get("peers")
+        if not isinstance(peers, list) or not peers:
+            raise ConfigError(f"[upstreams.{upstream_id}] peers required")
+        out[str(upstream_id)] = [str(p).strip() for p in peers]
+    for key, val in data.items():
+        if not key.startswith("upstreams.") or not isinstance(val, dict):
+            continue
+        pool_id = key.split(".", 1)[1]
+        _validate_upstream_balance(val, pool_id)
+        peers = val.get("peers")
+        if isinstance(peers, list) and peers:
+            out[pool_id] = [str(p).strip() for p in peers]
+    return out
+
+
+def _run_config_oracle_validators(data: dict[str, Any], path: Path) -> list[str]:
+    from httpd_leak_censor import ConfigError as LeakError
+    from httpd_leak_censor import validate_leak_censor
+    from httpd_m15 import ConfigError as M15Error
+    from httpd_m15 import validate_inference_require, validate_m15_limits, validate_route_match
+    from httpd_m2 import ConfigError as M2Error
+    from httpd_m2 import validate_m2_config
+    from httpd_m3 import ConfigError as M3Error
+    from httpd_m3 import validate_m3_config
+    from httpd_rng import ConfigError as RngError
+    from httpd_rng import validate_rng_config_raise
+    from httpd_tls import ConfigError as TlsError
+    from httpd_tls import validate_tls_config
+
+    warnings: list[str] = []
+    try:
+        validate_m15_limits(data)
+        validate_route_match(data)
+        validate_inference_require(data)
+        warnings.extend(validate_leak_censor(data, path))
+        validate_tls_config(data, path)
+        validate_m2_config(data, path)
+        validate_m3_config(data, path)
+        warnings.extend(validate_rng_config_raise(data))
+    except (M15Error, LeakError, TlsError, M2Error, M3Error, RngError) as e:
+        raise ConfigError(str(e)) from e
+    return warnings
+
+
 def load_httpd_config(path: Path) -> list[CanonicalRoute]:
+    return load_httpd_full(path).routes
+
+
+def load_httpd_sites(path: Path) -> list[HttpdConfig]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
+    sites_raw = data.get("site")
+    if sites_raw is None:
+        return [load_httpd_full(path)]
+    if not isinstance(sites_raw, list):
+        raise ConfigError("[[site]] must be an array of tables")
+    upstreams = parse_upstreams(data)
+    out: list[HttpdConfig] = []
+    for i, site in enumerate(sites_raw):
+        if not isinstance(site, dict):
+            raise ConfigError(f"[[site]] entry {i} must be a table")
+        host = str(site.get("host", "")).strip()
+        if not host:
+            raise ConfigError(f"[[site]] entry {i}: host required")
+        listen = str(site.get("listen", ":443"))
+        tls = site.get("tls")
+        tls_s = str(tls).strip() if tls is not None else None
+        limits = site.get("limits") or {}
+        max_body = None
+        if isinstance(limits, dict) and limits.get("max_body") is not None:
+            max_body = str(limits["max_body"])
+        routes_tbl = site.get("routes") or {}
+        fake = {"routes": routes_tbl}
+        routes = desugar_config(fake)
+        validate_routes(routes)
+        for r in routes:
+            if r.action.startswith("proxy:"):
+                uid = r.action.split(":", 1)[1]
+                if uid not in upstreams:
+                    raise ConfigError(f"unknown upstream {uid!r} for site {host}")
+        out.append(
+            HttpdConfig(
+                listen=listen,
+                host=host,
+                tls=tls_s,
+                max_body=max_body,
+                upstreams=upstreams,
+                routes=routes,
+            )
+        )
+    return out
+
+
+def load_httpd_full(path: Path) -> HttpdConfig:
+    data = tomllib.loads(path.read_text(encoding="utf-8"))
+    warnings = _run_config_oracle_validators(data, path)
+    if data.get("site") is not None:
+        sites = load_httpd_sites(path)
+        if len(sites) != 1:
+            raise ConfigError("use load_httpd_sites() for multi-site profiles")
+        site = sites[0]
+        site.warnings = warnings
+        return site
+    server = data.get("server") or {}
+    if not isinstance(server, dict):
+        raise ConfigError("[server] must be a table")
+    listen = str(server.get("listen", ":8080"))
+    host = str(server.get("host", "")).strip()
+    tls = server.get("tls")
+    tls_s = str(tls).strip() if tls is not None else None
+    limits = data.get("limits") or {}
+    max_body = None
+    if isinstance(limits, dict) and limits.get("max_body") is not None:
+        max_body = str(limits["max_body"])
     routes = desugar_config(data)
     validate_routes(routes)
-    return routes
+    upstreams = parse_upstreams(data)
+    for r in routes:
+        if r.action.startswith("proxy:"):
+            uid = r.action.split(":", 1)[1]
+            if uid not in upstreams:
+                raise ConfigError(f"unknown upstream {uid!r} for route {r.name}")
+    try:
+        validate_tls_config(data, path)
+        validate_m15_limits(data)
+        validate_inference_require(data)
+        validate_rng_config_raise(data)
+        for warn in validate_leak_censor(data, path):
+            print(warn, file=sys.stderr)
+    except (M15ConfigError, RngConfigError, LeakConfigError, TlsConfigError) as e:
+        raise ConfigError(str(e)) from e
+    return HttpdConfig(
+        listen=listen,
+        host=host,
+        tls=tls_s,
+        max_body=max_body,
+        upstreams=upstreams,
+        routes=routes,
+        warnings=warnings,
+    )
 
 
 def explain(routes: list[CanonicalRoute]) -> str:
     lines = ["# canonical routes (desugared)"]
     for r in routes:
-        hdr = " ".join(f"{k}={v}" for k, v in sorted(r.headers.items()))
-        extra = f" [{hdr}]" if hdr else ""
+        parts: list[str] = [f"require={req}" for req in r.requires]
+        parts.extend(f"{k}={v}" for k, v in sorted(r.headers.items()))
+        extra = f" [{' '.join(parts)}]" if parts else ""
         lines.append(
             f"[[routes]]\n"
             f'name = "{r.name}"\n'
@@ -137,11 +338,13 @@ def main() -> int:
         print("usage: httpd_config.py <config.toml> [--explain]", file=sys.stderr)
         return 2
     path = Path(sys.argv[1])
-    routes = load_httpd_config(path)
+    cfg = load_httpd_full(path)
+    for w in cfg.warnings:
+        print(w, file=sys.stderr)
     if "--explain" in sys.argv:
-        print(explain(routes), end="")
+        print(explain(cfg.routes), end="")
     else:
-        print(f"OK: {len(routes)} routes")
+        print(f"OK: {len(cfg.routes)} routes")
     return 0
 
 

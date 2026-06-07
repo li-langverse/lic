@@ -1,0 +1,31 @@
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_studio_version() < 36:
+    return 1
+  if studio_shell_widget_tree_version() != 1:
+    return 2
+  var shell: StudioShellCompose = studio_compose_shell(1280.0, 720.0, 0, 1, 1)
+  if shell.widget_tree_active != 1:
+    return 3
+  if shell.widget_tree.region_count != shell_widget_tree_region_count():
+    return 4
+  if shell_widget_tree_all_regions_laid_out(shell.widget_tree_layout) != 1:
+    return 5
+  if shell.widget_tree.params.has_selection != 1:
+    return 6
+  var frame: PaintFrame = paint_frame_new()
+  shell_widget_tree_paint(shell.widget_tree, shell.widget_tree_layout, frame)
+  if frame.cmd_count < 8:
+    return 7
+  var run: StudioAgentRun = studio_agent_run_start(studio_agent_context_selection())
+  run = studio_agent_run_fail(run)
+  store_int_set_with_deps(shell.reactive.agent_task, run.task_state, shell.reactive.inv, shell.reactive.graph)
+  studio_reactive_flush_agent_from_run(shell, run)
+  if shell.widget_tree.params.agent_task_state != studio_agent_task_failed():
+    return 8
+  return 0

@@ -1,0 +1,6 @@
+@cpu
+@parallel(disjoint
+@parallel(disjoint=disjoint_row)
+proc f() -allle(nisproc p() -> int
+  requires true
+  breakensuj

@@ -1,0 +1,7 @@
+@cpu
+@parallel(loint=disjoInt_row)
+pr ocf() -> int
+  requir[es true
+  ensures true
+  de=
+  return 0str

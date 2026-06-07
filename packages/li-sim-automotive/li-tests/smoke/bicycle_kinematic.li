@@ -1,0 +1,26 @@
+import sim.automotive
+
+def bicycle_kinematic_smoke() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var pose: AutomotivePose
+  automotive_pose_init(pose)
+  pose.speed_mps = 12.0
+  var wheelbase: float = sim_automotive_bicycle_wheelbase_default()
+  sim_automotive_pose_integrate(pose, 0.05, wheelbase, 0.05)
+  if pose.x_m <= 0.0:
+    return 1
+  if pose.y_m <= 0.0:
+    return 2
+  if pose.heading_rad <= 0.0:
+    return 3
+  return 0
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return bicycle_kinematic_smoke()

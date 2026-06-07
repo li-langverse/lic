@@ -1,0 +1,65 @@
+import gui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gui_version() < 8:
+    return 1
+  if gui_base_widgets_version() != 1:
+    return 2
+  if gui_widget_protocol_version() != 2:
+    return 3
+  var constraints: LayoutConstraints = layout_constraints_loose(320.0, 240.0)
+  var label: WidgetNode = widget_node_label(10.0)
+  var button: WidgetNode = widget_node_button(5.0)
+  var panel: WidgetNode = widget_node_panel(160.0, 120.0)
+  var input: WidgetNode = widget_node_text_input(8.0)
+  if label.kind != widget_kind_label():
+    return 4
+  if button.kind != widget_kind_button():
+    return 5
+  if panel.kind != widget_kind_panel():
+    return 6
+  if input.kind != widget_kind_text_input():
+    return 7
+  var input_size: WidgetSize = widget_measure(input, constraints)
+  if input_size.w < gui_widget_text_input_min_w_px():
+    return 8
+  if input_size.h < gui_widget_text_input_min_h_px():
+    return 9
+  var input_layout: WidgetLayoutResult = widget_layout(input, constraints, 24.0, 24.0)
+  var frame: PaintFrame = paint_frame_new()
+  var before: int = frame.cmd_count
+  widget_paint(label, frame, widget_layout(label, constraints, 0.0, 0.0))
+  widget_paint(button, frame, widget_layout(button, constraints, 0.0, 32.0))
+  widget_paint(panel, frame, widget_layout(panel, constraints, 0.0, 64.0))
+  widget_paint(input, frame, input_layout)
+  if frame.cmd_count <= before + 3:
+    return 10
+  var click: WidgetEvent
+  click.kind = widget_event_pointer_down()
+  click.x = input_layout.bounds.x + 6.0
+  click.y = input_layout.bounds.y + 6.0
+  var input_click: WidgetEventResult = widget_handle_event(input, input_layout, click)
+  if input_click.handled != 1:
+    return 11
+  if input_click.wants_focus != 1:
+    return 12
+  if widget_node_accepts_focus(input) != 1:
+    return 13
+  var scroll_child: WidgetNode = widget_node_label(24.0)
+  var area: ScrollAreaWidget = scroll_area_new(200.0, 100.0, 12.0, 8.0, scroll_child)
+  var area_layout: ScrollAreaLayoutResult = scroll_area_layout(area, constraints, 8.0, 120.0)
+  if area_layout.inner.scroll_x != 12.0:
+    return 14
+  if area_layout.inner.child_layout.bounds.x != -4.0:
+    return 15
+  if scroll_area_hit_test(area_layout, area_layout.bounds.x + 4.0, area_layout.bounds.y + 4.0) != 1:
+    return 16
+  var area_before: int = frame.cmd_count
+  scroll_area_paint(area, frame, area_layout)
+  if frame.cmd_count <= area_before:
+    return 17
+  return 0

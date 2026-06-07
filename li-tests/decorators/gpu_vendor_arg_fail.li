@@ -1,0 +1,14 @@
+@gpu(vendor="cuda")
+def vendor_specific_gpu() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return vendor_specific_gpu()

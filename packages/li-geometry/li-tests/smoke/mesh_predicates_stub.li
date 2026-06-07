@@ -1,0 +1,14 @@
+import geometry
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if geom_orient3d_class_positive() != 1:
+    return 1
+  if geom_orient3d_class_negative() != 2:
+    return 2
+  if geom_mesh_watertight_stub() != 1:
+    return 3
+  return 0

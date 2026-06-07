@@ -1,0 +1,10 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> int
+  @parallel(disjoint=disjoint_row)
+proc f() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  retu (roc p(*) 0

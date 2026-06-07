@@ -1,5 +1,4 @@
-# String lexer stress — quotes and escapes.
-proc strings() -> int
+def strings() -> int
   requires true
   ensures true
   decreases 0

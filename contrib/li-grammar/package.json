@@ -1,0 +1,34 @@
+{
+  "name": "li-lang",
+  "displayName": "Li Language",
+  "description": "Syntax highlighting for Li (.li). Grammar source for a future GitHub Linguist contribution (WP6); not vendored upstream yet.",
+  "version": "0.1.0",
+  "publisher": "li-langverse",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/li-langverse/lic.git",
+    "directory": "contrib/li-grammar"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": ["Programming Languages"],
+  "contributes": {
+    "languages": [
+      {
+        "id": "li",
+        "aliases": ["Li", "li"],
+        "extensions": [".li"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "li",
+        "scopeName": "source.li",
+        "path": "./syntaxes/li.tmLanguage.json"
+      }
+    ]
+  }
+}

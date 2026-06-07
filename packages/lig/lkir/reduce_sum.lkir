@@ -1,2 +1,0 @@
-; lig.kernel.reduce_sum_f32
-; axis=0 contiguous=f32 validity_ref=cpu

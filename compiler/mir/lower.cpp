@@ -61,7 +61,7 @@ bool mir_decorator_disjoint_proven(const Decorator& d) {
     if (arg.name != "disjoint" || !arg.value) continue;
     const Expr& e = *arg.value;
     if (e.kind == Expr::Kind::Ident && (e.ident == "disjoint_elem" || e.ident == "disjoint_slice")) return true;
-    if (e.kind == Expr::Kind::Call && (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice")) return true;
+    if (e.kind == Expr::Kind::Call && (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice" || e.ident == "disjoint_lookup" || e.ident == "disjoint_mod")) return true;
   }
   return false;
 }

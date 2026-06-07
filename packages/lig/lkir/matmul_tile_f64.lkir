@@ -1,2 +1,0 @@
-; lig.kernel.matmul_f64
-; tile_m=4 tile_n=4 tile_k=4 dtype=f64 validity_ref=cpu

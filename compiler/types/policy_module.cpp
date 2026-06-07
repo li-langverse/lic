@@ -10,14 +10,16 @@ namespace {
 bool expr_is_disjoint_builtin_call(const Expr& e) {
   return e.kind == Expr::Kind::Call &&
          (e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
-          e.ident == "disjoint_slice");
+          e.ident == "disjoint_slice" || e.ident == "disjoint_lookup" ||
+          e.ident == "disjoint_mod");
 }
 
 bool expr_references_disjoint(const Expr& e) {
   switch (e.kind) {
     case Expr::Kind::Ident:
       return e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
-             e.ident == "disjoint_slice";
+             e.ident == "disjoint_slice" || e.ident == "disjoint_lookup" ||
+             e.ident == "disjoint_mod";
     case Expr::Kind::Call:
       return expr_is_disjoint_builtin_call(e);
     case Expr::Kind::BinOp:

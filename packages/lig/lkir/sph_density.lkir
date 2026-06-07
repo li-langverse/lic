@@ -1,2 +1,0 @@
-; lig.kernel.sph_density_f32
-; kernel=poly6 tile=64 validity_ref=cpu

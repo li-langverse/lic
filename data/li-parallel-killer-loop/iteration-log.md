@@ -200,3 +200,12 @@
 - **Tests:** `li_par_mod_dependent_index_smoke.sh` wired into proofs gate; proof-db `P-par-mod-dependent-index`
 - **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS**; `check-li-parallel-full-suite.sh` **PASS**
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (compiler-side injective lookup/mod discharge + fully general dependent subscripts open)
+
+## 2026-06-07 — WP-PAR-79 lig removal + G-par compiler lookup/mod discharge (code_implementer-1780819756839)
+
+- **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required
+- **Killer gate blocker fix:** remove duplicate `packages/lig` (main merge reintroduced); drop `"lig"` from `packages/li.toml` — `check-chip-package-boundaries.sh` **PASS**
+- **G-par compiler slice:** `disjoint_lookup` / `disjoint_mod` prelude builtins + `index_bound_lookup_slot_spec` / `index_bound_mod_slot_spec` + policy witnesses in `Discharge.lean`; AutoVC emission in `vc_emit_lean.cpp`
+- **Tests:** `parallel_disjoint_lookup_closed.li`, `parallel_disjoint_mod_closed.li`, `li_par_lookup_mod_compiler_discharge_smoke.sh` wired into proofs gate
+- **Gates (local):** `check-chip-package-boundaries.sh` **PASS**; `check-li-parallel-proofs-gate.sh` **PASS**; `check-li-parallel-full-suite.sh` **PASS** (~105s)
+- **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (injective lookup/mod discharge on non-identity permutations + fully general dependent subscripts open)

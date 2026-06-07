@@ -221,6 +221,26 @@ def row_ok_spec {α : Type} {n m : Nat} (i : Int) (_grid : LiArray (LiArray α m
 theorem row_ok_policy_witness {α : Type} {n m : Nat} (i : Int) (grid : LiArray (LiArray α m) n) :
     row_ok_spec i grid := trivial
 
+/-- Index-bound slice (7d-c): lookup/gather dependent subscript path requires in-range slot. -/
+def index_bound_lookup_slot_spec {α : Type} {n : Nat} (i slot : Int) (_buf : LiArray α n) : Prop :=
+  (0 : Int) ≤ i ∧ (0 : Int) ≤ slot ∧ slot < (n : Int)
+
+def disjoint_lookup_spec {α : Type} {n : Nat} (i slot : Int) (buf : LiArray α n) : Prop :=
+  index_bound_lookup_slot_spec i slot buf
+
+theorem disjoint_lookup_policy_witness {α : Type} {n : Nat} (i slot : Int) (buf : LiArray α n)
+    (h_range : index_bound_lookup_slot_spec i slot buf) : disjoint_lookup_spec i slot buf := h_range
+
+/-- Index-bound slice (7d-c): modulo/cyclic dependent subscript path requires in-range slot. -/
+def index_bound_mod_slot_spec {α : Type} {n : Nat} (i period : Int) (_buf : LiArray α n) : Prop :=
+  (1 : Int) ≤ period ∧ (0 : Int) ≤ i ∧ (0 : Int) ≤ (i % period) ∧ (i % period) < (n : Int)
+
+def disjoint_mod_spec {α : Type} {n : Nat} (i period : Int) (buf : LiArray α n) : Prop :=
+  index_bound_mod_slot_spec i period buf
+
+theorem disjoint_mod_policy_witness {α : Type} {n : Nat} (i period : Int) (buf : LiArray α n)
+    (h_range : index_bound_mod_slot_spec i period buf) : disjoint_mod_spec i period buf := h_range
+
 def disjoint_par_policy_spec : Prop := True
 
 theorem disjoint_par_policy_witness : disjoint_par_policy_spec := trivial

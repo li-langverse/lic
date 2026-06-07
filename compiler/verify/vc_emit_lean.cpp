@@ -282,6 +282,19 @@ std::optional<std::string> expr_to_lean(const Expr& e, const VcCtx& ctx) {
           }
         }
       }
+      if (e.args.size() == 3 && e.args[0] && e.args[1] && e.args[2]) {
+        const auto a0 = expr_to_lean(*e.args[0], ctx);
+        const auto a1 = expr_to_lean(*e.args[1], ctx);
+        const auto a2 = expr_to_lean(*e.args[2], ctx);
+        if (a0 && a1 && a2) {
+          if (e.ident == "disjoint_lookup") {
+            return "Li.Discharge.disjoint_lookup_spec " + *a0 + " " + *a1 + " " + *a2;
+          }
+          if (e.ident == "disjoint_mod") {
+            return "Li.Discharge.disjoint_mod_spec " + *a0 + " " + *a1 + " " + *a2;
+          }
+        }
+      }
       return std::nullopt;
     }
     case Expr::Kind::Index: {
@@ -349,12 +362,19 @@ const Expr* ensures_rhs_eq_result(const Expr& e) {
 }
 
 std::optional<std::string> par_disjoint_policy_witness(const Expr& e) {
-  if (e.kind != Expr::Kind::Call || e.args.size() != 2) {
+  if (e.kind != Expr::Kind::Call) {
     return std::nullopt;
   }
-  if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice" ||
-      e.ident == "row_ok") {
-    return std::string{e.ident};
+  if (e.args.size() == 2) {
+    if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice" ||
+        e.ident == "row_ok") {
+      return std::string{e.ident};
+    }
+  }
+  if (e.args.size() == 3) {
+    if (e.ident == "disjoint_lookup" || e.ident == "disjoint_mod") {
+      return std::string{e.ident};
+    }
   }
   return std::nullopt;
 }
@@ -369,6 +389,12 @@ std::optional<std::string> par_disjoint_discharge_ref(const Expr& e) {
   }
   if (*tag == "disjoint_row") {
     return "Li.Discharge.disjoint_row_policy_witness";
+  }
+  if (*tag == "disjoint_lookup") {
+    return "Li.Discharge.disjoint_lookup_policy_witness";
+  }
+  if (*tag == "disjoint_mod") {
+    return "Li.Discharge.disjoint_mod_policy_witness";
   }
   if (*tag == "disjoint_slice") {
     return "Li.Discharge.disjoint_slice_policy_witness";
@@ -386,7 +412,36 @@ struct ParLoopBounds {
 
 bool par_disjoint_index_bound_policy(const Expr& e) {
   const auto tag = par_disjoint_policy_witness(e);
-  return tag && (*tag == "disjoint_elem" || *tag == "disjoint_row");
+  return tag && (*tag == "disjoint_elem" || *tag == "disjoint_row" || *tag == "disjoint_lookup" ||
+                 *tag == "disjoint_mod");
+}
+
+void emit_par_policy_call_args_to_lean(std::ostream& out, const Expr& call) {
+  const VcCtx par_ctx;
+  for (const auto& arg : call.args) {
+    if (!arg) {
+      continue;
+    }
+    if (const auto lean = expr_to_lean(*arg, par_ctx)) {
+      out << ' ' << *lean;
+    }
+  }
+}
+
+const char* par_disjoint_index_bound_spec(const std::string& tag) {
+  if (tag == "disjoint_elem") {
+    return "index_bound_elem_spec";
+  }
+  if (tag == "disjoint_row") {
+    return "index_bound_row_spec";
+  }
+  if (tag == "disjoint_lookup") {
+    return "index_bound_lookup_slot_spec";
+  }
+  if (tag == "disjoint_mod") {
+    return "index_bound_mod_slot_spec";
+  }
+  return "index_bound_elem_spec";
 }
 
 void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
@@ -734,21 +789,8 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       emit_formals(c.kind != ContractKind::Requires);
     }
     if (index_bound && index_bound_tag) {
-      const char* bound_spec =
-          *index_bound_tag == "disjoint_elem" ? "index_bound_elem_spec" : "index_bound_row_spec";
-      out << " (h_range : Li.Discharge." << bound_spec << ' ';
-      if (c.expr->args[0]) {
-        const VcCtx par_ctx;
-        if (const auto a0 = expr_to_lean(*c.expr->args[0], par_ctx)) {
-          out << *a0;
-        }
-      }
-      if (c.expr->args[1]) {
-        const VcCtx par_ctx;
-        if (const auto a1 = expr_to_lean(*c.expr->args[1], par_ctx)) {
-          out << ' ' << *a1;
-        }
-      }
+      out << " (h_range : Li.Discharge." << par_disjoint_index_bound_spec(*index_bound_tag) << ' ';
+      emit_par_policy_call_args_to_lean(out, *c.expr);
       out << ')';
     }
     out << " : " << name;
@@ -762,18 +804,7 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
     if (auto discharge = par_disjoint_discharge_ref(*c.expr)) {
       out << " := " << *discharge;
-      if (c.expr->args[0]) {
-        const VcCtx par_ctx;
-        if (const auto a0 = expr_to_lean(*c.expr->args[0], par_ctx)) {
-          out << ' ' << *a0;
-        }
-      }
-      if (c.expr->args[1]) {
-        const VcCtx par_ctx;
-        if (const auto a1 = expr_to_lean(*c.expr->args[1], par_ctx)) {
-          out << ' ' << *a1;
-        }
-      }
+      emit_par_policy_call_args_to_lean(out, *c.expr);
       if (index_bound) {
         out << " h_range";
       }

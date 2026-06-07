@@ -1080,6 +1080,16 @@ struct Ctx {
           (void)type_of(*e.args[1]);
           return make_bool();
         }
+        if (e.ident == "disjoint_lookup" || e.ident == "disjoint_mod") {
+          if (e.args.size() != 3) {
+            diags.error(loc(e.span), e.ident + " expects three arguments (index, slot_or_period, buffer)");
+            return make_bool();
+          }
+          (void)type_of(*e.args[0]);
+          (void)type_of(*e.args[1]);
+          (void)type_of(*e.args[2]);
+          return make_bool();
+        }
         const auto pit = procs.find(e.ident);
         if (pit != procs.end()) {
           const ProcDecl& callee = *pit->second;
@@ -1304,7 +1314,8 @@ struct Ctx {
         call.ident == "dot" ||
         call.ident == "norm" || call.ident == "axpy" ||
         call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||
-        call.ident == "disjoint_slice" || call.ident == "row_ok" ||
+        call.ident == "disjoint_slice" || call.ident == "disjoint_lookup" ||
+        call.ident == "disjoint_mod" || call.ident == "row_ok" ||
         call.ident == "__li_simd_splat_f64" || call.ident == "__li_simd_mul_f64" ||
         call.ident == "__li_simd_add_f64" || call.ident == "__li_horiz_sum_f64") {
       return;

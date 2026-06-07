@@ -1,2 +1,0 @@
-; lig.kernel.mlp_forward_f32
-; tile_m=16 tile_n=16 activation=relu validity_ref=cpu

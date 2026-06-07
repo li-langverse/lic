@@ -1,2 +1,0 @@
-; lig.kernel.dot_f32
-; warp_width=32 vector=f32 validity_ref=cpu

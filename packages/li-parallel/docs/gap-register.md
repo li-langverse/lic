@@ -52,7 +52,7 @@ Open work packages blocking killer gate completion. Updated 2026-06-07.
 
 | Gap | Status |
 |-----|--------|
-| G-par | Partial — **closed slice:** `index_bound_elem_spec` / `index_bound_row_spec` refine `disjoint_*_spec`; `index_bound_grid_cell_spec` / `index_bound_grid_linear_spec` refine dependent (row,col) indices; `index_bound_affine_spec` + `affine_index_injective` for stride*i+offset; `index_bound_blocked_affine_spec` + `blocked_affine_index_injective` for (i/block)*block_stride + (i%block); `index_bound_lookup_spec` + `lookup_injective_on_tiles_spec` for gather/permutation `lookup[i]`; `index_bound_mod_spec` + `mod_injective_on_tiles_spec` for cyclic `i % period` when tiles ≤ period; `par_disjoint_*_index_bound` + AutoVC `h_range` discharge |
+| G-par | Partial — **closed slice:** `index_bound_elem_spec` / `index_bound_row_spec` refine `disjoint_*_spec`; `index_bound_grid_cell_spec` / `index_bound_grid_linear_spec` refine dependent (row,col) indices; `index_bound_affine_spec` + `affine_index_injective` for stride*i+offset; `index_bound_blocked_affine_spec` + `blocked_affine_index_injective` for (i/block)*block_stride + (i%block); `index_bound_lookup_spec` + `lookup_injective_on_tiles_spec` for gather/permutation `lookup[i]`; `index_bound_mod_spec` + `mod_injective_on_tiles_spec` for cyclic `i % period` when tiles ≤ period; `par_disjoint_*_index_bound` + AutoVC `h_range` discharge; **closed slice:** compiler `disjoint_lookup` / `disjoint_mod` policy → `index_bound_lookup_slot_spec` / `index_bound_mod_slot_spec` + policy witnesses in AutoVC |
 | G-par-dist | Closed slice |
 | G-hetero | Closed slice |
 | P-par iteration independence (7d-c) | **Closed slice** — `par_iteration_independent_tile` + `iteration_independent_tile_spec` |

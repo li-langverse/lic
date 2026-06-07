@@ -11,3 +11,12 @@ export LIC_ROOT=/path/to/lic
 ```
 
 See `../benchmarks/docs/ecosystem/benchmarks-single-repo-layout.md`.
+
+## Social / X-ready plots
+
+Run from the lic checkout (requires [li-langverse/benchmarks](https://github.com/li-langverse/benchmarks) harness — auto-cloned to `.cache/li-benchmarks` when missing):
+
+```bash
+./scripts/plot_shareables.sh
+# → benchmarks/results/share/*.png  (16:9 dark theme; see docs/superpowers/plans/2026-05-14-plots-and-social.md)
+```

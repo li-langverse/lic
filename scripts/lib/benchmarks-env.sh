@@ -36,37 +36,75 @@ _benchmarks_env_lic_root() {
   echo "$here"
 }
 
-if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
-  _lic="$(_benchmarks_env_lic_root)"
-  # Prefer full harness checkouts (CI siblings, org roots) before in-repo lite tree.
+_benchmarks_env_find_harness_root() {
+  local _lic="$1"
+  local _c
   for _c in \
     "${LI_LANGVERSE_ROOT:-}/benchmarks" \
     "${LANGVERSE:-}/benchmarks" \
     "$_lic/../benchmarks" \
     "$_lic/../li-langverse/benchmarks" \
+    "$_lic/.cache/li-benchmarks" \
     "$_lic/benchmarks"
   do
     if [[ -f "$_c/harness/bench.py" ]]; then
+      echo "$(cd "$_c" && pwd)"
+      return 0
+    fi
+  done
+  return 1
+}
+
+_benchmarks_env_populate_cache() {
+  local _lic="$1"
+  local _cache="$_lic/.cache/li-benchmarks"
+  if [[ ! -f "$_cache/harness/bench.py" ]]; then
+    mkdir -p "$(dirname "$_cache")"
+    if [[ -d "$_cache/.git" ]]; then
+      (cd "$_cache" && git fetch --depth 1 origin main >/dev/null 2>&1 || true)
+      (cd "$_cache" && git checkout -f origin/main >/dev/null 2>&1 || true)
+    else
+      git clone --depth 1 https://github.com/li-langverse/benchmarks.git "$_cache" >/dev/null 2>&1 || true
+    fi
+  fi
+  if [[ -f "$_cache/harness/bench.py" ]]; then
+    echo "$(cd "$_cache" && pwd)"
+    return 0
+  fi
+  return 1
+}
+
+if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
+  _lic="$(_benchmarks_env_lic_root)"
+  BENCHMARKS_ROOT="$(_benchmarks_env_find_harness_root "$_lic" || true)"
+fi
+
+if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
+  _lic="$(_benchmarks_env_lic_root)"
+  BENCHMARKS_ROOT="$(_benchmarks_env_populate_cache "$_lic" || true)"
+fi
+
+# Upgrade lite in-repo tree when a full harness exists elsewhere (split-repo layout).
+if [[ -n "${BENCHMARKS_ROOT:-}" && ! -f "${BENCHMARKS_ROOT}/harness/bench.py" ]]; then
+  _lic="$(_benchmarks_env_lic_root)"
+  _full="$(_benchmarks_env_find_harness_root "$_lic" || true)"
+  if [[ -z "$_full" ]]; then
+    _full="$(_benchmarks_env_populate_cache "$_lic" || true)"
+  fi
+  if [[ -n "$_full" ]]; then
+    BENCHMARKS_ROOT="$_full"
+  fi
+fi
+
+if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
+  _lic="$(_benchmarks_env_lic_root)"
+  # Lite fallback: vendored results/competitive only (no tier-0 run-bench.sh).
+  for _c in "$_lic/benchmarks"; do
+    if _benchmarks_env_lite_root "$_c"; then
       BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
       break
     fi
   done
-  # Local cache (full harness) before in-repo lite tree.
-  if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
-    _cache="$_lic/.cache/li-benchmarks"
-    if [[ -f "$_cache/harness/bench.py" ]]; then
-      BENCHMARKS_ROOT="$(cd "$_cache" && pwd)"
-    fi
-  fi
-  # Lite fallback: vendored results/competitive only (no tier-0 run-bench.sh).
-  if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
-    for _c in "$_lic/benchmarks"; do
-      if _benchmarks_env_lite_root "$_c"; then
-        BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
-        break
-      fi
-    done
-  fi
 fi
 
 # Fallback: walk up parent dirs (handles isolated clones under data/workspaces/...).
@@ -82,24 +120,6 @@ if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
     done
     _p="$(cd "$_p/.." && pwd)"
   done
-fi
-
-# Last resort: populate a local cache (useful for CI runners without sibling checkouts).
-if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
-  _lic="$(_benchmarks_env_lic_root)"
-  _cache="$_lic/.cache/li-benchmarks"
-  if [[ ! -f "$_cache/harness/bench.py" ]]; then
-    mkdir -p "$(dirname "$_cache")"
-    if [[ -d "$_cache/.git" ]]; then
-      (cd "$_cache" && git fetch --depth 1 origin main >/dev/null 2>&1 || true)
-      (cd "$_cache" && git checkout -f origin/main >/dev/null 2>&1 || true)
-    else
-      git clone --depth 1 https://github.com/li-langverse/benchmarks.git "$_cache" >/dev/null 2>&1 || true
-    fi
-  fi
-  if [[ -f "$_cache/harness/bench.py" ]]; then
-    BENCHMARKS_ROOT="$(cd "$_cache" && pwd)"
-  fi
 fi
 
 if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
@@ -124,7 +144,15 @@ if [[ -z "${HARNESS:-}" ]] && [[ -d "$BENCHMARKS_ROOT/harness" ]]; then
   HARNESS="$BENCHMARKS_ROOT/harness"
 fi
 export HARNESS="${HARNESS:-}"
-export BENCHMARKS_RESULTS="${BENCHMARKS_RESULTS:-$BENCHMARKS_ROOT/results}"
+_lic_results="$(_benchmarks_env_lic_root)/benchmarks/results"
+if [[ -z "${BENCHMARKS_RESULTS:-}" ]]; then
+  if [[ -d "$_lic_results" ]]; then
+    BENCHMARKS_RESULTS="$(cd "$_lic_results" && pwd)"
+  else
+    BENCHMARKS_RESULTS="$BENCHMARKS_ROOT/results"
+  fi
+fi
+export BENCHMARKS_RESULTS
 
 if [[ -f "${BENCHMARKS_ROOT}/harness/bench.py" ]]; then
   export HARNESS="${HARNESS:-$BENCHMARKS_ROOT/harness}"

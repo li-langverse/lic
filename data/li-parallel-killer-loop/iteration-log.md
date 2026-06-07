@@ -210,6 +210,15 @@
 - **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS**; `check-li-parallel-full-suite.sh` **PASS**
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (arbitrary permutation tables + fully general dependent subscripts open)
 
+## 2026-06-07 — G-par cyclic rotate lookup h_inj discharge (code_implementer-1780823396863)
+
+- **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required
+- **G-par proof slice:** `rotate_lookup_slot` + `rotate_lookup_injective_on_tiles` in `Discharge.lean`; `par_rotate_lookup_injective_on_tiles` in `parallel/proof.li`
+- **Compiler slice:** cyclic rotate `disjoint_lookup(j, (j+k)%n, buf)` emits AutoVC `h_inj` via extended `par_disjoint_lookup_injective_formal` in `vc_emit_lean.cpp`
+- **Tests:** `parallel_disjoint_lookup_rotate_closed.li`; `li_par_lookup_mod_compiler_discharge_smoke.sh` extended; proof-db `P-par-lookup-rotate-perm`
+- **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS**; `check-li-parallel-full-suite.sh` **PASS**
+- **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (arbitrary compile-time lookup tables + fully general dependent subscripts open)
+
 ## 2026-06-07 — WP-PAR-79 lig removal + G-par compiler lookup/mod discharge (code_implementer-1780819756839)
 
 - **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required

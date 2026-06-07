@@ -488,6 +488,32 @@ theorem reverse_lookup_injective_on_tiles (n : Nat) (_hn : 0 < n) :
   have h2 : (n - 1 - j) + j = n - 1 := Nat.sub_add_cancel hj_le
   exact hne (Nat.add_left_cancel (h1.trans h2.symm))
 
+/-- Cyclic rotate gather: slot `(i + k) % n` for `i < n` (non-identity lookup slice). -/
+def rotate_lookup_slot (n k i : Nat) : Nat := (i + k) % n
+
+theorem rotate_lookup_injective_on_tiles (n k : Nat) (_hn : 0 < n) :
+    lookup_injective_on_tiles_spec (rotate_lookup_slot n k) n := by
+  intro i j hi hj hne heq
+  dsimp only [lookup_index, rotate_lookup_slot] at heq
+  apply hne
+  rcases Nat.lt_or_gt_of_ne hne with hlt | hgt
+  · have hsub : (j + k) - (i + k) = j - i := Nat.add_sub_add_right j k i
+    have hmod : (j - i) % n = 0 := by
+      rw [← hsub]
+      exact Nat.sub_mod_eq_zero_of_mod_eq (Eq.symm heq)
+    have hj_pos : 0 < j - i := Nat.sub_pos_of_lt hlt
+    have hj_bound : j - i < n := Nat.sub_lt_of_lt hj
+    have hn_le : n ≤ j - i := Nat.le_of_dvd hj_pos (Nat.dvd_of_mod_eq_zero hmod)
+    exact absurd hj_bound (Nat.not_lt_of_le hn_le)
+  · have hsub : (i + k) - (j + k) = i - j := Nat.add_sub_add_right i k j
+    have hmod : (i - j) % n = 0 := by
+      rw [← hsub]
+      exact Nat.sub_mod_eq_zero_of_mod_eq heq
+    have hi_pos : 0 < i - j := Nat.sub_pos_of_lt hgt
+    have hi_bound : i - j < n := Nat.sub_lt_of_lt hi
+    have hn_le : n ≤ i - j := Nat.le_of_dvd hi_pos (Nat.dvd_of_mod_eq_zero hmod)
+    exact absurd hi_bound (Nat.not_lt_of_le hn_le)
+
 /-- **Lookup dependent aliasing (7d-c slice):** injective gather map → distinct Fin slots. -/
 theorem array_lookup_indices_disjoint {α : Type} {n tiles : Nat}
     (lookup : Nat → Nat) (_buf : LiArray α n) (i j : Nat)

@@ -473,6 +473,44 @@ std::optional<std::int64_t> par_lookup_reverse_tiles(const Expr& slot, const std
   return tiles;
 }
 
+struct ParLookupRotateParams {
+  std::int64_t tiles = 0;
+  std::int64_t shift = 0;
+};
+
+std::optional<std::int64_t> par_lookup_rotate_shift(const Expr& add, const std::string& loop_iter) {
+  if (add.kind != Expr::Kind::BinOp || add.bin_op != BinOp::Add || add.lhs == nullptr ||
+      add.rhs == nullptr) {
+    return std::nullopt;
+  }
+  if (add.lhs->kind == Expr::Kind::Ident && add.lhs->ident == loop_iter) {
+    return int_lit_value(*add.rhs);
+  }
+  if (add.rhs->kind == Expr::Kind::Ident && add.rhs->ident == loop_iter) {
+    return int_lit_value(*add.lhs);
+  }
+  return std::nullopt;
+}
+
+std::optional<ParLookupRotateParams> par_lookup_rotate_params(const Expr& slot,
+                                                              const std::string& loop_iter,
+                                                              const ParLoopBounds& bounds) {
+  const std::int64_t tiles = bounds.end - bounds.start;
+  if (tiles <= 0 || slot.kind != Expr::Kind::BinOp || slot.bin_op != BinOp::Mod ||
+      slot.lhs == nullptr || slot.rhs == nullptr) {
+    return std::nullopt;
+  }
+  const auto mod_n = int_lit_value(*slot.rhs);
+  if (!mod_n || *mod_n != tiles) {
+    return std::nullopt;
+  }
+  const auto shift = par_lookup_rotate_shift(*slot.lhs, loop_iter);
+  if (!shift) {
+    return std::nullopt;
+  }
+  return ParLookupRotateParams{tiles, *shift};
+}
+
 std::optional<std::string> par_disjoint_lookup_injective_formal(const Expr& call,
                                                                 const std::string& loop_iter,
                                                                 const ParLoopBounds& bounds) {
@@ -480,7 +518,13 @@ std::optional<std::string> par_disjoint_lookup_injective_formal(const Expr& call
       call.args[1] == nullptr) {
     return std::nullopt;
   }
-  const auto tiles = par_lookup_reverse_tiles(*call.args[1], loop_iter, bounds);
+  const Expr& slot = *call.args[1];
+  if (const auto rotate = par_lookup_rotate_params(slot, loop_iter, bounds)) {
+    return "Li.Discharge.lookup_injective_on_tiles_spec (Li.Discharge.rotate_lookup_slot " +
+           std::to_string(rotate->tiles) + " " + std::to_string(rotate->shift) + ") " +
+           std::to_string(rotate->tiles);
+  }
+  const auto tiles = par_lookup_reverse_tiles(slot, loop_iter, bounds);
   if (!tiles) {
     return std::nullopt;
   }

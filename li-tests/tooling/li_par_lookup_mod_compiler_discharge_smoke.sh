@@ -5,6 +5,7 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LIC="$("$ROOT/scripts/resolve-lic.sh")"
 LOOKUP="$ROOT/li-tests/contracts_verify/parallel_disjoint_lookup_closed.li"
 LOOKUP_PERM="$ROOT/li-tests/contracts_verify/parallel_disjoint_lookup_perm_closed.li"
+LOOKUP_ROTATE="$ROOT/li-tests/contracts_verify/parallel_disjoint_lookup_rotate_closed.li"
 MOD="$ROOT/li-tests/contracts_verify/parallel_disjoint_mod_closed.li"
 DISCHARGE="$ROOT/docs/semantics/Discharge.lean"
 VC_EMIT="$ROOT/compiler/verify/vc_emit_lean.cpp"
@@ -20,6 +21,8 @@ grep -q 'disjoint_lookup_policy_witness' "$DISCHARGE"
 grep -q 'disjoint_mod_policy_witness' "$DISCHARGE"
 grep -q 'reverse_lookup_slot' "$DISCHARGE"
 grep -q 'reverse_lookup_injective_on_tiles' "$DISCHARGE"
+grep -q 'rotate_lookup_slot' "$DISCHARGE"
+grep -q 'rotate_lookup_injective_on_tiles' "$DISCHARGE"
 grep -q 'disjoint_lookup' "$VC_EMIT"
 grep -q 'disjoint_mod' "$VC_EMIT"
 grep -q 'par_disjoint_lookup_injective_formal' "$VC_EMIT"
@@ -59,6 +62,16 @@ if ! grep -q 'Li.Discharge.disjoint_lookup_spec' "$AUTOVC"; then
 fi
 if ! grep -q 'h_inj : Li.Discharge.lookup_injective_on_tiles_spec (Li.Discharge.reverse_lookup_slot 8) 8' "$AUTOVC"; then
   echo "FAIL: non-identity disjoint_lookup requires should emit reverse_lookup h_inj" >&2
+  exit 1
+fi
+
+AUTOVC="$(build_autovc "$LOOKUP_ROTATE")"
+if ! grep -q 'Li.Discharge.disjoint_lookup_spec' "$AUTOVC"; then
+  echo "FAIL: rotate disjoint_lookup requires should emit Li.Discharge.disjoint_lookup_spec" >&2
+  exit 1
+fi
+if ! grep -q 'h_inj : Li.Discharge.lookup_injective_on_tiles_spec (Li.Discharge.rotate_lookup_slot 8 1) 8' "$AUTOVC"; then
+  echo "FAIL: rotate disjoint_lookup requires should emit rotate_lookup h_inj" >&2
   exit 1
 fi
 

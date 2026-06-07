@@ -16,6 +16,8 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
 
+**GPU offload (OpenMPTarget):** decorator → OpenMP `target` mapping is **docs-only** until [#34](https://github.com/li-langverse/lic/issues/34) lowering is `plan-approved`. See [OpenMPTarget offload rubric](../superpowers/specs/2026-06-07-li-openmptarget-offload-rubric.md) ([#116](https://github.com/li-langverse/lic/issues/116)).
+
 ## Resource knobs (`lic build`)
 
 These are **CLI flags**, not decorators:

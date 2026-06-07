@@ -67,6 +67,17 @@ def li_array_matmul_f32(a, af, b, bf, c) -> int  # delegates ml_tensor_matmul_64
 | E | Batch matmul API (explicit leading dim) | transformer forward |
 | F | BLAS/OpenBLAS backend hook | numpy parity row |
 
+### Phase F — BLAS parity path (shipped)
+
+- **Bench:** `scripts/bench-ph-ml-li-array-matmul-32.sh` compiles `array_matmul_32.li`, records run-only
+  `cpu_sec`, and compares against `ph-ml-competitor-numpy-matmul-32.json` (`ratio_vs_li = numpy/cpu`,
+  `li_over_numpy = cpu/numpy`, honest target ≤2.0×).
+- **Competitive row:** `li_array_matmul_4x4` in `scripts/bench-ph-ml-competitive.sh` and
+  `benchmarks/competitive/ph-ml.toml`; results in `benchmarks/results/ph-ml-competitive.json`.
+- **Next hook (post-pilot):** `array_matmul_f32` dispatches to OpenBLAS/cblas when
+  `LI_ARRAY_BLAS=1` and linked `libopenblas` is present; until then the LKIR logical 32×32 path
+  is the tier-3 CPU reference (no silent BLAS fallback).
+
 Run-only timing: bench scripts record `cpu_sec` on binary execution only; `build_cpu_sec` is separate (already in `bench-ph-ml-lkir-matmul.sh`).
 
 ## Migration from MlTensorDesc

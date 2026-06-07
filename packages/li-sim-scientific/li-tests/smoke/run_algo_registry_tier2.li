@@ -1,5 +1,6 @@
 import sim
 import sim.scientific
+import physics.particles
 
 def main() -> int
   requires true
@@ -7,16 +8,19 @@ def main() -> int
   decreases 0
 =
   var md_oracle: float = sim_scientific_oracle_checksum_md()
+  var neighbor_oracle: float = md_neighbor_cell_list_smoke_checksum()
   var heat_oracle: float = sim_scientific_oracle_checksum_heat()
   var md105: SimRunResult = run_algo(105, 1)
   if run_result_ok(md105) != 1:
     return 1
   if md105.algo_id != 105:
     return 2
-  if md105.checksum != md_oracle:
+  if md105.checksum != neighbor_oracle:
     return 3
   if md105.checksum == 1.001:
     return 4
+  if neighbor_oracle < 0.01:
+    return 41
   var heat210: SimRunResult = run_algo(210, 2)
   if run_result_ok(heat210) != 1:
     return 5

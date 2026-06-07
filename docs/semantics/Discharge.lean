@@ -435,6 +435,43 @@ theorem dependent_blocked_affine_array_aliasing {α : Type} {n : Nat}
   memory_disjoint_elems_witness (blocked_affine_index block_size block_stride i)
     (blocked_affine_index block_size block_stride j) n
 
+/-- Lookup-table dependent subscript (7d-c slice): arbitrary `lookup i` gather / permutation map. -/
+def lookup_index (lookup : Nat → Nat) (i : Nat) : Nat := lookup i
+
+/-- Index-bound slice: lookup slot stays below buffer length when iteration is in range. -/
+def index_bound_lookup_spec (lookup : Nat → Nat) (i tiles buf_n : Nat) : Prop :=
+  0 < tiles ∧ i < tiles ∧ lookup i < buf_n ∧ (∀ j, j < tiles → lookup j < buf_n)
+
+/-- Injectivity on iteration domain: distinct tiles → distinct lookup slots. -/
+def lookup_injective_on_tiles_spec (lookup : Nat → Nat) (tiles : Nat) : Prop :=
+  ∀ i j, i < tiles → j < tiles → i ≠ j → lookup i ≠ lookup j
+
+theorem lookup_index_in_range (lookup : Nat → Nat) (i _tiles buf_n : Nat)
+    (_ht : 0 < _tiles) (_hi : i < _tiles) (hb : lookup i < buf_n) :
+    lookup_index lookup i < buf_n := hb
+
+theorem lookup_index_injective (lookup : Nat → Nat) (i j tiles : Nat)
+    (hinj : lookup_injective_on_tiles_spec lookup tiles) (hi : i < tiles) (hj : j < tiles) (hne : i ≠ j) :
+    lookup_index lookup i ≠ lookup_index lookup j :=
+  hinj i j hi hj hne
+
+/-- **Lookup dependent aliasing (7d-c slice):** injective gather map → distinct Fin slots. -/
+theorem array_lookup_indices_disjoint {α : Type} {n tiles : Nat}
+    (lookup : Nat → Nat) (_buf : LiArray α n) (i j : Nat)
+    (hi_slot : lookup_index lookup i < n) (hj_slot : lookup_index lookup j < n)
+    (hinj : lookup_injective_on_tiles_spec lookup tiles) (hi : i < tiles) (hj : j < tiles) (hne : i ≠ j) :
+    (⟨lookup_index lookup i, hi_slot⟩ : Fin n) ≠ ⟨lookup_index lookup j, hj_slot⟩ := by
+  intro heq
+  have heq' : lookup_index lookup i = lookup_index lookup j :=
+    (Fin.mk.injEq _ _ _ _).mp heq
+  exact (hinj i j hi hj hne) heq'
+
+/-- **Dependent array aliasing (7d-c slice):** lookup gather slots compose under memory_disjoint_elems. -/
+theorem dependent_lookup_array_aliasing {α : Type} {n : Nat}
+    (lookup : Nat → Nat) (_buf : LiArray α n) (i j : Nat) :
+    memory_disjoint_elems_spec (lookup_index lookup i) (lookup_index lookup j) n :=
+  memory_disjoint_elems_witness (lookup_index lookup i) (lookup_index lookup j) n
+
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
 

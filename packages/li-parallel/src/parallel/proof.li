@@ -224,6 +224,42 @@ def par_dependent_blocked_affine_array_aliasing(i: int, j: int, block_size: int,
   var sj: int = (j / block_size) * block_stride + (j % block_size)
   return par_memory_disjoint_elems(si, sj, buf_n)
 
+# G-par — lookup-table dependent subscript index-bound: lookup_slot in range (7d-c slice).
+def par_disjoint_lookup_index_bound(i: int, lookup_slot: int, tiles: int, buf_n: int) -> bool
+  requires i >= 0
+  requires tiles > 0
+  requires buf_n > 0
+  ensures result == (i < tiles and lookup_slot >= 0 and lookup_slot < buf_n)
+  decreases tiles + buf_n + i
+=
+  if i >= tiles:
+    return false
+  return lookup_slot >= 0 and lookup_slot < buf_n
+
+# G-par — lookup injective on tiles: distinct iterations with injective gather map (7d-c slice).
+def par_lookup_injective_on_tiles(i: int, j: int, lookup_slot_i: int, lookup_slot_j: int, tiles: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires tiles > 0
+  ensures result == (i != j implies (i < tiles and j < tiles implies lookup_slot_i != lookup_slot_j))
+  decreases tiles + i + j
+=
+  if i == j:
+    return true
+  if i >= tiles or j >= tiles:
+    return true
+  return lookup_slot_i != lookup_slot_j
+
+# G-par — lookup-table dependent aliasing: gather slots compose under memory_disjoint_elems (7d-c slice).
+def par_dependent_lookup_array_aliasing(i: int, j: int, lookup_slot_i: int, lookup_slot_j: int, buf_n: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires buf_n > 0
+  ensures result == par_memory_disjoint_elems(lookup_slot_i, lookup_slot_j, buf_n)
+  decreases buf_n + i + j
+=
+  return par_memory_disjoint_elems(lookup_slot_i, lookup_slot_j, buf_n)
+
 # G-par — @parallel(disjoint=...) on def inherits tile disjoint policy for nested parallel for.
 def def_disjoint_inherit_tile(tile: int, tiles: int) -> bool
   requires tile >= 0

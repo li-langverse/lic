@@ -65,7 +65,13 @@ def li_array_matmul_f32(a, af, b, bf, c) -> int  # delegates ml_tensor_matmul_64
 | C | `@vectorized` blocked matmul on flat storage | tier-1 `matmul_blocked` |
 | D | LKIR/GPU tile dispatch from `ArrayDesc` | lig parity gate |
 | E | Batch matmul API (explicit leading dim) | transformer forward |
-| F | BLAS/OpenBLAS backend hook | numpy parity row |
+| F | BLAS/OpenBLAS backend hook | `ph-ml-li-array-matmul-32.json` + numpy parity row |
+
+### Phase F — BLAS parity path (implemented)
+
+1. **32×32 pilot** — `array_matmul_32.li` smoke calls `ml_matmul_lkir_logical_32` via `ArrayDesc`; bench script `bench-ph-ml-li-array-matmul-32.sh` records honest `ratio_vs_li = numpy_cpu_sec / li_cpu_sec` (target ≤2.0; currently pilot-tier, not parity).
+2. **OpenBLAS hook (deferred)** — `li_array_matmul_f32` will gain an optional `backend: int` flag (`0=ref`, `1=openblas`) once `li-ml` exports a stable `extern "C"` matmul symbol; gate stays run-only (`cpu_sec` excludes compile).
+3. **Competitive registry** — `benchmarks/competitive/ph-ml.toml` row `li_array_matmul_4x4` merges into `ph-ml-competitive.json` via `bench-ph-ml-competitive.sh`; NumPy 4×4 is the same-size BLAS-labeled reference.
 
 Run-only timing: bench scripts record `cpu_sec` on binary execution only; `build_cpu_sec` is separate (already in `bench-ph-ml-lkir-matmul.sh`).
 

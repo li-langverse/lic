@@ -1,6 +1,6 @@
 [meta]
 version = 1
-updated = "2026-05-31"
+updated = "2026-06-07"
 schema = "li_ph_ml_competitive_v1"
 
 [harness]
@@ -8,6 +8,15 @@ script = "scripts/bench-ph-ml-competitive.sh"
 output_competitive = "benchmarks/results/ph-ml-competitive.json"
 competitor_drivers = "scripts/bench-ph-ml-competitor-all.sh"
 requirements = "scripts/requirements-ph-ml-competitive.txt"
+
+[[row]]
+id = "li_array_matmul_4x4"
+kernel = "array.matmul"
+workload_class = "tier3_cpu"
+workload_sizes = [4, 4]
+workload_note = "4x4 f32 matmul via ArrayDesc -> ml_tensor_matmul_64; run-only cpu_sec"
+incumbent = "Li li-array ArrayDesc matmul"
+competitors = ["python_numpy"]
 
 [[row]]
 id = "matmul_lkir"

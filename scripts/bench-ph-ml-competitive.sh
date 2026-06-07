@@ -12,6 +12,7 @@ OUT="$BENCHMARKS_RESULTS/ph-ml-competitive.json"
 mkdir -p "$BENCHMARKS_RESULTS"
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul.sh"
 bash "$ROOT/scripts/bench-ph-ml-li-array-matmul.sh" || true
+bash "$ROOT/scripts/bench-ph-ml-li-array-matmul-32.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-16.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-32.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
@@ -89,6 +90,7 @@ def comp_row(src, li_sec, cid, inc, wc, note):
 
 matmul = load("ph-ml-lkir-matmul.json")
 liarray_matmul = load("ph-ml-li-array-matmul.json")
+liarray_matmul32 = load("ph-ml-li-array-matmul-32.json")
 matmul32 = load("ph-ml-lkir-matmul-32.json")
 mlp = load("ph-ml-mlp-forward.json")
 train = load("ph-ml-mlp-train-step.json")
@@ -104,6 +106,7 @@ mlp_wc = "tier3_cpu" if train.get("autograd_mode") in ("pilot_backward", "full_b
 li_mlp_sec = mlp.get("cpu_sec")
 
 numpy_m = load("ph-ml-competitor-numpy-matmul.json")
+numpy_m32 = load("ph-ml-competitor-numpy-matmul-32.json")
 cpp_openmp_m = load("ph-ml-competitor-cpp-openmp-matmul.json")
 rust_ndarray_m = load("ph-ml-competitor-rust-ndarray-matmul.json")
 pytorch_cpu_m = load("ph-ml-competitor-pytorch-cpu-matmul.json")
@@ -130,6 +133,27 @@ rows = [
         "li": li_row(liarray_matmul, "tier3_cpu" if liarray_matmul.get("executed") and liarray_matmul.get("validity_gate_pass") else "pilot"),
         "competitors": [
             comp_row(numpy_m, liarray_matmul.get("cpu_sec"), "python_numpy", "NumPy BLAS matmul 4x4", "blas_labeled", "same-size reference"),
+        ],
+    },
+    {
+        "id": "li_array_matmul_32x32",
+        "kernel": "array.matmul",
+        "workload_class": "tier3_cpu" if liarray_matmul32.get("executed") and liarray_matmul32.get("validity_gate_pass") else "pilot",
+        "workload_note": "32x32 logical f32 via ArrayDesc -> ml_matmul_cpu_logical_32; run-only 50x mean",
+        "executed": bool(liarray_matmul32.get("executed")),
+        "li": li_row(
+            liarray_matmul32,
+            "tier3_cpu" if liarray_matmul32.get("executed") and liarray_matmul32.get("validity_gate_pass") else "pilot",
+        ),
+        "competitors": [
+            comp_row(
+                numpy_m32,
+                liarray_matmul32.get("cpu_sec"),
+                "python_numpy",
+                "NumPy BLAS matmul 32x32",
+                "blas_labeled",
+                "same-size reference; 50-run mean",
+            ),
         ],
     },
     {

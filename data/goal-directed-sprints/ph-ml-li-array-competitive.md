@@ -47,6 +47,7 @@ pilot 4×4 tiles to BLAS parity — replacing ad-hoc `MlTensorDesc` over time.
 
 - Run-only timing in bench scripts (`cpu_sec` excludes compile; `build_cpu_sec` separate)
 - Wire li-array matmul into `ph-ml-competitive.json` row `li_array_matmul_4x4`
+- Wire Phase G 32×32 row `li_array_matmul_32x32` into competitive registry
 - Document BLAS parity path in RFC phase F
 
 ## Completion gate

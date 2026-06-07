@@ -1,6 +1,6 @@
 {
   "suite": "ph-ml-llm-logits-oracle",
-  "generated_at": "2026-06-05T04:18:16Z",
+  "generated_at": "2026-06-07T16:50:46Z",
   "workload_class": "tier3_cpu",
   "oracle_fixture": "fixtures/ph-ml-weights/model.safetensors",
   "prompt": "ab",

@@ -10,6 +10,24 @@ competitor_drivers = "scripts/bench-ph-ml-competitor-all.sh"
 requirements = "scripts/requirements-ph-ml-competitive.txt"
 
 [[row]]
+id = "li_array_matmul_4x4"
+kernel = "array.matmul"
+workload_class = "tier3_cpu"
+workload_sizes = [4, 4]
+workload_note = "4x4 f32 matmul via ArrayDesc -> ml_tensor_matmul_64; run-only cpu_sec"
+incumbent = "NumPy BLAS matmul 4x4"
+competitors = ["python_numpy"]
+
+[[row]]
+id = "li_array_matmul_32x32"
+kernel = "array.matmul"
+workload_class = "tier3_cpu"
+workload_sizes = [32, 32]
+workload_note = "32x32 logical f32 via ArrayDesc -> ml_matmul_cpu_logical_32; run-only 50x mean"
+incumbent = "NumPy BLAS matmul 32x32"
+competitors = ["python_numpy"]
+
+[[row]]
 id = "matmul_lkir"
 kernel = "ml.lkir.matmul_f32"
 workload_class = "pilot"

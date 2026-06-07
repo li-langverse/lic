@@ -1,6 +1,6 @@
 {
   "suite": "ph-ml-transformer-multilayer-parity",
-  "generated_at": "2026-06-06T18:41:17Z",
+  "generated_at": "2026-06-07T16:50:47Z",
   "workload_class": "tier3_cpu",
   "num_layers": 2,
   "token_ids": [

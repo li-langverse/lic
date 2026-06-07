@@ -65,9 +65,28 @@ def li_array_matmul_f32(a, af, b, bf, c) -> int  # delegates ml_tensor_matmul_64
 | C | `@vectorized` blocked matmul on flat storage | tier-1 `matmul_blocked` |
 | D | LKIR/GPU tile dispatch from `ArrayDesc` | lig parity gate |
 | E | Batch matmul API (explicit leading dim) | transformer forward |
-| F | BLAS/OpenBLAS backend hook | numpy parity row |
+| F | BLAS/OpenBLAS backend hook | `ph-ml-li-array-matmul-32.json` + numpy parity row |
 
 Run-only timing: bench scripts record `cpu_sec` on binary execution only; `build_cpu_sec` is separate (already in `bench-ph-ml-lkir-matmul.sh`).
+
+### Phase F — BLAS/OpenBLAS backend hook (implemented)
+
+Phase F adds an honest 32×32 competitive row without claiming BLAS parity yet:
+
+- **Bench:** `scripts/bench-ph-ml-li-array-matmul-32.sh` → `benchmarks/results/ph-ml-li-array-matmul-32.json`
+- **Smoke:** `packages/li-array/li-tests/smoke/array_matmul_32.li` (CPU logical 32×32 path)
+- **Metric:** `ratio_vs_li = numpy_cpu_sec / li_cpu_sec` (run-only; target ≤2.0 is aspirational until BLAS hook lands)
+- **Competitive rows:** `li_array_matmul_4x4` and `li_array_matmul_32x32` in `ph-ml-competitive.json`
+
+**BLAS parity path (future hook, not yet wired):**
+
+1. Add `li_array_matmul_blas_f32(a, af, b, bf, c) -> int` behind `LI_ARRAY_BLAS=openblas` env (run-only bench gate).
+2. Delegate to `cblas_sgemm` when `m,n,k` exceed pilot tile (≤16) or when `@vectorized` blocked path is slower than BLAS crossover.
+3. Keep `ArrayDesc` as the single shape/strides authority — BLAS receives row-major ld from `desc.ld`, never silent broadcast.
+4. Bench honesty: label row `workload_class = blas_labeled` when OpenBLAS is linked; record `framework_version` from `openblas_get_config()`.
+5. Exit gate: `ratio_vs_li ≤ 2.0` on 32×32 vs NumPy (same target as `bench-ph-ml-li-array-matmul-32.sh`).
+
+Until the hook ships, Phase F records honest `ratio_vs_li` with `ratio_target_met: false` when Li is slower — no stub bar.
 
 ## Migration from MlTensorDesc
 

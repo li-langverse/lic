@@ -41,3 +41,15 @@ suite = "smoke"
 file = "smoke/echem_sei_kmc_interface_smoke.li"
 outcome = "verify_ok"
 note = "WP-ECHEM-15 SEI growth kMC registry + 48-step NEB-barrier deposition oracle"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/fea_linear_elasticity_smoke.li"
+outcome = "verify_ok"
+note = "WP-SCI-03/05 FEA tier-2 registry dispatch (algo 511)"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/cfd_lid_driven_cavity_smoke.li"
+outcome = "verify_ok"
+note = "WP-SCI-03/06 CFD tier-2 registry dispatch (algo 521)"

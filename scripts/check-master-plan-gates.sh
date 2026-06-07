@@ -64,7 +64,9 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/li-tests/tooling/mir_vc_witness.sh" \
   "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
+"$ROOT/li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh"
 "$ROOT/scripts/check-mir-parallel-decorator.sh"
+"$ROOT/scripts/check-mir-parallel-for-disjoint.sh"
 "$ROOT/scripts/check-mir-gpu-decorator.sh"
 "$ROOT/scripts/check-mir-vectorized-decorator.sh"
 "$ROOT/scripts/check-li-toolchain.sh"

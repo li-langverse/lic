@@ -472,6 +472,48 @@ theorem dependent_lookup_array_aliasing {α : Type} {n : Nat}
     memory_disjoint_elems_spec (lookup_index lookup i) (lookup_index lookup j) n :=
   memory_disjoint_elems_witness (lookup_index lookup i) (lookup_index lookup j) n
 
+/-- Modulo/cyclic dependent subscript (7d-c slice): `i % period` for ring-buffer parallel loops. -/
+def mod_index (period i : Nat) : Nat := i % period
+
+/-- Index-bound slice: modulo slot stays below buffer length when tiles fit within period. -/
+def index_bound_mod_spec (period i tiles buf_n : Nat) : Prop :=
+  0 < period ∧ tiles ≤ period ∧ 0 < tiles ∧ i < tiles ∧ mod_index period i < buf_n ∧
+    (∀ j, j < tiles → mod_index period j < buf_n)
+
+/-- Injectivity on iteration domain when tiles ≤ period: distinct tiles → distinct modulo slots. -/
+def mod_injective_on_tiles_spec (period tiles : Nat) : Prop :=
+  tiles ≤ period → ∀ i j, i < tiles → j < tiles → i ≠ j → mod_index period i ≠ mod_index period j
+
+theorem mod_index_in_range (period i _tiles buf_n : Nat)
+    (_hp : 0 < period) (_hi : i < _tiles) (hb : mod_index period i < buf_n) :
+    mod_index period i < buf_n := hb
+
+theorem mod_index_injective (period i j tiles : Nat)
+    (ht : tiles ≤ period) (hi : i < tiles) (hj : j < tiles) (hne : i ≠ j) :
+    mod_index period i ≠ mod_index period j := by
+  unfold mod_index
+  have hi_lt : i < period := Nat.lt_of_lt_of_le hi ht
+  have hj_lt : j < period := Nat.lt_of_lt_of_le hj ht
+  rw [Nat.mod_eq_of_lt hi_lt, Nat.mod_eq_of_lt hj_lt]
+  exact hne
+
+/-- **Mod dependent aliasing (7d-c slice):** injective modulo map → distinct Fin slots. -/
+theorem array_mod_indices_disjoint {α : Type} {n tiles period : Nat}
+    (_buf : LiArray α n) (i j : Nat)
+    (hi_slot : mod_index period i < n) (hj_slot : mod_index period j < n)
+    (ht : tiles ≤ period) (hi : i < tiles) (hj : j < tiles) (hne : i ≠ j) :
+    (⟨mod_index period i, hi_slot⟩ : Fin n) ≠ ⟨mod_index period j, hj_slot⟩ := by
+  intro heq
+  have heq' : mod_index period i = mod_index period j :=
+    (Fin.mk.injEq _ _ _ _).mp heq
+  exact (mod_index_injective period i j tiles ht hi hj hne) heq'
+
+/-- **Dependent array aliasing (7d-c slice):** modulo slots compose under memory_disjoint_elems. -/
+theorem dependent_mod_array_aliasing {α : Type} {n : Nat}
+    (period : Nat) (_buf : LiArray α n) (i j : Nat) :
+    memory_disjoint_elems_spec (mod_index period i) (mod_index period j) n :=
+  memory_disjoint_elems_witness (mod_index period i) (mod_index period j) n
+
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
 

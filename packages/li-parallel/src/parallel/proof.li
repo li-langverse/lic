@@ -260,6 +260,47 @@ def par_dependent_lookup_array_aliasing(i: int, j: int, lookup_slot_i: int, look
 =
   return par_memory_disjoint_elems(lookup_slot_i, lookup_slot_j, buf_n)
 
+# G-par — modulo/cyclic dependent subscript index-bound: i % period in range (7d-c slice).
+def par_disjoint_mod_index_bound(period: int, i: int, tiles: int, buf_n: int) -> bool
+  requires period > 0
+  requires i >= 0
+  requires tiles > 0
+  requires tiles <= period
+  requires buf_n > 0
+  ensures result == (i < tiles and i % period >= 0 and i % period < buf_n)
+  decreases tiles + buf_n + i + period
+=
+  if i >= tiles:
+    return false
+  var slot: int = i % period
+  return slot >= 0 and slot < buf_n
+
+# G-par — modulo injective on tiles: distinct iterations with tiles ≤ period (7d-c slice).
+def par_mod_injective_on_tiles(i: int, j: int, mod_slot_i: int, mod_slot_j: int, tiles: int, period: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires period > 0
+  requires tiles > 0
+  requires tiles <= period
+  ensures result == (i != j implies (i < tiles and j < tiles implies mod_slot_i != mod_slot_j))
+  decreases tiles + i + j + period
+=
+  if i == j:
+    return true
+  if i >= tiles or j >= tiles:
+    return true
+  return mod_slot_i != mod_slot_j
+
+# G-par — modulo dependent aliasing: cyclic slots compose under memory_disjoint_elems (7d-c slice).
+def par_dependent_mod_array_aliasing(i: int, j: int, mod_slot_i: int, mod_slot_j: int, buf_n: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires buf_n > 0
+  ensures result == par_memory_disjoint_elems(mod_slot_i, mod_slot_j, buf_n)
+  decreases buf_n + i + j
+=
+  return par_memory_disjoint_elems(mod_slot_i, mod_slot_j, buf_n)
+
 # G-par — @parallel(disjoint=...) on def inherits tile disjoint policy for nested parallel for.
 def def_disjoint_inherit_tile(tile: int, tiles: int) -> bool
   requires tile >= 0

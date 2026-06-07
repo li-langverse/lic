@@ -49,6 +49,7 @@ for smoke in \
   li-tests/tooling/li_par_affine_dependent_index_smoke.sh \
   li-tests/tooling/li_par_blocked_affine_dependent_index_smoke.sh \
   li-tests/tooling/li_par_lookup_dependent_index_smoke.sh \
+  li-tests/tooling/li_par_mod_dependent_index_smoke.sh \
   li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh
 do
   chmod +x "$ROOT/$smoke"

@@ -9,7 +9,7 @@
 
 Reconcile tracker and gap-register drift after the **length-1 broadcast compile slice** landed (`broadcast_len1_add_float4.li`, `broadcast_len1_mul_int4.li`, `broadcast_len1_pow_int4.li`, `broadcast_invalid_len2_vs_len4.li`). Close stale **#462** (which claimed zero `math_linalg/` broadcast tests), update **G-math** to cite compile-only evidence, and keep **PH-2i** honestly **partial** until Lean witness and full NumPy-rank broadcast land on `main`.
 
-## Status refresh (2026-06-06)
+## Status refresh (2026-06-07)
 
 | Tracker | Issue state | `main` reality |
 |---------|-------------|----------------|
@@ -17,6 +17,7 @@ Reconcile tracker and gap-register drift after the **length-1 broadcast compile 
 | **#574** (Lean witness) | Closed (`already_implemented`) | **PR [#900](https://github.com/li-langverse/lic/pull/900) still open** (`merge-approved`, CI green) — `Discharge.lean` has no `broadcast_len1` on `main`; gap script still enforces absence |
 | **#526** (NumPy-rank defer) | Closed (`already_implemented`) | **PR [#909](https://github.com/li-langverse/lic/pull/909) still open** — reject gate + `compile_fail` seeds not on `main` yet |
 | **#618** (this plan) | Open, `has-plan`, `plan-approved-requested` | Draft plan PR **#866**; docs implementation blocked until **`plan-approved`** |
+| **G-math register** | `provability-gaps.md` Last updated **2026-05-30** | Summary + gap-register rows still omit `broadcast_len1_*` compile slice — sub-phase **B** |
 
 ## Non-goals
 

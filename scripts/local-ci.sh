@@ -13,6 +13,8 @@
 # Exits non-zero on the same failures as scripts/ci.sh.
 set -euo pipefail
 
+LOCAL_CI_START=$SECONDS
+
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
@@ -152,6 +154,7 @@ if [[ "$USE_DOCKER" -eq 1 ]]; then
   echo "==> local-ci ($CTR / $LI_CI_DOCKER_IMAGE)"
   run_docker_ci
   echo "local-ci: ok (docker)"
+  echo "local-ci: wall_s=$((SECONDS - LOCAL_CI_START))"
   exit 0
 fi
 
@@ -167,3 +170,4 @@ if [[ "$RUN_MEMORY" -eq 1 ]]; then
   "$ROOT/scripts/memory-ci.sh"
 fi
 echo "local-ci: ok (native)"
+echo "local-ci: wall_s=$((SECONDS - LOCAL_CI_START))"

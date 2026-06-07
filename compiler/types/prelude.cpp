@@ -39,8 +39,8 @@ bool is_prelude_proc_name(const std::string_view name) {
 
 bool is_reserved_decorator_name(const std::string_view name) {
   return in_set(name, {"cpu",          "gpu",          "tpu",          "user_defined",
-                       "parallel",     "vectorized",   "async",        "serial",
-                       "no_vectorize", nullptr});
+                       "parallel",     "vectorized",   "async",        "schedule",
+                       "serial",       "no_vectorize", nullptr});
 }
 
 bool is_std_module_symbol(const std::string_view name) {

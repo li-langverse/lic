@@ -151,6 +151,11 @@ struct MirDecorator {
   std::int64_t gpu_devices = 0;
   bool parallel = false;
   bool disjoint_proven = false;
+  /** `@schedule(task|par|par_unseq)` tier-2 scheduling tag (lic#125); codegen deferred. */
+  bool schedule = false;
+  std::string schedule_mode;
+  std::string schedule_pool;
+  bool schedule_disjoint_proven = false;
 };
 
 struct MirFn {
@@ -192,6 +197,8 @@ struct MirModule {
 std::size_t count_mir_vectorized_proc(const MirModule& mir);
 std::size_t count_mir_gpu_def(const MirModule& mir);
 std::size_t count_mir_gpu_multi_device_def(const MirModule& mir);
+std::size_t count_mir_schedule_def(const MirModule& mir);
+std::size_t count_mir_schedule_task_def(const MirModule& mir);
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);

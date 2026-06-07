@@ -56,7 +56,12 @@ std::int64_t mir_gpu_devices_from_decorator(const Decorator& d) {
 }
 
 bool mir_decorator_disjoint_proven(const Decorator& d) {
-  if (d.name != "parallel") return false;
+  const bool is_parallel = d.name == "parallel";
+  const bool is_schedule_par = d.name == "schedule" && !d.args.empty() &&
+                               (d.args[0].name == "par" || d.args[0].name == "par_unseq");
+  if (!is_parallel && !is_schedule_par) {
+    return false;
+  }
   for (const auto& arg : d.args) {
     if (arg.name != "disjoint" || !arg.value) continue;
     const Expr& e = *arg.value;
@@ -64,6 +69,16 @@ bool mir_decorator_disjoint_proven(const Decorator& d) {
     if (e.kind == Expr::Kind::Call && (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice")) return true;
   }
   return false;
+}
+
+std::string mir_schedule_pool_from_decorator(const Decorator& d) {
+  if (d.name != "schedule") return "";
+  for (const auto& arg : d.args) {
+    if (arg.name == "pool" && arg.value && arg.value->kind == Expr::Kind::Ident) {
+      return arg.value->ident;
+    }
+  }
+  return "default";
 }
 
 void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator>& dst) {
@@ -81,6 +96,14 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
     if (d.name == "parallel") {
       md.parallel = true;
       md.disjoint_proven = mir_decorator_disjoint_proven(d);
+    }
+    if (d.name == "schedule") {
+      md.schedule = true;
+      if (!d.args.empty()) {
+        md.schedule_mode = d.args[0].name;
+      }
+      md.schedule_pool = mir_schedule_pool_from_decorator(d);
+      md.schedule_disjoint_proven = mir_decorator_disjoint_proven(d);
     }
     for (const auto& arg : d.args) {
       if (arg.name == "lanes" && arg.value && arg.value->kind == Expr::Kind::IntLit) {

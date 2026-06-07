@@ -35,6 +35,32 @@ std::size_t count_mir_gpu_multi_device_def(const MirModule& mir) {
   return n;
 }
 
+std::size_t count_mir_schedule_def(const MirModule& mir) {
+  std::size_t n = 0;
+  for (const auto& fn : mir.functions) {
+    for (const auto& d : fn.decorators) {
+      if (d.schedule) {
+        ++n;
+        break;
+      }
+    }
+  }
+  return n;
+}
+
+std::size_t count_mir_schedule_task_def(const MirModule& mir) {
+  std::size_t n = 0;
+  for (const auto& fn : mir.functions) {
+    for (const auto& d : fn.decorators) {
+      if (d.schedule && d.schedule_mode == "task") {
+        ++n;
+        break;
+      }
+    }
+  }
+  return n;
+}
+
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir) {
   std::size_t n = 0;
   for (const auto& fn : mir.functions) {

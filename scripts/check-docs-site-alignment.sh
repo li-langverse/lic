@@ -17,14 +17,17 @@ fi
 if [[ -n "$DOCS_ROOT" && -f "$DOCS_ROOT/mkdocs.yml" ]]; then
   MKDOCS="$DOCS_ROOT/mkdocs.yml"
 else
-  if ! command -v gh >/dev/null 2>&1; then
-    echo "FAIL: no local lic-docs checkout and gh unavailable" >&2
-    exit 1
-  fi
   TMP="$(mktemp)"
   trap 'rm -f "$TMP"' EXIT
-  gh api "repos/li-langverse/lic-docs/contents/mkdocs.yml" --jq '.content' | tr -d '\n' | base64 -d >"$TMP"
-  MKDOCS="$TMP"
+  REMOTE_URL="https://raw.githubusercontent.com/li-langverse/lic-docs/main/mkdocs.yml"
+  if curl -sf --max-time 20 "$REMOTE_URL" -o "$TMP"; then
+    MKDOCS="$TMP"
+  elif command -v gh >/dev/null 2>&1 && gh api "repos/li-langverse/lic-docs/contents/mkdocs.yml" --jq '.content' 2>/dev/null | tr -d '\n' | base64 -d >"$TMP"; then
+    MKDOCS="$TMP"
+  else
+    echo "FAIL: no local lic-docs checkout and could not fetch lic-docs/mkdocs.yml" >&2
+    exit 1
+  fi
 fi
 
 FAIL=0

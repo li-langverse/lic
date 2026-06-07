@@ -870,6 +870,20 @@ note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via phy
 
 [[tests]]
 suite = "composable"
+file = "composable/import_physics_quantum_qm_dft_scf.li"
+packages = ["li-physics-quantum"]
+outcome = "verify_ok"
+note = "sim-p2-qm-dft-scf: H2 STO-3G LDA SCF stub composable gate (algo_id=418)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_chem_dft_smoke.li"
+packages = ["li-chem", "li-sim-scientific", "li-sim"]
+outcome = "verify_ok"
+note = "chem-r2 cross-link: echem_dft_h2_energy_hartree + qm_dft_scf dispatch"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_studio_sim_profile_bridge.li"
 packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
 outcome = "check_ok"

@@ -265,6 +265,40 @@ def ml_matmul_tiled_dynamic(
     return ml_matmul_nested_to_flat(m, n, cn, c)
   return ml_matmul_nested_to_flat_8(m, n, cn, c)
 
+def ml_array_add_n(n: int, a: var array[64, float], b: var array[64, float], c: var array[64, float]) -> int
+  requires n >= 1
+  requires n <= 64
+  ensures result >= 0
+  ensures result <= 1
+  decreases n
+=
+  if n == 4:
+    c[0] = a[0] + b[0]
+    c[1] = a[1] + b[1]
+    c[2] = a[2] + b[2]
+    c[3] = a[3] + b[3]
+    return 1
+  var i: int = 0
+  while i < n
+    c[i] = a[i] + b[i]
+    i = i + 1
+  return 1
+
+def ml_array_sum_n(n: int, buf: var array[64, float]) -> float
+  requires n >= 1
+  requires n <= 64
+  ensures true
+  decreases n
+=
+  if n == 4:
+    return buf[0] + buf[1] + buf[2] + buf[3]
+  var acc: float = 0.0
+  var i: int = 0
+  while i < n
+    acc = acc + buf[i]
+    i = i + 1
+  return acc
+
 def ml_dtype_f32() -> int
   requires true
   ensures result == 0

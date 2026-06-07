@@ -250,6 +250,20 @@ def par_lookup_injective_on_tiles(i: int, j: int, lookup_slot_i: int, lookup_slo
     return true
   return lookup_slot_i != lookup_slot_j
 
+# G-par — reverse permutation lookup injective on tiles (non-identity gather slice).
+def par_reverse_lookup_injective_on_tiles(i: int, j: int, tiles: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires tiles > 0
+  ensures result == (i != j implies (i < tiles and j < tiles implies (tiles - 1 - i) != (tiles - 1 - j)))
+  decreases tiles + i + j
+=
+  if i == j:
+    return true
+  if i >= tiles or j >= tiles:
+    return true
+  return (tiles - 1 - i) != (tiles - 1 - j)
+
 # G-par — lookup-table dependent aliasing: gather slots compose under memory_disjoint_elems (7d-c slice).
 def par_dependent_lookup_array_aliasing(i: int, j: int, lookup_slot_i: int, lookup_slot_j: int, buf_n: int) -> bool
   requires i >= 0

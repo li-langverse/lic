@@ -475,6 +475,19 @@ theorem lookup_index_injective (lookup : Nat → Nat) (i j tiles : Nat)
     lookup_index lookup i ≠ lookup_index lookup j :=
   hinj i j hi hj hne
 
+/-- Reverse permutation gather: slot `n - 1 - i` for `i < n` (non-identity lookup slice). -/
+def reverse_lookup_slot (n i : Nat) : Nat := n - 1 - i
+
+theorem reverse_lookup_injective_on_tiles (n : Nat) (_hn : 0 < n) :
+    lookup_injective_on_tiles_spec (reverse_lookup_slot n) n := by
+  intro i j hi hj hne heq
+  dsimp only [lookup_index, reverse_lookup_slot] at heq
+  have hi_le : i ≤ n - 1 := Nat.le_pred_of_lt hi
+  have hj_le : j ≤ n - 1 := Nat.le_pred_of_lt hj
+  have h1 : (n - 1 - j) + i = n - 1 := by rw [← heq, Nat.sub_add_cancel hi_le]
+  have h2 : (n - 1 - j) + j = n - 1 := Nat.sub_add_cancel hj_le
+  exact hne (Nat.add_left_cancel (h1.trans h2.symm))
+
 /-- **Lookup dependent aliasing (7d-c slice):** injective gather map → distinct Fin slots. -/
 theorem array_lookup_indices_disjoint {α : Type} {n tiles : Nat}
     (lookup : Nat → Nat) (_buf : LiArray α n) (i j : Nat)

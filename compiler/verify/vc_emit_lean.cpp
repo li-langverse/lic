@@ -444,6 +444,50 @@ const char* par_disjoint_index_bound_spec(const std::string& tag) {
   return "index_bound_elem_spec";
 }
 
+bool par_lookup_slot_is_identity(const Expr& call, const std::string& loop_iter) {
+  if (call.kind != Expr::Kind::Call || call.ident != "disjoint_lookup" || call.args.size() < 2 ||
+      call.args[1] == nullptr) {
+    return false;
+  }
+  const Expr& slot = *call.args[1];
+  return slot.kind == Expr::Kind::Ident && slot.ident == loop_iter;
+}
+
+std::optional<std::int64_t> par_lookup_reverse_tiles(const Expr& slot, const std::string& loop_iter,
+                                                      const ParLoopBounds& bounds) {
+  const std::int64_t tiles = bounds.end - bounds.start;
+  if (tiles <= 0) {
+    return std::nullopt;
+  }
+  if (slot.kind != Expr::Kind::BinOp || slot.bin_op != BinOp::Sub || slot.lhs == nullptr ||
+      slot.rhs == nullptr) {
+    return std::nullopt;
+  }
+  if (slot.rhs->kind != Expr::Kind::Ident || slot.rhs->ident != loop_iter) {
+    return std::nullopt;
+  }
+  const auto lhs_val = int_lit_value(*slot.lhs);
+  if (!lhs_val || *lhs_val != tiles - 1) {
+    return std::nullopt;
+  }
+  return tiles;
+}
+
+std::optional<std::string> par_disjoint_lookup_injective_formal(const Expr& call,
+                                                                const std::string& loop_iter,
+                                                                const ParLoopBounds& bounds) {
+  if (par_lookup_slot_is_identity(call, loop_iter) || call.args.size() < 2 ||
+      call.args[1] == nullptr) {
+    return std::nullopt;
+  }
+  const auto tiles = par_lookup_reverse_tiles(*call.args[1], loop_iter, bounds);
+  if (!tiles) {
+    return std::nullopt;
+  }
+  return "Li.Discharge.lookup_injective_on_tiles_spec (Li.Discharge.reverse_lookup_slot " +
+         std::to_string(*tiles) + ") " + std::to_string(*tiles);
+}
+
 void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
                              const Contract& c, const std::string* loop_iter);
 
@@ -779,6 +823,11 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
         c.kind == ContractKind::Requires && loop_bounds != nullptr && loop_iter != nullptr &&
         par_disjoint_index_bound_policy(*c.expr);
     const auto index_bound_tag = index_bound ? par_disjoint_policy_witness(*c.expr) : std::nullopt;
+    const auto lookup_injective =
+        index_bound && index_bound_tag && *index_bound_tag == "disjoint_lookup" &&
+                loop_bounds != nullptr && loop_iter != nullptr
+            ? par_disjoint_lookup_injective_formal(*c.expr, *loop_iter, *loop_bounds)
+            : std::nullopt;
     out << "theorem " << name << "_proved";
     if (par_policy) {
       emit_par_policy_formals(out, module, proc, c, loop_iter);
@@ -792,6 +841,9 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       out << " (h_range : Li.Discharge." << par_disjoint_index_bound_spec(*index_bound_tag) << ' ';
       emit_par_policy_call_args_to_lean(out, *c.expr);
       out << ')';
+      if (lookup_injective) {
+        out << " (h_inj : " << *lookup_injective << ')';
+      }
     }
     out << " : " << name;
     if (par_policy) {

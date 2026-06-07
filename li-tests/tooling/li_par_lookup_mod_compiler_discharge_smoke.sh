@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LIC="$("$ROOT/scripts/resolve-lic.sh")"
 LOOKUP="$ROOT/li-tests/contracts_verify/parallel_disjoint_lookup_closed.li"
+LOOKUP_PERM="$ROOT/li-tests/contracts_verify/parallel_disjoint_lookup_perm_closed.li"
 MOD="$ROOT/li-tests/contracts_verify/parallel_disjoint_mod_closed.li"
 DISCHARGE="$ROOT/docs/semantics/Discharge.lean"
 VC_EMIT="$ROOT/compiler/verify/vc_emit_lean.cpp"
@@ -17,8 +18,11 @@ grep -q 'disjoint_lookup_spec' "$DISCHARGE"
 grep -q 'disjoint_mod_spec' "$DISCHARGE"
 grep -q 'disjoint_lookup_policy_witness' "$DISCHARGE"
 grep -q 'disjoint_mod_policy_witness' "$DISCHARGE"
+grep -q 'reverse_lookup_slot' "$DISCHARGE"
+grep -q 'reverse_lookup_injective_on_tiles' "$DISCHARGE"
 grep -q 'disjoint_lookup' "$VC_EMIT"
 grep -q 'disjoint_mod' "$VC_EMIT"
+grep -q 'par_disjoint_lookup_injective_formal' "$VC_EMIT"
 
 build_autovc() {
   local src="$1"
@@ -45,6 +49,16 @@ if ! grep -q 'disjoint_lookup_policy_witness' "$AUTOVC"; then
 fi
 if ! grep -q 'index_bound_lookup_slot_spec' "$AUTOVC"; then
   echo "FAIL: disjoint_lookup requires should emit index_bound_lookup_slot_spec h_range" >&2
+  exit 1
+fi
+
+AUTOVC="$(build_autovc "$LOOKUP_PERM")"
+if ! grep -q 'Li.Discharge.disjoint_lookup_spec' "$AUTOVC"; then
+  echo "FAIL: reverse perm disjoint_lookup requires should emit Li.Discharge.disjoint_lookup_spec" >&2
+  exit 1
+fi
+if ! grep -q 'h_inj : Li.Discharge.lookup_injective_on_tiles_spec (Li.Discharge.reverse_lookup_slot 8) 8' "$AUTOVC"; then
+  echo "FAIL: non-identity disjoint_lookup requires should emit reverse_lookup h_inj" >&2
   exit 1
 fi
 

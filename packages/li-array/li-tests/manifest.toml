@@ -1,0 +1,47 @@
+[[tests]]
+suite = "smoke"
+file = "smoke/builds.li"
+outcome = "verify_ok"
+note = "T-PKG-li-array-smoke PH-ML li-array pilot"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/array_matmul_4.li"
+outcome = "compile_open_ok"
+note = "PH-ML li-array matmul 4x4 strict shape + ml bridge"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/array_add_same_shape.li"
+outcome = "compile_open_ok"
+note = "PH-ML li-array elementwise add — exact shape only"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/array_sum_1d.li"
+outcome = "compile_open_ok"
+note = "PH-ML li-array sum reduction"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/array_shape_strict_reject.li"
+outcome = "compile_open_ok"
+note = "PH-ML li-array rejects broadcast / matmul shape mismatch"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/broadcast_reject_2_vs_4.li"
+outcome = "compile_open_ok"
+note = "PH-ML li-array broadcast dim rules — reject 2 vs 4"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/array_matmul_batch_2.li"
+outcome = "compile_open_ok"
+note = "PH-ML li-array explicit batch matmul batch=2 no broadcast"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/array_matmul_32.li"
+outcome = "compile_open_ok"
+note = "PH-ML li-array 32x32 LKIR matmul path"

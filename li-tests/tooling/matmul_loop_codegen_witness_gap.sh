@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# P-linalg / G-lean: tier-1 IKJ matmul loop path (ArrayMatMul2DF64) has no loop≡ensures witness.
-# Contrast: witness_dot4_int_loop in vc_witness.cpp + dot4_int_loop_eval_spec in Discharge.lean.
+# P-linalg / G-lean: tier-1 IKJ matmul loop path witness mirrors dot4 (matmul2_at2_loop_eval_spec).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
@@ -14,12 +13,12 @@ if [[ ! -x "$LIC" ]]; then
   exit 0
 fi
 
-if grep -q 'witness_matmul' "$WITNESS_CPP" 2>/dev/null; then
-  echo "FAIL: expected no witness_matmul* in vc_witness.cpp (P-linalg loop gap)" >&2
+if ! grep -q 'witness_matmul' "$WITNESS_CPP"; then
+  echo "FAIL: expected witness_matmul* in vc_witness.cpp" >&2
   exit 1
 fi
-if grep -q 'matmul.*loop_eval\|matmul2d.*loop' "$DISCHARGE" 2>/dev/null; then
-  echo "FAIL: expected no matmul loop_eval lemma in Discharge.lean yet" >&2
+if ! grep -q 'matmul.*loop_eval' "$DISCHARGE"; then
+  echo "FAIL: expected matmul loop_eval lemma in Discharge.lean" >&2
   exit 1
 fi
 
@@ -27,8 +26,8 @@ if ! grep -q 'MirOp::ArrayMatMul2DF64' "$ROOT/compiler/mir/lower.cpp"; then
   echo "FAIL: expected ArrayMatMul2DF64 lowering" >&2
   exit 1
 fi
-if ! grep -A20 'void emit_matmul2d_ijk_loops' "$EMIT" | grep -q 'fp_numerically_stable'; then
-  echo "FAIL: matmul loop FMA gate should reference fp_numerically_stable (emit.cpp:232-247)" >&2
+if ! grep -A30 'void emit_matmul2d_ijk_loops' "$EMIT" | grep -q 'fp_numerically_stable'; then
+  echo "FAIL: matmul loop FMA gate should reference fp_numerically_stable" >&2
   exit 1
 fi
 
@@ -57,11 +56,11 @@ if [[ "${FAST_FMA:-0}" -lt 1 ]] && [[ "${FAST_MUL:-0}" -lt 1 ]]; then
   exit 1
 fi
 if [[ "${FAST_FMA:-0}" -lt 1 ]]; then
-  echo "FAIL: release matmul loop path should prefer vfmadd (llvm.fmuladd; emit.cpp:232-247)" >&2
+  echo "FAIL: release matmul loop path should prefer vfmadd (llvm.fmuladd)" >&2
   exit 1
 fi
 if [[ "${STABLE_FMA:-0}" -ge 1 ]]; then
-  echo "FAIL: --numerically-stable matmul should not emit vfmadd (emit.cpp:232-247)" >&2
+  echo "FAIL: --numerically-stable matmul should not emit vfmadd" >&2
   exit 1
 fi
 if [[ "${STABLE_MUL:-0}" -lt 1 ]]; then
@@ -69,4 +68,4 @@ if [[ "${STABLE_MUL:-0}" -lt 1 ]]; then
   exit 1
 fi
 
-echo "PASS matmul_loop_codegen_witness_gap: no P-linalg loop witness; loop+FMA gate OK"
+echo "PASS matmul_loop_codegen_witness_gap: matmul2 loop witness + loop FMA gate OK"

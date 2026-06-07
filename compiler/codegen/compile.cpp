@@ -141,6 +141,12 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
 
   auto resolve_runtime_c = [](const char* name) -> std::filesystem::path {
+    if (const char* root = std::getenv("LI_REPO_ROOT")) {
+      const std::filesystem::path from_root = std::filesystem::path(root) / "runtime" / name;
+      if (std::filesystem::exists(from_root)) {
+        return from_root;
+      }
+    }
     std::filesystem::path p = std::filesystem::path("runtime") / name;
     if (!std::filesystem::exists(p)) {
       p = std::filesystem::path("..") / "runtime" / name;
@@ -148,11 +154,14 @@ bool compile_module(const Module& module, const std::string& output_path,
     return p;
   };
   const std::filesystem::path rt_path = resolve_runtime_c("li_rt.c");
+  const std::filesystem::path rt_par_pool_path = resolve_runtime_c("li_par_pool.c");
   const std::filesystem::path rt_httpd_path = resolve_runtime_c("li_rt_httpd.c");
   const std::filesystem::path rt_log_path = resolve_runtime_c("li_rt_log.c");
   const std::filesystem::path rt_net_path = resolve_runtime_c("li_rt_net.c");
   const std::filesystem::path rt_tls_path = resolve_runtime_c("li_rt_tls.c");
   const std::filesystem::path rt_h2_path = resolve_runtime_c("li_rt_h2.c");
+  const std::filesystem::path rt_llm_path = resolve_runtime_c("li_rt_llm.c");
+  const std::filesystem::path rt_inference_sse_path = resolve_runtime_c("li_rt_inference_sse.c");
 
   MirModule rt_needs;
   mir_collect_runtime_link_needs(mir, rt_needs);
@@ -168,6 +177,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   cmd << " -opaque-pointers";
 #endif
   cmd << " -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
+  cmd << " -x c \"" << rt_par_pool_path.string() << "\"";
   if (link_runtime_full || rt_needs.needs_rt_httpd) {
     if (std::filesystem::exists(rt_httpd_path)) {
       cmd << " -x c \"" << rt_httpd_path.string() << "\"";
@@ -192,6 +202,14 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (std::filesystem::exists(rt_lig_path)) {
     cmd << " -x c \"" << rt_lig_path.string() << "\"";
   }
+  if (link_runtime_full || rt_needs.needs_rt_llm) {
+    if (std::filesystem::exists(rt_llm_path)) {
+      cmd << " -x c \"" << rt_llm_path.string() << "\"";
+    }
+    if (std::filesystem::exists(rt_inference_sse_path)) {
+      cmd << " -x c \"" << rt_inference_sse_path.string() << "\"";
+    }
+  }
   const std::filesystem::path rt_studio_paint_path = resolve_runtime_c("li_rt_studio_paint_capture.c");
   if (std::filesystem::exists(rt_studio_paint_path)) {
     cmd << " -x c \"" << rt_studio_paint_path.string() << "\"";
@@ -200,6 +218,11 @@ bool compile_module(const Module& module, const std::string& output_path,
       resolve_runtime_c("li_rt_studio_headless_raster.c");
   if (std::filesystem::exists(rt_studio_headless_path)) {
     cmd << " -x c \"" << rt_studio_headless_path.string() << "\"";
+  }
+  const std::filesystem::path rt_studio_demo_path =
+      resolve_runtime_c("li_rt_studio_demo_recorder.c");
+  if (std::filesystem::exists(rt_studio_demo_path)) {
+    cmd << " -x c \"" << rt_studio_demo_path.string() << "\"";
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {
@@ -214,11 +237,9 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (!extra_clang_flags.empty()) {
     cmd << " " << extra_clang_flags;
   }
-  if (mir.uses_openmp) {
 #if defined(__linux__) || defined(__APPLE__)
-    cmd << " -pthread";
+  cmd << " -pthread";
 #endif
-  }
   if (const char* extra_c = std::getenv("LI_EXTRA_C")) {
     std::string paths(extra_c);
     std::size_t start = 0;

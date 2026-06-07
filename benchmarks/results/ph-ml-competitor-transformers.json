@@ -1,0 +1,12 @@
+{
+  "competitor_id": "pytorch_transformers",
+  "suite": "ph-ml-competitor-transformers",
+  "workload": "llm_forward_fixture",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
+  "device": "cpu",
+  "note": "transformers or torch not installed"
+}

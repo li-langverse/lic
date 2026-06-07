@@ -182,6 +182,8 @@ struct MirModule {
   bool needs_rt_net = false;
   /** Link runtime/li_rt_log.c when MIR calls li_log_* symbols. */
   bool needs_rt_log = false;
+  /** li_rt_llm.c — safetensors/GGUF weight file probes. */
+  bool needs_rt_llm = false;
   /** When true: MIR stability pass + strict FP codegen (no fast-math reassociation). */
   bool fp_numerically_stable = false;
 };

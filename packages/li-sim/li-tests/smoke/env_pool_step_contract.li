@@ -9,7 +9,7 @@ def main() -> int
     return 1
   var sess: SimSessionStub = sim_session_stub_default()
   sim_session_apply_studio_profile(2, sess)
-  if sim_rl_session_env_pool_step(sess, 0.02) != sim_status_ok():
+  if sim_rl_session_env_pool_step(sess, sim_rl_dt_default()) != sim_status_ok():
     return 2
   var psz: int = sim_rl_env_pool_size_default()
   if sess.env_pool_size != psz:
@@ -25,7 +25,7 @@ def main() -> int
     return 7
   var reward0: float = sess.env_pool_total_reward
   var steps0: int = sess.env_pool_steps_emitted
-  if sim_rl_session_env_pool_step(sess, 0.02) != sim_status_ok():
+  if sim_rl_session_env_pool_step(sess, sim_rl_dt_default()) != sim_status_ok():
     return 8
   if sess.env_pool_steps_emitted != steps0 + psz:
     return 9

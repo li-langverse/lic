@@ -29,6 +29,8 @@ competitors = ["cpp_openmp", "python_numpy", "pytorch_cpu"]
 id = "async_env_collect"
 kernel = "ml.rl.async_env_collect"
 workload_class = "pilot"
+workload = "async_env_collect_4"
+workload_note = "CartPole-v1 x4 collect (Li thread_pool; SB3/Ray honest drivers)"
 incumbent = "SB3 VecEnv / Ray RLlib"
 competitors = ["sb3_vecenv", "ray_rllib"]
 

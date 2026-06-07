@@ -7,7 +7,6 @@
 #include <string.h>
 
 #if !defined(_WIN32)
-#include <pthread.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #endif
@@ -39,26 +38,6 @@ const char* li_rt_argv(int index) {
   }
   return li_argv[index];
 }
-
-typedef struct {
-  long long begin;
-  long long end;
-} LiParChunk;
-
-typedef struct {
-  void (*body)(long long);
-  LiParChunk chunk;
-} LiParWorkerArg;
-
-#if !defined(_WIN32)
-static void* li_par_worker(void* raw) {
-  LiParWorkerArg* arg = (LiParWorkerArg*)raw;
-  for (long long i = arg->chunk.begin; i < arg->chunk.end; ++i) {
-    arg->body(i);
-  }
-  return NULL;
-}
-#endif
 
 static int li_warn_omp_alias_once(void) {
   static int warned = 0;
@@ -113,56 +92,7 @@ static int li_clamp_team(int team_size, long long trip_count) {
 
 void li_parallel_for_i64(long long start, long long end, void (*body)(long long),
                          int team_size) {
-  const long long trip = end - start;
-  if (trip <= 0 || body == NULL) {
-    return;
-  }
-  if (trip == 1) {
-    body(start);
-    return;
-  }
-
-  team_size = li_clamp_team(team_size, trip);
-  if (team_size <= 1) {
-    for (long long i = start; i < end; ++i) {
-      body(i);
-    }
-    return;
-  }
-
-#if defined(_WIN32)
-  (void)team_size;
-  for (long long i = start; i < end; ++i) {
-    body(i);
-  }
-#else
-  pthread_t threads[LI_MAX_THREADS];
-  LiParWorkerArg args[LI_MAX_THREADS];
-  const long long base = trip / team_size;
-  const long long rem = trip % team_size;
-  int launched = 0;
-  long long cur = start;
-  for (int w = 0; w < team_size; ++w) {
-    const long long len = base + (w < (int)rem ? 1 : 0);
-    if (len <= 0) {
-      continue;
-    }
-    args[launched].body = body;
-    args[launched].chunk.begin = cur;
-    args[launched].chunk.end = cur + len;
-    cur += len;
-    if (pthread_create(&threads[launched], NULL, li_par_worker, &args[launched]) != 0) {
-      for (long long i = args[launched].chunk.begin; i < args[launched].chunk.end; ++i) {
-        body(i);
-      }
-      continue;
-    }
-    ++launched;
-  }
-  for (int w = 0; w < launched; ++w) {
-    pthread_join(threads[w], NULL);
-  }
-#endif
+  li_par_pool_fork_join(start, end, body, li_clamp_team(team_size, end - start));
 }
 
 void li_omp_parallel_for_i64(long long start, long long end, void (*body)(long long)) {
@@ -370,6 +300,36 @@ static int32_t li_rt_studio_mcp_tool_match_name(const char* name) {
   if (li_rt_str_eq(name, "studio_set_biomol_style")) {
     return 11;
   }
+  if (li_rt_str_eq(name, "ui_snapshot")) {
+    return 12;
+  }
+  if (li_rt_str_eq(name, "ui_click")) {
+    return 13;
+  }
+  if (li_rt_str_eq(name, "ui_key")) {
+    return 14;
+  }
+  if (li_rt_str_eq(name, "ui_set_value")) {
+    return 15;
+  }
+  if (li_rt_str_eq(name, "ui_wait")) {
+    return 16;
+  }
+  if (li_rt_str_eq(name, "demo_record_start")) {
+    return 17;
+  }
+  if (li_rt_str_eq(name, "demo_record_step")) {
+    return 18;
+  }
+  if (li_rt_str_eq(name, "demo_record_finish")) {
+    return 19;
+  }
+  if (li_rt_str_eq(name, "ui_session_start")) {
+    return 20;
+  }
+  if (li_rt_str_eq(name, "ui_session_stop")) {
+    return 21;
+  }
   return 0;
 }
 
@@ -401,6 +361,26 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
       return "studio_set_particle_display";
     case 11:
       return "studio_set_biomol_style";
+    case 12:
+      return "ui_snapshot";
+    case 13:
+      return "ui_click";
+    case 14:
+      return "ui_key";
+    case 15:
+      return "ui_set_value";
+    case 16:
+      return "ui_wait";
+    case 17:
+      return "demo_record_start";
+    case 18:
+      return "demo_record_step";
+    case 19:
+      return "demo_record_finish";
+    case 20:
+      return "ui_session_start";
+    case 21:
+      return "ui_session_stop";
     default:
       return "";
   }

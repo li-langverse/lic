@@ -30,6 +30,11 @@ def main() -> int:
         action="store_true",
         help="Renew using acme-renewal.json (lets_encrypt only)",
     )
+    p.add_argument(
+        "--gen-dhparam",
+        action="store_true",
+        help="Generate server.tls.dhparam_file via openssl dhparam (TLS 1.2 DHE)",
+    )
     args = p.parse_args()
 
     if not args.config.is_file():
@@ -42,6 +47,7 @@ def main() -> int:
             cert_dir=args.cert_dir,
             dry_run=args.dry_run,
             renew_only=args.renew,
+            gen_dhparam=args.gen_dhparam,
         )
     except ConfigError as e:
         print(f"setup-tls: {e}", file=sys.stderr)

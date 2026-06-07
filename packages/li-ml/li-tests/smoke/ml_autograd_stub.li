@@ -5,14 +5,18 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if ml_autograd_tape_enabled() != 0:
+  if ml_autograd_tape_enabled() != 1:
     return 1
-  if ml_autograd_workload_class() != 0:
+  if ml_autograd_workload_class() != 1:
     return 2
   var da: array[8, array[8, float]]
   var db: array[8, array[8, float]]
   var dc: array[8, array[8, float]]
   dc[0][0] = 1.0
-  if ml_autograd_matmul_backward_stub(2, 2, 2, dc, da, db) != 0:
+  if ml_autograd_matmul_backward_stub(2, 2, 2, dc, da, db) != 1:
     return 3
+  if da[0][0] != 1.0:
+    return 4
+  if db[0][0] != 1.0:
+    return 5
   return 0

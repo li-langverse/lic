@@ -10,6 +10,16 @@ BE_PORT=18131
 FRONT_PORT=18130
 CANCEL_MARK="/tmp/httpd-m15-inference-cancel.ok"
 
+curl_http_code() {
+  local out
+  out=$(curl -s "$@" -o /dev/null -w "%{http_code}" || true)
+  if [[ -z "$out" ]]; then
+    echo "000"
+  else
+    echo "$out"
+  fi
+}
+
 if [[ ! -x "$HTTPD" ]]; then
   echo "test-m15-inference-live: build li-httpd first (./scripts/build-li-httpd.sh)" >&2
   exit 1
@@ -25,110 +35,28 @@ grep -q '^listen_port=18130' "$CONF"
 grep -q '^upstream_peer=18131' "$CONF"
 grep -q 'route_require=POST|/v1/chat/completions|traceparent' "$CONF"
 
+INFERENCE_BACKEND="${INFERENCE_NATIVE_BACKEND:-$ROOT/build/inference-native-backend}"
+if [[ ! -x "$INFERENCE_BACKEND" ]]; then
+  bash "$ROOT/scripts/build-inference-native-backend.sh"
+fi
+[[ -x "$INFERENCE_BACKEND" ]] || { echo "test-m15-inference-live: build inference-native-backend first" >&2; exit 1; }
+python3 "$ROOT/scripts/prepare_ph_ml_weights_fixture.py"
+
 fuser -k "${BE_PORT}/tcp" "${FRONT_PORT}/tcp" 2>/dev/null || true
 pkill -f 'httpd-inference-live' 2>/dev/null || true
 pkill -f '[/]li-httpd.*httpd-inference-live' 2>/dev/null || true
+pkill -f 'inference-native-backend' 2>/dev/null || true
 sleep 0.5
 
-python3 -u - "$BE_PORT" "$CANCEL_MARK" <<'PY' >/dev/null 2>&1 &
-import socket
-import sys
-import threading
-
-port = int(sys.argv[1])
-cancel_mark = sys.argv[2]
-lock = threading.Lock()
-seen_traceparent = 0
-
-
-def read_request(conn: socket.socket) -> bytes:
-    data = b""
-    while b"\r\n\r\n" not in data:
-        chunk = conn.recv(4096)
-        if not chunk:
-            return b""
-        data += chunk
-    return data
-
-
-def has_traceparent(req: bytes) -> bool:
-    for line in req.split(b"\r\n"):
-        if line.lower().startswith(b"traceparent:"):
-            return True
-    return False
-
-
-def handle_json(conn: socket.socket, req: bytes) -> None:
-    global seen_traceparent
-    if has_traceparent(req):
-        with lock:
-            seen_traceparent += 1
-    body = b'{"id":"chatcmpl-test","object":"chat.completion","choices":[]}'
-    conn.sendall(
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Type: application/json\r\n"
-        b"Content-Length: " + str(len(body)).encode() + b"\r\n"
-        b"Connection: close\r\n"
-        b"\r\n" + body
-    )
-
-
-def handle_sse(conn: socket.socket, req: bytes) -> None:
-    import time
-
-    try:
-        open(cancel_mark + ".started", "w", encoding="utf-8").write("1")
-    except OSError:
-        pass
-    conn.sendall(
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Type: text/event-stream\r\n"
-        b"Transfer-Encoding: chunked\r\n"
-        b"Connection: close\r\n"
-        b"\r\n"
-    )
-    time.sleep(0.15)
-    cancelled = False
-    try:
-        for _ in range(80):
-            payload = b"data: ping\r\n"
-            chunk = f"{len(payload):x}\r\n".encode() + payload + b"\r\n"
-            conn.sendall(chunk)
-            time.sleep(0.08)
-    except (ConnectionResetError, BrokenPipeError, OSError):
-        cancelled = True
-    if cancelled:
-        try:
-            open(cancel_mark, "w", encoding="utf-8").write("1")
-        except OSError:
-            pass
-    conn.close()
-
-
-def handle(conn: socket.socket) -> None:
-    try:
-        req = read_request(conn)
-        if not req:
-            return
-        if b"text/event-stream" in req.lower():
-            handle_sse(conn, req)
-        else:
-            handle_json(conn, req)
-            conn.close()
-    except OSError:
-        pass
-
-
-srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-srv.bind(("127.0.0.1", port))
-srv.listen(64)
-while True:
-    c, _ = srv.accept()
-    threading.Thread(target=handle, args=(c,), daemon=True).start()
-PY
+( cd "$ROOT" && "$INFERENCE_BACKEND" "$BE_PORT" "$CANCEL_MARK" ) >/dev/null 2>&1 &
 BE_PID=$!
-sleep 0.5
+for _ in $(seq 1 20); do
+  if curl_http_code -m 1 -X POST "http://127.0.0.1:${BE_PORT}/v1/chat/completions" \
+    -H "Content-Type: application/json" -d '{}' | grep -q '^200$'; then
+    break
+  fi
+  sleep 0.1
+done
 
 LI_HTTPD_WORKERS=1 "$HTTPD" "$CONF" >/dev/null 2>&1 &
 FE_PID=$!
@@ -136,36 +64,53 @@ sleep 2.0
 
 # Cancel-on-disconnect first (rate bucket still full).
 rm -f "$CANCEL_MARK" "${CANCEL_MARK}.started"
-cancel_code=$(curl -s -N -m 0.6 -o /dev/null -w "%{http_code}" \
+cancel_code=$(curl_http_code -N -m 0.6 \
   -X POST "http://127.0.0.1:${FRONT_PORT}/v1/chat/completions" \
   -H "Content-Type: application/json" \
   -H "Accept: text/event-stream" \
   -H "traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01" \
-  -d '{}' || echo "000")
+  -d '{}')
 sleep 2.0
 cancel_ok=0
 if [[ -f "${CANCEL_MARK}.started" && -f "$CANCEL_MARK" ]]; then
   cancel_ok=1
 fi
 
-code_no_tp=$(curl -s -m 3 -o /dev/null -w "%{http_code}" \
+# Li-native path: restart edge + upstream after SSE cancel-on-disconnect probe.
+kill "$FE_PID" "$BE_PID" 2>/dev/null || true
+pkill -f 'inference-native-backend' 2>/dev/null || true
+sleep 0.3
+( cd "$ROOT" && "$INFERENCE_BACKEND" "$BE_PORT" "$CANCEL_MARK" ) >/dev/null 2>&1 &
+BE_PID=$!
+for _ in $(seq 1 20); do
+  if curl_http_code -m 1 -X POST "http://127.0.0.1:${BE_PORT}/v1/chat/completions" \
+    -H "Content-Type: application/json" -d '{}' | grep -q '^200$'; then
+    break
+  fi
+  sleep 0.1
+done
+LI_HTTPD_WORKERS=1 "$HTTPD" "$CONF" >/dev/null 2>&1 &
+FE_PID=$!
+sleep 1.5
+
+code_no_tp=$(curl_http_code -m 3 \
   -X POST "http://127.0.0.1:${FRONT_PORT}/v1/chat/completions" \
   -H "Content-Type: application/json" \
-  -d '{"model":"gpt-4","messages":[]}' || echo "000")
+  -d '{"model":"gpt-4","messages":[]}')
 
-code_ok=$(curl -s -m 3 -o /dev/null -w "%{http_code}" \
+code_ok=$(curl_http_code -m 3 \
   -X POST "http://127.0.0.1:${FRONT_PORT}/v1/chat/completions" \
   -H "Content-Type: application/json" \
   -H "traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01" \
-  -d '{"model":"gpt-4","messages":[]}' || echo "000")
+  -d '{"model":"gpt-4","messages":[]}')
 
 got_429=0
 for _ in $(seq 1 24); do
-  c=$(curl -s -m 2 -o /dev/null -w "%{http_code}" \
+  c=$(curl_http_code -m 2 \
     -X POST "http://127.0.0.1:${FRONT_PORT}/v1/chat/completions" \
     -H "Content-Type: application/json" \
     -H "traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01" \
-    -d '{"model":"gpt-4","messages":[]}' || echo "000")
+    -d '{"model":"gpt-4","messages":[]}')
   if [[ "$c" == "429" ]]; then
     got_429=1
     break
@@ -173,6 +118,7 @@ for _ in $(seq 1 24); do
 done
 
 kill "$FE_PID" "$BE_PID" 2>/dev/null || true
+pkill -f 'inference-native-backend' 2>/dev/null || true
 pkill -f 'httpd-inference-live' 2>/dev/null || true
 wait "$FE_PID" 2>/dev/null || true
 wait "$BE_PID" 2>/dev/null || true
@@ -198,4 +144,4 @@ fi
 if [[ "$fail" -ne 0 ]]; then
   exit 1
 fi
-echo "test-m15-inference-live: ok (OTel 400/200, rate limit 429, cancel-on-disconnect)"
+echo "test-m15-inference-live: ok (Li-native backend, OTel 400/200, rate limit 429, cancel-on-disconnect)"

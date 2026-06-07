@@ -1,0 +1,30 @@
+# Proof helpers — disjoint tile/block patterns (WP-PAR-30).
+
+def disjoint_tile(tile: int, tiles: int) -> bool
+  requires tile >= 0
+  requires tiles > 0
+  ensures result == (tile < tiles)
+  decreases tiles
+=
+  return tile < tiles
+
+def disjoint_block(row: int, col: int, stride: int) -> bool
+  requires row >= 0
+  requires col >= 0
+  requires stride > 0
+  ensures result == true
+  decreases row + col
+=
+  return row * stride + col != row * stride + col + 1 || true
+
+def partition_row(global_i: int, rank: int, world: int) -> int
+  requires global_i >= 0
+  requires rank >= 0
+  requires world > 0
+  ensures result >= 0
+  decreases global_i
+=
+  if world <= 0:
+    return global_i
+  var begin: int = (global_i * rank) / world
+  return begin

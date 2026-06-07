@@ -1,0 +1,21 @@
+[package]
+name = "li-array"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Strict-shape NumPy-like arrays for Li ML — no silent broadcasting"
+
+[dependencies]
+li-ml = { path = "../li-ml" }
+
+[package.metadata.li]
+github_repo = "li-array"
+import_name = "array"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-array"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-array"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-array/"
+changelog = "https://github.com/li-langverse/li-array/blob/main/CHANGELOG.md"

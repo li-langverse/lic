@@ -19,6 +19,9 @@ void* httpd_tls_slot_ssl(int32_t slot);
 int32_t httpd_tls_runtime_wanted(void);
 int32_t httpd_tls_runtime_ready(void);
 
+/* TLS 1.2 + dhparam for legacy DHE (gap-tls-dhe); call before httpd_tls_global_init. */
+void httpd_tls_configure_legacy(int32_t min_proto_12, const char* dhparam_path);
+
 /* Load cert/key from dir/fullchain.pem + privkey.pem; enable ALPN h2 when http2_on. */
 int32_t httpd_tls_global_init(const char* cert_dir, int32_t http2_on);
 int32_t httpd_tls_global_init_paths(const char* cert_dir, const char* manual_cert,

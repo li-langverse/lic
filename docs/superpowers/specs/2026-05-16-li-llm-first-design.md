@@ -66,6 +66,18 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 
 When LLM-first convenience conflicts with provability: **provability wins** (same as language design spec).
 
+## Done checklist (Vision-LLM tracker)
+
+Flip master plan L476 to `[x]` only when all rows are **Green** in the same PR. Plan: [2026-06-07-vision-llm-done-gates.md](../plans/2026-06-07-vision-llm-done-gates.md).
+
+| Gate | Requirement | Evidence |
+|------|-------------|----------|
+| A | Manifest schema v1 + CI generation | `gen-li-agent-manifest.sh`, `agent_manifest_gen_smoke.sh` (#464) |
+| B | Test manifest export | `export-li-tests-agent-slice.sh`, `agent_manifest_smoke.sh` |
+| C | Diagnostic CI | `diagnose_json_smoke.sh`, `check_workspace_cache_smoke.sh`, `diagnostic-v1.json` |
+| D | studio-ai apply_patch handoff | `packages/li-studio-ai/li-tests/smoke/studio_ai_apply_patch_loop.li` |
+| E | Tracker closure | Master plan L476 `[x]` + release note |
+
 ## Related
 
 - [Agent handover formats](../../ecosystem/agent-handover-formats.md)

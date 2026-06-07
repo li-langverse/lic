@@ -1,0 +1,44 @@
+{
+  "completed_ids": [
+    "sec-r0-cwe-delta",
+    "sec-r1-httpd-fuzz-smoke",
+    "sec-r2-tier5-gap-exploit",
+    "sec-r3-runtime-surface"
+  ],
+  "iterations": 5,
+  "history": [
+    {
+      "at": "2026-05-25T19:08:08.544345+00:00",
+      "todo_id": "sec-r0-cwe-delta",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "at": "2026-05-25T19:29:32.615546+00:00",
+      "todo_id": "sec-r1-httpd-fuzz-smoke",
+      "agent_exit": 1,
+      "gates_ok": true
+    },
+    {
+      "at": "2026-06-07T00:00:00.000000+00:00",
+      "todo_id": "sec-r1-httpd-fuzz-smoke",
+      "agent_exit": 0,
+      "gates_ok": true,
+      "note": "code_implementer lic#521 — http_parse_fuzz smoke"
+    },
+    {
+      "at": "2026-06-07T00:00:00.000000+00:00",
+      "todo_id": "sec-r2-tier5-gap-exploit",
+      "agent_exit": 0,
+      "gates_ok": true,
+      "note": "code_implementer lic#521 — CWE-20 catalog"
+    },
+    {
+      "at": "2026-06-07T00:00:00.000000+00:00",
+      "todo_id": "sec-r3-runtime-surface",
+      "agent_exit": 0,
+      "gates_ok": true,
+      "note": "code_implementer lic#521 — ASan slice"
+    }
+  ]
+}

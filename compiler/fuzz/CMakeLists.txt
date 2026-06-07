@@ -13,3 +13,8 @@ add_executable(check_fuzz check_fuzz.cpp)
 target_link_libraries(check_fuzz PRIVATE li_parser li_types)
 target_compile_options(check_fuzz PRIVATE -fsanitize=fuzzer-no-link)
 target_link_options(check_fuzz PRIVATE -fsanitize=fuzzer)
+
+add_executable(http_parse_fuzz http_parse_fuzz.cpp)
+target_link_libraries(http_parse_fuzz PRIVATE li_rt)
+target_compile_options(http_parse_fuzz PRIVATE -fsanitize=fuzzer-no-link)
+target_link_options(http_parse_fuzz PRIVATE -fsanitize=fuzzer)

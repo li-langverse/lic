@@ -91,7 +91,7 @@ bash scripts/ph-pkg-governance-gates.sh
 
 | G-* | Change |
 |-----|--------|
-| **G-meta** | **Partial → Partial** — doc hygiene only; governance docs ≠ proof certificate |
+| **G-meta** | **Partial → Partial** — doc hygiene only; governance docs ≠ [proof certificate](../../verification/provability-gaps.md) |
 | **G-authz** | Unchanged (**Missing**) — out of scope |
 | Honest limit | Closing checkboxes ≠ closing PH-Pkg master tracker; audit distinguishes `stale_spec_checklists` |
 

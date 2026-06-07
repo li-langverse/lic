@@ -236,3 +236,10 @@
 - **Tests:** `parallel_disjoint_lookup_closed.li`, `parallel_disjoint_mod_closed.li`, `li_par_lookup_mod_compiler_discharge_smoke.sh` wired into proofs gate
 - **Gates (local):** `check-chip-package-boundaries.sh` **PASS**; `check-li-parallel-proofs-gate.sh` **PASS**; `check-li-parallel-full-suite.sh` **PASS** (~105s)
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (injective lookup/mod discharge on non-identity permutations + fully general dependent subscripts open)
+
+## 2026-06-07 — Killer gate re-verify + sprint doc sync (code_implementer-1780827213193)
+
+- **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required
+- **Doc sync:** `data/goal-directed-sprints/li-parallel-killer-package.md` — G-par proof depth text aligned with `lookup_const` closed slice (remove stale “arbitrary compile-time lookup tables” open line)
+- **Gates (local):** `./scripts/build.sh` exit 0; `check-li-parallel-full-suite.sh` **PASS** (~96s); `check-li-parallel-proofs-gate.sh` **PASS** (~170s); `check-li-parallel-killer-gate.sh` **PASS** (~28m, 152 benchmarks dual-mode, all sub-gates green)
+- **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (fully general dependent subscripts beyond implemented surface open)

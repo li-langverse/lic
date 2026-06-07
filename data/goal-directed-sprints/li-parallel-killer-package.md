@@ -151,7 +151,7 @@ Requires **engineering 100%** (`check-li-parallel-killer-gate.sh`: runtime smoke
 |----|-------------|--------|
 | **WP-PAR-100** | G-par **Done** in li-parallel registers | **DONE** — compiler `disjoint_*` + dependent-index surface marked **Done** |
 | **WP-PAR-101** | `check-li-parallel-proofs-complete-gate.sh` | **DONE** — proofs gate + G-par **Done** registers + Discharge `disjoint_*` builtin coverage |
-| **WP-PAR-102** | `check-li-parallel-goal-complete-gate.sh` | **PENDING** — killer + proofs-complete (GOAL_COMPLETE); killer green on GHA `lipar-killer-gate` |
+| **WP-PAR-102** | `check-li-parallel-goal-complete-gate.sh` | **DONE** — killer + proofs-complete (GOAL_COMPLETE); local gate green 2026-06-07; GHA `lipar-killer-gate` + `build-and-test` green on PR #881 |
 
 ## Agent rules
 
@@ -163,6 +163,4 @@ Requires **engineering 100%** (`check-li-parallel-killer-gate.sh`: runtime smoke
 
 ## Current blocker (2026-06-07)
 
-**Engineering:** none — killer gate **PASS** locally + GHA `lipar-killer-gate`.
-
-**Proofs (100%):** **G-par** **Done** in li-parallel registers; `check-li-parallel-proofs-complete-gate.sh` green (WP-PAR-101). Remaining: `check-li-parallel-goal-complete-gate.sh` (WP-PAR-102) — killer gate green on GHA; sandbox tier5 HTTP flakes are environmental. Future general dependent subscripts beyond compiler surface remain org-tracked outside this sprint scope.
+**None — GOAL_COMPLETE.** Engineering (killer gate) and proofs (G-par Done) at 100%. Local `check-li-parallel-goal-complete-gate.sh` green (~20 min, 152 benchmarks dual-mode tiers 0–7). GHA `lipar-killer-gate` + `build-and-test` green on PR #881. Unrelated `httpd-ci-runtime` `runtime-gates` flake is outside li-parallel scope. Future general dependent subscripts beyond compiler surface remain org-tracked outside this sprint.

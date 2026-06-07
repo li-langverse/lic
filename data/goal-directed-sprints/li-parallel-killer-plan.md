@@ -23,8 +23,8 @@ Plan loop for `goal-directed-loop` stuck detection (`LI_GOAL_SELF_UNBLOCK=1`).
 
 - id: par101-goal-complete-gate
   content: Green `scripts/check-li-parallel-goal-complete-gate.sh` (killer + proofs-complete)
-  status: pending
+  status: done
 
 - id: par102-ci-enforced
   content: PR #881 lipar-killer-gate + build-and-test green on cursor/li-parallel-native-hpc
-  status: pending
+  status: done

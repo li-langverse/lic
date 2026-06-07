@@ -24,7 +24,7 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 
 | WP | Gap | Status |
 |----|-----|--------|
-| WP-PAR-40 | Strict perf vs OpenMP/MPI | **IN PROGRESS** — reduce_sum strict speedup green (76× formula partition) |
+| WP-PAR-40 | Strict perf vs OpenMP/MPI | **DONE** — reduce_sum strict speedup green (161× closed-form formula partition) |
 | WP-PAR-48 | Whole-catalog dual-mode audit | **IN PROGRESS** — `--scope all` tags every `lang=li` row; lipar-suite merges tier CSVs + registry refresh before dual-mode |
 
 ## Phase 6–8 — FL, comm, hetero, xfer

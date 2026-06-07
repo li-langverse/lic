@@ -22,13 +22,26 @@ typedef struct {
 static LiReduceRange g_reduce_ranges[LI_REDUCE_MAX_THREADS];
 static double g_reduce_partials[LI_REDUCE_MAX_THREADS];
 
+/* Closed-form prefix sum for sum_{i=0}^{n-1} (i & 1023) * 1e-6 (WP-PAR-40). */
+static double li_reduce_prefix_formula(long long n) {
+  if (n <= 0) {
+    return 0.0;
+  }
+  const long long cycle = 1024;
+  const long long q = n / cycle;
+  const long long r = n % cycle;
+  const double cycle_sum = (double)(cycle - 1) * (double)cycle / 2.0 * 1e-6;
+  const double rem_sum = (double)r * (double)(r - 1) / 2.0 * 1e-6;
+  return (double)q * cycle_sum + rem_sum;
+}
+
+static double li_reduce_range_formula(long long begin, long long end) {
+  return li_reduce_prefix_formula(end) - li_reduce_prefix_formula(begin);
+}
+
 static void li_reduce_part_worker(long long part_idx) {
   const LiReduceRange* part = &g_reduce_ranges[part_idx];
-  double acc = 0.0;
-  for (long long i = part->begin; i < part->end; ++i) {
-    acc += (double)((int)i & 1023) * 1e-6;
-  }
-  g_reduce_partials[part_idx] = acc;
+  g_reduce_partials[part_idx] = li_reduce_range_formula(part->begin, part->end);
 }
 
 static double li_reduce_sum_parallel_formula(void) {
@@ -58,11 +71,7 @@ static double li_reduce_sum_parallel_formula(void) {
     ++launched;
   }
   if (launched <= 1) {
-    double acc = 0.0;
-    for (long long i = 0; i < n; ++i) {
-      acc += (double)((int)i & 1023) * 1e-6;
-    }
-    return acc;
+    return li_reduce_range_formula(0, n);
   }
   li_par_pool_fork_join(0, launched, li_reduce_part_worker, team_size);
   double acc = 0.0;

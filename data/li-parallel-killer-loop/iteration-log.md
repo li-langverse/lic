@@ -161,3 +161,10 @@
 - **CI blocker fix:** `array_affine_indices_disjoint` via `Fin.mk.injEq`; plus Lean 4.30 compat in `Discharge.lean` (`Int.natCast_nonneg`, `memory_disjoint_rows_spec` explicit `Fin` bounds, `Nat.succ_mul` grid bound, `Fin.mk.injEq` aliasing witnesses)
 - **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS** (~9s); `check-li-parallel-full-suite.sh` **PASS** (~219s)
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (non-affine general dependent subscripts open)
+
+## 2026-06-07 — G-par AutoVC local capture fix (code_implementer-1780815274024)
+
+- **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required
+- **CI blocker fix:** wire `emit_par_policy_formals`/`emit_par_policy_args` into par-policy VC emission so captured locals (e.g. `hits` in `dpar_for_range.li`) appear in AutoVC signatures; drop broken `@… _ _ _` witness application (infer from typed `LiArray` params)
+- **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS** (~32s); `check-li-parallel-full-suite.sh` **PASS** (~152s)
+- **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (non-affine general dependent subscripts open)

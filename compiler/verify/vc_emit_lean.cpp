@@ -568,8 +568,25 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
         vec3_len_sq_discharge_theorem || vec3_len_discharge_theorem) ||
        (proof_db_axiom_discharge && c.expr && !ensures_expr_mentions_result(*c.expr))) &&
       c.kind == ContractKind::Ensures;
+  const auto emit_result_formal = [&]() {
+    if (proc.ret_type && (c.kind == ContractKind::Ensures || c.kind == ContractKind::Invariant)) {
+      out << " (result : " << lean_type_name(*proc.ret_type, module) << ')';
+    }
+  };
+  const auto emit_result_arg = [&]() {
+    if (proc.ret_type && (c.kind == ContractKind::Ensures || c.kind == ContractKind::Invariant)) {
+      out << " result";
+    }
+  };
   out << "def " << name;
-  emit_formals(!semantic_ensures);
+  if (par_policy) {
+    emit_par_policy_formals(out, module, proc, c, loop_iter);
+    if (!semantic_ensures) {
+      emit_result_formal();
+    }
+  } else {
+    emit_formals(!semantic_ensures);
+  }
   out << " : Prop := " << prop << '\n';
 
   if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
@@ -708,7 +725,14 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
         par_disjoint_index_bound_policy(*c.expr);
     const auto index_bound_tag = index_bound ? par_disjoint_policy_witness(*c.expr) : std::nullopt;
     out << "theorem " << name << "_proved";
-    emit_formals(c.kind != ContractKind::Requires);
+    if (par_policy) {
+      emit_par_policy_formals(out, module, proc, c, loop_iter);
+      if (c.kind != ContractKind::Requires) {
+        emit_result_formal();
+      }
+    } else {
+      emit_formals(c.kind != ContractKind::Requires);
+    }
     if (index_bound && index_bound_tag) {
       const char* bound_spec =
           *index_bound_tag == "disjoint_elem" ? "index_bound_elem_spec" : "index_bound_row_spec";
@@ -728,9 +752,16 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       out << ')';
     }
     out << " : " << name;
-    emit_args(c.kind != ContractKind::Requires);
+    if (par_policy) {
+      emit_par_policy_args(out, proc, c, loop_iter);
+      if (c.kind != ContractKind::Requires) {
+        emit_result_arg();
+      }
+    } else {
+      emit_args(c.kind != ContractKind::Requires);
+    }
     if (auto discharge = par_disjoint_discharge_ref(*c.expr)) {
-      out << " := @" << *discharge << " _ _ _";
+      out << " := " << *discharge;
       if (c.expr->args[0]) {
         const VcCtx par_ctx;
         if (const auto a0 = expr_to_lean(*c.expr->args[0], par_ctx)) {

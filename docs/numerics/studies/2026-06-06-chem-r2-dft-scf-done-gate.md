@@ -12,7 +12,7 @@
 - **Done gate defined** for algo **418** (`qm_dft_scf_energy`): Li H₂ STO-3G mini SCF scaffold checksum + PySCF subprocess oracle.
 - **Li dispatch:** `run_qm_dft_scf_tier2_registry` replaces registry stub **1.001** with `echem_dft_h2_energy_hartree()` from `li-chem`.
 - **Composable gate:** `li-tests/composable/import_chem_dft_smoke.li` — required for `SIM_RESEARCH_VERTICAL=chem` research gates.
-- **External oracle:** `benchmarks/competitive/psi4_sto3g_h2_energy.py` (LGPL Psi4 RKS/LDA H₂ STO-3G, primary per #355); PySCF fallback `pyscf_sto3g_h2_energy.py`.
+- **External oracle:** `benchmarks/harness/qm_external_oracle.py` (`--external-oracle psi4|pyscf|skip`) subprocess drivers; Psi4 primary (`psi4_sto3g_h2_energy.py`, LGPL); PySCF fallback (`pyscf_sto3g_h2_energy.py`).
 - **Harness:** `scripts/bench-qm-dft-scf-energy.sh` — lic-side validity gate for catalog row `qm_dft_scf_energy` (family template `schrodinger_1d_barrier`; tier2 dirs in `li-langverse/benchmarks` post-#632).
 - **Perf / dashboard:** timing rows remain **deferred**; validity axis locked — no `threshold_ratio_cpp` relaxation until Ha parity tightens.
 
@@ -26,7 +26,7 @@
 | **Vertical route** | `run_simulation(vertical_qm_dft(), detail)` dispatches to 418 oracle | same smoke |
 | **Registry tier-2** | `run_algo_registry_tier2.li` asserts 418 checksum matches oracle | `packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li` |
 | **Composable** | `lic build li-tests/composable/import_chem_dft_smoke.li` succeeds | `li-tests/manifest.toml` composable row |
-| **Oracle (OSS)** | Psi4 H₂ STO-3G LDA energy JSON with `executed: true` when Psi4 installed | `benchmarks/competitive/psi4_sto3g_h2_energy.py` |
+| **Oracle (OSS)** | Psi4 H₂ STO-3G LDA energy JSON with `executed: true` when Psi4 installed | `benchmarks/harness/qm_external_oracle.py` |
 | **Harness JSON** | Validity/stability/accuracy axes locked; `threshold_ratio_cpp` not relaxed | `scripts/bench-qm-dft-scf-energy-gates.sh` |
 | **Honesty** | `verticals.toml` `qm_dft` notes pilot scaffold — not full Gaussian parity | `benchmarks/competitive/verticals.toml` |
 | **Study** | This file + chem-r0 survey remain canonical SOTA context | `docs/numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md` |

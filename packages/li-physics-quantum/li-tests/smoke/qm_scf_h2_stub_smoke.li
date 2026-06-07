@@ -1,0 +1,21 @@
+import physics.quantum
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_physics_quantum_version() != 3:
+    return 1
+  var e: float = qm_scf_h2_stub_energy()
+  if e >= 0.0:
+    return 2
+  var iters: int = qm_scf_h2_stub_iterations()
+  if iters < 1:
+    return 3
+  if iters > qm_scf_h2_max_iter():
+    return 4
+  var conv: int = qm_scf_h2_stub_converged()
+  if conv != 1:
+    return 5
+  return 0

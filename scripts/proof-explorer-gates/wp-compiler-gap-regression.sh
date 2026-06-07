@@ -7,6 +7,8 @@ cd "$ROOT"
 # shellcheck source=../lib/lic-bin-select.sh
 source "$ROOT/scripts/lib/lic-bin-select.sh"
 li_ensure_lic "$ROOT" "wp-compiler-gap-regression: build lic (./scripts/build.sh)" || exit 1
+li_export_lic "$ROOT" || exit 1
+export LIC="$ROOT/build/compiler/lic/lic"
 
 fail=0
 open=0

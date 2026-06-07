@@ -2,8 +2,10 @@
 # BUG-C-13 partial: proof_db_* axiom catalog specimens emit Discharge cites (not True stubs).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+cd "$ROOT"
 LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
-SAMPLE="$ROOT/proof-db/math/axioms/peano_succ_injective.li"
+case "$LIC" in ./*) LIC="$ROOT/${LIC#./}" ;; esac
+SAMPLE="proof-db/math/axioms/peano_succ_injective.li"
 VC_EMIT="$ROOT/compiler/verify/vc_emit_lean.cpp"
 VC_WITNESS="$ROOT/compiler/verify/vc_witness.cpp"
 DISCHARGE="$ROOT/docs/semantics/Discharge.lean"

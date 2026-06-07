@@ -8,9 +8,9 @@ fail=0
 bash scripts/proof-explorer-gates/wp0-schema.sh || fail=1
 
 for gate in \
-  wp-t10-01-site-sync \
   wp-t10-02-stale-prs-closed \
   wp-t10-03-proof-library-main \
+  wp-t10-01-site-sync \
   wp-t10-04-compiler-gaps \
   wp-t10-05-stub-audit-catalog \
   wp-t10-06-discrepancy-triage \

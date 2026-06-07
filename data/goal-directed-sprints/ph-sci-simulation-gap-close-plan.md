@@ -1,25 +1,27 @@
 ---
 workflow_repo: lic
-branch: cursor/ph-sci-gpu-chem-dft
+branch: main
 plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 ---
 
 # PH-SCI simulation gap-close plan
 
-**Status:** Phase 0 complete on `cursor/ph-ml-stage2-dl-spine` (gate: `scripts/ph-sci-phase0-gates.sh`, 2026-06-04)  
-**Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and planned `science_gpu` / `@gpu` placement coverage.  
+**Last updated:** 2026-06-06 · **main @** `e87165b7` (PH-SCI-GPU-16..19 via #847; HEAD may be newer)
+**Progress:** **19 / 33 WPs done (~58%)** — Phase 0 + Phase 1 **complete on `main`**
+**Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and `science_gpu` / `@gpu` placement coverage.
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
 
-## GPU Chem / DFT + Electrochemistry (headline — `cursor/ph-sci-gpu-chem-dft`)
+## GPU Chem / DFT + Electrochemistry (merged — #847 on `main`)
 
-See **[ph-sci-gpu-chem-dft.md](ph-sci-gpu-chem-dft.md)** for WP-SCI-GPU-CHEM-01..04, stub vs real audit, and PH-ML Phase 3 LKIR hooks. Electrochemistry WP-ECHEM-01..08 (CHE/SHE/EDL/NEB, potential-dependent SCF) and PH-SCI-GPU-16..19 gates live on that branch — see [ph-sci-electrochemistry-sim-plan.md](ph-sci-electrochemistry-sim-plan.md).
+See **[ph-sci-gpu-chem-dft.md](ph-sci-gpu-chem-dft.md)** for WP-SCI-GPU-CHEM-01..04, stub vs real audit, and PH-ML Phase 3 LKIR hooks. Electrochemistry WP-ECHEM-01..08 and PH-SCI-GPU-16..19 gates landed on **`main`** via PR #847 (`e87165b7`) — see [ph-sci-electrochemistry-sim-plan.md](ph-sci-electrochemistry-sim-plan.md). The `science_gpu` suite now includes **20** manifest rows (GPU-01..15 + GPU-16..19).
 
 ## Iteration rules
 
-1. Work **Phase 0 first** (BUILD-01 → BUILD-02 → GPU-00 → BUILD-03), then Phase 1 GPU smokes, then Phase 2+.
-2. One WP or logical chunk per iteration; commit + push to feature branch.
-3. Verify with WSL `./build-wsl/compiler/lic/lic build …` and `./li-tests/run_all.sh science_gpu` before ending an iteration.
-4. Do not mark the sprint done until `scripts/ph-sci-phase0-gates.sh` passes (Phase 0) and later phase gates as added.
+1. **Phase 0 + Phase 1 are done** — do not reopen unless a regression fails `scripts/ph-sci-phase0-gates.sh`.
+2. Work **Phase 2 next** ([ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md)), then Phase 3 vendor GPU.
+3. One WP or logical chunk per iteration; commit + push to a feature branch off `main`.
+4. Verify with WSL `./build-wsl/compiler/lic/lic build …` and `./li-tests/run_all.sh science_gpu` before ending an iteration.
+5. Phase 2+ gates TBD; Phase 0 gate remains the regression spine.
 
 ## Completion gate
 
@@ -29,15 +31,17 @@ bash scripts/ph-sci-phase0-gates.sh
 
 ## K8s handoff
 
-Homelab engine worker (namespace `li-swarm`):
+**Phase 2 worker** (current — does not auto-scale; run setup when ready):
 
 ```bash
 cd li-cursor-agents
 export KUBECONFIG=~/.kube/config-homelab
 export GH_TOKEN=... CURSOR_API_KEY=...
-bash scripts/setup-engine-k8s-ph-sci-simulation-gap-close.sh
-kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
+bash scripts/setup-engine-k8s-ph-sci-gap-close-phase2.sh
+kubectl -n li-swarm logs -f deploy/li-ph-sci-gap-close-phase2
 ```
+
+Legacy Phase 0 worker (`li-ph-sci-simulation-gap-close`) is superseded; keep scaled to 0 unless replaying history.
 
 ## Cross-references
 
@@ -53,17 +57,13 @@ kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
 | [2026-05-29-world-studio-master-plan-loop.md](../../docs/superpowers/plans/2026-05-29-world-studio-master-plan-loop.md) | Open WP-SCI-03 / WP-SCI-04 items |
 | `scripts/check-mir-gpu-decorator.sh` | `mir_gpu_def=1` gate (decorators only today) |
 
-### Parent context verification (`science_gpu`)
+### `science_gpu` on `main` (verified post-#847)
 
-- **On `cursor/ph-ml-stage2-dl-spine` (this audit branch):** No `science_gpu` suite or `*_gpu_*.li` under science/sim packages (only `li-ml` has `@gpu` smokes).
-- **On `cursor/def-only-implies-axiom`:** Landed **PH-SCI-GPU-01..15** (commits `22c27154`, `82b02323`) — merge or cherry-pick before closing **WP-SCI-GPU-00**.
-- **`@gpu` today:** MIR placement telemetry only (`li-tests/decorators/gpu_only_ok.li` → `mir_gpu_def=1` via `scripts/check-mir-gpu-decorator.sh`). Not vendor execution for science kernels.
-- **Blockers confirmed (WSL `lic build packages/<pkg>/src/lib.li`):**
-  - `li-physics-fluids`, `li-physics-em`, `li-physics-weather`: **E0201** (dynamic `while i < N` array indexing).
-  - `li-math-numerics`: **E0311** (move semantics on `var array` passed to `verlet_step_vec2` / `three_body_step_mini`).
-  - `li-physics-particles`, `li-physics-rigid`, `li-scene`, `li-sim-scientific`, `li-sim-robotics`, `li-sim-viz`: compile with **open VC** counts (smokes use `verify_ok` / `check_ok`).
-  - `li-physics-runtime`: **clean** `lic build` (Lean skip warning only).
-  - Package `builds.li` smokes are often **empty `main`** — they do **not** prove `src/lib.li` builds.
+- **`science_gpu` suite:** Registered in `li-tests/manifest.toml` — **20** tests (`PH-SCI-GPU-01..15` + `16..19` echem/chem DFT). Gate: `scripts/check-science-gpu-gate.sh`.
+- **Phase 0 lib compile:** `li-physics-fluids`, `li-physics-em`, `li-physics-weather`, `li-math-numerics` build under `scripts/ph-sci-phase0-gates.sh` (WP-SCI-BUILD-01/02).
+- **Honest smokes:** Phase 0 blocked libs import `src/lib.li` exports (WP-SCI-BUILD-03).
+- **`@gpu` today:** MIR placement telemetry (`mir_gpu_def=1` via `scripts/check-mir-gpu-decorator.sh`). Vendor LKIR execution remains Phase 3 (WP-SCI-GPU-VENDOR-01).
+- **Remaining lib gaps (Phase 2):** `run_algo_registry_stub` for most CFD/FEA rows; `li-sim-viz` compose-only; scene `native_pixels` stub; particles MD force accumulation still weak.
 
 ---
 
@@ -74,7 +74,7 @@ kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
 | Package | Maturity | Test coverage | `lic build` lib | Real vs placeholder | Known blockers |
 |---------|----------|---------------|-----------------|---------------------|----------------|
 | **li-sim** | contract-only / partial | CPU: `sim_step_stub`, env pool, profile bridge (`compile_open_ok`). No `@gpu`. | Runtime smokes OK; lib large, open VC on strict build | **Real:** deterministic tick/replay/env-pool contracts. **Placeholder:** `SimSessionStub` (no `SimWorld`), `sim_step` increments tick only | Object-call codegen #322 blocks some composables; SIM-4 full replay buffer stub |
-| **li-sim-scientific** | partial → tier-2 oracle | CPU: `multi_physics_tick`, `scientific_oracle_bench`, `run_algo_registry_tier2` (`verify_ok`). No `@gpu` in tree | Lib builds with open VC; smokes verify | **Real:** 4-particle LJ chain + 1D heat stencil oracles, `run_multi_physics_at_step`. **Placeholder:** `run_algo_registry_stub` (checksum 1.001) for most registry IDs | WP-SCI-03 registry; CFD/FEA rows stub; no LAMMPS/GROMACS external oracle |
+| **li-sim-scientific** | partial → tier-2 oracle | CPU + `@gpu` MD oracle smoke | Lib builds with open VC; smokes verify | **Real:** 4-particle LJ chain + 1D heat stencil oracles, `run_multi_physics_at_step`. **Placeholder:** `run_algo_registry_stub` (checksum 1.001) for most registry IDs | WP-SCI-03 registry; CFD/FEA rows stub; no LAMMPS/GROMACS external oracle |
 | **li-sim-viz** | stub / contract-only | CPU: `viz_pipeline`, `viz_viewport_fields` (`check_ok`). No `@gpu` | Open VC | **Real:** panel state machine + viewport field compose contract. **Placeholder:** `sim_viz_workload_class_stub`, no wgpu volume/field draw | WP-SCI-04; depends WP-GD-05 wgpu |
 | **li-sim-sensors** | partial stub | CPU: `sensor_bus_raycast_contract` | Open VC likely | **Real:** bounded hit distances + session persistence. **Placeholder:** analytic ray distances, not mesh/scene intersection | SIM-5 partial; no lidar mesh |
 | **li-sim-robotics** | partial | CPU: `tick_stub`, `workspace_bounds`, `robo_ik_6dof` | Open VC | **Real:** 2-DOF FK, 6-DOF numeric IK step, workspace checks. **Placeholder:** `sim_robotics_tick_at` wraps session + IK, not dynamics/collision | Not Gazebo/MoveIt; WP-ROBO-04/05 open |
@@ -85,13 +85,13 @@ kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
 | **li-physics-rigid** | partial | `builds.li`, composable `import_physics_runtime` | Open VC | **Real:** semi-implicit integrate, overlap tests. **Placeholder:** single-body game hook | Tier-2 bench vs `rigid_stack_core.c` |
 | **li-physics-runtime** | partial | `builds.li`, composable runtime | **Clean build** | **Real:** `physics_world_*`, substep loop, game hook. **Placeholder:** fluids/particles flags unused in full coupling | WP-GAME-02 scene sync |
 | **li-physics-particles** | partial (weak) | `builds.li` | Open VC | **Real:** LJ scalar, `md_mini_step` advection. **Placeholder:** `nbody_pair_force` empty body | Not MD force accumulation |
-| **li-physics-fluids** | partial (blocked lib) | `builds.li` only | **FAIL E0201** on `src/lib.li` | **Real (source):** SPH kernel, euler advect, heat step, PBD distance. **Blocked from build** | E0201 loops; blocks PH-SCI-GPU-04 |
-| **li-physics-em** | partial (blocked lib) | `builds.li` only | **FAIL E0201** | **Real (source):** Yee Ex update, Jacobi Poisson. **Blocked** | E0201; PH-SCI-GPU-05 |
-| **li-physics-weather** | partial (blocked lib) | `builds.li` only | **FAIL E0201** | **Real (source):** advect, diffuse, wind sample. **Blocked** | E0201; PH-SCI-GPU-07 |
+| **li-physics-fluids** | partial | `builds.li` + GPU smoke | **Build OK** (BUILD-01) | **Real:** SPH kernel, euler advect, heat step, PBD distance. **Placeholder:** full SPH sim | WP-SCI-06 cavity; PH-SCI-GPU-04 **done** |
+| **li-physics-em** | partial | `builds.li` + GPU smoke | **Build OK** (BUILD-01) | **Real:** Yee Ex update, Jacobi Poisson | PH-SCI-GPU-05 **done** |
+| **li-physics-weather** | partial | `builds.li` + GPU smoke | **Build OK** (BUILD-01) | **Real:** advect, diffuse, wind sample | PH-SCI-GPU-07 **done** |
 | **li-physics-chem** | partial | `builds.li` | No E0201; open VC | **Placeholder:** `arrhenius_rate` returns `k0` constant | Reaction/combustion loops need review |
 | **li-physics-quantum** | partial | `builds.li` | No E0201; open VC | **Real:** normalize_1d, norms. **Placeholder:** no time propagation | PH-SCI-GPU-06 candidate |
 | **li-physics-relativity** | partial | `builds.li` | Analytic formulas | No grid simulation | Niche; low sim priority |
-| **li-math-numerics** | partial (blocked lib) | `builds.li` only | **FAIL E0311** on `src/lib.li` | **Real (source):** Verlet, RK4, CG, three-body. **Blocked** | E0311 move; blocks PH-SCI-GPU-01 |
+| **li-math-numerics** | partial | `builds.li` + GPU smoke | **Build OK** (BUILD-02) | **Real:** Verlet, RK4, CG, three-body | PH-SCI-GPU-01 **done** |
 | **li-scene** | partial | `md_particle_tiers`, `md_particle_memory_ledger` (`verify_ok`) | Open VC | **Real:** tier metadata, lig ledger gate, draw tick. **Placeholder:** `native_pixels=0/1` flag only, no GPU particles | PH-SIM #9; WP-UX-13/14 |
 
 **Coupled but out of strict `li-sim-*` audit:** `li-studio` (profile multiplex, scientific viewport sync), `li-ml-rl` + `li-sim` (EnvPool), `li-render`/`lig` (wgpu, not simulation compute).
@@ -102,9 +102,9 @@ kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
 
 | Theme | Gap | Primary packages |
 |-------|-----|------------------|
-| **A. Lib compile** | E0201 on fluids/em/weather; E0311 on numerics; empty smokes mask lib failures | `li-physics-fluids`, `li-physics-em`, `li-physics-weather`, `li-math-numerics` |
+| **A. Lib compile** | Phase 0 BUILD-01/02/03 **done**; remaining packages still have open VC on strict build | `li-physics-fluids`, `li-physics-em`, `li-physics-weather`, `li-math-numerics` |
 | **B. Real physics kernels** | Tier-2 oracles only in `li-sim-scientific`; particles MD force empty; registry mostly stub; no CFD/FEA bench | `li-sim-scientific`, `li-physics-particles`, `verticals.toml` |
-| **C. GPU placement vs execution** | No `science_gpu` on mainline branch audited here; feature branch has 15 smokes (some std-tag fallbacks until BUILD-01/02); `@gpu` = MIR tag only | All physics + numerics; pattern in `li-ml/li-tests/smoke/ml_gpu_*.li` |
+| **C. GPU placement vs execution** | `science_gpu` suite on `main` (20 tests); `@gpu` = MIR placement today; vendor LKIR execution Phase 3 | All physics + numerics; pattern in `li-ml/li-tests/smoke/ml_gpu_*.li` |
 | **D. Viz / render** | `sim.viz` compose-only; scene `native_pixels` stub; no field/volume draw | `li-sim-viz`, `li-scene`, `li-render`, `li-studio` |
 | **E. Sensors** | Raycast analytic stub, no scene mesh | `li-sim-sensors` |
 | **F. Robotics** | IK numeric only; no dynamics, ROS2, factory layout | `li-sim-robotics` |
@@ -120,9 +120,9 @@ kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
 
 **Effort:** S ≈ 1–3 days, M ≈ 1–2 weeks, L ≈ multi-week / cross-team.
 
-### Phase 0 — Unblock builds (P0)
+### Phase 0 — Unblock builds (P0) — **DONE on main**
 
-#### WP-SCI-BUILD-01 — E0201-safe indexing in fluids / em / weather
+#### WP-SCI-BUILD-01 — E0201-safe indexing in fluids / em / weather — **DONE**
 
 - **Goal:** `lic build packages/li-physics-{fluids,em,weather}/src/lib.li` succeeds (no E0201).
 - **Scope:** `packages/li-physics-fluids/src/lib.li`, `li-physics-em/src/lib.li`, `li-physics-weather/src/lib.li`; package smokes that `import` these modules.
@@ -132,7 +132,7 @@ kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
 - **Acceptance:** `lic build packages/li-physics-fluids/src/lib.li` (and em, weather) exit 0; package smokes `compile_open_ok`.
 - **Priority / effort:** P0 / M
 
-#### WP-SCI-BUILD-02 — numerics move-semantics (E0311)
+#### WP-SCI-BUILD-02 — numerics move-semantics (E0311) — **DONE**
 
 - **Goal:** `lic build packages/li-math-numerics/src/lib.li` succeeds.
 - **Scope:** `verlet_step_vec2`, `three_body_step_mini`, `rk4_step_4`, `cg_iteration` — `var array` actual parameters.
@@ -142,7 +142,7 @@ kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
 - **Acceptance:** `lic build packages/li-math-numerics/src/lib.li` exit 0; `numerics_gpu_three_body.li` `compile_open_ok` (once WP-SCI-GPU-00 registers suite).
 - **Priority / effort:** P0 / M
 
-#### WP-SCI-BUILD-03 — Honest package smokes
+#### WP-SCI-BUILD-03 — Honest package smokes — **DONE**
 
 - **Goal:** Every audited package `builds.li` imports and calls ≥1 exported `def` from `src/lib.li`.
 - **Scope:** All rows in §1 with empty `main` smokes.
@@ -151,11 +151,11 @@ kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
 - **Acceptance:** `lic build packages/<pkg>/li-tests/smoke/builds.li` fails if lib broken.
 - **Priority / effort:** P0 / S
 
-#### WP-SCI-GPU-00 — Register `science_gpu` suite
+#### WP-SCI-GPU-00 — Register `science_gpu` suite — **DONE**
 
 - **Goal:** Monorepo `li-tests/manifest.toml` suite `science_gpu` with PH-SCI-GPU IDs (01..15).
 - **Scope:** `li-tests/manifest.toml`, `scripts/ci-*` if needed, `li-tests/run_all.sh science_gpu`.
-- **Current / gap:** Suite absent; parent context only.
+- **Status:** **DONE** — 20 manifest rows on `main`; gate in `scripts/check-science-gpu-gate.sh`.
 - **Deliverables:** Manifest block; `scripts/check-science-gpu-gate.sh` wrapping `run_all.sh science_gpu` + optional `check-mir-gpu-decorator.sh`.
 - **Dependencies:** WP-SCI-BUILD-01/02 for import paths.
 - **Acceptance:** `./li-tests/run_all.sh science_gpu` runs N tests; CI doc link.
@@ -163,7 +163,7 @@ kubectl -n li-swarm logs -f deploy/li-ph-sci-simulation-gap-close
 
 ---
 
-### Phase 1 — `@gpu` smokes → real lib compute (P0–P1)
+### Phase 1 — `@gpu` smokes → real lib compute (P0–P1) — **DONE on `main`** (20 `science_gpu` tests)
 
 Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `li-ml` `ml_gpu_matmul_stub.li`). Acceptance includes `lic verify` → `mir_gpu_def=1` until vendor path exists.
 
@@ -189,7 +189,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 
 ---
 
-### Phase 2 — Deepen simulation verticals (P1–P2)
+### Phase 2 — Deepen simulation verticals (P1–P2) — **OPEN** (see [ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md))
 
 #### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID)
 
@@ -279,7 +279,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 
 ---
 
-### Phase 3 — Vendor GPU / LKIR path (P2)
+### Phase 3 — Vendor GPU / LKIR path (P2) — **OPEN** (next P0: WP-SCI-GPU-VENDOR-01)
 
 Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-plan.md) Waves 2, 11–13, Stage 2.
 
@@ -311,19 +311,19 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 
 ## 4. WP summary
 
-| Phase | WP count | P0 items |
-|-------|----------|----------|
-| Phase 0 | 4 | BUILD-01, BUILD-02, BUILD-03, GPU-00 |
-| Phase 1 | 15 | GPU-01, 02, 04, 05, 07 (+ BUILD deps) |
-| Phase 2 | 11 | SCI-03, SCI-04, SIM-04, SIM-05, GAME-02, PLAT-05, … |
-| Phase 3 | 3 | Vendor pilot chain |
-| **Total** | **33** | |
+| Phase | WP count | Status | Next P0 |
+|-------|----------|--------|---------|
+| Phase 0 | 4 | **DONE** (BUILD-01..03, GPU-00) | regression only |
+| Phase 1 | 15 | **DONE** (GPU-01..15 on `main`; + GPU-16..19 via #847) | regression only |
+| Phase 2 | 11 | **OPEN** | WP-SCI-03 registry |
+| Phase 3 | 3 | **OPEN** | WP-SCI-GPU-VENDOR-01 |
+| **Total** | **33** | **19 done (~58%)** | |
 
-### Top 3 P0 items (start here)
+### Top 3 P0 items (Phase 2 — start here)
 
-1. **WP-SCI-BUILD-01** — Fix E0201 in `li-physics-fluids`, `li-physics-em`, `li-physics-weather` so science PDE libs actually compile.
-2. **WP-SCI-BUILD-02** — Fix E0311 move semantics in `li-math-numerics` (blocks three-body / Verlet reference kernels).
-3. **WP-SCI-GPU-00 + WP-SCI-BUILD-03** — Land `science_gpu` suite with honest smokes so gaps cannot hide behind empty `builds.li`.
+1. **WP-SCI-03** — Replace `run_algo_registry_stub` for CFD/FEA/QM rows with real dispatch or tier-2 oracles.
+2. **WP-SCI-04** — `sim.viz` → wgpu field draw for scientific profile (depends WP-GD-05).
+3. **WP-PLAT-05** — LAMMPS/GROMACS external oracle column for MD tier-2 bench.
 
 ---
 
@@ -335,7 +335,6 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 | **li-ml-rl** | RL env pool — covered under PH-SIM SIM-3 / PH-ML, not simulation physics |
 | **li-render / lig** | wgpu present path — PH-HW / WP-GD-05, not kernel audit |
 | **Windows native `lic build`** | Crashed (exit 0xC0000139) in audit shell; WSL `build-wsl` used instead |
-| **science_gpu file bodies** | Designed in unmerged session; IDs reserved in Phase 1 table |
 
 ---
 
@@ -374,4 +373,4 @@ LIG_EMIT_CUDA=1 ./build-wsl/compiler/lic/lic build packages/li-ml/li-tests/smoke
 | WP-SIM-04/05 | PH-SIM SIM-2/5/6 |
 | WP-SCI-GPU-VENDOR-* | PH-ML-GPU battle plan Waves 11–13, Stage 2 |
 
-*Plan-only document — no code changes in this commit.*
+*Tracking document — Phase 0/1 landed on `main`; Phase 2 kickoff: [ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md).*

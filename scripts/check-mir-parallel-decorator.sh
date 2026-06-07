@@ -13,9 +13,14 @@ echo "$inherit_out" | grep -qE 'mir_parallel_disjoint=[1-9]'
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 "$LIC" build "$DECOR" -o "$tmp/par" --release >/dev/null
-if command -v llvm-nm >/dev/null 2>&1; then llvm-nm "$tmp/par" | grep -q 'li_omp_parallel_for_i64'
-elif command -v nm >/dev/null 2>&1; then nm "$tmp/par" | grep -q 'li_omp_parallel_for_i64'
-else echo "check-mir-parallel-decorator: skip OpenMP symbol check" >&2
+nm_bin=""
+for cand in llvm-nm "llvm-nm-${LI_LLVM_MAJOR:-22}" nm; do
+  if command -v "$cand" >/dev/null 2>&1; then nm_bin="$cand"; break; fi
+done
+if [[ -n "$nm_bin" ]]; then
+  grep -q 'li_omp_parallel_for_i64' < <("$nm_bin" "$tmp/par" 2>/dev/null)
+else
+  echo "check-mir-parallel-decorator: skip OpenMP symbol check" >&2
 fi
 "$ROOT/li-tests/run_all.sh" race_shared_memory >/dev/null
 echo check-mir-parallel-decorator: ok

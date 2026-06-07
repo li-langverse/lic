@@ -6,6 +6,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT/scripts/llvm-env.sh"
 li_detect_compilers
 export LI_REPO_ROOT="$ROOT"
+export LIC_ROOT="$ROOT"
 export CC CXX
 export LI_ALLOW_OPEN_VC="${LI_ALLOW_OPEN_VC:-1}"
 export LIC="$("$ROOT/scripts/resolve-lic.sh")"

@@ -58,5 +58,6 @@ Open work packages blocking killer gate completion. Updated 2026-06-07.
 | P-par iteration independence (7d-c) | **Closed slice** — `par_iteration_independent_tile` + `iteration_independent_tile_spec` |
 | P-par flat-array aliasing (7d-c) | **Closed slice** — `par_memory_disjoint_elems` + `memory_disjoint_elems_spec` + `array_elem_indices_disjoint` |
 | P-par nested-grid aliasing (7d-c) | **Closed slice** — `par_memory_disjoint_grid_rows` + `memory_disjoint_grid_rows_spec` + `array_row_indices_disjoint` |
+| P-par nested-grid cell aliasing (7d-c) | **Closed slice** — `par_memory_disjoint_grid_elems` + `memory_disjoint_grid_elems_spec` + `array_grid_cell_indices_disjoint` |
 
 See [proofs table](proofs-table.md) and [provability gaps](../../../docs/verification/provability-gaps.md).

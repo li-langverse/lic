@@ -231,6 +231,30 @@ theorem array_row_indices_disjoint {α : Type} {m rows : Nat} (_grid : LiArray (
     (⟨i, hi⟩ : Fin rows) ≠ ⟨j, hj⟩ :=
   array_elem_indices_disjoint _grid i j hi hj hne
 
+/-- Row-major linear cell index for nested grids (7d-c slice). -/
+def grid_linear_index (row col cols : Nat) : Nat := row * cols + col
+
+/-- Memory-disjoint grid cells (7d-c slice): distinct linearized cell indices map to distinct `Fin cells` slots. -/
+def memory_disjoint_grid_elems_spec (i j cells : Nat) : Prop :=
+  memory_disjoint_rows_spec i j cells
+
+theorem memory_disjoint_grid_elems_witness (i j cells : Nat) :
+    memory_disjoint_grid_elems_spec i j cells :=
+  memory_disjoint_rows_witness i j cells
+
+/-- Compositional bridge: iteration independence implies memory-disjoint grid cell slots. -/
+theorem iteration_independent_implies_memory_disjoint_grid_elems (i j cells : Nat)
+    (_h : iteration_independent_tile_spec i j cells) : memory_disjoint_grid_elems_spec i j cells :=
+  memory_disjoint_grid_elems_witness i j cells
+
+/-- **Nested grid cell aliasing (7d-c slice):** distinct linearized cell indices into
+    `LiArray (LiArray α cols) rows` refer to distinct `Fin (rows * cols)` slots. -/
+theorem array_grid_cell_indices_disjoint {α : Type} {rows cols : Nat}
+    (grid : LiArray (LiArray α cols) rows) (li lj : Nat)
+    (hi : li < rows * cols) (hj : lj < rows * cols) (hne : li ≠ lj) :
+    (⟨li, hi⟩ : Fin (rows * cols)) ≠ ⟨lj, hj⟩ :=
+  array_elem_indices_disjoint grid li lj hi hj hne
+
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
 

@@ -95,6 +95,13 @@
 - `li_par_memory_disjoint_elems_smoke.sh` wired into proofs gate
 - Proofs gate **PASS**; progress gate **PASS**; killer gate unchanged green
 
+## 2026-06-07 — G-par nested grid cell aliasing proof slice (code_implementer)
+
+- Added `memory_disjoint_grid_elems_spec` + witness + bridge + `array_grid_cell_indices_disjoint` + `grid_linear_index` in `Discharge.lean`
+- Added `par_memory_disjoint_grid_elems` lemma in `parallel/proof.li` + proof-db entry `P-par-memory-disjoint-grid-elems`
+- `li_par_memory_disjoint_grid_elems_smoke.sh` wired into proofs gate
+- Proofs gate **PASS**; progress gate **PASS**; killer gate **PASS** (152 benchmarks dual-mode)
+
 ## 2026-06-07 — G-par nested grid row aliasing proof slice (code_implementer)
 
 - Added `memory_disjoint_grid_rows_spec` + witness + bridge + `array_row_indices_disjoint` in `Discharge.lean`

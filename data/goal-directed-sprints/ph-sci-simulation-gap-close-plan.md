@@ -198,6 +198,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.
 - **Acceptance:** `run_algo_registry_tier2.li` extended; stub only for explicitly documented IDs.
 - **Priority / effort:** P1 / L
+- **Status:** partial (2026-06-07) — CFD (205–210) + FEA (211–216) tier-2 oracles landed; QM 401–432 remain documented stub (`checksum=1.001`).
 
 #### WP-SCI-04 — `sim.viz` → wgpu field draw (extends existing ID)
 

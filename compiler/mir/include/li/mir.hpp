@@ -284,6 +284,7 @@ struct MirModule {
 std::size_t count_mir_vectorized_proc(const MirModule& mir);
 std::size_t count_mir_gpu_def(const MirModule& mir);
 std::size_t count_mir_gpu_multi_device_def(const MirModule& mir);
+/** Count `@parallel(disjoint=…)` on `def` plus proved `OmpParallelFor` sites (**G-par** / **G-dec**). */
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);

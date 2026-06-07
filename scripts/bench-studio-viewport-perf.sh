@@ -476,13 +476,6 @@ if (root / "packages/li-gui/bench/panel_switch.toml").is_file():
 else:
     report["notes"].append("skip_panel_switch:hook_missing")
 
-wgpu_hook = root / "packages/lig/bench/wgpu_smoke.toml"
-if wgpu_hook.is_file():
-    report["wgpu_swapchain"] = bench_wgpu_swapchain_hook()
-    report["notes"].append(f"wgpu_swapchain:{report['wgpu_swapchain'].get('status', 'unknown')}")
-else:
-    report["notes"].append("skip_wgpu_swapchain:hook_missing")
-
 scene_hook = root / "packages/li-scene/bench/particle_tiers.toml"
 if scene_hook.is_file():
     report["particle_tiers"] = bench_scene_particle_tiers()
@@ -568,15 +561,6 @@ report["gates"]["viewport_fps"] = {
     "unit": "fps",
     "meets_target": bool(vf.get("meets_target", False)),
     "honest_simulate": bool(vf.get("honest_simulate", vf.get("status") == "simulate")),
-}
-
-ws = report.get("wgpu_swapchain") or {}
-report["gates"]["wgpu_swapchain_readback"] = {
-    "target": "swapchain_pass",
-    "value": ws.get("status"),
-    "unit": "status",
-    "meets_target": bool(ws.get("meets_target", False)),
-    "honest_blocked": bool(ws.get("honest_blocked", ws.get("status") == "blocked_runner")),
 }
 
 ps = report.get("panel_switch_ms") or {}

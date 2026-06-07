@@ -11,6 +11,7 @@ REGISTRY="$BENCHMARKS_COMPETITIVE/ph-ml.toml"
 OUT="$BENCHMARKS_RESULTS/ph-ml-competitive.json"
 mkdir -p "$BENCHMARKS_RESULTS"
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul.sh"
+bash "$ROOT/scripts/bench-ph-ml-li-array-matmul.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-16.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-32.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
@@ -87,6 +88,7 @@ def comp_row(src, li_sec, cid, inc, wc, note):
 
 
 matmul = load("ph-ml-lkir-matmul.json")
+liarray_matmul = load("ph-ml-li-array-matmul.json")
 matmul32 = load("ph-ml-lkir-matmul-32.json")
 mlp = load("ph-ml-mlp-forward.json")
 train = load("ph-ml-mlp-train-step.json")
@@ -119,6 +121,17 @@ sb3_vecenv = load("ph-ml-competitor-sb3-vecenv.json")
 ray_rllib = load("ph-ml-competitor-ray-rllib.json")
 
 rows = [
+    {
+        "id": "li_array_matmul_4x4",
+        "kernel": "array.matmul",
+        "workload_class": "tier3_cpu" if liarray_matmul.get("executed") and liarray_matmul.get("validity_gate_pass") else "pilot",
+        "workload_note": "4x4 f32 matmul via ArrayDesc -> ml_tensor_matmul_64; run-only cpu_sec",
+        "executed": bool(liarray_matmul.get("executed")),
+        "li": li_row(liarray_matmul, "tier3_cpu" if liarray_matmul.get("executed") and liarray_matmul.get("validity_gate_pass") else "pilot"),
+        "competitors": [
+            comp_row(numpy_m, liarray_matmul.get("cpu_sec"), "python_numpy", "NumPy BLAS matmul 4x4", "blas_labeled", "same-size reference"),
+        ],
+    },
     {
         "id": "matmul_lkir",
         "kernel": "ml.lkir.matmul_f32",

@@ -13,10 +13,10 @@ type Emitter = object
   public burst: int
 def li_std_physics_particles_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 def emitter_tick(e: Emitter, dt: float) -> int
   requires dt >= 0.0
   ensures result >= 0
@@ -35,6 +35,384 @@ def nbody_pair_force(
   decreases 0
 =
   return
+
+# --- sim-p1-md-neighbor-cell: half-shell cell-linked neighbor list (N=16 micro) ---
+
+def neighbor_particle_count() -> int
+  requires true
+  ensures result == 16
+  decreases 0
+=
+  return 16
+
+def neighbor_box_len() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 5.0
+
+def neighbor_cutoff() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 2.5
+
+def neighbor_cell_ncell(box: float, rc: float) -> int
+  requires box > 0.0
+  requires rc > 0.0
+  ensures result >= 1
+  ensures result <= 4
+  decreases 0
+=
+  var n: int = 1
+  while n < 4
+    var cell_size: float = box / (n + 1)
+    if cell_size >= rc:
+      return n + 1
+    n = n + 1
+  return 4
+
+def neighbor_cell_index(cx: int, cy: int, cz: int, ncell: int) -> int
+  requires cx >= 0
+  requires cy >= 0
+  requires cz >= 0
+  requires ncell >= 1
+  requires ncell <= 4
+  ensures result >= 0
+  decreases 0
+=
+  return cx + ncell * (cy + ncell * cz)
+
+def neighbor_mic(dx: float, box: float) -> float
+  requires box > 0.0
+  ensures result >= -box
+  ensures result <= box
+  decreases 0
+=
+  var half: float = 0.5 * box
+  if dx > half:
+    return dx - box
+  if dx < -half:
+    return dx + box
+  return dx
+
+def neighbor_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
+  requires rc2 > 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  if r2 >= rc2:
+    return 0.0
+  if r2 < 1.0e-12:
+    return 0.0
+  var inv_r2: float = 1.0 / r2
+  var inv_r6: float = inv_r2 * inv_r2 * inv_r2
+  var inv_r12: float = inv_r6 * inv_r6
+  var f_scalar: float = 48.0 * inv_r12 - 24.0 * inv_r6
+  return f_scalar * dx
+
+def neighbor_init_lattice_px(idx: int) -> float
+  requires idx >= 0
+  requires idx < neighbor_particle_count()
+  ensures result >= 0.0
+  decreases idx
+=
+  var col: int = idx % 4
+  var spacing: float = 1.12
+  if col == 0:
+    return 0.0
+  if col == 1:
+    return spacing
+  if col == 2:
+    return spacing + spacing
+  return spacing + spacing + spacing
+
+def neighbor_init_lattice_py(idx: int) -> float
+  requires idx >= 0
+  requires idx < neighbor_particle_count()
+  ensures result >= 0.0
+  decreases idx
+=
+  var row: int = idx / 4
+  var spacing: float = 1.12
+  if row == 0:
+    return 0.0
+  if row == 1:
+    return spacing
+  if row == 2:
+    return spacing + spacing
+  return spacing + spacing + spacing
+
+def neighbor_init_lattice_pz(idx: int) -> float
+  requires idx >= 0
+  requires idx < neighbor_particle_count()
+  ensures result >= 0.0
+  decreases idx
+=
+  var layer: int = idx / 8
+  var spacing: float = 1.12
+  if layer == 0:
+    return 0.0
+  return spacing
+
+def neighbor_forces_lj_brute(
+    px: array[16, float], py: array[16, float], pz: array[16, float],
+    fx: var array[16, float], fy: var array[16, float], fz: var array[16, float]) -> unit
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var n: int = neighbor_particle_count()
+  var box: float = neighbor_box_len()
+  var rc: float = neighbor_cutoff()
+  var rc2: float = rc * rc
+  var i: int = 0
+  while i < n
+    fx[i] = 0.0
+    fy[i] = 0.0
+    fz[i] = 0.0
+    i = i + 1
+  i = 0
+  while i < n
+    var j: int = i + 1
+    while j < n
+      var dx: float = neighbor_mic(px[j] - px[i], box)
+      var dy: float = neighbor_mic(py[j] - py[i], box)
+      var dz: float = neighbor_mic(pz[j] - pz[i], box)
+      var r2: float = dx * dx + dy * dy + dz * dz
+      var fxi: float = neighbor_lj_fx_pair(dx, r2, rc2)
+      var fyi: float = neighbor_lj_fx_pair(dy, r2, rc2)
+      var fzi: float = neighbor_lj_fx_pair(dz, r2, rc2)
+      fx[i] = fx[i] - fxi
+      fy[i] = fy[i] - fyi
+      fz[i] = fz[i] - fzi
+      fx[j] = fx[j] + fxi
+      fy[j] = fy[j] + fyi
+      fz[j] = fz[j] + fzi
+      j = j + 1
+    i = i + 1
+
+def neighbor_forces_lj_cell(
+    px: array[16, float], py: array[16, float], pz: array[16, float],
+    fx: var array[16, float], fy: var array[16, float], fz: var array[16, float]) -> unit
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var n: int = neighbor_particle_count()
+  var box: float = neighbor_box_len()
+  var rc: float = neighbor_cutoff()
+  var rc2: float = rc * rc
+  var ncell: int = neighbor_cell_ncell(box, rc)
+  var cell_head: array[64, int]
+  var next_idx: array[16, int]
+  var i: int = 0
+  while i < 64
+    cell_head[i] = -1
+    i = i + 1
+  i = 0
+  while i < n
+    fx[i] = 0.0
+    fy[i] = 0.0
+    fz[i] = 0.0
+    next_idx[i] = -1
+    i = i + 1
+  i = 0
+  while i < n
+    var cx: int = 0
+    var cy: int = 0
+    var cz: int = 0
+    var cell_size: float = box / ncell
+    cx = 0
+    while cx < ncell
+      if px[i] >= cx * cell_size:
+        if px[i] < (cx + 1) * cell_size:
+          cy = 0
+          while cy < ncell
+            if py[i] >= cy * cell_size:
+              if py[i] < (cy + 1) * cell_size:
+                cz = 0
+                while cz < ncell
+                  if pz[i] >= cz * cell_size:
+                    if pz[i] < (cz + 1) * cell_size:
+                      var cidx: int = neighbor_cell_index(cx, cy, cz, ncell)
+                      next_idx[i] = cell_head[cidx]
+                      cell_head[cidx] = i
+                  cz = cz + 1
+              cy = cy + 1
+      cx = cx + 1
+    i = i + 1
+  var cz1: int = 0
+  while cz1 < ncell
+    var cy1: int = 0
+    while cy1 < ncell
+      var cx1: int = 0
+      while cx1 < ncell
+        var cell1: int = neighbor_cell_index(cx1, cy1, cz1, ncell)
+        var cz2: int = cz1
+        while cz2 < ncell
+          var y_start: int = 0
+          if cz2 == cz1:
+            y_start = cy1
+          var cy2: int = y_start
+          while cy2 < ncell
+            var x_start: int = 0
+            if cz2 == cz1:
+              if cy2 == cy1:
+                x_start = cx1
+            var cx2: int = x_start
+            while cx2 < ncell
+              var cell2: int = neighbor_cell_index(cx2, cy2, cz2, ncell)
+              var pi: int = cell_head[cell1]
+              while pi >= 0
+                var pj: int = -1
+                if cell1 == cell2:
+                  pj = next_idx[pi]
+                else:
+                  pj = cell_head[cell2]
+                while pj >= 0
+                  var dx: float = neighbor_mic(px[pj] - px[pi], box)
+                  var dy: float = neighbor_mic(py[pj] - py[pi], box)
+                  var dz: float = neighbor_mic(pz[pj] - pz[pi], box)
+                  var r2: float = dx * dx + dy * dy + dz * dz
+                  var fxi: float = neighbor_lj_fx_pair(dx, r2, rc2)
+                  var fyi: float = neighbor_lj_fx_pair(dy, r2, rc2)
+                  var fzi: float = neighbor_lj_fx_pair(dz, r2, rc2)
+                  fx[pi] = fx[pi] - fxi
+                  fy[pi] = fy[pi] - fyi
+                  fz[pi] = fz[pi] - fzi
+                  fx[pj] = fx[pj] + fxi
+                  fy[pj] = fy[pj] + fyi
+                  fz[pj] = fz[pj] + fzi
+                  pj = next_idx[pj]
+                pi = next_idx[pi]
+              cx2 = cx2 + 1
+            cy2 = cy2 + 1
+          cz2 = cz2 + 1
+        cx1 = cx1 + 1
+      cy1 = cy1 + 1
+    cz1 = cz1 + 1
+
+def neighbor_force_delta(
+    fx_a: array[16, float], fy_a: array[16, float], fz_a: array[16, float],
+    fx_b: array[16, float], fy_b: array[16, float], fz_b: array[16, float]) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var n: int = neighbor_particle_count()
+  var max_d: float = 0.0
+  var i: int = 0
+  while i < n
+    var dx: float = fx_a[i] - fx_b[i]
+    var dy: float = fy_a[i] - fy_b[i]
+    var dz: float = fz_a[i] - fz_b[i]
+    var d2: float = dx * dx + dy * dy + dz * dz
+    if d2 > max_d:
+      max_d = d2
+    i = i + 1
+  var r: float = max_d
+  if max_d > 1.0:
+    r = max_d * 0.5 + 0.5
+  var k: int = 0
+  while k < 8
+    r = 0.5 * (r + max_d / r)
+    k = k + 1
+  return r
+
+def neighbor_force_parity_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var px: array[16, float]
+  var py: array[16, float]
+  var pz: array[16, float]
+  var fx_brute: array[16, float]
+  var fy_brute: array[16, float]
+  var fz_brute: array[16, float]
+  var fx_cell: array[16, float]
+  var fy_cell: array[16, float]
+  var fz_cell: array[16, float]
+  var i: int = 0
+  while i < neighbor_particle_count()
+    px[i] = neighbor_init_lattice_px(i)
+    py[i] = neighbor_init_lattice_py(i)
+    pz[i] = neighbor_init_lattice_pz(i)
+    i = i + 1
+  neighbor_forces_lj_brute(px, py, pz, fx_brute, fy_brute, fz_brute)
+  neighbor_forces_lj_cell(px, py, pz, fx_cell, fy_cell, fz_cell)
+  var max_d: float = neighbor_force_delta(fx_brute, fy_brute, fz_brute, fx_cell, fy_cell, fz_cell)
+  if max_d > 1.0e-8:
+    return 0
+  return 1
+
+def neighbor_oracle_checksum() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var px: array[16, float]
+  var py: array[16, float]
+  var pz: array[16, float]
+  var vx: array[16, float]
+  var vy: array[16, float]
+  var vz: array[16, float]
+  var fx: array[16, float]
+  var fy: array[16, float]
+  var fz: array[16, float]
+  var i: int = 0
+  while i < neighbor_particle_count()
+    px[i] = neighbor_init_lattice_px(i)
+    py[i] = neighbor_init_lattice_py(i)
+    pz[i] = neighbor_init_lattice_pz(i)
+    vx[i] = 0.0
+    vy[i] = 0.0
+    vz[i] = 0.0
+    i = i + 1
+  var e0: float = 0.0
+  i = 0
+  while i < neighbor_particle_count()
+    e0 = e0 + 0.5 * (vx[i] * vx[i] + vy[i] * vy[i] + vz[i] * vz[i])
+    i = i + 1
+  var dt: float = 0.004
+  var step: int = 0
+  while step < 4
+    neighbor_forces_lj_cell(px, py, pz, fx, fy, fz)
+    i = 0
+    while i < neighbor_particle_count()
+      vx[i] = vx[i] + 0.5 * dt * fx[i]
+      vy[i] = vy[i] + 0.5 * dt * fy[i]
+      vz[i] = vz[i] + 0.5 * dt * fz[i]
+      px[i] = px[i] + dt * vx[i]
+      py[i] = py[i] + dt * vy[i]
+      pz[i] = pz[i] + dt * vz[i]
+      i = i + 1
+    neighbor_forces_lj_cell(px, py, pz, fx, fy, fz)
+    i = 0
+    while i < neighbor_particle_count()
+      vx[i] = vx[i] + 0.5 * dt * fx[i]
+      vy[i] = vy[i] + 0.5 * dt * fy[i]
+      vz[i] = vz[i] + 0.5 * dt * fz[i]
+      i = i + 1
+    step = step + 1
+  var e1: float = 0.0
+  i = 0
+  while i < neighbor_particle_count()
+    e1 = e1 + 0.5 * (vx[i] * vx[i] + vy[i] * vy[i] + vz[i] * vz[i])
+    i = i + 1
+  var denom: float = e0
+  if e1 > denom:
+    denom = e1
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = e1 - e0
+  if diff < 0.0:
+    diff = -diff
+  return diff / denom
 
 # Lennard-Jones force scalar (truncated at cutoff)
 def lj_force_scalar(r: float, epsilon: float, sigma: float, rc: float) -> float

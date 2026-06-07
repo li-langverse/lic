@@ -1748,3 +1748,9 @@ suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/echem_solvent_gr_smoke.li"
 outcome = "compile_open_ok"
 note = "WP-ECHEM-10 explicit water sphere g(r) peak smoke"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-particles/li-tests/smoke/neighbor_force_parity_smoke.li"
+outcome = "compile_open_ok"
+note = "sim-p1-md-neighbor-cell force parity smoke (algo 105)"

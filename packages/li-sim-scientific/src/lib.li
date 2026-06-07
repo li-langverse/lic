@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -627,6 +627,39 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def sim_scientific_oracle_checksum_md_neighbor() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return neighbor_oracle_checksum()
+
+def run_md_neighbor_cell_smoke(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id == 105
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  if neighbor_force_parity_smoke() != 1:
+    var bad: SimRunResult
+    bad.ok = 0
+    bad.algo_id = algo_id
+    bad.vertical_id = vertical_md_lennard_jones()
+    bad.checksum = 0.0
+    bad.detail_emitted = detail
+    return bad
+  var chk: float = sim_scientific_oracle_checksum_md_neighbor()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_md_lennard_jones()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_md_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -637,6 +670,9 @@ def run_md_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
+  if algo_id == 105:
+    var d_nb: int = detail
+    return run_md_neighbor_cell_smoke(algo_id, d_nb)
   var chk: float = sim_scientific_oracle_checksum_md()
   var r: SimRunResult
   r.ok = 1

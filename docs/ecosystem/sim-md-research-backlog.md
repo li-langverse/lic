@@ -65,8 +65,9 @@ todos:
   study_only: true
 
 - id: md-r2-neighbor-list-gap
-  content: "sim-md-research: pending plan todo md-r2-neighbor-list-gap — gap orchestrator"
-  status: pending
+  content: "Cell-linked neighbor list gap (algo 105); handoff sim-p1-md-neighbor-cell"
+  status: completed
+  study_only: true
   handoff_implement: sim-p1-md-neighbor-cell
 
 - id: md-r3-oracle-plan

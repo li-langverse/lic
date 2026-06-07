@@ -357,7 +357,7 @@ theorem array_affine_indices_disjoint {α : Type} {n : Nat}
     (hs : 0 < stride) (hi : affine_index stride offset i < n) (hj : affine_index stride offset j < n)
     (hne : i ≠ j) :
     (⟨affine_index stride offset i, hi⟩ : Fin n) ≠ ⟨affine_index stride offset j, hj⟩ :=
-  fun heq => affine_index_injective stride offset i j hs hne (Fin.ext heq)
+  fun heq => (affine_index_injective stride offset i j hs hne) (Fin.ext heq)
 
 /-- **Dependent array aliasing (7d-c slice):** distinct iterations with affine index map to memory-disjoint slots. -/
 theorem dependent_affine_array_aliasing {α : Type} {n : Nat}

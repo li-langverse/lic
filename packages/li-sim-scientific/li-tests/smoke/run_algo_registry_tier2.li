@@ -38,6 +38,26 @@ def main() -> int
     return 12
   if qm418.checksum != 1.001:
     return 13
+  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
+  var cfd206: SimRunResult = run_algo(algo_cfd_simple(), 1)
+  if run_result_ok(cfd206) != 1:
+    return 32
+  if cfd206.algo_id != 206:
+    return 33
+  if cfd206.checksum != cfd_oracle:
+    return 34
+  if cfd206.checksum == 1.001:
+    return 35
+  var fea_oracle: float = sim_scientific_oracle_checksum_fea()
+  var fea214: SimRunResult = run_algo(algo_fea_linear_elasticity(), 2)
+  if run_result_ok(fea214) != 1:
+    return 36
+  if fea214.algo_id != 214:
+    return 37
+  if fea214.checksum != fea_oracle:
+    return 38
+  if fea214.checksum == 1.001:
+    return 39
   var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
   if echem_oracle <= 0.0:
     return 14

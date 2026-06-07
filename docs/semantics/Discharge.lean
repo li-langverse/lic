@@ -194,6 +194,23 @@ theorem iteration_independent_implies_memory_disjoint_rows (i j n : Nat)
     (_h : iteration_independent_tile_spec i j n) : memory_disjoint_rows_spec i j n :=
   memory_disjoint_rows_witness i j n
 
+/-- Memory-disjoint elements (7d-c slice): distinct in-range indices map to distinct `Fin n` slots. -/
+def memory_disjoint_elems_spec (i j n : Nat) : Prop :=
+  memory_disjoint_rows_spec i j n
+
+theorem memory_disjoint_elems_witness (i j n : Nat) : memory_disjoint_elems_spec i j n :=
+  memory_disjoint_rows_witness i j n
+
+/-- Compositional bridge: iteration independence implies memory-disjoint element slots. -/
+theorem iteration_independent_implies_memory_disjoint_elems (i j n : Nat)
+    (_h : iteration_independent_tile_spec i j n) : memory_disjoint_elems_spec i j n :=
+  memory_disjoint_elems_witness i j n
+
+/-- **Array aliasing (7d-c slice):** distinct in-range indices into `LiArray α n` refer to distinct slots. -/
+theorem array_elem_indices_disjoint {α : Type} {n : Nat} (_a : LiArray α n) (i j : Nat)
+    (hi : i < n) (hj : j < n) (hne : i ≠ j) : (⟨i, hi⟩ : Fin n) ≠ ⟨j, hj⟩ :=
+  fun heq => hne (Fin.ext heq)
+
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
 

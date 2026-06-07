@@ -6,7 +6,7 @@ Honest proof status for li-parallel surfaces. Canonical register: [provability-g
 
 | Gap | Surface | Status | Evidence |
 |-----|---------|--------|----------|
-| **G-par** | `parallel for` disjoint writes | **Partial** | 6× `compile_fail` + `good_disjoint_parallel.li` `verify_ok` + `team_block_reduce_f64.li` + `parallel_def_disjoint_inherit.li` + `par_iteration_independent_tile` + `par_memory_disjoint_rows` smokes; `memory_disjoint_rows_spec` compositional slice; full array aliasing proofs open |
+| **G-par** | `parallel for` disjoint writes | **Partial** | 6× `compile_fail` + `good_disjoint_parallel.li` `verify_ok` + `team_block_reduce_f64.li` + `parallel_def_disjoint_inherit.li` + `par_iteration_independent_tile` + `par_memory_disjoint_rows` + `par_memory_disjoint_elems` smokes; `memory_disjoint_rows_spec` + `memory_disjoint_elems_spec` + `array_elem_indices_disjoint` compositional slices; full dependent array aliasing proofs open |
 | **G-par-dist** | Block partition + `distributed for` | **Closed slice** | `li_dpar_block_partition_*` + `dpar_for_range.li` smoke |
 | **G-hetero** | GPU/TPU/ASIC orchestration | **Closed slice** | `li_rt_hetero_*` + chip package probes + `hetero_mask_bounded` |
 | WP-PAR-15 | Team-scoped `reduce` | **Closed slice** | `team_block_reduce_f64.li` + `team_reduce_tile_disjoint` lemma |
@@ -26,6 +26,7 @@ Honest proof status for li-parallel surfaces. Canonical register: [provability-g
 | `def_disjoint_inherit_tile` | `parallel/proof.li` | G-par decorator-inherited disjoint mirrors tile policy |
 | `par_iteration_independent_tile` | `parallel/proof.li` | P-par iteration independence: distinct in-range tiles (7d-c slice) |
 | `par_memory_disjoint_rows` | `parallel/proof.li` | G-par memory-disjoint rows: distinct in-range indices → distinct Fin slots |
+| `par_memory_disjoint_elems` | `parallel/proof.li` | G-par memory-disjoint elems: flat `disjoint_elem` path → distinct Fin slots |
 | `partition_row` | `parallel/proof.li` | Rank-local row mapping |
 | `partition_block_in_range` | `parallel/proof.li` | G-par-dist block partition bound |
 | `hetero_mask_bounded` | `parallel/proof.li` | G-hetero chip mask contract |

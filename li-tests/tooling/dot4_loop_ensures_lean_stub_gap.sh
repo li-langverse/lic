@@ -4,17 +4,16 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
-LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
+if [[ -z "${LIC:-}" ]]; then
+  # shellcheck source=../../scripts/lib/lic-bin-select.sh
+  source "$ROOT/scripts/lib/lic-bin-select.sh"
+  li_ensure_lic "$ROOT" "dot4_loop_ensures_lean_stub_gap: build lic (./scripts/build.sh)" || exit 1
+fi
 LOOP_SAMPLE="$ROOT/li-tests/contracts_verify/linalg_dot4_int_loop_open.li"
 MAT2_SAMPLE="$ROOT/li-tests/contracts_verify/linalg_mat2_at2_float_closed.li"
 DISCHARGE="$ROOT/docs/semantics/Discharge.lean"
 VC_EMIT="$ROOT/compiler/verify/vc_emit_lean.cpp"
 AUTOVC="$ROOT/build/generated/AutoVC.lean"
-
-if [[ ! -x "$LIC" ]]; then
-  echo "SKIP: lic not built at $LIC" >&2
-  exit 0
-fi
 
 if ! grep -q 'dot4_int_loop_eval_spec' "$DISCHARGE"; then
   echo "FAIL: expected dot4_int_loop_eval_spec in Discharge.lean" >&2

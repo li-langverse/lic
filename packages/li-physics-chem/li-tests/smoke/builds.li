@@ -1,6 +1,12 @@
-def main() -> int
+import physics.chem
+
+def main() raises IO -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  if li_std_physics_chem_version() != 1:
+    return 1
+  if physics_chem_gpu_progress() != 1:
+    return 1
   return 0

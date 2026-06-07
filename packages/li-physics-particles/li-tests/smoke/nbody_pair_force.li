@@ -1,0 +1,16 @@
+# WP-SCI-GPU-03: 2D N-body pair force accumulation (borrowed fx/fy).
+import physics.particles
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var fx: float = 0.0
+  var fy: float = 0.0
+  nbody_pair_force(0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.01, fx, fy)
+  if fx <= 0.0:
+    return 1
+  if fy == 0.0:
+    return 1
+  return 0

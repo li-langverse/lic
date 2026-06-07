@@ -1,5 +1,5 @@
-# PH-SCI-GPU-01: @gpu numerics vertical — MD oracle via sim.scientific until math.numerics lib build unblocks.
-import sim.scientific
+# PH-SCI-GPU-01: @gpu numerics three-body Verlet reference kernel.
+import math.numerics
 
 @gpu
 def numerics_gpu_three_body_smoke() -> int
@@ -8,12 +8,7 @@ def numerics_gpu_three_body_smoke() -> int
   ensures result <= 1
   decreases 0
 =
-  var md: float = sim_scientific_oracle_checksum_md()
-  if md <= 0.0:
-    return 0
-  if md >= 1.0e-3:
-    return 0
-  return 1
+  return numerics_three_body_gpu_progress()
 
 def main() -> int
   requires true

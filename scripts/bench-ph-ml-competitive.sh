@@ -14,6 +14,7 @@ bash "$ROOT/scripts/bench-ph-ml-lkir-matmul.sh"
 bash "$ROOT/scripts/bench-ph-ml-li-array-matmul.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-16.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-32.sh" || true
+bash "$ROOT/scripts/bench-ph-sci-lkir-md-oracle.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
 bash "$ROOT/scripts/bench-ph-ml-mlp-train-step.sh"
 bash "$ROOT/scripts/bench-ph-ml-async-env-collect.sh"
@@ -88,6 +89,7 @@ def comp_row(src, li_sec, cid, inc, wc, note):
 
 
 matmul = load("ph-ml-lkir-matmul.json")
+sci_md = load("ph-sci-lkir-md-oracle.json")
 liarray_matmul = load("ph-ml-li-array-matmul.json")
 matmul32 = load("ph-ml-lkir-matmul-32.json")
 mlp = load("ph-ml-mlp-forward.json")
@@ -121,6 +123,15 @@ sb3_vecenv = load("ph-ml-competitor-sb3-vecenv.json")
 ray_rllib = load("ph-ml-competitor-ray-rllib.json")
 
 rows = [
+    {
+        "id": "sci_md_lkir",
+        "kernel": "lig.kernel.md_force_short",
+        "workload_class": "pilot",
+        "workload_note": "Li row: sim.scientific MD oracle + lig kid=5 validity; PH-SCI-GPU-VENDOR-01",
+        "executed": bool(sci_md.get("executed")),
+        "li": li_row(sci_md, "pilot"),
+        "competitors": [],
+    },
     {
         "id": "li_array_matmul_4x4",
         "kernel": "array.matmul",

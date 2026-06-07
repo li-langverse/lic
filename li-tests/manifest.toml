@@ -1189,6 +1189,12 @@ note = "PH-IO-4: std.csv + std.io import harness (csv_tag=6, io_tag=4)"
 
 [[tests]]
 suite = "stdlib_coverage"
+file = "stdlib_coverage/ph_io4_ingest_contract.li"
+outcome = "verify_open_ok"
+note = "PH-IO-4: io open/close + csv field-count ingest contract"
+
+[[tests]]
+suite = "stdlib_coverage"
 file = "stdlib_coverage/build_std_summary_plot.li"
 outcome = "verify_open_ok"
 note = "PH-IO-7/5: std.summary + std.plot import harness (summary_tag=7, plot_tag=5)"
@@ -1573,6 +1579,18 @@ file = "packages/lig/li-tests/smoke/present_wgpu_readback_stub.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-present-wgpu-readback"
 
+[[tests]]
+suite = "smoke"
+file = "stdlib_coverage/ph_io4_ingest_contract.li"
+outcome = "verify_open_ok"
+note = "PH-IO-4 std.io/csv ingest contract (open VC)"
+
+[[tests]]
+suite = "smoke"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_csv_ingest_gate.li"
+outcome = "verify_open_ok"
+note = "PH-IO-4 ingest bundle → run_algo(105) MD tier-2 registry"
+
 # --- science / simulation @gpu (PH-SCI-GPU) ---
 
 [[tests]]
@@ -1592,6 +1610,18 @@ suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/physics_gpu_md_mini_step.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-03 @gpu MD mini step"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-rigid/li-tests/smoke/physics_gpu_rigid_substep.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-08 @gpu rigid integrate + overlap"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-physics-runtime/li-tests/smoke/physics_gpu_runtime_substep.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-09 @gpu physics_world substep loop"
 
 [[tests]]
 suite = "science_gpu"
@@ -1621,19 +1651,25 @@ note = "PH-SCI-GPU-07 @gpu wavefunction normalize"
 suite = "science_gpu"
 file = "packages/li-physics-weather/li-tests/smoke/physics_gpu_weather_diffuse.li"
 outcome = "compile_open_ok"
-note = "PH-SCI-GPU-08 @gpu weather diffusion"
+note = "PH-SCI-GPU-07 @gpu weather diffusion"
 
 [[tests]]
 suite = "science_gpu"
 file = "packages/li-scene/li-tests/smoke/scene_gpu_md_particle_bench.li"
 outcome = "compile_open_ok"
-note = "PH-SCI-GPU-09 @gpu MD particle tier bench"
+note = "PH-SCI-GPU-10 @gpu MD particle tier bench"
 
 [[tests]]
 suite = "science_gpu"
 file = "packages/li-sim-robotics/li-tests/smoke/robo_gpu_integrate_steps.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-10 @gpu arm integration loop"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-robotics/li-tests/smoke/robo_gpu_ik_step.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-15 @gpu 6-DOF session IK step"
 
 [[tests]]
 suite = "science_gpu"
@@ -1664,6 +1700,18 @@ suite = "science_gpu"
 file = "packages/li-sim-drug-design/li-tests/smoke/drug_gpu_litl_workflow.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-15 @gpu drug LitL workflow"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_gpu_lkir_launch.li"
+outcome = "compile_open_ok"
+note = "WP-SCI-GPU-VENDOR-01 @gpu MD oracle LKIR launch pilot"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_gpu_md_device_buffer.li"
+outcome = "compile_open_ok"
+note = "WP-SCI-GPU-VENDOR-02 @gpu MD grid device buffer readback parity"
 
 [[tests]]
 suite = "science_gpu"

@@ -1,32 +1,34 @@
 ---
 workflow_repo: lic
-branch: main
+branch: cursor/ph-ml-stage2-dl-spine
 plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 ---
 
 # PH-SCI simulation gap-close plan
 
-**Last updated:** 2026-06-06 · **main @** `e87165b7` (PH-SCI-GPU-16..19 via #847; HEAD may be newer)
-**Progress:** **19 / 33 WPs done (~58%)** — Phase 0 + Phase 1 **complete on `main`**
+**Status:** Phase 0–3 complete on `cursor/ph-ml-stage2-dl-spine`; merged `origin/main` @ `7a4b6cbb` (run `code_implementer-1780862095464`) — PR #816 mergeable after conflict resolve + wgpu probe link fix. std_gap **PH-IO-4 closed** (`std/io/io.li`, `std/csv/csv.li`, `ph_io4_ingest_contract.li`, `scientific_csv_ingest_gate.li`). Gates: `scripts/ph-sci-all-gates.sh`, `check-ph-io-4-gate.sh`, `ph-sci-phase{0,1,2,3}-gates.sh`.
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and `science_gpu` / `@gpu` placement coverage.
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
 
-## GPU Chem / DFT + Electrochemistry (merged — #847 on `main`)
+## GPU Chem / DFT + Electrochemistry (merged from main — #847)
 
-See **[ph-sci-gpu-chem-dft.md](ph-sci-gpu-chem-dft.md)** for WP-SCI-GPU-CHEM-01..04, stub vs real audit, and PH-ML Phase 3 LKIR hooks. Electrochemistry WP-ECHEM-01..08 and PH-SCI-GPU-16..19 gates landed on **`main`** via PR #847 (`e87165b7`) — see [ph-sci-electrochemistry-sim-plan.md](ph-sci-electrochemistry-sim-plan.md). The `science_gpu` suite now includes **20** manifest rows (GPU-01..15 + GPU-16..19).
+See **[ph-sci-gpu-chem-dft.md](ph-sci-gpu-chem-dft.md)** for WP-SCI-GPU-CHEM-01..04, stub vs real audit, and PH-ML Phase 3 LKIR hooks. Electrochemistry WP-ECHEM-01..08 and PH-SCI-GPU-16..19 gates — see [ph-sci-electrochemistry-sim-plan.md](ph-sci-electrochemistry-sim-plan.md). The `science_gpu` suite includes **25** manifest rows on branch (ph-sci + chem/echem GPU smokes).
 
 ## Iteration rules
 
 1. **Phase 0 + Phase 1 are done** — do not reopen unless a regression fails `scripts/ph-sci-phase0-gates.sh`.
 2. Work **Phase 2 next** ([ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md)), then Phase 3 vendor GPU.
-3. One WP or logical chunk per iteration; commit + push to a feature branch off `main`.
-4. Verify with WSL `./build-wsl/compiler/lic/lic build …` and `./li-tests/run_all.sh science_gpu` before ending an iteration.
-5. Phase 2+ gates TBD; Phase 0 gate remains the regression spine.
+3. One WP or logical chunk per iteration; commit + push to `cursor/ph-ml-stage2-dl-spine`.
+4. Verify with `./scripts/build.sh`, `bash scripts/ph-sci-all-gates.sh`, and `./li-tests/run_all.sh science_gpu` before ending an iteration.
+5. Phase 0 gate remains the regression spine; Phase 2+ gates in `scripts/ph-sci-phase{2,3}-gates.sh`.
 
 ## Completion gate
 
 ```bash
+bash scripts/ph-sci-all-gates.sh
+# or per phase:
 bash scripts/ph-sci-phase0-gates.sh
+bash scripts/ph-sci-phase1-gates.sh
 ```
 
 ## K8s handoff
@@ -59,11 +61,10 @@ Legacy Phase 0 worker (`li-ph-sci-simulation-gap-close`) is superseded; keep sca
 
 ### `science_gpu` on `main` (verified post-#847)
 
-- **`science_gpu` suite:** Registered in `li-tests/manifest.toml` — **20** tests (`PH-SCI-GPU-01..15` + `16..19` echem/chem DFT). Gate: `scripts/check-science-gpu-gate.sh`.
-- **Phase 0 lib compile:** `li-physics-fluids`, `li-physics-em`, `li-physics-weather`, `li-math-numerics` build under `scripts/ph-sci-phase0-gates.sh` (WP-SCI-BUILD-01/02).
-- **Honest smokes:** Phase 0 blocked libs import `src/lib.li` exports (WP-SCI-BUILD-03).
-- **`@gpu` today:** MIR placement telemetry (`mir_gpu_def=1` via `scripts/check-mir-gpu-decorator.sh`). Vendor LKIR execution remains Phase 3 (WP-SCI-GPU-VENDOR-01).
-- **Remaining lib gaps (Phase 2):** `run_algo_registry_stub` for most CFD/FEA rows; `li-sim-viz` compose-only; scene `native_pixels` stub; particles MD force accumulation still weak.
+- **On `cursor/ph-ml-stage2-dl-spine` (current):** `science_gpu` suite in `li-tests/manifest.toml` — merged ph-sci + chem/echem GPU smokes (VENDOR-01/02 + PH-SCI-GPU-16..19); `scripts/ph-sci-gpu-gates.sh` + `check-mir-gpu-decorator.sh` pass.
+- **BUILD-01/02 (closed):** `li-physics-{fluids,em,weather}` and `li-math-numerics` `src/lib.li` build; honest `builds.li` smokes call exported lib defs (WP-SCI-BUILD-03).
+- **`@gpu` today:** MIR placement on most science smokes; **vendor pilot** on branch: `scientific_gpu_lkir_launch.li` (WP-SCI-GPU-VENDOR-01) + `scientific_gpu_md_device_buffer.li` (WP-SCI-GPU-VENDOR-02, 0.1% force-checksum parity); chem DFT LKIR + echem CHE from main.
+- **Remaining honesty gaps:** Tier-2 oracles for MD/heat/rigid/CFD/FEA/QM + echem AIMD/GC/SEI; `sim.viz` compose-only (no wgpu field draw); external PySCF/Gaussian parity columns still pilot.
 
 ---
 
@@ -345,11 +346,11 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 ./build-wsl/compiler/lic/lic build packages/li-physics-fluids/src/lib.li
 ./build-wsl/compiler/lic/lic build packages/li-math-numerics/src/lib.li
 
-# MIR placement (Phase 1)
-./scripts/check-mir-gpu-decorator.sh
-./li-tests/run_all.sh science_gpu
+# MIR placement + science_gpu (Phase 1 / VENDOR-03)
+bash scripts/ph-sci-gpu-gates.sh
+bash scripts/ph-sci-phase2-gates.sh
 
-# GPU chem / DFT + echem (cursor/ph-sci-gpu-chem-dft)
+# GPU chem / DFT + echem (merged from main)
 bash scripts/ph-sci-gpu-chem-gates.sh
 bash scripts/ph-sci-echem-competitive-gates.sh
 bash scripts/ph-sci-chem-dft-competitive-gates.sh

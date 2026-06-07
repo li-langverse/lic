@@ -1,0 +1,20 @@
+# PH-SCI-GPU-09: @gpu physics_world one frame substep loop.
+import physics.runtime
+
+@gpu
+def physics_gpu_runtime_substep_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return physics_runtime_gpu_progress()
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if physics_gpu_runtime_substep_smoke() != 1:
+    return 1
+  return 0

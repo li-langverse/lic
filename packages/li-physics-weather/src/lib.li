@@ -14,10 +14,15 @@ def advect_scalar_1d(
   ensures true
   decreases 0
 =
-  var i: int = 0
-  while i < 8
-    field[i] = field[i] - wind[i] * dt / dx
-    i = i + 1
+  var c: float = dt / dx
+  field[0] = field[0] - wind[0] * c
+  field[1] = field[1] - wind[1] * c
+  field[2] = field[2] - wind[2] * c
+  field[3] = field[3] - wind[3] * c
+  field[4] = field[4] - wind[4] * c
+  field[5] = field[5] - wind[5] * c
+  field[6] = field[6] - wind[6] * c
+  field[7] = field[7] - wind[7] * c
 
 def diffuse_explicit(
     field: var array[8, float], kappa: float, dt: float, dx: float) -> unit

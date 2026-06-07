@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-SCI-BUILD-01** — E0201-safe unrolled `advect_scalar_1d` (8-cell channel).
 - Initial scaffold via `scripts/li-new-package` (PKG-li-std-physics-weather).
 
 ## [0.1.0] - 2026-05-16

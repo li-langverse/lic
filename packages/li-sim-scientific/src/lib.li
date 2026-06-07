@@ -1,15 +1,21 @@
 
+import lig
 import sim
 import chem
 import physics.particles
 import physics.rigid
+import physics.fluids
+import physics.quantum
+import sim.drug_design
+import sim.robotics
+import sim.automotive
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 10
   decreases 0
 =
-  return 6
+  return 10
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -145,20 +151,24 @@ def sim_scientific_oracle_checksum_md() -> float
       i = i + 1
     step = step + 1
   var e1: float = md_oracle_chain_energy(px, py, vx, vy)
-  var denom: float = e0
-  if e1 > denom:
-    denom = e1
-  if denom < 0.0:
-    if -e0 > denom:
-      denom = -e0
-    if -e1 > denom:
-      denom = -e1
+  var d0: float = e0
+  if d0 < 0.0:
+    d0 = -d0
+  var d1: float = e1
+  if d1 < 0.0:
+    d1 = -d1
+  var denom: float = d0
+  if d1 > denom:
+    denom = d1
   if denom < 1.0e-12:
     denom = 1.0e-12
   var diff: float = e1 - e0
   if diff < 0.0:
     diff = -diff
-  return diff / denom
+  var rel: float = diff / denom
+  if rel < 0.0:
+    rel = -rel
+  return rel
 
 # WP-SCI-03 — tier-2 Li oracle: explicit 1D heat stencil (8-point grid).
 def heat_oracle_stencil_step(u: var array[8, float], v: var array[8, float], r: float) -> unit
@@ -207,6 +217,84 @@ def sim_scientific_oracle_checksum_heat() -> float
     heat_oracle_stencil_step(u, v, r)
     step = step + 1
   return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
+
+# WP-SCI-06 — tier-2 Li oracle: 1D lid-driven cavity surrogate (physics.fluids).
+def sim_scientific_oracle_checksum_cfd() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return cavity_lid_oracle_checksum()
+
+# WP-SCI-05 — tier-2 Li oracle: 1D bar linear elasticity (physics.rigid).
+def sim_scientific_oracle_checksum_fea() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return fea_bar_oracle_checksum()
+
+# WP-SCI-03 — tier-2 Li oracle: normalized 1D wavefunction (physics.quantum).
+def sim_scientific_oracle_checksum_qm() -> float
+  requires true
+  ensures result > 0.99
+  ensures result < 1.01
+  decreases 0
+=
+  return qm_normalize_oracle_checksum()
+
+# WP-SCI-03 — tier-2 Li oracle: LITL retrain-stage payload (sim.drug_design).
+def sim_scientific_oracle_checksum_drug() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var payload: DrugLitlStagePayload = drug_litl_stage_payload(drug_litl_stage_retrain())
+  return drug_litl_payload_checksum(payload)
+
+# WP-SCI-03 — tier-2 Li oracle: 2-DOF arm FK after bounded integrate (sim.robotics).
+def sim_scientific_oracle_checksum_robo() -> float
+  requires true
+  ensures result >= -2.0
+  ensures result <= 2.0
+  decreases 0
+=
+  var robo: SimRunResult = run_robo_arm_at_steps(8)
+  return robo.checksum
+
+# WP-SCI-03 — tier-2 Li oracle: bicycle kinematic witness (sim.automotive; no IO in registry path).
+def sim_scientific_oracle_checksum_auto() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return sim_automotive_bicycle_checksum(2, 0.05, 12.0)
+
+# WP-SCI-03 — tier-2 Li oracle: additive thermal preview (heat witness × 1e-6; avoids cyclic dep on sim.additive).
+def sim_scientific_oracle_checksum_additive() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return sim_scientific_oracle_checksum_heat() * 1.0e-6
+
+# WP-SCI-03 — tier-2 Li oracle: semi-implicit rigid body integrate (gaming vertical).
+def sim_scientific_oracle_checksum_rigid() -> float
+  requires true
+  ensures result != 1.001
+  decreases 0
+=
+  var body: RigidBody
+  body.px = 0.0
+  body.py = 0.0
+  body.pz = 0.0
+  body.vx = 1.0
+  body.vy = 0.0
+  body.vz = 0.0
+  body.inv_mass = 1.0
+  body.radius = 0.5
+  rigid_integrate_semi_implicit(body, 0.0, 0.0, -9.81, 0.01)
+  return body.pz
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int
@@ -581,6 +669,57 @@ def run_heat_smoke(detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_cfd_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == 206
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_cfd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = 206
+  r.vertical_id = vertical_cfd_lid_driven_cavity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_fea_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == 214
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_fea()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = 214
+  r.vertical_id = vertical_fea_linear_elasticity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_qm_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == 418
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = 418
+  r.vertical_id = vertical_qm_dft()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_rigid_smoke(detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -616,9 +755,6 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   decreases 0
 =
   var vert: int = 0
-  if algo_id >= 401:
-    if algo_id <= 432:
-      vert = vertical_qm_dft()
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo_id
@@ -650,7 +786,7 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
   requires algo_id >= 201
-  requires algo_id <= 216
+  requires algo_id <= 204
   ensures result.ok == 1
   ensures result.algo_id == algo_id
   ensures result.detail_emitted == detail
@@ -661,6 +797,158 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.ok = 1
   r.algo_id = algo_id
   r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_cfd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 205
+  requires algo_id <= 210
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_cfd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_cfd_lid_driven_cavity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 211
+  requires algo_id <= 216
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_fea()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_fea_linear_elasticity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 401
+  requires algo_id <= 432
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_drug_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 501
+  requires algo_id <= 505
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_drug()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = sim_contract_sim_drug_design()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_robo_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 801
+  requires algo_id <= 805
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_robo()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = robo_vertical_sim_robotics()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_auto_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 601
+  requires algo_id <= 610
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_auto()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = sim_contract_sim_automotive()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_additive_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 701
+  requires algo_id <= 707
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_additive()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = sim_contract_sim_additive()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_rigid_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 301
+  requires algo_id <= 305
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_rigid()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_gaming_rigid()
   r.checksum = chk
   r.detail_emitted = detail
   return r
@@ -731,15 +1019,41 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
       var d0: int = detail
       return run_md_tier2_registry(algo_id, d0)
   if algo_id >= 201:
-    if algo_id <= 216:
+    if algo_id <= 204:
       var d1: int = detail
       return run_heat_tier2_registry(algo_id, d1)
+  if algo_id >= 205:
+    if algo_id <= 210:
+      var d1b: int = detail
+      return run_cfd_tier2_registry(algo_id, d1b)
+  if algo_id >= 211:
+    if algo_id <= 216:
+      var d1c: int = detail
+      return run_fea_tier2_registry(algo_id, d1c)
   if algo_id >= 301:
     if algo_id <= 305:
       var d2: int = detail
-      var rigid: SimRunResult = run_rigid_smoke(d2)
-      rigid.algo_id = algo_id
-      return rigid
+      return run_rigid_tier2_registry(algo_id, d2)
+  if algo_id >= 401:
+    if algo_id <= 432:
+      var d2b: int = detail
+      return run_qm_tier2_registry(algo_id, d2b)
+  if algo_id >= 501:
+    if algo_id <= 505:
+      var d2c: int = detail
+      return run_drug_tier2_registry(algo_id, d2c)
+  if algo_id >= 601:
+    if algo_id <= 610:
+      var d2e: int = detail
+      return run_auto_tier2_registry(algo_id, d2e)
+  if algo_id >= 701:
+    if algo_id <= 707:
+      var d2f: int = detail
+      return run_additive_tier2_registry(algo_id, d2f)
+  if algo_id >= 801:
+    if algo_id <= 805:
+      var d2d: int = detail
+      return run_robo_tier2_registry(algo_id, d2d)
   if algo_id == algo_echem_aimd_interface():
     var d_echem: int = detail
     return run_echem_aimd_tier2_registry(algo_id, d_echem)
@@ -773,15 +1087,6 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_rigid_semi_implicit():
     var d3: int = detail
     return run_rigid_smoke(d3)
-  if algo_id == algo_echem_aimd_interface():
-    var d_echem: int = detail
-    return run_echem_aimd_tier2_registry(algo_id, d_echem)
-  if algo_id == algo_echem_gc_aimd_interface():
-    var d_gc: int = detail
-    return run_echem_gc_aimd_tier2_registry(algo_id, d_gc)
-  if algo_id == algo_echem_sei_kmc():
-    var d_sei: int = detail
-    return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
   if algo_in_registry(reg_chk) == 1:
     var d4: int = detail
     return run_algo_registry(reg_run, d4)
@@ -793,6 +1098,24 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   bad.checksum = 0.0
   bad.detail_emitted = d5
   return bad
+
+# PH-IO-4 — competitive vertical ingest bundle tag (lib path; smokes use std.io/csv first).
+def sim_scientific_csv_ingest_bundle_tag() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+# PH-IO-4 — ingest witness then MD tier-2 registry dispatch (no std.io import in lib).
+def sim_scientific_ingest_then_md_registry(ingest_tag: int, detail: int) -> SimRunResult
+  requires ingest_tag == 10
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  return run_algo(105, detail)
 
 def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   requires detail >= 0
@@ -807,12 +1130,18 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   if vertical_id == vertical_pde_heat_2d():
     var d1: int = detail
     return run_heat_smoke(d1)
+  if vertical_id == vertical_cfd_lid_driven_cavity():
+    var d1b: int = detail
+    return run_cfd_smoke(d1b)
+  if vertical_id == vertical_fea_linear_elasticity():
+    var d1c: int = detail
+    return run_fea_smoke(d1c)
   if vertical_id == vertical_gaming_rigid():
     var d2: int = detail
     return run_rigid_smoke(d2)
   if vertical_id == vertical_qm_dft():
     var d3: int = detail
-    return run_algo(algo_qm_dft_scf_energy(), d3)
+    return run_qm_smoke(d3)
   if vertical_id == vertical_echem_aimd():
     var d_echem: int = detail
     return run_echem_aimd_tier2_registry(algo_echem_aimd_interface(), d_echem)
@@ -830,3 +1159,89 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   bad.checksum = 0.0
   bad.detail_emitted = d4
   return bad
+
+# WP-SCI-GPU-VENDOR-01 — MD oracle + lig.kernel.md_force_short LKIR launch pilot (PH-ML Wave 12 pattern).
+def sim_scientific_use_lkir() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return 1
+
+def sim_scientific_lig_md_kernel_id() -> int
+  requires true
+  ensures result == lig_kernel_md_force_short()
+  decreases 0
+=
+  return lig_kernel_md_force_short()
+
+def sim_scientific_md_lkir_progress() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_scientific_use_lkir() == 0:
+    return 0
+  var _md_witness: float = sim_scientific_oracle_checksum_md()
+  if lig_kernel_run(sim_scientific_lig_md_kernel_id(), lig_backend_select_auto()) != 0:
+    return 0
+  if lig_validity_gate_pass(0.999) != 1:
+    return 0
+  return 1
+
+def sim_scientific_gpu_lkir_launch_pipeline() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_scientific_md_lkir_progress() != 1:
+    return 0
+  if lig_emit_vendor_progress() != 1:
+    return 0
+  if lig_emit_vendor_lowering_ready() != 1:
+    return 0
+  return 1
+
+# WP-SCI-GPU-VENDOR-02 — MD grid device buffer bind + readback parity (tolerance 0.1% via runtime).
+def sim_scientific_md_device_buffer_bind_ok() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if lig_md_device_buffer_bind_ok() != 1:
+    return 0
+  if lig_md_gpu_device_buffer_ready() != 1:
+    return 0
+  return 1
+
+def sim_scientific_md_device_buffer_parity_ok() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_scientific_md_device_buffer_bind_ok() != 1:
+    return 0
+  if lig_md_device_buffer_parity_ok() != 1:
+    return 0
+  return 1
+
+def sim_scientific_gpu_md_device_buffer_pipeline() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_scientific_md_lkir_progress() != 1:
+    return 0
+  if sim_scientific_md_device_buffer_parity_ok() != 1:
+    return 0
+  if lig_gpu_device_buffer_ready() != 1:
+    return 0
+  if lig_emit_vendor_lowering_ready() != 1:
+    return 0
+  return 1

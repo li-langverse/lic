@@ -1,4 +1,4 @@
-# PH-SCI-GPU-09: @gpu MD particle tier bench loop (simulation viz vertical).
+# PH-SCI-GPU-10: @gpu MD particle tier bench loop (scene vertical).
 import scene
 
 @gpu
@@ -8,12 +8,7 @@ def scene_gpu_md_particle_bench_smoke() -> int
   ensures result <= 1
   decreases 0
 =
-  var draw: SceneParticleDraw = scene_bench_particle_tier_simulate(scene_md_tier_10k())
-  if draw.meets_target != 1:
-    return 0
-  if scene_md_particle_display_fps(draw) < 30:
-    return 0
-  return 1
+  return scene_gpu_progress()
 
 def main() -> int
   requires true

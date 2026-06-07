@@ -14,6 +14,12 @@ note = "PH-SCI-GPU-03 @gpu MD mini step"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/nbody_pair_force.li"
+outcome = "verify_ok"
+note = "WP-SCI-GPU-03 nbody_pair_force 2D accumulation"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/echem_solvent_gr_smoke.li"
 outcome = "compile_open_ok"
 note = "WP-ECHEM-10 explicit water sphere g(r) peak smoke"

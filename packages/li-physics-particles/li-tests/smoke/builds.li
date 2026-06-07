@@ -12,4 +12,6 @@ def main() -> int
   e.burst = 0
   if emitter_tick(e, 0.01) < 0:
     return 1
+  if physics_particles_gpu_progress() != 1:
+    return 1
   return 0

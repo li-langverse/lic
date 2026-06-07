@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# PH-SCI Phase 2 partial gate — WP-SCI-05 FEA + WP-SCI-06 CFD cavity oracles.
+set -euo pipefail
+ROOT="${PH_SCI_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
+cd "$ROOT"
+
+LIC="${LIC_BIN:-${LIC:-}}"
+if [[ -z "$LIC" ]] || ! "$LIC" --version &>/dev/null; then
+  LIC="$("$ROOT/scripts/resolve-lic.sh")"
+fi
+export LIC
+BUILD_FLAGS=(--allow-open-vc --no-lean-verify)
+
+echo "==> WP-SCI-05: rigid FEA bar lib + sim.scientific FEA oracle"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-rigid/src/lib.li -o /dev/null
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-scientific/src/lib.li -o /dev/null
+
+echo "==> WP-SCI-05: FEA smokes"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_fea_elasticity.li -o /dev/null
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_fea_elasticity.li
+
+echo "==> WP-SCI-06: fluids cavity lib + sim.scientific CFD oracle"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-fluids/src/lib.li -o /dev/null
+
+echo "==> WP-SCI-03: quantum lib + QM tier-2 oracle"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-quantum/src/lib.li -o /dev/null
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_qm_normalize.li
+
+echo "==> PH-IO-4: sim.scientific std.io/csv ingest gate"
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_csv_ingest_gate.li
+
+echo "==> WP-SCI-06: cavity + tier-2 registry smokes (incl. rigid 301–305, drug/robo)"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_cfd_cavity.li -o /dev/null
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_cfd_cavity.li
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li
+
+echo "==> WP-SCI-03: drug LITL + robotics registry tier-2 (algo 501–505, 801–805)"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-drug-design/src/lib.li -o /dev/null
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-robotics/src/lib.li -o /dev/null
+
+echo "==> WP-SCI-03: automotive + additive registry tier-2 (algo 601–610, 701–707)"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-automotive/src/lib.li -o /dev/null
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-additive/src/lib.li -o /dev/null
+
+echo "==> WP-SCI-GPU-03: particles nbody_pair_force + MD mini lib"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-particles/src/lib.li -o /dev/null
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-physics-particles/li-tests/smoke/nbody_pair_force.li
+
+echo "==> WP-AM-02: additive require_sim_pass heat witness"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-additive/src/lib.li -o /dev/null
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-additive/li-tests/smoke/additive_require_sim_pass_heat.li
+"$LIC" verify "${BUILD_FLAGS[@]}" packages/li-sim-additive/li-tests/smoke/slicer_workflow.li
+
+echo "ph-sci-simulation-gap-close: Phase 2 (WP-SCI-03 QM/rigid/drug/robo/auto/additive registry, WP-SCI-05, WP-SCI-06, WP-AM-02) gate OK"

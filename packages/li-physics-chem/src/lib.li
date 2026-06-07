@@ -1,17 +1,26 @@
+
+extern proc li_rt_exp(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+
 def li_std_physics_chem_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
-def arrhenius_rate(k0: float, ea: float, temp: float, r_gas: float) -> float
+
+def arrhenius_rate(k0: float, ea: float, temp: float, r_gas: float) raises IO -> float
   requires k0 >= 0.0
+  requires ea >= 0.0
   requires temp > 0.0
   requires r_gas > 0.0
-  ensures result == k0
+  ensures result == k0 * li_rt_exp(-ea / (r_gas * temp))
   decreases 0
 =
-  return k0
+  return k0 * li_rt_exp(-ea / (r_gas * temp))
+
 def reactor_euler_step(
     conc: array[4, float], rates: array[4, float], dt: float) -> unit
   requires dt > 0.0
@@ -24,6 +33,7 @@ def reactor_euler_step(
     if conc[i] < 0.0:
       conc[i] = 0.0
     i = i + 1
+
 def combustion_passive_step(
     fuel: array[8, float], oxidizer: array[8, float],
     temp: array[8, float], dt: float, burn_rate: float) -> unit
@@ -40,3 +50,30 @@ def combustion_passive_step(
     fuel[i] = fuel[i] - burned
     temp[i] = temp[i] + burned
     i = i + 1
+
+def physics_chem_gpu_progress() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var fuel: array[8, float]
+  var oxidizer: array[8, float]
+  var temp: array[8, float]
+  var i: int = 0
+  while i < 8
+    fuel[i] = 1.0
+    oxidizer[i] = 1.0
+    temp[i] = 300.0
+    i = i + 1
+  var k_hot: float = arrhenius_rate(1.0, 5000.0, 400.0, 8.314)
+  var k_cold: float = arrhenius_rate(1.0, 5000.0, 300.0, 8.314)
+  if k_hot <= k_cold:
+    return 0
+  var k: int = 0
+  while k < 8
+    combustion_passive_step(fuel, oxidizer, temp, 0.01, 0.5)
+    k = k + 1
+  if fuel[0] >= 1.0:
+    return 0
+  return 1

@@ -4,6 +4,12 @@ set -euo pipefail
 ROOT="${PH_SCI_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
 
+LIC="${LIC_BIN:-${LIC:-}}"
+if [[ -z "$LIC" ]] || ! "$LIC" --version &>/dev/null; then
+  LIC="$("$ROOT/scripts/resolve-lic.sh")"
+fi
+export LIC
+
 ./li-tests/run_all.sh science_gpu
 
 if [[ "${PH_SCI_REQUIRE_MIR_GPU:-0}" == "1" ]]; then

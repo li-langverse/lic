@@ -1,0 +1,32 @@
+# WP-SCI-GPU-VENDOR-01: @gpu MD oracle → lig.kernel.md_force_short LKIR launch (LIG_EMIT_CUDA=1 at run).
+import sim.scientific
+
+def scientific_gpu_lkir_host_smoke() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_scientific_md_lkir_progress() != 1:
+    return 0
+  return sim_scientific_gpu_lkir_launch_pipeline()
+
+@gpu
+def scientific_gpu_lkir_launch_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return scientific_gpu_lkir_host_smoke()
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if scientific_gpu_lkir_host_smoke() != 1:
+    return 1
+  if scientific_gpu_lkir_launch_smoke() != 1:
+    return 2
+  return 0

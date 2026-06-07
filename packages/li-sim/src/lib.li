@@ -126,26 +126,40 @@ def vertical_qm_dft() -> int
 =
   return 4
 
-def vertical_echem_aimd() -> int
+def vertical_cfd_lid_driven_cavity() -> int
   requires true
   ensures result == 5
   decreases 0
 =
   return 5
 
-def vertical_echem_gc_aimd() -> int
+def vertical_fea_linear_elasticity() -> int
   requires true
   ensures result == 6
   decreases 0
 =
   return 6
 
-def vertical_echem_sei_kmc() -> int
+def vertical_echem_aimd() -> int
   requires true
-  ensures result == 7
+  ensures result == 8
   decreases 0
 =
-  return 7
+  return 8
+
+def vertical_echem_gc_aimd() -> int
+  requires true
+  ensures result == 9
+  decreases 0
+=
+  return 9
+
+def vertical_echem_sei_kmc() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
 
 def algo_registry_count() -> int
   requires true

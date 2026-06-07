@@ -1566,7 +1566,7 @@ note = "WP-PAR-23: distributed for codegen links li_dpar.c"
 suite = "tooling"
 file = "tooling/li_parallel_killer_gate_smoke.sh"
 outcome = "script_ok"
-note = "WP-PAR-99: killer gate script (smokes + PR profile; LIPAR_KILLER_SKIP_FULL=1)"
+note = "WP-PAR-99: killer gate script + sub-gates; full stack in GHA lipar-killer-gate"
 
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 

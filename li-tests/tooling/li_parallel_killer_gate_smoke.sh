@@ -37,4 +37,4 @@ do
   bash "$ROOT/$smoke"
 done
 
-echo "li_parallel_killer_gate_smoke: ok (sub-gates present; full killer gate is completion-only)"
+echo "li_parallel_killer_gate_smoke: ok (sub-gates present; full stack enforced by GHA lipar-killer-gate)"

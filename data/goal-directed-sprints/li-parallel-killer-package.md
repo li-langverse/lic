@@ -141,7 +141,7 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-99** | `check-li-parallel-killer-gate.sh` | **DONE** — whole-suite dual-mode (152 benchmarks), all sub-gates green |
+| **WP-PAR-99** | `check-li-parallel-killer-gate.sh` | **DONE** — whole-suite dual-mode (152 benchmarks), all sub-gates green; **GHA** job `lipar-killer-gate` |
 
 ## Agent rules
 
@@ -153,4 +153,6 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-07)
 
-None — killer gate **PASS** (152 benchmarks dual-mode complete, all sub-gates green). Remaining proof gaps: G-par partial — arbitrary compile-time lookup tables + fully general dependent subscripts beyond closed `index_bound_*_spec` slices (see gap register).
+None for **WP-PAR engineering + killer gate** — `check-li-parallel-killer-gate.sh` **PASS** locally (152 benchmarks dual-mode, all sub-gates green) and enforced in GHA job **`lipar-killer-gate`** (`.github/workflows/li-parallel-gate.yml`).
+
+**Proof depth (honest):** **G-par** remains **Partial** at the org register level — every **compiler-supported** dependent-index form (elem/row/grid, affine, blocked-affine, lookup, mod, reverse/rotate permutation) has a **closed slice** in `Discharge.lean` + proofs gate smokes. Still open: arbitrary compile-time lookup tables and dependent subscripts beyond the implemented surface (see `packages/li-parallel/docs/gap-register.md`).

@@ -33,10 +33,10 @@ Dashboard computes `speedup_vs_serial = li_serial / li_parallel`.
 
 ## Gates
 
-| Gate | Command | Scope |
-|------|---------|-------|
-| PR progress | `scripts/check-li-parallel-full-suite.sh` | Class A tier1+2 |
-| Killer completion | `scripts/check-li-parallel-killer-gate.sh` | Full tiers 0–7 |
+| Gate | Command | Scope | CI |
+|------|---------|-------|-----|
+| PR progress | `scripts/check-li-parallel-full-suite.sh` | Class A tier1+2 | GHA `lipar-gate` |
+| Killer completion | `scripts/check-li-parallel-killer-gate.sh` | Full tiers 0–7 + sub-gates | GHA `lipar-killer-gate` |
 
 ## Perf advisory (WP-PAR-40)
 

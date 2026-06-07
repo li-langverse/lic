@@ -4,6 +4,8 @@
 
 Open work packages blocking killer gate completion. Updated 2026-06-07.
 
+**Killer gate:** enforced in GitHub Actions job `lipar-killer-gate` (`.github/workflows/li-parallel-gate.yml`). No `LIPAR_KILLER_SKIP_FULL`.
+
 ## Phase 1 — Shared memory
 
 | WP | Gap | Status |

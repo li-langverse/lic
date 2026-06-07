@@ -93,13 +93,16 @@ lipar_suite_ensure_bench_scripts "$BENCH_ROOT"
 
 echo "==> killer gate step 3: whole org suite dual-mode (tiers 0–7, no tier skips)"
 export BENCHMARKS_ROOT="$BENCH_ROOT"
-unset SKIP_TIER0 SKIP_TIER5_HTTP SKIP_EXPLOITS || true
+unset SKIP_TIER0 SKIP_TIER5_HTTP SKIP_EXPLOITS BENCHMARKS_CSV || true
 export BENCH_RUNS="${BENCH_RUNS:-3}"
 export LIPAR_CORES="${LIPAR_CORES:-8}"
 chmod +x "$SUITE"
 bash "$SUITE" --profile full --dual-mode --cores "$LIPAR_CORES"
 
-CSV="${BENCHMARKS_CSV:-$BENCHMARKS_ROOT/results/latest.csv}"
+CSV="$BENCH_ROOT/results/latest.csv"
+export BENCHMARKS_CSV="$CSV"
+python3 "$ROOT/scripts/lipar-merge-tier-csv.py" "$BENCH_ROOT"
+lipar_suite_refresh_registry "$BENCH_ROOT"
 python3 - "$CSV" <<'PY'
 import csv
 import os

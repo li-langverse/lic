@@ -103,6 +103,9 @@ _run_benches() {
     chmod +x "$ROOT/scripts/lipar-apply-parallel-src.sh"
     "$ROOT/scripts/lipar-apply-parallel-src.sh"
     bash "$SUITE"
+    export BENCHMARKS_CSV="${BENCHMARKS_CSV:-$BENCH_ROOT/results/latest.csv}"
+    python3 "$ROOT/scripts/lipar-merge-tier-csv.py" "$BENCH_ROOT"
+    lipar_suite_refresh_registry "$BENCH_ROOT"
   fi
 }
 

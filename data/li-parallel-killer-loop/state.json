@@ -4,11 +4,11 @@
   "phase_index": 5,
   "branch": "cursor/li-parallel-native-hpc",
   "started": "2026-06-06",
-  "updated_at": "2026-06-06T18:00:00Z",
+  "updated_at": "2026-06-07T01:10:00Z",
   "last_gate": {
     "progress": "pass",
     "killer": "fail",
-    "killer_blocker": "killer gate step 3 — full-suite dual-mode breadth (run-bench.sh +x fixed WP-PAR-02)"
+    "killer_blocker": "killer gate step 3 — dual-mode breadth after tier CSV merge (WP-PAR-02/48)"
   },
   "completed_phases": ["phase-5-docs"],
   "pending_phases": [

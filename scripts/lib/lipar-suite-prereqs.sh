@@ -35,3 +35,19 @@ lipar_suite_ensure_bench_scripts() {
   fi
   find "$bench_root/scripts" -name '*.sh' -exec chmod +x {} + 2>/dev/null || true
 }
+
+# Tier-5 HTTP ingest can drop perf rows from latest.csv; tier-7 registry rebuilds breadth.
+lipar_suite_refresh_registry() {
+  local bench_root="${1:?benchmarks root}"
+  local runs="${BENCH_RUNS:-3}"
+  local runner="$bench_root/scripts/run-bench.sh"
+  if [[ ! -x "$runner" ]]; then
+    return 0
+  fi
+  export BENCHMARKS_ROOT="$bench_root"
+  export BENCHMARKS_CSV="${BENCHMARKS_CSV:-$bench_root/results/latest.csv}"
+  echo "==> lipar-suite: tier 7 registry refresh (runs=$runs)"
+  bash "$runner" --tier 7 --runs "$runs" --skip-verify || {
+    echo "lipar-suite: WARN tier 7 registry refresh failed" >&2
+  }
+}

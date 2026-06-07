@@ -39,6 +39,13 @@
 - Killer gate dual-mode check scoped to Li benchmarks only (excludes security-only rows)
 - Test: `li-tests/tooling/li_parallel_dual_mode_csv.sh` catalog scope case
 
+## 2026-06-07 — WP-PAR-02 tier CSV merge (code_implementer)
+
+- `scripts/lipar-merge-tier-csv.py` merges tier-tier*.csv perf shards into `results/latest.csv` after full suite
+- `lipar-suite.sh --profile full` and killer gate step 3 call merge before dual-mode CSV tagging
+- Test: `li-tests/tooling/li_parallel_merge_tier_csv.sh`
+- Killer blocker advances from empty `latest.csv` wall_time rows (tier-5 HTTP ingest overwrite) toward dual-mode breadth check
+
 ## 2026-06-06 — WP-PAR-02 full-suite prereqs (code_implementer)
 
 - `scripts/lib/lipar-suite-prereqs.sh` builds li-httpd + exports `TIER5_EXPLOIT_LANGS=nginx,li`

@@ -18,9 +18,11 @@ On a Linux devbox with **≥8 logical cores** and LLVM 22 + Lean installed:
 
 ## Implementation queue (order matters)
 
-### 8p-a — Parallel test orchestration (highest ROI)
+### 8p-a — Parallel test orchestration (highest ROI) — **shipped**
 
-**Files:** `li-tests/run_all.sh`, `scripts/lib/li-ui.sh` (optional progress), `docs/guide/getting-started-tools.md`
+**Status:** Done — `LI_TEST_JOBS` / `-j N` + isolated `--build-dir` per worker in `li-tests/run_all.sh` ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200)); tracker reconciled [#460](https://github.com/li-langverse/lic/issues/460); supersedes stale [#428](https://github.com/li-langverse/lic/issues/428).
+
+**Files:** `li-tests/run_all.sh`, `scripts/lib/li-jobs.sh`, `scripts/lib/li-ui.sh` (optional progress), `docs/guide/getting-started-tools.md`
 
 1. Add `LI_TEST_JOBS` (default: `nproc` / `sysctl hw.ncpu`) and optional `-j N` CLI on `run_all.sh`.
 2. For each manifest row, run `run_one` in a worker subprocess with:
@@ -59,7 +61,7 @@ On a Linux devbox with **≥8 logical cores** and LLVM 22 + Lean installed:
 | Variable | Scope | Default |
 |----------|--------|---------|
 | `LI_BUILD_JOBS` | CMake/Ninja C++ build | host cores |
-| `LI_TEST_JOBS` | `run_all.sh`, workspace smoke | host cores (8p-a); until shipped: **1** |
+| `LI_TEST_JOBS` | `run_all.sh`, workspace smoke | host cores when `CI=true`; **1** locally (8p-a shipped) |
 | `LI_COMPILE_JOBS` | `lic build` frontend (8p-c) | host cores when wired |
 | `lic build --threads=N` | **Runtime** OpenMP only | not compile parallelism |
 

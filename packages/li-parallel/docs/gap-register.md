@@ -2,16 +2,16 @@
 
 <!-- DOC-PAR-12 -->
 
-Open work packages blocking killer gate completion. Updated 2026-06-06.
+Open work packages blocking killer gate completion. Updated 2026-06-07.
 
 ## Phase 1 — Shared memory
 
 | WP | Gap | Status |
 |----|-----|--------|
-| WP-PAR-15 | `team()` / program-first `reduce` | **IN PROGRESS** |
-| WP-PAR-17 | Variable cores / scoped team | **IN PROGRESS** — `li_exec_team_push/pop` stack + scope smoke |
+| WP-PAR-15 | `team()` / program-first `reduce` | **DONE** — `team_block_reduce_f64.li` + compile smoke |
+| WP-PAR-17 | Variable cores / scoped team | **DONE** — `li_exec_team_push/pop` stack + scope smoke |
 | WP-PAR-18 | Callable parallel defs | **DONE** — var array params + outlined capture via shared buffer |
-| WP-PAR-19 | Unlimited/auto cores | **IN PROGRESS** — `team(cores=0)` auto, cap 256 via `li_par_max_threads()` |
+| WP-PAR-19 | Unlimited/auto cores | **DONE** — `team(cores=0)` auto-inherit, cap 256 via `li_par_max_threads()` |
 
 ## Phase 2 — Distributed
 
@@ -25,7 +25,7 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 | WP | Gap | Status |
 |----|-----|--------|
 | WP-PAR-40 | Strict perf vs OpenMP/MPI | **DONE** — reduce_sum strict speedup green (161× closed-form formula partition) |
-| WP-PAR-48 | Whole-catalog dual-mode audit | **IN PROGRESS** — `--scope all` tags every `lang=li` row; lipar-suite preserves serial snapshot across parallel full-suite pass |
+| WP-PAR-48 | Whole-catalog dual-mode audit | **DONE** — killer gate step 3: 152 benchmarks, dual-mode complete |
 
 ## Phase 6–8 — FL, comm, hetero, xfer
 
@@ -33,7 +33,7 @@ Open work packages blocking killer gate completion. Updated 2026-06-06.
 |----------|-----|--------|
 | WP-PAR-60–65 | Federated learning hardening | **DONE** — partial ranks, stragglers, compressed halos, hetero, overlap, shrink smokes |
 | WP-PAR-70–75 | Compiler comm plan | **DONE** — __li_comm_plan, overlap comm MIR, MD ghost overlap ≥50%, RDMA hooks, latency + compressed halo benches |
-| WP-PAR-07–09 | Embedded execution plan | **IN PROGRESS** — team/cluster/offload/overlap comm compile smokes land; runtime plan apply at main |
+| WP-PAR-07–09 | Embedded execution plan | **DONE** — team/cluster/offload/overlap comm compile + runtime apply at main |
 | WP-PAR-79–86 | Chip packages + boundaries | **DONE** — li-gpu (`import ligpu`), li-tpu, li-asic, hetero orchestration gate |
 | WP-PAR-87–92 | Transfer plan | **DONE** — __li_xfer_plan, elide copy/fuse xfer/d2d path/rdma gpu, dashboard xfer_sec/elided_copies |
 

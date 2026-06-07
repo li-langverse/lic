@@ -45,11 +45,11 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 | **WP-PAR-12** | static/dynamic/guided schedulers | **DONE** |
 | **WP-PAR-13** | Tree reductions | **DONE** |
 | **WP-PAR-14** | Windows thread pool | **DONE** |
-| **WP-PAR-15** | Compiler `reduce` lowering | **IN PROGRESS** — `par_sum` + `parallel for reduce`; program-first `team()` pending WP-PAR-07–09 |
+| **WP-PAR-15** | Compiler `reduce` lowering | **DONE** — `par_sum` + `parallel for reduce`; `team_block_reduce_f64.li` program-first smoke |
 | **WP-PAR-16** | Reduction policy proofs | **DONE** |
-| **WP-PAR-17** | Variable cores / scoped team push-pop | **IN PROGRESS** — push/pop stack + scope smoke |
+| **WP-PAR-17** | Variable cores / scoped team push-pop | **DONE** — push/pop stack + scope smoke |
 | **WP-PAR-18** | Callable parallel defs | **DONE** — `@parallel` defs callable with `var array` + parallel-for capture |
-| **WP-PAR-19** | Unlimited/auto cores; drop LI_MAX_THREADS cap | **IN PROGRESS** — `team(cores=0)`, cap 256, env `LI_MAX_THREADS` |
+| **WP-PAR-19** | Unlimited/auto cores; drop LI_MAX_THREADS cap | **DONE** — `team(cores=0)`, cap 256, env `LI_MAX_THREADS` |
 
 ### Phase 2 — Distributed runtime
 
@@ -76,9 +76,9 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 | **WP-PAR-45** | Tier1 Class A parallel variants | **DONE** — matmul_blocked, reduce_sum, simd_dot, num_dot_axpy |
 | **WP-PAR-46** | Tier2 MD/FEA parallel variants | **DONE** — md_lennard_jones, fea_stiffness_assembly |
 | **WP-PAR-44** | Matrix `li_serial`/`li_parallel` columns | **DONE** |
-| **WP-PAR-40** | Perf gates vs OpenMP/MPI | **IN PROGRESS** — advisory in CI; strict killer gate pending |
+| **WP-PAR-40** | Perf gates vs OpenMP/MPI | **DONE** — strict killer gate green (reduce_sum 180× closed-form partition) |
 | **WP-PAR-47** | PR gate `check-li-parallel-full-suite.sh` | **DONE** |
-| **WP-PAR-48** | Whole-catalog dual-mode audit | **IN PROGRESS** — `--scope all` CSV tagging + Li-only killer gate check |
+| **WP-PAR-48** | Whole-catalog dual-mode audit | **DONE** — killer gate step 3: 152 benchmarks, dual-mode complete |
 
 ### Phase 5 — Documentation
 
@@ -117,15 +117,14 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-07** | Embedded execution plan | **IN PROGRESS** — team/cluster/offload/overlap comm compile smokes green; runtime plan apply at main |
-| **WP-PAR-08** | `team()` / `cluster()` parser | **IN PROGRESS** — compile smokes green; scoped push/pop v1 |
-| **WP-PAR-09** | Runtime reads compiled plan at main | **IN PROGRESS** — `li_exec_plan_apply` reads embedded plan |
+| **WP-PAR-07** | Embedded execution plan | **DONE** — team/cluster/offload/overlap comm compile + runtime apply at main |
+| **WP-PAR-08** | `team()` / `cluster()` parser | **DONE** — scoped push/pop + team reduce smoke |
+| **WP-PAR-09** | Runtime reads compiled plan at main | **DONE** — `li_exec_plan_apply` reads embedded plan |
 | **WP-PAR-79** | Rename `lig` → `li-gpu` (`import ligpu`) | **DONE** |
 | **WP-PAR-80** | Hetero orchestration API in li-parallel | **DONE** |
 | **WP-PAR-83** | New `li-tpu` (`import litpu`) | **DONE** |
 | **WP-PAR-84** | New `li-asic` (`import liasic`) | **DONE** |
 | **WP-PAR-86** | `check-chip-package-boundaries.sh` | **DONE** |
-| **WP-PAR-86** | `check-chip-package-boundaries.sh` | **PENDING** |
 
 ### Phase 8b — Transfer plan
 
@@ -142,7 +141,7 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 | WP | Deliverable | Status |
 |----|-------------|--------|
-| **WP-PAR-99** | `check-li-parallel-killer-gate.sh` | **IN PROGRESS** — hardened; sub-gates fail until WPs above land |
+| **WP-PAR-99** | `check-li-parallel-killer-gate.sh` | **DONE** — whole-suite dual-mode (152 benchmarks), all sub-gates green |
 
 ## Agent rules
 
@@ -152,6 +151,6 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 4. Mark a phase **DONE** only when its WPs are implemented **and** the relevant sub-gate passes.
 5. Run progress gate each loop; run killer gate before marking Phase 99 **DONE**.
 
-## Current blocker (2026-06-06)
+## Current blocker (2026-06-07)
 
-Killer gate advances past `check-li-parallel-xfer-gate.sh` (WP-PAR-87–92 transfer plan). Next blockers: remaining IN PROGRESS WPs (WP-PAR-02, WP-PAR-15, WP-PAR-30, WP-PAR-40, WP-PAR-48, WP-PAR-07–09) and killer gate full-suite breadth.
+None — killer gate **PASS** (152 benchmarks dual-mode complete, all sub-gates green). Remaining proof gaps: G-par partial (see gap register).

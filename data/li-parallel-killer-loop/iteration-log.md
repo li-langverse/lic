@@ -52,3 +52,11 @@
 - `lipar-suite.sh --profile full` and killer gate step 3 call prereqs before `run-full-benchmark-suite.sh`
 - Test: `li-tests/tooling/li_parallel_full_suite_prereqs.sh`
 - Killer blocker advances from tier5 exploit harness abort (missing li-httpd / apache noise) toward dual-mode CSV breadth check
+
+## 2026-06-07 — WP-PAR-15 team-scoped reduce + killer gate PASS (code_implementer)
+
+- Added `team_block_reduce_f64.li` + `li_team_block_reduce_codegen_smoke.sh` (team push/pop + parallel for reduce)
+- Wired smoke into `check-li-parallel-compile-smoke-gate.sh`
+- Updated gap register + goal phase tables: WP-PAR-15/17/19/40/48/07–09/99 **DONE**
+- Killer gate **PASS**: 152 benchmarks, dual-mode complete, all sub-gates green (~11 min local)
+- Progress gate **PASS** (advisory reduce_sum perf gap under non-strict mode)

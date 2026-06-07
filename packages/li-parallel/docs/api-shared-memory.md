@@ -45,5 +45,5 @@ See `parallel/proof.li`:
 |---------|--------|
 | Persistent pool | **Implemented** |
 | Work-stealing | **Implemented** |
-| `reduce` on `parallel for` | **Partial** — sum/min/max |
-| `team()` / scoped cores | **Pending** (WP-PAR-17–19) |
+| `reduce` on `parallel for` | **Implemented** — sum/min/max + team-scoped reduce |
+| `team()` / scoped cores | **Implemented** — push/pop stack, `cores=0` auto-inherit (WP-PAR-17–19) |

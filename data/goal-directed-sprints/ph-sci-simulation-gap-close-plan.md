@@ -315,7 +315,7 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 |-------|----------|--------|---------|
 | Phase 0 | 4 | **DONE** (BUILD-01..03, GPU-00) | regression only |
 | Phase 1 | 15 | **DONE** (GPU-01..15 on `main`; + GPU-16..19 via #847) | regression only |
-| Phase 2 | 11 | **OPEN** | WP-SCI-03 registry |
+| Phase 2 | 11 | **OPEN** | WP-SCI-03 partial (CFD/FEA/QM tier-2 dispatch landed); WP-SCI-04 viz |
 | Phase 3 | 3 | **OPEN** | WP-SCI-GPU-VENDOR-01 |
 | **Total** | **33** | **19 done (~58%)** | |
 

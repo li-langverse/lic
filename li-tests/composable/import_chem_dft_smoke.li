@@ -1,0 +1,32 @@
+import sim
+import sim.scientific
+import chem
+
+def smoke_chem_dft_scf() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var e_h2: float = echem_dft_h2_energy_hartree()
+  if e_h2 >= 0.0:
+    return 1
+  var qm: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  if run_result_ok(qm) != 1:
+    return 1
+  if qm.checksum == 1.001:
+    return 1
+  if qm.checksum >= 0.0:
+    return 1
+  if qm.vertical_id != vertical_qm_dft():
+    return 1
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if smoke_chem_dft_scf() != 0:
+    return 1
+  return 0

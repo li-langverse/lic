@@ -18,7 +18,7 @@ def main() -> int
     return 4
   if echem_tddft_nonadiabatic_smoke() != 1:
     return 5
-  if li_std_physics_quantum_version() != 2:
+  if li_std_physics_quantum_version() != 3:
     return 6
   if quantum_tddft_nonadiabatic_smoke() != 1:
     return 7

@@ -411,6 +411,16 @@ def array_matmul_flat_cpu(
 =
   return ml_matmul_cpu_ref(m, n, k, af, bf, c)
 
+# Phase G: 32x32 logical gate — blocked CPU GEMM (no per-tile LKIR).
+def array_matmul_blocked_32(
+    af: var array[64, float], bf: var array[64, float], c: var array[64, float]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return ml_matmul_cpu_logical_32(af, bf, c)
+
 def array_matmul_batch_shape_ok(a: ArrayDesc, b: ArrayDesc) -> int
   requires true
   ensures result >= 0
@@ -510,7 +520,7 @@ def array_matmul(
   var k: int = a.shape1
   if m == 32 and n == 32 and k == 32:
     if a.storage == array_storage_flat() and b.storage == array_storage_flat():
-      return ml_matmul_lkir_logical_32(af, bf, c)
+      return ml_matmul_cpu_logical_32(af, bf, c)
   if a.storage == array_storage_flat() and b.storage == array_storage_flat():
     if array_matmul_small_ok(m, n, k) == 1:
       return array_matmul_flat_cpu(m, n, k, af, bf, c)

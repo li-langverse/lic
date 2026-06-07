@@ -19,7 +19,8 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 | Ecosystem | Why track | Li implication |
 |-----------|-----------|----------------|
 | Chapel | PGAS HPC language | Locale / distribution model → future G-* |
-| Kokkos | Performance portability | Team policies, backends → LLVM/OpenMP alignment |
+| RAJA | Policy-based loop abstractions (ICS 2025 portability rubric) | [Policy matrix](../superpowers/specs/2026-06-07-li-raja-policy-portability-rubric.md) (lic#109) → **G-par** / **G-dec**; `reduce_sum` anchor; no RAJA runtime |
+| Kokkos | Performance portability | Team policies, backends → LLVM/OpenMP alignment; memory spaces → lic#110 |
 | SYCL / oneAPI | Heterogeneous offload | Watch; no Li GPU story in v1 |
 | Zig | Low-level SIMD/comptime | Patterns for codegen, not a bench column yet |
 | NumPy / BLAS | ML tier baselines | Tier-3 only; label BLAS explicitly |

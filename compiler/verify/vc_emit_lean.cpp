@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 namespace li {
 namespace {
@@ -22,6 +23,47 @@ namespace {
 std::optional<std::int64_t> int_lit_value(const Expr& e) {
   if (e.kind == Expr::Kind::IntLit) return e.int_value;
   return std::nullopt;
+}
+
+std::optional<std::vector<std::int64_t>> lookup_const_table_values(const Expr& e) {
+  if (e.kind != Expr::Kind::Call || e.ident != "lookup_const" || e.args.size() < 2) {
+    return std::nullopt;
+  }
+  std::vector<std::int64_t> vals;
+  for (std::size_t i = 1; i < e.args.size(); ++i) {
+    if (!e.args[i]) {
+      return std::nullopt;
+    }
+    const auto v = int_lit_value(*e.args[i]);
+    if (!v) {
+      return std::nullopt;
+    }
+    vals.push_back(*v);
+  }
+  return vals;
+}
+
+std::string lookup_const_lean_list(const std::vector<std::int64_t>& table) {
+  std::string out = "[";
+  for (std::size_t i = 0; i < table.size(); ++i) {
+    if (i > 0) {
+      out += ", ";
+    }
+    out += std::to_string(table[i]);
+  }
+  out += ']';
+  return out;
+}
+
+bool lookup_table_injective(const std::vector<std::int64_t>& table) {
+  for (std::size_t i = 0; i < table.size(); ++i) {
+    for (std::size_t j = i + 1; j < table.size(); ++j) {
+      if (table[i] == table[j]) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 bool lean_reserved_ident(const std::string& name) {
@@ -295,6 +337,15 @@ std::optional<std::string> expr_to_lean(const Expr& e, const VcCtx& ctx) {
           }
         }
       }
+      if (e.ident == "lookup_const" && e.args.size() >= 2 && e.args[0]) {
+        const auto table = lookup_const_table_values(e);
+        const auto idx = expr_to_lean(*e.args[0], ctx);
+        if (!table || !idx) {
+          return std::nullopt;
+        }
+        return "(Int.ofNat (Li.Discharge.list_lookup_slot " + lookup_const_lean_list(*table) +
+               " (Int.toNat " + *idx + ")))";
+      }
       return std::nullopt;
     }
     case Expr::Kind::Index: {
@@ -519,6 +570,16 @@ std::optional<std::string> par_disjoint_lookup_injective_formal(const Expr& call
     return std::nullopt;
   }
   const Expr& slot = *call.args[1];
+  if (slot.kind == Expr::Kind::Call && slot.ident == "lookup_const") {
+    const auto table = lookup_const_table_values(slot);
+    const std::int64_t tiles = bounds.end - bounds.start;
+    if (!table || static_cast<std::int64_t>(table->size()) != tiles ||
+        !lookup_table_injective(*table)) {
+      return std::nullopt;
+    }
+    return "Li.Discharge.lookup_injective_on_tiles_spec (Li.Discharge.list_lookup_slot " +
+           lookup_const_lean_list(*table) + ") " + std::to_string(tiles);
+  }
   if (const auto rotate = par_lookup_rotate_params(slot, loop_iter, bounds)) {
     return "Li.Discharge.lookup_injective_on_tiles_spec (Li.Discharge.rotate_lookup_slot " +
            std::to_string(rotate->tiles) + " " + std::to_string(rotate->shift) + ") " +

@@ -514,6 +514,19 @@ theorem rotate_lookup_injective_on_tiles (n k : Nat) (_hn : 0 < n) :
     have hn_le : n ≤ i - j := Nat.le_of_dvd hi_pos (Nat.dvd_of_mod_eq_zero hmod)
     exact absurd hi_bound (Nat.not_lt_of_le hn_le)
 
+/-- Compile-time lookup table slot: `vals[i]` for `i < vals.length` (arbitrary permutation slice). -/
+def list_lookup_slot (vals : List Nat) : Nat → Nat :=
+  fun i => vals[i]!
+
+theorem list_lookup_table_injective (vals : List Nat) (tiles : Nat)
+    (hlen : vals.length = tiles) (hnodup : vals.Nodup) :
+    lookup_injective_on_tiles_spec (list_lookup_slot vals) tiles := by
+  intro i j hi hj hne heq
+  dsimp only [lookup_index, list_lookup_slot] at heq
+  have hi' : i < vals.length := hlen ▸ hi
+  have hj' : j < vals.length := hlen ▸ hj
+  exact hne ((List.getElem!_inj hi' hj' hnodup).1 heq)
+
 /-- **Lookup dependent aliasing (7d-c slice):** injective gather map → distinct Fin slots. -/
 theorem array_lookup_indices_disjoint {α : Type} {n tiles : Nat}
     (lookup : Nat → Nat) (_buf : LiArray α n) (i j : Nat)

@@ -8,6 +8,7 @@
 #include <functional>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 namespace li {
 
@@ -15,6 +16,31 @@ namespace {
 
 int temp_counter = 0;
 int par_counter = 0;
+
+std::optional<std::int64_t> int_lit_value(const Expr& e) {
+  if (e.kind == Expr::Kind::IntLit) {
+    return e.int_value;
+  }
+  return std::nullopt;
+}
+
+std::optional<std::vector<std::int64_t>> lookup_const_table_values(const Expr& e) {
+  if (e.kind != Expr::Kind::Call || e.ident != "lookup_const" || e.args.size() < 2) {
+    return std::nullopt;
+  }
+  std::vector<std::int64_t> vals;
+  for (std::size_t i = 1; i < e.args.size(); ++i) {
+    if (!e.args[i]) {
+      return std::nullopt;
+    }
+    const auto v = int_lit_value(*e.args[i]);
+    if (!v) {
+      return std::nullopt;
+    }
+    vals.push_back(*v);
+  }
+  return vals;
+}
 
 struct MatrixDims {
   std::int64_t rows = 0;
@@ -34,6 +60,49 @@ const std::unordered_map<std::string, const TypeExpr*>* g_object_locals = nullpt
 MirModule* g_mir_module = nullptr;
 
 std::string fresh_temp() { return "__t" + std::to_string(temp_counter++); }
+
+std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirInsn>& out,
+                          std::unordered_set<std::string>& float_names,
+                          std::unordered_set<std::string>& simd_names,
+                          std::unordered_set<std::string>& i64_locals);
+
+std::string lower_lookup_const(const Expr& e, const Module& module, std::vector<MirInsn>& out,
+                               std::unordered_set<std::string>& float_names,
+                               std::unordered_set<std::string>& simd_names,
+                               std::unordered_set<std::string>& i64_locals) {
+  const auto table = lookup_const_table_values(e);
+  if (!table || e.args.empty() || !e.args[0]) {
+    return fresh_temp();
+  }
+  const std::string arr = fresh_temp();
+  MirInsn alloc;
+  alloc.op = MirOp::ArrayAlloc;
+  alloc.ident = arr;
+  alloc.int_value = static_cast<std::int64_t>(table->size());
+  alloc.array_is_float = false;
+  out.push_back(std::move(alloc));
+  for (std::size_t i = 0; i < table->size(); ++i) {
+    MirInsn store;
+    store.op = MirOp::ArrayStoreInt;
+    store.ident = arr;
+    store.index_is_literal = true;
+    store.int_value = static_cast<std::int64_t>(i);
+    store.rhs_is_literal = true;
+    store.rhs_int = (*table)[i];
+    out.push_back(std::move(store));
+  }
+  const std::string idx =
+      lower_expr_to(*e.args[0], module, out, float_names, simd_names, i64_locals);
+  const std::string dest = fresh_temp();
+  MirInsn load;
+  load.op = MirOp::ArrayLoadInt;
+  load.ident = arr;
+  load.index_is_literal = false;
+  load.index_ident = idx;
+  load.lhs_ident = dest;
+  out.push_back(std::move(load));
+  return dest;
+}
 
 std::int64_t mir_vectorized_lanes_from_decorator(const Decorator& d) {
   if (d.name != "vectorized") return 0;
@@ -1623,6 +1692,9 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
             return dest;
           }
         }
+      }
+      if (e.ident == "lookup_const" && e.args.size() >= 2) {
+        return lower_lookup_const(e, module, out, float_names, simd_names, i64_locals);
       }
       if ((e.ident == "sum" || e.ident == "par_sum") && e.args.size() == 1 && g_arr_ctx) {
         const std::string arr =

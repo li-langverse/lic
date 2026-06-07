@@ -278,6 +278,16 @@ def par_rotate_lookup_injective_on_tiles(i: int, j: int, shift: int, tiles: int)
     return true
   return ((i + shift) % tiles) != ((j + shift) % tiles)
 
+# G-par — compile-time lookup table injective on tiles (arbitrary permutation slice).
+def par_const_lookup_table_injective_on_tiles(i: int, j: int, lookup_slot_i: int, lookup_slot_j: int, tiles: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires tiles > 0
+  ensures result == par_lookup_injective_on_tiles(i, j, lookup_slot_i, lookup_slot_j, tiles)
+  decreases tiles + i + j
+=
+  return par_lookup_injective_on_tiles(i, j, lookup_slot_i, lookup_slot_j, tiles)
+
 # G-par — lookup-table dependent aliasing: gather slots compose under memory_disjoint_elems (7d-c slice).
 def par_dependent_lookup_array_aliasing(i: int, j: int, lookup_slot_i: int, lookup_slot_j: int, buf_n: int) -> bool
   requires i >= 0

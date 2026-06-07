@@ -35,7 +35,7 @@ bool is_prelude_type_name(const std::string_view name) {
 bool is_prelude_proc_name(const std::string_view name) {
   return in_set(name, {"echo", "sum", "par_sum", "dot", "norm", "axpy", "disjoint_elem",
                        "disjoint_row", "disjoint_slice", "disjoint_lookup", "disjoint_mod",
-                       "row_ok", nullptr});
+                       "lookup_const", "row_ok", nullptr});
 }
 
 bool is_reserved_decorator_name(const std::string_view name) {

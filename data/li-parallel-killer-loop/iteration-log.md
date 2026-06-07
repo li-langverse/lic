@@ -219,6 +219,15 @@
 - **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS**; `check-li-parallel-full-suite.sh` **PASS**
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (arbitrary compile-time lookup tables + fully general dependent subscripts open)
 
+## 2026-06-07 — G-par compile-time lookup_const table h_inj discharge (code_implementer-1780825241260)
+
+- **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required
+- **G-par proof slice:** `list_lookup_slot` + `list_lookup_table_injective` in `Discharge.lean`; `par_const_lookup_table_injective_on_tiles` in `parallel/proof.li`
+- **Compiler slice:** prelude `lookup_const(j, v0, …)` + MIR table lowering + AutoVC `h_inj` via `list_lookup_table_injective` in `vc_emit_lean.cpp`
+- **Tests:** `parallel_disjoint_lookup_const_closed.li`; `li_par_lookup_mod_compiler_discharge_smoke.sh` extended; proof-db `P-par-lookup-const-table`
+- **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS**; `check-li-parallel-full-suite.sh` **PASS**
+- **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (fully general dependent subscripts beyond implemented surface open)
+
 ## 2026-06-07 — WP-PAR-79 lig removal + G-par compiler lookup/mod discharge (code_implementer-1780819756839)
 
 - **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required

@@ -1090,6 +1090,18 @@ struct Ctx {
           (void)type_of(*e.args[2]);
           return make_bool();
         }
+        if (e.ident == "lookup_const") {
+          if (e.args.size() < 2) {
+            diags.error(loc(e.span),
+                        "lookup_const expects loop index plus one or more compile-time table values");
+            return make_int();
+          }
+          (void)type_of(*e.args[0]);
+          for (std::size_t ai = 1; ai < e.args.size(); ++ai) {
+            (void)type_of(*e.args[ai]);
+          }
+          return make_int();
+        }
         const auto pit = procs.find(e.ident);
         if (pit != procs.end()) {
           const ProcDecl& callee = *pit->second;

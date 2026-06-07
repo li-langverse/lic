@@ -116,6 +116,30 @@ def par_disjoint_row_index_bound(i: int, rows: int) -> bool
 =
   return par_disjoint_elem_index_bound(i, rows)
 
+# G-par — dependent grid cell index-bound: row/col in range + linear index within cells (7d-c slice).
+def par_disjoint_grid_cell_index_bound(row: int, col: int, rows: int, cols: int) -> bool
+  requires row >= 0
+  requires col >= 0
+  requires rows > 0
+  requires cols > 0
+  ensures result == (row < rows and col < cols)
+  decreases rows + cols + row + col
+=
+  return row < rows and col < cols
+
+def par_disjoint_grid_linear_index_bound(row: int, col: int, rows: int, cols: int) -> bool
+  requires row >= 0
+  requires col >= 0
+  requires rows > 0
+  requires cols > 0
+  ensures result == par_disjoint_grid_cell_index_bound(row, col, rows, cols)
+  decreases rows + cols + row + col
+=
+  var linear: int = row * cols + col
+  if not par_disjoint_grid_cell_index_bound(row, col, rows, cols):
+    return false
+  return linear >= 0 and linear < rows * cols
+
 # G-par — dependent array aliasing: distinct parallel iterations with disjoint policy → memory-disjoint slots.
 def par_dependent_flat_array_aliasing(i: int, j: int, n: int) -> bool
   requires i >= 0

@@ -18,10 +18,16 @@ test -x "$OUT"
 
 grep -q 'index_bound_elem_spec' "$DISCHARGE"
 grep -q 'index_bound_row_spec' "$DISCHARGE"
+grep -q 'index_bound_grid_cell_spec' "$DISCHARGE"
+grep -q 'index_bound_grid_linear_spec' "$DISCHARGE"
+grep -q 'grid_linear_index_in_range' "$DISCHARGE"
 grep -q 'disjoint_elem_of_nat' "$DISCHARGE"
 grep -q 'disjoint_row_of_nat' "$DISCHARGE"
+grep -q 'disjoint_grid_cell_of_nat' "$DISCHARGE"
 grep -q 'def par_disjoint_elem_index_bound' "$SRC"
 grep -q 'def par_disjoint_row_index_bound' "$SRC"
+grep -q 'def par_disjoint_grid_cell_index_bound' "$SRC"
+grep -q 'def par_disjoint_grid_linear_index_bound' "$SRC"
 
 build_autovc() {
   local src="$1"

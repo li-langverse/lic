@@ -157,6 +157,18 @@ def index_bound_elem_spec {α : Type} {n : Nat} (i : Int) (_buf : LiArray α n) 
 def index_bound_row_spec {α : Type} {n m : Nat} (i : Int) (_grid : LiArray (LiArray α m) n) : Prop :=
   (0 : Int) ≤ i ∧ i < (n : Int)
 
+/-- Index-bound slice (7d-c): nested grid cell path requires in-range row and column indices. -/
+def index_bound_grid_cell_spec {α : Type} {rows cols : Nat} (row col : Int)
+    (_grid : LiArray (LiArray α cols) rows) : Prop :=
+  (0 : Int) ≤ row ∧ row < (rows : Int) ∧ (0 : Int) ≤ col ∧ col < (cols : Int)
+
+/-- Index-bound slice (7d-c): row-major linear cell index stays within `rows * cols`. -/
+def index_bound_grid_linear_spec (rows cols li : Nat) : Prop :=
+  li < rows * cols
+
+/-- Row-major linear cell index for nested grids (7d-c slice). -/
+def grid_linear_index (row col cols : Nat) : Nat := row * cols + col
+
 def disjoint_elem_spec {α : Type} {n : Nat} (i : Int) (buf : LiArray α n) : Prop :=
   index_bound_elem_spec i buf
 
@@ -177,6 +189,25 @@ theorem disjoint_row_policy_witness {α : Type} {n m : Nat} (i : Int)
 theorem disjoint_row_of_nat {α : Type} {n m : Nat} (ii : Nat) (grid : LiArray (LiArray α m) n)
     (h : ii < n) : disjoint_row_spec (Int.ofNat ii) grid :=
   ⟨Int.ofNat_zero.le, Int.ofNat_lt.mpr h⟩
+
+theorem grid_linear_index_in_range (row col rows cols : Nat) (hr : row < rows) (hc : col < cols) :
+    grid_linear_index row col cols < rows * cols := by
+  unfold grid_linear_index
+  calc
+    row * cols + col < row * cols + cols := Nat.add_lt_add_left hc (row * cols)
+    _ ≤ rows * cols := by
+      have hrow : row + 1 ≤ rows := Nat.succ_le_of_lt hr
+      exact Nat.le_trans (Nat.mul_le_mul_right cols hrow) (Nat.le_mul_of_pos_right _ (Nat.zero_lt_of_lt hc))
+
+theorem index_bound_grid_cell_implies_linear (rows cols row col : Nat)
+    (hr : row < rows) (hc : col < cols) :
+    index_bound_grid_linear_spec rows cols (grid_linear_index row col cols) :=
+  grid_linear_index_in_range row col rows cols hr hc
+
+theorem disjoint_grid_cell_of_nat {α : Type} {rows cols : Nat} (rr cc : Nat)
+    (grid : LiArray (LiArray α cols) rows) (hr : rr < rows) (hc : cc < cols) :
+    index_bound_grid_cell_spec (Int.ofNat rr) (Int.ofNat cc) grid :=
+  ⟨Int.ofNat_zero.le, Int.ofNat_lt.mpr hr, Int.ofNat_zero.le, Int.ofNat_lt.mpr hc⟩
 
 def disjoint_slice_spec {α : Type} {n : Nat} (tile : Int) (_buf : LiArray α n) : Prop := True
 
@@ -248,9 +279,6 @@ theorem array_row_indices_disjoint {α : Type} {m rows : Nat} (_grid : LiArray (
     (i j : Nat) (hi : i < rows) (hj : j < rows) (hne : i ≠ j) :
     (⟨i, hi⟩ : Fin rows) ≠ ⟨j, hj⟩ :=
   array_elem_indices_disjoint _grid i j hi hj hne
-
-/-- Row-major linear cell index for nested grids (7d-c slice). -/
-def grid_linear_index (row col cols : Nat) : Nat := row * cols + col
 
 /-- Memory-disjoint grid cells (7d-c slice): distinct linearized cell indices map to distinct `Fin cells` slots. -/
 def memory_disjoint_grid_elems_spec (i j cells : Nat) : Prop :=

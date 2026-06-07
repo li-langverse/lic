@@ -109,6 +109,13 @@
 - `li_par_dependent_array_aliasing_smoke.sh` wired into proofs gate
 - Proofs gate **PASS**; progress gate **PASS**; killer gate **PASS**
 
+## 2026-06-07 — G-par grid cell index-bound refinement (code_implementer)
+
+- Added `index_bound_grid_cell_spec` + `index_bound_grid_linear_spec` + `grid_linear_index_in_range` bridge in `Discharge.lean`
+- Added `par_disjoint_grid_cell_index_bound` + `par_disjoint_grid_linear_index_bound` in `parallel/proof.li` + proof-db entry `P-par-grid-cell-index-bound`
+- Extended `li_par_disjoint_index_bound_smoke.sh` for dependent (row,col) index-bound slice
+- Proofs gate **PASS**; progress gate **PASS**
+
 ## 2026-06-07 — G-par disjoint index-bound refinement (code_implementer)
 
 - Refined `disjoint_elem_spec` / `disjoint_row_spec` to `index_bound_*_spec` in `Discharge.lean`

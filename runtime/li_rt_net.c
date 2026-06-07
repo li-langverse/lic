@@ -5895,7 +5895,8 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
 
 static void httpd_proxy_snap_begin_recording_if_get(int32_t slot) {
   g_proxy_snap_recording = 0;
-  if (g_proxy_snap_ready || g_proxy_snap_recording || slot < 0 || slot >= HTTPD_MAX_CONN) {
+  if (httpd_proxy_snap_disabled() || g_proxy_snap_ready || g_proxy_snap_recording || slot < 0 ||
+      slot >= HTTPD_MAX_CONN) {
     return;
   }
   if (g_slots[slot].len < 4) {
@@ -5909,10 +5910,13 @@ static void httpd_proxy_snap_begin_recording_if_get(int32_t slot) {
 }
 
 /* 0 = no snap; 1 = served keep-alive; -1 = served then close; -2 = I/O error */
-int32_t httpd_li_proxy_snap_ready_i(void) { return g_proxy_snap_ready ? 1 : 0; }
+int32_t httpd_li_proxy_snap_ready_i(void) {
+  return (g_proxy_snap_ready && !httpd_proxy_snap_disabled()) ? 1 : 0;
+}
 
 int32_t httpd_li_proxy_try_snap_i(int32_t conn, int32_t slot, int32_t hdr_end, int32_t keep) {
-  if (!g_proxy_snap_ready || slot < 0 || slot >= HTTPD_MAX_CONN || hdr_end < 4) {
+  if (httpd_proxy_snap_disabled() || !g_proxy_snap_ready || slot < 0 || slot >= HTTPD_MAX_CONN ||
+      hdr_end < 4) {
     return 0;
   }
   if (g_slots[slot].len > hdr_end) {

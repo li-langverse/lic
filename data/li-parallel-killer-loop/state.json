@@ -8,10 +8,10 @@
   "last_gate": {
     "progress": "pass",
     "killer": "pass",
-    "proofs_complete": "pending",
+    "proofs_complete": "pass",
     "goal_complete": "pending",
     "killer_blocker": null,
-    "proofs_blocker": "WP-PAR-100–102: G-par Done markers + proofs-complete + goal-complete gates"
+    "proofs_blocker": "WP-PAR-102: goal-complete gate (killer green on GHA; sandbox tier5 HTTP flakes)"
   },
   "completed_phases": [
     "phase-0-program-first",
@@ -30,8 +30,6 @@
     "phase-10-proofs-complete"
   ],
   "current_wps": [
-    "WP-PAR-100",
-    "WP-PAR-101",
     "WP-PAR-102"
   ],
   "north_star_fit": {

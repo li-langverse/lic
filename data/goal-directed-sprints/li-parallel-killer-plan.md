@@ -15,7 +15,7 @@ Plan loop for `goal-directed-loop` stuck detection (`LI_GOAL_SELF_UNBLOCK=1`).
 
 - id: par100-proofs-complete-gate
   content: Green `scripts/check-li-parallel-proofs-complete-gate.sh` (proofs gate + G-par Done markers + Discharge builtins)
-  status: pending
+  status: done
 
 - id: par99-killer-gate
   content: Green `scripts/check-li-parallel-killer-gate.sh` (152 benchmarks dual-mode, all sub-gates)

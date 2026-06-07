@@ -150,8 +150,8 @@ Requires **engineering 100%** (`check-li-parallel-killer-gate.sh`: runtime smoke
 | WP | Deliverable | Status |
 |----|-------------|--------|
 | **WP-PAR-100** | G-par **Done** in li-parallel registers | **DONE** — compiler `disjoint_*` + dependent-index surface marked **Done** |
-| **WP-PAR-101** | `check-li-parallel-proofs-complete-gate.sh` | **PENDING** — proofs gate + register markers + Discharge builtin coverage |
-| **WP-PAR-102** | `check-li-parallel-goal-complete-gate.sh` | **PENDING** — killer + proofs-complete (GOAL_COMPLETE) |
+| **WP-PAR-101** | `check-li-parallel-proofs-complete-gate.sh` | **DONE** — proofs gate + G-par **Done** registers + Discharge `disjoint_*` builtin coverage |
+| **WP-PAR-102** | `check-li-parallel-goal-complete-gate.sh` | **PENDING** — killer + proofs-complete (GOAL_COMPLETE); killer green on GHA `lipar-killer-gate` |
 
 ## Agent rules
 
@@ -165,4 +165,4 @@ Requires **engineering 100%** (`check-li-parallel-killer-gate.sh`: runtime smoke
 
 **Engineering:** none — killer gate **PASS** locally + GHA `lipar-killer-gate`.
 
-**Proofs (100%):** **G-par** still **Partial** in `gap-register.md` / `proofs-table.md`. Agent loop must close WP-PAR-100–102: mark **Done** for all **compiler-supported** disjoint surface, green `check-li-parallel-proofs-complete-gate.sh`, then `check-li-parallel-goal-complete-gate.sh`. Future general dependent subscripts beyond compiler surface remain org-tracked outside this sprint scope.
+**Proofs (100%):** **G-par** **Done** in li-parallel registers; `check-li-parallel-proofs-complete-gate.sh` green (WP-PAR-101). Remaining: `check-li-parallel-goal-complete-gate.sh` (WP-PAR-102) — killer gate green on GHA; sandbox tier5 HTTP flakes are environmental. Future general dependent subscripts beyond compiler surface remain org-tracked outside this sprint scope.

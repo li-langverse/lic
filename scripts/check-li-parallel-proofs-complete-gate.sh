@@ -29,7 +29,7 @@ if [[ -z "$gpar_gap_line" ]]; then
   li_fail "G-par row missing in gap-register.md"
   exit 1
 fi
-if echo "$gpar_gap_line" | grep -qiE '\*\*Partial\*\*|^| G-par \| Partial'; then
+if echo "$gpar_gap_line" | grep -qiE '\*\*Partial\*\*|^\| G-par \| Partial'; then
   li_fail "gap-register.md G-par still Partial — mark **Done** when compiler surface is closed"
   exit 1
 fi

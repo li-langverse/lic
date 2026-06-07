@@ -19,6 +19,7 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 | Ecosystem | Why track | Li implication |
 |-----------|-----------|----------------|
 | Chapel | PGAS HPC language | Locale / distribution model → future G-* |
+| HPX | Lightweight futures + work-stealing task pools | Tier-2 physics future pipelines → [HPX futures spec](../superpowers/specs/2026-06-07-li-hpx-async-futures-surface.md) (lic#112) |
 | Kokkos | Performance portability | Team policies, backends → LLVM/OpenMP alignment |
 | SYCL / oneAPI | Heterogeneous offload | Watch; no Li GPU story in v1 |
 | Zig | Low-level SIMD/comptime | Patterns for codegen, not a bench column yet |

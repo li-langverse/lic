@@ -27,10 +27,19 @@ grep -q 'li_array_matmul_f32' packages/li-array/src/lib.li \
   || { echo "missing li_array_matmul_f32"; exit 1; }
 grep -q 'array_matmul_flat_cpu' packages/li-array/src/lib.li \
   || { echo "missing Phase B flat matmul hot path"; exit 1; }
+grep -q '@vectorized(lanes=4)' packages/li-array/src/lib.li \
+  || { echo "missing Phase C @vectorized array_add/sum"; exit 1; }
+grep -q 'array_matmul_batch' packages/li-array/src/lib.li \
+  || { echo "missing Phase D batch matmul"; exit 1; }
+grep -q 'import array' packages/li-llm/src/lib.li \
+  || { echo "missing Phase E li-llm import array"; exit 1; }
+grep -q 'li_array_matmul_f32' packages/li-llm/src/lib.li \
+  || { echo "missing Phase E li_array_matmul_f32 in llm forward"; exit 1; }
 
 for f in \
   packages/li-array/li-tests/smoke/builds.li \
   packages/li-array/li-tests/smoke/array_matmul_4.li \
+  packages/li-array/li-tests/smoke/array_matmul_batch_2.li \
   packages/li-array/li-tests/smoke/broadcast_reject_2_vs_4.li; do
   [[ -f "$f" ]] || { echo "missing smoke $f"; exit 1; }
 done
@@ -42,6 +51,9 @@ done
 
 echo "==> li-array matmul bench (run-only timing)"
 bash scripts/bench-ph-ml-li-array-matmul.sh
+
+echo "==> li-array 32x32 matmul bench (Phase F ratio_vs_li)"
+bash scripts/bench-ph-ml-li-array-matmul-32.sh || true
 
 python3 - <<'PY'
 import json, sys
@@ -60,6 +72,15 @@ if r.get("cpu_sec") is None:
 if r.get("build_cpu_sec") is None:
     sys.exit("li-array matmul must record build_cpu_sec separately")
 print("li-array gate: matmul bench OK cpu_sec=", r.get("cpu_sec"))
+
+p32 = Path("benchmarks/results/ph-ml-li-array-matmul-32.json")
+if p32.is_file():
+    r32 = json.loads(p32.read_text())
+    ratio = r32.get("ratio_vs_li")
+    met = r32.get("ratio_target_met")
+    print("li-array gate: 32x32 ratio_vs_li=", ratio, "target_met=", met)
+    if r32.get("executed") and ratio is None:
+        sys.exit("li-array 32x32 bench must record ratio_vs_li when executed")
 PY
 
 echo "ph-ml-li-array: completion gate OK"

@@ -42,6 +42,12 @@ note = "PH-ML Wave 13 T3 import ml in li-llm package graph"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/llm_import_array.li"
+outcome = "compile_open_ok"
+note = "PH-ML li-array Phase E import array in li-llm forward matmul"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/llm_weights_file_mmap.li"
 outcome = "verify_ok"
 note = "PH-ML Wave 13 T7 safetensors/GGUF mmap from PH_ML_WEIGHTS_FIXTURE paths"

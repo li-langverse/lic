@@ -168,3 +168,11 @@
 - **CI blocker fix:** wire `emit_par_policy_formals`/`emit_par_policy_args` into par-policy VC emission so captured locals (e.g. `hits` in `dpar_for_range.li`) appear in AutoVC signatures; drop broken `@… _ _ _` witness application (infer from typed `LiArray` params)
 - **Gates (local):** `check-li-parallel-proofs-gate.sh` **PASS** (~32s); `check-li-parallel-full-suite.sh` **PASS** (~152s)
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) on `cursor/li-parallel-native-hpc`; G-par remains **Partial** (non-affine general dependent subscripts open)
+
+## 2026-06-07 — main merge resolution (code_implementer-1780816477089)
+
+- **Dirty PR fix:** merged `main` (through #974 ph-ml li-array) into `cursor/li-parallel-native-hpc`
+- **Conflict:** `packages/li.toml` — union PR chip members (`li-gpu`, `li-tpu`, `li-asic`) with main (`lig`, `li-array`); pulled `packages/lig` tree from main
+- **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry — fixture briefing stale; no std module work required
+- **Gates (local):** `check-pkg-workspace.py` **PASS**; killer gates blocked (no LLVM 22 in agent sandbox) — CI re-triggered on push
+- **PR:** [#881](https://github.com/li-langverse/lic/pull/881) @ `16334634`; G-par remains **Partial** (non-affine general dependent subscripts open)

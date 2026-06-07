@@ -830,6 +830,8 @@ def proxy_handle_client_in(epfd: var int, slot: var int) raises Net, Alloc, IO -
     return -1
   if drained == 1:
     return 0
+  if httpd_li_proxy_active_i(slot) == 1:
+    return 0
   var filled2: int = net_buf_len(slot)
   if filled2 <= hdr_end:
     if httpd_li_proxy_snap_ready_i() == 1:
@@ -838,6 +840,8 @@ def proxy_handle_client_in(epfd: var int, slot: var int) raises Net, Alloc, IO -
         return 0
       if snap < 0:
         return -1
+  if httpd_li_proxy_req_body_ready_i(slot, hdr_end) == 0:
+    return 0
   var st2: int = proxy_li_start(epfd, slot, hdr_end, keep)
   if st2 < 0:
     return -1

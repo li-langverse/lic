@@ -960,10 +960,30 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       emit_args(c.kind != ContractKind::Requires);
     }
     if (auto discharge = par_disjoint_discharge_ref(*c.expr)) {
-      out << " := " << *discharge;
-      emit_par_policy_call_args_to_lean(out, *c.expr);
+      const auto tag = par_disjoint_policy_witness(*c.expr);
+      const int implicit_count =
+          (tag && (*tag == "disjoint_row" || *tag == "row_ok")) ? 3 : 2;
+      out << " := @" << *discharge;
+      for (int k = 0; k < implicit_count; ++k) {
+        out << " _";
+      }
+      if (c.expr->args[0]) {
+        const VcCtx par_ctx;
+        if (const auto a0 = expr_to_lean(*c.expr->args[0], par_ctx)) {
+          out << ' ' << *a0;
+        }
+      }
+      if (c.expr->args[1]) {
+        const VcCtx par_ctx;
+        if (const auto a1 = expr_to_lean(*c.expr->args[1], par_ctx)) {
+          out << ' ' << *a1;
+        }
+      }
       if (index_bound) {
         out << " h_range";
+        if (lookup_injective) {
+          out << " h_inj";
+        }
       }
       out << '\n';
     } else {

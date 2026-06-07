@@ -87,8 +87,9 @@ li_phase "math_syntax (2h)"
 li_phase "math_linalg (2i)"
 "$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" math_linalg
 
-li_phase "workspace build (8a)"
+li_phase "workspace build (8a/8p-b)"
 chmod +x "$ROOT/scripts/lic-workspace-build.sh"
+export LI_WORKSPACE_JOBS=8
 "$ROOT/scripts/lic-workspace-build.sh" "$ROOT/packages/li.toml"
 
 li_phase "lic check workspace (WP3)"
@@ -133,10 +134,11 @@ chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" \
 "$ROOT/li-tests/tooling/agent_manifest_smoke.sh"
 
 li_phase "8p parallel smokes"
-chmod +x "$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"   "$ROOT/li-tests/tooling/resource_flags_smoke.sh"   "$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
+chmod +x "$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"   "$ROOT/li-tests/tooling/resource_flags_smoke.sh"   "$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"   "$ROOT/li-tests/tooling/workspace_build_parallel_smoke.sh"
 "$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"
 "$ROOT/li-tests/tooling/resource_flags_smoke.sh"
 "$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
+"$ROOT/li-tests/tooling/workspace_build_parallel_smoke.sh"
 
 li_phase "8-sync toolchain"
 chmod +x "$ROOT/scripts/check-li-toolchain.sh"

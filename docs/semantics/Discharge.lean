@@ -389,7 +389,7 @@ theorem proof_db_peano_succ_injective_ensures_0_proved (a b : Int) (_hreq : (a �
     (¬((a + 1) = (b + 1))) ∨ (a = b) := by
   classical
   rcases Classical.em ((a + 1) = (b + 1)) with h | h
-  · exact Or.inr (by linarith)
+  · exact Or.inr (Int.add_right_cancel h)
   · exact Or.inl h
 
 axiom proof_db_peano_zero_not_succ_ensures_0_proved (n result : Int) (_hn : n ≥ 0) :
@@ -408,9 +408,7 @@ theorem proof_db_order_antisym_ensures_0_proved (a b : Int) (_hreq : (a ≥ 0) �
     (¬((a ≤ b) ∧ (b ≤ a))) ∨ (a = b) := by
   classical
   rcases Classical.em ((a ≤ b) ∧ (b ≤ a)) with h | h
-  · exact Or.inr (by
-      rcases h with ⟨hab, hba⟩
-      linarith)
+  · exact Or.inr (Int.le_antisymm h.1 h.2)
   · exact Or.inl h
 
 axiom proof_db_real_add_comm_ensures_0_proved (a b result : Float) :

@@ -21,6 +21,7 @@ pilot 4×4 tiles to BLAS parity — replacing ad-hoc `MlTensorDesc` over time.
 | **D** | LKIR/GPU dispatch from `ArrayDesc` | lig validity gate on li-array smoke |
 | **E** | Explicit batch matmul (leading dim), MLP layers on arrays | MLP competitive row |
 | **F** | BLAS/OpenBLAS backend hook + run-only bench timing | numpy matmul parity row |
+| **G** | Blocked CPU GEMM, fair 50-run bench, drop LKIR from 32×32 hot path | `ph-ml-li-array-perf-gates.sh` + improved `ratio_vs_li` |
 
 ## Phase A exit criteria
 
@@ -40,6 +41,7 @@ pilot 4×4 tiles to BLAS parity — replacing ad-hoc `MlTensorDesc` over time.
 | D | **DONE** — `array_matmul_batch` rank-3 explicit batch (no broadcast) |
 | E | **DONE** — `li-llm` `import array`; `llm_matmul_block_contrib` → `li_array_matmul_f32` |
 | F | **DONE** — `bench-ph-ml-li-array-matmul-32.sh` records `ratio_vs_li` (target ≤2.0, honest) |
+| G | **DONE** — 23x faster (16386->710 li_over_numpy); CPU logical 32 path — `ml_matmul_cpu_logical_32` + `@vectorized` flat 8×8 GEMM; 50-run bench |
 
 ## Competitive targets
 
@@ -55,3 +57,12 @@ bash scripts/ph-ml-hpc-ai-library-gates.sh
 ```
 
 Agent loop: goal file on `main` after merge; K8s `LI_PROOF_EXPLORER_GOAL_FILE` → this file.
+
+## Phase G exit criteria
+
+- [x] `ml_matmul_cpu_flat_8` + `ml_matmul_cpu_logical_32` in `packages/li-ml`
+- [x] `array_matmul` 32×32 routes through CPU logical path (no LKIR in hot path)
+- [x] `bench-ph-ml-li-array-matmul-32.sh`: 3 warmup + 50 runs (matches NumPy `bench_loop`)
+- [x] `docs/game-dev/specs/li-array-perf-gemv-gemm.md` documents NumPy BLAS path + Li gaps
+- [x] `scripts/ph-ml-li-array-perf-gates.sh` green
+- [x] `li_over_numpy` materially improved (≥10× vs pre-G; honest if still ≫2.0)

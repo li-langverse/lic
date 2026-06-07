@@ -177,7 +177,7 @@ theorem disjoint_elem_policy_witness {α : Type} {n : Nat} (i : Int) (buf : LiAr
 
 theorem disjoint_elem_of_nat {α : Type} {n : Nat} (ii : Nat) (buf : LiArray α n) (h : ii < n) :
     disjoint_elem_spec (Int.ofNat ii) buf :=
-  ⟨Int.ofNat_zero.le, Int.ofNat_lt.mpr h⟩
+  ⟨Int.natCast_nonneg ii, Int.ofNat_lt.mpr h⟩
 
 def disjoint_row_spec {α : Type} {n m : Nat} (i : Int) (grid : LiArray (LiArray α m) n) : Prop :=
   index_bound_row_spec i grid
@@ -188,7 +188,7 @@ theorem disjoint_row_policy_witness {α : Type} {n m : Nat} (i : Int)
 
 theorem disjoint_row_of_nat {α : Type} {n m : Nat} (ii : Nat) (grid : LiArray (LiArray α m) n)
     (h : ii < n) : disjoint_row_spec (Int.ofNat ii) grid :=
-  ⟨Int.ofNat_zero.le, Int.ofNat_lt.mpr h⟩
+  ⟨Int.natCast_nonneg ii, Int.ofNat_lt.mpr h⟩
 
 theorem grid_linear_index_in_range (row col rows cols : Nat) (hr : row < rows) (hc : col < cols) :
     grid_linear_index row col cols < rows * cols := by
@@ -197,7 +197,9 @@ theorem grid_linear_index_in_range (row col rows cols : Nat) (hr : row < rows) (
     row * cols + col < row * cols + cols := Nat.add_lt_add_left hc (row * cols)
     _ ≤ rows * cols := by
       have hrow : row + 1 ≤ rows := Nat.succ_le_of_lt hr
-      exact Nat.le_trans (Nat.mul_le_mul_right cols hrow) (Nat.le_mul_of_pos_right _ (Nat.zero_lt_of_lt hc))
+      calc
+        row * cols + cols = (row + 1) * cols := (Nat.succ_mul row cols).symm
+        _ ≤ rows * cols := Nat.mul_le_mul_right cols hrow
 
 theorem index_bound_grid_cell_implies_linear (rows cols row col : Nat)
     (hr : row < rows) (hc : col < cols) :
@@ -207,7 +209,7 @@ theorem index_bound_grid_cell_implies_linear (rows cols row col : Nat)
 theorem disjoint_grid_cell_of_nat {α : Type} {rows cols : Nat} (rr cc : Nat)
     (grid : LiArray (LiArray α cols) rows) (hr : rr < rows) (hc : cc < cols) :
     index_bound_grid_cell_spec (Int.ofNat rr) (Int.ofNat cc) grid :=
-  ⟨Int.ofNat_zero.le, Int.ofNat_lt.mpr hr, Int.ofNat_zero.le, Int.ofNat_lt.mpr hc⟩
+  ⟨Int.natCast_nonneg rr, Int.ofNat_lt.mpr hr, Int.natCast_nonneg cc, Int.ofNat_lt.mpr hc⟩
 
 def disjoint_slice_spec {α : Type} {n : Nat} (tile : Int) (_buf : LiArray α n) : Prop := True
 
@@ -233,10 +235,10 @@ theorem iteration_independent_tile_witness (i j tiles : Nat) :
 
 /-- Memory-disjoint rows (7d-c slice): distinct in-range indices map to distinct `Fin n` slots. -/
 def memory_disjoint_rows_spec (i j n : Nat) : Prop :=
-  i < n → j < n → i ≠ j → (i : Fin n) ≠ (j : Fin n)
+  ∀ (hi : i < n) (hj : j < n), i ≠ j → (⟨i, hi⟩ : Fin n) ≠ ⟨j, hj⟩
 
 theorem memory_disjoint_rows_witness (i j n : Nat) : memory_disjoint_rows_spec i j n :=
-  fun hi hj hne heq => hne (Fin.ext heq)
+  fun _ _ hne heq => hne ((Fin.mk.injEq _ _ _ _).mp heq)
 
 /-- Compositional bridge: iteration independence implies memory-disjoint row slots. -/
 theorem iteration_independent_implies_memory_disjoint_rows (i j n : Nat)
@@ -258,7 +260,7 @@ theorem iteration_independent_implies_memory_disjoint_elems (i j n : Nat)
 /-- **Array aliasing (7d-c slice):** distinct in-range indices into `LiArray α n` refer to distinct slots. -/
 theorem array_elem_indices_disjoint {α : Type} {n : Nat} (_a : LiArray α n) (i j : Nat)
     (hi : i < n) (hj : j < n) (hne : i ≠ j) : (⟨i, hi⟩ : Fin n) ≠ ⟨j, hj⟩ :=
-  fun heq => hne (Fin.ext heq)
+  fun heq => hne ((Fin.mk.injEq _ _ _ _).mp heq)
 
 /-- Memory-disjoint grid rows (7d-c slice): distinct in-range row indices into nested grids. -/
 def memory_disjoint_grid_rows_spec (i j rows : Nat) : Prop :=
@@ -299,7 +301,7 @@ theorem array_grid_cell_indices_disjoint {α : Type} {rows cols : Nat}
     (grid : LiArray (LiArray α cols) rows) (li lj : Nat)
     (hi : li < rows * cols) (hj : lj < rows * cols) (hne : li ≠ lj) :
     (⟨li, hi⟩ : Fin (rows * cols)) ≠ ⟨lj, hj⟩ :=
-  array_elem_indices_disjoint grid li lj hi hj hne
+  fun heq => hne ((Fin.mk.injEq _ _ _ _).mp heq)
 
 /-- **Dependent array aliasing (7d-c slice):** two distinct in-range indices with
     `disjoint_elem` policy on the same flat buffer target memory-disjoint slots. -/

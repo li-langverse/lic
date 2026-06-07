@@ -10,14 +10,16 @@ namespace {
 bool expr_is_disjoint_builtin_call(const Expr& e) {
   return e.kind == Expr::Kind::Call &&
          (e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
-          e.ident == "disjoint_slice");
+          e.ident == "disjoint_slice" || e.ident == "disjoint_lookup" ||
+          e.ident == "disjoint_mod");
 }
 
 bool expr_references_disjoint(const Expr& e) {
   switch (e.kind) {
     case Expr::Kind::Ident:
       return e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
-             e.ident == "disjoint_slice";
+             e.ident == "disjoint_slice" || e.ident == "disjoint_lookup" ||
+             e.ident == "disjoint_mod";
     case Expr::Kind::Call:
       return expr_is_disjoint_builtin_call(e);
     case Expr::Kind::BinOp:
@@ -163,7 +165,7 @@ void collect_proc_locals(const std::vector<Stmt>& stmts, std::vector<std::string
     }
     collect_proc_locals(s.while_body, out);
     collect_proc_locals(s.for_body, out);
-    if (s.kind != Stmt::Kind::ParallelFor) {
+    if (s.kind != Stmt::Kind::ParallelFor && s.kind != Stmt::Kind::DistributedFor) {
       collect_proc_locals(s.par_body, out);
     }
   }
@@ -184,6 +186,28 @@ bool assign_targets_outer_local(const Stmt& s, const std::vector<std::string>& l
   return false;
 }
 
+bool par_reduce_capture_allowed(const Stmt& par, const Stmt& s) {
+  if (par.par_reduce_kind == ParReduceKind::None || par.par_reduce_var.empty()) {
+    return false;
+  }
+  if (par.par_reduce_kind == ParReduceKind::Add && s.kind == Stmt::Kind::Assign && s.init &&
+      s.init->kind == Expr::Kind::Ident && s.init->ident == par.par_reduce_var && s.expr &&
+      s.expr->kind == Expr::Kind::BinOp && s.expr->bin_op == BinOp::Add && s.expr->lhs &&
+      s.expr->lhs->kind == Expr::Kind::Ident && s.expr->lhs->ident == par.par_reduce_var) {
+    return true;
+  }
+  if ((par.par_reduce_kind == ParReduceKind::Min || par.par_reduce_kind == ParReduceKind::Max) &&
+      s.kind == Stmt::Kind::If && !s.else_body && s.then_body.size() == 1) {
+    return par_reduce_capture_allowed(par, s.then_body[0]);
+  }
+  if ((par.par_reduce_kind == ParReduceKind::Min || par.par_reduce_kind == ParReduceKind::Max) &&
+      s.kind == Stmt::Kind::Assign && s.init && s.init->kind == Expr::Kind::Ident &&
+      s.init->ident == par.par_reduce_var) {
+    return true;
+  }
+  return false;
+}
+
 std::int64_t decorator_vectorized_lanes(const Decorator& d) {
   if (d.name != "vectorized") {
     return 0;
@@ -194,6 +218,17 @@ std::int64_t decorator_vectorized_lanes(const Decorator& d) {
     }
   }
   return 4;
+}
+
+void check_offload_decorator(const Decorator& d, const std::string& file, DiagnosticBag& diags) {
+  if (d.name != "offload") {
+    return;
+  }
+  if (!d.args.empty()) {
+    diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+               "offload decorator: `@offload` takes no arguments in v1.",
+               "Use bare `@offload` on a parallel region; device selection is in the exec plan.");
+  }
 }
 
 void check_gpu_decorator(const Decorator& d, const std::string& file, DiagnosticBag& diags) {
@@ -227,6 +262,7 @@ void check_gpu_decorator(const Decorator& d, const std::string& file, Diagnostic
 void check_stmt_decorators(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
   for (const auto& d : stmt.decorators) {
     check_gpu_decorator(d, file, diags);
+    check_offload_decorator(d, file, diags);
     if (d.name == "parallel") {
       if (!decorator_has_disjoint_arg(d)) {
         diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
@@ -263,6 +299,18 @@ void check_stmt_parallel(const Stmt& stmt, const std::string& file, DiagnosticBa
   if (stmt.kind != Stmt::Kind::ParallelFor) {
     return;
   }
+  for (const auto& s : stmt.par_body) {
+    if (s.kind == Stmt::Kind::Borrow) {
+      diag_error(diags, SourceLoc{file, 1, 1, s.span.start}, ErrorCode::E0350,
+                 "borrow mut forbidden across parallel iterations",
+                 "Do not borrow inside a parallel loop body; index the buffer directly with "
+                 "disjoint_elem(i, buf).");
+    }
+  }
+  /** WP-PAR-15: `reduce(+|min|max:)` uses TLS partials — no disjoint_elem on arrays required. */
+  if (stmt.par_reduce_kind != ParReduceKind::None) {
+    return;
+  }
   for (const auto& c : stmt.par_contracts) {
     if (c.kind == ContractKind::Requires && c.expr &&
         contract_requires_is_weak_parallel_witness(*c.expr)) {
@@ -286,23 +334,33 @@ void check_stmt_parallel(const Stmt& stmt, const std::string& file, DiagnosticBa
                "Use disjoint_elem(i, ...) for the memory you actually write, or write only "
                "grid[i][...].");
   }
+}
+
+void check_stmt_distributed(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
+  check_stmt_decorators(stmt, file, diags);
+  if (stmt.kind != Stmt::Kind::DistributedFor) {
+    return;
+  }
   for (const auto& s : stmt.par_body) {
     if (s.kind == Stmt::Kind::Borrow) {
       diag_error(diags, SourceLoc{file, 1, 1, s.span.start}, ErrorCode::E0350,
-                 "borrow mut forbidden across parallel iterations",
-                 "Do not borrow inside a parallel loop body; index the buffer directly with "
-                 "disjoint_elem(i, buf).");
+                 "borrow mut forbidden across distributed iterations",
+                 "Do not borrow inside a distributed loop body; index buffers with the loop "
+                 "variable over the block partition.");
     }
   }
 }
 
 void check_stmt_parallel_capture(const Stmt& stmt, const std::vector<std::string>& outer_locals,
                                  const std::string& file, DiagnosticBag& diags) {
-  if (stmt.kind != Stmt::Kind::ParallelFor) {
+  if (stmt.kind != Stmt::Kind::ParallelFor && stmt.kind != Stmt::Kind::DistributedFor) {
     return;
   }
   for (const auto& s : stmt.par_body) {
     if (assign_targets_outer_local(s, outer_locals)) {
+      if (par_reduce_capture_allowed(stmt, s)) {
+        continue;
+      }
       diag_error(diags, SourceLoc{file, 1, 1, s.span.start}, ErrorCode::E0350,
                  "parallel mutable capture requires Sync proof",
                  "Do not assign to outer `var` locals from parallel iterations unless you prove "
@@ -316,6 +374,7 @@ void walk_stmts(const std::vector<Stmt>& stmts, const std::vector<std::string>& 
                 bool proc_has_parallel_disjoint) {
   for (const auto& s : stmts) {
     check_stmt_parallel(s, file, diags, proc_has_parallel_disjoint);
+    check_stmt_distributed(s, file, diags);
     check_stmt_parallel_capture(s, outer_locals, file, diags);
     walk_stmts(s.then_body, outer_locals, file, diags, proc_has_parallel_disjoint);
     if (s.else_body) {
@@ -333,6 +392,7 @@ void check_proc_decorators(const std::vector<Decorator>& decos, const std::strin
                            DiagnosticBag& diags) {
   for (const auto& d : decos) {
     check_gpu_decorator(d, file, diags);
+    check_offload_decorator(d, file, diags);
     if (d.name == "parallel") {
       bool saw_disjoint_kw = false;
       for (const auto& arg : d.args) {

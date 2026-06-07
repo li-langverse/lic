@@ -13,6 +13,11 @@ set(LI_RT_SOURCES
   li_par_reduce.c
   li_dpar.c
   li_dpar_collective.c
+  li_exec_plan.c
+  li_comm_plan.c
+  li_xfer_plan.c
+  li_fl.c
+  li_rt_hetero.c
 )
 
 add_library(li_rt STATIC ${LI_RT_SOURCES})

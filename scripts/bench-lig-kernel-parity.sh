@@ -16,7 +16,7 @@ if [[ -x "$LIC" ]]; then
 fi
 OUT="$BENCHMARKS_RESULTS/lig-lkir-matmul.json"
 REG="$BENCHMARKS_COMPETITIVE/lig-kernels.toml"
-SMOKE="$ROOT/packages/lig/li-tests/smoke/kernel_matmul_parity.li"
+SMOKE="$ROOT/packages/li-gpu/li-tests/smoke/kernel_matmul_parity.li"
 PILOT_ID="${LIG_BENCH_PILOT_KERNEL_ID:-lig.kernel.matmul_f32}"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_BENCH_ROOT="$ROOT" LIG_BENCH_LIC="$LIC" LIG_BENCH_OUT="$OUT" LIG_BENCH_REG="$REG" LIG_BENCH_SMOKE="$SMOKE" LIG_BENCH_PILOT_ID="$PILOT_ID"

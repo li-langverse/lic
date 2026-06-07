@@ -1,5 +1,5 @@
 import render
-import lig.present
+import ligpu.present
 
 # render.host — LIG_HOST_PRESENT path; keeps lig.present out of `import render` composables.
 

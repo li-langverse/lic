@@ -8,6 +8,7 @@
 #include <functional>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 namespace li {
 
@@ -15,6 +16,31 @@ namespace {
 
 int temp_counter = 0;
 int par_counter = 0;
+
+std::optional<std::int64_t> int_lit_value(const Expr& e) {
+  if (e.kind == Expr::Kind::IntLit) {
+    return e.int_value;
+  }
+  return std::nullopt;
+}
+
+std::optional<std::vector<std::int64_t>> lookup_const_table_values(const Expr& e) {
+  if (e.kind != Expr::Kind::Call || e.ident != "lookup_const" || e.args.size() < 2) {
+    return std::nullopt;
+  }
+  std::vector<std::int64_t> vals;
+  for (std::size_t i = 1; i < e.args.size(); ++i) {
+    if (!e.args[i]) {
+      return std::nullopt;
+    }
+    const auto v = int_lit_value(*e.args[i]);
+    if (!v) {
+      return std::nullopt;
+    }
+    vals.push_back(*v);
+  }
+  return vals;
+}
 
 struct MatrixDims {
   std::int64_t rows = 0;
@@ -34,6 +60,49 @@ const std::unordered_map<std::string, const TypeExpr*>* g_object_locals = nullpt
 MirModule* g_mir_module = nullptr;
 
 std::string fresh_temp() { return "__t" + std::to_string(temp_counter++); }
+
+std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirInsn>& out,
+                          std::unordered_set<std::string>& float_names,
+                          std::unordered_set<std::string>& simd_names,
+                          std::unordered_set<std::string>& i64_locals);
+
+std::string lower_lookup_const(const Expr& e, const Module& module, std::vector<MirInsn>& out,
+                               std::unordered_set<std::string>& float_names,
+                               std::unordered_set<std::string>& simd_names,
+                               std::unordered_set<std::string>& i64_locals) {
+  const auto table = lookup_const_table_values(e);
+  if (!table || e.args.empty() || !e.args[0]) {
+    return fresh_temp();
+  }
+  const std::string arr = fresh_temp();
+  MirInsn alloc;
+  alloc.op = MirOp::ArrayAlloc;
+  alloc.ident = arr;
+  alloc.int_value = static_cast<std::int64_t>(table->size());
+  alloc.array_is_float = false;
+  out.push_back(std::move(alloc));
+  for (std::size_t i = 0; i < table->size(); ++i) {
+    MirInsn store;
+    store.op = MirOp::ArrayStoreInt;
+    store.ident = arr;
+    store.index_is_literal = true;
+    store.int_value = static_cast<std::int64_t>(i);
+    store.rhs_is_literal = true;
+    store.rhs_int = (*table)[i];
+    out.push_back(std::move(store));
+  }
+  const std::string idx =
+      lower_expr_to(*e.args[0], module, out, float_names, simd_names, i64_locals);
+  const std::string dest = fresh_temp();
+  MirInsn load;
+  load.op = MirOp::ArrayLoadInt;
+  load.ident = arr;
+  load.index_is_literal = false;
+  load.index_ident = idx;
+  load.lhs_ident = dest;
+  out.push_back(std::move(load));
+  return dest;
+}
 
 std::int64_t mir_vectorized_lanes_from_decorator(const Decorator& d) {
   if (d.name != "vectorized") return 0;
@@ -61,7 +130,7 @@ bool mir_decorator_disjoint_proven(const Decorator& d) {
     if (arg.name != "disjoint" || !arg.value) continue;
     const Expr& e = *arg.value;
     if (e.kind == Expr::Kind::Ident && (e.ident == "disjoint_elem" || e.ident == "disjoint_slice")) return true;
-    if (e.kind == Expr::Kind::Call && (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice")) return true;
+    if (e.kind == Expr::Kind::Call && (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice" || e.ident == "disjoint_lookup" || e.ident == "disjoint_mod")) return true;
   }
   return false;
 }
@@ -77,6 +146,9 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
     if (d.name == "gpu") {
       md.gpu = true;
       md.gpu_devices = mir_gpu_devices_from_decorator(d);
+    }
+    if (d.name == "offload") {
+      md.offload = true;
     }
     if (d.name == "parallel") {
       md.parallel = true;
@@ -199,15 +271,93 @@ const double* lookup_const_float(const std::unordered_map<std::string, double>& 
   return &it->second;
 }
 
+
+std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirInsn>& out,
+                          std::unordered_set<std::string>& float_names,
+                          std::unordered_set<std::string>& simd_names,
+                          std::unordered_set<std::string>& i64_locals);
+
 struct LowerCtx {
   const Module* module = nullptr;
   MirModule* mir = nullptr;
   std::string proc_name;
   const ProcDecl* proc = nullptr;
+  MirFn* owner_fn = nullptr;
   std::vector<LoopLabels>* loop_stack = nullptr;
   const std::unordered_map<std::string, const TypeExpr*>* object_locals = nullptr;
   std::unordered_map<std::string, double>* const_floats = nullptr;
+  /** When set, reduce updates lower to TLS accumulators (WP-PAR-15). */
+  ParReduceKind par_reduce_kind = ParReduceKind::None;
+  const std::string* par_reduce_var = nullptr;
 };
+
+void note_offload_decorators(const std::vector<Decorator>& decos, MirModule* mir);
+
+bool push_par_reduce_acc_arg(const Expr& candidate, const Module& module, std::vector<MirInsn>& out,
+                             std::unordered_set<std::string>& float_names,
+                             std::unordered_set<std::string>& simd_names,
+                             std::unordered_set<std::string>& i64_locals, MirInsn& ins) {
+  MirArg ma;
+  if (candidate.kind == Expr::Kind::FloatLit) {
+    ma.is_float_literal = true;
+    ma.float_value = candidate.float_value;
+  } else {
+    ma.ident = lower_expr_to(candidate, module, out, float_names, simd_names, i64_locals);
+  }
+  ins.args.push_back(std::move(ma));
+  return true;
+}
+
+bool try_lower_par_reduce_acc(const Stmt& stmt, LowerCtx& ctx, const Module& module,
+                              std::vector<MirInsn>& out, std::unordered_set<std::string>& float_names,
+                              std::unordered_set<std::string>& simd_names,
+                              std::unordered_set<std::string>& i64_locals) {
+  if (!ctx.par_reduce_var || ctx.par_reduce_var->empty() ||
+      ctx.par_reduce_kind == ParReduceKind::None) {
+    return false;
+  }
+  if (ctx.par_reduce_kind == ParReduceKind::Add && stmt.kind == Stmt::Kind::Assign && stmt.init &&
+      stmt.init->kind == Expr::Kind::Ident && stmt.init->ident == *ctx.par_reduce_var &&
+      stmt.expr && stmt.expr->kind == Expr::Kind::BinOp && stmt.expr->bin_op == BinOp::Add &&
+      stmt.expr->lhs && stmt.expr->lhs->kind == Expr::Kind::Ident &&
+      stmt.expr->lhs->ident == *ctx.par_reduce_var && stmt.expr->rhs) {
+    MirInsn ins;
+    ins.op = MirOp::CallExtern;
+    ins.callee = "li_par_reduce_acc_add_f64";
+    push_par_reduce_acc_arg(*stmt.expr->rhs, module, out, float_names, simd_names, i64_locals, ins);
+    out.push_back(std::move(ins));
+    return true;
+  }
+  if ((ctx.par_reduce_kind == ParReduceKind::Min || ctx.par_reduce_kind == ParReduceKind::Max) &&
+      stmt.kind == Stmt::Kind::If && stmt.cond && !stmt.else_body &&
+      stmt.then_body.size() == 1) {
+    const BinOp cmp = ctx.par_reduce_kind == ParReduceKind::Min ? BinOp::Lt : BinOp::Gt;
+    const Expr& c = *stmt.cond;
+    if (c.kind == Expr::Kind::BinOp && c.bin_op == cmp && c.lhs && c.rhs &&
+        c.rhs->kind == Expr::Kind::Ident && c.rhs->ident == *ctx.par_reduce_var) {
+      const Stmt& inner = stmt.then_body[0];
+      if (inner.kind == Stmt::Kind::Assign && inner.init &&
+          inner.init->kind == Expr::Kind::Ident &&
+          inner.init->ident == *ctx.par_reduce_var && inner.expr) {
+        MirInsn ins;
+        ins.op = MirOp::CallExtern;
+        ins.callee = ctx.par_reduce_kind == ParReduceKind::Min ? "li_par_reduce_acc_min_f64"
+                                                               : "li_par_reduce_acc_max_f64";
+        push_par_reduce_acc_arg(*c.lhs, module, out, float_names, simd_names, i64_locals, ins);
+        out.push_back(std::move(ins));
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+void note_par_reduce_runtime(LowerCtx& ctx) {
+  if (ctx.mir && ctx.par_reduce_kind != ParReduceKind::None) {
+    ctx.mir->needs_rt_par_reduce = true;
+    ctx.mir->needs_rt_par_pool = true;
+  }
+}
 std::string fresh_label(const std::string& prefix) {
   return prefix + std::to_string(temp_counter++);
 }
@@ -823,6 +973,9 @@ void collect_object_local_types_r(const Module& module, const std::vector<Stmt>&
         collect_object_local_types_r(module, st.for_body, out);
         break;
       case Stmt::Kind::ParallelFor:
+      case Stmt::Kind::DistributedFor:
+      case Stmt::Kind::TeamBlock:
+      case Stmt::Kind::ClusterBlock:
         collect_object_local_types_r(module, st.par_body, out);
         break;
       default:
@@ -1225,6 +1378,57 @@ void seed_i64_params(const MirFn& fn, std::unordered_set<std::string>& i64_local
   }
 }
 
+void seed_array_params(const MirFn& fn, LowerArrayCtx& arr_ctx,
+                       std::unordered_set<std::string>& float_array_names) {
+  for (const auto& p : fn.params) {
+    if (p.fixed_array_elems <= 0) {
+      continue;
+    }
+    float_array_names.insert(p.name);
+    // Value matrix params participate in `@` matmul lowering; `var` byref params keep 1d paths.
+    if (p.is_matrix && p.matrix_cols > 0 && !p.is_var) {
+      if (arr_ctx.matrix_names) {
+        arr_ctx.matrix_names->insert(p.name);
+      }
+      arr_ctx.matrix_dims[p.name] = MatrixDims{p.fixed_array_elems, p.matrix_cols};
+    } else if (p.is_float) {
+      arr_ctx.float_array_sizes[p.name] = p.fixed_array_elems;
+    } else if (!p.is_matrix) {
+      arr_ctx.int_array_sizes[p.name] = p.fixed_array_elems;
+    }
+  }
+}
+
+MirParCapture mir_par_capture_meta(const std::string& ident, const MirFn* owner,
+                                   const LowerArrayCtx* arr_ctx) {
+  MirParCapture cap;
+  cap.ident = ident;
+  if (owner) {
+    for (const auto& mp : owner->params) {
+      if (mp.name == ident && mp.fixed_array_elems > 0) {
+        cap.fixed_array_elems = mp.fixed_array_elems;
+        cap.is_float = mp.is_float;
+        cap.is_matrix = mp.is_matrix;
+        cap.matrix_cols = mp.matrix_cols;
+        return cap;
+      }
+    }
+  }
+  if (arr_ctx) {
+    const auto fs = arr_ctx->float_array_sizes.find(ident);
+    if (fs != arr_ctx->float_array_sizes.end()) {
+      cap.fixed_array_elems = fs->second;
+      cap.is_float = true;
+      return cap;
+    }
+    const auto isz = arr_ctx->int_array_sizes.find(ident);
+    if (isz != arr_ctx->int_array_sizes.end()) {
+      cap.fixed_array_elems = isz->second;
+    }
+  }
+  return cap;
+}
+
 std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirInsn>& out,
                           std::unordered_set<std::string>& float_names,
                           std::unordered_set<std::string>& simd_names,
@@ -1489,20 +1693,28 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           }
         }
       }
-      if (e.ident == "sum" && e.args.size() == 1 && g_arr_ctx) {
+      if (e.ident == "lookup_const" && e.args.size() >= 2) {
+        return lower_lookup_const(e, module, out, float_names, simd_names, i64_locals);
+      }
+      if ((e.ident == "sum" || e.ident == "par_sum") && e.args.size() == 1 && g_arr_ctx) {
         const std::string arr =
             lower_expr_to(*e.args[0], module, out, float_names, simd_names, i64_locals);
         const std::string dest = fresh_temp();
+        const bool par_reduce = e.ident == "par_sum";
         if (g_arr_ctx->float_array_names &&
             g_arr_ctx->float_array_names->count(arr) > 0) {
           const auto sz = g_arr_ctx->float_array_sizes.find(arr);
           if (sz != g_arr_ctx->float_array_sizes.end()) {
             MirInsn ins;
-            ins.op = MirOp::ArraySumF64;
+            ins.op = par_reduce ? MirOp::ParReduceSumF64 : MirOp::ArraySumF64;
             ins.ident = dest;
             ins.lhs_ident = arr;
             ins.int_value = sz->second;
             out.push_back(std::move(ins));
+            if (par_reduce && g_mir_module) {
+              g_mir_module->needs_rt_par_reduce = true;
+              g_mir_module->needs_rt_par_pool = true;
+            }
             float_names.insert(dest);
             return dest;
           }
@@ -1511,6 +1723,7 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           const auto sz = g_arr_ctx->int_array_sizes.find(arr);
           if (sz != g_arr_ctx->int_array_sizes.end()) {
             MirInsn ins;
+            // i32 tiles: runtime li_par_reduce_sum_i64 expects i64* — serial until i32 kernel lands.
             ins.op = MirOp::ArraySumI64;
             ins.ident = dest;
             ins.lhs_ident = arr;
@@ -1698,6 +1911,7 @@ void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
     ins.op = MirOp::ReturnFloat;
     ins.float_value = e.float_value;
   } else if (e.kind == Expr::Kind::Ident) {
+    const bool ident_is_matrix = matrix_slot_dims(e.ident, nullptr);
     if (ret_obj) {
       ins.op = MirOp::ReturnObject;
       ins.ident = std::string("__li_o_") + e.ident;
@@ -1705,15 +1919,18 @@ void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
     } else {
       ins.op = MirOp::ReturnIdent;
       ins.ident = e.ident;
-      ins.ret_is_float = returns_float || float_names.count(e.ident) > 0;
+      ins.ret_is_float =
+          !ident_is_matrix && (returns_float || float_names.count(e.ident) > 0);
       ins.ret_is_i64 =
-          i64_locals.count(e.ident) > 0 ||
-          (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name));
+          !ident_is_matrix &&
+          (i64_locals.count(e.ident) > 0 ||
+           (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name)));
     }
   } else if (e.kind == Expr::Kind::Call || e.kind == Expr::Kind::MethodCall ||
              e.kind == Expr::Kind::BinOp || e.kind == Expr::Kind::Index ||
              e.kind == Expr::Kind::FieldAccess) {
     const std::string tmp = lower_expr_to(e, module, out, float_names, simd_names, i64_locals);
+    const bool tmp_is_matrix = matrix_slot_dims(tmp, nullptr);
     if (ret_obj) {
       ins.op = MirOp::ReturnObject;
       ins.ident = tmp;
@@ -1721,10 +1938,12 @@ void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
     } else {
       ins.op = MirOp::ReturnIdent;
       ins.ident = tmp;
-      ins.ret_is_float = returns_float || is_float_expr(e, float_names);
+      ins.ret_is_float =
+          !tmp_is_matrix && (returns_float || is_float_expr(e, float_names));
       ins.ret_is_i64 =
-          i64_locals.count(tmp) > 0 ||
-          (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name));
+          !tmp_is_matrix &&
+          (i64_locals.count(tmp) > 0 ||
+           (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name)));
     }
   } else {
     ins.op = MirOp::ReturnVoid;
@@ -1986,6 +2205,10 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           arr_slot = mir_field_slot_for_expr(*stmt.init->base);
         }
         if (!arr_slot.empty()) {
+          float_array_names.insert(arr_slot);
+          if (g_arr_ctx && g_arr_ctx->float_array_names) {
+            g_arr_ctx->float_array_names->insert(arr_slot);
+          }
           const bool fa = float_array_names.count(arr_slot) > 0;
           MirInsn ins;
           ins.op = fa ? MirOp::ArrayStoreFloat : MirOp::ArrayStoreInt;
@@ -2077,6 +2300,10 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           out.push_back(std::move(ins));
         }
       } else if (stmt.init && stmt.init->kind == Expr::Kind::Ident && stmt.expr) {
+        if (try_lower_par_reduce_acc(stmt, ctx, module, out, float_names, simd_names, i64_locals)) {
+          note_par_reduce_runtime(ctx);
+          break;
+        }
         if (ctx.object_locals) {
           const auto ol_it = ctx.object_locals->find(stmt.init->ident);
           if (ol_it != ctx.object_locals->end()) {
@@ -2144,6 +2371,7 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       MirFn par_fn;
       par_fn.name = par_name;
       copy_decorators(stmt.decorators, par_fn.decorators);
+      note_offload_decorators(stmt.decorators, ctx.mir);
       MirParam ip;
       ip.name = stmt.par_iter;
       ip.is_i64 = true;
@@ -2152,10 +2380,32 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       std::unordered_set<std::string> par_simd;
       std::unordered_set<std::string> par_float_arrays;
       std::unordered_set<std::string> par_i64s;
-      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr, ctx.object_locals};
+      LowerArrayCtx par_arr_ctx;
+      par_arr_ctx.float_array_names = &par_float_arrays;
+      if (g_arr_ctx) {
+        for (const auto& kv : g_arr_ctx->float_array_sizes) {
+          par_arr_ctx.float_array_sizes[kv.first] = kv.second;
+        }
+        for (const auto& kv : g_arr_ctx->int_array_sizes) {
+          par_arr_ctx.int_array_sizes[kv.first] = kv.second;
+        }
+      }
+      LowerArrayCtx* saved_arr_ctx = g_arr_ctx;
+      g_arr_ctx = &par_arr_ctx;
+      const std::string reduce_var =
+          stmt.par_reduce_kind != ParReduceKind::None ? stmt.par_reduce_var : std::string();
+      LowerCtx par_ctx{ctx.module,       ctx.mir,     par_name, nullptr, nullptr, nullptr,
+                       ctx.object_locals, nullptr, stmt.par_reduce_kind,
+                       reduce_var.empty() ? nullptr : &reduce_var};
       lower_stmts(stmt.par_body, par_ctx, false, par_fn.body, par_floats, par_simd,
                   par_float_arrays, par_i64s);
+      g_arr_ctx = saved_arr_ctx;
+      for (const auto& cap_name : par_float_arrays) {
+        par_fn.par_captures.push_back(
+            mir_par_capture_meta(cap_name, ctx.owner_fn, saved_arr_ctx));
+      }
       append_implicit_return(par_fn.body);
+      const std::vector<MirParCapture> par_captures = par_fn.par_captures;
       ctx.mir->functions.push_back(std::move(par_fn));
       MirInsn call;
       call.op = MirOp::OmpParallelFor;
@@ -2164,11 +2414,149 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       call.rhs_int = stmt.par_end;
       call.parallel_disjoint_proven =
           parallel_for_disjoint_witness(stmt, ctx.proc ? &ctx.proc->decorators : nullptr);
+      if (stmt.par_reduce_kind != ParReduceKind::None && !stmt.par_reduce_var.empty()) {
+        call.par_reduce_kind = stmt.par_reduce_kind;
+        call.par_reduce_var = stmt.par_reduce_var;
+        ctx.mir->needs_rt_par_reduce = true;
+        ctx.mir->needs_rt_par_pool = true;
+      }
+      call.par_captures = par_captures;
       out.push_back(std::move(call));
       ctx.mir->uses_openmp = true;
       break;
     }
+    case Stmt::Kind::DistributedFor: {
+      if (!ctx.mir) {
+        break;
+      }
+      const std::string par_name =
+          "__li_dpar_" + ctx.proc_name + "_" + std::to_string(par_counter++);
+      MirFn par_fn;
+      par_fn.name = par_name;
+      copy_decorators(stmt.decorators, par_fn.decorators);
+      MirParam ip;
+      ip.name = stmt.par_iter;
+      ip.is_i64 = true;
+      par_fn.params.push_back(ip);
+      std::unordered_set<std::string> par_floats;
+      std::unordered_set<std::string> par_simd;
+      std::unordered_set<std::string> par_float_arrays;
+      std::unordered_set<std::string> par_i64s;
+      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr, nullptr, ctx.object_locals};
+      lower_stmts(stmt.par_body, par_ctx, false, par_fn.body, par_floats, par_simd,
+                  par_float_arrays, par_i64s);
+      append_implicit_return(par_fn.body);
+      ctx.mir->functions.push_back(std::move(par_fn));
+      MirInsn call;
+      call.op = MirOp::DParFor;
+      call.callee = par_name;
+      call.int_value = stmt.par_start;
+      call.rhs_int = stmt.par_end;
+      /** G-par-dist: block partition assigns disjoint iteration tiles per rank. */
+      call.parallel_disjoint_proven = true;
+      out.push_back(std::move(call));
+      ctx.mir->needs_rt_dpar = true;
+      break;
+    }
+    case Stmt::Kind::TeamBlock: {
+      if (!ctx.mir) {
+        break;
+      }
+      const std::int64_t cores = stmt.par_start;
+      if (cores > 0) {
+        ctx.mir->exec_plan.team_cores = cores;
+      }
+      ctx.mir->needs_rt_exec_plan = true;
+      ctx.mir->needs_rt_par_pool = true;
+      MirInsn push;
+      push.op = MirOp::TeamPush;
+      push.int_value = cores;
+      out.push_back(std::move(push));
+      lower_stmts(stmt.par_body, ctx, returns_float, out, float_names, simd_names, float_array_names,
+                  i64_locals);
+      MirInsn pop;
+      pop.op = MirOp::TeamPop;
+      out.push_back(std::move(pop));
+      break;
+    }
+    case Stmt::Kind::ClusterBlock: {
+      if (!ctx.mir) {
+        break;
+      }
+      if (stmt.par_start > 0) {
+        ctx.mir->exec_plan.cluster_world = stmt.par_start;
+      }
+      if (!stmt.exec_hosts.empty()) {
+        ctx.mir->exec_plan.cluster_hosts = stmt.exec_hosts;
+      }
+      ctx.mir->needs_rt_exec_plan = true;
+      ctx.mir->needs_rt_dpar = true;
+      lower_stmts(stmt.par_body, ctx, returns_float, out, float_names, simd_names, float_array_names,
+                  i64_locals);
+      break;
+    }
+    case Stmt::Kind::OverlapComm: {
+      if (!ctx.mir) {
+        break;
+      }
+      ctx.mir->exec_plan.overlap_comm_count++;
+      ctx.mir->comm_plan.overlap_comm_count++;
+      ctx.mir->needs_rt_exec_plan = true;
+      ctx.mir->needs_rt_comm_plan = true;
+      MirInsn oc;
+      oc.op = MirOp::OverlapComm;
+      out.push_back(std::move(oc));
+      break;
+    }
+    case Stmt::Kind::ElideCopy: {
+      if (!ctx.mir) {
+        break;
+      }
+      ctx.mir->xfer_plan.elide_copy_count++;
+      ctx.mir->needs_rt_xfer_plan = true;
+      MirInsn ins;
+      ins.op = MirOp::XferElide;
+      out.push_back(std::move(ins));
+      break;
+    }
+    case Stmt::Kind::FuseXfer: {
+      if (!ctx.mir) {
+        break;
+      }
+      ctx.mir->xfer_plan.fusion_count++;
+      ctx.mir->needs_rt_xfer_plan = true;
+      MirInsn ins;
+      ins.op = MirOp::XferFusion;
+      out.push_back(std::move(ins));
+      break;
+    }
+    case Stmt::Kind::D2dPath: {
+      if (!ctx.mir) {
+        break;
+      }
+      ctx.mir->xfer_plan.d2d_path_count++;
+      ctx.mir->needs_rt_xfer_plan = true;
+      MirInsn ins;
+      ins.op = MirOp::XferD2d;
+      out.push_back(std::move(ins));
+      break;
+    }
+    case Stmt::Kind::RdmaGpu: {
+      if (!ctx.mir) {
+        break;
+      }
+      ctx.mir->xfer_plan.rdma_gpu_count++;
+      ctx.mir->needs_rt_xfer_plan = true;
+      MirInsn ins;
+      ins.op = MirOp::XferRdmaGpu;
+      out.push_back(std::move(ins));
+      break;
+    }
     case Stmt::Kind::If: {
+      if (try_lower_par_reduce_acc(stmt, ctx, module, out, float_names, simd_names, i64_locals)) {
+        note_par_reduce_runtime(ctx);
+        break;
+      }
       if (!stmt.cond) {
         break;
       }
@@ -2458,6 +2846,20 @@ void append_implicit_return(std::vector<MirInsn>& body) {
   }
 }
 
+void note_offload_decorators(const std::vector<Decorator>& decos, MirModule* mir) {
+  if (!mir) {
+    return;
+  }
+  for (const auto& d : decos) {
+    if (d.name == "offload") {
+      mir->exec_plan.offload_count++;
+      mir->needs_rt_exec_plan = true;
+      mir->xfer_plan.elide_copy_count++;
+      mir->needs_rt_xfer_plan = true;
+    }
+  }
+}
+
 }  // namespace
 
 MirModule lower_to_mir(const Module& module) {
@@ -2472,16 +2874,26 @@ MirModule lower_to_mir(const Module& module) {
     copy_decorators(proc.decorators, fn.decorators);
     apply_fn_decorator_codegen_flags(fn);
     if (proc.ret_type) {
-      fn.returns_float = is_float_type_name(proc.ret_type->name);
-      fn.returns_i64 = mir_ptr_param_type_name(proc.ret_type->name) ||
-                        is_i64_type_name(proc.ret_type->name) ||
-                        proc.ret_type->name == "StringView";
-      fn.returns_void = proc.ret_type->name == "unit";
-      if (object_alias_for_named_type(module, *proc.ret_type)) {
-        fn.returns_object = true;
+      std::int64_t m_rows = 0;
+      std::int64_t m_cols = 0;
+      if (is_2d_float_matrix_type(*proc.ret_type, &m_rows, &m_cols)) {
+        fn.returns_matrix = true;
+        fn.return_matrix_rows = m_rows;
+        fn.return_matrix_cols = m_cols;
         fn.returns_float = false;
         fn.returns_void = false;
-        collect_object_return_layout_r(module, *proc.ret_type, "", fn.return_object_layout);
+      } else {
+        fn.returns_float = is_float_type_name(proc.ret_type->name);
+        fn.returns_i64 = mir_ptr_param_type_name(proc.ret_type->name) ||
+                          is_i64_type_name(proc.ret_type->name) ||
+                          proc.ret_type->name == "StringView";
+        fn.returns_void = proc.ret_type->name == "unit";
+        if (object_alias_for_named_type(module, *proc.ret_type)) {
+          fn.returns_object = true;
+          fn.returns_float = false;
+          fn.returns_void = false;
+          collect_object_return_layout_r(module, *proc.ret_type, "", fn.return_object_layout);
+        }
       }
     } else if (proc.is_extern) {
       fn.returns_void = true;
@@ -2514,6 +2926,7 @@ MirModule lower_to_mir(const Module& module) {
         }
         mp.is_string = mir_ptr_param_type_name(p.type.name);
         mp.is_i64 = is_i64_type_name(p.type.name) || is_string_type_name(p.type.name);
+        mp.is_var = p.type.is_var;
         fn.params.push_back(std::move(mp));
       }
     }
@@ -2540,11 +2953,12 @@ MirModule lower_to_mir(const Module& module) {
       g_mir_module = &mir;
       seed_float_params(fn, float_names);
       seed_i64_params(fn, i64_locals);
+      seed_array_params(fn, arr_ctx, float_array_names);
       std::vector<LoopLabels> loop_stack;
       std::unordered_map<std::string, double> const_floats;
       std::unordered_map<std::string, const TypeExpr*> object_local_types =
           collect_object_local_types(module, proc);
-      LowerCtx ctx{&module,       &mir,     proc.name, &proc,
+      LowerCtx ctx{&module,       &mir,     proc.name, &proc, &fn,
                    &loop_stack,   &object_local_types, &const_floats};
       g_object_locals = &object_local_types;
       bool lowered_body = false;
@@ -2601,6 +3015,27 @@ MirModule lower_to_mir(const Module& module) {
       if (!lowered_body) {
         lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
                     float_array_names, i64_locals);
+      }
+      if (proc.name == "main") {
+        std::vector<MirInsn> plan_prefix;
+        if (mir.needs_rt_comm_plan) {
+          MirInsn comm_apply;
+          comm_apply.op = MirOp::CommPlanApply;
+          plan_prefix.push_back(std::move(comm_apply));
+        }
+        if (mir.needs_rt_xfer_plan) {
+          MirInsn xfer_apply;
+          xfer_apply.op = MirOp::XferPlanApply;
+          plan_prefix.push_back(std::move(xfer_apply));
+        }
+        if (mir.needs_rt_exec_plan) {
+          MirInsn apply;
+          apply.op = MirOp::ExecPlanApply;
+          plan_prefix.push_back(std::move(apply));
+        }
+        if (!plan_prefix.empty()) {
+          fn.body.insert(fn.body.begin(), plan_prefix.begin(), plan_prefix.end());
+        }
       }
       g_object_locals = nullptr;
       g_mir_module = nullptr;

@@ -3,7 +3,44 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
-BENCH_ROOT="${BENCHMARKS_ROOT:-$(cd "$ROOT/../benchmarks" 2>/dev/null && pwd || echo "")}"
+# Agent runners often export stale LIC_ROOT=/workspace/lic — always pin to this checkout.
+export LIC_ROOT="$ROOT"
+export LI_REPO_ROOT="$ROOT"
+# shellcheck source=../../../scripts/lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+# shellcheck source=../../../scripts/lib/lipar-suite-prereqs.sh
+source "$ROOT/scripts/lib/lipar-suite-prereqs.sh"
+
+_ensure_full_benchmarks_root() {
+  local suite="${BENCHMARKS_ROOT}/scripts/run-full-benchmark-suite.sh"
+  if [[ -f "$suite" ]]; then
+    echo "$BENCHMARKS_ROOT"
+    return 0
+  fi
+  local cache="$ROOT/.cache/li-benchmarks"
+  if [[ ! -f "$cache/scripts/run-full-benchmark-suite.sh" ]]; then
+    mkdir -p "$(dirname "$cache")"
+    if [[ -d "$cache/.git" ]]; then
+      (cd "$cache" && git fetch --depth 1 origin main >/dev/null 2>&1 || true)
+      (cd "$cache" && git checkout -f origin/main >/dev/null 2>&1 || true)
+    else
+      git clone --depth 1 https://github.com/li-langverse/benchmarks.git "$cache" >/dev/null 2>&1 || true
+    fi
+  fi
+  if [[ -f "$cache/scripts/run-full-benchmark-suite.sh" ]]; then
+    echo "$cache"
+    return 0
+  fi
+  return 1
+}
+
+if ! BENCH_ROOT="$(_ensure_full_benchmarks_root)"; then
+  echo "ERROR: benchmarks harness missing — set BENCHMARKS_ROOT to a full benchmarks checkout" >&2
+  echo "  expected: \$BENCHMARKS_ROOT/scripts/run-full-benchmark-suite.sh" >&2
+  exit 1
+fi
+export BENCHMARKS_ROOT="$BENCH_ROOT"
+lipar_suite_ensure_bench_scripts "$BENCH_ROOT"
 PROFILE="full"
 CORES="${LIPAR_CORES:-8}"
 HOSTS=""
@@ -38,12 +75,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$BENCH_ROOT" || ! -d "$BENCH_ROOT" ]]; then
-  echo "ERROR: benchmarks repo not found — set BENCHMARKS_ROOT" >&2
-  exit 1
-fi
-
-export LIC_ROOT="$ROOT"
 case "$PROFILE" in
   pr) export BENCH_PROFILE=pr; export BENCH_RUNS="${BENCH_RUNS:-3}"; export SKIP_TIER0="${SKIP_TIER0:-1}" ;;
   full) export BENCH_PROFILE=full; export BENCH_RUNS="${BENCH_RUNS:-6}" ;;
@@ -62,6 +93,35 @@ if [[ ! -x "$SUITE" && ! -f "$SUITE" ]]; then
   exit 1
 fi
 
+_run_benches() {
+  if [[ "$PROFILE" == "pr" ]]; then
+    chmod +x "$ROOT/scripts/lipar-run-class-a.sh"
+    bash "$ROOT/scripts/lipar-run-class-a.sh"
+  else
+    lipar_suite_ensure_prereqs "$ROOT"
+    lipar_suite_ensure_bench_scripts "$BENCH_ROOT"
+    chmod +x "$ROOT/scripts/lipar-apply-parallel-src.sh"
+    "$ROOT/scripts/lipar-apply-parallel-src.sh"
+    bash "$SUITE"
+    export BENCHMARKS_CSV="${BENCHMARKS_CSV:-$BENCH_ROOT/results/latest.csv}"
+    python3 "$ROOT/scripts/lipar-merge-tier-csv.py" "$BENCH_ROOT"
+    lipar_suite_refresh_registry "$BENCH_ROOT"
+  fi
+}
+
+_dual_mode_tag() {
+  local mode="$1"
+  local scope="class_a"
+  if [[ "$PROFILE" == "full" ]]; then
+    scope="all"
+  fi
+  python3 "$ROOT/scripts/lipar-dual-mode-csv.py" \
+    --csv "${BENCHMARKS_CSV:-$BENCHMARKS_RESULTS/latest.csv}" \
+    --mode "$mode" \
+    --scope "$scope" \
+    --cores "$CORES"
+}
+
 run_pass() {
   local label="$1"
   local li_parallel="$2"
@@ -70,12 +130,49 @@ run_pass() {
   export LI_PARALLEL="$li_parallel"
   export BENCH_DUAL_MODE="$dual_flag"
   export LIPAR_CORES="$CORES"
+  export BENCHMARKS_CSV="${BENCHMARKS_CSV:-$BENCHMARKS_RESULTS/latest.csv}"
   if [[ "$li_parallel" == "1" ]]; then
     export LIC_BUILD_FLAGS="--cores=${CORES} --threads-per-core=1"
   else
     unset LIC_BUILD_FLAGS || true
   fi
-  bash "$SUITE"
+  local snap_backup=""
+  if [[ "$dual_flag" == "1" && "$li_parallel" == "1" ]]; then
+    local snap
+    snap="$(python3 - "$BENCHMARKS_CSV" <<'PY'
+from pathlib import Path
+import sys
+
+p = Path(sys.argv[1])
+print(p.with_suffix(p.suffix + ".lipar_serial.json"))
+PY
+)"
+    if [[ -f "$snap" ]]; then
+      snap_backup="$(mktemp)"
+      cp "$snap" "$snap_backup"
+    fi
+  fi
+  _run_benches
+  if [[ -n "$snap_backup" && -f "$snap_backup" ]]; then
+    local snap
+    snap="$(python3 - "$BENCHMARKS_CSV" <<'PY'
+from pathlib import Path
+import sys
+
+p = Path(sys.argv[1])
+print(p.with_suffix(p.suffix + ".lipar_serial.json"))
+PY
+)"
+    cp "$snap_backup" "$snap"
+    rm -f "$snap_backup"
+  fi
+  if [[ "$dual_flag" == "1" ]]; then
+    if [[ "$li_parallel" == "1" ]]; then
+      _dual_mode_tag parallel
+    else
+      _dual_mode_tag serial
+    fi
+  fi
 }
 
 if [[ "$DUAL_MODE" == "1" || ( "$SKIP_SERIAL" == "0" && "$SKIP_PARALLEL" == "0" ) ]]; then

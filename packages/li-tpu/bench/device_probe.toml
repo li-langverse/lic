@@ -1,0 +1,6 @@
+# Bench harness hook — WP-PAR-83 TPU device probe
+[device_probe]
+hook_version = 1
+package = "li-tpu"
+backend_auto = true
+notes = "Runtime li_rt_litpu_* probe; orchestrated from li-parallel only"

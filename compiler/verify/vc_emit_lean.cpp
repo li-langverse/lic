@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 namespace li {
 namespace {
@@ -22,6 +23,47 @@ namespace {
 std::optional<std::int64_t> int_lit_value(const Expr& e) {
   if (e.kind == Expr::Kind::IntLit) return e.int_value;
   return std::nullopt;
+}
+
+std::optional<std::vector<std::int64_t>> lookup_const_table_values(const Expr& e) {
+  if (e.kind != Expr::Kind::Call || e.ident != "lookup_const" || e.args.size() < 2) {
+    return std::nullopt;
+  }
+  std::vector<std::int64_t> vals;
+  for (std::size_t i = 1; i < e.args.size(); ++i) {
+    if (!e.args[i]) {
+      return std::nullopt;
+    }
+    const auto v = int_lit_value(*e.args[i]);
+    if (!v) {
+      return std::nullopt;
+    }
+    vals.push_back(*v);
+  }
+  return vals;
+}
+
+std::string lookup_const_lean_list(const std::vector<std::int64_t>& table) {
+  std::string out = "[";
+  for (std::size_t i = 0; i < table.size(); ++i) {
+    if (i > 0) {
+      out += ", ";
+    }
+    out += std::to_string(table[i]);
+  }
+  out += ']';
+  return out;
+}
+
+bool lookup_table_injective(const std::vector<std::int64_t>& table) {
+  for (std::size_t i = 0; i < table.size(); ++i) {
+    for (std::size_t j = i + 1; j < table.size(); ++j) {
+      if (table[i] == table[j]) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 bool lean_reserved_ident(const std::string& name) {
@@ -282,6 +324,28 @@ std::optional<std::string> expr_to_lean(const Expr& e, const VcCtx& ctx) {
           }
         }
       }
+      if (e.args.size() == 3 && e.args[0] && e.args[1] && e.args[2]) {
+        const auto a0 = expr_to_lean(*e.args[0], ctx);
+        const auto a1 = expr_to_lean(*e.args[1], ctx);
+        const auto a2 = expr_to_lean(*e.args[2], ctx);
+        if (a0 && a1 && a2) {
+          if (e.ident == "disjoint_lookup") {
+            return "Li.Discharge.disjoint_lookup_spec " + *a0 + " " + *a1 + " " + *a2;
+          }
+          if (e.ident == "disjoint_mod") {
+            return "Li.Discharge.disjoint_mod_spec " + *a0 + " " + *a1 + " " + *a2;
+          }
+        }
+      }
+      if (e.ident == "lookup_const" && e.args.size() >= 2 && e.args[0]) {
+        const auto table = lookup_const_table_values(e);
+        const auto idx = expr_to_lean(*e.args[0], ctx);
+        if (!table || !idx) {
+          return std::nullopt;
+        }
+        return "(Int.ofNat (Li.Discharge.list_lookup_slot " + lookup_const_lean_list(*table) +
+               " (Int.toNat " + *idx + ")))";
+      }
       return std::nullopt;
     }
     case Expr::Kind::Index: {
@@ -349,12 +413,19 @@ const Expr* ensures_rhs_eq_result(const Expr& e) {
 }
 
 std::optional<std::string> par_disjoint_policy_witness(const Expr& e) {
-  if (e.kind != Expr::Kind::Call || e.args.size() != 2) {
+  if (e.kind != Expr::Kind::Call) {
     return std::nullopt;
   }
-  if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice" ||
-      e.ident == "row_ok") {
-    return std::string{e.ident};
+  if (e.args.size() == 2) {
+    if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice" ||
+        e.ident == "row_ok") {
+      return std::string{e.ident};
+    }
+  }
+  if (e.args.size() == 3) {
+    if (e.ident == "disjoint_lookup" || e.ident == "disjoint_mod") {
+      return std::string{e.ident};
+    }
   }
   return std::nullopt;
 }
@@ -370,6 +441,12 @@ std::optional<std::string> par_disjoint_discharge_ref(const Expr& e) {
   if (*tag == "disjoint_row") {
     return "Li.Discharge.disjoint_row_policy_witness";
   }
+  if (*tag == "disjoint_lookup") {
+    return "Li.Discharge.disjoint_lookup_policy_witness";
+  }
+  if (*tag == "disjoint_mod") {
+    return "Li.Discharge.disjoint_mod_policy_witness";
+  }
   if (*tag == "disjoint_slice") {
     return "Li.Discharge.disjoint_slice_policy_witness";
   }
@@ -377,6 +454,143 @@ std::optional<std::string> par_disjoint_discharge_ref(const Expr& e) {
     return "Li.Discharge.row_ok_policy_witness";
   }
   return std::nullopt;
+}
+
+struct ParLoopBounds {
+  std::int64_t start = 0;
+  std::int64_t end = 0;
+};
+
+bool par_disjoint_index_bound_policy(const Expr& e) {
+  const auto tag = par_disjoint_policy_witness(e);
+  return tag && (*tag == "disjoint_elem" || *tag == "disjoint_row" || *tag == "disjoint_lookup" ||
+                 *tag == "disjoint_mod");
+}
+
+void emit_par_policy_call_args_to_lean(std::ostream& out, const Expr& call) {
+  const VcCtx par_ctx;
+  for (const auto& arg : call.args) {
+    if (!arg) {
+      continue;
+    }
+    if (const auto lean = expr_to_lean(*arg, par_ctx)) {
+      out << ' ' << *lean;
+    }
+  }
+}
+
+const char* par_disjoint_index_bound_spec(const std::string& tag) {
+  if (tag == "disjoint_elem") {
+    return "index_bound_elem_spec";
+  }
+  if (tag == "disjoint_row") {
+    return "index_bound_row_spec";
+  }
+  if (tag == "disjoint_lookup") {
+    return "index_bound_lookup_slot_spec";
+  }
+  if (tag == "disjoint_mod") {
+    return "index_bound_mod_slot_spec";
+  }
+  return "index_bound_elem_spec";
+}
+
+bool par_lookup_slot_is_identity(const Expr& call, const std::string& loop_iter) {
+  if (call.kind != Expr::Kind::Call || call.ident != "disjoint_lookup" || call.args.size() < 2 ||
+      call.args[1] == nullptr) {
+    return false;
+  }
+  const Expr& slot = *call.args[1];
+  return slot.kind == Expr::Kind::Ident && slot.ident == loop_iter;
+}
+
+std::optional<std::int64_t> par_lookup_reverse_tiles(const Expr& slot, const std::string& loop_iter,
+                                                      const ParLoopBounds& bounds) {
+  const std::int64_t tiles = bounds.end - bounds.start;
+  if (tiles <= 0) {
+    return std::nullopt;
+  }
+  if (slot.kind != Expr::Kind::BinOp || slot.bin_op != BinOp::Sub || slot.lhs == nullptr ||
+      slot.rhs == nullptr) {
+    return std::nullopt;
+  }
+  if (slot.rhs->kind != Expr::Kind::Ident || slot.rhs->ident != loop_iter) {
+    return std::nullopt;
+  }
+  const auto lhs_val = int_lit_value(*slot.lhs);
+  if (!lhs_val || *lhs_val != tiles - 1) {
+    return std::nullopt;
+  }
+  return tiles;
+}
+
+struct ParLookupRotateParams {
+  std::int64_t tiles = 0;
+  std::int64_t shift = 0;
+};
+
+std::optional<std::int64_t> par_lookup_rotate_shift(const Expr& add, const std::string& loop_iter) {
+  if (add.kind != Expr::Kind::BinOp || add.bin_op != BinOp::Add || add.lhs == nullptr ||
+      add.rhs == nullptr) {
+    return std::nullopt;
+  }
+  if (add.lhs->kind == Expr::Kind::Ident && add.lhs->ident == loop_iter) {
+    return int_lit_value(*add.rhs);
+  }
+  if (add.rhs->kind == Expr::Kind::Ident && add.rhs->ident == loop_iter) {
+    return int_lit_value(*add.lhs);
+  }
+  return std::nullopt;
+}
+
+std::optional<ParLookupRotateParams> par_lookup_rotate_params(const Expr& slot,
+                                                              const std::string& loop_iter,
+                                                              const ParLoopBounds& bounds) {
+  const std::int64_t tiles = bounds.end - bounds.start;
+  if (tiles <= 0 || slot.kind != Expr::Kind::BinOp || slot.bin_op != BinOp::Mod ||
+      slot.lhs == nullptr || slot.rhs == nullptr) {
+    return std::nullopt;
+  }
+  const auto mod_n = int_lit_value(*slot.rhs);
+  if (!mod_n || *mod_n != tiles) {
+    return std::nullopt;
+  }
+  const auto shift = par_lookup_rotate_shift(*slot.lhs, loop_iter);
+  if (!shift) {
+    return std::nullopt;
+  }
+  return ParLookupRotateParams{tiles, *shift};
+}
+
+std::optional<std::string> par_disjoint_lookup_injective_formal(const Expr& call,
+                                                                const std::string& loop_iter,
+                                                                const ParLoopBounds& bounds) {
+  if (par_lookup_slot_is_identity(call, loop_iter) || call.args.size() < 2 ||
+      call.args[1] == nullptr) {
+    return std::nullopt;
+  }
+  const Expr& slot = *call.args[1];
+  if (slot.kind == Expr::Kind::Call && slot.ident == "lookup_const") {
+    const auto table = lookup_const_table_values(slot);
+    const std::int64_t tiles = bounds.end - bounds.start;
+    if (!table || static_cast<std::int64_t>(table->size()) != tiles ||
+        !lookup_table_injective(*table)) {
+      return std::nullopt;
+    }
+    return "Li.Discharge.lookup_injective_on_tiles_spec (Li.Discharge.list_lookup_slot " +
+           lookup_const_lean_list(*table) + ") " + std::to_string(tiles);
+  }
+  if (const auto rotate = par_lookup_rotate_params(slot, loop_iter, bounds)) {
+    return "Li.Discharge.lookup_injective_on_tiles_spec (Li.Discharge.rotate_lookup_slot " +
+           std::to_string(rotate->tiles) + " " + std::to_string(rotate->shift) + ") " +
+           std::to_string(rotate->tiles);
+  }
+  const auto tiles = par_lookup_reverse_tiles(slot, loop_iter, bounds);
+  if (!tiles) {
+    return std::nullopt;
+  }
+  return "Li.Discharge.lookup_injective_on_tiles_spec (Li.Discharge.reverse_lookup_slot " +
+         std::to_string(*tiles) + ") " + std::to_string(*tiles);
 }
 
 void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
@@ -388,7 +602,8 @@ void emit_par_policy_args(std::ostream& out, const ProcDecl& proc, const Contrac
 void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& proc,
                        const char* kind, std::size_t idx, const Contract& c,
                        const std::string& vc_suffix = "",
-                       const std::string* loop_iter = nullptr) {
+                       const std::string* loop_iter = nullptr,
+                       const ParLoopBounds* loop_bounds = nullptr) {
   const std::string sec = proc_section(proc.name) + vc_suffix;
   const std::string name = "vc_" + sec + '_' + kind + '_' + std::to_string(idx);
   const auto emit_formals = [&](bool include_result) {
@@ -557,8 +772,25 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
         vec3_len_sq_discharge_theorem || vec3_len_discharge_theorem) ||
        (proof_db_axiom_discharge && c.expr && !ensures_expr_mentions_result(*c.expr))) &&
       c.kind == ContractKind::Ensures;
+  const auto emit_result_formal = [&]() {
+    if (proc.ret_type && (c.kind == ContractKind::Ensures || c.kind == ContractKind::Invariant)) {
+      out << " (result : " << lean_type_name(*proc.ret_type, module) << ')';
+    }
+  };
+  const auto emit_result_arg = [&]() {
+    if (proc.ret_type && (c.kind == ContractKind::Ensures || c.kind == ContractKind::Invariant)) {
+      out << " result";
+    }
+  };
   out << "def " << name;
-  emit_formals(!semantic_ensures);
+  if (par_policy) {
+    emit_par_policy_formals(out, module, proc, c, loop_iter);
+    if (!semantic_ensures) {
+      emit_result_formal();
+    }
+  } else {
+    emit_formals(!semantic_ensures);
+  }
   out << " : Prop := " << prop << '\n';
 
   if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
@@ -692,23 +924,46 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
   } else if (par_policy && c.expr) {
     out << "/-! Phase 2f: P-par disjoint policy witness (**G-par**) -/\n";
+    const bool index_bound =
+        c.kind == ContractKind::Requires && loop_bounds != nullptr && loop_iter != nullptr &&
+        par_disjoint_index_bound_policy(*c.expr);
+    const auto index_bound_tag = index_bound ? par_disjoint_policy_witness(*c.expr) : std::nullopt;
+    const auto lookup_injective =
+        index_bound && index_bound_tag && *index_bound_tag == "disjoint_lookup" &&
+                loop_bounds != nullptr && loop_iter != nullptr
+            ? par_disjoint_lookup_injective_formal(*c.expr, *loop_iter, *loop_bounds)
+            : std::nullopt;
     out << "theorem " << name << "_proved";
-    emit_formals(c.kind != ContractKind::Requires);
-    out << " : " << name;
-    emit_args(c.kind != ContractKind::Requires);
-    if (auto discharge = par_disjoint_discharge_ref(*c.expr)) {
-      out << " := @" << *discharge << " _ _ _";
-      if (c.expr->args[0]) {
-        const VcCtx par_ctx;
-        if (const auto a0 = expr_to_lean(*c.expr->args[0], par_ctx)) {
-          out << ' ' << *a0;
-        }
+    if (par_policy) {
+      emit_par_policy_formals(out, module, proc, c, loop_iter);
+      if (c.kind != ContractKind::Requires) {
+        emit_result_formal();
       }
-      if (c.expr->args[1]) {
-        const VcCtx par_ctx;
-        if (const auto a1 = expr_to_lean(*c.expr->args[1], par_ctx)) {
-          out << ' ' << *a1;
-        }
+    } else {
+      emit_formals(c.kind != ContractKind::Requires);
+    }
+    if (index_bound && index_bound_tag) {
+      out << " (h_range : Li.Discharge." << par_disjoint_index_bound_spec(*index_bound_tag) << ' ';
+      emit_par_policy_call_args_to_lean(out, *c.expr);
+      out << ')';
+      if (lookup_injective) {
+        out << " (h_inj : " << *lookup_injective << ')';
+      }
+    }
+    out << " : " << name;
+    if (par_policy) {
+      emit_par_policy_args(out, proc, c, loop_iter);
+      if (c.kind != ContractKind::Requires) {
+        emit_result_arg();
+      }
+    } else {
+      emit_args(c.kind != ContractKind::Requires);
+    }
+    if (auto discharge = par_disjoint_discharge_ref(*c.expr)) {
+      out << " := " << *discharge;
+      emit_par_policy_call_args_to_lean(out, *c.expr);
+      if (index_bound) {
+        out << " h_range";
       }
       out << '\n';
     } else {
@@ -1001,15 +1256,17 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
 
 void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
                     const std::vector<Contract>& contracts, const std::string& vc_suffix,
-                    const std::string* loop_iter);
+                    const std::string* loop_iter, const ParLoopBounds* loop_bounds);
 
 void walk_par_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
                         const std::vector<Stmt>& stmts, std::size_t& par_idx) {
   for (const auto& stmt : stmts) {
-    if (stmt.kind == Stmt::Kind::ParallelFor && !stmt.par_contracts.empty()) {
+    if ((stmt.kind == Stmt::Kind::ParallelFor || stmt.kind == Stmt::Kind::DistributedFor) &&
+        !stmt.par_contracts.empty()) {
       const std::string suffix = "_par" + std::to_string(par_idx++);
+      ParLoopBounds bounds{stmt.par_start, stmt.par_end};
       walk_contracts(out, module, proc, stmt.par_contracts, suffix,
-                     stmt.par_iter.empty() ? nullptr : &stmt.par_iter);
+                     stmt.par_iter.empty() ? nullptr : &stmt.par_iter, &bounds);
     }
     walk_par_contracts(out, module, proc, stmt.then_body, par_idx);
     if (stmt.else_body) {
@@ -1024,7 +1281,8 @@ void walk_par_contracts(std::ostream& out, const Module& module, const ProcDecl&
 void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
                     const std::vector<Contract>& contracts,
                     const std::string& vc_suffix = "",
-                    const std::string* loop_iter = nullptr) {
+                    const std::string* loop_iter = nullptr,
+                    const ParLoopBounds* loop_bounds = nullptr) {
   std::size_t req = 0;
   std::size_t ens = 0;
   std::size_t dec = 0;
@@ -1032,19 +1290,24 @@ void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& pro
   for (const auto& c : contracts) {
     switch (c.kind) {
       case ContractKind::Requires:
-        emit_contract_def(out, module, proc, "requires", req++, c, vc_suffix, loop_iter);
+        emit_contract_def(out, module, proc, "requires", req++, c, vc_suffix, loop_iter,
+                          loop_bounds);
         break;
       case ContractKind::Ensures:
-        emit_contract_def(out, module, proc, "ensures", ens++, c, vc_suffix, loop_iter);
+        emit_contract_def(out, module, proc, "ensures", ens++, c, vc_suffix, loop_iter,
+                          loop_bounds);
         break;
       case ContractKind::Decreases:
-        emit_contract_def(out, module, proc, "decreases", dec++, c, vc_suffix, loop_iter);
+        emit_contract_def(out, module, proc, "decreases", dec++, c, vc_suffix, loop_iter,
+                          loop_bounds);
         break;
       case ContractKind::Invariant:
-        emit_contract_def(out, module, proc, "invariant", inv++, c, vc_suffix, loop_iter);
+        emit_contract_def(out, module, proc, "invariant", inv++, c, vc_suffix, loop_iter,
+                          loop_bounds);
         break;
       case ContractKind::ProbEnsures:
-        emit_contract_def(out, module, proc, "prob_ensures", ens++, c, vc_suffix, loop_iter);
+        emit_contract_def(out, module, proc, "prob_ensures", ens++, c, vc_suffix, loop_iter,
+                          loop_bounds);
         break;
     }
   }

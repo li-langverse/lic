@@ -12,7 +12,7 @@ run_gate() {
   test -x "$lic" || { echo "lic not executable: $lic"; return 1; }
   local missing=0
   while IFS= read -r path; do
-    [[ -f "packages/lig/$path" ]] || { echo "missing LKIR: packages/lig/$path"; missing=1; }
+    [[ -f "packages/li-gpu/$path" ]] || { echo "missing LKIR: packages/li-gpu/$path"; missing=1; }
   done < <(grep -E '^lkir = ' benchmarks/competitive/lig-kernels.toml | sed 's/.*"\(.*\)".*/\1/')
   test "$missing" -eq 0
   sed -i 's/\r$//' scripts/bench-lig-kernel-parity.sh 2>/dev/null || true
@@ -34,7 +34,7 @@ if "cpu_sec" not in d and not any(
 ):
     sys.exit("bench did not record execution")
 PY
-  for smoke in packages/lig/li-tests/smoke/*.li; do
+  for smoke in packages/li-gpu/li-tests/smoke/*.li; do
     "$lic" build --allow-open-vc "$smoke" -o /dev/null
   done
   echo "lig-lkir-ph-hw: completion gate OK"

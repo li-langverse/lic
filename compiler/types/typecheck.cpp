@@ -997,14 +997,14 @@ struct Ctx {
           }
           return make_int();
         }
-        if (e.ident == "sum") {
+        if (e.ident == "sum" || e.ident == "par_sum") {
           if (e.args.size() != 1) {
-            diags.error(loc(e.span), "sum expects one array argument");
+            diags.error(loc(e.span), e.ident + " expects one array argument");
             return make_int();
           }
           const TyPtr arg_ty = type_of(*e.args[0]);
           if (arg_ty->kind != TyKind::Array || !arg_ty->elem) {
-            diags.error(loc(e.span), "sum expects a fixed array argument");
+            diags.error(loc(e.span), e.ident + " expects a fixed array argument");
             return make_int();
           }
           if (arg_ty->elem->kind == TyKind::Int) {
@@ -1013,7 +1013,7 @@ struct Ctx {
           if (arg_ty->elem->kind == TyKind::Float) {
             return make_float();
           }
-          diags.error(loc(e.span), "sum supports int or float arrays only");
+          diags.error(loc(e.span), e.ident + " supports int or float arrays only");
           return make_int();
         }
         if (e.ident == "dot") {
@@ -1079,6 +1079,28 @@ struct Ctx {
           (void)type_of(*e.args[0]);
           (void)type_of(*e.args[1]);
           return make_bool();
+        }
+        if (e.ident == "disjoint_lookup" || e.ident == "disjoint_mod") {
+          if (e.args.size() != 3) {
+            diags.error(loc(e.span), e.ident + " expects three arguments (index, slot_or_period, buffer)");
+            return make_bool();
+          }
+          (void)type_of(*e.args[0]);
+          (void)type_of(*e.args[1]);
+          (void)type_of(*e.args[2]);
+          return make_bool();
+        }
+        if (e.ident == "lookup_const") {
+          if (e.args.size() < 2) {
+            diags.error(loc(e.span),
+                        "lookup_const expects loop index plus one or more compile-time table values");
+            return make_int();
+          }
+          (void)type_of(*e.args[0]);
+          for (std::size_t ai = 1; ai < e.args.size(); ++ai) {
+            (void)type_of(*e.args[ai]);
+          }
+          return make_int();
         }
         const auto pit = procs.find(e.ident);
         if (pit != procs.end()) {
@@ -1300,10 +1322,12 @@ struct Ctx {
     if (call.kind != Expr::Kind::Call) {
       return;
     }
-    if (call.ident == "echo" || call.ident == "sum" || call.ident == "dot" ||
+    if (call.ident == "echo" || call.ident == "sum" || call.ident == "par_sum" ||
+        call.ident == "dot" ||
         call.ident == "norm" || call.ident == "axpy" ||
         call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||
-        call.ident == "disjoint_slice" || call.ident == "row_ok" ||
+        call.ident == "disjoint_slice" || call.ident == "disjoint_lookup" ||
+        call.ident == "disjoint_mod" || call.ident == "row_ok" ||
         call.ident == "__li_simd_splat_f64" || call.ident == "__li_simd_mul_f64" ||
         call.ident == "__li_simd_add_f64" || call.ident == "__li_horiz_sum_f64") {
       return;
@@ -1466,6 +1490,17 @@ struct Ctx {
         loop_index_vars.insert(s.par_iter);
         locals[s.par_iter] = make_int();
       }
+      if (s.par_reduce_kind != ParReduceKind::None) {
+        if (s.par_reduce_var.empty()) {
+          diags.error(loc(s.span), "reduce clause requires a variable name");
+        } else {
+          const auto it = locals.find(s.par_reduce_var);
+          if (it == locals.end() || it->second->kind != TyKind::Float) {
+            diags.error(loc(s.span),
+                        "reduce(+|min|max: var) variable must be a float declared before parallel for");
+          }
+        }
+      }
       for (const auto& c : s.par_contracts) {
         if (c.expr) {
           type_of(*c.expr);
@@ -1476,6 +1511,38 @@ struct Ctx {
       }
       loop_depth--;
       loop_index_vars = std::move(saved_loop);
+      return;
+    }
+    if (s.kind == Stmt::Kind::DistributedFor) {
+      std::set<std::string> saved_loop = loop_index_vars;
+      loop_depth++;
+      if (!s.par_iter.empty()) {
+        loop_index_vars.insert(s.par_iter);
+        locals[s.par_iter] = make_int();
+      }
+      for (const auto& c : s.par_contracts) {
+        if (c.expr) {
+          type_of(*c.expr);
+        }
+      }
+      for (const auto& inner : s.par_body) {
+        check_stmt(inner);
+      }
+      loop_depth--;
+      loop_index_vars = std::move(saved_loop);
+      return;
+    }
+    if (s.kind == Stmt::Kind::TeamBlock || s.kind == Stmt::Kind::ClusterBlock) {
+      for (const auto& inner : s.par_body) {
+        check_stmt(inner);
+      }
+      return;
+    }
+    if (s.kind == Stmt::Kind::OverlapComm) {
+      return;
+    }
+    if (s.kind == Stmt::Kind::ElideCopy || s.kind == Stmt::Kind::FuseXfer ||
+        s.kind == Stmt::Kind::D2dPath || s.kind == Stmt::Kind::RdmaGpu) {
       return;
     }
     if (s.kind == Stmt::Kind::Borrow) {

@@ -1,0 +1,105 @@
+# li-tpu — TPU device layer (WP-PAR-83): backend probe via runtime seam only.
+
+extern proc li_rt_litpu_device_kind() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 3
+  decreases 0
+
+extern proc li_rt_litpu_backend_available(backend_id: int) -> int
+  requires backend_id >= 1
+  requires backend_id <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases backend_id
+
+extern proc li_rt_litpu_backend_select_auto() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 3
+  decreases 0
+
+extern proc li_rt_litpu_capability_json() raises IO, Alloc -> str
+  requires true
+  ensures result != ""
+  decreases 0
+
+def li_std_litpu_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def litpu_backend_jax() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def litpu_backend_xla() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def litpu_backend_triton() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def litpu_device_kind() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 3
+  decreases 0
+=
+  return li_rt_litpu_device_kind()
+
+def litpu_backend_available(backend_id: int) -> int raises IO
+  requires backend_id >= 1
+  requires backend_id <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases backend_id
+=
+  return li_rt_litpu_backend_available(backend_id)
+
+def litpu_backend_select_auto() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 3
+  decreases 0
+=
+  return li_rt_litpu_backend_select_auto()
+
+def litpu_capability_json() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return li_rt_litpu_capability_json()
+
+def litpu_device_probe_smoke() -> int raises IO, Alloc
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  if li_std_litpu_version() < 1:
+    return 1
+  var kind: int = litpu_device_kind()
+  if kind < litpu_backend_jax() or kind > litpu_backend_triton():
+    return 1
+  if litpu_backend_available(kind) != 1:
+    return 1
+  var auto_id: int = litpu_backend_select_auto()
+  if litpu_backend_available(auto_id) != 1:
+    return 1
+  var cap: str = litpu_capability_json()
+  if cap == "":
+    return 1
+  return 0

@@ -1,6 +1,6 @@
 import studio
 import render
-import lig
+import ligpu
 import gui
 
 def main() -> int raises IO

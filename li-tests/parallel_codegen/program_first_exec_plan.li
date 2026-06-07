@@ -1,0 +1,30 @@
+extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
+  requires true
+  ensures true
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var hits: array[64, float]
+  var total: float = 0.0
+  var i: int = 0
+  while i < 64
+    hits[i] = 0.0
+    i = i + 1
+  overlap comm
+  team(cores=4)
+  =
+    @offload
+    parallel for j in 0..<64
+      reduce(+: total)
+      requires disjoint_elem(j, hits)
+      ensures true
+      decreases 64 - j
+    =
+      hits[j] = 1.0
+      total = total + 1.0
+  var s: float = par_sum(hits)
+  li_rt_volatile_sink_f64(s + total)
+  return 0

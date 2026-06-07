@@ -1,0 +1,25 @@
+# li-parallel dual-mode entry (WP-PAR-48).
+# Harness runs this when LI_PARALLEL=1; runtime pool + C overrides apply parallel execution.
+
+# fft_1d_fixed — shared C oracle via LI_EXTRA_C (smoke-scale).
+
+extern proc li_fft_1d_fixed_kernel()
+  requires true
+  ensures true
+
+extern proc li_fft_1d_fixed_checksum() -> float
+  requires true
+  ensures true
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  li_fft_1d_fixed_kernel()
+  li_rt_volatile_sink_f64(li_fft_1d_fixed_checksum())
+  return 0

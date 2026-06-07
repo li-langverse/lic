@@ -6,8 +6,7 @@ license = "Apache-2.0 OR MIT"
 description = "Li package li-parallel"
 
 [dependencies]
-# path = { path = "../other" }   # lip 8b+
-# registry = "1.0.0"             # lip 8d+
+# Chip packages are orchestrated via runtime seams (li_rt_hetero_*), not direct Li imports.
 
 [package.metadata.li]
 min_lic = "0.1.0"

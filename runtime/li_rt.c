@@ -1,5 +1,4 @@
 #include "li_rt.h"
-#include "li_parallel.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -37,67 +36,6 @@ const char* li_rt_argv(int index) {
     return "";
   }
   return li_argv[index];
-}
-
-static int li_warn_omp_alias_once(void) {
-  static int warned = 0;
-  if (!warned) {
-    fprintf(stderr,
-            "lic: warning: li_omp_parallel_for_i64 is deprecated; use li_parallel_for_i64 "
-            "(native pthread pool)\n");
-    warned = 1;
-  }
-  return 0;
-}
-
-static int li_resolve_team_size(int team_size) {
-  /* team_size > 0 is baked in at `lic build` from --threads/--cores (preferred). */
-  if (team_size > 0) {
-    return team_size;
-  }
-  const char* nt = getenv("LI_OMP_THREADS");
-  if (nt && *nt) {
-    int threads = atoi(nt);
-    if (threads > 0) {
-      return threads;
-    }
-  }
-#if defined(_WIN32)
-  return 1;
-#else
-  long cores = sysconf(_SC_NPROCESSORS_ONLN);
-  if (cores < 1) {
-    return 1;
-  }
-  if (cores > LI_MAX_THREADS) {
-    return LI_MAX_THREADS;
-  }
-  return (int)cores;
-#endif
-}
-
-static int li_clamp_team(int team_size, long long trip_count) {
-  team_size = li_resolve_team_size(team_size);
-  if (team_size > LI_MAX_THREADS) {
-    team_size = LI_MAX_THREADS;
-  }
-  if (trip_count < (long long)team_size) {
-    team_size = (int)trip_count;
-  }
-  if (team_size < 1) {
-    team_size = 1;
-  }
-  return team_size;
-}
-
-void li_parallel_for_i64(long long start, long long end, void (*body)(long long),
-                         int team_size) {
-  li_par_pool_fork_join(start, end, body, li_clamp_team(team_size, end - start));
-}
-
-void li_omp_parallel_for_i64(long long start, long long end, void (*body)(long long)) {
-  (void)li_warn_omp_alias_once();
-  li_parallel_for_i64(start, end, body, 0);
 }
 
 int32_t li_rt_floor_div_i32(int32_t a, int32_t b) {
@@ -1720,3 +1658,97 @@ int32_t li_rt_match_route_fixture(const char* method, const char* path) {
 void li_async_frame_enter(void) {}
 
 void li_async_frame_leave(void) {}
+
+/* WP-PAR-83: li-tpu device layer (runtime seam; no vendor SDK in li-parallel). */
+#define LI_RT_LITPU_BACKEND_JAX 1
+#define LI_RT_LITPU_BACKEND_XLA 2
+#define LI_RT_LITPU_BACKEND_TRITON 3
+
+static int32_t g_litpu_selected_backend = LI_RT_LITPU_BACKEND_TRITON;
+
+static int32_t li_rt_litpu_backend_probe_available(int32_t backend_id) {
+  switch (backend_id) {
+    case LI_RT_LITPU_BACKEND_JAX:
+      return (getenv("JAX_PLATFORMS") != NULL || getenv("XLA_FLAGS") != NULL) ? 1 : 0;
+    case LI_RT_LITPU_BACKEND_XLA:
+      return (getenv("XLA_FLAGS") != NULL || getenv("TPU_NAME") != NULL) ? 1 : 0;
+    case LI_RT_LITPU_BACKEND_TRITON:
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+int32_t li_rt_litpu_device_kind(void) { return g_litpu_selected_backend; }
+
+int32_t li_rt_litpu_backend_available(int32_t backend_id) {
+  return li_rt_litpu_backend_probe_available(backend_id);
+}
+
+int32_t li_rt_litpu_backend_select_auto(void) {
+  if (li_rt_litpu_backend_probe_available(LI_RT_LITPU_BACKEND_XLA)) {
+    g_litpu_selected_backend = LI_RT_LITPU_BACKEND_XLA;
+    return LI_RT_LITPU_BACKEND_XLA;
+  }
+  if (li_rt_litpu_backend_probe_available(LI_RT_LITPU_BACKEND_JAX)) {
+    g_litpu_selected_backend = LI_RT_LITPU_BACKEND_JAX;
+    return LI_RT_LITPU_BACKEND_JAX;
+  }
+  g_litpu_selected_backend = LI_RT_LITPU_BACKEND_TRITON;
+  return LI_RT_LITPU_BACKEND_TRITON;
+}
+
+static char li_rt_litpu_cap_json_buf[192];
+
+const char* li_rt_litpu_capability_json(void) {
+  snprintf(li_rt_litpu_cap_json_buf, sizeof(li_rt_litpu_cap_json_buf),
+           "{\"litpu_version\":1,\"device_kind\":%d}", (int)g_litpu_selected_backend);
+  return li_rt_litpu_cap_json_buf;
+}
+
+/* WP-PAR-84: li-asic device layer (runtime seam). */
+#define LI_RT_LIASIC_BACKEND_FPGA 1
+#define LI_RT_LIASIC_BACKEND_CUSTOM_LAB 2
+#define LI_RT_LIASIC_BACKEND_SYSTOLIC 3
+
+static int32_t g_liasic_selected_backend = LI_RT_LIASIC_BACKEND_SYSTOLIC;
+
+static int32_t li_rt_liasic_backend_probe_available(int32_t backend_id) {
+  switch (backend_id) {
+    case LI_RT_LIASIC_BACKEND_FPGA:
+      return (getenv("LIG_CUSTOM_LAB") != NULL || getenv("FPGA_DEVICE") != NULL) ? 1 : 0;
+    case LI_RT_LIASIC_BACKEND_CUSTOM_LAB:
+      return (getenv("LIG_CUSTOM_LAB") != NULL) ? 1 : 0;
+    case LI_RT_LIASIC_BACKEND_SYSTOLIC:
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+int32_t li_rt_liasic_device_kind(void) { return g_liasic_selected_backend; }
+
+int32_t li_rt_liasic_backend_available(int32_t backend_id) {
+  return li_rt_liasic_backend_probe_available(backend_id);
+}
+
+int32_t li_rt_liasic_backend_select_auto(void) {
+  if (li_rt_liasic_backend_probe_available(LI_RT_LIASIC_BACKEND_CUSTOM_LAB)) {
+    g_liasic_selected_backend = LI_RT_LIASIC_BACKEND_CUSTOM_LAB;
+    return LI_RT_LIASIC_BACKEND_CUSTOM_LAB;
+  }
+  if (li_rt_liasic_backend_probe_available(LI_RT_LIASIC_BACKEND_FPGA)) {
+    g_liasic_selected_backend = LI_RT_LIASIC_BACKEND_FPGA;
+    return LI_RT_LIASIC_BACKEND_FPGA;
+  }
+  g_liasic_selected_backend = LI_RT_LIASIC_BACKEND_SYSTOLIC;
+  return LI_RT_LIASIC_BACKEND_SYSTOLIC;
+}
+
+static char li_rt_liasic_cap_json_buf[192];
+
+const char* li_rt_liasic_capability_json(void) {
+  snprintf(li_rt_liasic_cap_json_buf, sizeof(li_rt_liasic_cap_json_buf),
+           "{\"liasic_version\":1,\"device_kind\":%d}", (int)g_liasic_selected_backend);
+  return li_rt_liasic_cap_json_buf;
+}

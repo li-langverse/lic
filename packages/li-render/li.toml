@@ -6,7 +6,7 @@ license = "Apache-2.0 OR MIT"
 description = "Li Studio viewport render — wgpu smoke bridge + FPS counter for bench harness"
 
 [dependencies]
-lig = { path = "../lig" }
+li-gpu = { path = "../li-gpu" }
 li-gui = { path = "../li-gui" }
 li-ui = { path = "../li-ui" }
 li-scene = { path = "../li-scene" }

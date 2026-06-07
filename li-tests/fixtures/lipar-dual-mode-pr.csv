@@ -1,0 +1,13 @@
+benchmark,lang,variant,threads,metric,value,stddev,sample_runs,unit,git_sha,cpu_model,flags,os,passed,oracle_kind,verify_abs_err,verify_rel_err,verify_ulps,verify_within_1ulp
+matmul_blocked,li_serial,serial,1,wall_time,0.0004,4.7e-05,200,s,gate,x86_64,pure lic -O3,linux,,,,,,
+matmul_blocked,li_parallel,parallel,8,wall_time,0.0008,0.00011,200,s,gate,x86_64,pure lic -O3,linux,,,,,,
+matmul_blocked,cpp,release,1,wall_time,0.0089,0.000433,200,s,gate,x86_64,-O3,linux,,,,,,
+reduce_sum,li_serial,serial,1,wall_time,0.2033,0.030804,20,s,gate,x86_64,shared C kernel,linux,,,,,,
+reduce_sum,li_parallel,parallel,8,wall_time,0.1648,0.013315,20,s,gate,x86_64,shared C kernel,linux,,,,,,
+reduce_sum,cpp,release,1,wall_time,0.1808,0.016596,20,s,gate,x86_64,-O3,linux,,,,,,
+simd_dot,li_serial,serial,1,wall_time,0.044,0.018504,35,s,gate,x86_64,shared C kernel,linux,,,,,,
+simd_dot,li_parallel,parallel,8,wall_time,0.0199,0.005081,57,s,gate,x86_64,shared C kernel,linux,,,,,,
+simd_dot,cpp,release,1,wall_time,0.0183,0.002089,57,s,gate,x86_64,-O3,linux,,,,,,
+num_dot_axpy,li_serial,serial,1,wall_time,0.0019,0.000163,200,s,gate,x86_64,shared C kernel,linux,,,,,,
+num_dot_axpy,li_parallel,parallel,8,wall_time,0.0008,0.000472,200,s,gate,x86_64,shared C kernel,linux,,,,,,
+num_dot_axpy,cpp,release,1,wall_time,0.0018,0.000275,200,s,gate,x86_64,-O3,linux,,,,,,

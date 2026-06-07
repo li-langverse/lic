@@ -1,5 +1,7 @@
 # li-parallel design spec (normative v1 slice)
 
+<!-- DOC-PAR-02 -->
+
 **Date:** 2026-06-06  
 **Status:** Phase 0–2 foundation  
 **Provability:** G-par (shared), G-par-dist (distributed partition)
@@ -15,8 +17,8 @@
 
 ## Shared memory v1
 
-- Runtime: persistent pool (`li_par_pool.c`), static chunk scheduling
-- Reductions: `li_par_reduce_sum_f64` tree API; compiler `reduce` clause → Phase 1.1
+- Runtime: persistent pool (`li_par_pool.c`), static/dynamic/guided/steal scheduling (`LI_PAR_SCHEDULE`, `li_par_pool_set_schedule`)
+- Reductions: `li_par_reduce_sum_f64` tree API; compiler `reduce(+|min|max: var)` on `parallel for` (Phase 1.1–1.2)
 - Windows: Win32 thread pool (no serial fallback)
 
 ## Distributed v1
@@ -28,3 +30,12 @@
 ## Benchmark mandate
 
 Full org suite via `lipar-suite.sh --dual-mode`; dashboard columns `li_serial`, `li_parallel`, `speedup_vs_serial`.
+
+## Documentation corpus
+
+| DOC id | Artifact |
+|--------|----------|
+| DOC-PAR-01 | [Handbook](../../handbook/li-parallel.md) |
+| DOC-PAR-03–05 | [API reference](../../../packages/li-parallel/docs/) |
+| DOC-PAR-06–07 | [Migration guides](../../../packages/li-parallel/docs/) |
+| DOC-PAR-12 | [Gap register](../../../packages/li-parallel/docs/gap-register.md) |

@@ -1,0 +1,18 @@
+extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
+  requires true
+  ensures true
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var total: float = 0.0
+  parallel for i in 0..<64
+    reduce(+: total)
+    requires true
+    decreases 64 - i
+  =
+    total = total + 1.0
+  li_rt_volatile_sink_f64(total)
+  return 0

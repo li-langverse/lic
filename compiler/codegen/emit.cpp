@@ -103,11 +103,92 @@ llvm::Value* string_ptr(llvm::IRBuilder<>& builder, llvm::GlobalVariable* gv) {
 
 struct ArraySlot {
   llvm::AllocaInst* alloca = nullptr;
+  /** `var array` param or outlined-loop capture — element 0 GEP base (WP-PAR-18). */
+  llvm::Value* byref = nullptr;
+  llvm::Type* stored_ty = nullptr;
   std::int64_t size = 0;
   std::int64_t cols = 0;
   bool is_float = false;
   bool is_matrix = false;
 };
+
+static llvm::Value* array_slot_base(const ArraySlot& slot) {
+  return slot.byref ? slot.byref : static_cast<llvm::Value*>(slot.alloca);
+}
+
+static llvm::Type* array_slot_ty(const ArraySlot& slot) {
+  if (slot.stored_ty) {
+    return slot.stored_ty;
+  }
+  return slot.alloca->getAllocatedType();
+}
+
+static std::string par_capture_global_name(const std::string& par_fn, const std::string& cap) {
+  return "__li_par_cap_" + par_fn + "_" + cap;
+}
+
+static std::string par_shared_array_key(const std::string& par_fn, const std::string& cap) {
+  return par_fn + "::" + cap;
+}
+
+struct ParSharedCache {
+  std::map<std::string, llvm::GlobalVariable*> arrays;
+};
+
+static llvm::GlobalVariable* ensure_par_shared_array(llvm::Module* module, ParSharedCache* cache,
+                                                     const std::string& par_fn,
+                                                     const MirParCapture& cap) {
+  const std::string key = par_shared_array_key(par_fn, cap.ident);
+  if (cache != nullptr) {
+    const auto it = cache->arrays.find(key);
+    if (it != cache->arrays.end()) {
+      return it->second;
+    }
+  }
+  const std::string name = "__li_par_shared_" + par_fn + "_" + cap.ident;
+  if (llvm::GlobalVariable* existing = module->getGlobalVariable(name)) {
+    if (cache != nullptr) {
+      cache->arrays[key] = existing;
+    }
+    return existing;
+  }
+  MirParam mp;
+  mp.fixed_array_elems = cap.fixed_array_elems;
+  mp.is_float = cap.is_float;
+  mp.is_matrix = cap.is_matrix;
+  mp.matrix_cols = cap.matrix_cols;
+  llvm::LLVMContext& ctx = module->getContext();
+  llvm::Type* arr_ty = llvm_array_type(ctx, mp);
+  auto* gv = new llvm::GlobalVariable(*module, arr_ty, false, llvm::GlobalValue::InternalLinkage,
+                                      llvm::ConstantAggregateZero::get(arr_ty), name);
+  if (cache != nullptr) {
+    cache->arrays[key] = gv;
+  }
+  return gv;
+}
+
+static llvm::GlobalVariable* ensure_par_capture_global(llvm::Module* module,
+                                                       const std::string& par_fn,
+                                                       const std::string& cap) {
+  const std::string name = par_capture_global_name(par_fn, cap);
+  if (llvm::GlobalVariable* existing = module->getGlobalVariable(name)) {
+    return existing;
+  }
+  llvm::LLVMContext& ctx = module->getContext();
+  auto* ty = llvm::PointerType::getUnqual(llvm::Type::getInt8Ty(ctx));
+  return new llvm::GlobalVariable(*module, ty, false, llvm::GlobalValue::InternalLinkage,
+                                  llvm::ConstantPointerNull::get(ty), name);
+}
+
+static MirParam mir_param_from_capture(const MirParCapture& cap) {
+  MirParam mp;
+  mp.name = cap.ident;
+  mp.fixed_array_elems = cap.fixed_array_elems;
+  mp.is_float = cap.is_float;
+  mp.is_matrix = cap.is_matrix;
+  mp.matrix_cols = cap.matrix_cols;
+  return mp;
+}
 
 struct EmitCtx {
   llvm::LLVMContext& context;
@@ -118,6 +199,7 @@ struct EmitCtx {
   bool returns_float = false;
   bool returns_i64 = false;
   bool returns_object = false;
+  bool returns_matrix = false;
   bool fp_numerically_stable = false;
   int runtime_team_size = 0;
   bool enable_array_simd = true;
@@ -130,6 +212,7 @@ struct EmitCtx {
   std::map<std::string, llvm::AllocaInst*> simd_f64x4_locals;
   std::unordered_map<std::string, llvm::BasicBlock*> labels;
   int str_counter = 0;
+  ParSharedCache* par_shared_cache = nullptr;
 
   llvm::Type* vec4_f64() const {
     return llvm::VectorType::get(llvm::Type::getDoubleTy(context),
@@ -701,12 +784,12 @@ struct EmitCtx {
     }
     if (arg.is_array_ident) {
       if (auto a_it = arrays.find(arg.ident); a_it != arrays.end()) {
-        return a_it->second.alloca;
+        return array_slot_base(a_it->second);
       }
     }
     if (auto a_it = arrays.find(arg.ident); a_it != arrays.end()) {
-      llvm::Type* arr_ty = a_it->second.alloca->getAllocatedType();
-      return builder->CreateLoad(arr_ty, a_it->second.alloca);
+      llvm::Type* arr_ty = array_slot_ty(a_it->second);
+      return builder->CreateLoad(arr_ty, array_slot_base(a_it->second));
     }
     if (float_locals.find(arg.ident) != float_locals.end()) {
       return load_float(arg.ident);
@@ -718,6 +801,24 @@ struct EmitCtx {
       return load_i64(arg.ident);
     }
     return load_int(arg.ident);
+  }
+
+  void emit_array_copy_range(llvm::Value* from_base, llvm::Value* to_base, llvm::Type* arr_ty,
+                             std::int64_t n, bool is_float) {
+    if (n <= 0 || from_base == nullptr || to_base == nullptr) {
+      return;
+    }
+    llvm::Type* elem = is_float ? llvm::Type::getDoubleTy(context) : i32_ty(context);
+    llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+    const auto len = static_cast<unsigned>(n);
+    for (unsigned i = 0; i < len; ++i) {
+      llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
+      llvm::Value* gep_idx[] = {zero, idx};
+      llvm::Value* from_p = builder->CreateInBoundsGEP(arr_ty, from_base, gep_idx);
+      llvm::Value* to_p = builder->CreateInBoundsGEP(arr_ty, to_base, gep_idx);
+      llvm::Value* v = builder->CreateLoad(elem, from_p);
+      builder->CreateStore(v, to_p);
+    }
   }
 
   bool emit_insn(const MirInsn& ins) {
@@ -770,8 +871,13 @@ struct EmitCtx {
         builder->CreateRet(llvm::ConstantFP::get(llvm::Type::getDoubleTy(context),
                                                     ins.float_value));
         return false;
-      case MirOp::ReturnIdent:
-        if (ins.ret_is_float || returns_float || float_locals.count(ins.ident) > 0) {
+      case MirOp::ReturnIdent: {
+        auto arr_it = arrays.find(ins.ident);
+        if (arr_it != arrays.end() && arr_it->second.is_matrix) {
+          llvm::Type* arr_ty = array_slot_ty(arr_it->second);
+          builder->CreateRet(
+              builder->CreateLoad(arr_ty, array_slot_base(arr_it->second)));
+        } else if (ins.ret_is_float || returns_float || float_locals.count(ins.ident) > 0) {
           builder->CreateRet(load_float(ins.ident));
         } else if (ins.ret_is_i64 || returns_i64 || i64_locals.count(ins.ident) > 0) {
           llvm::Value* wide = load_i64(ins.ident);
@@ -784,6 +890,7 @@ struct EmitCtx {
           builder->CreateRet(load_int(ins.ident));
         }
         return false;
+      }
       case MirOp::ReturnObject: {
         auto* st = llvm::dyn_cast<llvm::StructType>(ret_ty);
         if (!st || ins.object_layout.empty()) {
@@ -1133,8 +1240,43 @@ struct EmitCtx {
         if (!par_fn) {
           return true;
         }
+        for (const MirParCapture& cap : ins.par_captures) {
+          auto slot_it = arrays.find(cap.ident);
+          if (slot_it == arrays.end()) {
+            continue;
+          }
+          const MirParam mp = mir_param_from_capture(cap);
+          llvm::Type* arr_ty = llvm_array_type(context, mp);
+          llvm::GlobalVariable* shared =
+              ensure_par_shared_array(module, par_shared_cache, ins.callee, cap);
+          emit_array_copy_range(array_slot_base(slot_it->second), shared, arr_ty,
+                                cap.fixed_array_elems, cap.is_float);
+        }
         llvm::FunctionType* iter_ty =
             llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
+        if (ins.par_reduce_kind != ParReduceKind::None && !ins.par_reduce_var.empty()) {
+          llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+          llvm::FunctionType* reduce_ty = llvm::FunctionType::get(
+              llvm::Type::getVoidTy(context),
+              {i64_ty(context), i64_ty(context), iter_ty->getPointerTo(), f64->getPointerTo(),
+               i32_ty(context)},
+              false);
+          const char* reduce_fn = "li_parallel_for_reduce_add_f64";
+          if (ins.par_reduce_kind == ParReduceKind::Min) {
+            reduce_fn = "li_parallel_for_reduce_min_f64";
+          } else if (ins.par_reduce_kind == ParReduceKind::Max) {
+            reduce_fn = "li_parallel_for_reduce_max_f64";
+          }
+          llvm::FunctionCallee reduce_rt =
+              module->getOrInsertFunction(reduce_fn, reduce_ty);
+          llvm::Value* accum = ensure_float_local(ins.par_reduce_var);
+          builder->CreateCall(
+              reduce_rt,
+              {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
+               llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn, accum,
+               llvm::ConstantInt::get(i32_ty(context), runtime_team_size)});
+          return true;
+        }
         llvm::FunctionType* par_ty = llvm::FunctionType::get(
             llvm::Type::getVoidTy(context),
             {i64_ty(context), i64_ty(context), iter_ty->getPointerTo(), i32_ty(context)},
@@ -1146,6 +1288,37 @@ struct EmitCtx {
             {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
              llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn,
              llvm::ConstantInt::get(i32_ty(context), runtime_team_size)});
+        for (const MirParCapture& cap : ins.par_captures) {
+          auto slot_it = arrays.find(cap.ident);
+          if (slot_it == arrays.end()) {
+            continue;
+          }
+          const MirParam mp = mir_param_from_capture(cap);
+          llvm::Type* arr_ty = llvm_array_type(context, mp);
+          llvm::GlobalVariable* shared =
+              ensure_par_shared_array(module, par_shared_cache, ins.callee, cap);
+          emit_array_copy_range(shared, array_slot_base(slot_it->second), arr_ty,
+                                cap.fixed_array_elems, cap.is_float);
+        }
+        return true;
+      }
+      case MirOp::DParFor: {
+        llvm::Function* par_fn = module->getFunction(ins.callee);
+        if (!par_fn) {
+          return true;
+        }
+        llvm::FunctionType* iter_ty =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
+        llvm::FunctionType* dpar_ty = llvm::FunctionType::get(
+            llvm::Type::getVoidTy(context),
+            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo()},
+            false);
+        llvm::FunctionCallee dpar_rt =
+            module->getOrInsertFunction("li_distributed_for_i64", dpar_ty);
+        builder->CreateCall(
+            dpar_rt,
+            {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
+             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn});
         return true;
       }
       case MirOp::ArrayAlloc: {
@@ -1157,14 +1330,16 @@ struct EmitCtx {
           llvm::ArrayType* mat_ty =
               llvm::ArrayType::get(row_ty, static_cast<unsigned>(ins.int_value));
           slot = builder->CreateAlloca(mat_ty, nullptr, ins.ident);
-          arrays[ins.ident] = ArraySlot{slot, ins.int_value, ins.rhs_int, true, true};
+          arrays[ins.ident] = ArraySlot{slot, nullptr, nullptr, ins.int_value, ins.rhs_int, true,
+                                          true};
         } else {
           llvm::Type* elem_ty = ins.array_is_float ? llvm::Type::getDoubleTy(context)
                                                    : i32_ty(context);
           llvm::ArrayType* arr_ty =
               llvm::ArrayType::get(elem_ty, static_cast<unsigned>(ins.int_value));
           slot = builder->CreateAlloca(arr_ty, nullptr, ins.ident);
-          arrays[ins.ident] = ArraySlot{slot, ins.int_value, 0, ins.array_is_float, false};
+          arrays[ins.ident] = ArraySlot{slot, nullptr, nullptr, ins.int_value, 0,
+                                          ins.array_is_float, false};
         }
         return true;
       }
@@ -1180,7 +1355,7 @@ struct EmitCtx {
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
         llvm::Value* gep_indices[] = {zero, idx};
         llvm::Value* ptr = builder->CreateInBoundsGEP(
-            it->second.alloca->getAllocatedType(), it->second.alloca, gep_indices);
+            array_slot_ty(it->second), array_slot_base(it->second), gep_indices);
         if (it->second.is_float || ins.op == MirOp::ArrayStoreFloat) {
           llvm::Value* val =
               ins.rhs_is_literal
@@ -1205,7 +1380,7 @@ struct EmitCtx {
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
         llvm::Value* gep_indices[] = {zero, idx};
         llvm::Value* ptr = builder->CreateInBoundsGEP(
-            it->second.alloca->getAllocatedType(), it->second.alloca, gep_indices);
+            array_slot_ty(it->second), array_slot_base(it->second), gep_indices);
         if (it->second.is_float) {
           llvm::Value* loaded = builder->CreateLoad(llvm::Type::getDoubleTy(context), ptr);
           if (!ins.lhs_ident.empty()) {
@@ -1266,6 +1441,30 @@ struct EmitCtx {
           acc = builder->CreateAdd(acc, av);
         }
         builder->CreateStore(acc, ensure_int_local(ins.ident));
+        return true;
+      }
+      case MirOp::ParReduceSumF64: {
+        auto a_it = arrays.find(ins.lhs_ident);
+        if (a_it == arrays.end()) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        llvm::Value* gep_idx[] = {zero, zero};
+        llvm::Value* data_ptr = builder->CreateInBoundsGEP(
+            a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+        llvm::FunctionCallee rt_fn =
+            module->getOrInsertFunction("li_par_reduce_sum_f64",
+                                        llvm::FunctionType::get(
+                                            f64, {llvm::PointerType::getUnqual(f64),
+                                                  i64_ty(context), i32_ty(context)},
+                                            false));
+        llvm::Value* n = llvm::ConstantInt::get(i64_ty(context), ins.int_value);
+        llvm::Value* team =
+            llvm::ConstantInt::get(i32_ty(context), static_cast<unsigned>(runtime_team_size));
+        llvm::Value* sum =
+            builder->CreateCall(rt_fn, {data_ptr, n, team});
+        builder->CreateStore(sum, ensure_float_local(ins.ident));
         return true;
       }
       case MirOp::ArrayBinOpF64: {
@@ -1560,6 +1759,68 @@ struct EmitCtx {
         builder->CreateCall(leave, {});
         return true;
       }
+      case MirOp::TeamPush: {
+        llvm::FunctionType* ty =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i32_ty(context)}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_exec_team_push", ty);
+        const int cores = ins.int_value > 0 ? static_cast<int>(ins.int_value) : 0;
+        builder->CreateCall(rt, {llvm::ConstantInt::get(i32_ty(context), cores)});
+        return true;
+      }
+      case MirOp::TeamPop: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_exec_team_pop", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::OverlapComm: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_exec_overlap_comm", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::ExecPlanApply: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_exec_plan_apply", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::CommPlanApply: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_comm_plan_apply", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::XferElide: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_xfer_elide_copy", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::XferFusion: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_xfer_fusion", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::XferD2d: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_xfer_d2d_path", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::XferRdmaGpu: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_xfer_rdma_gpu", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
+      case MirOp::XferPlanApply: {
+        llvm::FunctionType* ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false);
+        llvm::FunctionCallee rt = module->getOrInsertFunction("li_xfer_plan_apply", ty);
+        builder->CreateCall(rt, {});
+        return true;
+      }
       case MirOp::ArraySimdScope:
         if (ins.int_value != 0) {
           array_simd_scope_stack.push_back(true);
@@ -1571,6 +1832,71 @@ struct EmitCtx {
     return true;
   }
 };
+
+void emit_exec_plan_global(llvm::Module* module, const MirExecPlan& plan) {
+  llvm::LLVMContext& ctx = module->getContext();
+  llvm::Type* i8 = llvm::Type::getInt8Ty(ctx);
+  llvm::ArrayType* hosts_arr = llvm::ArrayType::get(i8, 512);
+  llvm::StructType* st = llvm::StructType::get(
+      ctx, {i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), hosts_arr, i32_ty(ctx), i32_ty(ctx)});
+  std::string hosts = plan.cluster_hosts;
+  if (hosts.size() > 511) {
+    hosts.resize(511);
+  }
+  llvm::Constant* hosts_init = llvm::ConstantDataArray::getString(ctx, hosts, true);
+  const unsigned host_len = static_cast<unsigned>(hosts.size() + 1);
+  if (host_len < 512) {
+    std::vector<llvm::Constant*> pad(512 - host_len, llvm::ConstantInt::get(i8, 0));
+    std::vector<llvm::Constant*> chars;
+    for (unsigned i = 0; i < host_len; ++i) {
+      chars.push_back(hosts_init->getAggregateElement(i));
+    }
+    chars.insert(chars.end(), pad.begin(), pad.end());
+    hosts_init = llvm::ConstantArray::get(hosts_arr, chars);
+  }
+  llvm::Constant* init = llvm::ConstantStruct::get(
+      st,
+      {llvm::ConstantInt::get(i32_ty(ctx), 0x5045494cu),
+       llvm::ConstantInt::get(i32_ty(ctx), 1u),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.team_cores),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.cluster_world), hosts_init,
+       llvm::ConstantInt::get(i32_ty(ctx), plan.offload_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.overlap_comm_count)});
+  new llvm::GlobalVariable(*module, st, true, llvm::GlobalValue::ExternalLinkage, init,
+                           "__li_exec_plan");
+}
+
+void emit_comm_plan_global(llvm::Module* module, const MirCommPlan& plan) {
+  llvm::LLVMContext& ctx = module->getContext();
+  llvm::StructType* st = llvm::StructType::get(
+      ctx, {i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx)});
+  llvm::Constant* init = llvm::ConstantStruct::get(
+      st,
+      {llvm::ConstantInt::get(i32_ty(ctx), 0x5043494cu),
+       llvm::ConstantInt::get(i32_ty(ctx), 1u),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.overlap_comm_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.ghost_exchange_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.compressed_halo_enabled),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.rdma_hooks)});
+  new llvm::GlobalVariable(*module, st, true, llvm::GlobalValue::ExternalLinkage, init,
+                           "__li_comm_plan");
+}
+
+void emit_xfer_plan_global(llvm::Module* module, const MirXferPlan& plan) {
+  llvm::LLVMContext& ctx = module->getContext();
+  llvm::StructType* st = llvm::StructType::get(
+      ctx, {i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx), i32_ty(ctx)});
+  llvm::Constant* init = llvm::ConstantStruct::get(
+      st,
+      {llvm::ConstantInt::get(i32_ty(ctx), 0x5058494cu),
+       llvm::ConstantInt::get(i32_ty(ctx), 1u),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.elide_copy_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.fusion_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.d2d_path_count),
+       llvm::ConstantInt::get(i32_ty(ctx), plan.rdma_gpu_count)});
+  new llvm::GlobalVariable(*module, st, true, llvm::GlobalValue::ExternalLinkage, init,
+                           "__li_xfer_plan");
+}
 
 }  // namespace
 
@@ -1618,6 +1944,53 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                                    llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
                                i32_ty(context)},
                               false));
+  module->getOrInsertFunction(
+      "li_distributed_for_i64",
+      llvm::FunctionType::get(llvm::Type::getVoidTy(context),
+                              {i64_ty(context), i64_ty(context),
+                               llvm::PointerType::getUnqual(llvm::FunctionType::get(
+                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false))},
+                              false));
+  llvm::Type* f64_ptr = llvm::PointerType::getUnqual(f64);
+  module->getOrInsertFunction(
+      "li_par_reduce_sum_f64",
+      llvm::FunctionType::get(f64, {f64_ptr, i64_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_par_reduce_acc_add_f64",
+      llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64}, false));
+  module->getOrInsertFunction(
+      "li_par_reduce_acc_min_f64",
+      llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64}, false));
+  module->getOrInsertFunction(
+      "li_par_reduce_acc_max_f64",
+      llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64}, false));
+  module->getOrInsertFunction(
+      "li_parallel_for_reduce_add_f64",
+      llvm::FunctionType::get(
+          llvm::Type::getVoidTy(context),
+          {i64_ty(context), i64_ty(context),
+           llvm::PointerType::getUnqual(llvm::FunctionType::get(
+               llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
+           f64_ptr, i32_ty(context)},
+          false));
+  module->getOrInsertFunction(
+      "li_parallel_for_reduce_min_f64",
+      llvm::FunctionType::get(
+          llvm::Type::getVoidTy(context),
+          {i64_ty(context), i64_ty(context),
+           llvm::PointerType::getUnqual(llvm::FunctionType::get(
+               llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
+           f64_ptr, i32_ty(context)},
+          false));
+  module->getOrInsertFunction(
+      "li_parallel_for_reduce_max_f64",
+      llvm::FunctionType::get(
+          llvm::Type::getVoidTy(context),
+          {i64_ty(context), i64_ty(context),
+           llvm::PointerType::getUnqual(llvm::FunctionType::get(
+               llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
+           f64_ptr, i32_ty(context)},
+          false));
   module->getOrInsertFunction("li_async_frame_enter",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
   module->getOrInsertFunction("li_async_frame_leave",
@@ -1678,6 +2051,32 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction("li_rt_lig_parse_toml_backend_line",
                               llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
   module->getOrInsertFunction("li_rt_lig_present_surface_ok",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_litpu_device_kind",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_litpu_backend_available",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_litpu_backend_select_auto",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_litpu_capability_json",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_liasic_device_kind",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_liasic_backend_available",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_liasic_backend_select_auto",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_liasic_capability_json",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_hetero_probe_gpu",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_hetero_probe_tpu",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_hetero_probe_asic",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_hetero_available_mask",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_hetero_probe_pipeline",
                               llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_world_format_version",
@@ -1840,6 +2239,32 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                               llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
   module->getOrInsertFunction("li_rt_lig_present_surface_ok",
                               llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_litpu_device_kind",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_litpu_backend_available",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_litpu_backend_select_auto",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_litpu_capability_json",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_liasic_device_kind",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_liasic_backend_available",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_liasic_backend_select_auto",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_liasic_capability_json",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_hetero_probe_gpu",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_hetero_probe_tpu",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_hetero_probe_asic",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_hetero_available_mask",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_hetero_probe_pipeline",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_path_exact",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));
@@ -1863,6 +2288,39 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context),
                                                       {i32_ty(context)}, false));
 
+  if (mir.needs_rt_exec_plan) {
+    emit_exec_plan_global(module.get(), mir.exec_plan);
+    module->getOrInsertFunction("li_exec_plan_apply",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction(
+        "li_exec_team_push",
+        llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i32_ty(context)}, false));
+    module->getOrInsertFunction("li_exec_team_pop",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_exec_overlap_comm",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+  }
+  if (mir.needs_rt_comm_plan) {
+    emit_comm_plan_global(module.get(), mir.comm_plan);
+    module->getOrInsertFunction("li_comm_plan_apply",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_comm_overlap_region",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+  }
+  if (mir.needs_rt_xfer_plan) {
+    emit_xfer_plan_global(module.get(), mir.xfer_plan);
+    module->getOrInsertFunction("li_xfer_plan_apply",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_xfer_elide_copy",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_xfer_fusion",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_xfer_d2d_path",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+    module->getOrInsertFunction("li_xfer_rdma_gpu",
+                                llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+  }
+
   llvm::Function* user_main = nullptr;
   bool user_main_argv_wrapper = false;
 
@@ -1873,6 +2331,23 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
     bool is_par_fn = false;
   };
   std::vector<UserFnEmit> user_fns;
+
+  ParSharedCache par_shared_cache;
+  for (const auto& fn : mir.functions) {
+    if (fn.name.rfind("__li_par_", 0) == 0) {
+      for (const MirParCapture& cap : fn.par_captures) {
+        ensure_par_shared_array(module.get(), &par_shared_cache, fn.name, cap);
+      }
+    }
+    for (const MirInsn& ins : fn.body) {
+      if (ins.op != MirOp::OmpParallelFor) {
+        continue;
+      }
+      for (const MirParCapture& cap : ins.par_captures) {
+        ensure_par_shared_array(module.get(), &par_shared_cache, ins.callee, cap);
+      }
+    }
+  }
 
   // Pass 1: declare every MIR function before any body references callees.
   for (const auto& fn : mir.functions) {
@@ -1899,6 +2374,13 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       ret_ty = llvm::Type::getVoidTy(context);
     } else if (fn.returns_object && !fn.return_object_layout.empty()) {
       ret_ty = llvm_struct_from_layout(context, fn.return_object_layout);
+    } else if (fn.returns_matrix && fn.return_matrix_rows > 0 && fn.return_matrix_cols > 0) {
+      MirParam mp;
+      mp.fixed_array_elems = fn.return_matrix_rows;
+      mp.matrix_cols = fn.return_matrix_cols;
+      mp.is_matrix = true;
+      mp.is_float = true;
+      ret_ty = llvm_array_type(context, mp);
     } else if (fn.returns_i64) {
       ret_ty = i8_ptr(context);
     } else {
@@ -1963,6 +2445,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                 fn.returns_float,
                 fn.returns_i64,
                 fn.returns_object,
+                fn.returns_matrix,
                 mir.fp_numerically_stable,
                 runtime_team_size,
                 !fn.no_vectorize,
@@ -1972,6 +2455,18 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                 {},
                 {},
                 {}};
+    ctx.par_shared_cache = &par_shared_cache;
+
+    if (is_par_fn) {
+      for (const MirParCapture& cap : fn.par_captures) {
+        const MirParam mp = mir_param_from_capture(cap);
+        llvm::Type* arr_ty = llvm_array_type(context, mp);
+        llvm::GlobalVariable* shared =
+            ensure_par_shared_array(module.get(), ctx.par_shared_cache, fn.name, cap);
+        ctx.arrays[cap.ident] = ArraySlot{nullptr, shared, arr_ty, cap.fixed_array_elems,
+                                            cap.matrix_cols, cap.is_float, cap.is_matrix};
+      }
+    }
 
     unsigned idx = 0;
     for (auto& arg : func->args()) {
@@ -1980,9 +2475,13 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
         const auto& mp = fn.params[idx];
         if (mp.fixed_array_elems > 0) {
           llvm::Type* arr_ty = llvm_array_type(context, mp);
+          if (mp.is_var) {
+            ctx.arrays[mp.name] = ArraySlot{nullptr, &arg, arr_ty, mp.fixed_array_elems,
+                                              mp.matrix_cols, mp.is_float, mp.is_matrix};
+          } else {
           llvm::AllocaInst* ap = builder.CreateAlloca(arr_ty, nullptr, mp.name);
-          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, mp.matrix_cols, mp.is_float,
-                                          mp.is_matrix};
+          ctx.arrays[mp.name] = ArraySlot{ap, nullptr, arr_ty, mp.fixed_array_elems, mp.matrix_cols,
+                                          mp.is_float, mp.is_matrix};
           llvm::Type* elem = llvm_scalar(context, mp.is_float, mp.is_i64, mp.is_string);
           llvm::Value* zero = llvm::ConstantInt::get(builder.getInt32Ty(), 0);
           if (mp.is_matrix && mp.matrix_cols > 0) {
@@ -2009,6 +2508,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
               llvm::Value* v = builder.CreateLoad(elem, from_p);
               builder.CreateStore(v, to_p);
             }
+          }
           }
         } else if (mp.is_string) {
           builder.CreateStore(&arg, ctx.ensure_ptr_local(mp.name));

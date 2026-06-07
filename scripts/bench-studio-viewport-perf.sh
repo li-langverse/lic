@@ -132,7 +132,7 @@ def bench_lig_present_runtime_probe() -> dict | None:
 
 
 def bench_wgpu_swapchain_hook() -> dict | None:
-    hook_path = root / "packages/lig/bench/wgpu_smoke.toml"
+    hook_path = root / "packages/li-gpu/bench/wgpu_smoke.toml"
     if not hook_path.is_file():
         return None
     swap_cfg = (load_toml(hook_path).get("wgpu_swapchain") or {})
@@ -246,7 +246,7 @@ def bench_wgpu_swapchain_hook() -> dict | None:
 
 def bench_render_fps_hook() -> dict:
     hook_path = root / "packages/li-render/bench/viewport_fps.toml"
-    gpu_hook = root / "packages/lig/bench/wgpu_smoke.toml"
+    gpu_hook = root / "packages/li-gpu/bench/wgpu_smoke.toml"
     viewport = load_toml(hook_path)
     wgpu = load_toml(gpu_hook)
     vp_sec = viewport.get("viewport") or {}
@@ -430,7 +430,7 @@ def bench_scene_particle_tiers() -> list:
 
 # Cold-load proxy: package presence scan
 t0 = time.perf_counter()
-for pkg in ("li-ui", "li-gui", "lig", "li-render", "li-scene", "li-studio"):
+for pkg in ("li-ui", "li-gui", "li-gpu", "li-render", "li-scene", "li-studio"):
     if pkg_dir(pkg) is not None:
         report["notes"].append(f"present:{pkg}")
 report["load_ms"] = round((time.perf_counter() - t0) * 1000, 2)
@@ -459,7 +459,7 @@ if vertical_present_hook.is_file():
 else:
     report["notes"].append("skip_studio_vertical_present:hook_missing")
 
-wgpu_swapchain_hook = root / "packages/lig/bench/wgpu_smoke.toml"
+wgpu_swapchain_hook = root / "packages/li-gpu/bench/wgpu_smoke.toml"
 if wgpu_swapchain_hook.is_file():
     ws_hook = bench_wgpu_swapchain_hook()
     if ws_hook is not None:
@@ -476,7 +476,7 @@ if (root / "packages/li-gui/bench/panel_switch.toml").is_file():
 else:
     report["notes"].append("skip_panel_switch:hook_missing")
 
-wgpu_hook = root / "packages/lig/bench/wgpu_smoke.toml"
+wgpu_hook = root / "packages/li-gpu/bench/wgpu_smoke.toml"
 if wgpu_hook.is_file():
     report["wgpu_swapchain"] = bench_wgpu_swapchain_hook()
     report["notes"].append(f"wgpu_swapchain:{report['wgpu_swapchain'].get('status', 'unknown')}")

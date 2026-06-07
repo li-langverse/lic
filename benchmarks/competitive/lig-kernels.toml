@@ -4,7 +4,7 @@
 
 [meta]
 version = 1
-package = "lig"
+package = "li-gpu"
 vendor_na_until_emit = "cuda,hip,metal"
 emit_env_cuda = "LIG_EMIT_CUDA=1"
 emit_env_hip = "LIG_EMIT_HIP=1"

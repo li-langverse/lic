@@ -55,6 +55,9 @@ enum class ContractKind { Requires, Ensures, Decreases, Invariant, ProbEnsures }
 
 enum class BinOp { Add, Sub, Mul, Div, Mod, FloorDiv, Pow, MatMul, Le, Lt, Ge, Gt, Eq, Ne, Implies, And, Or, BitXor, Shl, Shr };
 
+/** WP-PAR-15 — `reduce(+|min|max: var)` on `parallel for`. */
+enum class ParReduceKind { None, Add, Min, Max };
+
 struct Expr {
   enum class Kind {
     IntLit,
@@ -123,6 +126,22 @@ struct Stmt {
     While,
     For,
     ParallelFor,
+    /** `distributed for i in start..<end` — block-partitioned per rank (**G-par-dist**). */
+    DistributedFor,
+    /** `team(cores=N)` scoped thread team (**WP-PAR-08**). */
+    TeamBlock,
+    /** `cluster(world=N)` distributed scope (**WP-PAR-08**). */
+    ClusterBlock,
+    /** `overlap comm` — comm/compute overlap site (**WP-PAR-71** compile smoke). */
+    OverlapComm,
+    /** `elide copy` — transfer copy elision site (**WP-PAR-88**). */
+    ElideCopy,
+    /** `fuse xfer` — transfer fusion site (**WP-PAR-89**). */
+    FuseXfer,
+    /** `d2d path` — device-to-device transfer path (**WP-PAR-90**). */
+    D2dPath,
+    /** `rdma gpu` — RDMA→GPU staging hook (**WP-PAR-91**). */
+    RdmaGpu,
     Break,
     Continue,
     Expr,
@@ -153,6 +172,11 @@ struct Stmt {
   std::int64_t par_end = 0;
   std::vector<Contract> par_contracts;
   std::vector<Stmt> par_body;
+  /** WP-PAR-15 — `reduce(+|min|max: var)` on float accumulator. */
+  std::string par_reduce_var;
+  ParReduceKind par_reduce_kind = ParReduceKind::None;
+  /** WP-PAR-08 — `cluster(hosts="a,b")` CSV for embedded exec plan. */
+  std::string exec_hosts;
   std::vector<Decorator> decorators;
 };
 

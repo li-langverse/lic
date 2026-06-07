@@ -25,6 +25,33 @@ void note_one(std::string_view callee, MirModule& mir) {
       starts_with(callee, "tcp_echo_")) {
     mir.needs_rt_net = true;
   }
+  if (callee == "li_parallel_for_i64" || callee == "li_omp_parallel_for_i64" ||
+      starts_with(callee, "li_par_pool_")) {
+    mir.needs_rt_par_pool = true;
+  }
+  if (callee == "li_distributed_for_i64" || starts_with(callee, "li_dpar_")) {
+    mir.needs_rt_dpar = true;
+  }
+  if (starts_with(callee, "li_par_reduce_") || callee == "li_parallel_for_reduce_add_f64" ||
+      callee == "li_parallel_for_reduce_min_f64" || callee == "li_parallel_for_reduce_max_f64") {
+    mir.needs_rt_par_pool = true;
+    mir.needs_rt_par_reduce = true;
+  }
+  if (starts_with(callee, "li_exec_")) {
+    mir.needs_rt_exec_plan = true;
+  }
+  if (starts_with(callee, "li_comm_")) {
+    mir.needs_rt_comm_plan = true;
+  }
+  if (starts_with(callee, "li_xfer_")) {
+    mir.needs_rt_xfer_plan = true;
+  }
+  if (starts_with(callee, "li_fl_")) {
+    mir.needs_rt_fl = true;
+  }
+  if (starts_with(callee, "li_rt_hetero_")) {
+    mir.needs_rt_hetero = true;
+  }
 }
 
 }  // namespace
@@ -41,6 +68,33 @@ void mir_finalize_runtime_link_needs(MirModule& mir) {
   if (mir.needs_rt_net) {
     mir.needs_rt_log = true;
   }
+  if (mir.needs_rt_par_reduce) {
+    mir.needs_rt_par_pool = true;
+  }
+  if (mir.needs_rt_dpar) {
+    mir.needs_rt_net = true;
+  }
+  if (mir.needs_rt_exec_plan) {
+    mir.needs_rt_par_pool = true;
+    if (mir.exec_plan.cluster_world > 0 || !mir.exec_plan.cluster_hosts.empty()) {
+      mir.needs_rt_dpar = true;
+    }
+  }
+  if (mir.needs_rt_comm_plan) {
+    mir.needs_rt_dpar = true;
+  }
+  if (mir.needs_rt_xfer_plan) {
+    mir.needs_rt_dpar = true;
+  }
+  if (mir.needs_rt_fl) {
+    mir.needs_rt_dpar = true;
+  }
+  if (mir.needs_rt_dpar) {
+    mir.needs_rt_net = true;
+  }
+  if (mir.needs_rt_net) {
+    mir.needs_rt_log = true;
+  }
 }
 
 void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) {
@@ -48,6 +102,28 @@ void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) 
     for (const auto& ins : fn.body) {
       if (ins.op == MirOp::CallExtern && !ins.callee.empty()) {
         mir_note_runtime_callee(ins.callee, out_flags);
+      }
+      if (ins.op == MirOp::ParReduceSumF64) {
+        out_flags.needs_rt_par_reduce = true;
+        out_flags.needs_rt_par_pool = true;
+      }
+      if (ins.op == MirOp::OmpParallelFor && ins.par_reduce_kind != ParReduceKind::None) {
+        out_flags.needs_rt_par_reduce = true;
+        out_flags.needs_rt_par_pool = true;
+      }
+      if (ins.op == MirOp::DParFor) {
+        out_flags.needs_rt_dpar = true;
+      }
+      if (ins.op == MirOp::TeamPush || ins.op == MirOp::TeamPop || ins.op == MirOp::OverlapComm ||
+          ins.op == MirOp::ExecPlanApply) {
+        out_flags.needs_rt_exec_plan = true;
+      }
+      if (ins.op == MirOp::OverlapComm || ins.op == MirOp::CommPlanApply) {
+        out_flags.needs_rt_comm_plan = true;
+      }
+      if (ins.op == MirOp::XferElide || ins.op == MirOp::XferFusion || ins.op == MirOp::XferD2d ||
+          ins.op == MirOp::XferRdmaGpu || ins.op == MirOp::XferPlanApply) {
+        out_flags.needs_rt_xfer_plan = true;
       }
       if (ins.op == MirOp::AsyncAwait || ins.op == MirOp::AsyncFrameEnter ||
           ins.op == MirOp::AsyncFrameLeave) {

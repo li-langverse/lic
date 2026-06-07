@@ -1,4 +1,4 @@
-import lig
+import ligpu
 
 # li-ml (PH-ML Wave 6): nested-array CPU matmul + MLP forward + lig auto dispatch.
 

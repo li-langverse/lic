@@ -8,6 +8,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cstring>
 #include <cstdlib>
 #include <filesystem>
 #include <sstream>
@@ -162,12 +163,23 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_h2_path = resolve_runtime_c("li_rt_h2.c");
   const std::filesystem::path rt_llm_path = resolve_runtime_c("li_rt_llm.c");
   const std::filesystem::path rt_inference_sse_path = resolve_runtime_c("li_rt_inference_sse.c");
+  const std::filesystem::path rt_par_reduce_path = resolve_runtime_c("li_par_reduce.c");
+  const std::filesystem::path rt_dpar_path = resolve_runtime_c("li_dpar.c");
+  const std::filesystem::path rt_dpar_collective_path = resolve_runtime_c("li_dpar_collective.c");
+  const std::filesystem::path rt_exec_plan_path = resolve_runtime_c("li_exec_plan.c");
+  const std::filesystem::path rt_comm_plan_path = resolve_runtime_c("li_comm_plan.c");
+  const std::filesystem::path rt_xfer_plan_path = resolve_runtime_c("li_xfer_plan.c");
+  const std::filesystem::path rt_fl_path = resolve_runtime_c("li_fl.c");
+  const std::filesystem::path rt_hetero_path = resolve_runtime_c("li_rt_hetero.c");
 
   MirModule rt_needs;
   mir_collect_runtime_link_needs(mir, rt_needs);
   mir_finalize_runtime_link_needs(rt_needs);
   const bool link_runtime_full =
       std::getenv("LI_LINK_RUNTIME_FULL") != nullptr && *std::getenv("LI_LINK_RUNTIME_FULL") != '0';
+  const char* li_parallel_env = std::getenv("LI_PARALLEL");
+  const bool link_par_rt_env =
+      li_parallel_env != nullptr && *li_parallel_env != '\0' && strcmp(li_parallel_env, "0") != 0;
   const std::filesystem::path rt_lig_path = resolve_runtime_c("li_rt_lig.c");
 
   std::ostringstream cmd;
@@ -176,6 +188,9 @@ bool compile_module(const Module& module, const std::string& output_path,
 #if defined(LLVM_VERSION_MAJOR) && LLVM_VERSION_MAJOR >= 15
   cmd << " -opaque-pointers";
 #endif
+  if (link_par_rt_env) {
+    cmd << " -DLI_PAR_REDUCE_RT";
+  }
   cmd << " -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
   cmd << " -x c \"" << rt_par_pool_path.string() << "\"";
   if (link_runtime_full || rt_needs.needs_rt_httpd) {
@@ -223,6 +238,39 @@ bool compile_module(const Module& module, const std::string& output_path,
       resolve_runtime_c("li_rt_studio_demo_recorder.c");
   if (std::filesystem::exists(rt_studio_demo_path)) {
     cmd << " -x c \"" << rt_studio_demo_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_par_reduce || link_par_rt_env) &&
+      std::filesystem::exists(rt_par_reduce_path)) {
+    cmd << " -x c \"" << rt_par_reduce_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_dpar || rt_needs.needs_rt_exec_plan) &&
+      std::filesystem::exists(rt_dpar_path)) {
+    cmd << " -x c \"" << rt_dpar_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_dpar || rt_needs.needs_rt_exec_plan) &&
+      std::filesystem::exists(rt_dpar_collective_path)) {
+    cmd << " -x c \"" << rt_dpar_collective_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_exec_plan) &&
+      std::filesystem::exists(rt_exec_plan_path)) {
+    cmd << " -x c \"" << rt_exec_plan_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_comm_plan || rt_needs.needs_rt_exec_plan) &&
+      std::filesystem::exists(rt_comm_plan_path)) {
+    cmd << " -x c \"" << rt_comm_plan_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_xfer_plan || rt_needs.needs_rt_exec_plan) &&
+      std::filesystem::exists(rt_xfer_plan_path)) {
+    cmd << " -x c \"" << rt_xfer_plan_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_fl) && std::filesystem::exists(rt_fl_path)) {
+    cmd << " -x c \"" << rt_fl_path.string() << "\"";
+  }
+  // li_xfer_plan.c calls li_rt_hetero_* — link whenever xfer plan is linked (incl. exec plan).
+  if ((link_runtime_full || rt_needs.needs_rt_hetero || rt_needs.needs_rt_xfer_plan ||
+       rt_needs.needs_rt_exec_plan) &&
+      std::filesystem::exists(rt_hetero_path)) {
+    cmd << " -x c \"" << rt_hetero_path.string() << "\"";
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {

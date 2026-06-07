@@ -1,0 +1,22 @@
+[package]
+name = "li-gpu"
+version = "0.2.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li GPU device layer — backend probe, TOML backend line, wgpu smoke (PH-HW HW-0; import ligpu)"
+
+[package.metadata.li]
+github_repo = "li-gpu"
+import_name = "ligpu"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-gpu"
+
+[package.metadata.studio]
+device_probe = "bench/device_probe.toml"
+bench_hook = "packages/li-gpu/bench/device_probe.toml"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-gpu"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-gpu/"
+changelog = "https://github.com/li-langverse/li-gpu/blob/main/CHANGELOG.md"

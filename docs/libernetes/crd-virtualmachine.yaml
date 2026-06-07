@@ -1,0 +1,12 @@
+# Stub — KubeVirt-compatible VirtualMachine CRD spec (Wave 1 livm)
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: example
+spec:
+  runStrategy: Always
+  template:
+    spec:
+      domain:
+        devices: {}
+      volumes: []

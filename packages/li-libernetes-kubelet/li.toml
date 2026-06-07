@@ -1,0 +1,13 @@
+[package]
+name = "li-libernetes-kubelet"
+version = "0.0.1"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "libernetes node agent (CRI + livm dual sync)"
+
+[package.metadata.li]
+github_repo = "libernetes"
+import_name = "libernetes_kubelet"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-libernetes-kubelet"

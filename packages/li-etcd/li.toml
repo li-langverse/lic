@@ -1,0 +1,13 @@
+[package]
+name = "li-etcd"
+version = "0.0.1"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "etcd v3 client for libernetes"
+
+[package.metadata.li]
+github_repo = "libernetes"
+import_name = "etcd"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-etcd"

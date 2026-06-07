@@ -1,0 +1,9 @@
+apiVersion: libernetes.io/v1
+kind: WorkerProfile
+metadata:
+  name: default-auto
+spec:
+  capabilities: []
+  architectures: []
+  runtimes: [container, vm]
+  description: "Join with --profile auto; capabilities discovered at runtime"

@@ -30,7 +30,7 @@ fi
 
 li_export_lic "$ROOT" || { echo "ph-ml-stage8-gates: build lic"; exit 1; }
 
-grep -qE 'return (9|10)' packages/li-llm/src/lib.li \
+grep -A5 'def li_llm_version()' packages/li-llm/src/lib.li | grep -qE 'return (9|10)$' \
   || { echo "8.1: li_llm_version must be >= 9"; exit 1; }
 grep -q 'llm_streaming_sse_production_ok' packages/li-llm/src/lib.li \
   || { echo "8.2: missing production SSE oracle"; exit 1; }

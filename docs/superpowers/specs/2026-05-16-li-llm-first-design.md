@@ -46,6 +46,7 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 | `scripts/lic-fix-suggest.sh` | **Stub** — jq hints from JSON |
 | Compact test manifest slice for agents | **Implemented** — `scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json` |
 | `lic edit --patch=json` | **Spec only** — compact edit IR |
+| TUI plain + JSON export | **Contract** — `docs/schemas/tui-a11y-v1.json` (harness in `li-cursor-agents`) |
 
 ### Docs & rules
 
@@ -54,22 +55,34 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 
 ### TUI accessibility export contract (agent + harness)
 
-Terminal UIs consumed by agents and CI must expose **both** a human-readable plain export and a machine JSON row. Implementation lives in `li-cursor-agents/ux-harness` (adapters + fixtures); this spec is the cross-repo contract Li docs reference.
+Terminal UIs consumed by agents and CI must expose **both** a human-readable plain export and a machine JSON audit envelope. Implementation lives in `li-cursor-agents/ux-harness` (adapters + fixtures); this spec is the cross-repo contract Li docs reference. JSON shape: [`docs/schemas/tui-a11y-v1.json`](../../schemas/tui-a11y-v1.json).
 
 | Artifact | Path (per target) | Purpose |
 |----------|-------------------|---------|
-| **Plain frame** | `artifacts/<target>/frame.txt` | UTF-8 terminal snapshot after render; one screen per audit step. Agents grep this instead of replaying ANSI. |
-| **Plain a11y** | `artifacts/<target>/a11y.txt` | Role/name/label lines derived from the frame (no color codes). Mirrors axe “name” checks for TUI. |
-| **JSON audit row** | `ui-audit.json` (run root) | One object per target: `id`, `status` (`pass` \| `fail` \| `skip`), `surface: "tui"`, `plain_export` (path to `frame.txt`), `a11y_export` (path to `a11y.txt`), optional `error` string. |
+| **Plain frame** | `ux-harness/artifacts/<target>/frame.txt` | UTF-8 terminal snapshot after render; one screen per audit step. Agents grep this instead of replaying ANSI. |
+| **Plain a11y** | `ux-harness/artifacts/<target>/a11y-plain.txt` | Semantic plain-text snapshot (`Surface:`, headings, status lines). No ANSI or box-drawing; emitted when `LI_TUI_EXPORT_A11Y=1`. |
+| **Journey trace** | `ux-harness/artifacts/<target>/journey-log.json` | UX mode only — step trace for configured journeys (`key_nav_help`, `cli_to_tui`). |
+| **UI audit envelope** | `ui-audit.json` (run root) | Aggregate UI pass/fail per target; schema `tui-a11y-v1` → `targets[]`. |
+| **UX audit envelope** | `ux-audit.json` (run root) | Journey rubric scores, friction points, artifact paths; schema `tui-a11y-v1` → `targets[]` with `journeys`. |
 
 **Environment flags (deterministic CI):**
 
-- `CI=1` or `UX_HARNESS=1` — fixtures must not block on `read` or TTY input; emit fixed frames (see [li-cursor-agents#30](https://github.com/li-langverse/li-cursor-agents/issues/30)).
+- `UX_HARNESS=1` or `CI=1` or `LI_TUI_NONINTERACTIVE=1` — fixtures must not block on `read` when stdin is not a TTY (see [li-cursor-agents#30](https://github.com/li-langverse/li-cursor-agents/issues/30)).
+- `LI_UX_SCRIPT` — piped key sequence for journey steps (`h` help, `q` quit); adapter sets this from `ux-targets.json` journeys.
+- `LI_TUI_EXPORT_A11Y=1` — emit plain snapshot to stdout (no escape codes); harness writes `a11y-plain.txt`.
+- `LI_TUI_ERROR=1` — exercise error surface on stderr (`Error:` banner); rubric `error_handling` derives from this branch.
 - `NO_COLOR=1` — plain export must not depend on ANSI color for meaning.
 
-**Harness command:** `python3 ux-harness/run_audit.py --target <id> --mode ui` completes in under 5s for non-interactive targets; row must appear in `ui-audit.json`.
+**Harness commands (must complete &lt;5s non-interactive):**
 
-**Li repo obligations:** document targets in [gui-ux-quality-handoff](../../ecosystem/gui-ux-quality-handoff.md); do not claim WCAG closure from TUI plain export alone (chrome a11y remains Studio/native — [WORLD-STUDIO-MASTER-PLAN](../game-dev/WORLD-STUDIO-MASTER-PLAN.md) PH-UX UX-10).
+```bash
+python3 ux-harness/run_audit.py --target tui-app-fixture --mode ui
+python3 ux-harness/run_audit.py --target tui-app-fixture --mode ux
+```
+
+UI mode records `frame.txt`; UX mode additionally records `journey-log.json`, `a11y-plain.txt`, and journey completion in `ux-audit.json`.
+
+**Li repo obligations:** document targets in [gui-ux-quality-handoff](../../ecosystem/gui-ux-quality-handoff.md); do not claim WCAG closure from TUI plain export alone (chrome a11y remains Studio/native — [WORLD-STUDIO-MASTER-PLAN](../../game-dev/WORLD-STUDIO-MASTER-PLAN.md) PH-UX UX-10).
 
 ## Learned from (survey sketch)
 

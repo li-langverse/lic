@@ -47,6 +47,18 @@ def team_cores_bounded(cores: int) -> bool
 =
   return cores >= 0 and cores <= 256
 
+# P-par / G-par — iteration independence: distinct in-range tile indices cannot alias (7d-c slice).
+def par_iteration_independent_tile(i: int, j: int, tiles: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires tiles > 0
+  ensures result == (i != j implies disjoint_tile(i, tiles) and disjoint_tile(j, tiles))
+  decreases tiles + i + j
+=
+  if i == j:
+    return true
+  return disjoint_tile(i, tiles) and disjoint_tile(j, tiles)
+
 # G-par — @parallel(disjoint=...) on def inherits tile disjoint policy for nested parallel for.
 def def_disjoint_inherit_tile(tile: int, tiles: int) -> bool
   requires tile >= 0

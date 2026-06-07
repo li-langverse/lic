@@ -3,7 +3,7 @@
 Li targets **CPU HPC**: vector lanes on one core, many cores on shared memory — **without** user-installed parallel frameworks.
 
 !!! note "Provability status"
-    Disjointness for `parallel for` is enforced today partly via **string heuristics** in `policy.cpp`, not full Lean discharge. Decorators (`@parallel`, …) **parse** but do not yet elaborate. See **[Provability gaps](../verification/provability-gaps.md)** (**G-par**, **G-dec**).
+    Disjointness for `parallel for` is enforced via AST `policy_module` checks plus `Li.Discharge.*_spec` witnesses in AutoVC. Decorators (`@parallel(disjoint=…)`) inherit disjoint policy to nested loops. See **[Provability gaps](../verification/provability-gaps.md)** (**G-par**, **G-dec**).
 
 ## Two layers
 

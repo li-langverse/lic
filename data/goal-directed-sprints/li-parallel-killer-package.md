@@ -153,4 +153,4 @@ Whole stack: runtime smokes, sub-gates (docs, distributed, FL, comm, hetero, xfe
 
 ## Current blocker (2026-06-07)
 
-None — killer gate **PASS** (152 benchmarks dual-mode complete, all sub-gates green). Remaining proof gaps: G-par partial (see gap register).
+None — killer gate **PASS** (152 benchmarks dual-mode complete, all sub-gates green). Remaining proof gaps: G-par partial — memory-disjoint Lean specs beyond `iteration_independent_tile_spec` closed slice (see gap register).

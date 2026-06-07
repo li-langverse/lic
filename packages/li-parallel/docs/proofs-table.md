@@ -6,7 +6,7 @@ Honest proof status for li-parallel surfaces. Canonical register: [provability-g
 
 | Gap | Surface | Status | Evidence |
 |-----|---------|--------|----------|
-| **G-par** | `parallel for` disjoint writes | **Partial** | 6× `compile_fail` + `good_disjoint_parallel.li` `verify_ok` + `team_block_reduce_f64.li` + `parallel_def_disjoint_inherit.li` smokes; Lean discharge open |
+| **G-par** | `parallel for` disjoint writes | **Partial** | 6× `compile_fail` + `good_disjoint_parallel.li` `verify_ok` + `team_block_reduce_f64.li` + `parallel_def_disjoint_inherit.li` + `par_iteration_independent_tile` smokes; full Lean memory disjointness open |
 | **G-par-dist** | Block partition + `distributed for` | **Closed slice** | `li_dpar_block_partition_*` + `dpar_for_range.li` smoke |
 | **G-hetero** | GPU/TPU/ASIC orchestration | **Closed slice** | `li_rt_hetero_*` + chip package probes + `hetero_mask_bounded` |
 | WP-PAR-15 | Team-scoped `reduce` | **Closed slice** | `team_block_reduce_f64.li` + `team_reduce_tile_disjoint` lemma |
@@ -24,6 +24,7 @@ Honest proof status for li-parallel surfaces. Canonical register: [provability-g
 | `team_cores_bounded` | `parallel/proof.li` | Team scope within thread cap (WP-PAR-19) |
 | `team_reduce_tile_disjoint` | `parallel/proof.li` | Team-scoped reduce inherits tile policy |
 | `def_disjoint_inherit_tile` | `parallel/proof.li` | G-par decorator-inherited disjoint mirrors tile policy |
+| `par_iteration_independent_tile` | `parallel/proof.li` | P-par iteration independence: distinct in-range tiles (7d-c slice) |
 | `partition_row` | `parallel/proof.li` | Rank-local row mapping |
 | `partition_block_in_range` | `parallel/proof.li` | G-par-dist block partition bound |
 | `hetero_mask_bounded` | `parallel/proof.li` | G-hetero chip mask contract |

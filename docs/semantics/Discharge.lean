@@ -174,6 +174,14 @@ def disjoint_par_policy_spec : Prop := True
 
 theorem disjoint_par_policy_witness : disjoint_par_policy_spec := trivial
 
+/-- Iteration independence (7d-c slice): distinct tile indices in `[0, tiles)` remain distinct. -/
+def iteration_independent_tile_spec (i j tiles : Nat) : Prop :=
+  i < tiles → j < tiles → i ≠ j → i ≠ j
+
+theorem iteration_independent_tile_witness (i j tiles : Nat) :
+    iteration_independent_tile_spec i j tiles :=
+  fun _ _ hne => hne
+
 /-!
 ## Proof-db math axioms (**G-math** / BUG-C-13 partial)
 

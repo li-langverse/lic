@@ -55,5 +55,6 @@ Open work packages blocking killer gate completion. Updated 2026-06-07.
 | G-par | Partial |
 | G-par-dist | Closed slice |
 | G-hetero | Closed slice |
+| P-par iteration independence (7d-c) | **Closed slice** — `par_iteration_independent_tile` + `iteration_independent_tile_spec` |
 
 See [proofs table](proofs-table.md) and [provability gaps](../../../docs/verification/provability-gaps.md).

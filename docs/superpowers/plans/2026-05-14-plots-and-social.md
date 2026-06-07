@@ -91,10 +91,10 @@ scripts/
 
 ## Exit gate (Phase 5b plotting slice)
 
-- [ ] `./scripts/plot_shareables.sh` exits 0 and writes ≥4 PNGs to `benchmarks/results/share/`
-- [ ] Plots meet 16:9 + dark theme spec above
-- [ ] README or docs link to `results/share/` for social assets
-- [ ] `bench.py --tier 0` feeds correctness plot when Tier 0 data exists
+- [x] `./scripts/plot_shareables.sh` exits 0 and writes ≥4 PNGs to `benchmarks/results/share/`
+- [x] Plots meet 16:9 + dark theme spec above
+- [x] README or docs link to `results/share/` for social assets
+- [x] `bench.py --tier 0` feeds correctness plot when Tier 0 data exists
 
 ---
 

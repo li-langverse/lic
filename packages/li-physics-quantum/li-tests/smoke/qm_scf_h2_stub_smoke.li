@@ -1,0 +1,17 @@
+import physics.quantum
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var energy: float = qm_scf_h2_stub_energy()
+  if energy >= 0.0:
+    return 1
+  if qm_scf_h2_stub_converged() != 1:
+    return 2
+  if qm_scf_h2_stub_iterations() < 1:
+    return 3
+  if qm_scf_h2_bond_length_ang() != 0.74:
+    return 4
+  return 0

@@ -178,10 +178,7 @@ def par_disjoint_affine_index_bound(stride: int, offset: int, i: int, tiles: int
   ensures result == (i < tiles and stride * i + offset >= 0 and stride * i + offset < buf_n)
   decreases tiles + buf_n + i
 =
-  if i >= tiles:
-    return false
-  var slot: int = stride * i + offset
-  return slot >= 0 and slot < buf_n
+  return i < tiles and stride * i + offset >= 0 and stride * i + offset < buf_n
 
 # G-par — affine dependent aliasing: distinct iterations with positive stride → memory-disjoint slots.
 def par_dependent_affine_array_aliasing(i: int, j: int, stride: int, offset: int, buf_n: int) -> bool
@@ -221,11 +218,10 @@ def partition_block_in_range(local_i: int, global_n: int, rank: int, world: int)
   requires global_n >= 0
   requires rank >= 0
   requires world > 0
-  ensures result == (row >= 0 and row <= global_n)
+  ensures result == (partition_row(local_i, rank, world) >= 0 and partition_row(local_i, rank, world) <= global_n)
   decreases global_n + rank
 =
-  var row: int = partition_row(local_i, rank, world)
-  return row >= 0 and row <= global_n
+  return partition_row(local_i, rank, world) >= 0 and partition_row(local_i, rank, world) <= global_n
 
 # G-hetero — chip mask stays within orchestration contract (CPU=1, GPU=2, TPU=4, ASIC=8).
 def hetero_mask_bounded(mask: int) -> bool

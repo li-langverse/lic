@@ -1745,6 +1745,34 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
         float_names.insert(dest);
         return dest;
       }
+      if (e.ident == "@hw.outb" && e.args.size() == 2) {
+        MirInsn ins;
+        ins.op = MirOp::HwOutb;
+        if (e.args[0]->kind == Expr::Kind::IntLit) {
+          ins.index_is_literal = true;
+          ins.int_value = e.args[0]->int_value;
+        } else {
+          ins.index_is_literal = false;
+          ins.index_ident =
+              lower_expr_to(*e.args[0], module, out, float_names, simd_names, i64_locals);
+        }
+        if (e.args[1]->kind == Expr::Kind::IntLit) {
+          ins.rhs_is_literal = true;
+          ins.rhs_int = e.args[1]->int_value;
+        } else {
+          ins.rhs_is_literal = false;
+          ins.rhs_ident =
+              lower_expr_to(*e.args[1], module, out, float_names, simd_names, i64_locals);
+        }
+        out.push_back(std::move(ins));
+        return fresh_temp();
+      }
+      if (e.ident == "@hw.hlt" && e.args.empty()) {
+        MirInsn ins;
+        ins.op = MirOp::HwHlt;
+        out.push_back(std::move(ins));
+        return fresh_temp();
+      }
       const ProcDecl* callee = find_proc(module, e.ident);
       if (callee && !callee->is_extern) {
         const std::string dest = lower_callproc_with_optional_inout(

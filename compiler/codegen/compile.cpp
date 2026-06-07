@@ -119,7 +119,7 @@ bool compile_module(const Module& module, const std::string& output_path,
     ll_path = unique_temp_ll_path();
   }
 
-  if (!emit_llvm_ir(mir, ll_path, opts.runtime_team_size, error)) {
+  if (!emit_llvm_ir(mir, ll_path, opts.runtime_team_size, opts.is_freestanding(), error)) {
     return false;
   }
 
@@ -191,7 +191,49 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (link_par_rt_env) {
     cmd << " -DLI_PAR_REDUCE_RT";
   }
-  cmd << " -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
+  cmd << " -x ir \"" << ll_path << "\"";
+  if (opts.is_freestanding()) {
+    auto resolve_link_script = []() -> std::filesystem::path {
+      if (const char* script = std::getenv("LI_KERNEL_LINK_SCRIPT")) {
+        const std::filesystem::path from_env(script);
+        if (std::filesystem::exists(from_env)) {
+          return from_env;
+        }
+      }
+      if (const char* lik = std::getenv("LIK_ROOT")) {
+        const std::filesystem::path from_lik =
+            std::filesystem::path(lik) / "arch" / "i686" / "link.ld";
+        if (std::filesystem::exists(from_lik)) {
+          return from_lik;
+        }
+      }
+      if (const char* root = std::getenv("LI_REPO_ROOT")) {
+        const std::filesystem::path from_root = std::filesystem::path(root) / "kernel" / "link.ld";
+        if (std::filesystem::exists(from_root)) {
+          return from_root;
+        }
+      }
+      const std::filesystem::path candidates[] = {
+          std::filesystem::path("arch/i686/link.ld"),
+          std::filesystem::path("../lik/arch/i686/link.ld"),
+          std::filesystem::path("kernel/link.ld"),
+          std::filesystem::path("../kernel/link.ld"),
+      };
+      for (const auto& c : candidates) {
+        if (std::filesystem::exists(c)) {
+          return c;
+        }
+      }
+      return std::filesystem::path("kernel/link.ld");
+    };
+    const std::filesystem::path link_script = resolve_link_script();
+    cmd << " -ffreestanding -nostdlib -nostartfiles -static"
+        << " -fuse-ld=lld"
+        << " -Wl,-T," << link_script.string()
+        << " -Wl,--gc-sections"
+        << " -e _start";
+  } else {
+  cmd << " -x c \"" << rt_path.string() << "\"";
   cmd << " -x c \"" << rt_par_pool_path.string() << "\"";
   if (link_runtime_full || rt_needs.needs_rt_httpd) {
     if (std::filesystem::exists(rt_httpd_path)) {
@@ -272,9 +314,17 @@ bool compile_module(const Module& module, const std::string& output_path,
       std::filesystem::exists(rt_hetero_path)) {
     cmd << " -x c \"" << rt_hetero_path.string() << "\"";
   }
+  }
   cmd << " -o \"" << output_path << "\"";
+  if (opts.is_freestanding() && !opts.target_triple.empty()) {
+    cmd << " -target " << opts.target_triple;
+  }
   if (opts.release) {
-    cmd << " -O3 -march=native";
+    if (opts.is_freestanding()) {
+      cmd << " -O2";
+    } else {
+      cmd << " -O3 -march=native";
+    }
     if (!opts.fp_numerically_stable) {
       cmd << " -ffast-math -ffp-contract=fast";
     }
@@ -286,7 +336,9 @@ bool compile_module(const Module& module, const std::string& output_path,
     cmd << " " << extra_clang_flags;
   }
 #if defined(__linux__) || defined(__APPLE__)
-  cmd << " -pthread";
+  if (!opts.is_freestanding()) {
+    cmd << " -pthread";
+  }
 #endif
   if (const char* extra_c = std::getenv("LI_EXTRA_C")) {
     std::string paths(extra_c);
@@ -314,16 +366,29 @@ bool compile_module(const Module& module, const std::string& output_path,
     }
   }
 #if defined(__linux__)
-  cmd << " -lm -ldl";
+  if (!opts.is_freestanding()) {
+    cmd << " -lm -ldl";
+  }
 #elif defined(__APPLE__)
-  cmd << " -lm";
+  if (!opts.is_freestanding()) {
+    cmd << " -lm";
+  }
 #endif
 #if defined(_WIN32)
   if (link_runtime_full || rt_needs.needs_rt_net) {
     cmd << " -lws2_32";
   }
 #endif
-  const int rc = std::system(cmd.str().c_str());
+  const int rc = std::system([&]() -> std::string {
+    if (opts.is_freestanding()) {
+      const char* path_env = std::getenv("PATH");
+      const std::string path_prefix =
+          "PATH=/usr/bin:/usr/lib/llvm-22/bin" +
+          (path_env != nullptr ? std::string(":") + path_env : std::string());
+      return path_prefix + " " + cmd.str();
+    }
+    return cmd.str();
+  }().c_str());
   maybe_keep_emit_ll(ll_path);
   if (!emit_ll || !emit_ll[0]) {
     std::filesystem::remove(ll_path);

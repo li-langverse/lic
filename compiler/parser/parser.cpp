@@ -196,6 +196,43 @@ std::unique_ptr<Expr> Parser::parse_primary() {
     }
     return parse_postfix(std::move(e));
   }
+  if (t.kind == TokenKind::At) {
+    const std::size_t start = t.start;
+    i++;
+    if (!at(TokenKind::Ident)) {
+      diags.error(loc(cur()), "expected namespace after '@'");
+      return nullptr;
+    }
+    const std::string ns(cur().text);
+    i++;
+    if (!expect(TokenKind::Dot, "'.'")) {
+      return nullptr;
+    }
+    if (!at(TokenKind::Ident)) {
+      diags.error(loc(cur()), "expected method name after '@hw.'");
+      return nullptr;
+    }
+    const std::string method(cur().text);
+    i++;
+    if (!expect(TokenKind::LParen, "'('")) {
+      return nullptr;
+    }
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::Call;
+    e->ident = "@" + ns + "." + method;
+    if (!at(TokenKind::RParen)) {
+      do {
+        if (auto arg = parse_expr()) {
+          e->args.push_back(std::move(arg));
+        }
+      } while (accept(TokenKind::Comma));
+    }
+    if (!expect(TokenKind::RParen, "')'")) {
+      return nullptr;
+    }
+    e->span = {start, tokens[i - 1].end};
+    return parse_postfix(std::move(e));
+  }
   if (t.kind == TokenKind::StringLit) {
     i++;
     auto e = std::make_unique<Expr>();
@@ -844,6 +881,18 @@ std::vector<Decorator> Parser::parse_decorator_list() {
 
 Stmt Parser::parse_stmt() {
   Stmt s;
+  if (at(TokenKind::At) && i + 3 < tokens.size() && tokens[i + 1].kind == TokenKind::Ident &&
+      tokens[i + 1].text == "hw" && tokens[i + 2].kind == TokenKind::Dot &&
+      tokens[i + 3].kind == TokenKind::Ident) {
+    const std::size_t start = tokens[i].start;
+    s.kind = Stmt::Kind::Expr;
+    s.expr = parse_expr();
+    if (s.expr) {
+      s.span = {start, s.expr->span.end};
+    }
+    skip_newlines();
+    return s;
+  }
   if (at(TokenKind::At)) {
     std::vector<Decorator> decos = parse_decorator_list();
     if (at(TokenKind::KwWhile)) {

@@ -42,10 +42,22 @@ Serial bring-up (x86_64 QEMU `-serial stdio`):
 - No libc, no pthread, no trusted C runtime objects
 - Gate: `li-os/scripts/gates/check-zero-c.sh` on the produced ELF
 
-## Build invocation (planned)
+## Build invocation (M1 Phase 1)
 
 ```bash
-lic build --target x86_64-unknown-none -o hello_kern.elf kernel/hello_kern.li
+lic build --target i686-unknown-none --allow-open-vc --no-lean-verify \
+  -o hello_kern.elf kernel/hello_kern.li
+# or: bash scripts/build-hello-kern.sh
+```
+
+Phase 1 ships **i686 multiboot1** freestanding link (QEMU x86 guest). x86_64 long-mode
+bring-up is Phase 1b follow-up.
+
+## Serial smoke
+
+```bash
+python3 scripts/hello-kern-serial-smoke.py hello_kern.elf
+bash scripts/gates/phase-p0-hello-kern-gate.sh   # in li-os checkout
 ```
 
 ## Related repos

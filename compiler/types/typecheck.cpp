@@ -997,6 +997,22 @@ struct Ctx {
           }
           return make_int();
         }
+        if (e.ident == "@hw.outb") {
+          if (e.args.size() != 2) {
+            diags.error(loc(e.span), "@hw.outb expects port and value (two int arguments)");
+            return make_int();
+          }
+          (void)type_of(*e.args[0]);
+          (void)type_of(*e.args[1]);
+          return make_int();
+        }
+        if (e.ident == "@hw.hlt") {
+          if (!e.args.empty()) {
+            diags.error(loc(e.span), "@hw.hlt expects no arguments");
+            return make_int();
+          }
+          return make_int();
+        }
         if (e.ident == "sum" || e.ident == "par_sum") {
           if (e.args.size() != 1) {
             diags.error(loc(e.span), e.ident + " expects one array argument");
@@ -1322,8 +1338,8 @@ struct Ctx {
     if (call.kind != Expr::Kind::Call) {
       return;
     }
-    if (call.ident == "echo" || call.ident == "sum" || call.ident == "par_sum" ||
-        call.ident == "dot" ||
+    if (call.ident == "echo" || call.ident == "@hw.outb" || call.ident == "@hw.hlt" ||
+        call.ident == "sum" || call.ident == "par_sum" || call.ident == "dot" ||
         call.ident == "norm" || call.ident == "axpy" ||
         call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||
         call.ident == "disjoint_slice" || call.ident == "disjoint_lookup" ||

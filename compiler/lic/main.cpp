@@ -108,6 +108,7 @@ int usage() {
             << "  lic verify <file>      VC summary; --lean lake; --strict-lean fails open VCs\n"
             << "                       [--allow-open-vc] [--no-lean-verify]\n"
             << "  lic build <file> -o <out> [--release] [--numerically-stable]\n"
+            << "                       [--target TRIPLE]  freestanding kernel (e.g. x86_64-unknown-none)\n"
             << "                       [--strict-lean]  fail on open AutoVC goals + lake strict check\n"
             << "                       [--allow-open-vc]  allow obligations without Lean proof (dev only)\n"
             << "                       [--prob-check]     Monte Carlo discharge for prob_ensures P(event)<ε\n"
@@ -580,6 +581,10 @@ int main(int argc, char** argv) {
       const std::string_view arg = argv[i];
       if (arg == "-o" && i + 1 < argc) {
         output = argv[++i];
+      } else if (arg.rfind("--target=", 0) == 0) {
+        opts.target_triple = std::string(arg.substr(9));
+      } else if (arg == "--target" && i + 1 < argc) {
+        opts.target_triple = argv[++i];
       } else if (!input && arg[0] != '-' && arg != "--release") {
         input = argv[i];
       } else if (arg == "--release") {
@@ -610,6 +615,10 @@ int main(int argc, char** argv) {
     }
     if (!input) {
       return usage();
+    }
+    if (opts.is_freestanding()) {
+      li::proof_cli_flags().allow_open_vc = true;
+      li::proof_cli_flags().no_lean_verify = true;
     }
     const std::string source = read_file(input);
     li::Module module;

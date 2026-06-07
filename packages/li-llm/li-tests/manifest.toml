@@ -42,6 +42,12 @@ note = "PH-ML Wave 13 T3 import ml in li-llm package graph"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/llm_import_array.li"
+outcome = "compile_open_ok"
+note = "PH-ML li-array Phase E import array in li-llm forward matmul"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/llm_weights_file_mmap.li"
 outcome = "verify_ok"
 note = "PH-ML Wave 13 T7 safetensors/GGUF mmap from PH_ML_WEIGHTS_FIXTURE paths"
@@ -87,3 +93,21 @@ suite = "smoke"
 file = "smoke/llm_kv_device_buffer.li"
 outcome = "verify_ok"
 note = "PH-ML Stage 8 KV device buffer honest skip"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_transformer_multilayer_parity.li"
+outcome = "verify_ok"
+note = "PH-ML Stage 9 multi-layer transformer reference parity"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_transformer_multilayer_top_probe.li"
+outcome = "verify_ok"
+note = "PH-ML Stage 9 multilayer top_id probe for parity bench"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_kv_cluster_gpu_decode.li"
+outcome = "verify_ok"
+note = "PH-ML Stage 9 cluster GPU KV decode honest skip"

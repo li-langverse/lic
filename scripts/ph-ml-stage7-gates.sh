@@ -27,7 +27,7 @@ li_export_lic "$ROOT" || { echo "ph-ml-stage7-gates: build lic"; exit 1; }
 
 grep -q 'llm_streaming_sse_prep_ok' packages/li-llm/src/lib.li \
   || { echo "7.1: missing streaming SSE prep"; exit 1; }
-grep -qE 'return (8|9)' packages/li-llm/src/lib.li \
+grep -qE 'return (8|9|10)' packages/li-llm/src/lib.li \
   || { echo "7.2: li_llm_version must be >= 8"; exit 1; }
 grep -q 'ml_autograd_tape_enabled() -> int' packages/li-ml/src/lib.li \
   && grep -A6 'def ml_autograd_tape_enabled' packages/li-ml/src/lib.li | grep -q 'return 1' \

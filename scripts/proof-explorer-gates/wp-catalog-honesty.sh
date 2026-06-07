@@ -4,8 +4,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
+# shellcheck source=../lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_ensure_lic "$ROOT" "wp-catalog-honesty: build lic (./scripts/build.sh)" || exit 1
+
 fail=0
 python3 - <<'PY'
+import os
 import re
 import subprocess
 import sys
@@ -28,7 +33,11 @@ def gap_open(script: str) -> bool:
     path = root / "li-tests/tooling" / script
     if not path.is_file():
         return False
-    r = subprocess.run(["bash", str(path)], cwd=root, capture_output=True)
+    env = os.environ.copy()
+    lic = env.get("LIC")
+    if lic:
+        env["LIC"] = lic
+    r = subprocess.run(["bash", str(path)], cwd=root, capture_output=True, env=env)
     return r.returncode != 0
 
 def proved_hits(needle: str) -> list[str]:

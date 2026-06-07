@@ -6,26 +6,9 @@ cd "$ROOT"
 
 # shellcheck source=../lib/lic-bin-select.sh
 source "$ROOT/scripts/lib/lic-bin-select.sh"
-if lic_rel="$(li_pick_lic_bin "$ROOT" 2>/dev/null)"; then
-  case "$lic_rel" in
-    ./*) export LIC="$ROOT/${lic_rel#./}" ;;
-    *) export LIC="$lic_rel" ;;
-  esac
-else
-  echo "wp-compiler-gap-regression: building lic (./scripts/build.sh)" >&2
-  (cd "$ROOT" && bash scripts/build.sh) || {
-    echo "wp-compiler-gap-regression: lic build failed" >&2
-    exit 1
-  }
-  lic_rel="$(li_pick_lic_bin "$ROOT")" || {
-    echo "wp-compiler-gap-regression: lic binary missing after build" >&2
-    exit 1
-  }
-  case "$lic_rel" in
-    ./*) export LIC="$ROOT/${lic_rel#./}" ;;
-    *) export LIC="$lic_rel" ;;
-  esac
-fi
+li_ensure_lic "$ROOT" "wp-compiler-gap-regression: build lic (./scripts/build.sh)" || exit 1
+li_export_lic "$ROOT" || exit 1
+export LIC="$ROOT/build/compiler/lic/lic"
 
 fail=0
 open=0

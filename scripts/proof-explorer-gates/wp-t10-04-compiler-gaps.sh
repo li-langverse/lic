@@ -5,11 +5,12 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 test -f docs/reports/compiler-audit/README.md
-bash scripts/proof-explorer-gates/wp-compiler-gap-regression.sh
-
-# Mandatory passes beyond regression gate defaults (use host lic, not stale LIC env)
 # shellcheck source=../lib/lic-bin-select.sh
 source "$ROOT/scripts/lib/lic-bin-select.sh"
+li_ensure_lic "$ROOT" "wp-t10-04: build lic (./scripts/build.sh)" || exit 1
+bash scripts/proof-explorer-gates/wp-compiler-gap-regression.sh
+
+# Mandatory passes: force host lic binary (ignore stale LIC=/workspace/lic env)
 if lic_rel="$(li_pick_lic_bin "$ROOT" 2>/dev/null)"; then
   case "$lic_rel" in
     ./*) export LIC="$ROOT/${lic_rel#./}" ;;
@@ -19,7 +20,6 @@ else
   echo "wp-t10-04: lic binary missing after regression gate" >&2
   exit 1
 fi
-
 for mandatory in dot4_loop_ensures_lean_stub_gap.sh axiom_decl_vc_skip_gap.sh; do
   script="li-tests/tooling/$mandatory"
   if [[ ! -f "$script" ]]; then

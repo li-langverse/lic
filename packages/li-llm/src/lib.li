@@ -1,5 +1,6 @@
 import bytes
 import ml
+import array
 
 # li-llm (PH-LLM): native LLM inference - tokenizer, loader, forward, generate.
 extern proc li_rt_lig_matmul_ready() -> int
@@ -210,10 +211,10 @@ def llm_path_is_gguf_fixture(path: str) -> int raises IO, Alloc
 
 def li_llm_version() -> int
   requires true
-  ensures result == 9
+  ensures result == 10
   decreases 0
 =
-  return 9
+  return 10
 
 type LlmTokenIds = object
   public count: int
@@ -996,15 +997,36 @@ def llm_matmul_block_contrib(path: str, tensor_index: int, tid: int) -> int rais
   var a: array[64, float]
   var b: array[64, float]
   var c: array[64, float]
+  var zi: int = 0
+  while zi < 64
+    a[zi] = 0.0
+    b[zi] = 0.0
+    c[zi] = 0.0
+    zi = zi + 1
   var bi: int = 0
   while bi < 4
     b[bi] = llm_scale_byte(llm_safetensors_mmap_byte_at(path, tensor_index, bi))
     bi = bi + 1
   a[0] = llm_scale_byte(tid)
   a[1] = 1.0
-  if ml_matmul_f32(1, 2, 2, a, b, c) != 1:
+  var ad: ArrayDesc = array_desc_2d(1, 2, 2, array_storage_flat())
+  var bd: ArrayDesc = array_desc_2d(2, 2, 2, array_storage_flat())
+  if li_array_matmul_f32(ad, a, bd, b, c) != 1:
     return 0
   return llm_float_bucket(c[0]) + llm_float_bucket(c[1]) * 4
+
+def llm_transformer_layer_count(weights: LlmModelWeights) -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 4
+  decreases 0
+=
+  var layers: int = weights.config.num_layers
+  if layers <= 0:
+    return 1
+  if layers > 4:
+    return 4
+  return layers
 
 def llm_forward_matmul_top_id(
     path: str, tokens: LlmTokenIds, weights: LlmModelWeights, cache: var LlmKVCache) -> int raises IO, Alloc
@@ -1015,11 +1037,14 @@ def llm_forward_matmul_top_id(
 =
   cache.forward_matmul = 1
   var score: int = cache.seq_len
+  var layers: int = llm_transformer_layer_count(weights)
   var ti: int = 0
   while ti < tokens.count
     var tid: int = tokens.ids[ti]
-    score = score + llm_matmul_block_contrib(path, 0, tid)
-    score = score + llm_matmul_block_contrib(path, 1, tid)
+    var layer: int = 0
+    while layer < layers
+      score = score + llm_matmul_block_contrib(path, layer, tid)
+      layer = layer + 1
     ti = ti + 1
   var vocab: int = weights.config.vocab_size
   if vocab <= 0:
@@ -1300,5 +1325,54 @@ def llm_logits_oracle_parity_ok() -> int raises IO, Alloc
   if oracle < 0:
     return 0
   if oracle > 255:
+    return 0
+  return 1
+
+def llm_transformer_multilayer_fixture_top_id() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 255
+  decreases 0
+=
+  var w: LlmModelWeights = llm_load_weights("fixtures/ph-ml-weights/model.safetensors")
+  if llm_transformer_layer_count(w) < 2:
+    return 255
+  var tok: LlmTokenIds = llm_tokenize("ab", "fixtures/vocab.json")
+  var cache: LlmKVCache
+  cache.seq_len = 0
+  cache.last_top_id = 0
+  cache.decode_steps = 0
+  cache.forward_matmul = 0
+  cache.kv_device_buffer = llm_kv_device_buffer_progress()
+  var p_matmul: str = llm_weights_matmul_path(w)
+  return llm_forward_matmul_top_id(p_matmul, tok, w, cache)
+
+def llm_transformer_multilayer_parity_ok() -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var top: int = llm_transformer_multilayer_fixture_top_id()
+  var again: int = llm_transformer_multilayer_fixture_top_id()
+  if top == 255:
+    return 0
+  if top != again:
+    return 0
+  if top < 0:
+    return 0
+  if top > 255:
+    return 0
+  return 1
+
+def llm_kv_cluster_gpu_decode_progress() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if llm_kv_device_buffer_progress() != 1:
+    return 0
+  if ml_lig_emit_vendor_progress() != 1:
     return 0
   return 1

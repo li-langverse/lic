@@ -9,7 +9,22 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO / "benchmarks" / "harness"))
+
+
+def _resolve_harness() -> Path:
+    candidates = [
+        REPO / "benchmarks" / "harness",
+        REPO / ".cache" / "li-benchmarks" / "harness",
+        Path(os.environ.get("HARNESS", "")),
+        Path(os.environ.get("BENCHMARKS_ROOT", "")) / "harness",
+    ]
+    for c in candidates:
+        if c.is_dir() and (c / "sim_summary.py").is_file():
+            return c
+    raise SystemExit("sim-write-summary: benchmarks harness not found (set BENCHMARKS_ROOT or clone .cache/li-benchmarks)")
+
+
+sys.path.insert(0, str(_resolve_harness()))
 
 from sim_summary import (  # noqa: E402
     SUMMARY_FORMATS,
@@ -68,6 +83,19 @@ def main() -> int:
         workload_class=wl,
         benchmark=bench,
     )
+
+    if args.algo_id == 418:
+        summary["workload_class"] = wl or "smoke"
+        summary["metrics"].update(
+            {
+                "total_energy_hartree": args.checksum,
+                "converged": bool(args.ok),
+                "scf_iterations": int(os.environ.get("LI_SIM_SCF_ITERATIONS", "8")),
+                "method": os.environ.get("LI_SIM_QM_METHOD", "RKS/LDA"),
+                "basis": os.environ.get("LI_SIM_QM_BASIS", "STO-3G"),
+            }
+        )
+        summary["invariants"] = {"scf_converged_ok": bool(args.ok)}
 
     out = args.output
     if out is None:

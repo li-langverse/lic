@@ -90,6 +90,12 @@ outcome = "compile_ok"
 
 [[tests]]
 suite = "decorators"
+file = "decorators/md_lj_decorator_def_ok.li"
+outcome = "compile_ok"
+note = "PH-7d: tier-2 MD-shaped @cpu @parallel @vectorized on def"
+
+[[tests]]
+suite = "decorators"
 file = "decorators/vectorized_dot_ok.li"
 outcome = "verify_ok"
 

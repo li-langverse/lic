@@ -111,6 +111,22 @@ def md_cells_neighbor(cxi: int, cyi: int, czi: int, cxj: int, cyj: int, czj: int
         return 1
   return 0
 
+# LJ force magnitude from r² (avoids lj_force_scalar requires r > 0 for VC).
+def md_lj_force_from_r2(r2: float, rc: float) -> float
+  requires rc > 0.0
+  ensures true
+  decreases 0
+=
+  var rc2: float = rc * rc
+  if r2 >= rc2:
+    return 0.0
+  if r2 < 1.0e-12:
+    return 0.0
+  var inv_r2: float = 1.0 / r2
+  var inv_r6: float = inv_r2 * inv_r2 * inv_r2
+  var inv_r12: float = inv_r6 * inv_r6
+  return 24.0 * (2.0 * inv_r12 - inv_r6)
+
 # Sum LJ force scalars over pairs within 3×3×3 cell shell (half-shell i<j).
 def md_neighbor_cell_list_force_sum(
     px: array[8, float], py: array[8, float], pz: array[8, float],
@@ -137,9 +153,7 @@ def md_neighbor_cell_list_force_sum(
         var dy: float = md_mic(py[j] - py[i], box)
         var dz: float = md_mic(pz[j] - pz[i], box)
         var r2: float = dx * dx + dy * dy + dz * dz
-        if r2 > 1e-12:
-          var r: float = md_sqrt_smoke(r2)
-          acc = acc + lj_force_scalar(r, 1.0, 1.0, rc)
+        acc = acc + md_lj_force_from_r2(r2, rc)
       j = j + 1
     i = i + 1
   return acc

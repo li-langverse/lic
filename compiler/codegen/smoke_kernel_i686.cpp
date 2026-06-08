@@ -21,70 +21,6 @@ uint32_t read_le32(const uint8_t* p) {
          (static_cast<uint32_t>(p[2]) << 16) | (static_cast<uint32_t>(p[3]) << 24);
 }
 
-uint32_t Memory::page_base(uint32_t addr) { return addr & ~(kPageSize - 1); }
-
-void Memory::map(uint32_t vaddr, const uint8_t* data, std::size_t filesz, std::size_t memsz) {
-  const std::size_t total = std::max(filesz, memsz);
-  for (std::size_t off = 0; off < total; off += kPageSize) {
-    const uint32_t page = page_base(vaddr + static_cast<uint32_t>(off));
-    auto& page_bytes = pages_[page];
-    if (page_bytes.empty()) {
-      page_bytes.assign(kPageSize, 0);
-    }
-    const std::size_t page_off = (vaddr + off) & (kPageSize - 1);
-    const std::size_t chunk = std::min(kPageSize - page_off, total - off);
-    if (off < filesz && data != nullptr) {
-      const std::size_t copy = std::min(chunk, filesz - off);
-      std::memcpy(page_bytes.data() + page_off, data + off, copy);
-    }
-  }
-}
-
-bool Memory::mapped(uint32_t addr) const {
-  return pages_.find(page_base(addr)) != pages_.end();
-}
-
-uint8_t Memory::read8(uint32_t addr) const {
-  const auto it = pages_.find(page_base(addr));
-  if (it == pages_.end()) {
-    return 0;
-  }
-  return it->second[addr & (kPageSize - 1)];
-}
-
-uint16_t Memory::read16(uint32_t addr) const {
-  return static_cast<uint16_t>(read8(addr)) |
-         static_cast<uint16_t>(static_cast<uint16_t>(read8(addr + 1)) << 8);
-}
-
-uint32_t Memory::read32(uint32_t addr) const {
-  return static_cast<uint32_t>(read8(addr)) |
-         (static_cast<uint32_t>(read8(addr + 1)) << 8) |
-         (static_cast<uint32_t>(read8(addr + 2)) << 16) |
-         (static_cast<uint32_t>(read8(addr + 3)) << 24);
-}
-
-void Memory::write8(uint32_t addr, uint8_t value) {
-  const uint32_t page = page_base(addr);
-  auto& page_bytes = pages_[page];
-  if (page_bytes.empty()) {
-    page_bytes.assign(kPageSize, 0);
-  }
-  page_bytes[addr & (kPageSize - 1)] = value;
-}
-
-void Memory::write16(uint32_t addr, uint16_t value) {
-  write8(addr, static_cast<uint8_t>(value & 0xFF));
-  write8(addr + 1, static_cast<uint8_t>((value >> 8) & 0xFF));
-}
-
-void Memory::write32(uint32_t addr, uint32_t value) {
-  write8(addr, static_cast<uint8_t>(value & 0xFF));
-  write8(addr + 1, static_cast<uint8_t>((value >> 8) & 0xFF));
-  write8(addr + 2, static_cast<uint8_t>((value >> 16) & 0xFF));
-  write8(addr + 3, static_cast<uint8_t>((value >> 24) & 0xFF));
-}
-
 struct Decoder {
   Cpu* cpu;
   Memory* mem;
@@ -436,6 +372,70 @@ struct Decoder {
 };
 
 }  // namespace
+
+uint32_t Memory::page_base(uint32_t addr) { return addr & ~(kPageSize - 1); }
+
+void Memory::map(uint32_t vaddr, const uint8_t* data, std::size_t filesz, std::size_t memsz) {
+  const std::size_t total = std::max(filesz, memsz);
+  for (std::size_t off = 0; off < total; off += kPageSize) {
+    const uint32_t page = page_base(vaddr + static_cast<uint32_t>(off));
+    auto& page_bytes = pages_[page];
+    if (page_bytes.empty()) {
+      page_bytes.assign(kPageSize, 0);
+    }
+    const std::size_t page_off = (vaddr + off) & (kPageSize - 1);
+    const std::size_t chunk = std::min(kPageSize - page_off, total - off);
+    if (off < filesz && data != nullptr) {
+      const std::size_t copy = std::min(chunk, filesz - off);
+      std::memcpy(page_bytes.data() + page_off, data + off, copy);
+    }
+  }
+}
+
+bool Memory::mapped(uint32_t addr) const {
+  return pages_.find(page_base(addr)) != pages_.end();
+}
+
+uint8_t Memory::read8(uint32_t addr) const {
+  const auto it = pages_.find(page_base(addr));
+  if (it == pages_.end()) {
+    return 0;
+  }
+  return it->second[addr & (kPageSize - 1)];
+}
+
+uint16_t Memory::read16(uint32_t addr) const {
+  return static_cast<uint16_t>(read8(addr)) |
+         static_cast<uint16_t>(static_cast<uint16_t>(read8(addr + 1)) << 8);
+}
+
+uint32_t Memory::read32(uint32_t addr) const {
+  return static_cast<uint32_t>(read8(addr)) |
+         (static_cast<uint32_t>(read8(addr + 1)) << 8) |
+         (static_cast<uint32_t>(read8(addr + 2)) << 16) |
+         (static_cast<uint32_t>(read8(addr + 3)) << 24);
+}
+
+void Memory::write8(uint32_t addr, uint8_t value) {
+  const uint32_t page = page_base(addr);
+  auto& page_bytes = pages_[page];
+  if (page_bytes.empty()) {
+    page_bytes.assign(kPageSize, 0);
+  }
+  page_bytes[addr & (kPageSize - 1)] = value;
+}
+
+void Memory::write16(uint32_t addr, uint16_t value) {
+  write8(addr, static_cast<uint8_t>(value & 0xFF));
+  write8(addr + 1, static_cast<uint8_t>((value >> 8) & 0xFF));
+}
+
+void Memory::write32(uint32_t addr, uint32_t value) {
+  write8(addr, static_cast<uint8_t>(value & 0xFF));
+  write8(addr + 1, static_cast<uint8_t>((value >> 8) & 0xFF));
+  write8(addr + 2, static_cast<uint8_t>((value >> 16) & 0xFF));
+  write8(addr + 3, static_cast<uint8_t>((value >> 24) & 0xFF));
+}
 
 uint32_t choose_stack_top(const Memory& mem, uint32_t entry) {
   (void)entry;

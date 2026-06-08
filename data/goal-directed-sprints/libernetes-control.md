@@ -20,9 +20,9 @@ Control plane UX and package scaffolds. Wave 0 **DONE**. Wave 1 adds `libernetes
 | **LB-K0** | easy-setup + heterogeneous-workers docs | **DONE** | `check-libernetes-control-docs-gate.sh` |
 | **LB-K1** | WorkerProfile CRD yaml | **DONE** | `check-libernetes-control-crd-gate.sh` |
 | **LB-K2** | apiserver + kubelet scaffolds | **DONE** | `check-libernetes-control-packages-gate.sh` |
-| **LB-K3** | `scripts/libernetes-init.sh` | pending | `check-libernetes-control-wave1-gate.sh` |
-| **LB-K4** | `scripts/libernetes-worker-join.sh` | pending | same wave1 gate |
-| **LB-K5** | `docs/libernetes/join-flow.md` | pending | same wave1 gate |
+| **LB-K3** | `scripts/libernetes-init.sh` | **DONE** | `check-libernetes-control-wave1-gate.sh` |
+| **LB-K4** | `scripts/libernetes-worker-join.sh` | **DONE** | same wave1 gate |
+| **LB-K5** | `docs/libernetes/join-flow.md` | **DONE** | same wave1 gate |
 
 ## Completion gate
 

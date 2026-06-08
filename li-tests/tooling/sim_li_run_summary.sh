@@ -38,4 +38,7 @@ emit 201 1 1.0 2 pde_heat_explicit_2d
 # Registry stub spot-check (robo family)
 emit 801 1 0.801 0 robo_multibody_step
 
+# chem-r2 / sim-p2 — qm_dft_scf_energy (418)
+emit 418 1 -1.117 4 qm_dft_scf_energy
+
 echo "sim_li_run_summary: wrote summaries under $OUT_DIR (format=$FORMAT)"

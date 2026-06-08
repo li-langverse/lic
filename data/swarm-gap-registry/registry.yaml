@@ -268,8 +268,8 @@ gaps:
   - swarm_observer
 - id: gap-plan-pending-sim-sim-p2-qm-dft-scf
   gap_kind: plan_debt
-  title: 'sim: pending plan todo sim-p2-qm-dft-scf'
-  status: open
+  title: 'sim: sim-p2-qm-dft-scf completed — algo 418 (#478)'
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:

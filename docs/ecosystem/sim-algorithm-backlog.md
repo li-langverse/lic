@@ -15,8 +15,8 @@ todos:
   status: pending
   gap_orchestrator: true
 - id: gap-sim-sim-p2-qm-dft-scf
-  content: "sim: pending plan todo sim-p2-qm-dft-scf"
-  status: pending
+  content: "sim: sim-p2-qm-dft-scf completed — algo 418 H₂ STO-3G SCF via li-chem (#478)"
+  status: completed
   gap_orchestrator: true
 
 
@@ -39,8 +39,8 @@ todos:
   status: pending
 
 - id: sim-p2-qm-dft-scf
-  content: "sim: pending plan todo sim-p2-qm-dft-scf — gap orchestrator"
-  status: pending
+  content: "algo_id=418 qm_dft_scf_energy — H₂ STO-3G SCF oracle via li-chem (chem-r2 done gate)"
+  status: completed
 
 ---
 

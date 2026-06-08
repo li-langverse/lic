@@ -441,6 +441,146 @@ bool expr_is_mat2_int_spec(const Expr& e, const std::string& a, const std::strin
   return true;
 }
 
+bool array_param_shape(const ParamDecl& param, std::int64_t* size, std::string* elem) {
+  const TypeExpr* ty = &param.type;
+  while (ty != nullptr && ty->kind == TypeKind::Refinement && ty->refinement_base) {
+    ty = ty->refinement_base.get();
+  }
+  if (ty == nullptr || ty->kind != TypeKind::Array || !ty->elem) {
+    return false;
+  }
+  if (size != nullptr) {
+    *size = ty->array_size;
+  }
+  if (elem != nullptr) {
+    const TypeExpr* et = ty->elem.get();
+    while (et != nullptr && et->kind == TypeKind::Refinement && et->refinement_base) {
+      et = et->refinement_base.get();
+    }
+    if (et == nullptr || et->kind != TypeKind::Named) {
+      return false;
+    }
+    *elem = et->name;
+  }
+  return true;
+}
+
+bool expr_is_index1d_lit(const Expr* e, const std::string& arr, std::int64_t idx) {
+  return e != nullptr && e->kind == Expr::Kind::Index && expr_is_ident(e->base.get(), arr) &&
+         expr_is_int_lit(e->index.get(), idx);
+}
+
+bool expr_is_broadcast_len1_binop(const Expr* rhs, BinOp op, const std::string& long_arr,
+                                    const std::string& short_arr, std::int64_t idx) {
+  if (rhs == nullptr || rhs->kind != Expr::Kind::BinOp || rhs->bin_op != op || !rhs->lhs ||
+      !rhs->rhs) {
+    return false;
+  }
+  const auto long_idx = [&](const Expr* side) -> bool {
+    return expr_is_index1d_lit(side, long_arr, idx);
+  };
+  const auto short_zero = [&](const Expr* side) -> bool {
+    return expr_is_index1d_lit(side, short_arr, 0);
+  };
+  if (op == BinOp::Pow) {
+    return long_idx(rhs->lhs.get()) && short_zero(rhs->rhs.get());
+  }
+  return (long_idx(rhs->lhs.get()) && short_zero(rhs->rhs.get())) ||
+         (long_idx(rhs->rhs.get()) && short_zero(rhs->lhs.get()));
+}
+
+bool expr_is_broadcast_len1_entry_eq(const Expr* e, const std::string& result,
+                                     const std::string& long_arr, const std::string& short_arr,
+                                     std::int64_t idx, BinOp op) {
+  if (e == nullptr || e->kind != Expr::Kind::BinOp || e->bin_op != BinOp::Eq || !e->lhs ||
+      !e->rhs) {
+    return false;
+  }
+  if (!expr_is_index1d_lit(e->lhs.get(), result, idx)) {
+    return false;
+  }
+  return expr_is_broadcast_len1_binop(e->rhs.get(), op, long_arr, short_arr, idx);
+}
+
+bool expr_is_broadcast_len1_spec(const Expr& e, const std::string& long_arr,
+                                 const std::string& short_arr, BinOp op) {
+  std::vector<const Expr*> terms;
+  collect_and_chain_terms(&e, terms);
+  if (terms.size() != 4) {
+    return false;
+  }
+  for (std::int64_t idx = 0; idx < 4; ++idx) {
+    if (!expr_is_broadcast_len1_entry_eq(terms[static_cast<std::size_t>(idx)], "result", long_arr,
+                                         short_arr, idx, op)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::optional<BroadcastLen1DischargeNames> witness_broadcast_len1_discharge_impl(
+    const ProcDecl& proc, const Expr& ensures_expr) {
+  if (proc.params.size() != 2) {
+    return std::nullopt;
+  }
+  const Expr* ret = single_return_expr(proc);
+  if (ret == nullptr || ret->kind != Expr::Kind::BinOp || !ret->lhs || !ret->rhs) {
+    return std::nullopt;
+  }
+  const BinOp op = ret->bin_op;
+  if (op != BinOp::Add && op != BinOp::Mul && op != BinOp::Pow) {
+    return std::nullopt;
+  }
+  if (ret->lhs->kind != Expr::Kind::Ident || ret->rhs->kind != Expr::Kind::Ident) {
+    return std::nullopt;
+  }
+  std::int64_t size0 = 0;
+  std::int64_t size1 = 0;
+  std::string elem0;
+  std::string elem1;
+  if (!array_param_shape(proc.params[0], &size0, &elem0) ||
+      !array_param_shape(proc.params[1], &size1, &elem1)) {
+    return std::nullopt;
+  }
+  std::string long_arr;
+  std::string short_arr;
+  std::string elem;
+  if (size0 == 4 && size1 == 1) {
+    long_arr = proc.params[0].name;
+    short_arr = proc.params[1].name;
+    elem = elem0;
+  } else if (size0 == 1 && size1 == 4) {
+    long_arr = proc.params[1].name;
+    short_arr = proc.params[0].name;
+    elem = elem1;
+  } else {
+    return std::nullopt;
+  }
+  const std::string& rl = ret->lhs->ident;
+  const std::string& rr = ret->rhs->ident;
+  if (!((rl == long_arr && rr == short_arr) || (rl == short_arr && rr == long_arr))) {
+    return std::nullopt;
+  }
+  if (!expr_is_broadcast_len1_spec(ensures_expr, long_arr, short_arr, op)) {
+    return std::nullopt;
+  }
+  if (op == BinOp::Add && elem == "float") {
+    return BroadcastLen1DischargeNames{"Li.Discharge.broadcast_len1_add_float4_spec",
+                                       "Li.Discharge.broadcast_len1_add_float4_eval",
+                                       "Li.Discharge.broadcast_len1_add_float4_spec_proved"};
+  }
+  if (op == BinOp::Mul && elem == "int") {
+    return BroadcastLen1DischargeNames{"Li.Discharge.broadcast_len1_mul_int4_spec",
+                                       "Li.Discharge.broadcast_len1_mul_int4_eval",
+                                       "Li.Discharge.broadcast_len1_mul_int4_spec_proved"};
+  }
+  if (op == BinOp::Pow && elem == "int") {
+    return BroadcastLen1DischargeNames{"Li.Discharge.broadcast_len1_pow_int4_spec",
+                                       "Li.Discharge.broadcast_len1_pow_int4_eval",
+                                       "Li.Discharge.broadcast_len1_pow_int4_spec_proved"};
+  }
+  return std::nullopt;
+}
 
 bool expr_is_float_lit(const Expr* e, double v) {
   return e && e->kind == Expr::Kind::FloatLit && std::fabs(e->float_value - v) < 1e-15;
@@ -679,6 +819,9 @@ bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const
   if (witness_mat2_int_at2_spec_impl(proc, *c.expr)) {
     return true;
   }
+  if (witness_broadcast_len1_discharge_impl(proc, *c.expr).has_value()) {
+    return true;
+  }
   if (witness_vec3_len_sq_callproc_impl(proc, *c.expr)) {
     return true;
   }
@@ -822,6 +965,11 @@ bool witness_mat2_int_at2_spec(const ProcDecl& proc, const Expr& ensures_expr) {
 
 bool witness_matmul2_at2_spec(const ProcDecl& proc, const Expr& ensures_expr) {
   return witness_mat2_int_at2_spec_impl(proc, ensures_expr);
+}
+
+std::optional<BroadcastLen1DischargeNames> witness_broadcast_len1_discharge(
+    const ProcDecl& proc, const Expr& ensures_expr) {
+  return witness_broadcast_len1_discharge_impl(proc, ensures_expr);
 }
 
 bool witness_vec3_len_sq_callproc(const ProcDecl& proc, const Expr& ensures_expr) {

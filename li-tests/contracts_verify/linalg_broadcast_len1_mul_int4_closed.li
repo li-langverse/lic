@@ -1,0 +1,22 @@
+# P-linalg / PH-2i: length-1 broadcast mul — closed Lean Prop (Li.Discharge.broadcast_len1_mul_int4_spec).
+def broadcast_len1_mul_int4(a: array[4, int], b: array[1, int]) -> array[4, int]
+  requires true
+  ensures result[0] == a[0] * b[0] and result[1] == a[1] * b[0] and result[2] == a[2] * b[0] and result[3] == a[3] * b[0]
+  decreases 0
+=
+  return a * b
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var a: array[4, int]
+  var b: array[1, int]
+  a[0] = 2
+  a[1] = 2
+  a[2] = 2
+  a[3] = 2
+  b[0] = 3
+  var c: array[4, int] = broadcast_len1_mul_int4(a, b)
+  return 0

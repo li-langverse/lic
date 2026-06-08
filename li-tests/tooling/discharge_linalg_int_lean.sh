@@ -13,13 +13,16 @@ for sample in \
   "$ROOT/li-tests/contracts_verify/linalg_axpy4_int_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_dot4_float_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_mat2_at2_float_closed.li" \
+  "$ROOT/li-tests/contracts_verify/linalg_broadcast_len1_add_float4_closed.li" \
+  "$ROOT/li-tests/contracts_verify/linalg_broadcast_len1_mul_int4_closed.li" \
+  "$ROOT/li-tests/contracts_verify/linalg_broadcast_len1_pow_int4_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_dot4_int_loop_open.li" \
   "$ROOT/li-tests/contracts_verify/linalg_mat2_callproc_float_closed.li"; do
   AUTOVC="$ROOT/build/generated/AutoVC.lean"
   rm -f "$AUTOVC"
   "$LIC" build "$sample" -o /dev/null
   test -f "$AUTOVC"
-  grep -qE 'Phase 2f: (return expression matches ensures|fixed-bound dot loop witness|P-loop dot4|prelude dot)|Li\.Discharge\.(mat2_at2|dot4)' \
+  grep -qE 'Phase 2f: (return expression matches ensures|fixed-bound dot loop witness|P-loop dot4|prelude dot|PH-2i broadcast_len1)|Li\.Discharge\.(mat2_at2|dot4|broadcast_len1)' \
     "$AUTOVC" || {
     echo "discharge_linalg_int_lean: missing witness marker in $sample"
     exit 1

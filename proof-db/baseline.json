@@ -1,8 +1,8 @@
 {
   "version": 1,
   "release_pin": "2026-05-25",
-  "proved_count": 6,
-  "total_count": 8,
+  "proved_count": 9,
+  "total_count": 11,
   "records": [
     {
       "id": "AutoVC.vc_greet_decreases_0_proved",
@@ -36,6 +36,24 @@
     },
     {
       "id": "Li.Discharge.mat2_at2_float_spec_proved",
+      "status": "proved",
+      "source": "discharge",
+      "file": "docs/semantics/Discharge.lean"
+    },
+    {
+      "id": "Li.Discharge.broadcast_len1_add_float4_spec_proved",
+      "status": "proved",
+      "source": "discharge",
+      "file": "docs/semantics/Discharge.lean"
+    },
+    {
+      "id": "Li.Discharge.broadcast_len1_mul_int4_spec_proved",
+      "status": "proved",
+      "source": "discharge",
+      "file": "docs/semantics/Discharge.lean"
+    },
+    {
+      "id": "Li.Discharge.broadcast_len1_pow_int4_spec_proved",
       "status": "proved",
       "source": "discharge",
       "file": "docs/semantics/Discharge.lean"

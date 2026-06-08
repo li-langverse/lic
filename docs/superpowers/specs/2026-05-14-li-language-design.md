@@ -362,6 +362,8 @@ Requires: hardware feature detection, explicit conversion rules (`f32` ↔ `bf16
 | `tensor[Shape, T]` | Shape in the type — e.g. `tensor[(3, 3), f64]` vs `tensor[(3,), f64]`; dimension errors at compile time |
 | `array[N, T]` (v1) | Fixed rank-1/2 stack arrays; Tetris boards, small grids |
 | GPU buffers `device[T]` / `host[T]` | Separate address spaces; copy semantics explicit |
+| `MemorySpace` / `ExecutionSpace` enums | Kokkos-class placement tags (`Host`, `Device`, `Unified`; `Serial`, `OpenMP`, `Threads`; `SYCL`/`Cuda`/`HIP` reserved) — `import std.execution.memory_spaces` |
+| `View[T, Space, Layout]` | Shaped buffer with static memory-space tag; lifecycle in same space unless `@sync_host` / `@sync_device` (names TBD; #110 spec, #15 lowering) |
 | Kernel `gpu proc` | Entry points for CUDA / Metal / Vulkan compute (one backend chosen first) |
 
 Depends on Phase 1 numerics (including SIMD) and a stable MIR → LLVM path (or secondary GPU IR).

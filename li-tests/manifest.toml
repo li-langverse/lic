@@ -1216,6 +1216,12 @@ file = "stdlib_coverage/build_std_summary_plot.li"
 outcome = "verify_open_ok"
 note = "PH-IO-7/5: std.summary + std.plot import harness (summary_tag=7, plot_tag=5)"
 
+[[tests]]
+suite = "stdlib_coverage"
+file = "stdlib_coverage/build_std_memory_spaces.li"
+outcome = "verify_open_ok"
+note = "PH-7e/#110: std.execution.memory_spaces import harness"
+
 # --- stdlib_seal (4s — prelude/stdlib names cannot be shadowed) ---
 # Coverage policy: std/**/*.li requires 100% line coverage (scripts/check-stdlib-coverage.sh).
 note = "open VC until 2f full (Lean gate on devbox)"
@@ -1265,6 +1271,12 @@ suite = "stdlib_seal"
 file = "stdlib_seal/import_std_summary_plot_ok.li"
 outcome = "compile_ok"
 note = "PH-IO-7/5: std.summary + std.plot resolve without shadow errors"
+
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/import_std_memory_spaces_ok.li"
+outcome = "compile_ok"
+note = "PH-7e/#110: std.execution.memory_spaces resolves without shadow errors"
 
 # --- encapsulation (2g — def, object, visibility, import) ---
 
@@ -1569,6 +1581,12 @@ outcome = "script_ok"
 note = "WP-PAR-99: killer gate script + sub-gates; full stack in GHA lipar-killer-gate"
 
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
+
+[[tests]]
+suite = "hpc"
+file = "hpc/memory_spaces_ok.li"
+outcome = "compile_ok"
+note = "PH-7e/#110: MemorySpace/ExecutionSpace enum accessors + sync contract helpers"
 
 # --- stdlib_parity (WP0-D — compile-only until WP-WA + WP1 runtime) ---
 

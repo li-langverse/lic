@@ -1,0 +1,143 @@
+# std/execution/memory_spaces.li — Kokkos-class memory/execution space enums (PH-7e, #110)
+#
+# Spec-only v1: integer tags for MemorySpace and ExecutionSpace.
+# Buffer types (hostbuffer/devicebuffer), View[T, Space], and @sync_* lowering
+# are deferred to #15 (decorator elaboration) and #116 (OpenMPTarget offload).
+#
+# Kokkos 4.6 alignment: no implicit DualView; explicit copy before cross-space read.
+
+def memory_space_host() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def memory_space_device() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def memory_space_unified() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def execution_space_serial() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def execution_space_openmp() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def execution_space_threads() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+# Reserved for #116 — SYCL/CUDA/HIP offload; not selectable in tier-2 v1.
+def execution_space_sycl() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def execution_space_cuda() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def execution_space_hip() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def sync_host_tag() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def sync_device_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def memory_space_is_valid(space: int) -> bool
+  requires true
+  ensures result == (space == memory_space_host() or space == memory_space_device() or space == memory_space_unified())
+  decreases 0
+=
+  return space == memory_space_host() or space == memory_space_device() or space == memory_space_unified()
+
+def execution_space_is_valid(space: int) -> bool
+  requires true
+  ensures result == (space >= execution_space_serial() and space <= execution_space_hip())
+  decreases 0
+=
+  return space >= execution_space_serial() and space <= execution_space_hip()
+
+def execution_space_default_tier2() -> int
+  requires true
+  ensures result == execution_space_openmp()
+  decreases 0
+=
+  return execution_space_openmp()
+
+def memory_space_for_execution(exec_space: int) -> int
+  requires execution_space_is_valid(exec_space)
+  ensures memory_space_is_valid(result)
+  ensures exec_space == execution_space_serial() implies result == memory_space_host()
+  ensures exec_space == execution_space_openmp() implies result == memory_space_host()
+  ensures exec_space == execution_space_threads() implies result == memory_space_host()
+  decreases exec_space
+=
+  if exec_space == execution_space_sycl():
+    return memory_space_device()
+  if exec_space == execution_space_cuda():
+    return memory_space_device()
+  if exec_space == execution_space_hip():
+    return memory_space_device()
+  return memory_space_host()
+
+def sync_required_before_read(src_space: int, dst_space: int) -> bool
+  requires memory_space_is_valid(src_space)
+  requires memory_space_is_valid(dst_space)
+  ensures result == (src_space != dst_space and src_space != memory_space_unified() and dst_space != memory_space_unified())
+  decreases 0
+=
+  if src_space == dst_space:
+    return false
+  if src_space == memory_space_unified():
+    return false
+  if dst_space == memory_space_unified():
+    return false
+  return true
+
+def __memory_spaces_doc() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -34,6 +34,7 @@
 | ui | `std/ui/ui.li` | 29 | **Stub** (`Color`, `Rect`, `color_white`) | `import std.ui` |
 | csv | `std/csv/csv.li` | 28 | **Stub** (`CsvRow`, parse/read stubs) | `import std.csv` |
 | execution | `std/execution/decorators.li` | 23 | **Doc/seal** (reserved decorator names) | `import std.execution.decorators` |
+| execution | `std/execution/memory_spaces.li` | 130 | **Doc/seal** (Kokkos-class memory/execution enums, #110) | `import std.execution.memory_spaces` |
 | math | `std/math/numerics.li` | 10 | **Policy tag** (numerics policy comment) | `import std.math` (facade) |
 | math | `std/math/math.li` | 6 | **Tag** `math_std_tag` | via `std.math` |
 | physics | `std/physics/*.li` (13 files) | 6–9 each | **Tag facades** per subdomain | `import std.physics.<sub>` |

@@ -124,7 +124,7 @@
         "divisors"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/8",
       "li_specimen": "proof-db/erdos/specimens/E-8.li"
     },
@@ -136,7 +136,7 @@
         "divisors"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/9",
       "li_specimen": "proof-db/erdos/specimens/E-9.li"
     },
@@ -149,7 +149,7 @@
         "arithmetic_progressions"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/10",
       "content_tier": "curated",
       "context": "Sets with divergent harmonic sum but no long arithmetic progressions. A cousin of Erdős–Turán conjectures; ties to Szemerédi-type obstructions.",
@@ -169,7 +169,7 @@
         "additive_combinatorics"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/11",
       "content_tier": "curated",
       "context": "Every large odd integer as a squarefree number plus a power of two. Mixes binary representations with squarefree structure.",
@@ -377,7 +377,7 @@
         "primes"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/26",
       "li_specimen": "proof-db/erdos/specimens/E-26.li"
     },
@@ -401,7 +401,7 @@
         "additive_combinatorics"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/28",
       "notes": "Bloom Top 10.",
       "content_tier": "curated",
@@ -549,7 +549,7 @@
         "covering_systems"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/39",
       "content_tier": "curated",
       "context": "Finite covering systems with distinct moduli: existence and minimal modulus questions. Hough disproved the distinct-odd-moduli variant in 2022.",
@@ -639,7 +639,7 @@
         "factorial"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/45",
       "li_specimen": "proof-db/erdos/specimens/E-45.li"
     },
@@ -712,7 +712,7 @@
         "random_walk"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/50",
       "li_specimen": "proof-db/erdos/specimens/E-50.li"
     },
@@ -879,7 +879,7 @@
         "unit_fractions"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/62",
       "li_specimen": "proof-db/erdos/specimens/E-62.li"
     },
@@ -891,7 +891,7 @@
         "pseudoprimes"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/63",
       "li_specimen": "proof-db/erdos/specimens/E-63.li"
     },
@@ -950,7 +950,7 @@
         "covering_systems"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/68",
       "li_specimen": "proof-db/erdos/specimens/E-68.li"
     },
@@ -1019,7 +1019,7 @@
         "primes"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/73",
       "li_specimen": "proof-db/erdos/specimens/E-73.li"
     },
@@ -1031,7 +1031,7 @@
         "series"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/74",
       "li_specimen": "proof-db/erdos/specimens/E-74.li"
     },
@@ -1043,7 +1043,7 @@
         "divisors"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/75",
       "li_specimen": "proof-db/erdos/specimens/E-75.li"
     },
@@ -1068,7 +1068,7 @@
         "graph_theory"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/77",
       "notes": "Bloom Top 10.",
       "content_tier": "curated",
@@ -1093,7 +1093,7 @@
         "divisors"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/78",
       "li_specimen": "proof-db/erdos/specimens/E-78.li"
     },
@@ -1165,7 +1165,7 @@
         "factorial"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/83",
       "li_specimen": "proof-db/erdos/specimens/E-83.li"
     },
@@ -1364,7 +1364,7 @@
         "series"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/96",
       "li_specimen": "proof-db/erdos/specimens/E-96.li"
     },
@@ -1389,7 +1389,7 @@
         "series"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/98",
       "li_specimen": "proof-db/erdos/specimens/E-98.li"
     },
@@ -1494,7 +1494,7 @@
         "divisibility"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/107",
       "li_specimen": "proof-db/erdos/specimens/E-107.li"
     },
@@ -1530,7 +1530,7 @@
         "ramsey_theory"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/110",
       "content_tier": "curated",
       "context": "Cap-set style problem: arbitrarily large sets without 4-term arithmetic progressions. Related to Roth/Szemerédi and recent polynomial-method bounds.",
@@ -1912,7 +1912,7 @@
         "ramsey_theory"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/140",
       "li_specimen": "proof-db/erdos/specimens/E-140.li"
     },
@@ -1972,7 +1972,7 @@
         "primes"
       ],
       "priority_tier": "P3",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/145",
       "li_specimen": "proof-db/erdos/specimens/E-145.li"
     },
@@ -6950,7 +6950,7 @@
         "turán"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/571",
       "notes": "Bloom Top 10.",
       "li_specimen": "proof-db/erdos/specimens/E-571.li"
@@ -8608,7 +8608,7 @@
         "turán"
       ],
       "priority_tier": "P1",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/713",
       "notes": "Bloom Top 10; $500 prize.",
       "li_specimen": "proof-db/erdos/specimens/E-713.li"

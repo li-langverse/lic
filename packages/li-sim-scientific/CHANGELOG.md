@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- CFD/FEA tier-2 rows use `vertical_cfd_lid_driven_cavity` / `vertical_fea_linear_elasticity`; `run_simulation` dispatches new verticals; smoke version gates aligned to `li_sim_scientific_version` 7.
 - `run_md_lj_smoke` / `run_heat_smoke` use tier-2 oracle checksums (not scalar stub / constant 1.0); `li_sim_scientific_version` → 7 (WP-SCI-03 Phase 2).
 - **WP-SCI-01 multi-physics tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` (MD + heat + rigid smokes); smoke `li-tests/smoke/multi_physics_tick.li`.
 

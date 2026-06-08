@@ -1,7 +1,7 @@
 # Li LLM-first design (research stub)
 
 **Date:** 2026-05-16  
-**Status:** Planning / research (**Vision-LLM** — partial on master plan)  
+**Status:** v1 agent diagnostics ship gate **closed**; syntax/terse research remains open (**Vision-LLM**)  
 **Pillar priority:** Provability (#1) unchanged — this spec optimizes **agent ergonomics**, not proof shortcuts.  
 **Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](../plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability-gaps](../../verification/provability-gaps.md) (no **G-*** closure from JSON diagnostics alone)
 
@@ -45,6 +45,7 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 | `lic diagnose` | **Implemented** — JSON to stdout |
 | `scripts/lic-fix-suggest.sh` | **Stub** — jq hints from JSON |
 | Compact test manifest slice for agents | **Implemented** — `scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json` |
+| `scripts/gen-li-agent-manifest.sh` | **Implemented** — `li-agent.json` + `.cursor/AGENTS.generated.md`; CI smoke |
 | `lic edit --patch=json` | **Spec only** — compact edit IR |
 
 ### Docs & rules
@@ -65,6 +66,22 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 ## Conflict resolution
 
 When LLM-first convenience conflicts with provability: **provability wins** (same as language design spec).
+
+## Vision-LLM v1 exit gate (agent diagnostics)
+
+Runnable after `./scripts/build.sh`:
+
+- [x] `docs/schemas/diagnostic-v1.json` — stable envelope
+- [x] `lic check --format=json` and `lic diagnose` — opt-in JSON path
+- [x] `li-tests/tooling/diagnose_json_smoke.sh` — envelope, codes, severities
+- [x] `docs/ecosystem/li-agent-manifest.toml` — canonical agent commands
+- [x] `scripts/gen-li-agent-manifest.sh` → `li-agent.json` + `.cursor/AGENTS.generated.md`
+- [x] `li-tests/tooling/gen_li_agent_manifest_smoke.sh` — manifest generation in CI
+- [x] `scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json`
+- [x] `li-tests/tooling/agent_manifest_smoke.sh` — suites index smoke
+- [x] `docs/ecosystem/agent-handover-formats.md` — layered handover documented
+
+**Still open (v2 backlog, not gate-blocking):** `lic edit --patch=json`, structured `fix_hint`, terse-syntax RFC, Studio WP-AG-04 eval loop.
 
 ## Related
 

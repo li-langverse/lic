@@ -38,6 +38,8 @@ Use when an agent must fix Li source using machine-readable diagnostics and `li-
 8. **Smoke JSON tooling** (after compiler changes):
    ```bash
    ./li-tests/tooling/diagnose_json_smoke.sh
+   ./li-tests/tooling/gen_li_agent_manifest_smoke.sh
+   ./li-tests/tooling/agent_manifest_smoke.sh
    ```
 
 ## JSON fields

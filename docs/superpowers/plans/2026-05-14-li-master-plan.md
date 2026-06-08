@@ -189,7 +189,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 5b | Benchmarks & sims | `2026-05-14-benchmarks-and-simulations.md` | **Verified** Tier 2 physics + cross-lang CSV + **X plots** |
 | 6 | Self-host (post-live) | `2026-05-14-phase-06-self-host.md` | `lic` built by li (bootstrap seed) |
 | 7 | Native HPC (SIMD + OpenMP) | `2026-05-14-phase-07-native-hpc.md` | Pure-Li simd_dot + md; race suite; fuzz daily |
-| **7d** | **Execution decorators** | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | **Partial:** `@vectorized` scope (#150); **G-par** disjoint= open |
+| **7d** | **Execution decorators** | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | **Partial:** MIR proc tags for `@cpu`/`@parallel`/`@vectorized`/`@gpu` + `decorator_exploits` CI; Lean **P-dec** / **G-par** proofs open — [G-dec](../verification/provability-gaps.md#g-dec) |
 | **7e** | **Math → SIMD lowering** | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) § 7e | **Partial:** pure-Li tier-1 (#148); perf bar open |
 | **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | **M1 partial:** epoll static/sendfile + proxy (#153/#156); **li-log** package stub (access sink + redact); **next:** M1 ship gate Lean + Li reactor |
 | **Obs** | Fuzz dashboard + plan canvas | `scripts/export-fuzz-status.sh` + `canvases/*.canvas.tsx` | Nightly updates `.canvas.data.json` sidecars |
@@ -366,8 +366,11 @@ Maps **master plan phases** to gap IDs and what “mathematical provability esta
 | 2f | `Core.lean` | **G-trust** | Typing + contract rules in Lean, not stub | semantics/README |
 | 3 | MIR bounds / refinement | **G-bnd** | Release path does not rely on `li_bounds_fail` for proved indices | architecture, numerics |
 | 7b | Structured `disjoint=` | **G-par** | Disjointness from AST, not `policy.cpp` strings | simd-parallel, gaps |
-| 7d-a | Decorator parse | **G-dec** | (partial) parse only — mark **Partial** | decorators spec |
-| 7d-b–e | Decorator elaborate + exploits | **G-dec** | Elaboration + `decorator_exploits` CI green | language/decorators.md (new), fast-math guide |
+| 7d-a | Decorator parse | **G-dec** | Parse tests green | decorators spec |
+| 7d-b | Elaboration → MIR proc tags (`@cpu`, `@parallel`, `@vectorized`, `@gpu`) | **G-dec** | `check-mir-{cpu,parallel,gpu,vectorized}-decorator.sh` green | language/decorators.md |
+| 7d-c | Structured `disjoint=`; scoped `@vectorized` on `for` | **G-par**, **G-dec** | `vectorized_for_scope_ok.li` + `parallel_with_disjoint.li`; **G-par** Lean proofs open | [G-par](../verification/provability-gaps.md#g-par) |
+| 7d-d | `std/execution/decorators.li` + handbook | **G-dec** | Handbook + gallery | language/decorators.md |
+| 7d-e | `decorator_exploits/` CI + reserved names | **G-dec** | All exploit rows `compile_fail` | `decorator_exploits/` |
 | 2i | Math surface types | **G-math** | `A @ B` / `dot` shape errors at typecheck; **P-linalg** closed VCs (#151) | linear-algebra.md, math spec, `contracts_verify/linalg_*` |
 | 7e | Math → SIMD MIR | **G-math** | Tier 1 Li sources math-only; lowering proved or documented | gaps, benchmarks plan, `discharge_linalg_int_lean.sh` |
 | 2f | P-linalg corpus | **G-lean**, **G-math** | Closed dot/sum/matmul-entry; loop dot open | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
@@ -454,7 +457,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
 - [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155):** default `lake build AutoVC` on `lic build`; **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; intentional open: `sqrt_open_bound`; **G-lean** / **G-vc** still open — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
-- [ ] Phase 7d — Execution decorators — **partial (#150 7d-c):** `@vectorized` on `for` → `ArraySimdScope`; **7d-b** lanes=4; **def `@parallel(disjoint=)`** inherits to nested `parallel for` (policy); **open:** full MIR proc tags, Lean **G-par** proofs
+- [ ] Phase 7d — Execution decorators — **partial:** **7d-a/e done** (`decorator_exploits/` CI); **7d-b closed slice:** `@cpu`/`@parallel(disjoint=)`/`@vectorized`/`@gpu` MIR proc tags + `lic verify` telemetry; **7d-c partial:** `@vectorized` on `for` → `ArraySimdScope`; **open:** Lean **P-dec** / full **G-par** proofs — [G-dec](../verification/provability-gaps.md#g-dec)
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150, #155):** loop matmul + FMA horner; tier-1 advisory ≤1.2× (`matmul_naive`, `horner_pure_li`); **`check-tier1-li-vs-cpp.sh`** strict optional; **open:** remaining tier-1 slices, full float Lean Props
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, validate/explain/flatten-config, overlap reject, Bearer auth (C), `packages/li-log` (#158); **next:** Li `net.httpd` lib build + M1 ship gate Lean ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
@@ -493,7 +496,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 - **180** `li-tests` manifest entries (`run_all.sh --ci` after gap-closure)
 - **2e/2f partial:** `build/generated/AutoVC.lean` every `lic build`; **P-linalg** closed VCs (#151)
 - **7e partial:** 1d/2d float `@`, element-wise SIMD, pure-Li tier-1 `simd_dot` / `matmul_*` (#148)
-- **7d partial:** `@vectorized(lanes=4)` + scoped `for` (**#150**); structured `disjoint=` still open
+- **7d partial:** `@cpu`/`@parallel`/`@vectorized`/`@gpu` MIR proc tags + scoped `for` `@vectorized` (#150); Lean **P-dec** / **G-par** proofs open
 
 ### Full master plan — **not complete** (v2 backlog)
 
@@ -501,7 +504,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 |---------|-----------|----------------|
 | **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
 | **2i / 7e** | **G-math** | broadcast, loop-dot proof, remaining tier-1 strict rows |
-| **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
+| **7d** | **G-par**, **G-dec** | MIR proc tags closed slice; Lean **P-dec** / **G-par** proofs open — [provability-gaps](../verification/provability-gaps.md#g-dec) |
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |
 | **8b–8d v2** | — | Remote registry, full trust store; **blocked on PH-DB-4** ([PH-DB plan](ph-db-lidb-platform.md)) |

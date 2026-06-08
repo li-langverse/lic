@@ -14,7 +14,7 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 ## Status
 
-Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
+Parsing and policy checks run in `lic check`. **MIR proc tags** for `@cpu`, `@parallel(disjoint=)`, `@vectorized(lanes=N)`, and `@gpu` survive lowering; `lic verify` reports `mir_cpu_def=`, `mir_parallel_disjoint=`, `mir_vectorized_proc=`, and `mir_gpu_def=` telemetry. Loop-body `@vectorized` lowers to `ArraySimdScope`. Remaining work is tracked as **G-dec** (Lean **P-dec** proofs) and **G-par** (full disjoint proofs) in [provability-gaps](../verification/provability-gaps.md).
 
 ## Resource knobs (`lic build`)
 

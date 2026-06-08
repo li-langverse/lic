@@ -1,0 +1,4494 @@
+{
+  "generated_at": "2026-06-08T05:20:08.322451+00:00",
+  "csv": "/mnt/c/Users/Julian/Documents/Programming/li/benchmarks/results/latest.csv",
+  "registry": "/mnt/c/Users/Julian/Documents/Programming/li/lic/benchmarks/competitive/registry.toml",
+  "competitor_langs": [
+    "cpp",
+    "julia",
+    "rust"
+  ],
+  "threshold_vs_cpp": 1.2,
+  "sota_policy": "best_competitor_lang_excludes_li",
+  "summary": {
+    "benchmarks_with_li": 152,
+    "li_parallel_beats_sota": 24,
+    "li_parallel_within_threshold": 118,
+    "li_parallel_behind": 10,
+    "li_serial_beats_sota": 24
+  },
+  "entries": [
+    {
+      "benchmark": "advection_diffusion_2d",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "am_export_gcode_3mf",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "am_infill_grid_lines",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "am_infill_gyroid",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "am_offset_perimeters",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "am_plane_mesh_intersect",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "am_polygon_clip",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "am_slice_layers",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "am_support_tree",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "am_thermal_warp",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "am_toolpath_arcs",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "auto_bicycle_model",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "auto_dyn_rk4",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "auto_sensor_raycast",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0814
+      },
+      "competitors": {
+        "cpp": 0.0842,
+        "julia": 0.0831,
+        "rust": 0.0814
+      },
+      "li_serial": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0822,
+        "vs_best_sota": 0.9903,
+        "ratio_vs_cpp": 0.9762,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "bio_proteinmpnn",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "bio_rfdiffusion",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "bio_rosetta_energy",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "bio_rotamer_packing",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "cfd_fvm_face_flux",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "cfd_pimple",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "cfd_piso",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "cfd_simple",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "cfd_turbulence_k_epsilon",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "cfd_turbulence_k_omega_sst",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "cloth_swing",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0036
+      },
+      "competitors": {
+        "cpp": 0.0037,
+        "julia": 0.0038,
+        "rust": 0.0036
+      },
+      "li_serial": {
+        "wall_sec": 0.0037,
+        "vs_best_sota": 0.973,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0037,
+        "vs_best_sota": 0.973,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "combustion_passive",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0033
+      },
+      "competitors": {
+        "cpp": 0.0035,
+        "julia": 0.0033,
+        "rust": 0.0033
+      },
+      "li_serial": {
+        "wall_sec": 0.0038,
+        "vs_best_sota": 0.8684,
+        "ratio_vs_cpp": 1.0857,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0038,
+        "vs_best_sota": 0.8684,
+        "ratio_vs_cpp": 1.0857,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "double_pendulum",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.3141
+      },
+      "competitors": {
+        "cpp": 0.3195,
+        "julia": 0.3158,
+        "rust": 0.3141
+      },
+      "li_serial": {
+        "wall_sec": 0.3076,
+        "vs_best_sota": 1.0211,
+        "ratio_vs_cpp": 0.9628,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.3076,
+        "vs_best_sota": 1.0211,
+        "ratio_vs_cpp": 0.9628,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "drug_docking_diffusion",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "drug_docking_score_vina",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "drug_fep_alchemical",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "drug_litl_stages",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "drug_ml_retrain_loop",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "euler_fluid_2d",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0033
+      },
+      "competitors": {
+        "cpp": 0.0035,
+        "julia": 0.0034,
+        "rust": 0.0033
+      },
+      "li_serial": {
+        "wall_sec": 0.0038,
+        "vs_best_sota": 0.8684,
+        "ratio_vs_cpp": 1.0857,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0038,
+        "vs_best_sota": 0.8684,
+        "ratio_vs_cpp": 1.0857,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "fdtd_waveguide_2d",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0033
+      },
+      "competitors": {
+        "cpp": 0.0035,
+        "julia": 0.0034,
+        "rust": 0.0033
+      },
+      "li_serial": {
+        "wall_sec": 0.0037,
+        "vs_best_sota": 0.8919,
+        "ratio_vs_cpp": 1.0571,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0037,
+        "vs_best_sota": 0.8919,
+        "ratio_vs_cpp": 1.0571,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "fea_gauss_quadrature",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "fea_linear_elasticity",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "fea_mesh_tri_tet",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "fea_solver_direct",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "fea_solver_iterative",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "fea_stiffness_assembly",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "fft_1d_fixed",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0258
+      },
+      "competitors": {
+        "cpp": 0.0287,
+        "julia": 0.0274,
+        "rust": 0.0258
+      },
+      "li_serial": {
+        "wall_sec": 0.0266,
+        "vs_best_sota": 0.9699,
+        "ratio_vs_cpp": 0.9268,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0266,
+        "vs_best_sota": 0.9699,
+        "ratio_vs_cpp": 0.9268,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "harmonic_oscillator_chain",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0951
+      },
+      "competitors": {
+        "cpp": 0.1008,
+        "julia": 0.0951,
+        "rust": 0.0954
+      },
+      "li_serial": {
+        "wall_sec": 0.0962,
+        "vs_best_sota": 0.9886,
+        "ratio_vs_cpp": 0.9544,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0962,
+        "vs_best_sota": 0.9886,
+        "ratio_vs_cpp": 0.9544,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "heat_equation_2d",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "horner_pure_li",
+      "best_sota": {
+        "lang": "cpp",
+        "ecosystem": "cpp_openmp",
+        "wall_sec": 0.0005
+      },
+      "competitors": {
+        "cpp": 0.0005,
+        "julia": 0.0005,
+        "rust": 0.0005
+      },
+      "li_serial": {
+        "wall_sec": 0.0004,
+        "vs_best_sota": 1.25,
+        "ratio_vs_cpp": 0.8,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0004,
+        "vs_best_sota": 1.25,
+        "ratio_vs_cpp": 0.8,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "matmul_blocked",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0082
+      },
+      "competitors": {
+        "cpp": 0.0085,
+        "julia": 0.0082,
+        "rust": 0.0087
+      },
+      "li_serial": {
+        "wall_sec": 0.0004,
+        "vs_best_sota": 20.5,
+        "ratio_vs_cpp": 0.0471,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0004,
+        "vs_best_sota": 20.5,
+        "ratio_vs_cpp": 0.0471,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "matmul_naive",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0017
+      },
+      "competitors": {
+        "cpp": 0.0019,
+        "julia": 0.0017,
+        "rust": 0.0018
+      },
+      "li_serial": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "md_barostat_parrinello_rahman",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 2.0918
+      },
+      "competitors": {
+        "cpp": 2.1827,
+        "julia": 2.0918,
+        "rust": 2.172
+      },
+      "li_serial": {
+        "wall_sec": 2.1537,
+        "vs_best_sota": 0.9713,
+        "ratio_vs_cpp": 0.9867,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 2.1537,
+        "vs_best_sota": 0.9713,
+        "ratio_vs_cpp": 0.9867,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "md_constraints_rattle",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 2.0836
+      },
+      "competitors": {
+        "cpp": 2.1467,
+        "julia": 2.177,
+        "rust": 2.0836
+      },
+      "li_serial": {
+        "wall_sec": 2.1177,
+        "vs_best_sota": 0.9839,
+        "ratio_vs_cpp": 0.9865,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 2.1177,
+        "vs_best_sota": 0.9839,
+        "ratio_vs_cpp": 0.9865,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "md_constraints_shake",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 2.1335
+      },
+      "competitors": {
+        "cpp": 2.1709,
+        "julia": 2.1335,
+        "rust": 2.1644
+      },
+      "li_serial": {
+        "wall_sec": 2.0931,
+        "vs_best_sota": 1.0193,
+        "ratio_vs_cpp": 0.9642,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 2.0931,
+        "vs_best_sota": 1.0193,
+        "ratio_vs_cpp": 0.9642,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "md_energy_drift",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 2.1032
+      },
+      "competitors": {
+        "cpp": 2.2029,
+        "julia": 2.1032,
+        "rust": 2.2093
+      },
+      "li_serial": {
+        "wall_sec": 2.0285,
+        "vs_best_sota": 1.0368,
+        "ratio_vs_cpp": 0.9208,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 2.0285,
+        "vs_best_sota": 1.0368,
+        "ratio_vs_cpp": 0.9208,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "md_init_fcc_mb",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 2.1768
+      },
+      "competitors": {
+        "cpp": 2.2298,
+        "julia": 2.1768,
+        "rust": 2.2738
+      },
+      "li_serial": {
+        "wall_sec": 2.1506,
+        "vs_best_sota": 1.0122,
+        "ratio_vs_cpp": 0.9645,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 2.1506,
+        "vs_best_sota": 1.0122,
+        "ratio_vs_cpp": 0.9645,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "md_integrator_leapfrog",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 2.0462
+      },
+      "competitors": {
+        "cpp": 2.3174,
+        "julia": 2.0462,
+        "rust": 2.2378
+      },
+      "li_serial": {
+        "wall_sec": 2.1372,
+        "vs_best_sota": 0.9574,
+        "ratio_vs_cpp": 0.9222,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 2.1372,
+        "vs_best_sota": 0.9574,
+        "ratio_vs_cpp": 0.9222,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "md_integrator_verlet",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 2.1148
+      },
+      "competitors": {
+        "cpp": 2.2177,
+        "julia": 2.1148,
+        "rust": 2.1641
+      },
+      "li_serial": {
+        "wall_sec": 2.0802,
+        "vs_best_sota": 1.0166,
+        "ratio_vs_cpp": 0.938,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 2.0802,
+        "vs_best_sota": 1.0166,
+        "ratio_vs_cpp": 0.938,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "md_lennard_jones",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 1.1527
+      },
+      "competitors": {
+        "cpp": 1.1883,
+        "julia": 1.1527,
+        "rust": 1.1743
+      },
+      "li_serial": {
+        "wall_sec": 1.1833,
+        "vs_best_sota": 0.9741,
+        "ratio_vs_cpp": 0.9958,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 1.1833,
+        "vs_best_sota": 0.9741,
+        "ratio_vs_cpp": 0.9958,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "md_lj_cutoff_mic",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 1.1527
+      },
+      "competitors": {
+        "cpp": 1.1883,
+        "julia": 1.1527,
+        "rust": 1.1743
+      },
+      "li_serial": {
+        "wall_sec": 1.1833,
+        "vs_best_sota": 0.9741,
+        "ratio_vs_cpp": 0.9958,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 1.1833,
+        "vs_best_sota": 0.9741,
+        "ratio_vs_cpp": 0.9958,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "md_longrange_ewald",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 2.0912
+      },
+      "competitors": {
+        "cpp": 2.1596,
+        "julia": 2.1099,
+        "rust": 2.0912
+      },
+      "li_serial": {
+        "wall_sec": 2.0729,
+        "vs_best_sota": 1.0088,
+        "ratio_vs_cpp": 0.9599,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 2.0729,
+        "vs_best_sota": 1.0088,
+        "ratio_vs_cpp": 0.9599,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "md_longrange_pme",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 2.1425
+      },
+      "competitors": {
+        "cpp": 2.1835,
+        "julia": 2.2099,
+        "rust": 2.1425
+      },
+      "li_serial": {
+        "wall_sec": 2.1152,
+        "vs_best_sota": 1.0129,
+        "ratio_vs_cpp": 0.9687,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 2.1152,
+        "vs_best_sota": 1.0129,
+        "ratio_vs_cpp": 0.9687,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "md_neighbor_cell_list",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 2.1422
+      },
+      "competitors": {
+        "cpp": 2.1452,
+        "julia": 2.1422,
+        "rust": 2.1931
+      },
+      "li_serial": {
+        "wall_sec": 2.0638,
+        "vs_best_sota": 1.038,
+        "ratio_vs_cpp": 0.9621,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 2.0638,
+        "vs_best_sota": 1.038,
+        "ratio_vs_cpp": 0.9621,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "md_neighbor_verlet_skin",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 2.137
+      },
+      "competitors": {
+        "cpp": 2.2029,
+        "julia": 2.1728,
+        "rust": 2.137
+      },
+      "li_serial": {
+        "wall_sec": 1.9702,
+        "vs_best_sota": 1.0847,
+        "ratio_vs_cpp": 0.8944,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 1.9702,
+        "vs_best_sota": 1.0847,
+        "ratio_vs_cpp": 0.8944,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "md_oracle_external",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 2.1929
+      },
+      "competitors": {
+        "cpp": 2.268,
+        "julia": 2.1929,
+        "rust": 2.1951
+      },
+      "li_serial": {
+        "wall_sec": 2.0059,
+        "vs_best_sota": 1.0932,
+        "ratio_vs_cpp": 0.8844,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 2.0059,
+        "vs_best_sota": 1.0932,
+        "ratio_vs_cpp": 0.8844,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "md_thermostat_berendsen",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 2.0605
+      },
+      "competitors": {
+        "cpp": 2.0919,
+        "julia": 2.0605,
+        "rust": 2.1467
+      },
+      "li_serial": {
+        "wall_sec": 2.1192,
+        "vs_best_sota": 0.9723,
+        "ratio_vs_cpp": 1.0131,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 2.1192,
+        "vs_best_sota": 0.9723,
+        "ratio_vs_cpp": 1.0131,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "md_thermostat_nose_hoover",
+      "best_sota": {
+        "lang": "cpp",
+        "ecosystem": "cpp_openmp",
+        "wall_sec": 2.1232
+      },
+      "competitors": {
+        "cpp": 2.1232,
+        "julia": 2.1575,
+        "rust": 2.1905
+      },
+      "li_serial": {
+        "wall_sec": 2.1539,
+        "vs_best_sota": 0.9857,
+        "ratio_vs_cpp": 1.0145,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 2.1539,
+        "vs_best_sota": 0.9857,
+        "ratio_vs_cpp": 1.0145,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "ml_conv2d_forward",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0017
+      },
+      "competitors": {
+        "cpp": 0.0019,
+        "julia": 0.0017,
+        "rust": 0.0018
+      },
+      "li_serial": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "ml_mlp_forward",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0017
+      },
+      "competitors": {
+        "cpp": 0.0019,
+        "julia": 0.0017,
+        "rust": 0.0018
+      },
+      "li_serial": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "ml_mlp_train_step",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0017
+      },
+      "competitors": {
+        "cpp": 0.0019,
+        "julia": 0.0017,
+        "rust": 0.0018
+      },
+      "li_serial": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "nbody_barnes_hut",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 1.1527
+      },
+      "competitors": {
+        "cpp": 1.1883,
+        "julia": 1.1527,
+        "rust": 1.1743
+      },
+      "li_serial": {
+        "wall_sec": 1.1833,
+        "vs_best_sota": 0.9741,
+        "ratio_vs_cpp": 0.9958,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 1.1833,
+        "vs_best_sota": 0.9741,
+        "ratio_vs_cpp": 0.9958,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "nbody_gravity",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 1.4375
+      },
+      "competitors": {
+        "cpp": 1.4999,
+        "julia": 1.4375,
+        "rust": 1.4632
+      },
+      "li_serial": {
+        "wall_sec": 1.4468,
+        "vs_best_sota": 0.9936,
+        "ratio_vs_cpp": 0.9646,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 1.4468,
+        "vs_best_sota": 0.9936,
+        "ratio_vs_cpp": 0.9646,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "nbody_pairwise_gravity",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 1.1527
+      },
+      "competitors": {
+        "cpp": 1.1883,
+        "julia": 1.1527,
+        "rust": 1.1743
+      },
+      "li_serial": {
+        "wall_sec": 1.1833,
+        "vs_best_sota": 0.9741,
+        "ratio_vs_cpp": 0.9958,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 1.1833,
+        "vs_best_sota": 0.9741,
+        "ratio_vs_cpp": 0.9958,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "num_cg",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0085
+      },
+      "competitors": {
+        "cpp": 0.0092,
+        "julia": 0.0089,
+        "rust": 0.0085
+      },
+      "li_serial": {
+        "wall_sec": 0.0109,
+        "vs_best_sota": 0.7798,
+        "ratio_vs_cpp": 1.1848,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0109,
+        "vs_best_sota": 0.7798,
+        "ratio_vs_cpp": 1.1848,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      }
+    },
+    {
+      "benchmark": "num_cholesky",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0085
+      },
+      "competitors": {
+        "cpp": 0.009,
+        "julia": 0.0096,
+        "rust": 0.0085
+      },
+      "li_serial": {
+        "wall_sec": 0.0089,
+        "vs_best_sota": 0.9551,
+        "ratio_vs_cpp": 0.9889,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0089,
+        "vs_best_sota": 0.9551,
+        "ratio_vs_cpp": 0.9889,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "num_dot_axpy",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0017
+      },
+      "competitors": {
+        "cpp": 0.0019,
+        "julia": 0.0017,
+        "rust": 0.0018
+      },
+      "li_serial": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "num_eig_symmetric",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0085
+      },
+      "competitors": {
+        "cpp": 0.0092,
+        "julia": 0.0088,
+        "rust": 0.0085
+      },
+      "li_serial": {
+        "wall_sec": 0.0113,
+        "vs_best_sota": 0.7522,
+        "ratio_vs_cpp": 1.2283,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0113,
+        "vs_best_sota": 0.7522,
+        "ratio_vs_cpp": 1.2283,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      }
+    },
+    {
+      "benchmark": "num_fft_r2c",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0177
+      },
+      "competitors": {
+        "cpp": 0.019,
+        "julia": 0.0188,
+        "rust": 0.0177
+      },
+      "li_serial": {
+        "wall_sec": 0.0204,
+        "vs_best_sota": 0.8676,
+        "ratio_vs_cpp": 1.0737,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0204,
+        "vs_best_sota": 0.8676,
+        "ratio_vs_cpp": 1.0737,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "num_gmres",
+      "best_sota": {
+        "lang": "cpp",
+        "ecosystem": "cpp_openmp",
+        "wall_sec": 0.0005
+      },
+      "competitors": {
+        "cpp": 0.0005,
+        "julia": 0.0005,
+        "rust": 0.0005
+      },
+      "li_serial": {
+        "wall_sec": 0.0005,
+        "vs_best_sota": 1.0,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0005,
+        "vs_best_sota": 1.0,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "num_integ_euler",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0093
+      },
+      "competitors": {
+        "cpp": 0.0102,
+        "julia": 0.0095,
+        "rust": 0.0093
+      },
+      "li_serial": {
+        "wall_sec": 0.0121,
+        "vs_best_sota": 0.7686,
+        "ratio_vs_cpp": 1.1863,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0121,
+        "vs_best_sota": 0.7686,
+        "ratio_vs_cpp": 1.1863,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      }
+    },
+    {
+      "benchmark": "num_integ_rk4",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0094
+      },
+      "competitors": {
+        "cpp": 0.0102,
+        "julia": 0.0097,
+        "rust": 0.0094
+      },
+      "li_serial": {
+        "wall_sec": 0.0121,
+        "vs_best_sota": 0.7769,
+        "ratio_vs_cpp": 1.1863,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0121,
+        "vs_best_sota": 0.7769,
+        "ratio_vs_cpp": 1.1863,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      }
+    },
+    {
+      "benchmark": "num_integ_semi_implicit",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0093
+      },
+      "competitors": {
+        "cpp": 0.01,
+        "julia": 0.0098,
+        "rust": 0.0093
+      },
+      "li_serial": {
+        "wall_sec": 0.0119,
+        "vs_best_sota": 0.7815,
+        "ratio_vs_cpp": 1.19,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0119,
+        "vs_best_sota": 0.7815,
+        "ratio_vs_cpp": 1.19,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      }
+    },
+    {
+      "benchmark": "num_integ_symplectic",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0093
+      },
+      "competitors": {
+        "cpp": 0.01,
+        "julia": 0.0097,
+        "rust": 0.0093
+      },
+      "li_serial": {
+        "wall_sec": 0.0118,
+        "vs_best_sota": 0.7881,
+        "ratio_vs_cpp": 1.18,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0118,
+        "vs_best_sota": 0.7881,
+        "ratio_vs_cpp": 1.18,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      }
+    },
+    {
+      "benchmark": "num_integ_verlet",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0101
+      },
+      "competitors": {
+        "cpp": 0.0109,
+        "julia": 0.0104,
+        "rust": 0.0101
+      },
+      "li_serial": {
+        "wall_sec": 0.0129,
+        "vs_best_sota": 0.7829,
+        "ratio_vs_cpp": 1.1835,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0129,
+        "vs_best_sota": 0.7829,
+        "ratio_vs_cpp": 1.1835,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      }
+    },
+    {
+      "benchmark": "num_matmul_blocked",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0017
+      },
+      "competitors": {
+        "cpp": 0.0019,
+        "julia": 0.0017,
+        "rust": 0.0018
+      },
+      "li_serial": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "num_matmul_naive",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0017
+      },
+      "competitors": {
+        "cpp": 0.0019,
+        "julia": 0.0017,
+        "rust": 0.0018
+      },
+      "li_serial": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0018,
+        "vs_best_sota": 0.9444,
+        "ratio_vs_cpp": 0.9474,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "num_opt_bfgs",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0085
+      },
+      "competitors": {
+        "cpp": 0.0091,
+        "julia": 0.0088,
+        "rust": 0.0085
+      },
+      "li_serial": {
+        "wall_sec": 0.0109,
+        "vs_best_sota": 0.7798,
+        "ratio_vs_cpp": 1.1978,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0109,
+        "vs_best_sota": 0.7798,
+        "ratio_vs_cpp": 1.1978,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      }
+    },
+    {
+      "benchmark": "num_opt_line_search",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0107
+      },
+      "competitors": {
+        "cpp": 0.0117,
+        "julia": 0.0117,
+        "rust": 0.0107
+      },
+      "li_serial": {
+        "wall_sec": 0.0116,
+        "vs_best_sota": 0.9224,
+        "ratio_vs_cpp": 0.9915,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0116,
+        "vs_best_sota": 0.9224,
+        "ratio_vs_cpp": 0.9915,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "num_quadrature_gauss",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0085
+      },
+      "competitors": {
+        "cpp": 0.0093,
+        "julia": 0.009,
+        "rust": 0.0085
+      },
+      "li_serial": {
+        "wall_sec": 0.0103,
+        "vs_best_sota": 0.8252,
+        "ratio_vs_cpp": 1.1075,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0103,
+        "vs_best_sota": 0.8252,
+        "ratio_vs_cpp": 1.1075,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      }
+    },
+    {
+      "benchmark": "num_rng_pcg",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0173
+      },
+      "competitors": {
+        "cpp": 0.0186,
+        "julia": 0.018,
+        "rust": 0.0173
+      },
+      "li_serial": {
+        "wall_sec": 0.0205,
+        "vs_best_sota": 0.8439,
+        "ratio_vs_cpp": 1.1022,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0205,
+        "vs_best_sota": 0.8439,
+        "ratio_vs_cpp": 1.1022,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "num_root_newton",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0085
+      },
+      "competitors": {
+        "cpp": 0.0091,
+        "julia": 0.0088,
+        "rust": 0.0085
+      },
+      "li_serial": {
+        "wall_sec": 0.0111,
+        "vs_best_sota": 0.7658,
+        "ratio_vs_cpp": 1.2198,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0111,
+        "vs_best_sota": 0.7658,
+        "ratio_vs_cpp": 1.2198,
+        "speedup_vs_serial": 1.0,
+        "status": "behind"
+      }
+    },
+    {
+      "benchmark": "num_sparse_mv",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0143
+      },
+      "competitors": {
+        "cpp": 0.0158,
+        "julia": 0.0151,
+        "rust": 0.0143
+      },
+      "li_serial": {
+        "wall_sec": 0.0164,
+        "vs_best_sota": 0.872,
+        "ratio_vs_cpp": 1.038,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0164,
+        "vs_best_sota": 0.872,
+        "ratio_vs_cpp": 1.038,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "orbit_two_body",
+      "best_sota": {
+        "lang": "cpp",
+        "ecosystem": "cpp_openmp",
+        "wall_sec": 0.0036
+      },
+      "competitors": {
+        "cpp": 0.0036,
+        "julia": 0.0038,
+        "rust": 0.0036
+      },
+      "li_serial": {
+        "wall_sec": 0.0037,
+        "vs_best_sota": 0.973,
+        "ratio_vs_cpp": 1.0278,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0037,
+        "vs_best_sota": 0.973,
+        "ratio_vs_cpp": 1.0278,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "pde_cfl_timestep",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "pde_heat_explicit_2d",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "pde_heat_implicit_jacobi",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "pde_wave_1d_cfl",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_ase_calculator",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_ccsd",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_dft_grid_becke",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_dft_grid_lebedev",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_dft_hybrid_exchange",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_dft_scf_energy",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_dft_xc_gga",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_dft_xc_lda",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_dft_xc_mgga",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_dispersion_d3",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_ecp",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_eri_density_fitting",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_eri_os",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_eri_screening",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_geom_opt_bfgs",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_geom_opt_internal",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_grad_analytical",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_gto_eval",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_hf_canonical_ortho",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_hf_diis",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_hf_fock_build",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_job_queue_io",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_kinetic_integrals",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_mp2",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_nuclear_attraction",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_overlap_integrals",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_property_dipole",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_property_freq",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_scf_solver",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_tddft_casida",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_tddft_rpa",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "qm_xtb_gfn",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "ragdoll_chain",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0031
+      },
+      "competitors": {
+        "cpp": 0.0032,
+        "julia": 0.0034,
+        "rust": 0.0031
+      },
+      "li_serial": {
+        "wall_sec": 0.0035,
+        "vs_best_sota": 0.8857,
+        "ratio_vs_cpp": 1.0938,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0035,
+        "vs_best_sota": 0.8857,
+        "ratio_vs_cpp": 1.0938,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "reduce_sum",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.4292
+      },
+      "competitors": {
+        "cpp": 0.475,
+        "julia": 0.4292,
+        "rust": 0.438
+      },
+      "li_serial": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "rigid_body_stack",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0029
+      },
+      "competitors": {
+        "cpp": 0.003,
+        "julia": 0.0032,
+        "rust": 0.0029
+      },
+      "li_serial": {
+        "wall_sec": 0.0034,
+        "vs_best_sota": 0.8529,
+        "ratio_vs_cpp": 1.1333,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0034,
+        "vs_best_sota": 0.8529,
+        "ratio_vs_cpp": 1.1333,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "rigid_broadphase_bvh",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "rigid_broadphase_sap",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "rigid_constraints",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "rigid_contact_solver",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "rigid_semi_implicit",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1062
+      },
+      "competitors": {
+        "cpp": 0.1133,
+        "julia": 0.1064,
+        "rust": 0.1062
+      },
+      "li_serial": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1067,
+        "vs_best_sota": 0.9953,
+        "ratio_vs_cpp": 0.9417,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "robo_ik_jacobian",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1807
+      },
+      "competitors": {
+        "cpp": 0.1817,
+        "julia": 0.1818,
+        "rust": 0.1807
+      },
+      "li_serial": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "robo_multibody_step",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1807
+      },
+      "competitors": {
+        "cpp": 0.1817,
+        "julia": 0.1818,
+        "rust": 0.1807
+      },
+      "li_serial": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "robo_plan_prm",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1807
+      },
+      "competitors": {
+        "cpp": 0.1817,
+        "julia": 0.1818,
+        "rust": 0.1807
+      },
+      "li_serial": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "robo_plan_rrt",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1807
+      },
+      "competitors": {
+        "cpp": 0.1817,
+        "julia": 0.1818,
+        "rust": 0.1807
+      },
+      "li_serial": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "robo_traj_opt",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1807
+      },
+      "competitors": {
+        "cpp": 0.1817,
+        "julia": 0.1818,
+        "rust": 0.1807
+      },
+      "li_serial": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "schrodinger_1d_barrier",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0037
+      },
+      "competitors": {
+        "cpp": 0.0039,
+        "julia": 0.0037,
+        "rust": 0.0037
+      },
+      "li_serial": {
+        "wall_sec": 0.0039,
+        "vs_best_sota": 0.9487,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0039,
+        "vs_best_sota": 0.9487,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "simd_dot",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.0932
+      },
+      "competitors": {
+        "cpp": 0.1166,
+        "julia": 0.0932,
+        "rust": 0.1117
+      },
+      "li_serial": {
+        "wall_sec": 0.096,
+        "vs_best_sota": 0.9708,
+        "ratio_vs_cpp": 0.8233,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.096,
+        "vs_best_sota": 0.9708,
+        "ratio_vs_cpp": 0.8233,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "sph_dam_break_2d",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.9566
+      },
+      "competitors": {
+        "cpp": 1.0041,
+        "julia": 0.9566,
+        "rust": 0.9704
+      },
+      "li_serial": {
+        "wall_sec": 0.9576,
+        "vs_best_sota": 0.999,
+        "ratio_vs_cpp": 0.9537,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.9576,
+        "vs_best_sota": 0.999,
+        "ratio_vs_cpp": 0.9537,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "three_body",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.1807
+      },
+      "competitors": {
+        "cpp": 0.1817,
+        "julia": 0.1818,
+        "rust": 0.1807
+      },
+      "li_serial": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1817,
+        "vs_best_sota": 0.9945,
+        "ratio_vs_cpp": 1.0,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    },
+    {
+      "benchmark": "three_body_pure",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.1708
+      },
+      "competitors": {
+        "cpp": 0.1759,
+        "julia": 0.1708,
+        "rust": 0.171
+      },
+      "li_serial": {
+        "wall_sec": 0.1705,
+        "vs_best_sota": 1.0018,
+        "ratio_vs_cpp": 0.9693,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1705,
+        "vs_best_sota": 1.0018,
+        "ratio_vs_cpp": 0.9693,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "viz_colormap",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.4292
+      },
+      "competitors": {
+        "cpp": 0.475,
+        "julia": 0.4292,
+        "rust": 0.438
+      },
+      "li_serial": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "viz_decimate",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.4292
+      },
+      "competitors": {
+        "cpp": 0.475,
+        "julia": 0.4292,
+        "rust": 0.438
+      },
+      "li_serial": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "viz_inspector_panels",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.4292
+      },
+      "competitors": {
+        "cpp": 0.475,
+        "julia": 0.4292,
+        "rust": 0.438
+      },
+      "li_serial": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "viz_linked_views",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.4292
+      },
+      "competitors": {
+        "cpp": 0.475,
+        "julia": 0.4292,
+        "rust": 0.438
+      },
+      "li_serial": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "viz_marching_cubes",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.4292
+      },
+      "competitors": {
+        "cpp": 0.475,
+        "julia": 0.4292,
+        "rust": 0.438
+      },
+      "li_serial": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "viz_pipeline_graph",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.4292
+      },
+      "competitors": {
+        "cpp": 0.475,
+        "julia": 0.4292,
+        "rust": 0.438
+      },
+      "li_serial": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "viz_resample",
+      "best_sota": {
+        "lang": "julia",
+        "ecosystem": "julia",
+        "wall_sec": 0.4292
+      },
+      "competitors": {
+        "cpp": 0.475,
+        "julia": 0.4292,
+        "rust": 0.438
+      },
+      "li_serial": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.4287,
+        "vs_best_sota": 1.0012,
+        "ratio_vs_cpp": 0.9025,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "wave_equation_1d",
+      "best_sota": {
+        "lang": "cpp",
+        "ecosystem": "cpp_openmp",
+        "wall_sec": 1.2387
+      },
+      "competitors": {
+        "cpp": 1.2387,
+        "julia": 1.2837,
+        "rust": 1.2677
+      },
+      "li_serial": {
+        "wall_sec": 1.2046,
+        "vs_best_sota": 1.0283,
+        "ratio_vs_cpp": 0.9725,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 1.2046,
+        "vs_best_sota": 1.0283,
+        "ratio_vs_cpp": 0.9725,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "wave_equation_2d",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.2035
+      },
+      "competitors": {
+        "cpp": 0.2117,
+        "julia": 0.2056,
+        "rust": 0.2035
+      },
+      "li_serial": {
+        "wall_sec": 0.1977,
+        "vs_best_sota": 1.0293,
+        "ratio_vs_cpp": 0.9339,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      },
+      "li_parallel": {
+        "wall_sec": 0.1977,
+        "vs_best_sota": 1.0293,
+        "ratio_vs_cpp": 0.9339,
+        "speedup_vs_serial": 1.0,
+        "status": "beats_sota"
+      }
+    },
+    {
+      "benchmark": "wind_field_bc",
+      "best_sota": {
+        "lang": "rust",
+        "ecosystem": "rust_ndarray_rayon",
+        "wall_sec": 0.0033
+      },
+      "competitors": {
+        "cpp": 0.0035,
+        "julia": 0.0034,
+        "rust": 0.0033
+      },
+      "li_serial": {
+        "wall_sec": 0.0039,
+        "vs_best_sota": 0.8462,
+        "ratio_vs_cpp": 1.1143,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      },
+      "li_parallel": {
+        "wall_sec": 0.0039,
+        "vs_best_sota": 0.8462,
+        "ratio_vs_cpp": 1.1143,
+        "speedup_vs_serial": 1.0,
+        "status": "within_threshold"
+      }
+    }
+  ],
+  "ph_ml_competitive": {
+    "generated_at": "2026-06-06T18:41:49Z",
+    "suite": "ph-ml-competitive",
+    "registry_path": "/mnt/c/Users/Julian/Documents/Programming/li/.worktrees/lic-stage9-stretch/benchmarks/competitive/ph-ml.toml",
+    "registry_schema": "li_ph_ml_competitive_v1",
+    "rows": [
+      {
+        "id": "matmul_lkir",
+        "kernel": "ml.lkir.matmul_f32",
+        "workload_class": "tier3_cpu",
+        "workload_note": "32x32 LKIR matmul (tier3) when matmul-32 bench executes; else 4x4 pilot",
+        "executed": true,
+        "li": {
+          "id": "li",
+          "incumbent": "Li native",
+          "workload_class": "tier3_cpu",
+          "executed": true,
+          "cpu_sec": 0.02102,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 1.0,
+          "workload": null
+        },
+        "competitors": [
+          {
+            "id": "cpp_openmp",
+            "incumbent": "C++/OpenMP matmul_blocked",
+            "workload_class": "reference_native",
+            "executed": true,
+            "cpu_sec": 0.000215,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": 0.010228,
+            "note": "OpenMP when -fopenmp available; else serial -O3",
+            "framework_version": "/usr/bin/g++",
+            "device": "cpu",
+            "workload_size": 4,
+            "workload": "matmul_4x4_f32"
+          },
+          {
+            "id": "rust_ndarray_rayon",
+            "incumbent": "Rust/ndarray+rayon",
+            "workload_class": "shared_c_kernel",
+            "executed": false,
+            "cpu_sec": null,
+            "validity_gate_pass": false,
+            "validity_ratio": 0.0,
+            "ratio_vs_li": null,
+            "note": "rustc not found",
+            "framework_version": null,
+            "device": "cpu",
+            "workload_size": 4,
+            "workload": "matmul_4x4_f32"
+          },
+          {
+            "id": "python_numpy",
+            "incumbent": "NumPy BLAS matmul",
+            "workload_class": "blas_labeled",
+            "executed": true,
+            "cpu_sec": 1e-06,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": 4.8e-05,
+            "note": "numpy pinned",
+            "framework_version": "2.2.6",
+            "device": "cpu",
+            "workload_size": 4,
+            "workload": "matmul_4x4_f32"
+          },
+          {
+            "id": "pytorch_cpu",
+            "incumbent": "PyTorch CPU matmul",
+            "workload_class": "blas_labeled",
+            "executed": true,
+            "cpu_sec": 6e-06,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": 0.000285,
+            "note": "torch pinned",
+            "framework_version": "2.6.0+cu124",
+            "device": "cpu",
+            "workload_size": 4,
+            "workload": "matmul_4x4_f32"
+          },
+          {
+            "id": "pytorch_cuda",
+            "incumbent": "PyTorch CUDA matmul",
+            "workload_class": "gpu_labeled",
+            "executed": true,
+            "cpu_sec": 7.9e-05,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": 0.003758,
+            "note": "optional GPU",
+            "framework_version": "2.6.0+cu124",
+            "device": "cuda",
+            "workload_size": 4,
+            "workload": "matmul_4x4_f32"
+          },
+          {
+            "id": "jax_cpu",
+            "incumbent": "JAX CPU matmul",
+            "workload_class": "blas_labeled",
+            "executed": true,
+            "cpu_sec": 0.000112,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": 0.005328,
+            "note": "jax pinned",
+            "framework_version": "0.5.3",
+            "device": "cpu",
+            "workload_size": 4,
+            "workload": "matmul_4x4_f32"
+          },
+          {
+            "id": "tensorflow_cpu",
+            "incumbent": "TensorFlow CPU matmul",
+            "workload_class": "blas_labeled",
+            "executed": false,
+            "cpu_sec": null,
+            "validity_gate_pass": false,
+            "validity_ratio": 0.0,
+            "ratio_vs_li": null,
+            "note": "tensorflow not installed (optional Wave 8 dep)",
+            "framework_version": null,
+            "device": "cpu",
+            "workload_size": 4,
+            "workload": "matmul_4x4_f32"
+          },
+          {
+            "id": "triton_cuda",
+            "incumbent": "Triton CUDA matmul kernel",
+            "workload_class": "gpu_labeled",
+            "executed": true,
+            "cpu_sec": 9.1e-05,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": 0.004329,
+            "note": "GPU-only",
+            "framework_version": "3.2.0",
+            "device": "cuda",
+            "workload_size": 4,
+            "workload": "matmul_4x4_f32"
+          }
+        ]
+      },
+      {
+        "id": "mlp_forward",
+        "kernel": "ml.mlp_forward_f32",
+        "workload_class": "tier3_cpu",
+        "workload_note": "2-2-1 f32 MLP forward; tier3 when pilot_backward train step executes",
+        "executed": true,
+        "li": {
+          "id": "li",
+          "incumbent": "Li native",
+          "workload_class": "tier3_cpu",
+          "executed": true,
+          "cpu_sec": 1.21243,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 1.0,
+          "workload": null
+        },
+        "competitors": [
+          {
+            "id": "cpp_openmp",
+            "incumbent": "C++ MLP forward",
+            "workload_class": "reference_native",
+            "executed": true,
+            "cpu_sec": 1.5e-05,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": 1.2e-05,
+            "note": "C++ serial MLP 2-2-1 (OpenMP optional deferred)",
+            "framework_version": "/usr/bin/g++",
+            "device": "cpu",
+            "workload_size": null,
+            "workload": "mlp_forward_2_2_1_f32"
+          },
+          {
+            "id": "python_numpy",
+            "incumbent": "NumPy manual MLP",
+            "workload_class": "blas_labeled",
+            "executed": true,
+            "cpu_sec": 2e-06,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": 2e-06,
+            "note": "Wave 10 NumPy MLP",
+            "framework_version": "2.2.6",
+            "device": "cpu",
+            "workload_size": null,
+            "workload": "mlp_forward_2_2_1_f32"
+          },
+          {
+            "id": "pytorch_cpu",
+            "incumbent": "PyTorch CPU MLP forward",
+            "workload_class": "blas_labeled",
+            "executed": true,
+            "cpu_sec": 1.1e-05,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": 9e-06,
+            "note": "torch pinned",
+            "framework_version": "2.6.0+cu124",
+            "device": "cpu",
+            "workload_size": null,
+            "workload": "mlp_forward_2_2_1_f32"
+          }
+        ]
+      },
+      {
+        "id": "async_env_collect",
+        "kernel": "ml.rl.async_env_collect",
+        "workload_class": "pilot",
+        "executed": true,
+        "li": {
+          "id": "li",
+          "incumbent": "Li native",
+          "workload_class": "pilot",
+          "executed": true,
+          "cpu_sec": 1.194728,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 1.0,
+          "workload": "async_env_collect_4",
+          "worker": "thread_pool",
+          "worker_count": 4,
+          "worker_backend": "pthread_pool",
+          "parallelism_model": "pthread_pool_env_rewards",
+          "env_semantics": "cartpole_v1_stub_x4"
+        },
+        "competitors": [
+          {
+            "id": "sb3_vecenv",
+            "incumbent": "SB3 SubprocVecEnv",
+            "workload_class": "stub",
+            "executed": true,
+            "cpu_sec": 1.649153,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": 1.380359,
+            "note": "SubprocVecEnv CartPole-v1 x4 (Wave 13 T5)",
+            "framework_version": "2.5.0",
+            "device": "cpu",
+            "workload_size": 4,
+            "workload": "async_env_collect_4"
+          },
+          {
+            "id": "ray_rllib",
+            "incumbent": "Ray RLlib RolloutWorker",
+            "workload_class": "stub",
+            "executed": true,
+            "cpu_sec": 0.078364,
+            "validity_gate_pass": true,
+            "validity_ratio": 1.0,
+            "ratio_vs_li": null,
+            "note": "Ray core task fallback (RLlib deferred: `rollouts` has been deprecated. Use `AlgorithmConfig.env_runners(..)` instead.)",
+            "framework_version": "2.44.1",
+            "device": "cpu",
+            "workload_size": 4,
+            "workload": "async_env_collect_4"
+          }
+        ]
+      },
+      {
+        "id": "llm_forward",
+        "kernel": "llm.forward_stub",
+        "workload_class": "tier3_cpu",
+        "executed": true,
+        "li": {
+          "id": "li",
+          "incumbent": "Li native",
+          "workload_class": "tier3_cpu",
+          "executed": true,
+          "cpu_sec": 0.000739,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 1.0,
+          "workload": null
+        },
+        "competitors": [
+          {
+            "id": "llamacpp",
+            "incumbent": "llama.cpp",
+            "workload_class": "reference_native",
+            "executed": false,
+            "cpu_sec": null,
+            "validity_gate_pass": false,
+            "validity_ratio": 0.0,
+            "ratio_vs_li": null,
+            "note": "llama-cli not installed",
+            "framework_version": null,
+            "device": "cpu",
+            "workload_size": null,
+            "workload": "llm_forward_fixture"
+          },
+          {
+            "id": "vllm",
+            "incumbent": "vLLM",
+            "workload_class": "gpu_labeled",
+            "executed": false,
+            "cpu_sec": null,
+            "validity_gate_pass": false,
+            "validity_ratio": 0.0,
+            "ratio_vs_li": null,
+            "note": "vllm not installed",
+            "framework_version": null,
+            "device": null,
+            "workload_size": null,
+            "workload": "llm_forward_fixture"
+          },
+          {
+            "id": "pytorch_transformers",
+            "incumbent": "transformers",
+            "workload_class": "blas_labeled",
+            "executed": false,
+            "cpu_sec": null,
+            "validity_gate_pass": false,
+            "validity_ratio": 0.0,
+            "ratio_vs_li": null,
+            "note": "transformers or torch not installed",
+            "framework_version": null,
+            "device": "cpu",
+            "workload_size": null,
+            "workload": "llm_forward_fixture"
+          }
+        ]
+      },
+      {
+        "id": "llm_transformer_multilayer",
+        "kernel": "llm.forward_multilayer_matmul",
+        "workload_class": "tier3_cpu",
+        "workload_note": "2-layer transformer forward via ml_matmul_f32; Li vs Python reference parity",
+        "executed": true,
+        "li": {
+          "id": "li",
+          "incumbent": "Li native",
+          "workload_class": "tier3_cpu",
+          "executed": true,
+          "cpu_sec": null,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 1.0,
+          "workload": null,
+          "reference_top_id": 0,
+          "li_top_id": 0,
+          "hf_executed": false
+        },
+        "competitors": [
+          {
+            "id": "pytorch_transformers",
+            "incumbent": "transformers tiny-GPT2 smoke",
+            "workload_class": "blas_labeled",
+            "executed": false,
+            "cpu_sec": null,
+            "validity_gate_pass": false,
+            "validity_ratio": 0.0,
+            "ratio_vs_li": null,
+            "note": "transformers or torch not installed",
+            "framework_version": null,
+            "device": "cpu",
+            "workload_size": null,
+            "workload": "llm_forward_fixture"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -8,6 +8,9 @@ def main() -> int
 =
   var md_oracle: float = sim_scientific_oracle_checksum_md()
   var heat_oracle: float = sim_scientific_oracle_checksum_heat()
+  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
+  var fea_oracle: float = sim_scientific_oracle_checksum_fea()
+  var qm_oracle: float = sim_scientific_oracle_checksum_qm()
   var md105: SimRunResult = run_algo(105, 1)
   if run_result_ok(md105) != 1:
     return 1
@@ -17,15 +20,33 @@ def main() -> int
     return 3
   if md105.checksum == 1.001:
     return 4
-  var heat210: SimRunResult = run_algo(210, 2)
-  if run_result_ok(heat210) != 1:
+  var heat203: SimRunResult = run_algo(203, 2)
+  if run_result_ok(heat203) != 1:
     return 5
-  if heat210.algo_id != 210:
+  if heat203.algo_id != 203:
     return 6
-  if heat210.checksum != heat_oracle:
+  if heat203.checksum != heat_oracle:
     return 7
-  if heat210.checksum == 1.001:
+  if heat203.checksum == 1.001:
     return 8
+  var cfd210: SimRunResult = run_algo(210, 2)
+  if run_result_ok(cfd210) != 1:
+    return 32
+  if cfd210.algo_id != 210:
+    return 33
+  if cfd210.checksum != cfd_oracle:
+    return 34
+  if cfd210.checksum == 1.001:
+    return 35
+  var fea214: SimRunResult = run_algo(214, 1)
+  if run_result_ok(fea214) != 1:
+    return 36
+  if fea214.algo_id != 214:
+    return 37
+  if fea214.checksum != fea_oracle:
+    return 38
+  if fea214.checksum == 1.001:
+    return 39
   var rigid302: SimRunResult = run_algo(302, 0)
   if run_result_ok(rigid302) != 1:
     return 9
@@ -36,8 +57,10 @@ def main() -> int
   var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(qm418) != 1:
     return 12
-  if qm418.checksum != 1.001:
+  if qm418.checksum != qm_oracle:
     return 13
+  if qm418.checksum == 1.001:
+    return 40
   var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
   if echem_oracle <= 0.0:
     return 14

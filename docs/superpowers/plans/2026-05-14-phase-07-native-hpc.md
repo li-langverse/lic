@@ -61,17 +61,29 @@
 - `scripts/ci.sh`: log `race_shared_memory` and **`decorator_exploits`** explicitly
 - TSan nightly (post-7b): optional `memory.yml` job
 
+### Exit gate — G-* register
+
+Register: [provability-gaps.md](../../verification/provability-gaps.md). Rows below cite applicable **G-*** IDs at phase exit (or **N/A**).
+
+| G-* ID | Applicability | Exit-gate evidence (today) | Notes |
+|--------|---------------|------------------------------|-------|
+| **G-par** | **Yes** | `li-tests/race_shared_memory/`, `good_disjoint_parallel.li` | **7b** — Lean proofs open |
+| **G-dec** | **Yes** | `li-tests/decorators/`, `decorator_exploits/` | **7d** — elaboration partial |
+| **G-math** | **Yes** | `li-tests/math_linalg/`, tier-1 advisory benches | **7e** — see [ph7e plan](2026-05-30-ph7e-tier1-red-benchmark-honesty.md) |
+| **G-gpu** | **Yes** | `ml_gpu_device_buffer.li`, `check-mir-gpu-decorator.sh` | Partial address-space proofs |
+| **G-lean** | **Partial cite** | P-linalg / P-par open in **7e** row | Cross-link only; closure is **2f** |
+
 ## Exit gate (phase complete)
 
 **7a–7c (Phase 7 core):**
 
-- [x] `./li-tests/run_all.sh simd race_shared_memory`
+- [x] `./li-tests/run_all.sh simd race_shared_memory` — **G-par** partial
 - [x] `bench.py --tier 0` in CI; tier 1/2 perf runs advisory via `bench.py`
 - [x] Fuzz workflow present (`.github/workflows/fuzz.yml`); `scripts/export-fuzz-status.sh`
 
 **7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):**
 
-- [x] `./li-tests/run_all.sh decorators decorator_exploits`
+- [x] `./li-tests/run_all.sh decorators decorator_exploits` — **G-dec** partial
 - [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
 - [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds (`compiler/fuzz/corpus/seed_decorators`)
 
@@ -81,12 +93,12 @@
 
 | Sub | Task | Exit |
 |-----|------|------|
-| **7e-a** | Lower `*`, `+`, `dot`, `sum` to 7a SIMD MIR | **partial:** `simd_dot` pure-Li `a @ b` (#148) |
-| **7e-b** | Lower `A @ B` for Tier 1 matmul benches | **partial:** `matmul_naive` / `matmul_blocked` pure-Li; **≤1.2× C++** advisory |
+| **7e-a** | Lower `*`, `+`, `dot`, `sum` to 7a SIMD MIR | **partial:** `simd_dot` pure-Li `a @ b` (#148) — **G-math** |
+| **7e-b** | Lower `A @ B` for Tier 1 matmul benches | **partial:** `matmul_naive` / `matmul_blocked` pure-Li; **≤1.2× C++** advisory — **G-math** |
 | **7e-c** | `docs/language/linear-algebra.md`, `docs/guide/math-hpc-examples.md` | **done** on `main` |
-| **7e-d/e** | `ArrayDotF64` / `ArrayBinOpF64` gather SIMD | **partial** on `main` (#148) |
+| **7e-d/e** | `ArrayDotF64` / `ArrayBinOpF64` gather SIMD | **partial** on `main` (#148) — **G-math** |
 | **2f / P-linalg** | Contract corpus for dot/sum/matmul entry | **partial:** #151 closed + loop open — **G-math**, **G-lean** |
 
-- [x] `./li-tests/run_all.sh math_linalg`
+- [x] `./li-tests/run_all.sh math_linalg` — **G-math** partial
 - [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`)
 - [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard)

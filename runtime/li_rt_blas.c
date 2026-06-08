@@ -67,7 +67,15 @@ static void li_rt_blas_init_once(void) {
   p_cblas_dgemm = (cblas_dgemm_fn)li_rt_dlsym(g_openblas_lib, "cblas_dgemm");
   if (p_cblas_dgemm != NULL) {
     g_blas_ready = 1;
+    /* Tiny GEMMs pay OpenBLAS thread/dispatch overhead; keep user override if set. */
+    (void)setenv("OPENBLAS_NUM_THREADS", "1", 0);
   }
+}
+
+/** Li codegen stores `float` as f64; skip BLAS below 16³ — 8×8 pilot is faster on @vectorized CPU. */
+static int li_rt_blas_size_ok(int32_t m, int32_t n, int32_t k) {
+  const int64_t mnk = (int64_t)m * (int64_t)n * (int64_t)k;
+  return mnk >= 4096;
 }
 
 int32_t li_rt_blas_sgemm_ready(void) {
@@ -83,7 +91,11 @@ int32_t li_rt_blas_sgemm_f32(int32_t m, int32_t n, int32_t k, int32_t ld, double
   if (m <= 0 || n <= 0 || k <= 0 || ld <= 0) {
     return 1;
   }
-  if (m > ld || n > ld || k > ld) {
+  /* Row-major: lda/ldb/ldc must cover inner/outer dims (shared ld for square pilot tiles). */
+  if (k > ld || n > ld) {
+    return 1;
+  }
+  if (!li_rt_blas_size_ok(m, n, k)) {
     return 1;
   }
   li_rt_blas_init_once();

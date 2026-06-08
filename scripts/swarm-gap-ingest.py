@@ -223,11 +223,33 @@ def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> in
     return added
 
 
+def _verticals_toml_candidates() -> list[Path]:
+    competitive = os.environ.get("BENCHMARKS_COMPETITIVE")
+    candidates: list[Path] = []
+    if competitive:
+        candidates.append(Path(competitive) / "verticals.toml")
+    candidates.extend(
+        [
+            BENCHMARKS / "benchmarks" / "workloads" / "competitive" / "verticals.toml",
+            BENCHMARKS / "competitive" / "verticals.toml",
+            LANGVERSE / "benchmarks" / "workloads" / "competitive" / "verticals.toml",
+            ROOT / "benchmarks" / "competitive" / "verticals.toml",
+        ]
+    )
+    seen: set[Path] = set()
+    out: list[Path] = []
+    for p in candidates:
+        rp = p.resolve()
+        if rp in seen:
+            continue
+        seen.add(rp)
+        out.append(rp)
+    return out
+
+
 def ingest_verticals_stubs(gaps_by_id: dict[str, dict]) -> int:
-    vert = Path(os.environ["BENCHMARKS_COMPETITIVE"]) / "verticals.toml"
-    if not vert.is_file():
-        vert = Path(os.environ.get("BENCHMARKS_COMPETITIVE", str(LANGVERSE / "benchmarks/workloads/competitive"))/verticals.toml"
-    if not vert.is_file():
+    vert = next((p for p in _verticals_toml_candidates() if p.is_file()), None)
+    if vert is None:
         return 0
     text = vert.read_text(encoding="utf-8")
     added = 0

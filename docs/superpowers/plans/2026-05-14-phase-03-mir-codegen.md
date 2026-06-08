@@ -100,6 +100,8 @@ def main() -> int =
 
 ### Phase 3 exit gate
 
-- [x] Native binary from minimal proc
+Gap IDs: [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-meta](../../verification/provability-gaps.md#g-meta)
+
+- [x] Native binary from minimal proc — codegen path live; **G-meta** compiler ≡ Lean semantics **Missing** (documented limit)
 - [x] `-O2` flag forwarded to clang in `--release` (C++: `-O3 -march=native` in `compile.cpp` when `--release`)
-- [x] Bounds check calls present in IR for dynamic index
+- [x] Bounds check calls present in IR for dynamic index — **G-bnd** release refinement path **Partial** (`check_release_bounds_ir.sh`)

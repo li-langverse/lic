@@ -538,6 +538,16 @@ GPU side (with numeric Phase 3):
 | `hostbuffer[T]` | Pinned/pageable host mirror |
 | `ndview[Shape, T]` | View with strides (non-contiguous) |
 
+**Memory and execution spaces (#110):** Kokkos-class placement tags for tier-2 physics. Spec: [2026-06-08-li-tier2-memory-execution-spaces.md](2026-06-08-li-tier2-memory-execution-spaces.md).
+
+| Enum | Variants (v1) | Maps to |
+|------|---------------|---------|
+| `MemorySpace` | `Host`, `Device`, `Unified` | `hostbuffer` / `devicebuffer` / HBW alias |
+| `ExecutionSpace` | `Serial`, `OpenMP`, `Threads`; `SYCL`/`Cuda`/`HIP` reserved | `@cpu`/`@gpu` decorators, `parallel for` |
+| `View[T, Space, Layout]` | Alloc → use → destroy in one space unless `@sync_*` | `grid` / `tensor` with static space tag |
+
+Compile-only stub: `import std.memory.spaces` (`std/memory/spaces.li`). No implicit DualView — host mirror is an explicit `hostbuffer` pair.
+
 ---
 
 ### Phase 4 — advanced & domain structures

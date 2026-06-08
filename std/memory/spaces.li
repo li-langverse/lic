@@ -1,0 +1,90 @@
+# std.memory.spaces — Phase 3 HPC memory + execution space enums (WP0-B compile-only).
+#
+# Spec: docs/superpowers/specs/2026-06-08-li-tier2-memory-execution-spaces.md
+# Issue: #110 — Kokkos-class View lifecycle; no runtime until #15/#116.
+#
+# Import: `import std.memory.spaces`
+
+# MemorySpace tag constants (REQ-MS-01)
+type MemorySpaceTag = object
+  public id: int
+
+type ExecutionSpaceTag = object
+  public id: int
+
+# View shell — layout ABI deferred to #128
+type ViewShell = object
+  public len: int
+  public space_id: int
+
+def memory_spaces_std_tag() -> int
+  requires true
+  ensures result == 110
+  decreases 0
+=
+  return 110
+
+def memory_space_host() -> MemorySpaceTag
+  requires true
+  ensures result.id == 0
+  decreases 0
+=
+  var t: MemorySpaceTag
+  t.id = 0
+  return t
+
+def memory_space_device() -> MemorySpaceTag
+  requires true
+  ensures result.id == 1
+  decreases 0
+=
+  var t: MemorySpaceTag
+  t.id = 1
+  return t
+
+def memory_space_unified() -> MemorySpaceTag
+  requires true
+  ensures result.id == 2
+  decreases 0
+=
+  var t: MemorySpaceTag
+  t.id = 2
+  return t
+
+def execution_space_serial() -> ExecutionSpaceTag
+  requires true
+  ensures result.id == 0
+  decreases 0
+=
+  var t: ExecutionSpaceTag
+  t.id = 0
+  return t
+
+def execution_space_openmp() -> ExecutionSpaceTag
+  requires true
+  ensures result.id == 1
+  decreases 0
+=
+  var t: ExecutionSpaceTag
+  t.id = 1
+  return t
+
+def execution_space_threads() -> ExecutionSpaceTag
+  requires true
+  ensures result.id == 2
+  decreases 0
+=
+  var t: ExecutionSpaceTag
+  t.id = 2
+  return t
+
+def view_shell_new(space: MemorySpaceTag, len: int) -> ViewShell
+  requires true
+  ensures result.len == len
+  ensures result.space_id == space.id
+  decreases 0
+=
+  var v: ViewShell
+  v.len = len
+  v.space_id = space.id
+  return v

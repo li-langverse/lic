@@ -1,0 +1,20 @@
+import std.memory.spaces
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var tag: int = memory_spaces_std_tag()
+  if tag != 110:
+    return 1
+  var host: MemorySpaceTag = memory_space_host()
+  var dev: MemorySpaceTag = memory_space_device()
+  var uni: MemorySpaceTag = memory_space_unified()
+  var omp: ExecutionSpaceTag = execution_space_openmp()
+  var v: ViewShell = view_shell_new(host, 256)
+  if host.id != 0 or dev.id != 1 or uni.id != 2 or omp.id != 1:
+    return 2
+  if v.space_id != 0 or v.len != 256:
+    return 3
+  return 0

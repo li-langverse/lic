@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "schema": "tui-a11y-export-v1",
+  "tool": "tui-app-fixture",
+  "command": "export_a11y",
+  "ok": true,
+  "screen": {
+    "title": "Li TUI demo",
+    "status": "ok",
+    "focus": "main_panel",
+    "headings": [
+      { "level": 1, "text": "Li TUI demo" },
+      { "level": 2, "text": "Help" }
+    ],
+    "sections": [
+      {
+        "kind": "text",
+        "label": "Status",
+        "items": ["Ready — press h for help, q to quit."]
+      },
+      {
+        "kind": "bindings",
+        "label": "Keybindings",
+        "items": [
+          "h: help — Show help overlay",
+          "q: quit — Exit application",
+          "j: focus_next — Move focus down",
+          "k: focus_prev — Move focus up"
+        ]
+      }
+    ],
+    "bindings": [
+      { "key": "h", "action": "help", "description": "Show help overlay" },
+      { "key": "q", "action": "quit", "description": "Exit application" },
+      { "key": "j", "action": "focus_next", "description": "Move focus down" },
+      { "key": "k", "action": "focus_prev", "description": "Move focus up" }
+    ],
+    "errors": []
+  }
+}

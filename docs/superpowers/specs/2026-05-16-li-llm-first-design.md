@@ -46,6 +46,46 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 | `scripts/lic-fix-suggest.sh` | **Stub** — jq hints from JSON |
 | Compact test manifest slice for agents | **Implemented** — `scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json` |
 | `lic edit --patch=json` | **Spec only** — compact edit IR |
+| TUI a11y export (plain + JSON) | **Spec** — `docs/schemas/tui-a11y-export-v1.json` (see below) |
+
+### TUI accessibility export contract (Vision-LLM)
+
+Future Li terminal UIs (`li-tui`, generators, fixtures) must expose **agent-ingestible**
+snapshots alongside human ANSI rendering. This mirrors `diagnostic-v1`: structured JSON on
+stdout when requested; human TUI remains the default.
+
+**Environment flags** (convention for harnesses and shipped TUIs):
+
+| Flag | Effect |
+|------|--------|
+| `LI_TUI_EXPORT_A11Y=1` | Emit structured export to **stdout** (JSON or plain; see below). Skip ANSI clear/full-screen noise. |
+| `LI_TUI_ERROR=1` | Force recoverable error path; set `ok: false` and populate `screen.errors` (Bubble Tea model pattern — no panic). |
+| `LI_TUI_NONINTERACTIVE=1` | Disable blocking `read`/PTY waits; inject default key sequence or exit after export. |
+
+**Plain-text rules** (when fixture prints text instead of JSON):
+
+- Use Markdown-style headings (`#`, `##`) and bullet lists — **not** box-drawing or layout spaces.
+- One binding per line: `key: action — description` (matches JSON `bindings` / `sections` items).
+- Status line: `Status: ok|error|loading` immediately after the title.
+- Errors on **stderr** as `code: message` when not using JSON envelope.
+
+**JSON envelope** — `docs/schemas/tui-a11y-export-v1.json`:
+
+- Required top-level: `version`, `schema`, `tool`, `command`, `ok`, `screen`.
+- `screen.headings` + `screen.sections` carry semantic structure (headings, lists, bindings).
+- `screen.bindings` duplicates Footer/help key map for grep-friendly agent loops.
+- `screen.errors` holds recoverable failures (`LI_TUI_ERROR=1` or model-stored errors).
+- Example: `docs/schemas/examples/tui-a11y-export-v1.example.json`.
+
+**Harness acceptance** (li-cursor-agents ux-harness):
+
+1. `LI_TUI_EXPORT_A11Y=1` → stdout validates against schema (or plain rules above).
+2. `LI_TUI_ERROR=1` → `ok: false`, at least one `screen.errors` entry, non-zero exit optional.
+3. `LI_TUI_NONINTERACTIVE=1` → completes within harness timeout without piped stdin workaround.
+
+**Non-goals:** WCAG audit of shipped Li TUI (future); this contract is **agent ergonomics**
+for keyboard flows, help overlays, and error display — proof gates on underlying diagnostics
+unchanged (`lic build` certificate independent of TUI presentation).
 
 ### Docs & rules
 

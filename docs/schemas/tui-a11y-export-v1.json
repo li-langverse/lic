@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://li-langverse.github.io/schemas/tui-a11y-export-v1.json",
+  "title": "Li TUI accessibility export envelope (v1)",
+  "description": "Structured plain-text and JSON export for agent ingestion from Li terminal UIs. Activated by LI_TUI_EXPORT_A11Y=1 on stdout; human ANSI rendering remains default.",
+  "type": "object",
+  "required": ["version", "schema", "tool", "command", "ok", "screen"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": 1 },
+    "schema": { "const": "tui-a11y-export-v1" },
+    "tool": { "type": "string", "description": "TUI binary or fixture name (e.g. li-tui, tui-app-fixture)." },
+    "command": { "type": "string", "enum": ["export_a11y", "export_error"] },
+    "ok": { "type": "boolean", "description": "False when LI_TUI_ERROR=1 or recoverable failure on model." },
+    "screen": { "$ref": "#/$defs/screen" }
+  },
+  "$defs": {
+    "screen": {
+      "type": "object",
+      "required": ["title", "status", "headings", "sections"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string", "description": "Primary screen or app title (plain text, no ANSI)." },
+        "status": { "type": "string", "enum": ["ok", "error", "loading"] },
+        "focus": {
+          "type": ["string", "null"],
+          "description": "Focused widget id for roving-key navigation; null when none."
+        },
+        "headings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/heading" },
+          "description": "Semantic headings in document order (not layout-derived)."
+        },
+        "sections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/section" },
+          "description": "Content blocks: lists, bindings, or plain text — no box-drawing art."
+        },
+        "bindings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/binding" },
+          "description": "Keybindings visible on this screen (Footer / help overlay)."
+        },
+        "errors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/tui_error" },
+          "description": "Recoverable errors stored on model (Bubble Tea pattern); empty when ok."
+        }
+      }
+    },
+    "heading": {
+      "type": "object",
+      "required": ["level", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "level": { "type": "integer", "minimum": 1, "maximum": 6 },
+        "text": { "type": "string" }
+      }
+    },
+    "section": {
+      "type": "object",
+      "required": ["kind", "label", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "type": "string", "enum": ["list", "text", "bindings"] },
+        "label": { "type": "string", "description": "Section heading (plain text)." },
+        "items": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List lines or paragraph chunks; bindings use 'key: action — description'."
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "required": ["key", "action", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string", "description": "Single key or chord (e.g. ctrl+c)." },
+        "action": { "type": "string", "description": "Stable action id (e.g. quit, help, focus_next)." },
+        "description": { "type": "string", "description": "Human-readable binding tooltip." }
+      }
+    },
+    "tui_error": {
+      "type": "object",
+      "required": ["code", "message", "severity"],
+      "additionalProperties": false,
+      "properties": {
+        "code": { "type": "string", "description": "Stable error category (e.g. tui.timeout, tui.input)." },
+        "message": { "type": "string" },
+        "severity": { "type": "string", "enum": ["error", "warning"] }
+      }
+    }
+  }
+}

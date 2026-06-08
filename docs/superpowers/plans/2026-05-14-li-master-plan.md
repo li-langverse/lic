@@ -181,7 +181,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | **2j** | **Full OOP** — methods/`self`, method visibility, traits, inheritance, object write-back | [2026-05-20-li-oop-roadmap.md](2026-05-20-li-oop-roadmap.md) | 2j-a…f exit gates in OOP plan |
 | 2h | **Python-math surface** (`**`, `//`, `%`, `for`/`range`, contract sugar, `old`) | same plan (Phase A0) | `li-tests/math_syntax/` green |
 | **2i** | **Math / linalg surface** (infix `*`, `+`, `dot`, `A @ B` — not user `simd(...)`) | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | `li-tests/math_linalg/`; docs samples |
-| 2e | Contracts + refinements | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) | **Partial (PR #83):** call-site `requires`, refinements, AutoVC |
+| 2e | Contracts + refinements | [2026-05-14-phase-02e-contracts-vc.md](2026-05-14-phase-02e-contracts-vc.md) | **v1 gate:** `vc_emit_contracts.sh`, `mir_vc_witness.sh`, `contracts_discharge_corpus.sh`, `check-autovc-open-goals.sh` — **G-vc** still Partial |
 | 2f | Lean 4 verify | same + [provability-gaps](../verification/provability-gaps.md) | **Partial:** open-VC gate; `contracts_verify` 16/16; full kernel **G-lean** open |
 | 3 | MIR + LLVM codegen | `2026-05-14-phase-03-mir-codegen.md` | `lic build` |
 | 4 | Stdlib + runtime + deferred annotations | `2026-05-14-phase-04-runtime-stdlib.md` | hello + collections run |
@@ -423,6 +423,7 @@ Track in phase **Doc** until each is checked:
 | `2026-05-16-li-ecosystem-governance.md` | GitHub org policy, intl doc standards, PKG/REQ traceability, org repo templates |
 | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | Phase **7d** — `@` decorators on `def`/`for`/`while`; reserved stdlib names; `decorator_exploits` suite |
 | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | Phase **2i** + **7e** — math notation in source; compiler lowers to SIMD/OpenMP; Tier 1 cross-lang benches |
+| [2026-05-14-phase-02e-contracts-vc.md](2026-05-14-phase-02e-contracts-vc.md) | Phase **2e** — contracts, refinements, VC emit; exit gates **2e-a…f** |
 | [provability-gaps.md](../verification/provability-gaps.md) | **Doc-a** — living **G-*** register; update on every proof-surface PR |
 | [2026-05-22-parallel-compile-ci.md](2026-05-22-parallel-compile-ci.md) | Phase **8p** — parallel `li-tests`, workspace builds, `--jobs` frontend |
 | [ph-db-lidb-platform.md](ph-db-lidb-platform.md) | Phase **PH-DB** — `lidb` + `lis` data platform; **PH-8d-v2 → PH-DB-4** |
@@ -451,7 +452,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5 — Tetris
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
-- [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
+- [x] Phase 2e — Contracts + refinements — **v1 gate:** [phase-02e plan](2026-05-14-phase-02e-contracts-vc.md) — call-site `requires` (**E0304**), refinement types (**E0305**), typed `AutoVC.lean`, `lic verify` `witnessed_ensures=` + `mir_return_linked=`, open-goals checker; CI: `vc_emit_contracts.sh`, `mir_vc_witness.sh`, `contracts_discharge_corpus.sh`; **G-vc** still Partial (opaque ensures, float backlog)
 - [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155):** default `lake build AutoVC` on `lic build`; **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; intentional open: `sqrt_open_bound`; **G-lean** / **G-vc** still open — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (#150 7d-c):** `@vectorized` on `for` → `ArraySimdScope`; **7d-b** lanes=4; **def `@parallel(disjoint=)`** inherits to nested `parallel for` (policy); **open:** full MIR proc tags, Lean **G-par** proofs

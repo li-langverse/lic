@@ -1,0 +1,14 @@
+# Linux OCI/CRI runtime backend (Wave 1 stub).
+def linux_backend_namespaces_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def linux_backend_cgroups_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2

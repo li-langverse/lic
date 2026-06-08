@@ -25,9 +25,3 @@ Build **licontainers** OCI/CRI runtime package. Wave 0 scaffold **DONE**. Wave 1
 | **LB-C5** | `src/oci/image.li` | pending | `check-libernetes-licontainers-wave2-gate.sh` |
 | **LB-C6** | `src/runtime/create.li` + `start.li` | pending | same wave2 gate |
 | **LB-C7** | `li-tests/integration/cri_lifecycle.li` | pending | same wave2 gate |
-
-## Completion gate
-
-```bash
-bash scripts/check-libernetes-licontainers-gate.sh
-```

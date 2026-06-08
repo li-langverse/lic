@@ -21,7 +21,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **`lic check`** | Fast IDE feedback | **Yes** — no Lean, not a certificate |
 | **Parallel disjointness** | Lean + structured proofs | **Partial** — substring heuristics in `policy.cpp` |
 | **Index bounds (release)** | Refinement / proved → no user traps | **Partial** — MIR/runtime paths still evolving |
-| **Decorators (`@parallel`, …)** | Compile-time elaboration + proofs | **Partial** — parse + policy (7d-a/e); no MIR lowering yet |
+| **Decorators (`@parallel`, …)** | Compile-time elaboration + proofs | **Partial** — parse + policy + MIR proc tags (`@cpu`, `@parallel`, `@vectorized`, `@gpu`); Lean **P-dec** open |
 | **Math / linalg surface** | Static shapes, compile-time lowering | **Partial** — shape tests + **P-linalg** closed VCs (2i / 7e) |
 | **Zero user runtime errors** | All above + 2f gate | **In progress** — see table below |
 
@@ -38,7 +38,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-par** | Partial | AST `policy_module` accepts `disjoint_*` on `parallel for`; **closed slice:** `par_iteration_independent_tile` + `par_memory_disjoint_rows` + `par_memory_disjoint_elems` + `par_memory_disjoint_grid_rows` + `par_memory_disjoint_grid_elems` + `par_dependent_*_aliasing` + `iteration_independent_tile_spec` + `memory_disjoint_rows_spec` + `memory_disjoint_elems_spec` + `memory_disjoint_grid_rows_spec` + `memory_disjoint_grid_elems_spec` + `array_elem_indices_disjoint` + `array_row_indices_disjoint` + `array_grid_cell_indices_disjoint` + `dependent_flat/grid_row/grid_cell/lookup/mod_aliasing` (7d-c); **closed slice:** `index_bound_elem_spec` / `index_bound_row_spec` / `index_bound_grid_cell_spec` / `index_bound_grid_linear_spec` / `index_bound_affine_spec` / `index_bound_blocked_affine_spec` / `index_bound_lookup_spec` / `index_bound_mod_spec` refine `disjoint_*_spec` + `par_disjoint_*_index_bound` + AutoVC `h_range` discharge (7d-c); **closed slice:** compiler `disjoint_lookup` / `disjoint_mod` → `index_bound_lookup_slot_spec` / `index_bound_mod_slot_spec` + policy witnesses in AutoVC (7d-c); **closed slice:** non-identity reverse permutation lookup → `reverse_lookup_injective_on_tiles` + AutoVC `h_inj` on `parallel_disjoint_lookup_perm_closed.li` (7d-c) |
 | **G-par-dist** | Partial | **Closed slice:** block partition via `li_dpar_block_partition_*` + `distributed for` MIR (`dpar_for_range.li` smoke); Lean partition proofs open |
 | **G-hetero** | Partial | **Closed slice:** CPU+GPU+TPU+ASIC orchestration via `li_rt_hetero_*` runtime seams + chip package probes; address-space proofs open |
-| **G-dec** | Partial | **Closed slice:** MIR telemetry + corpus scripts; Lean **P-dec** open |
+| **G-dec** | Partial | **Closed slice:** MIR proc tags (`@cpu`, `@parallel(disjoint=)`, `@vectorized`, `@gpu`) + `lic verify` telemetry + `check-mir-*-decorator.sh` gates; Lean **P-dec** open |
 | **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
 | **G-bnd** | Partial | **Closed slice:** `bounds_refinement_release_ok.li` + `check_release_bounds_ir.sh`; `discharge_refinement_lean.sh` |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
@@ -90,7 +90,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-par-dist** | `distributed for` partition | Block partition assigns disjoint tiles per rank | **Partial** — **closed slice:** `li_dpar_block_partition_*` + `dpar_for_range.li` codegen smoke; Lean partition proofs open | **7b**, **li-parallel** | `li-tests/tooling/li_dpar_for_codegen_smoke.sh`, `packages/li-parallel/src/parallel/proof.li`, `docs/verification/proof-database/entries/parallel-li-par.toml` |
 | **G-hetero** | Hetero orchestration | CPU+GPU+TPU+ASIC via runtime chip seams only | **Partial** — **closed slice:** `li_rt_hetero_*` probes + chip package smokes; address-space proofs open | **li-parallel** | `li-tests/tooling/li_hetero_gate_smoke.sh`, `packages/li-parallel/src/parallel/hetero.li`, `docs/verification/proof-database/entries/parallel-li-par.toml` |
 | **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
-| **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — **closed slice:** 4× `decorator_exploits` `compile_fail`; `@vectorized` on `for` (`vectorized_for_scope_ok.li`); `MIR proc tags + corpus scripts | **7d** | `contracts_discharge_corpus.sh`, `decorator_exploits/` |
+| **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — **closed slice:** 4× `decorator_exploits` `compile_fail`; `@vectorized` on `for` (`vectorized_for_scope_ok.li`); `@cpu`/`@parallel`/`@vectorized`/`@gpu` MIR proc tags + `check-mir-*-decorator.sh` gates (**7d-b**); `@parallel(disjoint=)` on `def` inherits to nested `parallel for` (**G-par** policy witness) | **7d** | `contracts_discharge_corpus.sh`, `decorator_exploits/`, `scripts/check-mir-*-decorator.sh` |
 | **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — **closed slice:** 9× `prove_lean_ok` linalg + `discharge_linalg_int_lean.sh`; `math_linalg/` compile tests; tier-1 `tier1_li_vs_cpp.sh` | **2i**, **7e**, **2f** | `li-tests/math_linalg/`, `li-tests/contracts_verify/linalg_*_closed.li`, `li-tests/tooling/discharge_linalg_int_lean.sh`, `li-tests/tooling/tier1_li_vs_cpp.sh` |
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — [bounds-release-path](bounds-release-path.md) | **2e**, **3** | `check_release_bounds_ir.sh` |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
@@ -168,7 +168,7 @@ flowchart LR
 | Type / borrow errors | Compile-time only | **Mostly** at typecheck |
 | `parallel for` races | Compile-time reject | **Heuristic** policy + tests |
 | Out-of-bounds | Compile-time proof | **May** still hit `li_bounds_fail` in debug paths |
-| Decorators | Never interpreted at run time | **N/A** — not executed; not elaborated yet |
+| Decorators | Never interpreted at run time | **N/A** — not executed; MIR proc tags on `def` (**7d-b** closed slice) |
 | `li_panic` / contract fail | No user path in proved release | **Runtime** hooks exist in `li_rt` |
 | OpenMP | Native threads | **Runtime** library (not user logic validation) |
 | Fuzz / TSan | Find compiler bugs | **CI optional** — not user proof |
@@ -182,7 +182,7 @@ flowchart LR
 | Suite | What it proves |
 |-------|----------------|
 | `li-tests/race_shared_memory/` | Policy + typecheck **reject** bad parallel patterns (not Lean) |
-| `li-tests/decorator_exploits/` | **Planned** — reserved names, macro hijack (7d-e) |
+| `li-tests/decorator_exploits/` | **Closed slice** — reserved names, typosquat, missing `disjoint=` (7d-e) |
 | `li-tests/math_linalg/` | **Partial** — 1d/2d `@`, element-wise, matmul compile tests (2i/7e) |
 | `li-tests/contracts_verify/` | **Partial** — 14× `prove_lean_ok` closed corpus; `sqrt_open_bound` intentional open (`verify_open_ok`); refinements on `verify_ok` |
 | `li-tests/tooling/discharge_linalg_int_lean.sh` | P-linalg closed specimens → zero open AutoVC goals |

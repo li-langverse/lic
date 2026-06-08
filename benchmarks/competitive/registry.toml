@@ -78,8 +78,8 @@ repo_url = "https://github.com/kokkos/kokkos"
 compare = ["md_lennard_jones", "heat_2d"]
 csv_lang = ""
 kernel_honesty = "n/a"
-last_reviewed = "2026-05-16"
-notes = "Performance portability; watch Kokkos 4 OpenMP/SYCL backends."
+last_reviewed = "2026-06-08"
+notes = "Kokkos 4.6.02 (SYCL production, DualView deprecation); vendor pin handoff benchmarks#27; Li policy docs/hpc/kokkos-memory-execution-spaces-rubric.md (lic#110)."
 
 [[ecosystem]]
 id = "sycl_dpcpp"

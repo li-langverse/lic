@@ -1062,6 +1062,18 @@ expected_substr = "length-1 broadcast"
 
 [[tests]]
 suite = "math_linalg"
+file = "math_linalg/broadcast_invalid_2d_m3n_vs_m1.li"
+outcome = "compile_fail"
+expected_substr = "NumPy-style rank broadcast"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/broadcast_invalid_2d_m3n_vs_1n.li"
+outcome = "compile_fail"
+expected_substr = "NumPy-style rank broadcast"
+
+[[tests]]
+suite = "math_linalg"
 file = "math_linalg/sum_elementwise_product.li"
 outcome = "verify_ok"
 

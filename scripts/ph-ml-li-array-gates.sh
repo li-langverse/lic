@@ -81,6 +81,17 @@ if p32.is_file():
     print("li-array gate: 32x32 ratio_vs_li=", ratio, "target_met=", met)
     if r32.get("executed") and ratio is None:
         sys.exit("li-array 32x32 bench must record ratio_vs_li when executed")
+
+comp_path = Path("benchmarks/results/ph-ml-competitive.json")
+if comp_path.is_file():
+    comp = json.loads(comp_path.read_text())
+    row = next((r for r in comp.get("rows") or [] if r.get("id") == "li_array_matmul_4x4"), None)
+    if row is None:
+        sys.exit("ph-ml-competitive.json missing li_array_matmul_4x4 row")
+    li = row.get("li") or {}
+    if not li.get("executed"):
+        sys.exit("li_array_matmul_4x4 competitive row must have executed Li bench")
+    print("li-array gate: competitive row li_array_matmul_4x4 OK")
 PY
 
 echo "ph-ml-li-array: completion gate OK"

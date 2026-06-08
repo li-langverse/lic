@@ -7,11 +7,11 @@
   "executed": true,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
-  "cpu_sec": 0.00172,
+  "cpu_sec": 0.000663,
   "build_cpu_sec": null,
-  "numpy_cpu_sec": 2e-06,
-  "ratio_vs_li": 0.001163,
+  "numpy_cpu_sec": 1e-06,
+  "ratio_vs_li": 0.001508,
   "ratio_target": 2.0,
   "ratio_target_met": false,
-  "li_over_numpy": 860.0
+  "li_over_numpy": 663.0
 }

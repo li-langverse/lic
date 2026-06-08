@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -207,6 +207,55 @@ def sim_scientific_oracle_checksum_heat() -> float
     heat_oracle_stencil_step(u, v, r)
     step = step + 1
   return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
+
+# WP-SCI-03 — tier-2 FEA oracle: 1D bar chain (2 equal elements, fixed at node 0).
+def fea_oracle_bar_end_displacement(e: float, a: float, le: float, f_load: float) -> float
+  requires e > 0.0
+  requires a > 0.0
+  requires le > 0.0
+  ensures result > 0.0
+  decreases 0
+=
+  var compliance: float = 2.0 * le / (e * a)
+  return f_load * compliance
+
+def sim_scientific_oracle_checksum_fea() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var u: float = fea_oracle_bar_end_displacement(1.0, 1.0, 1.0, 1.0)
+  var strain_energy: float = 0.5 * 1.0 * u
+  return u + strain_energy
+
+# WP-SCI-03 — tier-2 CFD oracle: lid-driven cavity centerline (1D Poiseuille slice).
+def cfd_oracle_lid_centerline_velocity(u_lid: float, h: float, y: float) -> float
+  requires u_lid > 0.0
+  requires h > 0.0
+  requires y >= 0.0
+  requires y <= h
+  ensures result >= 0.0
+  decreases 0
+=
+  var y_scaled: float = y / h
+  var profile: float = 4.0 * y_scaled * (1.0 - y_scaled)
+  return u_lid * profile
+
+def sim_scientific_oracle_checksum_cfd() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var h: float = 1.0
+  var u_lid: float = 1.0
+  var u1: float = cfd_oracle_lid_centerline_velocity(u_lid, h, 0.125)
+  var u2: float = cfd_oracle_lid_centerline_velocity(u_lid, h, 0.25)
+  var u3: float = cfd_oracle_lid_centerline_velocity(u_lid, h, 0.375)
+  var u4: float = cfd_oracle_lid_centerline_velocity(u_lid, h, 0.5)
+  var u5: float = cfd_oracle_lid_centerline_velocity(u_lid, h, 0.625)
+  var u6: float = cfd_oracle_lid_centerline_velocity(u_lid, h, 0.75)
+  var u7: float = cfd_oracle_lid_centerline_velocity(u_lid, h, 0.875)
+  return u1 + u2 + u3 + u4 + u5 + u6 + u7
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int
@@ -650,7 +699,7 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
   requires algo_id >= 201
-  requires algo_id <= 216
+  requires algo_id <= 204
   ensures result.ok == 1
   ensures result.algo_id == algo_id
   ensures result.detail_emitted == detail
@@ -661,6 +710,44 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.ok = 1
   r.algo_id = algo_id
   r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_cfd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 205
+  requires algo_id <= 210
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_cfd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_cfd_lid_driven_cavity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 211
+  requires algo_id <= 216
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_fea()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_fea_linear_elasticity()
   r.checksum = chk
   r.detail_emitted = detail
   return r
@@ -731,9 +818,17 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
       var d0: int = detail
       return run_md_tier2_registry(algo_id, d0)
   if algo_id >= 201:
-    if algo_id <= 216:
+    if algo_id <= 204:
       var d1: int = detail
       return run_heat_tier2_registry(algo_id, d1)
+  if algo_id >= 205:
+    if algo_id <= 210:
+      var d_cfd: int = detail
+      return run_cfd_tier2_registry(algo_id, d_cfd)
+  if algo_id >= 211:
+    if algo_id <= 216:
+      var d_fea: int = detail
+      return run_fea_tier2_registry(algo_id, d_fea)
   if algo_id >= 301:
     if algo_id <= 305:
       var d2: int = detail

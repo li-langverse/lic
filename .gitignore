@@ -1,4 +1,5 @@
 /build/
+build-kernel/
 build-native/
 build-wsl-agent/
 build-fuzz/

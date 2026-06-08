@@ -1,11 +1,11 @@
-# li-std-physics-hep
+# li-physics-hep
 
-Li package li-std-physics-hep
+Li package li-physics-hep
 
 ## Build
 
 ```bash
-lic build src/lib.li -o li-std-physics-hep
+lic build src/lib.li -o li-physics-hep
 ```
 
 From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
@@ -14,8 +14,8 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 
 | ID | Link |
 |----|------|
-| Package | `PKG-li-std-physics-hep` |
-| Org repo | https://github.com/li-langverse/li-std-physics-hep |
+| Package | `PKG-li-physics-hep` |
+| Org repo | https://github.com/li-langverse/li-physics-hep |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
 
 See `PUBLISH.md` and `docs/traceability.md`.

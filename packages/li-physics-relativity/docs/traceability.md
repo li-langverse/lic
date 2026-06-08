@@ -1,12 +1,12 @@
-# Traceability — PKG-li-std-physics-relativity
+# Traceability — PKG-li-physics-relativity
 
-<!-- DOC-traceability-PKG-li-std-physics-relativity -->
+<!-- DOC-traceability-PKG-li-physics-relativity -->
 
 | Type | ID | Artifact |
 |------|-----|----------|
-| Package | PKG-li-std-physics-relativity | This repository |
+| Package | PKG-li-physics-relativity | This repository |
 | Phase | PH-Pkg | [Package scaffold](https://github.com/li-langverse/li-language/blob/dev/docs/superpowers/plans/2026-05-16-li-package-scaffold.md) |
-| Test | T-PKG-li-std-physics-relativity-smoke | `li-tests/smoke/builds.li` |
+| Test | T-PKG-li-physics-relativity-smoke | `li-tests/smoke/builds.li` |
 
 ## Requirements
 

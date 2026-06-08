@@ -945,13 +945,13 @@ gaps:
 - id: gap-hpc-openmp-llvm-lowering-rubric
   gap_kind: competitor_feature
   title: OpenMP prescriptive vs descriptive lowering rubric for portable codegen
-  status: open
+  status: closed
   priority: 6
   discovered_by: gap_explorer
   evidence:
   - ecosystem-explorer.json hpc_libraries[openmp] li_status=partial
   - https://www.osti.gov/servlets/purl/2224192
-  - lic issues
+  - lic#124 plan + spec Phase 0-1
   ph_id: PH-7e
   handoff_to:
   - numerics_researcher

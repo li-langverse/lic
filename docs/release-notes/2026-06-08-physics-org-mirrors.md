@@ -30,6 +30,7 @@ Published **12 official `li-physics-*` org mirrors** for the physics package fam
 - Aligned stale `li-std-physics-*` metadata → `li-physics-*` in README/PUBLISH/traceability
 - Registered mirrors in `.github/li-downstream-repos.txt`
 - Added `scripts/push-physics-mirrors.sh` batch helper
+- Mirror CI uses `lic/scripts/ci-install-llvm.sh` (apt.llvm.org fallback on ubuntu-24.04)
 
 ## Related
 

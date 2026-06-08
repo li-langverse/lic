@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar-22 Dqc libli_analyze.a CMakeFiles/li_analyze.dir/advisory.cpp.o
+/usr/bin/llvm-ranlib-22 -D libli_analyze.a

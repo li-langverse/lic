@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar-22 Dqc libli_types.a CMakeFiles/li_types.dir/types.cpp.o CMakeFiles/li_types.dir/typecheck.cpp.o CMakeFiles/li_types.dir/policy.cpp.o CMakeFiles/li_types.dir/policy_module.cpp.o CMakeFiles/li_types.dir/prelude.cpp.o CMakeFiles/li_types.dir/import_resolve.cpp.o CMakeFiles/li_types.dir/borrowck.cpp.o CMakeFiles/li_types.dir/numeric_types.cpp.o
+/usr/bin/llvm-ranlib-22 -D libli_types.a

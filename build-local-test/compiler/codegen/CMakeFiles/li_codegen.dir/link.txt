@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar-22 Dqc libli_codegen.a CMakeFiles/li_codegen.dir/codegen.cpp.o CMakeFiles/li_codegen.dir/smoke_llvm.cpp.o CMakeFiles/li_codegen.dir/emit.cpp.o CMakeFiles/li_codegen.dir/compile.cpp.o
+/usr/bin/llvm-ranlib-22 -D libli_codegen.a

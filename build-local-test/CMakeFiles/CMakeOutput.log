@@ -1,0 +1,685 @@
+The system is: Linux - 6.12.88+deb13-amd64 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /usr/bin/clang-22 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is Clang, found in "/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/3.25.1/CompilerIdC/a.out"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /usr/bin/clang++-22 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is Clang, found in "/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/3.25.1/CompilerIdCXX/a.out"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-cYrdpH
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_92936/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_92936.dir/build.make CMakeFiles/cmTC_92936.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-cYrdpH'
+Building C object CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o
+/usr/bin/clang-22   -v -MD -MT CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.25/Modules/CMakeCCompilerABI.c
+Debian clang version 22.1.0 (++20260223093050+cd5897175d0d-1~exp1~20260223093246.28)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/lib/llvm-22/bin
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12
+Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12
+Candidate multilib: .;@m64
+Selected multilib: .;@m64
+ (in-process)
+ "/usr/lib/llvm-22/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-cYrdpH -v -fcoverage-compilation-dir=/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-cYrdpH -resource-dir /usr/lib/llvm-22/lib/clang/22 -dependency-file CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/llvm-22/lib/clang/22/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/12/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -ferror-limit 19 -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -faddrsig -fdwarf2-cfi-asm -o CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.25/Modules/CMakeCCompilerABI.c
+clang -cc1 version 22.1.0 based upon LLVM 22.1.0 default target x86_64-pc-linux-gnu
+ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/12/../../../../x86_64-linux-gnu/include"
+ignoring nonexistent directory "/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/lib/llvm-22/lib/clang/22/include
+ /usr/local/include
+ /usr/include/x86_64-linux-gnu
+ /usr/include
+End of search list.
+Linking C executable cmTC_92936
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_92936.dir/link.txt --verbose=1
+/usr/bin/clang-22  -v CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -o cmTC_92936 
+Debian clang version 22.1.0 (++20260223093050+cd5897175d0d-1~exp1~20260223093246.28)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/lib/llvm-22/bin
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12
+Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12
+Candidate multilib: .;@m64
+Selected multilib: .;@m64
+ "/usr/bin/ld" --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -pie -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_92936 /lib/x86_64-linux-gnu/Scrt1.o /lib/x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/12/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/12 -L/usr/lib/gcc/x86_64-linux-gnu/12/../../../../lib64 -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib64 -L/lib -L/usr/lib CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/12/crtendS.o /lib/x86_64-linux-gnu/crtn.o
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-cYrdpH'
+
+
+
+Parsed C implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/usr/lib/llvm-22/lib/clang/22/include]
+    add: [/usr/local/include]
+    add: [/usr/include/x86_64-linux-gnu]
+    add: [/usr/include]
+  end of search list found
+  collapse include dir [/usr/lib/llvm-22/lib/clang/22/include] ==> [/usr/lib/llvm-22/lib/clang/22/include]
+  collapse include dir [/usr/local/include] ==> [/usr/local/include]
+  collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+  collapse include dir [/usr/include] ==> [/usr/include]
+  implicit include dirs: [/usr/lib/llvm-22/lib/clang/22/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include]
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld\.lld-22|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-cYrdpH]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_92936/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_92936.dir/build.make CMakeFiles/cmTC_92936.dir/build]
+  ignore line: [gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-cYrdpH']
+  ignore line: [Building C object CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/usr/bin/clang-22   -v -MD -MT CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.25/Modules/CMakeCCompilerABI.c]
+  ignore line: [Debian clang version 22.1.0 (++20260223093050+cd5897175d0d-1~exp1~20260223093246.28)]
+  ignore line: [Target: x86_64-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/lib/llvm-22/bin]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12]
+  ignore line: [Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  ignore line: [ (in-process)]
+  ignore line: [ "/usr/lib/llvm-22/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-cYrdpH -v -fcoverage-compilation-dir=/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-cYrdpH -resource-dir /usr/lib/llvm-22/lib/clang/22 -dependency-file CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -sys-header-deps -internal-isystem /usr/lib/llvm-22/lib/clang/22/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/12/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -ferror-limit 19 -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -faddrsig -fdwarf2-cfi-asm -o CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -x c /usr/share/cmake-3.25/Modules/CMakeCCompilerABI.c]
+  ignore line: [clang -cc1 version 22.1.0 based upon LLVM 22.1.0 default target x86_64-pc-linux-gnu]
+  ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/12/../../../../x86_64-linux-gnu/include"]
+  ignore line: [ignoring nonexistent directory "/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /usr/lib/llvm-22/lib/clang/22/include]
+  ignore line: [ /usr/local/include]
+  ignore line: [ /usr/include/x86_64-linux-gnu]
+  ignore line: [ /usr/include]
+  ignore line: [End of search list.]
+  ignore line: [Linking C executable cmTC_92936]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_92936.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/clang-22  -v CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -o cmTC_92936 ]
+  ignore line: [Debian clang version 22.1.0 (++20260223093050+cd5897175d0d-1~exp1~20260223093246.28)]
+  ignore line: [Target: x86_64-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/lib/llvm-22/bin]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12]
+  ignore line: [Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  link line: [ "/usr/bin/ld" --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -pie -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_92936 /lib/x86_64-linux-gnu/Scrt1.o /lib/x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/12/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/12 -L/usr/lib/gcc/x86_64-linux-gnu/12/../../../../lib64 -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib64 -L/lib -L/usr/lib CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/12/crtendS.o /lib/x86_64-linux-gnu/crtn.o]
+    arg [/usr/bin/ld] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_92936] ==> ignore
+    arg [/lib/x86_64-linux-gnu/Scrt1.o] ==> obj [/lib/x86_64-linux-gnu/Scrt1.o]
+    arg [/lib/x86_64-linux-gnu/crti.o] ==> obj [/lib/x86_64-linux-gnu/crti.o]
+    arg [/usr/lib/gcc/x86_64-linux-gnu/12/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/12/crtbeginS.o]
+    arg [-L/usr/lib/gcc/x86_64-linux-gnu/12] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/12]
+    arg [-L/usr/lib/gcc/x86_64-linux-gnu/12/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/12/../../../../lib64]
+    arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+    arg [-L/usr/lib64] ==> dir [/usr/lib64]
+    arg [-L/lib] ==> dir [/lib]
+    arg [-L/usr/lib] ==> dir [/usr/lib]
+    arg [CMakeFiles/cmTC_92936.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/usr/lib/gcc/x86_64-linux-gnu/12/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/12/crtendS.o]
+    arg [/lib/x86_64-linux-gnu/crtn.o] ==> obj [/lib/x86_64-linux-gnu/crtn.o]
+  collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/12] ==> [/usr/lib/gcc/x86_64-linux-gnu/12]
+  collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/12/../../../../lib64] ==> [/usr/lib64]
+  collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+  collapse library dir [/usr/lib64] ==> [/usr/lib64]
+  collapse library dir [/lib] ==> [/lib]
+  collapse library dir [/usr/lib] ==> [/usr/lib]
+  implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+  implicit objs: [/lib/x86_64-linux-gnu/Scrt1.o;/lib/x86_64-linux-gnu/crti.o;/usr/lib/gcc/x86_64-linux-gnu/12/crtbeginS.o;/usr/lib/gcc/x86_64-linux-gnu/12/crtendS.o;/lib/x86_64-linux-gnu/crtn.o]
+  implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/12;/usr/lib64;/lib/x86_64-linux-gnu;/lib64;/usr/lib/x86_64-linux-gnu;/lib;/usr/lib]
+  implicit fwks: []
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-vS55jX
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_52d8b/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_52d8b.dir/build.make CMakeFiles/cmTC_52d8b.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-vS55jX'
+Building CXX object CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o
+/usr/bin/clang++-22   -v -MD -MT CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.25/Modules/CMakeCXXCompilerABI.cpp
+Debian clang version 22.1.0 (++20260223093050+cd5897175d0d-1~exp1~20260223093246.28)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/lib/llvm-22/bin
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12
+Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12
+Candidate multilib: .;@m64
+Selected multilib: .;@m64
+ (in-process)
+ "/usr/lib/llvm-22/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-vS55jX -v -fcoverage-compilation-dir=/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-vS55jX -resource-dir /usr/lib/llvm-22/lib/clang/22 -dependency-file CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/backward -internal-isystem /usr/lib/llvm-22/lib/clang/22/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/12/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdeprecated-macro -ferror-limit 19 -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -faddrsig -fdwarf2-cfi-asm -o CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/share/cmake-3.25/Modules/CMakeCXXCompilerABI.cpp
+clang -cc1 version 22.1.0 based upon LLVM 22.1.0 default target x86_64-pc-linux-gnu
+ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/12/../../../../x86_64-linux-gnu/include"
+ignoring nonexistent directory "/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12
+ /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12
+ /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/backward
+ /usr/lib/llvm-22/lib/clang/22/include
+ /usr/local/include
+ /usr/include/x86_64-linux-gnu
+ /usr/include
+End of search list.
+Linking CXX executable cmTC_52d8b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_52d8b.dir/link.txt --verbose=1
+/usr/bin/clang++-22  -v CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_52d8b 
+Debian clang version 22.1.0 (++20260223093050+cd5897175d0d-1~exp1~20260223093246.28)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/lib/llvm-22/bin
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12
+Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12
+Candidate multilib: .;@m64
+Selected multilib: .;@m64
+ "/usr/bin/ld" --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -pie -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_52d8b /lib/x86_64-linux-gnu/Scrt1.o /lib/x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/12/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/12 -L/usr/lib/gcc/x86_64-linux-gnu/12/../../../../lib64 -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib64 -L/lib -L/usr/lib CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/12/crtendS.o /lib/x86_64-linux-gnu/crtn.o
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-vS55jX'
+
+
+
+Parsed CXX implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12]
+    add: [/usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12]
+    add: [/usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/backward]
+    add: [/usr/lib/llvm-22/lib/clang/22/include]
+    add: [/usr/local/include]
+    add: [/usr/include/x86_64-linux-gnu]
+    add: [/usr/include]
+  end of search list found
+  collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12] ==> [/usr/include/c++/12]
+  collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12] ==> [/usr/include/x86_64-linux-gnu/c++/12]
+  collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/backward] ==> [/usr/include/c++/12/backward]
+  collapse include dir [/usr/lib/llvm-22/lib/clang/22/include] ==> [/usr/lib/llvm-22/lib/clang/22/include]
+  collapse include dir [/usr/local/include] ==> [/usr/local/include]
+  collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+  collapse include dir [/usr/include] ==> [/usr/include]
+  implicit include dirs: [/usr/include/c++/12;/usr/include/x86_64-linux-gnu/c++/12;/usr/include/c++/12/backward;/usr/lib/llvm-22/lib/clang/22/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include]
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld\.lld-22|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-vS55jX]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_52d8b/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_52d8b.dir/build.make CMakeFiles/cmTC_52d8b.dir/build]
+  ignore line: [gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-vS55jX']
+  ignore line: [Building CXX object CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/usr/bin/clang++-22   -v -MD -MT CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.25/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Debian clang version 22.1.0 (++20260223093050+cd5897175d0d-1~exp1~20260223093246.28)]
+  ignore line: [Target: x86_64-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/lib/llvm-22/bin]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12]
+  ignore line: [Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  ignore line: [ (in-process)]
+  ignore line: [ "/usr/lib/llvm-22/bin/clang" -cc1 -triple x86_64-pc-linux-gnu -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debugger-tuning=gdb -fdebug-compilation-dir=/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-vS55jX -v -fcoverage-compilation-dir=/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-vS55jX -resource-dir /usr/lib/llvm-22/lib/clang/22 -dependency-file CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/backward -internal-isystem /usr/lib/llvm-22/lib/clang/22/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/12/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -fdeprecated-macro -ferror-limit 19 -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -faddrsig -fdwarf2-cfi-asm -o CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/share/cmake-3.25/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [clang -cc1 version 22.1.0 based upon LLVM 22.1.0 default target x86_64-pc-linux-gnu]
+  ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/12/../../../../x86_64-linux-gnu/include"]
+  ignore line: [ignoring nonexistent directory "/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12]
+  ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/x86_64-linux-gnu/c++/12]
+  ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/backward]
+  ignore line: [ /usr/lib/llvm-22/lib/clang/22/include]
+  ignore line: [ /usr/local/include]
+  ignore line: [ /usr/include/x86_64-linux-gnu]
+  ignore line: [ /usr/include]
+  ignore line: [End of search list.]
+  ignore line: [Linking CXX executable cmTC_52d8b]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_52d8b.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/clang++-22  -v CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_52d8b ]
+  ignore line: [Debian clang version 22.1.0 (++20260223093050+cd5897175d0d-1~exp1~20260223093246.28)]
+  ignore line: [Target: x86_64-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/lib/llvm-22/bin]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12]
+  ignore line: [Selected GCC installation: /usr/lib/gcc/x86_64-linux-gnu/12]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Selected multilib: .]
+  ignore line: [@m64]
+  link line: [ "/usr/bin/ld" --hash-style=gnu --build-id --eh-frame-hdr -m elf_x86_64 -pie -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_52d8b /lib/x86_64-linux-gnu/Scrt1.o /lib/x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/12/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/12 -L/usr/lib/gcc/x86_64-linux-gnu/12/../../../../lib64 -L/lib/x86_64-linux-gnu -L/lib/../lib64 -L/usr/lib/x86_64-linux-gnu -L/usr/lib64 -L/lib -L/usr/lib CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/12/crtendS.o /lib/x86_64-linux-gnu/crtn.o]
+    arg [/usr/bin/ld] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_52d8b] ==> ignore
+    arg [/lib/x86_64-linux-gnu/Scrt1.o] ==> obj [/lib/x86_64-linux-gnu/Scrt1.o]
+    arg [/lib/x86_64-linux-gnu/crti.o] ==> obj [/lib/x86_64-linux-gnu/crti.o]
+    arg [/usr/lib/gcc/x86_64-linux-gnu/12/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/12/crtbeginS.o]
+    arg [-L/usr/lib/gcc/x86_64-linux-gnu/12] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/12]
+    arg [-L/usr/lib/gcc/x86_64-linux-gnu/12/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/12/../../../../lib64]
+    arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+    arg [-L/usr/lib64] ==> dir [/usr/lib64]
+    arg [-L/lib] ==> dir [/lib]
+    arg [-L/usr/lib] ==> dir [/usr/lib]
+    arg [CMakeFiles/cmTC_52d8b.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/usr/lib/gcc/x86_64-linux-gnu/12/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/12/crtendS.o]
+    arg [/lib/x86_64-linux-gnu/crtn.o] ==> obj [/lib/x86_64-linux-gnu/crtn.o]
+  collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/12] ==> [/usr/lib/gcc/x86_64-linux-gnu/12]
+  collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/12/../../../../lib64] ==> [/usr/lib64]
+  collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+  collapse library dir [/usr/lib64] ==> [/usr/lib64]
+  collapse library dir [/lib] ==> [/lib]
+  collapse library dir [/usr/lib] ==> [/usr/lib]
+  implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+  implicit objs: [/lib/x86_64-linux-gnu/Scrt1.o;/lib/x86_64-linux-gnu/crti.o;/usr/lib/gcc/x86_64-linux-gnu/12/crtbeginS.o;/usr/lib/gcc/x86_64-linux-gnu/12/crtendS.o;/lib/x86_64-linux-gnu/crtn.o]
+  implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/12;/usr/lib64;/lib/x86_64-linux-gnu;/lib64;/usr/lib/x86_64-linux-gnu;/lib;/usr/lib]
+  implicit fwks: []
+
+
+Performing C SOURCE FILE Test HAVE_FFI_CALL succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-8rd5w1
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_ab2ef/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_ab2ef.dir/build.make CMakeFiles/cmTC_ab2ef.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-8rd5w1'
+Building C object CMakeFiles/cmTC_ab2ef.dir/src.c.o
+/usr/bin/clang-22 -DHAVE_FFI_CALL   -MD -MT CMakeFiles/cmTC_ab2ef.dir/src.c.o -MF CMakeFiles/cmTC_ab2ef.dir/src.c.o.d -o CMakeFiles/cmTC_ab2ef.dir/src.c.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-8rd5w1/src.c
+Linking C executable cmTC_ab2ef
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ab2ef.dir/link.txt --verbose=1
+/usr/bin/clang-22 CMakeFiles/cmTC_ab2ef.dir/src.c.o -o cmTC_ab2ef  /usr/lib/x86_64-linux-gnu/libffi.so 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-8rd5w1'
+
+
+Source file was:
+    #ifdef __cplusplus
+    extern "C" {
+    #endif
+    struct ffi_cif;
+    typedef struct ffi_cif ffi_cif;
+    void ffi_call(ffi_cif *cif, void (*fn)(void), void *rvalue, void **avalue);
+    #ifdef __cplusplus
+    }
+    #endif
+    int main(void) { ffi_call(0, 0, 0, 0); }
+    
+
+Performing C++ SOURCE FILE Test LLVM_LIBSTDCXX_MIN succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-daeRxY
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_3def7/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_3def7.dir/build.make CMakeFiles/cmTC_3def7.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-daeRxY'
+Building CXX object CMakeFiles/cmTC_3def7.dir/src.cxx.o
+/usr/bin/clang++-22 -DLLVM_LIBSTDCXX_MIN  -std=c++0x -std=gnu++17 -MD -MT CMakeFiles/cmTC_3def7.dir/src.cxx.o -MF CMakeFiles/cmTC_3def7.dir/src.cxx.o.d -o CMakeFiles/cmTC_3def7.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-daeRxY/src.cxx
+Linking CXX executable cmTC_3def7
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3def7.dir/link.txt --verbose=1
+/usr/bin/clang++-22   -std=c++0x CMakeFiles/cmTC_3def7.dir/src.cxx.o -o cmTC_3def7 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-daeRxY'
+
+
+Source file was:
+
+#include <iosfwd>
+#if defined(__GLIBCXX__)
+#if !defined(_GLIBCXX_RELEASE) || _GLIBCXX_RELEASE < 7
+#error Unsupported libstdc++ version
+#endif
+#endif
+int main() { return 0; }
+
+
+Performing C++ SOURCE FILE Test LLVM_LIBSTDCXX_SOFT_ERROR succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-m8TuLq
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_93243/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_93243.dir/build.make CMakeFiles/cmTC_93243.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-m8TuLq'
+Building CXX object CMakeFiles/cmTC_93243.dir/src.cxx.o
+/usr/bin/clang++-22 -DLLVM_LIBSTDCXX_SOFT_ERROR  -std=c++0x -std=gnu++17 -MD -MT CMakeFiles/cmTC_93243.dir/src.cxx.o -MF CMakeFiles/cmTC_93243.dir/src.cxx.o.d -o CMakeFiles/cmTC_93243.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-m8TuLq/src.cxx
+Linking CXX executable cmTC_93243
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_93243.dir/link.txt --verbose=1
+/usr/bin/clang++-22   -std=c++0x CMakeFiles/cmTC_93243.dir/src.cxx.o -o cmTC_93243 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-m8TuLq'
+
+
+Source file was:
+
+#include <iosfwd>
+#if defined(__GLIBCXX__)
+#if !defined(_GLIBCXX_RELEASE) || _GLIBCXX_RELEASE < 7
+#error Unsupported libstdc++ version
+#endif
+#endif
+int main() { return 0; }
+
+
+Performing C++ SOURCE FILE Test LLVM_USES_LIBSTDCXX succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Triak2
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_b0125/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_b0125.dir/build.make CMakeFiles/cmTC_b0125.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Triak2'
+Building CXX object CMakeFiles/cmTC_b0125.dir/src.cxx.o
+/usr/bin/clang++-22 -DLLVM_USES_LIBSTDCXX  -std=gnu++17 -MD -MT CMakeFiles/cmTC_b0125.dir/src.cxx.o -MF CMakeFiles/cmTC_b0125.dir/src.cxx.o.d -o CMakeFiles/cmTC_b0125.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Triak2/src.cxx
+Linking CXX executable cmTC_b0125
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b0125.dir/link.txt --verbose=1
+/usr/bin/clang++-22 CMakeFiles/cmTC_b0125.dir/src.cxx.o -o cmTC_b0125 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Triak2'
+
+
+Source file was:
+
+#include <iosfwd>
+#if !defined(__GLIBCXX__)
+#error Not libstdc++
+#endif
+int main() { return 0; }
+
+
+Performing C++ SOURCE FILE Test LLVM_DEFAULT_TO_GLIBCXX_USE_CXX11_ABI succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-xuONzr
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_c2239/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_c2239.dir/build.make CMakeFiles/cmTC_c2239.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-xuONzr'
+Building CXX object CMakeFiles/cmTC_c2239.dir/src.cxx.o
+/usr/bin/clang++-22 -DLLVM_DEFAULT_TO_GLIBCXX_USE_CXX11_ABI  -std=gnu++17 -MD -MT CMakeFiles/cmTC_c2239.dir/src.cxx.o -MF CMakeFiles/cmTC_c2239.dir/src.cxx.o.d -o CMakeFiles/cmTC_c2239.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-xuONzr/src.cxx
+Linking CXX executable cmTC_c2239
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c2239.dir/link.txt --verbose=1
+/usr/bin/clang++-22 CMakeFiles/cmTC_c2239.dir/src.cxx.o -o cmTC_c2239 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-xuONzr'
+
+
+Source file was:
+
+#include <string>
+#if _GLIBCXX_USE_CXX11_ABI == 0
+#error _GLIBCXX_USE_CXX11_ABI not active
+#endif
+int main() { return 0; }
+
+
+Performing C SOURCE FILE Test C_SUPPORTS_FPIC succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-NzkriS
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_d3c4c/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_d3c4c.dir/build.make CMakeFiles/cmTC_d3c4c.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-NzkriS'
+Building C object CMakeFiles/cmTC_d3c4c.dir/src.c.o
+/usr/bin/clang-22 -DC_SUPPORTS_FPIC  -Werror -fPIC -MD -MT CMakeFiles/cmTC_d3c4c.dir/src.c.o -MF CMakeFiles/cmTC_d3c4c.dir/src.c.o.d -o CMakeFiles/cmTC_d3c4c.dir/src.c.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-NzkriS/src.c
+Linking C executable cmTC_d3c4c
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d3c4c.dir/link.txt --verbose=1
+/usr/bin/clang-22 CMakeFiles/cmTC_d3c4c.dir/src.c.o -o cmTC_d3c4c 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-NzkriS'
+
+
+Source file was:
+int main(void) { return 0; }
+
+Performing C++ SOURCE FILE Test CXX_SUPPORTS_FPIC succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-RyLTSw
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_592d7/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_592d7.dir/build.make CMakeFiles/cmTC_592d7.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-RyLTSw'
+Building CXX object CMakeFiles/cmTC_592d7.dir/src.cxx.o
+/usr/bin/clang++-22 -DCXX_SUPPORTS_FPIC  -Werror -fPIC -std=gnu++17 -MD -MT CMakeFiles/cmTC_592d7.dir/src.cxx.o -MF CMakeFiles/cmTC_592d7.dir/src.cxx.o.d -o CMakeFiles/cmTC_592d7.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-RyLTSw/src.cxx
+Linking CXX executable cmTC_592d7
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_592d7.dir/link.txt --verbose=1
+/usr/bin/clang++-22 CMakeFiles/cmTC_592d7.dir/src.cxx.o -o cmTC_592d7 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-RyLTSw'
+
+
+Source file was:
+int main() { return 0; }
+
+Performing C SOURCE FILE Test C_SUPPORTS_FNO_SEMANTIC_INTERPOSITION succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-UzSg3B
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_62704/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_62704.dir/build.make CMakeFiles/cmTC_62704.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-UzSg3B'
+Building C object CMakeFiles/cmTC_62704.dir/src.c.o
+/usr/bin/clang-22 -DC_SUPPORTS_FNO_SEMANTIC_INTERPOSITION  -fPIC    -Werror -fno-semantic-interposition -MD -MT CMakeFiles/cmTC_62704.dir/src.c.o -MF CMakeFiles/cmTC_62704.dir/src.c.o.d -o CMakeFiles/cmTC_62704.dir/src.c.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-UzSg3B/src.c
+Linking C executable cmTC_62704
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_62704.dir/link.txt --verbose=1
+/usr/bin/clang-22  -fPIC  CMakeFiles/cmTC_62704.dir/src.c.o -o cmTC_62704 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-UzSg3B'
+
+
+Source file was:
+int main(void) { return 0; }
+
+Performing C++ SOURCE FILE Test CXX_SUPPORTS_FNO_SEMANTIC_INTERPOSITION succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Fg3D8h
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_18044/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_18044.dir/build.make CMakeFiles/cmTC_18044.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Fg3D8h'
+Building CXX object CMakeFiles/cmTC_18044.dir/src.cxx.o
+/usr/bin/clang++-22 -DCXX_SUPPORTS_FNO_SEMANTIC_INTERPOSITION  -fPIC    -Werror -fno-semantic-interposition -std=gnu++17 -MD -MT CMakeFiles/cmTC_18044.dir/src.cxx.o -MF CMakeFiles/cmTC_18044.dir/src.cxx.o.d -o CMakeFiles/cmTC_18044.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Fg3D8h/src.cxx
+Linking CXX executable cmTC_18044
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_18044.dir/link.txt --verbose=1
+/usr/bin/clang++-22  -fPIC  CMakeFiles/cmTC_18044.dir/src.cxx.o -o cmTC_18044 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Fg3D8h'
+
+
+Source file was:
+int main() { return 0; }
+
+Performing C++ SOURCE FILE Test SUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-A1FKkM
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_663a2/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_663a2.dir/build.make CMakeFiles/cmTC_663a2.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-A1FKkM'
+Building CXX object CMakeFiles/cmTC_663a2.dir/src.cxx.o
+/usr/bin/clang++-22 -DSUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG  -fPIC -fno-semantic-interposition    -fvisibility-inlines-hidden -std=gnu++17 -MD -MT CMakeFiles/cmTC_663a2.dir/src.cxx.o -MF CMakeFiles/cmTC_663a2.dir/src.cxx.o.d -o CMakeFiles/cmTC_663a2.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-A1FKkM/src.cxx
+Linking CXX executable cmTC_663a2
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_663a2.dir/link.txt --verbose=1
+/usr/bin/clang++-22  -fPIC -fno-semantic-interposition  CMakeFiles/cmTC_663a2.dir/src.cxx.o -o cmTC_663a2 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-A1FKkM'
+
+
+Source file was:
+int main() { return 0; }
+
+Performing C++ SOURCE FILE Test CXX_SUPPORTS_SUGGEST_OVERRIDE_FLAG succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-iObQ02
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_ddbc0/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_ddbc0.dir/build.make CMakeFiles/cmTC_ddbc0.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-iObQ02'
+Building CXX object CMakeFiles/cmTC_ddbc0.dir/src.cxx.o
+/usr/bin/clang++-22 -DCXX_SUPPORTS_SUGGEST_OVERRIDE_FLAG  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor    -Wsuggest-override -std=gnu++17 -MD -MT CMakeFiles/cmTC_ddbc0.dir/src.cxx.o -MF CMakeFiles/cmTC_ddbc0.dir/src.cxx.o.d -o CMakeFiles/cmTC_ddbc0.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-iObQ02/src.cxx
+Linking CXX executable cmTC_ddbc0
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ddbc0.dir/link.txt --verbose=1
+/usr/bin/clang++-22  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor  CMakeFiles/cmTC_ddbc0.dir/src.cxx.o -o cmTC_ddbc0 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-iObQ02'
+
+
+Source file was:
+int main() { return 0; }
+
+Performing C++ SOURCE FILE Test CXX_WSUGGEST_OVERRIDE_ALLOWS_ONLY_FINAL succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Zd8Qep
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_5d2a3/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_5d2a3.dir/build.make CMakeFiles/cmTC_5d2a3.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Zd8Qep'
+Building CXX object CMakeFiles/cmTC_5d2a3.dir/src.cxx.o
+/usr/bin/clang++-22 -DCXX_WSUGGEST_OVERRIDE_ALLOWS_ONLY_FINAL  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor  -Werror=suggest-override -std=gnu++17 -MD -MT CMakeFiles/cmTC_5d2a3.dir/src.cxx.o -MF CMakeFiles/cmTC_5d2a3.dir/src.cxx.o.d -o CMakeFiles/cmTC_5d2a3.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Zd8Qep/src.cxx
+/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Zd8Qep/src.cxx:1:7: warning: 'base' has virtual functions but non-virtual destructor [-Wnon-virtual-dtor]
+    1 | class base {public: virtual void anchor();};
+      |       ^
+/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Zd8Qep/src.cxx:2:38: warning: 'derived' has virtual functions but non-virtual destructor [-Wnon-virtual-dtor]
+    2 |                                class derived : base {public: void anchor() final;};
+      |                                      ^
+2 warnings generated.
+Linking CXX executable cmTC_5d2a3
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5d2a3.dir/link.txt --verbose=1
+/usr/bin/clang++-22  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor  -Werror=suggest-override CMakeFiles/cmTC_5d2a3.dir/src.cxx.o -o cmTC_5d2a3 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Zd8Qep'
+
+
+Source file was:
+class base {public: virtual void anchor();};
+                               class derived : base {public: void anchor() final;};
+                               int main() { return 0; }
+
+Performing C SOURCE FILE Test C_WCOMMENT_ALLOWS_LINE_WRAP succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-nrzhSy
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_7c78c/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_7c78c.dir/build.make CMakeFiles/cmTC_7c78c.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-nrzhSy'
+Building C object CMakeFiles/cmTC_7c78c.dir/src.c.o
+/usr/bin/clang-22 -DC_WCOMMENT_ALLOWS_LINE_WRAP  -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default  -Werror -Wcomment -MD -MT CMakeFiles/cmTC_7c78c.dir/src.c.o -MF CMakeFiles/cmTC_7c78c.dir/src.c.o.d -o CMakeFiles/cmTC_7c78c.dir/src.c.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-nrzhSy/src.c
+Linking C executable cmTC_7c78c
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7c78c.dir/link.txt --verbose=1
+/usr/bin/clang-22  -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default  -Werror -Wcomment CMakeFiles/cmTC_7c78c.dir/src.c.o -o cmTC_7c78c 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-nrzhSy'
+
+
+Source file was:
+// \
+//
+int main(void) {return 0;}
+
+Performing C SOURCE FILE Test C_SUPPORTS_MISLEADING_INDENTATION_FLAG succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-tZ9B4D
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_2d133/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_2d133.dir/build.make CMakeFiles/cmTC_2d133.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-tZ9B4D'
+Building C object CMakeFiles/cmTC_2d133.dir/src.c.o
+/usr/bin/clang-22 -DC_SUPPORTS_MISLEADING_INDENTATION_FLAG  -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion    -Werror -Wmisleading-indentation -MD -MT CMakeFiles/cmTC_2d133.dir/src.c.o -MF CMakeFiles/cmTC_2d133.dir/src.c.o.d -o CMakeFiles/cmTC_2d133.dir/src.c.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-tZ9B4D/src.c
+Linking C executable cmTC_2d133
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2d133.dir/link.txt --verbose=1
+/usr/bin/clang-22  -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion  CMakeFiles/cmTC_2d133.dir/src.c.o -o cmTC_2d133 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-tZ9B4D'
+
+
+Source file was:
+int main(void) { return 0; }
+
+Performing C++ SOURCE FILE Test CXX_SUPPORTS_MISLEADING_INDENTATION_FLAG succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-4yGJNz
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_25f0c/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_25f0c.dir/build.make CMakeFiles/cmTC_25f0c.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-4yGJNz'
+Building CXX object CMakeFiles/cmTC_25f0c.dir/src.cxx.o
+/usr/bin/clang++-22 -DCXX_SUPPORTS_MISLEADING_INDENTATION_FLAG  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed    -Werror -Wmisleading-indentation -std=gnu++17 -MD -MT CMakeFiles/cmTC_25f0c.dir/src.cxx.o -MF CMakeFiles/cmTC_25f0c.dir/src.cxx.o.d -o CMakeFiles/cmTC_25f0c.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-4yGJNz/src.cxx
+Linking CXX executable cmTC_25f0c
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_25f0c.dir/link.txt --verbose=1
+/usr/bin/clang++-22  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed  CMakeFiles/cmTC_25f0c.dir/src.cxx.o -o cmTC_25f0c 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-4yGJNz'
+
+
+Source file was:
+int main() { return 0; }
+
+Performing C SOURCE FILE Test C_SUPPORTS_CTAD_MAYBE_UNSPPORTED_FLAG succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Sii8Bn
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_9050c/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_9050c.dir/build.make CMakeFiles/cmTC_9050c.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Sii8Bn'
+Building C object CMakeFiles/cmTC_9050c.dir/src.c.o
+/usr/bin/clang-22 -DC_SUPPORTS_CTAD_MAYBE_UNSPPORTED_FLAG  -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation    -Werror -Wctad-maybe-unsupported -MD -MT CMakeFiles/cmTC_9050c.dir/src.c.o -MF CMakeFiles/cmTC_9050c.dir/src.c.o.d -o CMakeFiles/cmTC_9050c.dir/src.c.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Sii8Bn/src.c
+Linking C executable cmTC_9050c
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9050c.dir/link.txt --verbose=1
+/usr/bin/clang-22  -fPIC -fno-semantic-interposition -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation  CMakeFiles/cmTC_9050c.dir/src.c.o -o cmTC_9050c 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Sii8Bn'
+
+
+Source file was:
+int main(void) { return 0; }
+
+Performing C++ SOURCE FILE Test CXX_SUPPORTS_CTAD_MAYBE_UNSPPORTED_FLAG succeeded with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Lhxsfc
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_7c441/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_7c441.dir/build.make CMakeFiles/cmTC_7c441.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Lhxsfc'
+Building CXX object CMakeFiles/cmTC_7c441.dir/src.cxx.o
+/usr/bin/clang++-22 -DCXX_SUPPORTS_CTAD_MAYBE_UNSPPORTED_FLAG  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed -Wmisleading-indentation    -Werror -Wctad-maybe-unsupported -std=gnu++17 -MD -MT CMakeFiles/cmTC_7c441.dir/src.cxx.o -MF CMakeFiles/cmTC_7c441.dir/src.cxx.o.d -o CMakeFiles/cmTC_7c441.dir/src.cxx.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Lhxsfc/src.cxx
+Linking CXX executable cmTC_7c441
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7c441.dir/link.txt --verbose=1
+/usr/bin/clang++-22  -fPIC -fno-semantic-interposition -fvisibility-inlines-hidden -Werror=date-time -Werror=unguarded-availability-new -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wno-noexcept-type -Wnon-virtual-dtor -Wdelete-non-virtual-dtor -Wsuggest-override -Wstring-conversion -Wno-pass-failed -Wmisleading-indentation  CMakeFiles/cmTC_7c441.dir/src.cxx.o -o cmTC_7c441 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-Lhxsfc'
+
+
+Source file was:
+int main() { return 0; }
+
+Determining if the flock exist passed with the following output:
+Change Dir: /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-q8juvL
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_a56e6/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_a56e6.dir/build.make CMakeFiles/cmTC_a56e6.dir/build
+gmake[1]: Entering directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-q8juvL'
+Building C object CMakeFiles/cmTC_a56e6.dir/CheckSymbolExists.c.o
+/usr/bin/clang-22   -fPIC -fno-semantic-interposition  -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -ffunction-sections -fdata-sections  -MD -MT CMakeFiles/cmTC_a56e6.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_a56e6.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_a56e6.dir/CheckSymbolExists.c.o -c /app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-q8juvL/CheckSymbolExists.c
+Linking C executable cmTC_a56e6
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a56e6.dir/link.txt --verbose=1
+/usr/bin/clang-22  -fPIC -fno-semantic-interposition  -Wall -Wextra -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -Wimplicit-fallthrough -Wcovered-switch-default -Wstring-conversion -Wmisleading-indentation -Wctad-maybe-unsupported -ffunction-sections -fdata-sections  CMakeFiles/cmTC_a56e6.dir/CheckSymbolExists.c.o -o cmTC_a56e6 
+gmake[1]: Leaving directory '/app/data/workspaces/li-langverse/lic/code_implementer-1780948696644/repo/build-local-test/CMakeFiles/CMakeScratch/TryCompile-q8juvL'
+
+
+File CheckSymbolExists.c:
+/* */
+#include <sys/file.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef flock
+  return ((int*)(&flock))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}

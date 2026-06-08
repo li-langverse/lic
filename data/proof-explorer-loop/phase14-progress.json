@@ -4,14 +4,14 @@
   "baseline_open": 1109,
   "current": {
     "total": 1556,
-    "proved": 551,
-    "open": 916,
-    "open_non_erdos": 15,
+    "proved": 552,
+    "open": 901,
+    "open_non_erdos": 0,
     "open_erdos": 901,
     "axiomatic": 86,
-    "target": 0,
+    "target": 14,
     "discrepancy": 3
   },
-  "proved_delta": 197,
-  "open_delta": -193
+  "proved_delta": 198,
+  "open_delta": -208
 }

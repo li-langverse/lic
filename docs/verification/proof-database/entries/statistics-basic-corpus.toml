@@ -40,7 +40,7 @@ gap_id = "G-stats"
 lean_module = "proof-db/statistics/StatsAxioms.lean"
 li_specimen = "proof-db/statistics/basic-corpus/st_lm_bc_ber_009.li"
 content_tier = "raw"
-notes = "phase8-basic-corpus tranche=1"; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh
+notes = "phase8-basic-corpus tranche=1; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh"
 last_verified_lic_commit = "main"
 [[entry]]
 id = "ST-LM-BC-BN-006"
@@ -54,7 +54,7 @@ gap_id = "G-stats"
 lean_module = "proof-db/statistics/StatsAxioms.lean"
 li_specimen = "proof-db/statistics/basic-corpus/st_lm_bc_bn_006.li"
 content_tier = "raw"
-notes = "phase8-basic-corpus tranche=1"; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh
+notes = "phase8-basic-corpus tranche=1; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh"
 last_verified_lic_commit = "main"
 [[entry]]
 id = "ST-LM-BC-CH-004"
@@ -68,7 +68,7 @@ gap_id = "G-stats"
 lean_module = "proof-db/statistics/StatsAxioms.lean"
 li_specimen = "proof-db/statistics/basic-corpus/st_lm_bc_ch_004.li"
 content_tier = "raw"
-notes = "phase8-basic-corpus tranche=1"; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh
+notes = "phase8-basic-corpus tranche=1; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh"
 last_verified_lic_commit = "main"
 [[entry]]
 id = "ST-LM-BC-CLT-005"
@@ -82,7 +82,7 @@ gap_id = "G-stats"
 lean_module = "proof-db/statistics/StatsAxioms.lean"
 li_specimen = "proof-db/statistics/basic-corpus/st_lm_bc_clt_005.li"
 content_tier = "raw"
-notes = "phase8-basic-corpus tranche=1"; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh
+notes = "phase8-basic-corpus tranche=1; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh"
 last_verified_lic_commit = "main"
 [[entry]]
 id = "ST-LM-BC-COV-007"
@@ -96,7 +96,7 @@ gap_id = "G-stats"
 lean_module = "proof-db/statistics/StatsAxioms.lean"
 li_specimen = "proof-db/statistics/basic-corpus/st_lm_bc_cov_007.li"
 content_tier = "raw"
-notes = "phase8-basic-corpus tranche=1"; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh
+notes = "phase8-basic-corpus tranche=1; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh"
 last_verified_lic_commit = "main"
 [[entry]]
 id = "ST-LM-BC-GAU-010"
@@ -110,7 +110,7 @@ gap_id = "G-stats"
 lean_module = "proof-db/statistics/StatsAxioms.lean"
 li_specimen = "proof-db/statistics/basic-corpus/st_lm_bc_gau_010.li"
 content_tier = "raw"
-notes = "phase8-basic-corpus tranche=1"; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh
+notes = "phase8-basic-corpus tranche=1; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh"
 last_verified_lic_commit = "main"
 [[entry]]
 id = "ST-LM-BC-MGF-008"
@@ -124,7 +124,7 @@ gap_id = "G-stats"
 lean_module = "proof-db/statistics/StatsAxioms.lean"
 li_specimen = "proof-db/statistics/basic-corpus/st_lm_bc_mgf_008.li"
 content_tier = "raw"
-notes = "phase8-basic-corpus tranche=1"; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh
+notes = "phase8-basic-corpus tranche=1; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh"
 last_verified_lic_commit = "main"
 [[entry]]
 id = "ST-LM-BC-VR-003"
@@ -138,7 +138,7 @@ gap_id = "G-stats"
 lean_module = "proof-db/statistics/StatsAxioms.lean"
 li_specimen = "proof-db/statistics/basic-corpus/st_lm_bc_vr_003.li"
 content_tier = "raw"
-notes = "phase8-basic-corpus tranche=1"; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh
+notes = "phase8-basic-corpus tranche=1; phase14: discharged via specimen + discharge_statistics_basic_corpus_lean.sh"
 last_verified_lic_commit = "main"
 [[entry]]
 id = "ST-AX-BC-EX-012"

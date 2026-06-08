@@ -14,7 +14,16 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 ## Status
 
-Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
+Parsing, policy checks, and **MIR proc tags** are implemented in `lic build` / `lic verify`:
+
+| Decorator | MIR tag | Verify telemetry | Gate script |
+|-----------|---------|------------------|-------------|
+| `@cpu` | `MirDecorator.cpu` | `mir_cpu_def` | `check-mir-cpu-decorator.sh` |
+| `@parallel(disjoint=…)` | `MirDecorator.parallel` + `disjoint_proven` | `mir_parallel_disjoint` | `check-mir-parallel-decorator.sh` |
+| `@vectorized(lanes=N)` | `MirDecorator.vectorized` | `mir_vectorized_proc` | `check-mir-vectorized-decorator.sh` |
+| `@gpu(devices=N)` | `MirDecorator.gpu` | `mir_gpu_def` | `check-mir-gpu-decorator.sh` |
+
+Def-level `@parallel(disjoint=…)` inherits disjointness to nested `parallel for` loops (policy witness — see **G-par**). Full Lean **P-dec** discharge and LKIR `@gpu` codegen remain open (**G-dec** / **G-gpu** partial).
 
 ## Resource knobs (`lic build`)
 

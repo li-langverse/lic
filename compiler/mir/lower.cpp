@@ -143,6 +143,9 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
       md.vectorized = true;
       md.lanes = mir_vectorized_lanes_from_decorator(d);
     }
+    if (d.name == "cpu") {
+      md.cpu = true;
+    }
     if (d.name == "gpu") {
       md.gpu = true;
       md.gpu_devices = mir_gpu_devices_from_decorator(d);

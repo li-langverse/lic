@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-7e / lic#110:** Kokkos-aligned `MemorySpace` / `ExecutionSpace` / `View` policy, tier-2 `shared_c_kernel` migration appendix, benchmarks Kokkos 4.6.x vendor handoff — [2026-06-08-kokkos-memory-execution-spaces-110.md](docs/release-notes/2026-06-08-kokkos-memory-execution-spaces-110.md).
+
 - **Docs:** GitHub Pages handbook hub at https://li-langverse.github.io/lic/ (`site/index.html`, `pages.yml`) — [2026-05-30-lic-handbook-pages.md](docs/release-notes/2026-05-30-lic-handbook-pages.md), [2026-05-30-lic-pages-site-artifact.md](docs/release-notes/2026-05-30-lic-pages-site-artifact.md) (fix missing `site/` artifact after #535).
 
 ### Changed

@@ -17,7 +17,7 @@ Phase 2 is complete when the WPs below are landed and documented; no single gate
 
 ## P0 order (start here)
 
-1. **WP-SCI-03** — `run_algo_registry` real kernels (CFD/FEA/QM rows); extend `run_algo_registry_tier2.li`.
+1. **WP-SCI-03** — `run_algo_registry` real kernels (CFD/FEA/QM rows); extend `run_algo_registry_tier2.li`. **Partial (2026-06-08):** QM/FEA/CFD tier-2 oracles + registry dispatch landed; stub remains for robotics/drug/am rows (701–903).
 2. **WP-PLAT-05** — LAMMPS/GROMACS external oracle column (unblocks SCI-03 MD rows).
 3. **WP-SCI-04** — `sim.viz` → wgpu field draw (depends WP-GD-05 / PH-HW-2).
 

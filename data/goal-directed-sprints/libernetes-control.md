@@ -11,7 +11,7 @@ plan: docs/libernetes/master-plan.md
 
 ## Mission
 
-Control plane UX and package scaffolds. Wave 0 **DONE**. Wave 1 **DONE**. Wave 2 adds scheduler scaffold, apiserver serve entrypoint, and doctor coverage.
+Control plane UX and package scaffolds. Wave 0 **DONE**. Wave 1 adds `libernetes init/join` scripts and join-flow doc.
 
 ## Phase checklist
 
@@ -23,9 +23,6 @@ Control plane UX and package scaffolds. Wave 0 **DONE**. Wave 1 **DONE**. Wave 2
 | **LB-K3** | `scripts/libernetes-init.sh` | **DONE** | `check-libernetes-control-wave1-gate.sh` |
 | **LB-K4** | `scripts/libernetes-worker-join.sh` | **DONE** | same wave1 gate |
 | **LB-K5** | `docs/libernetes/join-flow.md` | **DONE** | same wave1 gate |
-| **LB-K6** | `packages/li-libernetes-scheduler/` scaffold | pending | `check-libernetes-control-wave2-gate.sh` |
-| **LB-K7** | `packages/li-libernetes-apiserver/src/serve.li` | pending | same wave2 gate |
-| **LB-K8** | `libernetes-doctor.sh` checks scheduler | pending | same wave2 gate |
 
 ## Completion gate
 

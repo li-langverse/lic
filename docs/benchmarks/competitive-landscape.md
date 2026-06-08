@@ -18,7 +18,7 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 
 | Ecosystem | Why track | Li implication |
 |-----------|-----------|----------------|
-| Chapel | PGAS HPC language | Locale / distribution model → future G-* |
+| Chapel | PGAS HPC language | Locale / distribution model → future G-*; **2.3+** [Python/NumPy interop](https://chapel-lang.org/docs/modules/packages/Python.html) → [foreign bindings policy](../superpowers/specs/2026-06-08-li-foreign-bindings-reference-policy.md) (**G-ai**) |
 | Kokkos | Performance portability | Team policies, backends → LLVM/OpenMP alignment |
 | SYCL / oneAPI | Heterogeneous offload | Watch; no Li GPU story in v1 |
 | Zig | Low-level SIMD/comptime | Patterns for codegen, not a bench column yet |

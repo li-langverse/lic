@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-30  
+**Last updated:** 2026-06-08  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -65,6 +65,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-erdos** | Partial | **WP0-B:** proof-db/erdos/register.json → erdos-register.toml (E-*); **WP1+** Lean per 	arget row |
 | **G-chem** | Stub | **WP0-D:** reaction / stoichiometry catalog; tier-2 chem benches (**5b**) TBD |
 | **G-bio** | Stub | **WP0-D:** population / sequence toy models; tier-2 bio benches (**5b**) TBD |
+| **G-ai** | Stub | Foreign AI/Python boundary proofs — [reference policy](../superpowers/specs/2026-06-08-li-foreign-bindings-reference-policy.md) (lic#54); no `std/foreign` implementation |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
 
 **Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta**, **P-physics**, **P-num**, **P-discrete**, **P-stats**, **P-ml-convergence**, **P-graph**, **P-erdos**, **P-chem**, **P-bio** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc. **P-physics partial:** [proof-database.md](proof-database.md) index + `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`, pin `a9542bfc`); tier-2 wrappers still **modeling_gap** (`ensures true` on extern kernels).
@@ -117,6 +118,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-erdos** | Erdős problem register | Curated open problems → catalog E-* | **Partial** — **WP0-B** register + sync; Lean per row **WP1+** | **Doc**, **2f**, WP0-B | proof-db/erdos/register.json, proof-db/erdos/ROADMAP.md |
 | **G-chem** | Chemistry models | Stoichiometry, energy bookkeeping | **Stub** — **WP0-D** | **Doc**, **5b**, WP0-D | Tier-2 chem benches (planned) |
 | **G-bio** | Biology models | Growth / sequence toy dynamics | **Stub** — **WP0-D** | **Doc**, **5b**, WP0-D | Tier-2 bio benches (planned) |
+| **G-ai** | Foreign AI/Python boundary | Typed marshaling + boundary `ensures` on cross-language calls | **Stub** — [foreign bindings reference policy](../superpowers/specs/2026-06-08-li-foreign-bindings-reference-policy.md) (lic#54); `raises Foreign` + seam manifest TBD | **Doc**, future **std/foreign** | Policy doc only; PH-IO ingest + PH-ML harness patterns cited |
 
 ---
 

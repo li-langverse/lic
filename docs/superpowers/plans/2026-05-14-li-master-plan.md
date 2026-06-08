@@ -410,6 +410,7 @@ Track in phase **Doc** until each is checked:
 | `2026-05-14-phase-00-bootstrap.md` | **Done** — C++ + CMake + LLVM smoke |
 | `2026-05-14-phase-01-lexer-parser.md` | Valid structure; retarget paths to `compiler/` |
 | `2026-05-14-phase-02-typechecker.md` | Partial; split into 2a–2d |
+| [2026-05-14-phase-02e-contracts.md](2026-05-14-phase-02e-contracts.md) | Phase **2e** — VC generation; **G-vc** v1 exit gates (**2e-a…c**) |
 | `2026-05-14-phase-03-mir-codegen.md` | LLVM-only codegen |
 | `2026-05-14-phase-04-runtime-stdlib.md` | Add PEP 649 deferred annotations |
 | `2026-05-14-phase-05-tetris.md` | Valid |
@@ -451,7 +452,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5 — Tetris
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
-- [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
+- [x] Phase 2e — Contracts + refinements — **v1 exit (#83 + plan):** **2e-a** `vc_emit_contracts.sh`, **2e-b** `mir_vc_witness.sh` (`witnessed_ensures=` / `mir_return_linked=` via `vc_witness.cpp`), **2e-c** `contracts_discharge_corpus.sh` + `check-autovc-open-goals.sh`; composite `./scripts/check-phase-2e-gates.sh`; **G-vc** still **Partial** — **2e-d** open (float/opaque/loop ensures) — [phase-02e plan](2026-05-14-phase-02e-contracts.md)
 - [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155):** default `lake build AutoVC` on `lic build`; **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; intentional open: `sqrt_open_bound`; **G-lean** / **G-vc** still open — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (#150 7d-c):** `@vectorized` on `for` → `ArraySimdScope`; **7d-b** lanes=4; **def `@parallel(disjoint=)`** inherits to nested `parallel for` (policy); **open:** full MIR proc tags, Lean **G-par** proofs

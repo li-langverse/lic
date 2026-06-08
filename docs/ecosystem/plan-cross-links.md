@@ -28,6 +28,7 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-14-phase-00-bootstrap.md` | Bootstrap |
 | `2026-05-14-phase-01-lexer-parser.md` | Parser |
 | `2026-05-14-phase-02-typechecker.md` | Types |
+| `2026-05-14-phase-02e-contracts.md` | **PH-2e** · **G-vc** (VC generation exit gates) |
 | `2026-05-14-phase-03-mir-codegen.md` | MIR / LLVM |
 | `2026-05-14-phase-04-runtime-stdlib.md` | Runtime / std |
 | `2026-05-14-phase-05-tetris.md` | Demo game |

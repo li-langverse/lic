@@ -77,6 +77,49 @@ def vec3_len_sq_spec (a : Int) (result : Float) : Prop :=
 
 theorem vec3_len_sq_spec_proved (a : Int) : vec3_len_sq_spec a (vec3_len_sq_eval a) := rfl
 
+/-- Length-1 rhs broadcast add on `array[4, float]` (matches `broadcast_len1_add_float4.li`). -/
+def broadcast_len1_add_float4_spec (a : LiArray Float 4) (b : LiArray Float 1) (result : LiArray Float 4) :
+    Prop :=
+  (result[0]! = a[0]! + b[0]!) ∧
+  (result[1]! = a[1]! + b[0]!) ∧
+  (result[2]! = a[2]! + b[0]!) ∧
+  (result[3]! = a[3]! + b[0]!)
+
+/-- Semantic length-1 rhs broadcast add (`return a + b` when `b` has length 1). -/
+def broadcast_len1_add_float4_eval (a : LiArray Float 4) (b : LiArray Float 1) : LiArray Float 4 :=
+  fun i =>
+    match i with
+    | ⟨0, _⟩ => a[0]! + b[0]!
+    | ⟨1, _⟩ => a[1]! + b[0]!
+    | ⟨2, _⟩ => a[2]! + b[0]!
+    | ⟨3, _⟩ => a[3]! + b[0]!
+
+theorem broadcast_len1_add_float4_spec_proved (a : LiArray Float 4) (b : LiArray Float 1) :
+    broadcast_len1_add_float4_spec a b (broadcast_len1_add_float4_eval a b) := by
+  unfold broadcast_len1_add_float4_spec broadcast_len1_add_float4_eval
+  refine And.intro rfl (And.intro rfl (And.intro rfl rfl))
+
+/-- Length-1 lhs broadcast mul on `array[4, int]` (matches `broadcast_len1_mul_int4.li`). -/
+def broadcast_len1_mul_int4_spec (s : LiArray Int 1) (v : LiArray Int 4) (result : LiArray Int 4) : Prop :=
+  (result[0]! = s[0]! * v[0]!) ∧
+  (result[1]! = s[0]! * v[1]!) ∧
+  (result[2]! = s[0]! * v[2]!) ∧
+  (result[3]! = s[0]! * v[3]!)
+
+/-- Semantic length-1 lhs broadcast mul (`return s * v` when `s` has length 1). -/
+def broadcast_len1_mul_int4_eval (s : LiArray Int 1) (v : LiArray Int 4) : LiArray Int 4 :=
+  fun i =>
+    match i with
+    | ⟨0, _⟩ => s[0]! * v[0]!
+    | ⟨1, _⟩ => s[0]! * v[1]!
+    | ⟨2, _⟩ => s[0]! * v[2]!
+    | ⟨3, _⟩ => s[0]! * v[3]!
+
+theorem broadcast_len1_mul_int4_spec_proved (s : LiArray Int 1) (v : LiArray Int 4) :
+    broadcast_len1_mul_int4_spec s v (broadcast_len1_mul_int4_eval s v) := by
+  unfold broadcast_len1_mul_int4_spec broadcast_len1_mul_int4_eval
+  refine And.intro rfl (And.intro rfl (And.intro rfl rfl))
+
 /-!
 ## Trusted libm (`li_rt_sqrt`) — **P-float** corpus only
 

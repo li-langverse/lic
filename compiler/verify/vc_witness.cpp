@@ -553,6 +553,88 @@ bool witness_vec3_len_callproc_chain_impl(const ProcDecl& proc, const Expr& ensu
          inner.args[0] && expr_is_ident(inner.args[0].get(), a);
 }
 
+bool expr_is_index0_lit(const Expr* e, const std::string& arr) {
+  return e != nullptr && e->kind == Expr::Kind::Index && expr_is_ident(e->base.get(), arr) &&
+         expr_is_int_lit(e->index.get(), 0);
+}
+
+bool expr_is_index_lit_binop_with_short0(const Expr* rhs, const std::string& long_arr,
+                                       std::int64_t idx, const std::string& short_arr, BinOp op) {
+  if (rhs == nullptr || rhs->kind != Expr::Kind::BinOp || rhs->bin_op != op || !rhs->lhs ||
+      !rhs->rhs) {
+    return false;
+  }
+  const auto long_ok = [&](const Expr* side) -> bool {
+    return side && side->kind == Expr::Kind::Index && expr_is_ident(side->base.get(), long_arr) &&
+           expr_is_int_lit(side->index.get(), idx);
+  };
+  const auto short_ok = [&](const Expr* side) -> bool {
+    return expr_is_index0_lit(side, short_arr);
+  };
+  return (long_ok(rhs->lhs.get()) && short_ok(rhs->rhs.get())) ||
+         (short_ok(rhs->lhs.get()) && long_ok(rhs->rhs.get()));
+}
+
+bool expr_is_broadcast_len1_ij_entry_eq(const Expr* e, const std::string& result,
+                                        const std::string& long_arr, const std::string& short_arr,
+                                        BinOp op, std::int64_t idx) {
+  if (e == nullptr || e->kind != Expr::Kind::BinOp || e->bin_op != BinOp::Eq || !e->lhs ||
+      !e->rhs) {
+    return false;
+  }
+  const Expr& lhs = *e->lhs;
+  if (lhs.kind != Expr::Kind::Index || !expr_is_ident(lhs.base.get(), result) ||
+      !expr_is_int_lit(lhs.index.get(), idx)) {
+    return false;
+  }
+  return expr_is_index_lit_binop_with_short0(e->rhs.get(), long_arr, idx, short_arr, op);
+}
+
+bool expr_is_broadcast_len1_spec(const Expr& e, const std::string& result,
+                                 const std::string& long_arr, const std::string& short_arr,
+                                 BinOp op, std::int64_t n) {
+  std::vector<const Expr*> terms;
+  collect_and_chain_terms(&e, terms);
+  if (static_cast<std::int64_t>(terms.size()) != n) {
+    return false;
+  }
+  for (std::int64_t idx = 0; idx < n; ++idx) {
+    if (!expr_is_broadcast_len1_ij_entry_eq(terms[static_cast<std::size_t>(idx)], result, long_arr,
+                                            short_arr, op, idx)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::optional<BroadcastLen1DischargeKind> witness_broadcast_len1_spec_impl(
+    const ProcDecl& proc, const Expr& ensures_expr) {
+  const Expr* ret = single_return_expr(proc);
+  if (ret == nullptr || ret->kind != Expr::Kind::BinOp || !ret->lhs || !ret->rhs ||
+      ret->lhs->kind != Expr::Kind::Ident || ret->rhs->kind != Expr::Kind::Ident) {
+    return std::nullopt;
+  }
+  const std::string& op_lhs = ret->lhs->ident;
+  const std::string& op_rhs = ret->rhs->ident;
+  if (ret->bin_op == BinOp::Add) {
+    if (expr_is_broadcast_len1_spec(ensures_expr, "result", op_lhs, op_rhs, BinOp::Add, 4)) {
+      return BroadcastLen1DischargeKind::AddFloat4;
+    }
+    if (expr_is_broadcast_len1_spec(ensures_expr, "result", op_rhs, op_lhs, BinOp::Add, 4)) {
+      return BroadcastLen1DischargeKind::AddFloat4;
+    }
+  }
+  if (ret->bin_op == BinOp::Mul) {
+    if (expr_is_broadcast_len1_spec(ensures_expr, "result", op_rhs, op_lhs, BinOp::Mul, 4)) {
+      return BroadcastLen1DischargeKind::MulInt4;
+    }
+    if (expr_is_broadcast_len1_spec(ensures_expr, "result", op_lhs, op_rhs, BinOp::Mul, 4)) {
+      return BroadcastLen1DischargeKind::MulInt4;
+    }
+  }
+  return std::nullopt;
+}
+
 bool expr_is_i_lt_bound(const Expr* e, const std::string& i, std::int64_t bound) {
   if (e == nullptr || e->kind != Expr::Kind::BinOp || e->bin_op != BinOp::Lt || !e->lhs ||
       !e->rhs) {
@@ -683,6 +765,9 @@ bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const
     return true;
   }
   if (witness_vec3_len_callproc_chain_impl(proc, *c.expr)) {
+    return true;
+  }
+  if (witness_broadcast_len1_spec_impl(proc, *c.expr).has_value()) {
     return true;
   }
   if (witness_sqrt_open_bound_spec_impl(proc, *c.expr)) {
@@ -834,6 +919,11 @@ bool witness_vec3_len_callproc_chain(const ProcDecl& proc, const Expr& ensures_e
 
 bool witness_sqrt_open_bound_spec(const ProcDecl& proc, const Expr& ensures_expr) {
   return witness_sqrt_open_bound_spec_impl(proc, ensures_expr);
+}
+
+std::optional<BroadcastLen1DischargeKind> witness_broadcast_len1_spec(const ProcDecl& proc,
+                                                                      const Expr& ensures_expr) {
+  return witness_broadcast_len1_spec_impl(proc, ensures_expr);
 }
 
 bool is_proof_db_axiom_decl(const ProcDecl& proc) {

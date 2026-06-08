@@ -25,6 +25,9 @@ bool witness_matmul2_at2_spec(const ProcDecl& proc, const Expr& ensures_expr);
 bool witness_vec3_len_sq_callproc(const ProcDecl& proc, const Expr& ensures_expr);
 bool witness_vec3_len_callproc_chain(const ProcDecl& proc, const Expr& ensures_expr);
 bool witness_sqrt_open_bound_spec(const ProcDecl& proc, const Expr& ensures_expr);
+enum class BroadcastLen1DischargeKind { AddFloat4, MulInt4 };
+std::optional<BroadcastLen1DischargeKind> witness_broadcast_len1_spec(const ProcDecl& proc,
+                                                                      const Expr& ensures_expr);
 bool is_proof_db_axiom_decl(const ProcDecl& proc);
 std::optional<std::string> proof_db_axiom_discharge_suffix(const ProcDecl& proc);
 bool ensures_expr_mentions_result(const Expr& e);

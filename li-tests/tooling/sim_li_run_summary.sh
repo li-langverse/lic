@@ -38,4 +38,15 @@ emit 201 1 1.0 2 pde_heat_explicit_2d
 # Registry stub spot-check (robo family)
 emit 801 1 0.801 0 robo_multibody_step
 
+# sim-p2: qm_dft_scf_energy (418) — QM summary metrics (li_sim_summary_v1)
+QM_ENERGY="${LI_SIM_QM_ENERGY:--1.117}"
+QM_ITERS="${LI_SIM_QM_ITERATIONS:-8}"
+QM_OUT="$ROOT/benchmarks/results/qm_dft_scf_energy/li"
+python3 "$ROOT/scripts/sim-write-qm-summary.py" \
+  --total-energy-hartree "$QM_ENERGY" \
+  --converged 1 \
+  --scf-iterations "$QM_ITERS" \
+  --format "$FORMAT" \
+  -o "$QM_OUT"
+
 echo "sim_li_run_summary: wrote summaries under $OUT_DIR (format=$FORMAT)"

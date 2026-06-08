@@ -1,0 +1,20 @@
+import std.execution.memory_spaces
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var host: int = memory_space_host()
+  var dev: int = memory_space_device()
+  var uni: int = memory_space_unified()
+  var es: int = tier2_default_execution_space()
+  if host != 0:
+    return 1
+  if dev != 1:
+    return 1
+  if uni != 2:
+    return 1
+  if es != execution_space_openmp():
+    return 1
+  return __memory_spaces_doc()

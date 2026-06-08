@@ -1,0 +1,101 @@
+# std/execution/memory_spaces.li — MemorySpace / ExecutionSpace spec constants (PH-7e)
+#
+# Spec-only v1: integer tags document the normative enums from
+# docs/hpc/kokkos-memory-execution-spaces-rubric.md and
+# docs/superpowers/specs/2026-05-14-li-language-design.md (Phase 3).
+# Parser / typechecker support lands after plan-approved codegen (#110, #128, #15).
+#
+# View[T, Space] and hostbuffer/devicebuffer types are documented in the
+# language design spec; this module exposes stable tag constants for harness
+# metadata and future MIR telemetry tests.
+
+# --- MemorySpace (REQ-MS-01) ---
+
+def memory_space_host() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def memory_space_device() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def memory_space_unified() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+# --- ExecutionSpace (REQ-ES-01) ---
+
+def execution_space_serial() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def execution_space_openmp() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def execution_space_threads() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+# Reserved for #116 GPU backends (not valid in tier-2 v1 harness metadata)
+def execution_space_sycl_reserved() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+def execution_space_cuda_reserved() -> int
+  requires true
+  ensures result == 11
+  decreases 0
+=
+  return 11
+
+def execution_space_hip_reserved() -> int
+  requires true
+  ensures result == 12
+  decreases 0
+=
+  return 12
+
+# --- Tier-2 defaults (REQ-ES-02 policy) ---
+
+def tier2_default_memory_space() -> int
+  requires true
+  ensures result == memory_space_host()
+  decreases 0
+=
+  return memory_space_host()
+
+def tier2_default_execution_space() -> int
+  requires true
+  ensures result == execution_space_openmp()
+  decreases 0
+=
+  return execution_space_openmp()
+
+def __memory_spaces_doc() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

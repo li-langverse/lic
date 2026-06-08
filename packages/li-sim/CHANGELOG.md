@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-SCI-03 vertical IDs** — `vertical_fea_linear_elasticity()` (8), `vertical_cfd_lid_driven_cavity()` (9) for tier-2 registry dispatch.
 - **PH-GAME-01** — `SimSessionStub.game_px`…`game_vz`, `game_physics_steps`; cleared in `sim_reset` / `sim_session_stub_default`.
 - **PH-SIM SIM-3 persistent env pool** — `SimSessionStub.env_pool_*` + `env_obs_from_session`; session-backed `sim_rl_session_env_pool_step` (not stack pool); smoke `env_pool_step_contract.li`.
 - **PH-SIM SIM-5 sensor bus fields** — `SimSessionStub.sensor_*` cleared in `sim_reset`; `algo_auto_sensor_raycast()` registry id 903; wired via `li-sim-sensors` (`sim.sensors`).

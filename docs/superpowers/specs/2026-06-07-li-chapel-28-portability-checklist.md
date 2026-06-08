@@ -1,7 +1,7 @@
 # Chapel 2.8 → Li HPC portability checklist (normative rubric v1)
 
 **Date:** 2026-06-07  
-**Status:** Planning slice — spec-only until `plan-approved` on [lic#113](https://github.com/li-langverse/lic/issues/113)  
+**Status:** Normative rubric v1 — `plan-approved` on [lic#113](https://github.com/li-langverse/lic/issues/113); implementation slices tracked via lic#109, lic#110, lic#54  
 **Depends on:** [Execution surface](2026-05-25-li-execution-surface.md), [Parallel design](2026-06-06-li-parallel-design.md), [Execution decorators](2026-05-16-li-execution-decorators.md)  
 **Companion:** [lic#54](https://github.com/li-langverse/lic/issues/54) (Chapel Python/NumPy interop — G-ai tooling)  
 **Plan:** [Chapel 2.8 portability rubric](../plans/2026-06-07-li-chapel-28-hpc-portability-rubric.md)

@@ -26,4 +26,4 @@ HPC portability reference · **PH-7d**, **PH-7e**, **PH-5b** · **G-par**, **G-g
 
 ## Next steps
 
-Human **`plan-approved`** on #113 → implementers consume rows via lic#109, lic#110, lic#54 sibling tracks.
+Rubric v1 shipped on PR #1038. Backend implementers consume rows via lic#109, lic#110, lic#54 sibling tracks.

@@ -112,14 +112,14 @@ Evidence: tier-2 harness rows ([WP-T2 release notes](../../release-notes/2026-05
 
 ## Rollout
 
-1. Merge **this plan PR** (draft → ready) + human **`plan-approved`** on #113.
-2. **Spec PR** (sub-phase A) — normative checklist only.
+1. [x] Merge **this plan PR** — normative checklist + tier-2 matrix shipped ([PR #1038](https://github.com/li-langverse/lic/pull/1038)).
+2. [x] **`plan-approved`** on #113 — rubric v1 complete; no product codegen in this slice.
 3. **lic#110** / **lic#109** implementers consume rows B–C; no duplicate matrices.
 4. **lic#54** planner adds G-ai tooling subsection referencing sub-phase E.
-5. Implementation handoff → `code_implementer` only after `plan-approved` + PH-7e tracks explicitly scoped.
+5. Backend codegen handoff only after PH-7e tracks explicitly scoped (ROCm, vectorization metadata).
 
 ## Human-only
 
-- [ ] Label **`plan-approved`** on #113 before backend codegen agents run.
+- [x] Label **`plan-approved`** on #113 before backend codegen agents run.
 - [ ] Decide whether Chapel stays **`watch`** or gains **`bench_tier2`** reference driver (recommend: stay watch until G-par proofs advance).
 - [ ] Approve Slurm passthrough syntax for `lipar run` vs env-only flags.

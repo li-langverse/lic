@@ -1,11 +1,11 @@
-# Publish metadata — PKG-li-std-physics-rigid
+# Publish metadata — PKG-li-physics-rigid
 
 | Field | Value |
 |-------|--------|
-| **PKG id** | `PKG-li-std-physics-rigid` |
-| **Registry name** | `li-std-physics-rigid` (lip, phase 8d) |
+| **PKG id** | `PKG-li-physics-rigid` |
+| **Registry name** | `li-physics-rigid` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-std-physics-rigid |
+| **Repository** | https://github.com/li-langverse/li-physics-rigid |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)

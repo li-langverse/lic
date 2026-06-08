@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-30  
+**Last updated:** 2026-06-08  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -37,7 +37,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-vc** | Partial | **Closed slice:** `sqrt_open_bound` float `abs` bound (trusted libm axiom). Still open: opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
 | **G-par** | Partial | AST `policy_module` accepts `disjoint_*` on `parallel for`; **closed slice:** `par_iteration_independent_tile` + `par_memory_disjoint_rows` + `par_memory_disjoint_elems` + `par_memory_disjoint_grid_rows` + `par_memory_disjoint_grid_elems` + `par_dependent_*_aliasing` + `iteration_independent_tile_spec` + `memory_disjoint_rows_spec` + `memory_disjoint_elems_spec` + `memory_disjoint_grid_rows_spec` + `memory_disjoint_grid_elems_spec` + `array_elem_indices_disjoint` + `array_row_indices_disjoint` + `array_grid_cell_indices_disjoint` + `dependent_flat/grid_row/grid_cell/lookup/mod_aliasing` (7d-c); **closed slice:** `index_bound_elem_spec` / `index_bound_row_spec` / `index_bound_grid_cell_spec` / `index_bound_grid_linear_spec` / `index_bound_affine_spec` / `index_bound_blocked_affine_spec` / `index_bound_lookup_spec` / `index_bound_mod_spec` refine `disjoint_*_spec` + `par_disjoint_*_index_bound` + AutoVC `h_range` discharge (7d-c); **closed slice:** compiler `disjoint_lookup` / `disjoint_mod` → `index_bound_lookup_slot_spec` / `index_bound_mod_slot_spec` + policy witnesses in AutoVC (7d-c); **closed slice:** non-identity reverse permutation lookup → `reverse_lookup_injective_on_tiles` + AutoVC `h_inj` on `parallel_disjoint_lookup_perm_closed.li` (7d-c) |
 | **G-par-dist** | Partial | **Closed slice:** block partition via `li_dpar_block_partition_*` + `distributed for` MIR (`dpar_for_range.li` smoke); Lean partition proofs open |
-| **G-hetero** | Partial | **Closed slice:** CPU+GPU+TPU+ASIC orchestration via `li_rt_hetero_*` runtime seams + chip package probes; address-space proofs open |
+| **G-hetero** | Partial | **Closed slice:** CPU+GPU+TPU+ASIC orchestration via `li_rt_hetero_*` runtime seams + chip package probes. **#110 slice:** explicit `MemorySpace`/`ExecutionSpace` enums; tier-2 migration rubric requires named sync before cross-space access. Address-space proofs open |
 | **G-dec** | Partial | **Closed slice:** MIR telemetry + corpus scripts; Lean **P-dec** open |
 | **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
 | **G-bnd** | Partial | **Closed slice:** `bounds_refinement_release_ok.li` + `check_release_bounds_ir.sh`; `discharge_refinement_lean.sh` |
@@ -50,7 +50,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-net** | Partial | Net effect codegen + proofs |
 | **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
 | **G-ann** | Missing | PEP 649 deferred annotations |
-| **G-gpu** | Partial | **Closed slice:** `@gpu` MIR telemetry; **Wave 13:** `ml_gpu_device_buffer_pipeline` + `lig_gpu_device_buffer_ready` host contract. Still open: address-space proofs, full LKIR lowering |
+| **G-gpu** | Partial | **Closed slice:** `@gpu` MIR telemetry; **Wave 13:** `ml_gpu_device_buffer_pipeline` + `lig_gpu_device_buffer_ready` host contract. **#110 slice:** cross-space read without `@sync_host`/`@sync_device` documented as open compile obligation (spec: `docs/superpowers/specs/2026-06-08-li-tier2-memory-execution-spaces.md`). Still open: address-space proofs, full LKIR lowering |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |
@@ -97,7 +97,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface done; Lean `ensures` on methods / trait laws open | **2j** | `li-tests/encapsulation/trait_*.li`, `method_call_requires_*.li` |
 | **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; **`for i in 0..<n`** (`for_range_sum.li`); `range()` helper + dynamic bounds open | **2h** | `li-tests/math_syntax/` |
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
-| **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Partial** — MIR telemetry + **Wave 13** device-buffer host contract (`ml_gpu_device_buffer.li`); vendor codegen slice via `lig_emit_vendor_lowering_ready`; address-space proofs open | **3+**, **7d** | `li-tests/decorators/gpu_*`, `packages/li-ml/li-tests/smoke/ml_gpu_device_buffer.li`, `scripts/check-mir-gpu-decorator.sh` |
+| **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Partial** — MIR telemetry + **Wave 13** device-buffer host contract (`ml_gpu_device_buffer.li`); **#110:** `MemorySpace`/`View` lifecycle spec + `std/memory/spaces.li` stub; cross-space access without sync is open compile obligation; vendor codegen via `lig_emit_vendor_lowering_ready`; address-space proofs open | **3+**, **7d**, **#110** | `li-tests/decorators/gpu_*`, `packages/li-ml/li-tests/smoke/ml_gpu_device_buffer.li`, `scripts/check-mir-gpu-decorator.sh`, `li-tests/stdlib_seal/import_std_memory_spaces_ok.li`, `docs/hpc/kokkos-memory-execution-spaces-rubric.md` |
 | **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; await not parsed | **2+**, **7d** | `li-tests/effects/` |
 | **G-net** | `raises Net` | Trusted syscall surface | **Partial** — effect propagation + `trusted.lean` axioms; no codegen | **H**, **2f** | `li-tests/effects/net_*.li` |
 | **G-trust** | Trusted base growth | Only `trusted.lean` | **Stub** — file exists; `Core.lean` / `MIR.lean` **planned** | **2f** | [semantics/README.md](../semantics/README.md) |

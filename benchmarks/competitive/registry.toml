@@ -78,8 +78,8 @@ repo_url = "https://github.com/kokkos/kokkos"
 compare = ["md_lennard_jones", "heat_2d"]
 csv_lang = ""
 kernel_honesty = "n/a"
-last_reviewed = "2026-05-16"
-notes = "Performance portability; watch Kokkos 4 OpenMP/SYCL backends."
+last_reviewed = "2026-06-08"
+notes = "Performance portability; watch Kokkos 4.6.x (4.6.02 SYCL production). Vendor pin handoff: docs/ecosystem/benchmarks-kokkos-vendor-handoff.md → benchmarks#27. Li rubric: docs/hpc/kokkos-memory-execution-spaces-rubric.md."
 
 [[ecosystem]]
 id = "sycl_dpcpp"

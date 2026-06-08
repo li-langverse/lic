@@ -73,6 +73,11 @@ bool is_std_module_symbol(const std::string_view name) {
                        // std.plot (PH-IO-5)
                        "PlotSpec", "PlotCanvas", "plot_tag",
                        "render_static_dashboard_stub", "plot_canvas_new_stub",
+                       // std.memory.spaces (#110 WP0-B)
+                       "MemorySpaceTag", "ExecutionSpaceTag", "ViewShell",
+                       "memory_spaces_std_tag", "memory_space_host", "memory_space_device",
+                       "memory_space_unified", "execution_space_serial", "execution_space_openmp",
+                       "execution_space_threads", "view_shell_new",
                        nullptr});
 }
 

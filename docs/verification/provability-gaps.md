@@ -50,7 +50,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-net** | Partial | Net effect codegen + proofs |
 | **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
 | **G-ann** | Missing | PEP 649 deferred annotations |
-| **G-gpu** | Partial | **Closed slice:** `@gpu` MIR telemetry; **Wave 13:** `ml_gpu_device_buffer_pipeline` + `lig_gpu_device_buffer_ready` host contract. Still open: address-space proofs, full LKIR lowering |
+| **G-gpu** | Partial | **Closed slice:** `@gpu` MIR telemetry; **Wave 13:** `ml_gpu_device_buffer_pipeline` + `lig_gpu_device_buffer_ready` host contract. **#110 slice:** cross-space read without `@sync_host`/`@sync_device` documented as compile_fail obligation ([copy-sync-contract-110.md](../hpc/copy-sync-contract-110.md)). Still open: address-space proofs, full LKIR lowering, `mir_sync_*` emission |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |
@@ -97,7 +97,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface done; Lean `ensures` on methods / trait laws open | **2j** | `li-tests/encapsulation/trait_*.li`, `method_call_requires_*.li` |
 | **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; **`for i in 0..<n`** (`for_range_sum.li`); `range()` helper + dynamic bounds open | **2h** | `li-tests/math_syntax/` |
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
-| **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Partial** — MIR telemetry + **Wave 13** device-buffer host contract (`ml_gpu_device_buffer.li`); vendor codegen slice via `lig_emit_vendor_lowering_ready`; address-space proofs open | **3+**, **7d** | `li-tests/decorators/gpu_*`, `packages/li-ml/li-tests/smoke/ml_gpu_device_buffer.li`, `scripts/check-mir-gpu-decorator.sh` |
+| **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Partial** — MIR telemetry + **Wave 13** device-buffer host contract (`ml_gpu_device_buffer.li`); **#110:** `MemorySpace`/`ExecutionSpace` spec + explicit sync contract (no DualView); vendor codegen slice via `lig_emit_vendor_lowering_ready`; address-space proofs + `mir_sync_*` open | **3+**, **7d** | `li-tests/decorators/gpu_*`, `li-tests/hpc/memory_spaces_enum_ok.li`, `packages/li-ml/li-tests/smoke/ml_gpu_device_buffer.li`, `scripts/check-mir-gpu-decorator.sh`, `docs/hpc/copy-sync-contract-110.md` |
 | **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; await not parsed | **2+**, **7d** | `li-tests/effects/` |
 | **G-net** | `raises Net` | Trusted syscall surface | **Partial** — effect propagation + `trusted.lean` axioms; no codegen | **H**, **2f** | `li-tests/effects/net_*.li` |
 | **G-trust** | Trusted base growth | Only `trusted.lean` | **Stub** — file exists; `Core.lean` / `MIR.lean` **planned** | **2f** | [semantics/README.md](../semantics/README.md) |

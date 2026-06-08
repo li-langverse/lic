@@ -538,6 +538,23 @@ GPU side (with numeric Phase 3):
 | `hostbuffer[T]` | Pinned/pageable host mirror |
 | `ndview[Shape, T]` | View with strides (non-contiguous) |
 
+#### Memory and execution spaces (PH-7e, lic#110)
+
+Kokkos-class **placement tags** for tier-2 physics — spec enums in v1; codegen in [#15](https://github.com/li-langverse/lic/issues/15) / [#116](https://github.com/li-langverse/lic/issues/116).
+
+| Enum | Values (v1) | Kokkos analog |
+|------|-------------|---------------|
+| `MemorySpace` | `Host`, `Device`, `Unified` | `HostSpace`, `CudaSpace`, `SYCLSpace`, `HBWSpace` |
+| `ExecutionSpace` | `Serial`, `OpenMP` (tier-2 default), `Threads` | `Serial`, `OpenMP`, `Threads` |
+| `ExecutionSpace` (reserved) | `SYCL`, `Cuda`, `HIP` | Device backends — #116 |
+
+| Type | Purpose |
+|------|---------|
+| `View[T, Space, Layout]` | Buffer with static memory-space tag; layout ABI in [#128](https://github.com/li-langverse/lic/issues/128) |
+| `@sync_host(view)` / `@sync_device(view)` | Explicit `deep_copy` analog — **no implicit DualView** |
+
+**Rules:** cross-space read without prior sync is a **compile error**; `std/execution/memory_spaces.li` exports int constants for tooling and docs.
+
 ---
 
 ### Phase 4 — advanced & domain structures

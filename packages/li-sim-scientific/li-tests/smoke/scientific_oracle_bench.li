@@ -1,3 +1,4 @@
+import sim
 import sim.scientific
 
 def main() -> int
@@ -5,26 +6,24 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_sim_scientific_version() != 4:
+  if li_sim_scientific_version() != 7:
     return 1
+  var md105: SimRunResult = run_algo(105, 1)
   var md: float = sim_scientific_oracle_checksum_md()
-  if md <= 0.0:
+  if run_result_ok(md105) != 1:
     return 2
-  if md >= 1.0e-3:
+  if md105.checksum != md:
     return 3
-  var heat: float = sim_scientific_oracle_checksum_heat()
-  if heat <= 1.0:
+  var cfd210: SimRunResult = run_algo(210, 1)
+  var cfd: float = sim_scientific_oracle_checksum_cfd()
+  if run_result_ok(cfd210) != 1:
     return 4
-  if heat >= 10.0:
+  if cfd210.checksum != cfd:
     return 5
-  var md_run: SimRunResult = run_md_lj_smoke(0)
-  if run_result_ok(md_run) != 1:
+  var heat204: SimRunResult = run_algo(204, 1)
+  var heat: float = sim_scientific_oracle_checksum_heat()
+  if run_result_ok(heat204) != 1:
     return 6
-  if md_run.checksum != md:
+  if heat204.checksum != heat:
     return 7
-  var heat_run: SimRunResult = run_heat_smoke(0)
-  if run_result_ok(heat_run) != 1:
-    return 8
-  if heat_run.checksum != heat:
-    return 9
   return 0

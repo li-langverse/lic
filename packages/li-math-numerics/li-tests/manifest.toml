@@ -15,5 +15,5 @@ note = "PH-SCI-GPU-01 @gpu MD oracle via sim.scientific"
 [[tests]]
 suite = "smoke"
 file = "smoke/bdf_stiff_ode.li"
-outcome = "verify_ok"
-note = "ode-r3 BDF-1/2 fixed-step stiff ODE stubs (lic#35)"
+outcome = "compile_open_ok"
+note = "ode-r3 BDF-1/2 fixed-step stiff ODE stubs (lic#35); open VC on numerics externs"

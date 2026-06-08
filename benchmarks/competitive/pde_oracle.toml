@@ -1,0 +1,32 @@
+# PDE external oracle pins (PETSc + hypre).
+# Status: stub — implement after plan-approved on lic#108.
+# Validate: ./scripts/check-hpc-competitive.sh (extend in implement phase)
+# Plan: docs/superpowers/plans/2026-06-07-pde-r1-hypre-petsc-oracle-plan.md
+
+[meta]
+version = 0
+status = "stub"
+issue = "https://github.com/li-langverse/lic/issues/108"
+updated = "2026-06-07"
+
+[[oracle]]
+id = "petsc_hypre_heat_implicit"
+bench_id = "pde_heat_implicit_jacobi"
+workload_class = "v0_micro"
+engine = "petsc"
+preconditioner = "hypre_boomeramg"
+petsc_version = "3.25.x"
+hypre_version = "2.32.x"
+driver = "benchmarks/harness/pde_external_oracle.py"
+status = "stub"
+notes = "CPU SNES/KSP + PCBOOMER; GPU PCBJKOKKOS deferred (T2b)."
+
+[[oracle]]
+id = "petsc_pcbjkokkos_heat_implicit"
+bench_id = "pde_heat_implicit_jacobi"
+workload_class = "v0_micro"
+engine = "petsc"
+preconditioner = "pcbjkokkos"
+petsc_version = "3.25.x"
+status = "deferred"
+notes = "Requires lic#28 Kokkos policy + human G-gpu approval."

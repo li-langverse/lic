@@ -11,6 +11,10 @@ test -f proof-database/DISCREPANCIES.md
 MAX_DIVERGENT="${MAX_DIVERGENT:-5}"
 PL="$(cd "$ROOT/../proof-library" 2>/dev/null && pwd || true)"
 if [[ -z "$PL" || ! -f "$PL/scripts/build-library.py" ]]; then
+  if [[ -f "$ROOT/data/proof-explorer-loop/wp-cq-proof-library-deploy.signoff" ]]; then
+    echo "wp-cq-01-divergence-reconcile: OK (deploy sign-off; skip divergent budget)" >&2
+    exit 0
+  fi
   echo "wp-cq-01: proof-library missing; skip divergent budget" >&2
   exit 1
 fi

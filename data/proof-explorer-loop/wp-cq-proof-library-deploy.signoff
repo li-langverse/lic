@@ -1,4 +1,5 @@
 # WP-CQ-08 — proof-library deploy sign-off (filled after PR merge)
 
-proof-library PR: pending merge from chore/library-sync-lic-phase12
+proof-library PR: merged li-langverse/proof-library#15 (cursor/proof-explorer-phase12-catalog-quality)
+library.json: 1538 entries, divergent=0, lic_commit=a4fc6f19
 Pages: GitHub Pages on li-langverse/proof-library

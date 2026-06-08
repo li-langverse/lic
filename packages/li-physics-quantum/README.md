@@ -1,11 +1,11 @@
-# li-std-physics-quantum
+# li-physics-quantum
 
-Li package li-std-physics-quantum
+Li package li-physics-quantum
 
 ## Build
 
 ```bash
-lic build src/lib.li -o li-std-physics-quantum
+lic build src/lib.li -o li-physics-quantum
 ```
 
 From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
@@ -14,8 +14,8 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 
 | ID | Link |
 |----|------|
-| Package | `PKG-li-std-physics-quantum` |
-| Org repo | https://github.com/li-langverse/li-std-physics-quantum |
+| Package | `PKG-li-physics-quantum` |
+| Org repo | https://github.com/li-langverse/li-physics-quantum |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
 
 See `PUBLISH.md` and `docs/traceability.md`.

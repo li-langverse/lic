@@ -1,12 +1,12 @@
-# Traceability — PKG-li-std-physics-rigid
+# Traceability — PKG-li-physics-rigid
 
-<!-- DOC-traceability-PKG-li-std-physics-rigid -->
+<!-- DOC-traceability-PKG-li-physics-rigid -->
 
 | Type | ID | Artifact |
 |------|-----|----------|
-| Package | PKG-li-std-physics-rigid | This repository |
+| Package | PKG-li-physics-rigid | This repository |
 | Phase | PH-Pkg | [Package scaffold](https://github.com/li-langverse/li-language/blob/dev/docs/superpowers/plans/2026-05-16-li-package-scaffold.md) |
-| Test | T-PKG-li-std-physics-rigid-smoke | `li-tests/smoke/builds.li` |
+| Test | T-PKG-li-physics-rigid-smoke | `li-tests/smoke/builds.li` |
 
 ## Requirements
 

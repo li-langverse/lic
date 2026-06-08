@@ -1,11 +1,11 @@
-# li-std-physics-aero
+# li-physics-aero
 
-Li package li-std-physics-aero
+Li package li-physics-aero
 
 ## Build
 
 ```bash
-lic build src/lib.li -o li-std-physics-aero
+lic build src/lib.li -o li-physics-aero
 ```
 
 From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
@@ -14,8 +14,8 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 
 | ID | Link |
 |----|------|
-| Package | `PKG-li-std-physics-aero` |
-| Org repo | https://github.com/li-langverse/li-std-physics-aero |
+| Package | `PKG-li-physics-aero` |
+| Org repo | https://github.com/li-langverse/li-physics-aero |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
 
 See `PUBLISH.md` and `docs/traceability.md`.

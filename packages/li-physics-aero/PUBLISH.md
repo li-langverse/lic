@@ -1,11 +1,11 @@
-# Publish metadata — PKG-li-std-physics-aero
+# Publish metadata — PKG-li-physics-aero
 
 | Field | Value |
 |-------|--------|
-| **PKG id** | `PKG-li-std-physics-aero` |
-| **Registry name** | `li-std-physics-aero` (lip, phase 8d) |
+| **PKG id** | `PKG-li-physics-aero` |
+| **Registry name** | `li-physics-aero` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-std-physics-aero |
+| **Repository** | https://github.com/li-langverse/li-physics-aero |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)

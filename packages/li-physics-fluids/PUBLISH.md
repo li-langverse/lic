@@ -1,11 +1,11 @@
-# Publish metadata — PKG-li-std-physics-fluids
+# Publish metadata — PKG-li-physics-fluids
 
 | Field | Value |
 |-------|--------|
-| **PKG id** | `PKG-li-std-physics-fluids` |
-| **Registry name** | `li-std-physics-fluids` (lip, phase 8d) |
+| **PKG id** | `PKG-li-physics-fluids` |
+| **Registry name** | `li-physics-fluids` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-std-physics-fluids |
+| **Repository** | https://github.com/li-langverse/li-physics-fluids |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)

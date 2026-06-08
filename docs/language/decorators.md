@@ -12,6 +12,8 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 `@parallel` on a `parallel for` loop requires a disjointness proof hint, e.g. `disjoint_elem(i, buf)` in the loop contract list.
 
+**Portability rubric:** Li ↔ RAJA ↔ Kokkos ↔ OpenMP policy matrix — [portability-policy-matrix.md](../../packages/li-parallel/docs/portability-policy-matrix.md). `lic verify` reports `mir_parallel_disjoint=` and `mir_omp_parallel_for=` so `@parallel` lowering is auditable (no silent serial fallback).
+
 ## Status
 
 Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).

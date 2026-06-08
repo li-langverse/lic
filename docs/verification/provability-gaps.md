@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-30  
+**Last updated:** 2026-06-08  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -22,7 +22,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **Parallel disjointness** | Lean + structured proofs | **Partial** — substring heuristics in `policy.cpp` |
 | **Index bounds (release)** | Refinement / proved → no user traps | **Partial** — MIR/runtime paths still evolving |
 | **Decorators (`@parallel`, …)** | Compile-time elaboration + proofs | **Partial** — parse + policy (7d-a/e); no MIR lowering yet |
-| **Math / linalg surface** | Static shapes, compile-time lowering | **Partial** — shape tests + **P-linalg** closed VCs (2i / 7e) |
+| **Math / linalg surface** | Static shapes, compile-time lowering | **Partial** — [G-math](#g-math) closed slices (shape tests, P-linalg VCs); [PH-2i / PH-7e partial](../superpowers/plans/2026-05-14-li-master-plan.md) |
 | **Zero user runtime errors** | All above + 2f gate | **In progress** — see table below |
 
 ---

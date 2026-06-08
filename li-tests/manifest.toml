@@ -1647,6 +1647,20 @@ outcome = "compile_open_ok"
 note = "PH-SCI-GPU-02 @gpu MD/heat oracle"
 
 [[tests]]
+suite = "smoke"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "compile_open_ok"
+note = "WP-SCI-03 Phase 2 CFD/FEA/QM tier-2 oracle checksums"
+
+[[tests]]
+suite = "smoke"
+file = "packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "compile_open_ok"
+note = "WP-SCI-03 Phase 2 run_algo_registry CFD/FEA/QM tier-2 dispatch"
+
+[[tests]]
 suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/physics_gpu_md_mini_step.li"
 outcome = "compile_open_ok"

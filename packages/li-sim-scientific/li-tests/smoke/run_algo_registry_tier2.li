@@ -1,9 +1,67 @@
 import sim
 import sim.scientific
 
-def main() -> int
+def check_cfd_tier2_dispatch() -> int
   requires true
-  ensures result == 0
+  ensures result >= 0
+  decreases 0
+=
+  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
+  var cfd206: SimRunResult = run_algo(206, 1)
+  if run_result_ok(cfd206) != 1:
+    return 1
+  if cfd206.algo_id != 206:
+    return 2
+  if cfd206.checksum != cfd_oracle:
+    return 3
+  if cfd206.checksum == 1.001:
+    return 4
+  if cfd206.vertical_id != vertical_cfd_lid_driven_cavity():
+    return 5
+  return 0
+
+def check_fea_tier2_dispatch() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var fea_oracle: float = sim_scientific_oracle_checksum_fea()
+  var fea214: SimRunResult = run_algo(214, 0)
+  if run_result_ok(fea214) != 1:
+    return 1
+  if fea214.algo_id != 214:
+    return 2
+  if fea214.checksum != fea_oracle:
+    return 3
+  if fea214.checksum == 1.001:
+    return 4
+  if fea214.vertical_id != vertical_fea_linear_elasticity():
+    return 5
+  return 0
+
+def check_qm_tier2_dispatch() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var qm_oracle: float = sim_scientific_oracle_checksum_qm()
+  var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  if run_result_ok(qm418) != 1:
+    return 1
+  if qm418.checksum != qm_oracle:
+    return 2
+  if qm418.checksum == 1.001:
+    return 3
+  var qm401: SimRunResult = run_algo(401, 0)
+  if run_result_ok(qm401) != 1:
+    return 4
+  if qm401.checksum != qm_oracle:
+    return 5
+  return 0
+
+def check_md_heat_rigid_tier2_dispatch() -> int
+  requires true
+  ensures result >= 0
   decreases 0
 =
   var md_oracle: float = sim_scientific_oracle_checksum_md()
@@ -17,14 +75,14 @@ def main() -> int
     return 3
   if md105.checksum == 1.001:
     return 4
-  var heat210: SimRunResult = run_algo(210, 2)
-  if run_result_ok(heat210) != 1:
+  var heat203: SimRunResult = run_algo(203, 2)
+  if run_result_ok(heat203) != 1:
     return 5
-  if heat210.algo_id != 210:
+  if heat203.algo_id != 203:
     return 6
-  if heat210.checksum != heat_oracle:
+  if heat203.checksum != heat_oracle:
     return 7
-  if heat210.checksum == 1.001:
+  if heat203.checksum == 1.001:
     return 8
   var rigid302: SimRunResult = run_algo(302, 0)
   if run_result_ok(rigid302) != 1:
@@ -33,51 +91,75 @@ def main() -> int
     return 10
   if rigid302.checksum == 1.001:
     return 11
-  var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
-  if run_result_ok(qm418) != 1:
-    return 12
-  if qm418.checksum != 1.001:
-    return 13
+  return 0
+
+def check_echem_tier2_dispatch() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
   var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
   if echem_oracle <= 0.0:
-    return 14
+    return 1
   if echem_oracle >= 1.0e-2:
-    return 15
+    return 2
   var aimd433: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
   if run_result_ok(aimd433) != 1:
-    return 16
+    return 3
   if aimd433.algo_id != 433:
-    return 17
+    return 4
   if aimd433.checksum != echem_oracle:
-    return 18
+    return 5
   if aimd433.checksum == 1.001:
-    return 19
+    return 6
   var gc_oracle: float = sim_scientific_oracle_checksum_echem_gc_aimd()
   if gc_oracle <= 0.0:
-    return 20
+    return 7
   if gc_oracle >= 0.05:
-    return 21
+    return 8
   var gc434: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 1)
   if run_result_ok(gc434) != 1:
-    return 22
+    return 9
   if gc434.algo_id != 434:
-    return 23
+    return 10
   if gc434.checksum != gc_oracle:
-    return 24
+    return 11
   if gc434.checksum == 1.001:
-    return 25
+    return 12
   var sei_oracle: float = sim_scientific_oracle_checksum_echem_sei_kmc()
   if sei_oracle <= 0.0:
-    return 26
+    return 13
   if sei_oracle >= 0.35:
-    return 27
+    return 14
   var sei435: SimRunResult = run_algo(algo_echem_sei_kmc(), 1)
   if run_result_ok(sei435) != 1:
-    return 28
+    return 15
   if sei435.algo_id != 435:
-    return 29
+    return 16
   if sei435.checksum != sei_oracle:
-    return 30
+    return 17
   if sei435.checksum == 1.001:
-    return 31
+    return 18
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var cfd_chk: int = check_cfd_tier2_dispatch()
+  if cfd_chk != 0:
+    return cfd_chk
+  var fea_chk: int = check_fea_tier2_dispatch()
+  if fea_chk != 0:
+    return 100 + fea_chk
+  var qm_chk: int = check_qm_tier2_dispatch()
+  if qm_chk != 0:
+    return 200 + qm_chk
+  var md_chk: int = check_md_heat_rigid_tier2_dispatch()
+  if md_chk != 0:
+    return 300 + md_chk
+  var echem_chk: int = check_echem_tier2_dispatch()
+  if echem_chk != 0:
+    return 400 + echem_chk
   return 0

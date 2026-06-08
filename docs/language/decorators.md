@@ -14,7 +14,7 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 ## Status
 
-Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
+Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md). Kokkos-class portable lowering plan: [#15](https://github.com/li-langverse/lic/issues/15) → [plan](../superpowers/plans/2026-06-08-ph7e-gpar-kokkos-class-portable-parallel-lowering-15.md).
 
 ## Resource knobs (`lic build`)
 

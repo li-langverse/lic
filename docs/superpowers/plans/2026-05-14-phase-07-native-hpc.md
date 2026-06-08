@@ -34,8 +34,8 @@
 ## 7d — Execution decorators (decorator-first HPC)
 
 > **Depends on:** **2g** (`def`), **7a** (SIMD), **7b** (`parallel for` + structured disjoint)  
-> **Plan:** [.cursor/plans/li_execution_decorators_7c6e3b42.plan.md](../../../.cursor/plans/li_execution_decorators_7c6e3b42.plan.md)  
-> **Spec (to land):** `docs/superpowers/specs/2026-05-16-li-execution-decorators.md`
+> **Plan:** [.cursor/plans/li_execution_decorators_7c6e3b42.plan.md](../../../.cursor/plans/li_execution_decorators_7c6e3b42.plan.md) · **Kokkos-class portable lowering:** [2026-06-08-ph7e-gpar-kokkos-class-portable-parallel-lowering-15.md](2026-06-08-ph7e-gpar-kokkos-class-portable-parallel-lowering-15.md) ([#15](https://github.com/li-langverse/lic/issues/15))  
+> **Spec (to land):** `docs/superpowers/specs/2026-05-16-li-execution-decorators.md` · [portable execution + memory spaces](2026-06-08-li-portable-execution-memory-spaces.md)
 
 **Goal:** Primary surface for parallelism, vectorization, and device placement is **stackable `@` decorators** on `def` and on `for`/`while` — elaborating to the same proved cores as keywords (`parallel for`, `simd`, future `gpu proc`).
 

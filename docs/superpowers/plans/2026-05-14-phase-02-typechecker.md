@@ -98,3 +98,5 @@
 - [x] `fib.li` typechecks (`li-tests/typecheck/fib.li`)
 - [x] All `bad_*.li` fail with expected errors
 - [x] Borrow double-mut test fails cleanly (`li-tests/borrow/double_mut.li`)
+
+**Provability (Doc-c):** Static typecheck/borrow exit only — open proof gaps: [G-vc](../../verification/provability-gaps.md#g-vc) (contracts → Lean, Phase 2e) · [G-bnd](../../verification/provability-gaps.md#g-bnd) (release bounds, partial) · [G-def](../../verification/provability-gaps.md#g-def) (visibility/OOP, Phase 2j) · [G-math-syn](../../verification/provability-gaps.md#g-math-syn) (Python-math surface, Phase 2h)

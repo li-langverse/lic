@@ -43,10 +43,21 @@
 |-----|------|------|
 | **7d-a** | Lexer `@`, decorator lists on `def`/`for`/`while`, AST attrs | Parse tests — **done** |
 | **7d-e (partial)** | Policy: `reserved_name`, typosquat, `parallel_requires_disjoint` | `decorator_exploits/` CI |
-| **7d-b** | Elaboration → `ParallelFor` / `simd` / host placement MIR tags | `li-tests/decorators/` positive — **partial:** `@vectorized(lanes=4)`, `@no_vectorize` |
-| **7d-c** | Structured `disjoint=`; scoped `@vectorized` on `for` (`ArraySimdScope`) | `vectorized_for_scope_ok.li` — **partial:** disjoint= still **G-par** open |
-| **7d-d** | `std/execution/decorators.li` + `docs/language/decorators.md` | Handbook + gallery |
-| **7d-e** | `decorator def` with **strict naming** (package prefix, typosquat ban), expansion whitelist | `li-tests/decorator_exploits/` all **fail** except control; CI on every PR |
+| **7d-b** | Elaboration → `ParallelFor` / `simd` / host placement MIR tags | `li-tests/decorators/` positive — **partial:** `@cpu` → `mir_cpu_def=1` (`check-mir-cpu-decorator.sh`); proc `@vectorized` → `ArraySimdScope` (`mir_vectorized_def_scope`); `@vectorized(lanes=4)`, `@no_vectorize`; `@gpu`/`@parallel` MIR tags — **G-dec** |
+| **7d-c** | Structured `disjoint=`; scoped `@vectorized` on `for` (`ArraySimdScope`) | `vectorized_for_scope_ok.li` — **partial:** proc `@parallel(disjoint=)` inherit + `mir_parallel_disjoint` — **G-dec** + **G-par** (policy witnesses; Lean [#387](https://github.com/li-langverse/lic/issues/387)) |
+| **7d-d** | `std/execution/decorators.li` + `docs/language/decorators.md` | Handbook + gallery — **G-dec** (doc honesty) |
+| **7d-e** | `decorator def` with **strict naming** (package prefix, typosquat ban), expansion whitelist | `li-tests/decorator_exploits/` all **fail** except control; CI on every PR — **G-dec** |
+
+### Exit gates — 7d-b–e (Doc-c · **G-dec** / **G-par**)
+
+Cross-links: [G-dec](../../verification/provability-gaps.md#g-dec) · [G-par](../../verification/provability-gaps.md#g-par) · Plan [#22](https://github.com/li-langverse/lic/issues/22) · [#387](https://github.com/li-langverse/lic/issues/387) (Lean **G-par**)
+
+| Sub | Exit gate (must pass) | Gap ID |
+|-----|----------------------|--------|
+| **7d-b** | `@parallel` / `@vectorized` / `@cpu` on `def` **elaborate** to MIR (`ParallelFor`, proc SIMD flags, host placement) — not telemetry-only | **G-dec** |
+| **7d-c** | Proc `@parallel(disjoint=…)` inherits to nested `parallel for`; `@vectorized for` → `ArraySimdScope` (done #150); disjoint policy green | **G-dec** + **G-par** (Lean open → **#387**) |
+| **7d-d** | `std/execution/decorators.li` + [decorators.md](../../language/decorators.md) gallery; no false elaboration claims | **G-dec** (doc) |
+| **7d-e** | `decorator_exploits/` all `compile_fail`; `scripts/ci.sh` runs suite every PR | **G-dec** |
 
 **Policy (binding):**
 

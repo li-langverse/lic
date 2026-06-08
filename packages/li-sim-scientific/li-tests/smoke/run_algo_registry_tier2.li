@@ -17,14 +17,14 @@ def main() -> int
     return 3
   if md105.checksum == 1.001:
     return 4
-  var heat210: SimRunResult = run_algo(210, 2)
-  if run_result_ok(heat210) != 1:
+  var heat202: SimRunResult = run_algo(202, 2)
+  if run_result_ok(heat202) != 1:
     return 5
-  if heat210.algo_id != 210:
+  if heat202.algo_id != 202:
     return 6
-  if heat210.checksum != heat_oracle:
+  if heat202.checksum != heat_oracle:
     return 7
-  if heat210.checksum == 1.001:
+  if heat202.checksum == 1.001:
     return 8
   var rigid302: SimRunResult = run_algo(302, 0)
   if run_result_ok(rigid302) != 1:

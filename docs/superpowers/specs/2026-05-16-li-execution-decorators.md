@@ -36,3 +36,16 @@ User `decorator def` names: strict package-prefixed snake_case; typosquat ban; e
 This is **placement metadata only**. It does not yet lower kernels to LKIR, allocate device buffers, prove address-space separation, or emit CUDA/HIP/Metal/SPIR-V. Those remain **G-gpu** work.
 
 See master plan Phase **7d** and `li-tests/decorator_exploits/` (to land with 7d-e).
+
+## Memory-space sync (lic#110 → #15)
+
+Decorator elaboration must attach **sync MIR tags** when buffers cross memory spaces. Policy matrix: [kokkos-memory-execution-spaces-rubric.md](../../hpc/kokkos-memory-execution-spaces-rubric.md).
+
+| Decorator stack | Buffer space | Required sync before access |
+|-----------------|--------------|----------------------------|
+| `@cpu` / `@parallel` | `MemorySpace.Host` only | None (disjoint proof on shared host memory) |
+| `@gpu` | `MemorySpace.Device` only | `@sync_device` if host wrote since last device read |
+| `@gpu` reading host buffer | — | **Compile error** unless preceded by `@sync_device` copy |
+| Host checksum after `@gpu` kernel | `MemorySpace.Host` | `@sync_host` before host read |
+
+Reserved sync decorators (spec names; parser in #15): `@sync_host(view)`, `@sync_device(view)`. No implicit DualView — explicit `hostbuffer` + `devicebuffer` pair only.

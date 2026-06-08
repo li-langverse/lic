@@ -340,7 +340,7 @@ See [local-ci-docker-images.md](../ecosystem/local-ci-docker-images.md).
 |-----|------|-----------|
 | **Doc-a** | **Gap register** — keep `provability-gaps.md` current; link from index, overview, master plan, mkdocs, [plan-cross-links](../ecosystem/plan-cross-links.md) | Register lists every open **G-*** row; last-updated date |
 | **Doc-b** | **Handbook audit** — every `docs/language/*`, `docs/guide/*`, `docs/compiler/*` uses *target vs today* where spec ≠ `lic` | No page implies Lean runs on `lic build` without a status note |
-| **Doc-c** | **Spec stubs** — decorator, math, language design cross-link gaps | `2026-05-16-li-execution-decorators.md`, `2026-05-16-li-math-linalg-surface.md` point at **G-*** |
+| **Doc-c** | **Phase exit gates + spec stubs** — phase plans **02 / 03 / 07** and decorator/math specs cite **G-*** at exit criteria (or **N/A** with rationale) | Each applicable register row linked; see [phase 02](2026-05-14-phase-02-typechecker.md#exit-gate--g--register), [phase 03](2026-05-14-phase-03-mir-codegen.md#exit-gate--g--register), [phase 07](2026-05-14-phase-07-native-hpc.md#exit-gate--g--register) |
 | **Doc-d** | **Contributing rule** — [documentation style](../contributing/documentation.md) § Provability | PR template / agent skill: “updated gap register?” |
 | **Doc-e** | **CI doc check** (optional) — `scripts/check-doc-provability-claims.sh` greps for forbidden phrases without nearby “gap” link | Fails on `proofs closed` without `provability-gaps` in changed docs |
 
@@ -470,7 +470,7 @@ Track in phase **Doc** until each is checked:
 - [ ] Phase 8p — Parallel compile + CI throughput — **partial (8p-a/b/c/d):** 8p-a parallel `run_all` + isolated `LI_BUILD_DIR` ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200)); 8p-c/d `ResourceOptions` + `lic build --jobs` reserved pass + CI test-job smokes (`compiler/common/`, `scripts/ci.sh`); **open:** 8p-b workspace pool, wall-time SLO ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
-- [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
+- [x] Phase Doc-c — Phase plans **02 / 03 / 07** link **G-*** IDs in exit gates + spec stubs normalized
 - [x] Phase Doc-d — Contributing / build skill requires gap-register updates
 - [x] Phase Doc-e — `scripts/check-doc-provability-claims.sh` in `scripts/ci.sh` (expand patterns over time)
 - [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../ecosystem/agent-handover-formats.md))

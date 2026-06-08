@@ -46,6 +46,7 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-30-ph7e-tier1-red-benchmark-honesty.md` | **PH-7e** tier-1 honesty · **G-math** doc sync |
 | `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
+| **Doc-c** — G-* exit gate linkage | **PH-Doc-c** · per-phase register rows | [phase-02-typechecker](../superpowers/plans/2026-05-14-phase-02-typechecker.md#exit-gate--g--register) · [phase-03-mir-codegen](../superpowers/plans/2026-05-14-phase-03-mir-codegen.md#exit-gate--g--register) · [phase-07-native-hpc](../superpowers/plans/2026-05-14-phase-07-native-hpc.md#exit-gate--g--register) |
 
 ## Open master-plan tracker rows (2026-05-30)
 

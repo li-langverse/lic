@@ -95,6 +95,21 @@
 
 ### Phase 2 exit gate
 
-- [x] `fib.li` typechecks (`li-tests/typecheck/fib.li`)
-- [x] All `bad_*.li` fail with expected errors
-- [x] Borrow double-mut test fails cleanly (`li-tests/borrow/double_mut.li`)
+- [x] `fib.li` typechecks (`li-tests/typecheck/fib.li`) — [**G-vc**](../../verification/provability-gaps.md#g-vc) (partial), [**G-def**](../../verification/provability-gaps.md#g-def) (partial)
+- [x] All `bad_*.li` fail with expected errors — [**G-vc**](../../verification/provability-gaps.md#g-vc), [**G-bnd**](../../verification/provability-gaps.md#g-bnd), [**G-narrow**](../../verification/provability-gaps.md#g-narrow)
+- [x] Borrow double-mut test fails cleanly (`li-tests/borrow/double_mut.li`) — **N/A** (lexical borrow; compile-time only, no **G-*** debt)
+
+### Exit gate — G-* register
+
+| G-* ID | Applicability | Exit-gate evidence (today) | Notes |
+|--------|---------------|------------------------------|-------|
+| [**G-vc**](../../verification/provability-gaps.md#g-vc) | **Yes** | `li-tests/contracts_verify/`, `vc_emit_contracts.sh` | Primary 2e overlap; **Partial** |
+| [**G-bnd**](../../verification/provability-gaps.md#g-bnd) | **Yes** | Literal index bounds at typecheck | Release MIR path in phase 3 |
+| [**G-def**](../../verification/provability-gaps.md#g-def) | **Yes** | `li-tests/encapsulation/`, method/`self` | PH-2j overlap |
+| [**G-math-syn**](../../verification/provability-gaps.md#g-math-syn) | **Yes** | `li-tests/math_syntax/` | PH-2h |
+| [**G-narrow**](../../verification/provability-gaps.md#g-narrow) | **Yes** | `historic_ariane5_narrowing.li` reject | 2e policy |
+| [**G-oop**](../../verification/provability-gaps.md#g-oop) | **Yes** | trait/method tests partial | PH-2j |
+| **G-lean** | **N/A** | — | Lean gate is **2f**, not phase-2 exit |
+| **G-ann** | **N/A** | — | Phase 4 deferred annotations |
+| **G-par** | **N/A** | — | Phase 7b parallel surface |
+| **G-meta** | **N/A** | — | Research limit per master plan |

@@ -2,7 +2,7 @@
 
 **Status:** Phase 7d in progress (`@gpu` / `@gpu(devices=N)` MIR telemetry landed; LKIR/codegen open)
 **Plan:** `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md`  
-**Gaps:** [Provability gaps](../../verification/provability-gaps.md) **G-dec**
+**Proof gaps (Doc-c):** [G-dec](../../verification/provability-gaps.md#g-dec) · [G-par](../../verification/provability-gaps.md#g-par) · [G-gpu](../../verification/provability-gaps.md#g-gpu) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)
 
 ## No runtime semantics
 

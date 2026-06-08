@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_numerics_version() != 1:
+  if li_std_numerics_version() != 2:
     return 1
   if numerics_three_body_gpu_progress() != 1:
     return 1

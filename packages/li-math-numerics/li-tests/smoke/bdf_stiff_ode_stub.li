@@ -1,0 +1,41 @@
+import math.numerics
+
+# ode-r3: BDF-1 single step on y'=-y must match e^{-dt} within 1e-6 rel.
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var dt: float = 0.001
+  var y: float = 1.0
+  bdf1_step_scalar(y, 1.0, dt)
+  var exact: float = 0.9990004998750625
+  var rel: float = (y - exact)
+  if rel < 0.0:
+    rel = -rel
+  rel = rel / exact
+  if rel > 0.000001:
+    return 1
+  var y2: float = 1.0
+  var y1: float = y2 / (1.0 + dt)
+  bdf2_step_scalar(y2, y1, 1.0, dt)
+  if y2 <= 0.0:
+    return 2
+  var vec: array[2, float]
+  var vec_prev: array[2, float]
+  vec[0] = 1.0
+  vec[1] = 0.5
+  vec_prev[0] = vec[0] / (1.0 + dt)
+  vec_prev[1] = vec[1] / (1.0 + dt)
+  bdf2_step_vec2(vec, vec_prev, 1.0, dt)
+  if vec[0] <= 0.0 or vec[1] <= 0.0:
+    return 3
+  var y_end: float = bdf1_integrate_decay(1.0, 1.0, 0.0001, 10000)
+  var target: float = 0.36787944117144233
+  var rel_end: float = (y_end - target)
+  if rel_end < 0.0:
+    rel_end = -rel_end
+  rel_end = rel_end / target
+  if rel_end > 0.000001:
+    return 4
+  return 0

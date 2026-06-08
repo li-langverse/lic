@@ -1635,6 +1635,12 @@ note = "T-PKG-lig-present-wgpu-readback"
 # --- science / simulation @gpu (PH-SCI-GPU) ---
 
 [[tests]]
+suite = "smoke"
+file = "packages/li-math-numerics/li-tests/smoke/bdf_stiff_ode_stub.li"
+outcome = "verify_ok"
+note = "ode-r3 BDF-1/2 stiff decay stub (lic#35)"
+
+[[tests]]
 suite = "science_gpu"
 file = "packages/li-math-numerics/li-tests/smoke/numerics_gpu_three_body.li"
 outcome = "compile_open_ok"

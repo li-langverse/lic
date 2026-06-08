@@ -1,0 +1,17 @@
+version = 1
+
+[[entry]]
+id = "N-ODE-BDF1-SCALAR"
+kind = "lemma"
+field = "numerics"
+domain = "ode_integration"
+statement = "BDF-1 fixed-step on y'=-lambda*y: y_{n+1}=y_n/(1+dt*lambda); monotone decay when lambda>0."
+proof_status = "planned"
+gap_id = "G-num"
+gap_kind = "modeling_gap"
+lean_module = "proof-db/numerics/axioms/NumericsAxioms.lean"
+lean_thm = "Li.ProofDb.Numerics.bdf1_decay_stub"
+li_specimen = "packages/li-math-numerics/li-tests/smoke/bdf_stiff_ode_stub.li"
+benchmark_ref = "benchmarks/tier2_physics/stiff_ode_robertson"
+issue_ref = "https://github.com/li-langverse/lic/issues/35"
+last_verified_lic_commit = "pending"

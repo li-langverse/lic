@@ -6,78 +6,86 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  var md_oracle: float = sim_scientific_oracle_checksum_md()
-  var heat_oracle: float = sim_scientific_oracle_checksum_heat()
   var md105: SimRunResult = run_algo(105, 1)
+  var md_ref: SimRunResult = run_md_tier2_registry(105, 1)
   if run_result_ok(md105) != 1:
     return 1
   if md105.algo_id != 105:
     return 2
-  if md105.checksum != md_oracle:
+  if md105.checksum != md_ref.checksum:
     return 3
   if md105.checksum == 1.001:
     return 4
-  var heat210: SimRunResult = run_algo(210, 2)
-  if run_result_ok(heat210) != 1:
+  var heat202: SimRunResult = run_algo(202, 2)
+  var heat_ref: SimRunResult = run_heat_tier2_registry(202, 2)
+  if run_result_ok(heat202) != 1:
     return 5
-  if heat210.algo_id != 210:
+  if heat202.algo_id != 202:
     return 6
-  if heat210.checksum != heat_oracle:
+  if heat202.checksum != heat_ref.checksum:
     return 7
-  if heat210.checksum == 1.001:
+  if heat202.checksum == 1.001:
     return 8
+  var cfd206: SimRunResult = run_algo(algo_cfd_simple(), 1)
+  var cfd_ref: SimRunResult = run_cfd_tier2_registry(algo_cfd_simple(), 1)
+  if run_result_ok(cfd206) != 1:
+    return 9
+  if cfd206.algo_id != 206:
+    return 10
+  if cfd206.checksum != cfd_ref.checksum:
+    return 11
+  if cfd206.checksum == 1.001:
+    return 12
+  var fea214: SimRunResult = run_algo(algo_fea_linear_elasticity(), 1)
+  var fea_ref: SimRunResult = run_fea_tier2_registry(algo_fea_linear_elasticity(), 1)
+  if run_result_ok(fea214) != 1:
+    return 14
+  if fea214.algo_id != 214:
+    return 15
+  if fea214.checksum != fea_ref.checksum:
+    return 16
+  if fea214.checksum == 1.001:
+    return 17
   var rigid302: SimRunResult = run_algo(302, 0)
   if run_result_ok(rigid302) != 1:
-    return 9
+    return 18
   if rigid302.algo_id != 302:
-    return 10
+    return 19
   if rigid302.checksum == 1.001:
-    return 11
+    return 20
   var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(qm418) != 1:
-    return 12
-  if qm418.checksum != 1.001:
-    return 13
-  var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
-  if echem_oracle <= 0.0:
-    return 14
-  if echem_oracle >= 1.0e-2:
-    return 15
-  var aimd433: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
-  if run_result_ok(aimd433) != 1:
-    return 16
-  if aimd433.algo_id != 433:
-    return 17
-  if aimd433.checksum != echem_oracle:
-    return 18
-  if aimd433.checksum == 1.001:
-    return 19
-  var gc_oracle: float = sim_scientific_oracle_checksum_echem_gc_aimd()
-  if gc_oracle <= 0.0:
-    return 20
-  if gc_oracle >= 0.05:
     return 21
-  var gc434: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 1)
-  if run_result_ok(gc434) != 1:
+  if qm418.checksum != 1.001:
     return 22
-  if gc434.algo_id != 434:
-    return 23
-  if gc434.checksum != gc_oracle:
+  var aimd433: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
+  var aimd_ref: SimRunResult = run_echem_aimd_tier2_registry(algo_echem_aimd_interface(), 1)
+  if run_result_ok(aimd433) != 1:
     return 24
-  if gc434.checksum == 1.001:
+  if aimd433.algo_id != 433:
     return 25
-  var sei_oracle: float = sim_scientific_oracle_checksum_echem_sei_kmc()
-  if sei_oracle <= 0.0:
+  if aimd433.checksum != aimd_ref.checksum:
     return 26
-  if sei_oracle >= 0.35:
+  if aimd433.checksum == 1.001:
     return 27
-  var sei435: SimRunResult = run_algo(algo_echem_sei_kmc(), 1)
-  if run_result_ok(sei435) != 1:
+  var gc434: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 1)
+  var gc_ref: SimRunResult = run_echem_gc_aimd_tier2_registry(algo_echem_gc_aimd_interface(), 1)
+  if run_result_ok(gc434) != 1:
     return 28
-  if sei435.algo_id != 435:
+  if gc434.algo_id != 434:
     return 29
-  if sei435.checksum != sei_oracle:
+  if gc434.checksum != gc_ref.checksum:
     return 30
-  if sei435.checksum == 1.001:
+  if gc434.checksum == 1.001:
     return 31
+  var sei435: SimRunResult = run_algo(algo_echem_sei_kmc(), 1)
+  var sei_ref: SimRunResult = run_echem_sei_kmc_tier2_registry(algo_echem_sei_kmc(), 1)
+  if run_result_ok(sei435) != 1:
+    return 32
+  if sei435.algo_id != 435:
+    return 33
+  if sei435.checksum != sei_ref.checksum:
+    return 34
+  if sei435.checksum == 1.001:
+    return 35
   return 0

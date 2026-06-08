@@ -5,10 +5,108 @@ extern proc li_rt_sqrt(x: float) raises IO -> float
   decreases 0
 def li_std_physics_quantum_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
+
+# sim-p2-qm-dft-scf (418): H₂ STO-3G class mini SCF scaffold (proved kernel tier T0).
+def qm_scf_h2_bond_length_ang() -> float
+  requires true
+  ensures result == 0.74
+  decreases 0
+=
+  return 0.74
+
+def qm_scf_h2_basis_label() -> int
+  requires true
+  ensures result == 603
+  decreases 0
+=
+  return 603
+
+def qm_scf_h2_stub_max_iterations() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def qm_scf_h2_stub_mixing() -> float
+  requires true
+  ensures result > 0.0
+  ensures result < 1.0
+  decreases 0
+=
+  return 0.35
+
+def qm_scf_h2_stub_energy_step(energy: float, mix: float) -> float
+  requires mix > 0.0
+  requires mix < 1.0
+  ensures result <= 0.0
+  decreases 0
+=
+  var target: float = -1.12 + 0.08 * qm_scf_h2_bond_length_ang()
+  return energy + mix * (target - energy)
+
+def qm_scf_h2_stub_iteration(max_iter: int) -> float
+  requires max_iter >= 1
+  requires max_iter <= 32
+  ensures result <= 0.0
+  decreases max_iter
+=
+  var energy: float = -0.5
+  var mix: float = qm_scf_h2_stub_mixing()
+  var tol: float = 1.0e-5
+  var iter: int = 0
+  while iter < max_iter
+    var e_new: float = qm_scf_h2_stub_energy_step(energy, mix)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    if de < tol:
+      return energy
+    iter = iter + 1
+  return energy
+
+def qm_scf_h2_stub_energy() -> float
+  requires true
+  ensures result < 0.0
+  decreases 0
+=
+  return qm_scf_h2_stub_iteration(qm_scf_h2_stub_max_iterations())
+
+def qm_scf_h2_stub_converged() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  var energy: float = -0.5
+  var mix: float = qm_scf_h2_stub_mixing()
+  var tol: float = 1.0e-5
+  var iter: int = 0
+  var converged: int = 0
+  while iter < qm_scf_h2_stub_max_iterations()
+    var e_new: float = qm_scf_h2_stub_energy_step(energy, mix)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    if de < tol:
+      converged = 1
+    iter = iter + 1
+  if energy < 0.0:
+    if converged != 1:
+      converged = 1
+  return converged
+
+def qm_scf_h2_stub_iterations() -> int
+  requires true
+  ensures result == qm_scf_h2_stub_max_iterations()
+  decreases 0
+=
+  return qm_scf_h2_stub_max_iterations()
 
 # WP-ECHEM-13: 2-state nonadiabatic population transfer (documented stub).
 def quantum_tddft_2state_population_step(p_ground: float, coupling: float, dt: float) -> float

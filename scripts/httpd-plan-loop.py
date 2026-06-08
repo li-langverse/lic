@@ -153,7 +153,7 @@ def pick_next(todos: list[dict], state: dict) -> dict | None:
 def run_gates() -> tuple[bool, str]:
     if not GATES.is_file():
         return False, f"missing gates script: {GATES}"
-    env = {**os.environ, "LI_REPO_ROOT": str(ROOT)}
+    env = {**os.environ, "LI_REPO_ROOT": str(ROOT), "LIC_ROOT": str(ROOT)}
     proc = subprocess.run(
         ["bash", str(GATES)],
         cwd=ROOT,
@@ -516,8 +516,13 @@ def main() -> int:
 
         if todo["id"].startswith("gap-phase2-"):
             os.environ["HTTPD_RUN_PHASE2_GATES"] = "1"
+            os.environ["HTTPD_BENCH_SKIP_TIMING"] = "0"
+            os.environ.setdefault("HTTPD_BENCH_DURATION_SEC", "30")
+            if todo["id"] in ("gap-phase2-perf-wrk-soak", "gap-phase2-streaming-wrk"):
+                os.environ.setdefault("LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC", "5400")
         else:
             os.environ.pop("HTTPD_RUN_PHASE2_GATES", None)
+            os.environ.pop("HTTPD_BENCH_SKIP_TIMING", None)
 
         ok, gate_out = run_gates()
         if not ok:

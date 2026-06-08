@@ -4,7 +4,7 @@
 
 | Id | Closes |
 |----|--------|
-| `gap-phase2-perf-wrk-soak` | Full wrk timing vs nginx (parity + nextjs + regression gate) |
+| `gap-phase2-perf-wrk-soak` | Full wrk timing vs nginx (parity + parity_streaming + nextjs + regression gate) |
 | `gap-phase2-mitigation-exploits` | All `nginx_mitigations.toml` rows linked to exploit TOMLs + drivers |
 | `gap-phase2-streaming-wrk` | SSE/WS streaming soak with timing, not verify-only |
 | `gap-phase2-exploit-nginx-regression` | Live exploit compare — no nginx-pass / li-fail regressions |

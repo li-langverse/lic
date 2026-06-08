@@ -59,7 +59,8 @@ Li scaffold energy is typically **~1–2 Hartree** away from PySCF STO-3G LDA be
 |------|------|
 | `scripts/bench-ph-sci-chem-dft-competitive.sh` | Orchestrator + JSON merge |
 | `scripts/bench-ph-sci-chem-dft-li.sh` | Li build/run timing |
-| `benchmarks/competitive/pyscf_sto3g_h_energy.py` | PySCF driver |
+| `benchmarks/competitive/pyscf_sto3g_h_energy.py` | PySCF driver (H atom) |
+| `benchmarks/competitive/pyscf_sto3g_h2_energy.py` | PySCF driver (H₂ STO-3G — chem-r2 / algo 418 oracle) |
 | `benchmarks/competitive/psi4_sto3g_h_energy.py` | Psi4 driver (optional) |
 | `benchmarks/competitive/chem_dft_competitive_common.py` | Shared workload + Li mirror |
 | `benchmarks/competitive/ph-sci-chem-dft.toml` | Registry / tier-2 gate |

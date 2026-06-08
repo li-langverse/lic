@@ -90,3 +90,5 @@
 - [x] `./li-tests/run_all.sh math_linalg`
 - [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`)
 - [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard)
+
+**Provability (Doc-c):** HPC exit proves codegen + policy smokes, not full Lean discharge — [G-par](../../verification/provability-gaps.md#g-par) (structured `disjoint=`, partial) · [G-dec](../../verification/provability-gaps.md#g-dec) (decorator elaboration, partial) · [G-math](../../verification/provability-gaps.md#g-math) (linalg surface + P-linalg, partial) · [G-gpu](../../verification/provability-gaps.md#g-gpu) (device buffers, partial). See [still open](../../verification/provability-gaps.md#still-open-report-every-session).

@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial scaffold via `scripts/li-new-package` (PKG-li-std-physics-quantum).
+- **WP-SIM-P2 / lic#478** — `qm_scf_h2_stub_energy`, `qm_scf_h2_stub_converged`, `qm_scf_h2_stub_scf_iterations` H₂ STO-3G-class minimal SCF stub; smoke `qm_scf_h2_stub_smoke.li`.
+
+### Changed
+
+- `li_std_physics_quantum_version` → 3.
 
 ## [0.1.0] - 2026-05-16
 

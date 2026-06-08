@@ -5,10 +5,10 @@ extern proc li_rt_sqrt(x: float) raises IO -> float
   decreases 0
 def li_std_physics_quantum_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 # WP-ECHEM-13: 2-state nonadiabatic population transfer (documented stub).
 def quantum_tddft_2state_population_step(p_ground: float, coupling: float, dt: float) -> float
@@ -88,3 +88,153 @@ def schrodinger_kinetic_diag(dx: float, mass: float) -> float
 =
   var hbar: float = 1.0
   return hbar * hbar / (2.0 * mass * dx * dx)
+
+# WP-SIM-P2 / lic#478: H2 STO-3G-class minimal SCF stub (algo 418 kernel).
+def qm_scf_h2_stub_bond_angstrom() -> float
+  requires true
+  ensures result == 0.74
+  decreases 0
+=
+  return 0.74
+
+def qm_scf_h2_stub_mixing() -> float
+  requires true
+  ensures result == 0.5
+  decreases 0
+=
+  return 0.5
+
+def qm_scf_h2_stub_tol() -> float
+  requires true
+  ensures result == 1.0e-3
+  decreases 0
+=
+  return 1.0e-3
+
+def qm_scf_h2_stub_max_iter() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def qm_scf_h2_stub_fill_density(dens: var array[4, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  dens[0] = 0.50
+  dens[1] = 0.35
+  dens[2] = 0.25
+  dens[3] = 0.15
+
+def qm_scf_h2_stub_target_density(target: var array[4, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  target[0] = 0.62
+  target[1] = 0.40
+  target[2] = 0.22
+  target[3] = 0.12
+
+def qm_scf_h2_stub_energy_from_density(dens: array[4, float]) -> float
+  requires true
+  ensures result <= 0.0
+  decreases 0
+=
+  var kin: float = 0.0
+  var i: int = 0
+  while i < 4
+    kin = kin + dens[i] * dens[i]
+    i = i + 1
+  var coul: float = dens[0] * dens[1] + dens[1] * dens[2] + dens[2] * dens[3]
+  var xc: float = -0.25 * kin
+  return -0.95 - 0.15 * kin - 0.08 * coul + xc
+
+def qm_scf_h2_stub_mix_density(dens: var array[4, float], mix: float) -> unit
+  requires mix > 0.0
+  requires mix <= 1.0
+  ensures true
+  decreases 0
+=
+  var target: array[4, float]
+  qm_scf_h2_stub_target_density(target)
+  var i: int = 0
+  while i < 4
+    dens[i] = (1.0 - mix) * dens[i] + mix * target[i]
+    i = i + 1
+
+def qm_scf_h2_stub_energy() -> float
+  requires true
+  ensures result <= 0.0
+  decreases 0
+=
+  var dens: array[4, float]
+  qm_scf_h2_stub_fill_density(dens)
+  var energy: float = qm_scf_h2_stub_energy_from_density(dens)
+  var mix: float = qm_scf_h2_stub_mixing()
+  var tol: float = qm_scf_h2_stub_tol()
+  var max_iter: int = qm_scf_h2_stub_max_iter()
+  var iter: int = 0
+  while iter < max_iter
+    qm_scf_h2_stub_mix_density(dens, mix)
+    var e_new: float = qm_scf_h2_stub_energy_from_density(dens)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    if de < tol:
+      return energy
+    iter = iter + 1
+  return energy
+
+def qm_scf_h2_stub_converged() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var dens: array[4, float]
+  qm_scf_h2_stub_fill_density(dens)
+  var energy: float = qm_scf_h2_stub_energy_from_density(dens)
+  var mix: float = qm_scf_h2_stub_mixing()
+  var tol: float = qm_scf_h2_stub_tol()
+  var max_iter: int = qm_scf_h2_stub_max_iter()
+  var iter: int = 0
+  while iter < max_iter
+    qm_scf_h2_stub_mix_density(dens, mix)
+    var e_new: float = qm_scf_h2_stub_energy_from_density(dens)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    if de < tol:
+      return 1
+    iter = iter + 1
+  return 0
+
+def qm_scf_h2_stub_scf_iterations() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 8
+  decreases 0
+=
+  var dens: array[4, float]
+  qm_scf_h2_stub_fill_density(dens)
+  var energy: float = qm_scf_h2_stub_energy_from_density(dens)
+  var mix: float = qm_scf_h2_stub_mixing()
+  var tol: float = qm_scf_h2_stub_tol()
+  var max_iter: int = qm_scf_h2_stub_max_iter()
+  var iter: int = 0
+  while iter < max_iter
+    iter = iter + 1
+    qm_scf_h2_stub_mix_density(dens, mix)
+    var e_new: float = qm_scf_h2_stub_energy_from_density(dens)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    if de < tol:
+      return iter
+  return max_iter

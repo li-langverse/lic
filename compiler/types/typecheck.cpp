@@ -1080,6 +1080,15 @@ struct Ctx {
           (void)type_of(*e.args[1]);
           return make_bool();
         }
+        if (e.ident == "then") {
+          if (e.args.size() != 2) {
+            diags.error(loc(e.span), "then expects two arguments (future, continuation)");
+            return make_int();
+          }
+          (void)type_of(*e.args[0]);
+          (void)type_of(*e.args[1]);
+          return make_int();
+        }
         if (e.ident == "disjoint_lookup" || e.ident == "disjoint_mod") {
           if (e.args.size() != 3) {
             diags.error(loc(e.span), e.ident + " expects three arguments (index, slot_or_period, buffer)");
@@ -1327,7 +1336,7 @@ struct Ctx {
         call.ident == "norm" || call.ident == "axpy" ||
         call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||
         call.ident == "disjoint_slice" || call.ident == "disjoint_lookup" ||
-        call.ident == "disjoint_mod" || call.ident == "row_ok" ||
+        call.ident == "disjoint_mod" || call.ident == "row_ok" || call.ident == "then" ||
         call.ident == "__li_simd_splat_f64" || call.ident == "__li_simd_mul_f64" ||
         call.ident == "__li_simd_add_f64" || call.ident == "__li_horiz_sum_f64") {
       return;

@@ -135,6 +135,18 @@ bool mir_decorator_disjoint_proven(const Decorator& d) {
   return false;
 }
 
+std::string mir_executor_pool_from_decorator(const Decorator& d) {
+  if (d.name != "executor") {
+    return "";
+  }
+  for (const auto& arg : d.args) {
+    if (arg.name == "pool" && arg.value && arg.value->kind == Expr::Kind::Ident) {
+      return arg.value->ident;
+    }
+  }
+  return "default";
+}
+
 void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator>& dst) {
   for (const auto& d : src) {
     MirDecorator md;
@@ -153,6 +165,10 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
     if (d.name == "parallel") {
       md.parallel = true;
       md.disjoint_proven = mir_decorator_disjoint_proven(d);
+    }
+    if (d.name == "executor") {
+      md.executor = true;
+      md.executor_pool = mir_executor_pool_from_decorator(d);
     }
     for (const auto& arg : d.args) {
       if (arg.name == "lanes" && arg.value && arg.value->kind == Expr::Kind::IntLit) {

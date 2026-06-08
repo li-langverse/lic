@@ -1,0 +1,25 @@
+async def force_pass(world: var array[8, int]) raises Async -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  borrow mut w = world
+  w[0] = 1
+  return 0
+
+async def constraint_solve(world: var array[8, int]) raises Async -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  borrow mut c = world
+  c[1] = 2
+  return 0
+
+async def rigid_body_pipeline(world: var array[8, int]) raises Async -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  then(force_pass(world), constraint_solve(world))
+  return 0

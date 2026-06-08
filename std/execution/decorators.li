@@ -3,8 +3,11 @@
 # Users write @cpu, @parallel(disjoint=disjoint_elem), @vectorized on def/for/while.
 # The compiler elaborates these at compile time; they are NOT runtime calls.
 #
-# Reserved (cannot user decorator def): parallel, vectorized, async, cpu, gpu, tpu,
+# Reserved (cannot user decorator def): parallel, vectorized, async, executor, cpu, gpu, tpu,
 # user_defined, serial, no_vectorize.
+#
+# Async continuum (G-async, lic#112): @async + Future[T] + then/continue_with — distinct from
+# data-parallel @parallel / parallel for (G-par). See docs/superpowers/specs/2026-06-07-li-hpx-async-futures-surface.md
 #
 # Resource knobs (lic build, not decorators):
 #   --jobs=N           — parallel compile workers (frontend), not runtime threads

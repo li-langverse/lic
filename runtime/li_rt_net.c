@@ -4155,6 +4155,34 @@ static int httpd_proxy_relay_pending_client(httpd_slot_t* s) {
   return s->proxy_rbuf_len > 0 && s->proxy_rbuf_sent < (size_t)s->proxy_rbuf_len;
 }
 
+static int httpd_proxy_relay_body_complete(const httpd_slot_t* s) {
+  if (s->proxy_resp_parsing) {
+    return 0;
+  }
+  if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL) {
+    return s->proxy_resp_body_left <= 0;
+  }
+  if (s->proxy_resp_body_mode == PROXY_RESP_BODY_TUNNEL ||
+      s->proxy_resp_body_mode == PROXY_RESP_BODY_CLOSE) {
+    return 0;
+  }
+  return 1;
+}
+
+static void httpd_proxy_relay_upstream_eof(int epfd, int32_t slot) {
+  httpd_slot_t* s = &g_slots[slot];
+  httpd_proxy_flush_client_out(epfd, slot);
+  if (httpd_proxy_relay_pending_client(s)) {
+    httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
+    return;
+  }
+  if (!httpd_proxy_relay_body_complete(s)) {
+    httpd_proxy_finish_err(epfd, slot);
+    return;
+  }
+  httpd_proxy_finish_ok(epfd, slot);
+}
+
 static void httpd_proxy_relay_maybe_done(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
   if (!s->proxy_active || s->proxy_phase != HTTPD_PROXY_PHASE_RELAY) {
@@ -4223,8 +4251,7 @@ static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
       return;
     }
     if (r == 0) {
-      httpd_proxy_flush_client_out(epfd, slot);
-      httpd_proxy_finish_ok(epfd, slot);
+      httpd_proxy_relay_upstream_eof(epfd, slot);
       return;
     }
     size_t take = (size_t)r;
@@ -4474,8 +4501,7 @@ static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
       return;
     }
     if (r == 0) {
-      httpd_proxy_flush_client_out(epfd, slot);
-      httpd_proxy_finish_ok(epfd, slot);
+      httpd_proxy_relay_upstream_eof(epfd, slot);
       return;
     }
     if (httpd_proxy_resp_feed(epfd, slot, s->proxy_rbuf, (size_t)r) < 0) {
@@ -4504,6 +4530,14 @@ static void httpd_proxy_up_handler(int epfd, int32_t slot, uint32_t events) {
       }
       httpd_proxy_flush_client_out(epfd, slot);
       if (s->proxy_relay_got_data || httpd_proxy_relay_pending_client(s)) {
+        if (httpd_proxy_relay_pending_client(s)) {
+          httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
+          return;
+        }
+        if (!httpd_proxy_relay_body_complete(s)) {
+          httpd_proxy_finish_err(epfd, slot);
+          return;
+        }
         httpd_proxy_finish_ok(epfd, slot);
         return;
       }

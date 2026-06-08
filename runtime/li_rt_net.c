@@ -733,7 +733,7 @@ int32_t httpd_set_proxy_upstream_port_i(int32_t port, int32_t proxy_all) {
   if (httpd_add_upstream_peer_i(port) < 0) {
     return -1;
   }
-  upstream_pool_prewarm_all();
+  ((void)0); /* lip edge: no upstream_pool_prewarm_all */
   return 0;
 }
 
@@ -771,7 +771,7 @@ int32_t httpd_set_upstream_ports_csv_i(intptr_t csv, int32_t proxy_all) {
   }
   if (count > 0) {
     httpd_proxy_snap_reset();
-    upstream_pool_prewarm_all();
+    ((void)0); /* lip edge: no upstream_pool_prewarm_all */
   }
   return count > 0 ? count : -1;
 }
@@ -3127,8 +3127,7 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
       epoll_ctl((int)epfd, EPOLL_CTL_DEL, g_slots[slot].proxy_up_fd, NULL);
     }
 #endif
-    upstream_pool_release(g_slots[slot].proxy_peer_port, g_slots[slot].proxy_up_fd,
-                          g_slots[slot].proxy_up_reuse);
+    upstream_pool_release(g_slots[slot].proxy_peer_port, g_slots[slot].proxy_up_fd, 0);
     g_slots[slot].proxy_up_fd = -1;
   }
   g_slots[slot].proxy_active = 0;
@@ -5505,7 +5504,7 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
     httpd_proxy_snap_reset();
   }
   if (g_up_peer_count > 0) {
-    upstream_pool_prewarm_all();
+    ((void)0); /* lip edge: no upstream_pool_prewarm_all */
   }
   if (g_m2_tls_terminate && g_tls_enabled_flat && g_tls_cert_dir[0]) {
     int tls12 = (strcmp(g_tls_min_protocol, "1.2") == 0) ? 1 : 0;

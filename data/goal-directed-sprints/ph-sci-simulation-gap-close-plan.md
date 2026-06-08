@@ -63,7 +63,8 @@ Legacy Phase 0 worker (`li-ph-sci-simulation-gap-close`) is superseded; keep sca
 - **Phase 0 lib compile:** `li-physics-fluids`, `li-physics-em`, `li-physics-weather`, `li-math-numerics` build under `scripts/ph-sci-phase0-gates.sh` (WP-SCI-BUILD-01/02).
 - **Honest smokes:** Phase 0 blocked libs import `src/lib.li` exports (WP-SCI-BUILD-03).
 - **`@gpu` today:** MIR placement telemetry (`mir_gpu_def=1` via `scripts/check-mir-gpu-decorator.sh`). Vendor LKIR execution remains Phase 3 (WP-SCI-GPU-VENDOR-01).
-- **Remaining lib gaps (Phase 2):** `run_algo_registry_stub` for most CFD/FEA rows; `li-sim-viz` compose-only; scene `native_pixels` stub; particles MD force accumulation still weak.
+- **Remaining lib gaps (Phase 2):** `run_algo_registry_stub` for QM (401–432) and non-science registry families; `li-sim-viz` compose-only; scene `native_pixels` stub; particles MD force accumulation still weak.
+- **WP-SCI-03 partial (2026-06-08):** CFD (205–210) + FEA (211–216) tier-2 oracles landed; QM rows still stub (418 checksum 1.001 by design until WP-QM-02).
 
 ---
 

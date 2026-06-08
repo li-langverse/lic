@@ -45,7 +45,20 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            libsdl2-dev pkg-config xvfb gcc python3
+            libsdl2-dev pkg-config xvfb gcc python3 chromium-browser
+
+      - name: Capture deps probe (issue #399)
+        run: |
+          chmod +x scripts/studio-ui-ux-check-capture-deps.sh \
+            scripts/studio-ui-ux-probe-capture-deps.sh
+          STUDIO_UI_UX_CAPTURE_DEPS_WARN_ONLY=1 ./scripts/studio-ui-ux-check-capture-deps.sh
+
+      - name: Headless Chrome HTML mock smoke
+        run: |
+          chmod +x deploy/studio-demo/screenshots/capture.sh
+          STUDIO_UI_UX_CAPTURE_MOTION_FRAMES=0 CAPTURE_CHROME_TIMEOUT_SEC=45 \
+            OUT=/tmp/studio-html-smoke bash deploy/studio-demo/screenshots/capture.sh
+          test -f /tmp/studio-html-smoke/01-studio-workspace.png
 
       - name: Studio UI/UX gates (no lic build)
         env:

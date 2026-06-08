@@ -44,6 +44,7 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-16-li-ecosystem-governance.md` | **PH-Pkg** governance |
 | `ph-db-lidb-platform.md` | **PH-DB** (roadmap ADR owns detail) |
 | `2026-05-30-ph7e-tier1-red-benchmark-honesty.md` | **PH-7e** tier-1 honesty · **G-math** doc sync |
+| `2026-06-07-kokkos-memory-execution-spaces-110.md` | **PH-7e** tier-2 memory spaces · **G-par**, **G-gpu** |
 | `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
 

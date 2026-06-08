@@ -1,0 +1,48 @@
+[meta]
+version = 1
+updated = "2026-06-08"
+schema = "li_ph_sci_pde_implicit_competitive_v1"
+issue = "https://github.com/li-langverse/lic/issues/108"
+pin_policy_issue = "https://github.com/li-langverse/lic/issues/33"
+
+[harness]
+script = "scripts/bench-ph-sci-pde-implicit-competitive.sh"
+output_competitive = "benchmarks/results/ph-sci-pde-implicit-competitive.json"
+competitor_drivers = "benchmarks/competitive/petsc_heat_implicit_stub.py"
+gate_script = "scripts/ph-sci-pde-implicit-competitive-gates.sh"
+
+[[row]]
+id = "heat_implicit_jacobi_8"
+kernel = "physics.fluids.pde_implicit_jacobi_oracle_checksum"
+catalog_bench = "pde_heat_implicit_jacobi"
+algo_id = 204
+workload_class = "stub"
+workload = "1d_heat_implicit_jacobi_8cell"
+nx = 8
+steps = 200
+jacobi_iters = 4
+checksum_tolerance = 1.0e-9
+incumbent = "PETSc KSP + hypre BoomerAMG (reference)"
+competitors = ["petsc_hypre", "li_jacobi"]
+
+[vendor.petsc]
+version = "3.25.0"
+version_policy = "major.minor.patch pin; bump with release notes + competitive TOML"
+repo_url = "https://gitlab.com/petsc/petsc"
+license = "BSD-2-Clause"
+gpu_pc = "PCBJKOKKOS"
+notes = "Optional user-run oracle — PETSC_DIR must be set; not bundled in CI"
+
+[vendor.hypre]
+version = "2.32.0"
+version_policy = "bundled with PETSc externalpackages or HYPRE_DIR"
+repo_url = "https://github.com/hypre-space/hypre"
+license = "Apache-2.0 OR LGPL-2.1"
+preconditioner = "BoomerAMG"
+notes = "Primary AMG reference for implicit PDE tier-2 rows"
+
+[competitor.petsc_hypre]
+license = "BSD-2-Clause + hypre dual-license"
+bundled = false
+import_json_field = "competitors[id=petsc_hypre].checksum"
+notes = "Stub driver — see README-pde-implicit.md"

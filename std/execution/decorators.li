@@ -1,4 +1,5 @@
 # std/execution/decorators.li — reserved execution decorator names (Phase 7d-d)
+# Lowering map (MIR / LLVM / OpenMPIRBuilder / MLIR omp): docs/compiler/execution-decorator-lowering-map.md
 #
 # Users write @cpu, @parallel(disjoint=disjoint_elem), @vectorized on def/for/while.
 # The compiler elaborates these at compile time; they are NOT runtime calls.

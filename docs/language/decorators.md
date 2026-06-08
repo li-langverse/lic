@@ -16,6 +16,8 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
 
+**Compiler map:** [Execution decorator lowering map](../compiler/execution-decorator-lowering-map.md) — MIR, LLVM, OpenMPIRBuilder, and MLIR `omp` targets for **PH-7e** / **G-par**.
+
 ## Resource knobs (`lic build`)
 
 These are **CLI flags**, not decorators:

@@ -36,3 +36,5 @@ User `decorator def` names: strict package-prefixed snake_case; typosquat ban; e
 This is **placement metadata only**. It does not yet lower kernels to LKIR, allocate device buffers, prove address-space separation, or emit CUDA/HIP/Metal/SPIR-V. Those remain **G-gpu** work.
 
 See master plan Phase **7d** and `li-tests/decorator_exploits/` (to land with 7d-e).
+
+**Lowering map (PH-7e / G-par):** [Execution decorator lowering map](../../compiler/execution-decorator-lowering-map.md) — Li decorators → MIR → LLVM today → LLVM `OpenMPIRBuilder` / MLIR `omp` dialect targets ([#34](https://github.com/li-langverse/lic/issues/34)).

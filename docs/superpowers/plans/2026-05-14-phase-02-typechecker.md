@@ -95,6 +95,9 @@
 
 ### Phase 2 exit gate
 
-- [x] `fib.li` typechecks (`li-tests/typecheck/fib.li`)
-- [x] All `bad_*.li` fail with expected errors
-- [x] Borrow double-mut test fails cleanly (`li-tests/borrow/double_mut.li`)
+Gap IDs: [G-vc](../../verification/provability-gaps.md#g-vc) · [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-def](../../verification/provability-gaps.md#g-def) · [G-math-syn](../../verification/provability-gaps.md#g-math-syn)
+
+- [x] `fib.li` typechecks (`li-tests/typecheck/fib.li`) — **G-vc** call-site / contract surface shipped; full VC corpus **Partial**
+- [x] All `bad_*.li` fail with expected errors — literal index + dimension rules (**G-bnd** **Partial**)
+- [x] Borrow double-mut test fails cleanly (`li-tests/borrow/double_mut.li`) — lexical borrow (**G-def** **Partial**)
+- [x] `lic check` rejects ill-typed programs — **G-math-syn** / **G-def** syntax gates (`**`, `def`, `object` surface **Partial**)

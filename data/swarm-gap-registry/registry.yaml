@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-31T00:53:15Z'
+updated_at: '2026-06-06T05:51:52Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -1088,11 +1088,13 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-16-palette-search-latency
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-16-palette-search-latency'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-16-palette-search-latency
+  - snapshot studio-ui-ux completed_ids includes studio-ux-16-palette-search-latency
+  - 'orch-r4: lic/data/studio-ui-ux-plan-loop/state.json gates_ok ux_pass 2026-05-30'
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-16-palette-search-latency
   suggested_loop: studio-ui-ux
@@ -1101,11 +1103,13 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-17-gpu-fail-recovery
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-17-gpu-fail-recovery'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-17-gpu-fail-recovery
+  - snapshot studio-ui-ux completed_ids includes studio-ux-17-gpu-fail-recovery
+  - 'orch-r4: lic/data/studio-ui-ux-plan-loop/state.json gates_ok ux_pass 2026-05-30'
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-17-gpu-fail-recovery
   suggested_loop: studio-ui-ux
@@ -1228,3 +1232,72 @@ gaps:
   suggested_loop: ph-db
   handoff_to:
   - swarm_observer
+- id: gap-ux-preflight-docs-only
+  gap_kind: ui_ux
+  title: Briefing preflight ux-audit audits docs-only — GUI targets require proactive harness
+  status: open
+  priority: 7
+  discovered_by: swarm_observer
+  evidence:
+  - benchmarks/data/latest/ux-audit.json — lic-docs only
+  - benchmarks/docs/ecosystem/ux-digests/2026-05-31-gui-ux.md
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - gui_ux_tester
+  - ci_maintainer
+- id: gap-ux-agents-dashboard-unreachable
+  gap_kind: ui_ux
+  title: agents-dashboard UX journeys blocked — dev server not reachable at probe
+  status: open
+  priority: 8
+  discovered_by: swarm_observer
+  evidence:
+  - benchmarks/data/latest-gui-ux-run/ux-audit.json — agents-dashboard skip
+  - li-cursor-agents#38
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - gui_ux_tester
+  - studio_ui_ux_builder
+- id: gap-ux-lic-tetris-stub-honesty
+  gap_kind: ui_ux
+  title: lic-tetris harness reuses studio SDL stub — UX-14 misleading pass
+  status: open
+  priority: 7
+  discovered_by: swarm_observer
+  evidence:
+  - benchmarks/data/latest-gui-ui-run/ui-audit.json
+  - li-cursor-agents#46
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - gui_ui_tester
+  - gui_ux_tester
+- id: gap-ux-playwright-journey-harness
+  gap_kind: ui_ux
+  title: HTML GUI fixtures lack Playwright snapshots + axe + journey rubric
+  status: open
+  priority: 7
+  discovered_by: swarm_observer
+  evidence:
+  - benchmarks/docs/ecosystem/ux-digests/2026-05-30-gui-ui.md
+  - li-cursor-agents#32
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - gui_ux_tester
+  - code_implementer
+- id: gap-ux-studio-wave3-native-deps
+  gap_kind: ui_ux
+  title: Studio wave-3 native capture deps + GPU runner CI — studio-ux-21..24 follow-through
+  status: open
+  priority: 6
+  discovered_by: swarm_observer
+  evidence:
+  - lic/data/studio-ui-ux-plan-loop/state.json — studio-ux-21..24 completed on branch
+  - lic/docs/ecosystem/gui-ux-quality-handoff.md
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - studio_ui_ux_builder
+  - gui_ux_tester

@@ -37,7 +37,7 @@
         "arithmetic_progressions"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/3",
       "notes": "Bloom Top 10; $5000 prize.",
       "content_tier": "polished",
@@ -287,7 +287,7 @@
         "sunflower"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/20",
       "notes": "Bloom Top 10; $1000 prize for k=3.",
       "content_tier": "curated",
@@ -422,7 +422,7 @@
         "prime_gaps"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/29",
       "content_tier": "curated",
       "context": "Prime k-tuple conjecture flavor: infinitely many primes p with p+k also prime for some fixed k>0. Standard open problem in analytic number theory.",
@@ -594,7 +594,7 @@
         "almost_prime"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/42",
       "content_tier": "curated",
       "context": "Twin semiprime problem: infinitely many n such that n and n+2 are each products of exactly two primes. Connects to sieve methods and almost-prime pairs.",
@@ -736,7 +736,7 @@
         "sum_product"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/52",
       "notes": "Bloom Top 10; real-number variant disproved May 2026; Z variant open.",
       "content_tier": "curated",
@@ -858,7 +858,7 @@
         "extremal"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/61",
       "notes": "Mochizuki proof disputed; register tracks as open.",
       "content_tier": "curated",
@@ -962,7 +962,7 @@
         "prime_gaps"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/69",
       "content_tier": "curated",
       "context": "Infinitely many consecutive prime gaps strictly larger than log p for the smaller prime p. Tests fine structure of gap distribution beyond average spacing.",
@@ -1261,7 +1261,7 @@
         "prime_gaps"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/89",
       "content_tier": "curated",
       "context": "Existence of very large prime gaps of size at least c√p log p infinitely often. Connects to Cramér-type conjectures and recent explicit gap constructions.",
@@ -1307,7 +1307,7 @@
         "polynomials"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/92",
       "content_tier": "curated",
       "context": "Infinitely many primes of the form n²+1. A classical sieve obstacle problem; Iwaniec showed infinitely many primes in shifted quadratics under weaker forms.",
@@ -1659,7 +1659,7 @@
         "additive"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/120",
       "content_tier": "curated",
       "context": "Infinitely many n such that n and n+2 are each sums of two primes. A Goldbach–twin hybrid problem in additive prime number theory.",
@@ -1762,7 +1762,7 @@
         "zeta"
       ],
       "priority_tier": "P0",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/128",
       "content_tier": "curated",
       "context": "Error term for π(x) vs Li(x) at Riemann-hypothesis strength. Equivalent to RH in standard formulations; catalogued as an Erdős-flavored open target.",

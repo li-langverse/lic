@@ -870,6 +870,13 @@ note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via phy
 
 [[tests]]
 suite = "composable"
+file = "composable/import_chem_dft_smoke.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "verify_ok"
+note = "sim-p2-qm-dft-scf: algo_id=418 qm_dft_scf_energy H₂ SCF oracle composable gate"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_studio_sim_profile_bridge.li"
 packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
 outcome = "check_ok"

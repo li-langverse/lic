@@ -369,8 +369,7 @@ def ml_blas_matmul_f32(
   ensures result <= 1
   decreases m + n + k
 =
-  if li_rt_blas_sgemm_ready() != 1:
-    return 0
+  # li_rt_blas_sgemm_f32 checks tile size before dlopen — avoid ready() here (bench spawns per run).
   if li_rt_blas_sgemm_f32(m, n, k, ld, a, b, c) != 0:
     return 0
   return 1

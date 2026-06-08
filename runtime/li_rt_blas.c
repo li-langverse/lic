@@ -95,7 +95,7 @@ int32_t li_rt_blas_sgemm_f32(int32_t m, int32_t n, int32_t k, int32_t ld, double
   if (k > ld || n > ld) {
     return 1;
   }
-  if (!li_rt_blas_size_ok(m, n, k)) {
+  if (!li_rt_blas_env_wanted() || !li_rt_blas_size_ok(m, n, k)) {
     return 1;
   }
   li_rt_blas_init_once();

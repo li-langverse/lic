@@ -120,7 +120,7 @@ int usage() {
             << "                       [--threads=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
-            << "  lic smoke-kernel <elf> [--timeout SEC]  run freestanding kernel on COM1 via QEMU\n"
+            << "  lic smoke-kernel <elf> [--timeout SEC]  execute freestanding kernel; trap @hw outb on COM1\n"
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
             << "  lic httpd validate-config <file.toml>  validate [routes] (E0501–E0504)\n"
             << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"

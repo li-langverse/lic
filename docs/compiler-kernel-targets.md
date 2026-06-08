@@ -21,8 +21,9 @@ bash scripts/build-hello-kern.sh
 bash scripts/smoke-hello-kern.sh ../build/hello_kern.elf
 ```
 
-Serial smoke is **`lic smoke-kernel <elf>`** — Li-native verification via QEMU COM1
-(0x3F8), wrapped by `lik/scripts/smoke-hello-kern.sh` for gates and `dev-vm.sh`.
+Serial smoke is **`lic smoke-kernel <elf>`** — Li-native verification: lic loads the
+freestanding ELF32, interprets i686 `@hw` (`outb` → COM1 0x3F8, `hlt`), no QEMU/Python.
+Wrapped by `lik/scripts/smoke-hello-kern.sh` for gates and `dev-vm.sh`.
 
 ## `@hw` intrinsics (compiler lowering)
 

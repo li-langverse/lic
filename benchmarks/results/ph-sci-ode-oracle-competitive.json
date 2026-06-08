@@ -1,0 +1,49 @@
+{
+  "schema": "ph-sci-ode-oracle-competitive-v1",
+  "rows": [
+    {
+      "id": "stiff_ode_robertson",
+      "problem": "robertson",
+      "oracle": "cvode_stub",
+      "li": {
+        "bdf1_linear_decay_ok": true,
+        "note": "BDF stub smoke; tier-2 driver pending"
+      },
+      "competitors": {
+        "cvode": {
+          "executed": false,
+          "y_end": [
+            1.0,
+            3e-07,
+            2e-05
+          ],
+          "note": "pinned stub \u2014 install sundials for live oracle"
+        }
+      },
+      "validity_ok": true,
+      "parity_gate_pass": true
+    },
+    {
+      "id": "stiff_ode_van_der_pol",
+      "problem": "van_der_pol",
+      "oracle": "cvode_stub",
+      "li": {
+        "bdf2_vec2_smoke_ok": true,
+        "note": "BDF-2 vec2 stub; tier-2 driver pending"
+      },
+      "competitors": {
+        "cvode": {
+          "executed": false,
+          "mu": 1000.0,
+          "y_end": [
+            1.988,
+            -0.002
+          ],
+          "note": "pinned stub \u2014 install sundials for live oracle"
+        }
+      },
+      "validity_ok": true,
+      "parity_gate_pass": true
+    }
+  ]
+}

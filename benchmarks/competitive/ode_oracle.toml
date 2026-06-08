@@ -1,0 +1,25 @@
+# ODE external oracle registry (ode-r2) — CVODE/SUNDIALS validity column for lic#35.
+# Full harness: benchmarks repo sundials_ode_oracle.py (handoff benchmarks#179).
+
+[[row]]
+id = "stiff_ode_robertson"
+problem = "robertson"
+oracle = "cvode"
+validity_required = true
+rtol = 1.0e-4
+atol = 1.0e-11
+lic_package = "math.numerics"
+lic_driver = "packages/li-math-numerics/src/lib.li"
+note = "3-species stiff Robertson; tier-2 physics workload (proposed)"
+
+[[row]]
+id = "stiff_ode_van_der_pol"
+problem = "van_der_pol"
+oracle = "cvode"
+validity_required = true
+rtol = 1.0e-6
+atol = 1.0e-8
+mu = 1000.0
+lic_package = "math.numerics"
+lic_driver = "packages/li-math-numerics/src/lib.li"
+note = "Van der Pol mu=1000; stiff oscillatory validity (proposed)"

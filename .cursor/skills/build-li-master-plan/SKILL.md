@@ -75,6 +75,8 @@ Report: what was done, exact error, what the user must provide (e.g. `brew insta
 | 0 | `docs/superpowers/plans/2026-05-14-phase-00-bootstrap.md` |
 | 1 | `docs/superpowers/plans/2026-05-14-phase-01-lexer-parser.md` |
 | 2d | `docs/superpowers/plans/2026-05-14-phase-02-typechecker.md` (+ 2a–2c when added) |
+| 2e | `docs/superpowers/plans/2026-05-14-phase-02e-contracts-vc.md` — exit: `scripts/check-phase-2e-gates.sh` |
+| 2f | [proof-corpus-roadmap.md](../../../docs/verification/proof-corpus-roadmap.md) + provability-gaps **G-lean** |
 | 3 | `docs/superpowers/plans/2026-05-14-phase-03-mir-codegen.md` |
 | 4 | `docs/superpowers/plans/2026-05-14-phase-04-runtime-stdlib.md` |
 | 5 | `docs/superpowers/plans/2026-05-14-phase-05-tetris.md` |

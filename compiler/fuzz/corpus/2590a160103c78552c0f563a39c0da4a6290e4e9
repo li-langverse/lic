@@ -1,7 +1,0 @@
-@cpu
-@parallel(disjoinw)
-proc -oc -> inttrsecpu
-@parallel(disjoint=di@parallel(disjoint=disjpu
-@parallel(dis2
-=
-  return 0

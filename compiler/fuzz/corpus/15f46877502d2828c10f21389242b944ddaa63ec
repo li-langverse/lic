@@ -1,4 +1,0 @@
-@cpu
-@para@proc f
-@para@proc f() -> int
-  urn 0

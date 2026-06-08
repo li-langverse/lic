@@ -16,6 +16,10 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
 
+## Offload mapping (OpenMPTarget / host OpenMP)
+
+Host `@cpu` / `@parallel` / `@vectorized` lowering and future `@gpu` → OpenMP **target** semantics are documented in the [OpenMPTarget offload checklist](../ecosystem/openmptarget-offload-checklist.md). **No device codegen** until [lic#34](https://github.com/li-langverse/lic/issues/34) (LLVM OpenMP IR plan) is approved.
+
 ## Resource knobs (`lic build`)
 
 These are **CLI flags**, not decorators:

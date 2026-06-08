@@ -45,6 +45,7 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `ph-db-lidb-platform.md` | **PH-DB** (roadmap ADR owns detail) |
 | `2026-05-30-ph7e-tier1-red-benchmark-honesty.md` | **PH-7e** tier-1 honesty · **G-math** doc sync |
 | `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
+| `openmptarget-offload-checklist.md` (ecosystem) | **PH-7e** · **G-par** · OpenMPTarget rubric (lic#116) |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
 
 ## Open master-plan tracker rows (2026-05-30)

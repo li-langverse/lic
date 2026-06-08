@@ -36,3 +36,7 @@ User `decorator def` names: strict package-prefixed snake_case; typosquat ban; e
 This is **placement metadata only**. It does not yet lower kernels to LKIR, allocate device buffers, prove address-space separation, or emit CUDA/HIP/Metal/SPIR-V. Those remain **G-gpu** work.
 
 See master plan Phase **7d** and `li-tests/decorator_exploits/` (to land with 7d-e).
+
+## Offload rubric (OpenMPTarget)
+
+Decorator → OpenMP **target** / **teams** / **map** mapping, Kokkos-class memory spaces, tier-2 physics bench scope, and explicit **no codegen until #34** gate: [OpenMPTarget offload checklist](../../ecosystem/openmptarget-offload-checklist.md) (**G-par**, **PH-7e**, lic#116).

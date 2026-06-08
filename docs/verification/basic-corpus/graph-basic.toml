@@ -8,7 +8,7 @@ last_verified_lic_commit = "708c67b8"
 id = "GT-LM-BC-HS-001"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Handshaking lemma: sum_{v in V} deg(v) = 2|E| in any finite graph."
 
@@ -16,7 +16,7 @@ statement = "Handshaking lemma: sum_{v in V} deg(v) = 2|E| in any finite graph."
 id = "GT-LM-BC-TR-002"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Tree on n vertices has exactly n-1 edges."
 
@@ -24,7 +24,7 @@ statement = "Tree on n vertices has exactly n-1 edges."
 id = "GT-LM-BC-CON-003"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Connected graph on n vertices has at least n-1 edges."
 
@@ -32,7 +32,7 @@ statement = "Connected graph on n vertices has at least n-1 edges."
 id = "GT-LM-BC-COL-004"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Greedy bound: chromatic number chi(G) <= Delta(G) + 1."
 
@@ -48,7 +48,7 @@ statement = "Simple graph: no self-loops; adjacency matrix is symmetric with zer
 id = "GT-LM-BC-HS-006"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Corollary: every graph has an even number of odd-degree vertices."
 
@@ -56,7 +56,7 @@ statement = "Corollary: every graph has an even number of odd-degree vertices."
 id = "GT-LM-BC-TR-007"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Connected acyclic graph on n vertices has n-1 edges."
 
@@ -64,7 +64,7 @@ statement = "Connected acyclic graph on n vertices has n-1 edges."
 id = "GT-LM-BC-CON-008"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "If |E| > |V|-1 then a graph contains a cycle."
 
@@ -72,7 +72,7 @@ statement = "If |E| > |V|-1 then a graph contains a cycle."
 id = "GT-LM-BC-COL-009"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Brooks theorem (qualitative): chi(G) <= Delta(G) except for cliques and odd cycles."
 
@@ -88,7 +88,7 @@ statement = "Simple graph edge count at most n(n-1)/2 on n vertices."
 id = "GT-LM-BC-HS-011"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Average degree: 2|E|/|V| equals average vertex degree."
 
@@ -96,7 +96,7 @@ statement = "Average degree: 2|E|/|V| equals average vertex degree."
 id = "GT-LM-BC-TR-012"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Adding one edge to a tree creates exactly one cycle."
 
@@ -104,7 +104,7 @@ statement = "Adding one edge to a tree creates exactly one cycle."
 id = "GT-LM-BC-CON-013"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Tree characterization: connected and |E| = |V|-1."
 
@@ -112,7 +112,7 @@ statement = "Tree characterization: connected and |E| = |V|-1."
 id = "GT-LM-BC-COL-014"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Complete graph K_n has chi(K_n) = n."
 
@@ -128,7 +128,7 @@ statement = "Adjacency symmetry: A[i,j] = A[j,i] for simple undirected graphs."
 id = "GT-LM-BC-HS-016"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Regular graph: if every vertex has degree d then 2|E| = d|V|."
 
@@ -136,7 +136,7 @@ statement = "Regular graph: if every vertex has degree d then 2|E| = d|V|."
 id = "GT-LM-BC-TR-017"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Removing any edge from a tree disconnects the graph."
 
@@ -144,7 +144,7 @@ statement = "Removing any edge from a tree disconnects the graph."
 id = "GT-LM-BC-CON-018"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Minimal connected spanning subgraph has |V|-1 edges."
 
@@ -152,7 +152,7 @@ statement = "Minimal connected spanning subgraph has |V|-1 edges."
 id = "GT-LM-BC-COL-019"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Bipartite graphs satisfy chi(G) = 2 when |E| > 0."
 
@@ -168,7 +168,7 @@ statement = "No parallel edges: at most one edge between distinct vertices."
 id = "GT-LM-BC-HS-021"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Bipartite handshaking: sum of degrees in each part equals |E|."
 
@@ -176,7 +176,7 @@ statement = "Bipartite handshaking: sum of degrees in each part equals |E|."
 id = "GT-LM-BC-TR-022"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Every tree with n >= 2 has at least two leaves."
 
@@ -184,7 +184,7 @@ statement = "Every tree with n >= 2 has at least two leaves."
 id = "GT-LM-BC-CON-023"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Disconnected graph on n vertices with c components has at most |V|-c edges."
 
@@ -192,7 +192,7 @@ statement = "Disconnected graph on n vertices with c components has at most |V|-
 id = "GT-LM-BC-COL-024"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Tree chi: every tree with edges has chi = 2."
 
@@ -208,7 +208,7 @@ statement = "Simple graph complement also has no loops."
 id = "GT-LM-BC-HS-026"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Loop-free simple graph: sum of degrees is twice the edge count."
 
@@ -216,7 +216,7 @@ statement = "Loop-free simple graph: sum of degrees is twice the edge count."
 id = "GT-LM-BC-TR-027"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Unique simple path between any two vertices in a tree."
 
@@ -224,7 +224,7 @@ statement = "Unique simple path between any two vertices in a tree."
 id = "GT-LM-BC-CON-028"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Adding an edge to a connected graph preserves connectivity or creates a cycle."
 
@@ -232,7 +232,7 @@ statement = "Adding an edge to a connected graph preserves connectivity or creat
 id = "GT-LM-BC-COL-029"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Cycle C_n: chi(C_n) = 2 if n even, 3 if n odd."
 
@@ -248,7 +248,7 @@ statement = "Degree of vertex v equals number of neighbors in simple graph."
 id = "GT-LM-BC-HS-031"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Degree sequence necessary condition: sum of degrees is even."
 
@@ -256,7 +256,7 @@ statement = "Degree sequence necessary condition: sum of degrees is even."
 id = "GT-LM-BC-TR-032"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Tree edge count: |E| = |V| - 1 for connected acyclic graphs."
 
@@ -264,7 +264,7 @@ statement = "Tree edge count: |E| = |V| - 1 for connected acyclic graphs."
 id = "GT-LM-BC-CON-033"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Connected graph diameter is finite when |V| >= 1."
 
@@ -272,7 +272,7 @@ statement = "Connected graph diameter is finite when |V| >= 1."
 id = "GT-LM-BC-COL-034"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Clique lower bound: chi(G) >= omega(G) (clique number)."
 
@@ -288,7 +288,7 @@ statement = "Simple graph isomorphism preserves degree sequence."
 id = "GT-LM-BC-HS-036"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Minimum edges for given degree sum: |E| >= (sum deg)/2."
 
@@ -296,7 +296,7 @@ statement = "Minimum edges for given degree sum: |E| >= (sum deg)/2."
 id = "GT-LM-BC-TR-037"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Forest on n vertices with c components has n-c edges."
 
@@ -304,7 +304,7 @@ statement = "Forest on n vertices with c components has n-c edges."
 id = "GT-LM-BC-CON-038"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Bridge edge: removing it increases number of components."
 
@@ -312,7 +312,7 @@ statement = "Bridge edge: removing it increases number of components."
 id = "GT-LM-BC-COL-039"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Edge chromatic number chi'(G) >= Delta(G) (Vizing lower bound)."
 
@@ -328,7 +328,7 @@ statement = "Complete simple graph K_n has n(n-1)/2 edges."
 id = "GT-LM-BC-HS-041"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Forest handshaking: same as general graph, 2|E| = sum deg(v)."
 
@@ -336,7 +336,7 @@ statement = "Forest handshaking: same as general graph, 2|E| = sum deg(v)."
 id = "GT-LM-BC-TR-042"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Spanning tree of connected graph has |V|-1 edges."
 
@@ -344,7 +344,7 @@ statement = "Spanning tree of connected graph has |V|-1 edges."
 id = "GT-LM-BC-CON-043"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "2-edge-connected graph has no bridges."
 
@@ -352,7 +352,7 @@ statement = "2-edge-connected graph has no bridges."
 id = "GT-LM-BC-COL-044"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Planar graph chi <= 4 (four color theorem statement)."
 
@@ -368,7 +368,7 @@ statement = "Empty simple graph on n vertices has 0 edges."
 id = "GT-LM-BC-HS-046"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Multigraph: counting edge incidences gives sum deg(v) = 2|E|."
 
@@ -376,7 +376,7 @@ statement = "Multigraph: counting edge incidences gives sum deg(v) = 2|E|."
 id = "GT-LM-BC-TR-047"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Cayley count: there are n^(n-2) labeled trees on n vertices."
 
@@ -384,7 +384,7 @@ statement = "Cayley count: there are n^(n-2) labeled trees on n vertices."
 id = "GT-LM-BC-CON-048"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Connected cubic graph on n vertices has 3n/2 edges."
 
@@ -392,7 +392,7 @@ statement = "Connected cubic graph on n vertices has 3n/2 edges."
 id = "GT-LM-BC-COL-049"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "combinatorics"
 statement = "Greedy coloring uses at most Delta+1 colors in some vertex order."
 

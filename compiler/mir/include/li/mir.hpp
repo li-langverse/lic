@@ -285,6 +285,8 @@ std::size_t count_mir_vectorized_proc(const MirModule& mir);
 std::size_t count_mir_gpu_def(const MirModule& mir);
 std::size_t count_mir_gpu_multi_device_def(const MirModule& mir);
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
+/** Count `OmpParallelFor` with proved disjoint witness — v1 policy is static_chunk (lic#109). */
+std::size_t count_mir_parallel_policy_static_chunk(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
 

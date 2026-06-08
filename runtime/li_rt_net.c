@@ -3973,7 +3973,7 @@ static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
   }
   int resp_keep = 0;
   int cl = parse_resp_content_length(s->proxy_resp_hdr_acc, hdr_end, &resp_keep);
-  s->proxy_up_reuse = resp_keep;
+  s->proxy_up_reuse = 0;
   if (cl >= 0) {
     s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
     s->proxy_resp_body_left = cl;
@@ -4656,7 +4656,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_body_slot_done = 0;
   s->proxy_rbuf_len = 0;
   s->proxy_rbuf_sent = 0;
-  s->proxy_up_reuse = 1;
+  s->proxy_up_reuse = 0;
   s->proxy_relay_got_data = 0;
   s->proxy_phase = HTTPD_PROXY_PHASE_SEND_REQ;
   s->proxy_chunk_state = PROXY_CHUNK_HEX;
@@ -6186,7 +6186,7 @@ int32_t httpd_li_proxy_mark_active_i(int32_t epfd, int32_t slot, int32_t up_fd, 
   s->proxy_up_fd = up_fd;
   s->proxy_hdr_end = hdr_end;
   s->proxy_keep = keep ? 1 : 0;
-  s->proxy_up_reuse = 1;
+  s->proxy_up_reuse = 0;
   s->proxy_phase = HTTPD_PROXY_PHASE_SEND_REQ;
   s->proxy_send_off = 0;
   s->proxy_relay_got_data = 0;

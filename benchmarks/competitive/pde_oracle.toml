@@ -1,13 +1,13 @@
 # PDE external oracle pins (PETSc + hypre).
-# Status: stub — implement after plan-approved on lic#108.
+# Status: stub_ok — driver stub ships; real PETSc SNES/KSP deferred.
 # Validate: ./scripts/check-hpc-competitive.sh (extend in implement phase)
 # Plan: docs/superpowers/plans/2026-06-07-pde-r1-hypre-petsc-oracle-plan.md
 
 [meta]
-version = 0
-status = "stub"
+version = 1
+status = "stub_ok"
 issue = "https://github.com/li-langverse/lic/issues/108"
-updated = "2026-06-07"
+updated = "2026-06-08"
 
 [[oracle]]
 id = "petsc_hypre_heat_implicit"

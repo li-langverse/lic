@@ -15,7 +15,7 @@ todos:
 
 - id: pde-r1-hypre-petsc-oracle-plan
   content: "PETSc+hypre external oracle column for pde_heat_implicit_jacobi — plan doc + gate contract"
-  status: pending
+  status: completed
   study_only: true
   handoff_implement: sim-pde-r1-oracle-harness
 

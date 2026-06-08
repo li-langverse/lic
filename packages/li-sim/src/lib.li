@@ -147,6 +147,20 @@ def vertical_echem_sei_kmc() -> int
 =
   return 7
 
+def vertical_fea_linear_elasticity() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def vertical_cfd_lid_driven_cavity() -> int
+  requires true
+  ensures result == 9
+  decreases 0
+=
+  return 9
+
 def algo_registry_count() -> int
   requires true
   ensures result == 127
@@ -317,6 +331,20 @@ def algo_echem_sei_kmc() -> int
   decreases 0
 =
   return 435
+
+def algo_cfd_fvm_face_flux() -> int
+  requires true
+  ensures result == 205
+  decreases 0
+=
+  return 205
+
+def algo_fea_linear_elasticity() -> int
+  requires true
+  ensures result == 214
+  decreases 0
+=
+  return 214
 
 def algo_robo_multibody_step() -> int
   requires true

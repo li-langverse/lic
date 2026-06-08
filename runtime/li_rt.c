@@ -448,7 +448,7 @@ float li_rt_studio_timeline_playhead_pct_from_tick(int32_t tick, int32_t duratio
   return pct;
 }
 
-float li_rt_int_as_float(int32_t v) { return (float)v; }
+double li_rt_int_as_float(int32_t v) { return (double)v; }
 
 int32_t li_rt_studio_timeline_set_playhead_pct(float pct) {
   if (pct < 0.0f) {

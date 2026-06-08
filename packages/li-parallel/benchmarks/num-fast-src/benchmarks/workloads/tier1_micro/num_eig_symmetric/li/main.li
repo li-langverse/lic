@@ -1,0 +1,61 @@
+# Pure-Li num_eig_symmetric — power iteration (N=32, STEPS=200).
+
+extern proc li_rt_int_as_float(v: int) -> float
+  requires true
+  ensures true
+
+extern proc sqrt(v: float) -> float
+  requires v >= 0.0
+  ensures true
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var A: array[32, array[32, float]]
+  var v: array[32, float]
+  var w: array[32, float]
+  var i: int = 0
+  while i < 32
+    var j: int = 0
+    while j < 32
+      var mod7: int = (i + j) % 7
+      var aval: float = 0.02 * li_rt_int_as_float(mod7)
+      if i == j:
+        aval = li_rt_int_as_float(32 + i + 1)
+      A[i][j] = aval
+      j = j + 1
+    v[i] = 1.0 / 32.0
+    i = i + 1
+  var lambda: float = 0.0
+  var s: int = 0
+  while s < 200
+    i = 0
+    while i < 32
+      var sum: float = 0.0
+      var j: int = 0
+      while j < 32
+        sum = sum + A[i][j] * v[j]
+        j = j + 1
+      w[i] = sum
+      i = i + 1
+    var norm: float = 0.0
+    i = 0
+    while i < 32
+      norm = norm + w[i] * w[i]
+      i = i + 1
+    norm = sqrt(norm)
+    lambda = 0.0
+    i = 0
+    while i < 32
+      v[i] = w[i] / norm
+      lambda = lambda + v[i] * w[i]
+      i = i + 1
+    s = s + 1
+  li_rt_volatile_sink_f64(lambda)
+  return 0

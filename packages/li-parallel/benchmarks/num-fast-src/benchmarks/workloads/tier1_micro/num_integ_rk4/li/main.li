@@ -1,0 +1,29 @@
+# Pure-Li num_integ_rk4 — RK4 step outlined for stable codegen.
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var dt: float = 0.0002
+  var y: float = 1.0
+  var v: float = 0.0
+  var i: int = 0
+  while i < 200000
+    var k1y: float = v
+    var k1v: float = -y
+    var k2y: float = v + 0.5 * dt * k1v
+    var k2v: float = 0.0 - (y + 0.5 * dt * k1y)
+    var k3y: float = v + 0.5 * dt * k2v
+    var k3v: float = 0.0 - (y + 0.5 * dt * k2y)
+    var k4y: float = v + dt * k3v
+    var k4v: float = 0.0 - (y + dt * k3y)
+    y = y + dt * (k1y + 2.0 * k2y + 2.0 * k3y + k4y) / 6.0
+    v = v + dt * (k1v + 2.0 * k2v + 2.0 * k3v + k4v) / 6.0
+    i = i + 1
+  li_rt_volatile_sink_f64(y + v)
+  return 0

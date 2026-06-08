@@ -4197,13 +4197,17 @@ static void httpd_proxy_relay_maybe_done(int epfd, int32_t slot) {
   if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL) {
     if (s->proxy_resp_body_left <= 0) {
       httpd_proxy_flush_client_out(epfd, slot);
-      httpd_proxy_finish_ok(epfd, slot);
+      if (!httpd_proxy_relay_pending_client(s)) {
+        httpd_proxy_finish_ok(epfd, slot);
+      }
     }
     return;
   }
   if (s->proxy_resp_body_mode == PROXY_RESP_BODY_NONE && s->proxy_relay_got_data) {
     httpd_proxy_flush_client_out(epfd, slot);
-    httpd_proxy_finish_ok(epfd, slot);
+    if (!httpd_proxy_relay_pending_client(s)) {
+      httpd_proxy_finish_ok(epfd, slot);
+    }
     return;
   }
   if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CLOSE) {

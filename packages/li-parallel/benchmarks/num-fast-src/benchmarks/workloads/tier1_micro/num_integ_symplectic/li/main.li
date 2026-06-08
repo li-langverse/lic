@@ -1,0 +1,21 @@
+# Pure-Li num_integ_symplectic — Störmer–Verlet leapfrog (smoke-scale).
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var dt: float = 0.0001
+  var y: float = 1.0
+  var v: float = 0.0
+  var i: int = 0
+  while i < 500000
+    v = v - y * dt
+    y = y + v * dt
+    i = i + 1
+  li_rt_volatile_sink_f64(y + v)
+  return 0

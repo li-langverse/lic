@@ -1,0 +1,76 @@
+# Pure-Li num_cg — same CG smoke kernel as common/num_cg_core.c (N=64, ITERS=120).
+
+extern proc li_rt_int_as_float(v: int) -> float
+  requires true
+  ensures true
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var x: array[64, float]
+  var b: array[64, float]
+  var r: array[64, float]
+  var p: array[64, float]
+  var Ap: array[64, float]
+  var i: int = 0
+  while i < 64
+    b[i] = li_rt_int_as_float(i + 1)
+    x[i] = 0.0
+    r[i] = b[i]
+    p[i] = r[i]
+    i = i + 1
+  var rsold: float = 0.0
+  i = 0
+  while i < 64
+    rsold = rsold + r[i] * r[i]
+    i = i + 1
+  var it: int = 0
+  while it < 120
+    i = 0
+    while i < 64
+      var sum: float = 0.0
+      var j: int = 0
+      while j < 64
+        var aij: float = 0.001
+        if i == j:
+          aij = 68.0
+        sum = sum + aij * p[j]
+        j = j + 1
+      Ap[i] = sum
+      i = i + 1
+    var alpha_den: float = 0.0
+    i = 0
+    while i < 64
+      alpha_den = alpha_den + p[i] * Ap[i]
+      i = i + 1
+    var alpha: float = rsold / alpha_den
+    i = 0
+    while i < 64
+      x[i] = x[i] + alpha * p[i]
+      i = i + 1
+    var rsnew: float = 0.0
+    i = 0
+    while i < 64
+      r[i] = r[i] - alpha * Ap[i]
+      rsnew = rsnew + r[i] * r[i]
+      i = i + 1
+    var beta: float = rsnew / rsold
+    rsold = rsnew
+    i = 0
+    while i < 64
+      p[i] = r[i] + beta * p[i]
+      i = i + 1
+    it = it + 1
+  var acc: float = 0.0
+  i = 0
+  while i < 64
+    acc = acc + x[i]
+    i = i + 1
+  li_rt_volatile_sink_f64(acc)
+  return 0

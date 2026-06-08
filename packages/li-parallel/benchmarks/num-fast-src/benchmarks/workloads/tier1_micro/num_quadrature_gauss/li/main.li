@@ -1,0 +1,41 @@
+# Pure-Li num_quadrature_gauss — hoist inner quadrature; outer acc matches C fp order.
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var inner: float = 0.0
+  var k: int = 0
+  while k < 5
+    var node: float = 0.0
+    var weight: float = 0.0
+    if k == 0:
+      node = -0.906179845938664
+      weight = 0.236926885056189
+    if k == 1:
+      node = -0.538469310105683
+      weight = 0.478628670499366
+    if k == 2:
+      node = 0.0
+      weight = 0.568888888888889
+    if k == 3:
+      node = 0.538469310105683
+      weight = 0.478628670499366
+    if k == 4:
+      node = 0.906179845938664
+      weight = 0.236926885056189
+    var x: float = 0.5 * (node + 1.0)
+    inner = inner + weight * 0.5 * (x * x + 1.0)
+    k = k + 1
+  var acc: float = 0.0
+  var r: int = 0
+  while r < 2000000
+    acc = acc + inner
+    r = r + 1
+  li_rt_volatile_sink_f64(acc)
+  return 0

@@ -1,0 +1,24 @@
+# Pure-Li num_integ_verlet — velocity Verlet for harmonic oscillator.
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var dt: float = 0.0001
+  var y: float = 1.0
+  var v: float = 0.0
+  var a: float = -y
+  var i: int = 0
+  while i < 500000
+    y = y + dt * v + 0.5 * dt * dt * a
+    var a_new: float = -y
+    v = v + 0.5 * dt * (a + a_new)
+    a = a_new
+    i = i + 1
+  li_rt_volatile_sink_f64(y + v)
+  return 0

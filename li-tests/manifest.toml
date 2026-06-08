@@ -863,6 +863,13 @@ note = "2j-c: var RigidBody in-out write-back after rigid_integrate_semi_implici
 
 [[tests]]
 suite = "composable"
+file = "composable/import_physics_particles_neighbor_cell.li"
+packages = ["li-physics-particles"]
+outcome = "compile_open_ok"
+note = "sim-p1-md-neighbor-cell: algo 105 cell-shell LJ smoke checksum"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_sim_scientific_run.li"
 packages = ["li-sim-scientific", "li-sim"]
 outcome = "compile_open_ok"

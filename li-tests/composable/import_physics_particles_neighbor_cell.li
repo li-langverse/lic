@@ -1,0 +1,19 @@
+import physics.particles
+
+def smoke_md_neighbor_cell_list() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var c: float = md_neighbor_cell_list_smoke_checksum()
+  if c < 0.01:
+    return 1
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return smoke_md_neighbor_cell_list()

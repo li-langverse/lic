@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **sim-p1-md-neighbor-cell (algo 105)** — `md_neighbor_cell_list_smoke_checksum`, cell-shell LJ force sum with MIC; composable `import_physics_particles_neighbor_cell.li`; `li_std_physics_particles_version` → 3.
 - **WP-ECHEM-10 classical MD solvent shell** — `echem_solvent_*` water sphere (16-molecule 4×4 grid), TIP3P-like LJ + Ewald stub, O–O radial `g(r)` peak oracle vs `ph-sci-echem-solvent-gr-reference.json`; smokes `echem_solvent_gr_smoke.li`, composable `import_echem_solvent_smoke.li`; `li_std_physics_particles_version` → 2.
 - Initial scaffold via `scripts/li-new-package` (PKG-li-std-physics-particles).
 

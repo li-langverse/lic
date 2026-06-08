@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -207,6 +207,121 @@ def sim_scientific_oracle_checksum_heat() -> float
     heat_oracle_stencil_step(u, v, r)
     step = step + 1
   return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
+
+# WP-SCI-03 — tier-2 Li oracle: 4×4 lid-driven cavity (explicit diffusion, 40 steps).
+def cfd_oracle_cavity_diffuse(
+    r0: var array[4, float], r1: var array[4, float],
+    r2: var array[4, float], r3: var array[4, float],
+    n0: var array[4, float], n1: var array[4, float],
+    n2: var array[4, float], n3: var array[4, float],
+    coeff: float) -> unit
+  requires coeff > 0.0
+  ensures true
+  decreases 0
+=
+  n0[0] = r0[0]
+  n0[1] = r0[1] + coeff * (r0[0] + r0[2] + r1[1] - 4.0 * r0[1])
+  n0[2] = r0[2] + coeff * (r0[1] + r0[3] + r1[2] - 4.0 * r0[2])
+  n0[3] = r0[3]
+  n1[0] = r1[0]
+  n1[1] = r1[1] + coeff * (r1[0] + r1[2] + r0[1] + r2[1] - 4.0 * r1[1])
+  n1[2] = r1[2] + coeff * (r1[1] + r1[3] + r0[2] + r2[2] - 4.0 * r1[2])
+  n1[3] = r1[3]
+  n2[0] = r2[0]
+  n2[1] = r2[1] + coeff * (r2[0] + r2[2] + r1[1] + r3[1] - 4.0 * r2[1])
+  n2[2] = r2[2] + coeff * (r2[1] + r2[3] + r1[2] + r3[2] - 4.0 * r2[2])
+  n2[3] = r2[3]
+  n3[0] = 1.0
+  n3[1] = 1.0
+  n3[2] = 1.0
+  n3[3] = 1.0
+
+def cfd_oracle_copy_rows(
+    src0: array[4, float], src1: array[4, float],
+    src2: array[4, float], src3: array[4, float],
+    dst0: var array[4, float], dst1: var array[4, float],
+    dst2: var array[4, float], dst3: var array[4, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < 4
+    dst0[i] = src0[i]
+    dst1[i] = src1[i]
+    dst2[i] = src2[i]
+    dst3[i] = src3[i]
+    i = i + 1
+
+def sim_scientific_oracle_checksum_cfd() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var r0: array[4, float]
+  var r1: array[4, float]
+  var r2: array[4, float]
+  var r3: array[4, float]
+  var n0: array[4, float]
+  var n1: array[4, float]
+  var n2: array[4, float]
+  var n3: array[4, float]
+  var dx: float = 0.25
+  var nu: float = 0.01
+  var dt: float = 0.002
+  var coeff: float = nu * dt / (dx * dx)
+  var i: int = 0
+  while i < 4
+    r0[i] = 0.0
+    r1[i] = 0.0
+    r2[i] = 0.0
+    r3[i] = 0.0
+    i = i + 1
+  r3[0] = 1.0
+  r3[1] = 1.0
+  r3[2] = 1.0
+  r3[3] = 1.0
+  var step: int = 0
+  while step < 40
+    cfd_oracle_cavity_diffuse(r0, r1, r2, r3, n0, n1, n2, n3, coeff)
+    cfd_oracle_copy_rows(n0, n1, n2, n3, r0, r1, r2, r3)
+    step = step + 1
+  return r1[1] + r1[2] + r2[1] + r2[2]
+
+# WP-SCI-03 — tier-2 Li oracle: 3-node 1D bar stiffness assembly + loaded solve.
+def fea_oracle_assemble_bar(
+    k: var array[3, array[3, float]], ea_over_l: float) -> unit
+  requires ea_over_l > 0.0
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < 3
+    var j: int = 0
+    while j < 3
+      k[i][j] = 0.0
+      j = j + 1
+    i = i + 1
+  k[0][0] = k[0][0] + ea_over_l
+  k[0][1] = k[0][1] - ea_over_l
+  k[1][0] = k[1][0] - ea_over_l
+  k[1][1] = k[1][1] + ea_over_l
+  k[1][1] = k[1][1] + ea_over_l
+  k[1][2] = k[1][2] - ea_over_l
+  k[2][1] = k[2][1] - ea_over_l
+  k[2][2] = k[2][2] + ea_over_l
+
+def sim_scientific_oracle_checksum_fea() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var k: array[3, array[3, float]]
+  fea_oracle_assemble_bar(k, 1.0)
+  var u1: float = 1.0
+  var u2: float = 2.0
+  var energy: float = 0.5 * (u1 * u1 + (u2 - u1) * (u2 - u1))
+  return energy
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int
@@ -650,7 +765,7 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
   requires algo_id >= 201
-  requires algo_id <= 216
+  requires algo_id <= 204
   ensures result.ok == 1
   ensures result.algo_id == algo_id
   ensures result.detail_emitted == detail
@@ -661,6 +776,44 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.ok = 1
   r.algo_id = algo_id
   r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_cfd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 205
+  requires algo_id <= 210
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_cfd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_cfd_lid_driven_cavity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 211
+  requires algo_id <= 216
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_fea()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_fea_linear_elasticity()
   r.checksum = chk
   r.detail_emitted = detail
   return r
@@ -731,9 +884,17 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
       var d0: int = detail
       return run_md_tier2_registry(algo_id, d0)
   if algo_id >= 201:
-    if algo_id <= 216:
+    if algo_id <= 204:
       var d1: int = detail
       return run_heat_tier2_registry(algo_id, d1)
+  if algo_id >= 205:
+    if algo_id <= 210:
+      var d_cfd: int = detail
+      return run_cfd_tier2_registry(algo_id, d_cfd)
+  if algo_id >= 211:
+    if algo_id <= 216:
+      var d_fea: int = detail
+      return run_fea_tier2_registry(algo_id, d_fea)
   if algo_id >= 301:
     if algo_id <= 305:
       var d2: int = detail

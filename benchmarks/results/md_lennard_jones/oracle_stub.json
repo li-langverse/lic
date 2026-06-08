@@ -1,0 +1,27 @@
+{
+  "schema": "li_md_external_oracle_stub_v1",
+  "generated_at": "2026-06-06T15:51:10Z",
+  "mode": "stub_ok",
+  "benchmark": "md_lennard_jones",
+  "oracle_registry": "benchmarks/competitive/md_oracle.toml",
+  "driver": "benchmarks/harness/md_external_oracle.py",
+  "oracle_ids": [
+    "lammps_lj_micro",
+    "gromacs_lj_micro"
+  ],
+  "reference_energy_drift": 6.969122800372497e-05,
+  "reference_source": "li_oracle_python_mirror",
+  "workload_class": "v0_micro",
+  "external": {
+    "lammps": {
+      "executed": false,
+      "note": "set LI_MD_ORACLE_LAMMPS=1 for B1+ driver"
+    },
+    "gromacs": {
+      "executed": false,
+      "note": "set LI_MD_ORACLE_GROMACS=1 for B1+ driver"
+    }
+  },
+  "plan": "docs/benchmarks/competitive-engines-plan.md",
+  "study": "docs/numerics/studies/2026-06-06-md-r3-oracle-plan.md"
+}

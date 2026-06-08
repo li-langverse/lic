@@ -13,6 +13,10 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 | Julia | bench_tier2 | `julia` | Tier-2 physics + micro | shared_c_kernel |
 | Li | bench_tier2 | `li` | Same fixtures | mixed (pure_li vs shared) |
 | OpenMP / races | bench_tier0 | — | Tier-0 correctness, race rejects | CI strict |
+| LAMMPS (micro LJ) | watch / oracle_stub | `lammps` (B3) | Domain MD validity column | external_binary stub |
+| GROMACS (micro LJ) | watch / oracle_stub | `gromacs` (B3) | Same micro workload | external_binary stub |
+
+**Layer B MD oracle:** `benchmarks/competitive/md_oracle.toml` · plan [competitive-engines-plan.md](competitive-engines-plan.md) · gate `./scripts/check-md-oracle-plan.sh`.
 
 ## Watch list (manual review)
 

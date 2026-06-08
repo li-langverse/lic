@@ -1,0 +1,41 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var aimd433: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
+  var aimd_chk: float = aimd433.checksum
+  var echem_expected: float = sim_scientific_oracle_checksum_echem_aimd()
+  if aimd_chk != echem_expected:
+    return 18
+  if run_result_ok(aimd433) != 1:
+    return 16
+  if aimd433.algo_id != 433:
+    return 17
+  if aimd_chk == 1.001:
+    return 19
+  var gc434: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 1)
+  var gc_chk: float = gc434.checksum
+  var gc_expected: float = sim_scientific_oracle_checksum_echem_gc_aimd()
+  if gc_chk != gc_expected:
+    return 24
+  if run_result_ok(gc434) != 1:
+    return 22
+  if gc434.algo_id != 434:
+    return 23
+  if gc_chk == 1.001:
+    return 25
+  var sei435: SimRunResult = run_algo(algo_echem_sei_kmc(), 1)
+  var sei_chk: float = sei435.checksum
+  var sei_expected: float = sim_scientific_oracle_checksum_echem_sei_kmc()
+  if sei_chk != sei_expected:
+    return 30
+  if run_result_ok(sei435) != 1:
+    return 28
+  if sei435.algo_id != 435:
+    return 29
+  if sei_chk == 1.001:
+    return 31
+  return 0

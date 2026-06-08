@@ -1,0 +1,19 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var cfd_expected: float = sim_scientific_oracle_checksum_cfd()
+  var cfd0: SimRunResult = run_algo(algo_cfd_simple(), 1)
+  var cfd_chk: float = cfd0.checksum
+  if cfd_chk != cfd_expected:
+    return 4
+  if run_result_ok(cfd0) != 1:
+    return 1
+  if cfd0.algo_id != algo_cfd_simple():
+    return 2
+  if cfd_chk == 1.001:
+    return 3
+  return 0

@@ -46,6 +46,7 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-30-ph7e-tier1-red-benchmark-honesty.md` | **PH-7e** tier-1 honesty · **G-math** doc sync |
 | `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
+| `2026-06-08-li-foreign-bindings-reference-policy.md` (spec) | **G-ai** — Chapel 2.3+ Python interop reference; proof-friendly foreign bindings (policy only) |
 
 ## Open master-plan tracker rows (2026-05-30)
 

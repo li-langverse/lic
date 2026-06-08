@@ -38,6 +38,7 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-16-li-httpd-plan.md` | **lis** / httpd |
 | `2026-05-16-li-math-linalg-surface.md` | Math / **PH-7e** · **G-math**, **G-math-syn** |
 | `2026-05-22-parallel-compile-ci.md` | **PH-8p** (CI throughput; no **G-*** closure) |
+| `2026-06-07-li-physics-org-mirrors-plan.md` | **PH-5b** tier-2 physics · org mirrors (lic#50) |
 | `2026-05-24-studio-ui-ux-plan-loop.md` | **PH-UX** / Studio (UX honesty, not Lean) |
 | `2026-05-20-li-oop-roadmap.md` | **PH-2j** · **G-oop**, **G-def** |
 | `2026-05-16-li-package-scaffold.md` | **Pkg** / **8a** |

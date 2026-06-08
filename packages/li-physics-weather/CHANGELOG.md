@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial scaffold via `scripts/li-new-package` (PKG-li-std-physics-weather).
+- Initial scaffold via `scripts/li-new-package` (PKG-li-physics-weather).
 
 ## [0.1.0] - 2026-05-16
 

@@ -1,11 +1,11 @@
-# li-std-physics-weather
+# li-physics-weather
 
-Li package li-std-physics-weather
+Li package li-physics-weather
 
 ## Build
 
 ```bash
-lic build src/lib.li -o li-std-physics-weather
+lic build src/lib.li -o li-physics-weather
 ```
 
 From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
@@ -14,8 +14,8 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 
 | ID | Link |
 |----|------|
-| Package | `PKG-li-std-physics-weather` |
-| Org repo | https://github.com/li-langverse/li-std-physics-weather |
+| Package | `PKG-li-physics-weather` |
+| Org repo | https://github.com/li-langverse/li-physics-weather |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
 
 See `PUBLISH.md` and `docs/traceability.md`.

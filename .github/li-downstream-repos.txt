@@ -8,3 +8,15 @@ li-langverse/li-math
 li-langverse/li-demo
 li-langverse/li-httpd
 li-langverse/limq
+li-langverse/li-physics-core
+li-langverse/li-physics-rigid
+li-langverse/li-physics-runtime
+li-langverse/li-physics-particles
+li-langverse/li-physics-fluids
+li-langverse/li-physics-weather
+li-langverse/li-physics-aero
+li-langverse/li-physics-chem
+li-langverse/li-physics-em
+li-langverse/li-physics-quantum
+li-langverse/li-physics-relativity
+li-langverse/li-physics-hep

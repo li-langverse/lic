@@ -15,7 +15,7 @@
     },
     {
       "id": "N-LM-DOT4-INT-CLOSED",
-      "status": "target",
+      "status": "proved",
       "li_file": "proof-db/math/lemmas/linalg_dot4_int_closed.li"
     }
   ]

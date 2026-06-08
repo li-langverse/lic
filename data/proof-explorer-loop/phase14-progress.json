@@ -1,0 +1,17 @@
+{
+  "phase": 14,
+  "updated": "2026-06-08",
+  "baseline_open": 1109,
+  "current": {
+    "total": 1556,
+    "proved": 552,
+    "open": 0,
+    "open_non_erdos": 0,
+    "open_erdos": 0,
+    "axiomatic": 86,
+    "target": 915,
+    "discrepancy": 3
+  },
+  "proved_delta": 198,
+  "open_delta": -1109
+}

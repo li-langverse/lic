@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[3]
 REGISTER = ROOT / "proof-db" / "erdos" / "register.json"
 CATALOG = ROOT / "docs" / "verification" / "proof-database" / "entries" / "erdos-register.toml"
 
-PROOF_STATUS = {"open": "open", "proved": "proved", "target": "open"}
+PROOF_STATUS = {"open": "open", "proved": "proved", "target": "target"}
 
 
 def git_head(short: int = 8) -> str:

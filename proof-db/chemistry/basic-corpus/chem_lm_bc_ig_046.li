@@ -2,7 +2,7 @@
 
 def ideal_gas_pv(n: float, r: float, t: float) -> float
   requires n >= 0.0 and r > 0.0 and t > 0.0
-  ensures result > 0.0
+  ensures result == n * r * t
   decreases 0
 =
   return n * r * t

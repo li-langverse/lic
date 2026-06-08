@@ -1,27 +1,18 @@
 {
-  "sprint": "proof-explorer-phase13-ten-of-ten",
-  "phase": 13,
-  "started": "2026-06-06",
-  "completed_wps": [
-    "wp-t10-01",
-    "wp-t10-02",
-    "wp-t10-03",
-    "wp-t10-04",
-    "wp-t10-05",
-    "wp-t10-06",
-    "wp-t10-07",
-    "wp-t10-08",
-    "wp-t10-09",
-    "wp-t10-10"
-  ],
+  "sprint": "proof-explorer-phase14-open-catalog-prove",
+  "phase": 14,
+  "started": "2026-06-07",
+  "completed_wps": ["wp-pr-01", "wp-pr-02", "wp-pr-03", "wp-pr-04", "wp-pr-05", "wp-pr-06", "wp-pr-07"],
   "current_wp": null,
-  "branch": "cursor/proof-explorer-phase13-ten-of-ten",
+  "branch": "cursor/proof-explorer-phase14-open-catalog-prove",
   "research_problem_id": null,
   "claim_count": 0,
   "review_round": 0,
   "loop_sleep_sec": 120,
-  "problem_source": "ten_of_ten",
+  "problem_source": "open_catalog_prove",
   "priority_tier": "P0",
-  "compiler_rfc": "BUG-C-13-li-axiom-declarations.md",
-  "completed_at": "2026-06-06"
+  "baseline_open": 1109,
+  "baseline_proved": 354,
+  "open_non_erdos": 208,
+  "open_erdos": 901
 }

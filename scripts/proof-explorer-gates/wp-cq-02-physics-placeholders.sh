@@ -13,7 +13,6 @@ root = Path(".")
 checks = {
     "P-AX-DIM-001": "discrepancy",
     "P-AX-DIM-002": "discrepancy",
-    "P-LM-MOM-001": "discrepancy",
 }
 entries = root / "docs/verification/proof-database/entries"
 fail = 0

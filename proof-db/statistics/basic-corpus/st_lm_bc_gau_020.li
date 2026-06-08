@@ -2,7 +2,7 @@
 
 def normal_density_scale(sigma: float) -> float
   requires sigma > 0.0
-  ensures result > 0.0
+  ensures result == 1.0 / sigma
   decreases 0
 =
   return 1.0 / sigma

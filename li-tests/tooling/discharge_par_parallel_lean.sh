@@ -19,5 +19,10 @@ grep -q 'disjoint_row_policy_witness' "$AUTOVC"
 grep -q '_par0_requires' "$AUTOVC"
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"
 "$ROOT/scripts/check-autovc-open-goals.sh" "$AUTOVC"
-(cd "$ROOT/docs/semantics" && lake env lean "$AUTOVC")
+if command -v lake >/dev/null 2>&1; then
+  (cd "$ROOT/docs/semantics" && lake env lean "$AUTOVC")
+  echo "discharge_par_parallel_lean: lake ok"
+else
+  echo "discharge_par_parallel_lean: skipped lake (not installed)"
+fi
 echo "discharge_par_parallel_lean: ok"

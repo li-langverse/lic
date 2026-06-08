@@ -33,51 +33,65 @@ def main() -> int
     return 10
   if rigid302.checksum == 1.001:
     return 11
+  var qm_oracle: float = sim_scientific_oracle_checksum_qm_dft()
+  if qm_oracle <= 1.0:
+    return 12
+  if qm_oracle == 1.001:
+    return 13
   var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(qm418) != 1:
-    return 12
-  if qm418.checksum != 1.001:
-    return 13
+    return 14
+  if qm418.algo_id != 418:
+    return 15
+  if qm418.checksum != qm_oracle:
+    return 16
+  if qm418.checksum == 1.001:
+    return 17
+  var qm401: SimRunResult = run_algo(401, 0)
+  if run_result_ok(qm401) != 1:
+    return 18
+  if qm401.checksum != qm_oracle:
+    return 19
   var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
   if echem_oracle <= 0.0:
-    return 14
+    return 20
   if echem_oracle >= 1.0e-2:
-    return 15
+    return 21
   var aimd433: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
   if run_result_ok(aimd433) != 1:
-    return 16
+    return 22
   if aimd433.algo_id != 433:
-    return 17
+    return 23
   if aimd433.checksum != echem_oracle:
-    return 18
+    return 24
   if aimd433.checksum == 1.001:
-    return 19
+    return 25
   var gc_oracle: float = sim_scientific_oracle_checksum_echem_gc_aimd()
   if gc_oracle <= 0.0:
-    return 20
+    return 26
   if gc_oracle >= 0.05:
-    return 21
+    return 27
   var gc434: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 1)
   if run_result_ok(gc434) != 1:
-    return 22
+    return 28
   if gc434.algo_id != 434:
-    return 23
+    return 29
   if gc434.checksum != gc_oracle:
-    return 24
+    return 30
   if gc434.checksum == 1.001:
-    return 25
+    return 31
   var sei_oracle: float = sim_scientific_oracle_checksum_echem_sei_kmc()
   if sei_oracle <= 0.0:
-    return 26
+    return 32
   if sei_oracle >= 0.35:
-    return 27
+    return 33
   var sei435: SimRunResult = run_algo(algo_echem_sei_kmc(), 1)
   if run_result_ok(sei435) != 1:
-    return 28
+    return 34
   if sei435.algo_id != 435:
-    return 29
+    return 35
   if sei435.checksum != sei_oracle:
-    return 30
+    return 36
   if sei435.checksum == 1.001:
-    return 31
+    return 37
   return 0

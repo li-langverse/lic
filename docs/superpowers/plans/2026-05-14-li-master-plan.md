@@ -189,7 +189,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 5b | Benchmarks & sims | `2026-05-14-benchmarks-and-simulations.md` | **Verified** Tier 2 physics + cross-lang CSV + **X plots** |
 | 6 | Self-host (post-live) | `2026-05-14-phase-06-self-host.md` | `lic` built by li (bootstrap seed) |
 | 7 | Native HPC (SIMD + OpenMP) | `2026-05-14-phase-07-native-hpc.md` | Pure-Li simd_dot + md; race suite; fuzz daily |
-| **7d** | **Execution decorators** | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | **Partial:** `@vectorized` scope (#150); **G-par** disjoint= open |
+| **7d** | **Execution decorators** | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | **Partial:** MIR proc tags (`@cpu`/`@gpu`/`@parallel`/`@vectorized`); **G-dec** closed slice; **G-par** disjoint= open |
 | **7e** | **Math → SIMD lowering** | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) § 7e | **Partial:** pure-Li tier-1 (#148); perf bar open |
 | **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | **M1 partial:** epoll static/sendfile + proxy (#153/#156); **li-log** package stub (access sink + redact); **next:** M1 ship gate Lean + Li reactor |
 | **Obs** | Fuzz dashboard + plan canvas | `scripts/export-fuzz-status.sh` + `canvases/*.canvas.tsx` | Nightly updates `.canvas.data.json` sidecars |

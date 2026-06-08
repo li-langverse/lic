@@ -47,6 +47,7 @@ note = "contract requires/ensures may use implies (lower precedence than or)"
 suite = "decorators"
 file = "decorators/cpu_only_ok.li"
 outcome = "verify_ok"
+note = "PH-7d/G-dec: @cpu is visible in MIR telemetry (mir_cpu_def=1)"
 
 [[tests]]
 suite = "decorators"

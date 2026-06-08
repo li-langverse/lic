@@ -114,6 +114,11 @@ flowchart LR
 | **7e-a** | Connect math expr lowering to existing 7a SIMD MIR | `simd_dot` Li source has **zero** `__li_simd_*` in user file |
 | **7e-b** | Matmul math + decorators in Tier 1 benches | `bench.py --tier 1` CSV: li vs cpp/rust/julia |
 | **7e-c** | Docs + gallery | See below |
+| **7e-d** | Pure-Li Horner / polynomial-eval FMA lowering | [2026-06-08-ph7e-horner-pure-li-lowering.md](2026-06-08-ph7e-horner-pure-li-lowering.md) — `horner_pure_li` ≤1.2× C++ ([#11](https://github.com/li-langverse/lic/issues/11)) |
+
+### §7e-d — Horner slice (issue #11)
+
+Scalar Horner loops (`acc = acc * x + c` over fixed trip) are **not** array `@` / `ArrayDotF64`; they lower via dedicated MIR (`HornerConstLoopF64`, `HornerStepPow4`, `HornerFmaUnroll`) in `compiler/mir/lower.cpp`. Tier-1 `horner_pure_li` is the exit gate: pure-Li source, no `__li_simd_*`, FMA density matching `common/horner_core.c`. Dashboard **≈88×** is stale (pre-lexer); honest post-fix gap **~3–11×** — see [bench-improver horner](../../numerics/bench-improver-horner-2026-05-20.md). Full sub-phases **7e-d0…7e-d6** in the slice plan; **G-math** closed-slice wording updates only after measured green.
 
 ---
 
@@ -173,4 +178,4 @@ Use existing [benchmarks plan](2026-05-14-benchmarks-and-simulations.md) harness
 - [x] **2i-b** `norm`, `sum`/`dot`, `reductions/` suite; same-length `**` / prelude `axpy` / scalar×array (no broadcast) — float Lean Props still open
 - [x] **2i-broadcast** length-1 element-wise broadcast (`broadcast_len1_*.li`); non-broadcast length mismatch (`broadcast_invalid_len2_vs_len4.li`, `elementwise_len_mismatch.li`) — full NumPy rank rules open
 - [x] **P-linalg** loop implementation ≡ closed-form `ensures` in Lean (**G-lean**) (`linalg_dot4_int_loop_open.li` + `discharge_linalg_int_lean.sh`; float Props still **G-math** open)
-- [ ] Tier 1 perf ≤1.2× C++ (benchmarks dashboard)
+- [ ] Tier 1 perf ≤1.2× C++ (benchmarks dashboard) — **7e-d** owns `horner_pure_li`; **7e-b** owns `matmul_*` / `simd_dot`

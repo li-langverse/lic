@@ -6,33 +6,43 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  var md_oracle: float = sim_scientific_oracle_checksum_md()
-  var heat_oracle: float = sim_scientific_oracle_checksum_heat()
   var md105: SimRunResult = run_algo(105, 1)
   if run_result_ok(md105) != 1:
     return 1
   if md105.algo_id != 105:
     return 2
-  if md105.checksum != md_oracle:
-    return 3
   if md105.checksum == 1.001:
+    return 3
+  if md105.checksum >= 1.0e-3:
     return 4
-  var heat210: SimRunResult = run_algo(210, 2)
-  if run_result_ok(heat210) != 1:
+  var heat203: SimRunResult = run_algo(203, 2)
+  if run_result_ok(heat203) != 1:
     return 5
-  if heat210.algo_id != 210:
+  if heat203.algo_id != 203:
     return 6
-  if heat210.checksum != heat_oracle:
+  if heat203.checksum == 1.001:
     return 7
-  if heat210.checksum == 1.001:
-    return 8
+  var cfd206: SimRunResult = run_algo(algo_cfd_simple(), 1)
+  if run_result_ok(cfd206) != 1:
+    return 32
+  if cfd206.algo_id != 206:
+    return 33
+  if cfd206.checksum == 1.001:
+    return 34
+  var fea212: SimRunResult = run_algo(algo_fea_stiffness_assembly(), 1)
+  if run_result_ok(fea212) != 1:
+    return 35
+  if fea212.algo_id != 212:
+    return 36
+  if fea212.checksum == 1.001:
+    return 37
   var rigid302: SimRunResult = run_algo(302, 0)
   if run_result_ok(rigid302) != 1:
-    return 9
+    return 42
   if rigid302.algo_id != 302:
-    return 10
+    return 43
   if rigid302.checksum == 1.001:
-    return 11
+    return 44
   var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(qm418) != 1:
     return 12

@@ -30,6 +30,10 @@ todos:
   content: "Surface studio-ui-ux / gui_ux_tester signals as ui_ux gaps; link studio backlog if needed"
   status: pending
 
+- id: orch-r5-security-orchestration
+  content: "Reconcile sec-r1…sec-r3 + CWE catalog gaps (19 Top-25 missing); handoff security_auditor"
+  status: completed
+
 ---
 
 ## Agent instructions

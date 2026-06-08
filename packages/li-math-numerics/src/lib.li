@@ -14,10 +14,10 @@ extern proc li_rt_cos(x: float) raises IO -> float
 
 def li_std_numerics_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 # Semi-implicit Euler: v += a*dt; x += v*dt
 def euler_step_vec2(
@@ -59,7 +59,69 @@ def verlet_step_vec2(
     vy[i] = vy[i] + fy[i] * inv_mass * dt
     i = i + 1
 
-# RK4 for state y[4] with user-provided derivative via indices (double pendulum shape)
+# BDF-1 (backward Euler) for scalar y' = -lambda*y (stiff decay prototype).
+# Implicit: y_{n+1} = y_n / (1 + dt*lambda).  SUNDIALS CVODE BDF precursor (ode-r3).
+def bdf1_step_scalar(y: var float, lambda_decay: float, dt: float) -> unit
+  requires dt > 0.0
+  requires lambda_decay >= 0.0
+  ensures true
+  decreases 0
+=
+  var denom: float = 1.0 + dt * lambda_decay
+  y = y / denom
+
+# BDF-2 fixed-step for scalar y' = -lambda*y (two-step implicit).
+# (3*y_{n+1} - 4*y_n + y_{n-1})/(2*dt) = -lambda*y_{n+1}
+def bdf2_step_scalar(
+    y: var float, y_prev: float, lambda_decay: float, dt: float) -> unit
+  requires dt > 0.0
+  requires lambda_decay >= 0.0
+  ensures true
+  decreases 0
+=
+  var old: float = y
+  var numer: float = 4.0 * old - y_prev
+  var denom: float = 3.0 + 2.0 * dt * lambda_decay
+  y = numer / denom
+
+# BDF-2 for 2-vector state with shared lambda (Robertson/Van der Pol staging).
+def bdf2_step_vec2(
+    y: var array[2, float], y_prev: var array[2, float],
+    lambda_decay: float, dt: float) -> unit
+  requires dt > 0.0
+  requires lambda_decay >= 0.0
+  ensures true
+  decreases 0
+=
+  var old: array[2, float]
+  var i: int = 0
+  while i < 2
+    old[i] = y[i]
+    i = i + 1
+  i = 0
+  while i < 2
+    var numer: float = 4.0 * old[i] - y_prev[i]
+    var denom: float = 3.0 + 2.0 * dt * lambda_decay
+    y[i] = numer / denom
+    i = i + 1
+
+# Integrate y' = -lambda*y for n fixed BDF-1 steps (smoke / tier-1 micro).
+def bdf1_integrate_decay(y0: float, lambda_decay: float, dt: float, steps: int) -> float
+  requires dt > 0.0
+  requires lambda_decay >= 0.0
+  requires steps >= 0
+  ensures result >= 0.0
+  decreases steps
+=
+  var y: float = y0
+  var n: int = 0
+  while n < steps
+    bdf1_step_scalar(y, lambda_decay, dt)
+    n = n + 1
+  return y
+
+# RK4 for state y[4] with user-provided derivative via indices (double pendulum shape).
+# Smoke scaffold: caller must refresh dydt between stages for production RK4.
 def rk4_step_4(y: var array[4, float], dydt: var array[4, float], dt: float) -> unit
   requires dt > 0.0
   ensures true

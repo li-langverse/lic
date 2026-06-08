@@ -2,6 +2,23 @@ import ligpu
 
 # li-ml (PH-ML Wave 6): nested-array CPU matmul + MLP forward + lig auto dispatch.
 
+extern proc li_rt_blas_sgemm_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_blas_sgemm_f32(
+    m: int, n: int, k: int, ld: int,
+    a: var array[64, float], b: var array[64, float], c: var array[64, float]) -> int
+  requires m >= 0
+  requires n >= 0
+  requires k >= 0
+  requires ld >= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+
 def ml_version() -> int
   requires true
   ensures result == 9
@@ -341,7 +358,24 @@ def ml_tensor_matmul_nested(
   return ml_matmul_cpu_nested(a.rows, b.cols, a.cols, an, bn, c)
 
 
-# Phase G: native CPU 32x32 logical gate — one @vectorized 8x8 nested GEMM, zero LKIR.
+def ml_blas_matmul_f32(
+    m: int, n: int, k: int, ld: int,
+    a: var array[64, float], b: var array[64, float], c: var array[64, float]) -> int
+  requires m >= 0
+  requires n >= 0
+  requires k >= 0
+  requires ld >= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if li_rt_blas_sgemm_ready() != 1:
+    return 0
+  if li_rt_blas_sgemm_f32(m, n, k, ld, a, b, c) != 0:
+    return 0
+  return 1
+
+# Phase G: native CPU 32x32 logical gate — BLAS (Phase H) then @vectorized 8x8 nested GEMM, zero LKIR.
 def ml_matmul_cpu_logical_32(a: var array[64, float], b: var array[64, float], c: var array[64, float]) -> int
   requires true
   ensures result >= 0
@@ -350,6 +384,8 @@ def ml_matmul_cpu_logical_32(a: var array[64, float], b: var array[64, float], c
 =
   if ml_matmul_blocked_tile_ok(32, 32, 32) != 1:
     return 0
+  if ml_blas_matmul_f32(8, 8, 8, 8, a, b, c) == 1:
+    return 1
   var an: array[8, array[8, float]]
   var bn: array[8, array[8, float]]
   var cn: array[8, array[8, float]]

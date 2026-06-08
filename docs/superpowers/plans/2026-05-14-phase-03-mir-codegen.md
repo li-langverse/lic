@@ -96,10 +96,10 @@ def main() -> int =
 
 ---
 
-**Proof gaps (Doc-c):** [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-meta](../../verification/provability-gaps.md#g-meta)
-
 ### Phase 3 exit gate
 
 - [x] Native binary from minimal proc
 - [x] `-O2` flag forwarded to clang in `--release` (C++: `-O3 -march=native` in `compile.cpp` when `--release`)
 - [x] Bounds check calls present in IR for dynamic index
+
+**Provability (Doc-c):** MIR/codegen exit does not prove full index refinement — [G-bnd](../../verification/provability-gaps.md#g-bnd) (partial; release bounds path). [G-meta](../../verification/provability-gaps.md#g-meta) **N/A** — compiler↔Lean equivalence is long-term research, not a Phase 3 ship gate.

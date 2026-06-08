@@ -35,4 +35,17 @@ User `decorator def` names: strict package-prefixed snake_case; typosquat ban; e
 
 This is **placement metadata only**. It does not yet lower kernels to LKIR, allocate device buffers, prove address-space separation, or emit CUDA/HIP/Metal/SPIR-V. Those remain **G-gpu** work.
 
-See master plan Phase **7d** and `li-tests/decorator_exploits/` (to land with 7d-e).
+## CPU / parallel / vectorized MIR slice (**G-dec**)
+
+Builtin execution decorators on `def` and loops lower to `MirDecorator` proc tags during MIR (`copy_decorators` in `compiler/mir/lower.cpp`). `lic verify` exposes counts for CI gates:
+
+| Decorator | Telemetry | Gate script |
+|-----------|-----------|-------------|
+| `@cpu` | `mir_cpu_def=` | `scripts/check-mir-cpu-decorator.sh` |
+| `@parallel(disjoint=…)` | `mir_parallel_disjoint=` | `scripts/check-mir-parallel-decorator.sh` |
+| `@vectorized(lanes=N)` | `mir_vectorized_proc=` | `scripts/check-mir-vectorized-decorator.sh` |
+| `@gpu` / `@gpu(devices=N)` | `mir_gpu_def=` / `mir_gpu_multi_device_def=` | `scripts/check-mir-gpu-decorator.sh` |
+
+**Exit gates (7d-b–e):** `./li-tests/run_all.sh decorator_exploits decorators` plus the four `check-mir-*-decorator.sh` scripts (wired in `contracts_discharge_corpus.sh`). Structured `disjoint=` proofs remain **G-par** partial — policy accepts `disjoint_*` witnesses; Lean discharge still open.
+
+See master plan Phase **7d** and `li-tests/decorator_exploits/` (7d-e).

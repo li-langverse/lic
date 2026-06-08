@@ -7,6 +7,9 @@ LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 DECOR="$ROOT/li-tests/decorators/parallel_with_disjoint.li"
 out="$("$LIC" verify "$DECOR" 2>&1)"
 echo "$out" | grep -q 'mir_parallel_disjoint=1'
+INHERIT="$ROOT/li-tests/decorators/parallel_def_disjoint_inherit.li"
+inherit_out="$("$LIC" verify "$INHERIT" 2>&1)"
+echo "$inherit_out" | grep -q 'mir_parallel_disjoint=1'
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 "$LIC" build "$DECOR" -o "$tmp/par" --release >/dev/null

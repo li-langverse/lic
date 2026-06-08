@@ -15,6 +15,16 @@ std::size_t count_mir_vectorized_proc(const MirModule& mir) {
 
 }
 
+std::size_t count_mir_vectorized_def_scope(const MirModule& mir) {
+  std::size_t n = 0;
+  for (const auto& fn : mir.functions) {
+    if (fn.vectorized_def_scope) {
+      ++n;
+    }
+  }
+  return n;
+}
+
 std::size_t count_mir_gpu_def(const MirModule& mir) {
   std::size_t n = 0;
   for (const auto& fn : mir.functions) {

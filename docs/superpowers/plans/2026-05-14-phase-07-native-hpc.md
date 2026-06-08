@@ -48,6 +48,17 @@
 | **7d-d** | `std/execution/decorators.li` + `docs/language/decorators.md` | Handbook + gallery |
 | **7d-e** | `decorator def` with **strict naming** (package prefix, typosquat ban), expansion whitelist | `li-tests/decorator_exploits/` all **fail** except control; CI on every PR |
 
+### Exit gates — 7d-b–e (Doc-c · **G-dec** / **G-par**)
+
+Cross-links: [G-dec](../../verification/provability-gaps.md#g-dec) · [G-par](../../verification/provability-gaps.md#g-par) · Plan [#22](https://github.com/li-langverse/lic/issues/22) · [#387](https://github.com/li-langverse/lic/issues/387) (Lean **G-par**)
+
+| Sub | Exit gate (must pass) | Gap ID |
+|-----|----------------------|--------|
+| **7d-b** | `@parallel` / `@vectorized` / `@cpu` on `def` **elaborate** to MIR (`ParallelFor`, proc SIMD flags, host placement) — not telemetry-only | **G-dec** |
+| **7d-c** | Proc `@parallel(disjoint=…)` inherits to nested `parallel for`; `@vectorized for` → `ArraySimdScope` (done #150); disjoint policy green | **G-dec** + **G-par** (Lean open → **#387**) |
+| **7d-d** | `std/execution/decorators.li` + [decorators.md](../../language/decorators.md) gallery; no false elaboration claims | **G-dec** (doc) |
+| **7d-e** | `decorator_exploits/` all `compile_fail`; `scripts/ci.sh` runs suite every PR | **G-dec** |
+
 **Policy (binding):**
 
 - Stdlib names (`parallel`, `vectorized`, `async`, `cpu`, `gpu`, `tpu`, `user_defined`, …) are **reserved** — no Python-style shadowing via import or user `decorator def`.

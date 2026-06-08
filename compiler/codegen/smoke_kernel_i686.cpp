@@ -260,6 +260,21 @@ struct Decoder {
     }
 
     const uint32_t start_eip = cpu->eip;
+    bool operand32 = true;
+    while (true) {
+      const uint8_t prefix = mem->read8(cpu->eip);
+      if (prefix == 0x66) {
+        operand32 = false;
+        fetch8();
+        continue;
+      }
+      if (prefix == 0x67 || prefix == 0xF0 || prefix == 0xF2 || prefix == 0xF3 || prefix == 0x2E ||
+          prefix == 0x36 || prefix == 0x3E || prefix == 0x26 || prefix == 0x64 || prefix == 0x65) {
+        fetch8();
+        continue;
+      }
+      break;
+    }
     const uint8_t op = fetch8();
 
     switch (op) {
@@ -302,7 +317,11 @@ struct Decoder {
     }
 
     if (op >= 0xB8 && op <= 0xBF) {
-      *reg32(op - 0xB8) = fetch32();
+      if (operand32) {
+        *reg32(op - 0xB8) = fetch32();
+      } else {
+        *reg32(op - 0xB8) = (*reg32(op - 0xB8) & ~0xFFFFu) | fetch16();
+      }
       return true;
     }
     if (op >= 0xB0 && op <= 0xB7) {

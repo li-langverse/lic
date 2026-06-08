@@ -147,6 +147,20 @@ def vertical_echem_sei_kmc() -> int
 =
   return 7
 
+def vertical_cfd_lid_cavity() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def vertical_fea_linear_elasticity() -> int
+  requires true
+  ensures result == 9
+  decreases 0
+=
+  return 9
+
 def algo_registry_count() -> int
   requires true
   ensures result == 127

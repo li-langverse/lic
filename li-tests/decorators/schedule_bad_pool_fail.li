@@ -1,0 +1,7 @@
+@schedule(task, pool=custom_queue)
+def bad_pool() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

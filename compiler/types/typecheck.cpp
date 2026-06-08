@@ -1102,6 +1102,16 @@ struct Ctx {
           }
           return make_int();
         }
+        if (e.ident == "when_all") {
+          if (e.args.size() < 2) {
+            diags.error(loc(e.span), "when_all expects at least two sender arguments");
+            return make_int();
+          }
+          for (const auto& arg : e.args) {
+            (void)type_of(*arg);
+          }
+          return make_int();
+        }
         const auto pit = procs.find(e.ident);
         if (pit != procs.end()) {
           const ProcDecl& callee = *pit->second;
@@ -1327,7 +1337,7 @@ struct Ctx {
         call.ident == "norm" || call.ident == "axpy" ||
         call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||
         call.ident == "disjoint_slice" || call.ident == "disjoint_lookup" ||
-        call.ident == "disjoint_mod" || call.ident == "row_ok" ||
+        call.ident == "disjoint_mod" || call.ident == "row_ok" || call.ident == "when_all" ||
         call.ident == "__li_simd_splat_f64" || call.ident == "__li_simd_mul_f64" ||
         call.ident == "__li_simd_add_f64" || call.ident == "__li_horiz_sum_f64") {
       return;

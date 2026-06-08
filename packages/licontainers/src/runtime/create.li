@@ -1,0 +1,7 @@
+# CRI CreateContainer runtime path (Wave 2 stub).
+def runtime_create_container_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2

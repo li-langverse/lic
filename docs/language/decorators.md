@@ -16,6 +16,12 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
 
+## Execution policy matrix (PH-7e)
+
+`@parallel(disjoint=…)` on `parallel for` lowers to a **static-chunk** host team (`li_parallel_for_i64` with `LI_PAR_SCHEDULE=static` default). `lic verify` reports `mir_parallel_policy=static_chunk` when a proved disjoint loop is present — no silent serial fallback when `LI_PARALLEL=1`.
+
+Normative cross-framework mapping (Li → RAJA → Kokkos → OpenMP): [RAJA policy portability rubric](../superpowers/specs/2026-06-07-li-raja-policy-portability-rubric.md) (lic#109). Tier-1 anchor kernel: `reduce_sum` (RP-04 in rubric).
+
 ## Resource knobs (`lic build`)
 
 These are **CLI flags**, not decorators:

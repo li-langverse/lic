@@ -10,7 +10,7 @@ Execution decorator names (`@parallel`, `@cpu`, …) are also reserved; see [Dec
 
 ## Shipped std/
 
-Today the repository ships **27 `.li` modules** under `std/` (compile harnesses + trusted seams). Names exported from those modules are added to the compiler seal list.
+Today the repository ships **28 `.li` modules** under `std/` (compile harnesses + trusted seams). Names exported from those modules are added to the compiler seal list.
 
 | Import | Path | Maturity |
 |--------|------|----------|

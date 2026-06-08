@@ -1,5 +1,7 @@
 # li-httpd compiler prerequisites (P0)
 
+**Exit graph:** [httpd-phase-h-exit-graph.md](httpd-phase-h-exit-graph.md) — blocked-by map (**PH-2e** / **PH-2f** → **G-vc** / **G-lean** → P0 → Phase H M1 `.li` close). Issue [lic#30](https://github.com/li-langverse/lic/issues/30).
+
 li-httpd **M1 `.li` code** does not start until these **`lic`** gates pass. Infra in **`lis`** can proceed in parallel.
 
 | ID | Work | Repo | Status |

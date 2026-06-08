@@ -155,6 +155,7 @@ isProject: false
 # li-httpd — minimal, proved, nginx-competitive
 
 **Proof gaps (Doc-c):** [G-net](../../verification/provability-gaps.md#g-net) · [G-async](../../verification/provability-gaps.md#g-async) · [G-vc](../../verification/provability-gaps.md#g-vc) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)  
+**Exit graph:** [httpd-phase-h-exit-graph](../../ecosystem/httpd-phase-h-exit-graph.md) — PH-H M1 `.li` blocked-by map ([lic#30](https://github.com/li-langverse/lic/issues/30))  
 **Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
 
 ## Parity milestones (agent-gateway vs nginx oracle)

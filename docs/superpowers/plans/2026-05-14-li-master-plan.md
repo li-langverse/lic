@@ -457,7 +457,7 @@ Track in phase **Doc** until each is checked:
 - [ ] Phase 7d — Execution decorators — **partial (#150 7d-c):** `@vectorized` on `for` → `ArraySimdScope`; **7d-b** lanes=4; **def `@parallel(disjoint=)`** inherits to nested `parallel for` (policy); **open:** full MIR proc tags, Lean **G-par** proofs
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150, #155):** loop matmul + FMA horner; tier-1 advisory ≤1.2× (`matmul_naive`, `horner_pure_li`); **`check-tier1-li-vs-cpp.sh`** strict optional; **open:** remaining tier-1 slices, full float Lean Props
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
-- [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, validate/explain/flatten-config, overlap reject, Bearer auth (C), `packages/li-log` (#158); **next:** Li `net.httpd` lib build + M1 ship gate Lean ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
+- [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, validate/explain/flatten-config, overlap reject, Bearer auth (C), `packages/li-log` (#158); **blocked on PH-2e/2f** via P0-lean + P0-http — exit checklist [httpd-phase-h-exit-graph](../ecosystem/httpd-phase-h-exit-graph.md) · [httpd-prerequisites](../ecosystem/httpd-prerequisites.md)
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
 - [x] Phase 8-repo — [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) on GitHub + CI
 - [x] Phase 8a — Modules + workspace `lic build` — `std.*` + workspace/local imports; `li-tests/modules/`; `lic-workspace-build.sh` on 3 packages
@@ -503,7 +503,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | **2i / 7e** | **G-math** | broadcast, loop-dot proof, remaining tier-1 strict rows |
 | **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
-| **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |
+| **H** | **G-vc**, **G-lean** (httpd slice) | M1 ship gate (exploits A+B, li-log, strict Lean on server); M1.5 SSE/TLS — [httpd-phase-h-exit-graph](../ecosystem/httpd-phase-h-exit-graph.md) |
 | **8b–8d v2** | — | Remote registry, full trust store; **blocked on PH-DB-4** ([PH-DB plan](ph-db-lidb-platform.md)) |
 | **PH-DB** | — | `lidb` engine + registry v2; phases 0–10 in [ph-db-lidb-platform.md](ph-db-lidb-platform.md) |
 | **Vision-LLM** | — | Agent JSON diagnostics completion |

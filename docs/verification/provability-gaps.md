@@ -210,6 +210,7 @@ When editing handbook pages, do **not** imply features beyond this register with
 | [SIMD and parallel](../language/simd-parallel.md) | Note heuristic disjoint until 7d-c |
 | Decorator / math spec stubs | Say “planned” until gaps closed |
 | [Plan cross-links](../ecosystem/plan-cross-links.md) | Master plan ↔ phase plans ↔ benchmarks; [open PH tracker](../ecosystem/plan-cross-links.md#open-master-plan-tracker-rows-2026-05-30) when rows move |
+| [HTTPd Phase H exit graph](../ecosystem/httpd-phase-h-exit-graph.md) | **PH-H** M1 `.li` blocked-by (**PH-2e/2f** → **G-vc**/**G-lean** → P0) — [lic#30](https://github.com/li-langverse/lic/issues/30) |
 | [Handbook index](../handbook/README.md) | Satellite Pages table — audit HEAD green 2026-05-30; [li-language Pages](https://li-langverse.github.io/li-language/) content may lag local mkdocs until [#403](https://github.com/li-langverse/lic/issues/403) |
 | [GUI UX handoff](../ecosystem/gui-ux-quality-handoff.md) | **ui_ux_quality** research goal — surface UX only; never closes **G-*** rows |
 

@@ -130,7 +130,11 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
             lines.append(f"route={r.method}|{r.path}|{kind}|{action}|{rps}|{burst}")
         else:
             lines.append(f"route={r.method}|{r.path}|{kind}|{action}")
-        for req in getattr(r, "requires", []):
+        reqs = list(getattr(r, "requires", []))
+        route_req = (r.headers or {}).get("require")
+        if route_req and route_req not in reqs:
+            reqs.append(route_req)
+        for req in reqs:
             lines.append(f"route_require={r.method}|{r.path}|{req}")
         req_hdr = r.headers.get("require")
         if req_hdr:

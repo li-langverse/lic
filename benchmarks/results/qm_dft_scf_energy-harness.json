@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-06-07T00:49:59Z",
+  "suite": "qm_dft_scf_energy-harness",
+  "catalog_row": "qm_dft_scf_energy",
+  "algo_id": 418,
+  "family_template": "schrodinger_1d_barrier",
+  "template_note": "WP4 qm_* compile smokes use schrodinger_1d_barrier family; tier2 bench dirs routed to li-langverse/benchmarks (lic#632)",
+  "threshold_ratio_cpp": 1.2,
+  "threshold_ratio_cpp_locked": true,
+  "axes": {
+    "validity": {
+      "li_energy_lt_zero": true,
+      "smoke_build_ok": false,
+      "oracle_executed": false,
+      "oracle_id": null
+    },
+    "stability": {
+      "scf_scaffold_converges": true,
+      "note": "li-chem chem_dft_scf_h2_iteration_scaffold(8)"
+    },
+    "accuracy": {
+      "energy_delta_hartree": null,
+      "energy_tolerance_hartree": 0.35,
+      "parity_gate_pass": null,
+      "note": "Loose tolerance until integral chain 401-404; no threshold relaxation"
+    },
+    "performance": {
+      "deferred": true,
+      "note": "Dashboard timing deferred until Ha parity tightens"
+    }
+  },
+  "li": {
+    "energy_hartree": -0.21996099817,
+    "energy_source": "li_scaffold_scf_h2_python_mirror",
+    "checksum_oracle": "sim_scientific_oracle_checksum_qm_dft_scf"
+  },
+  "competitors": {
+    "psi4": {
+      "competitor_id": "psi4",
+      "suite": "ph-sci-chem-competitor-psi4-h2",
+      "workload": "sto3g_h2_lda_energy",
+      "executed": false,
+      "cpu_sec": null,
+      "energy_hartree": null,
+      "validity_gate_pass": false,
+      "validity_ratio": 0.0,
+      "framework_version": null,
+      "device": "cpu",
+      "note": "psi4 not installed (optional LGPL oracle for qm_dft_scf_energy / 418)",
+      "geometry": "H 0 0 -0.37; H 0 0 0.37",
+      "basis": "sto-3g",
+      "xc": "lda,vwn",
+      "generated_at": "2026-06-07T00:49:59Z",
+      "license": "LGPL-3.0-or-later",
+      "charge": 0,
+      "spin": 0,
+      "algo_id": 418,
+      "catalog_row": "qm_dft_scf_energy"
+    },
+    "pyscf": {
+      "competitor_id": "pyscf",
+      "suite": "ph-sci-chem-competitor-pyscf-h2",
+      "workload": "sto3g_h2_lda_energy",
+      "executed": false,
+      "cpu_sec": null,
+      "energy_hartree": null,
+      "validity_gate_pass": false,
+      "validity_ratio": 0.0,
+      "framework_version": null,
+      "device": "cpu",
+      "note": "pyscf not installed \u2014 pip install -r scripts/requirements-ph-sci-chem-dft-competitive.txt",
+      "geometry": "H 0 0 0; H 0 0 0.74",
+      "basis": "sto-3g",
+      "xc": "lda,vwn",
+      "generated_at": "2026-06-07T00:49:59Z",
+      "license": "Apache-2.0",
+      "charge": 0,
+      "spin": 0,
+      "algo_id": 418,
+      "catalog_row": "qm_dft_scf_energy"
+    }
+  },
+  "smoke_note": "lic binary not found \u2014 skip package smokes"
+}

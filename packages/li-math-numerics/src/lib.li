@@ -59,7 +59,8 @@ def verlet_step_vec2(
     vy[i] = vy[i] + fy[i] * inv_mass * dt
     i = i + 1
 
-# RK4 for state y[4] with user-provided derivative via indices (double pendulum shape)
+# RK4 for state y[4] with user-provided derivative via indices (double pendulum shape).
+# Smoke scaffold: k2/k3/k4 reuse dydt without re-evaluating at stage points — not production RK4.
 def rk4_step_4(y: var array[4, float], dydt: var array[4, float], dt: float) -> unit
   requires dt > 0.0
   ensures true
@@ -103,6 +104,51 @@ def rk4_step_4(y: var array[4, float], dydt: var array[4, float], dt: float) -> 
   while i < 4
     y[i] = y[i] + (h / 6.0) * (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i])
     i = i + 1
+
+# BDF-1 (backward Euler) fixed-step stub for scalar y' = -y (stiff decay smoke ODE).
+def bdf1_step_scalar(y: var float, dt: float) -> unit
+  requires dt > 0.0
+  ensures true
+  decreases 0
+=
+  var denom: float = 1.0 + dt
+  y = y / denom
+
+# BDF-2 fixed-step stub for scalar y' = -y with history y_{n-1}.
+def bdf2_step_scalar(y: var float, y_prev: float, dt: float) -> unit
+  requires dt > 0.0
+  ensures true
+  decreases 0
+=
+  var rhs: float = (4.0 / 3.0) * y - (1.0 / 3.0) * y_prev
+  var denom: float = 1.0 + (2.0 / 3.0) * dt
+  y = rhs / denom
+
+# BDF-2 fixed-step stub for 2-state ODE (component-wise linear y' = -y).
+def bdf2_step_vec2(
+    y: var array[2, float], y_prev: var array[2, float], dt: float) -> unit
+  requires dt > 0.0
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  var denom: float = 1.0 + (2.0 / 3.0) * dt
+  while i < 2
+    var rhs: float = (4.0 / 3.0) * y[i] - (1.0 / 3.0) * y_prev[i]
+    y_prev[i] = y[i]
+    y[i] = rhs / denom
+    i = i + 1
+
+# One Newton iteration for implicit linear step: y - y_prev + dt * slope * y = 0.
+def newton_implicit_step_scalar(
+    y: var float, y_prev: float, slope: float, dt: float) -> unit
+  requires dt > 0.0
+  ensures true
+  decreases 0
+=
+  var denom: float = 1.0 + dt * slope
+  var residual: float = y - y_prev + dt * slope * y
+  y = y - residual / denom
 
 # Conjugate gradient: one iteration (for Poisson / implicit steps)
 def cg_iteration(
@@ -219,6 +265,27 @@ def three_body_step_mini(
     vx[i] = vx[i] + fx[i] * dt
     vy[i] = vy[i] + fy[i] * dt
     i = i + 1
+
+# Smoke: BDF-1 integrates y'=-y to t=1 within 1e-6 rel vs exp(-1) at dt=1e-4.
+def numerics_stiff_ode_bdf_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var y: float = 1.0
+  var dt: float = 0.0001
+  var steps: int = 0
+  while steps < 10000
+    bdf1_step_scalar(y, dt)
+    steps = steps + 1
+  var target: float = 0.36787944117144233
+  var err: float = y - target
+  if err < 0.0:
+    err = -err
+  if err / target > 0.000001:
+    return 0
+  return 1
 
 def numerics_three_body_gpu_progress() -> int
   requires true

@@ -9,4 +9,6 @@ def main() -> int
     return 1
   if numerics_three_body_gpu_progress() != 1:
     return 1
+  if numerics_stiff_ode_bdf_smoke() != 1:
+    return 1
   return 0

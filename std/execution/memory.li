@@ -1,0 +1,114 @@
+# std/execution/memory.li — Kokkos-class memory + execution space enums (PH-7e, #110)
+#
+# Spec-only v1: int tags for policy docs and tier-2 migration rubrics.
+# Parser lowering for View[T, Space] and @sync_* deferred to #15 / #116.
+#
+# Kokkos 4.6 alignment: explicit host/device/unified; no implicit DualView.
+
+# --- MemorySpace (REQ-MS-01) ---
+
+def memory_space_host() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def memory_space_device() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def memory_space_unified() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def memory_space_is_valid(space: int) -> int
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  if space == memory_space_host():
+    return 1
+  if space == memory_space_device():
+    return 1
+  if space == memory_space_unified():
+    return 1
+  return 0
+
+# --- ExecutionSpace (REQ-ES-01) ---
+
+def execution_space_serial() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def execution_space_openmp() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def execution_space_threads() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+# Reserved for #116 offload; not selectable in v1 tier-2 builds.
+def execution_space_sycl() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def execution_space_cuda() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def execution_space_hip() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def execution_space_default_tier2() -> int
+  requires true
+  ensures result == execution_space_openmp()
+  decreases 0
+=
+  return execution_space_openmp()
+
+def execution_space_is_v1_selectable(space: int) -> int
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  if space == execution_space_serial():
+    return 1
+  if space == execution_space_openmp():
+    return 1
+  if space == execution_space_threads():
+    return 1
+  return 0
+
+def __execution_memory_doc() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

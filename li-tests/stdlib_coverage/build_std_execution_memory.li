@@ -1,0 +1,21 @@
+import std.execution.memory
+import std.execution.decorators
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var host: int = memory_space_host()
+  var dev: int = memory_space_device()
+  var uni: int = memory_space_unified()
+  if memory_space_is_valid(host) != 1:
+    return 1
+  if memory_space_is_valid(dev) != 1:
+    return 1
+  if memory_space_is_valid(uni) != 1:
+    return 1
+  var esp: int = execution_space_default_tier2()
+  if execution_space_is_v1_selectable(esp) != 1:
+    return 1
+  return __execution_memory_doc() + __execution_decorators_doc()

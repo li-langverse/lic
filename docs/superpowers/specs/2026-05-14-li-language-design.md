@@ -667,6 +667,24 @@ OpenMP worker threads share **one process address space** (POSIX shared memory).
 
 **Debug-only:** `LI_RT_TSAN=1` links ThreadSanitizer on CI nightly to catch compiler bugs — not a user safety net.
 
+### Tier-2 memory spaces (Kokkos-class, PH-7e)
+
+Tier-2 physics kernels (`md_lennard_jones`, `heat_equation_2d`, …) need explicit **where data lives** before pure-Li device paths ship. This section defines spec-only enums aligned with Kokkos 4.6 (`HostSpace`, `CudaSpace`, `SYCLSpace`, DualView deprecation). Parser/codegen deferred to [#15](https://github.com/li-langverse/lic/issues/15) / [#116](https://github.com/li-langverse/lic/issues/116); layout ABI in [#128](https://github.com/li-langverse/lic/issues/128).
+
+| Type / enum | Values (v1) | Role |
+|-------------|-------------|------|
+| `MemorySpace` | `Host`, `Device`, `Unified` | Static tag on buffer / `View` allocation |
+| `ExecutionSpace` | `Serial`, `OpenMP`, `Threads` (+ `SYCL`/`Cuda`/`HIP` reserved) | Selects team policy; tier-2 default `OpenMP` |
+| `View[T, Space, Layout]` | `T` element type, `Space: MemorySpace`, `Layout` from #128 | Kokkos `View` analog; lifecycle in one space unless synced |
+| `hostbuffer[T]` | `MemorySpace = Host` | Pinned/pageable host mirror (Phase 3+) |
+| `devicebuffer[T]` | `MemorySpace = Device` | Device-resident storage (Phase 4+) |
+
+**Sync contract (REQ-SYNC-01):** cross-space access requires explicit `@sync_host(view)` or `@sync_device(view)` before read/write on the other space. **Compile error** on device read after host write without intervening sync (REQ-SYNC-02). No implicit DualView — host mirror is an explicit paired `hostbuffer`.
+
+**Stdlib tags today:** `import std.execution.memory` — `memory_space_*()`, `execution_space_*()` int constants for policy docs and migration rubrics.
+
+**Rubric:** [kokkos-memory-execution-spaces-rubric.md](../../hpc/kokkos-memory-execution-spaces-rubric.md) · **Migration:** [tier2-shared-c-kernel-migration-rubric.md](../../hpc/tier2-shared-c-kernel-migration-rubric.md).
+
 ### Race-reject test suite (v1, mandatory CI)
 
 Deliberate exploit attempts in `li-tests/race_shared_memory/*.li` **must fail** `lic build` with a diagnostic citing **shared memory / disjointness / Send / Sync**. Run on every PR:

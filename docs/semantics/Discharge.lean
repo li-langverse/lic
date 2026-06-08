@@ -63,6 +63,29 @@ theorem matmul2_at2_loop_eval_spec (A B : LiArray (LiArray Float 2) 2) :
     mat2_at2_float_spec A B (mat2_at2_eval A B) :=
   mat2_at2_float_spec_proved A B
 
+/-- Length-1 rhs broadcast add (matches `linalg_broadcast_len1_add_float4_closed.li`). -/
+def broadcast_len1_add_float4_spec (a : LiArray Float 4) (b : LiArray Float 1)
+    (result : LiArray Float 4) : Prop :=
+  (result[0]! = a[0]! + b[0]!) ∧
+  (result[1]! = a[1]! + b[0]!) ∧
+  (result[2]! = a[2]! + b[0]!) ∧
+  (result[3]! = a[3]! + b[0]!)
+
+/-- Semantic length-1 rhs broadcast add (`array[4] + array[1]`). -/
+def broadcast_len1_add_float4_eval (a : LiArray Float 4) (b : LiArray Float 1) : LiArray Float 4 :=
+  fun i =>
+    match i with
+    | ⟨0, _⟩ => a[0]! + b[0]!
+    | ⟨1, _⟩ => a[1]! + b[0]!
+    | ⟨2, _⟩ => a[2]! + b[0]!
+    | ⟨3, _⟩ => a[3]! + b[0]!
+
+/-- Closed length-1 broadcast add witness (P-linalg / **G-math** / PH-2i). -/
+theorem broadcast_len1_add_float4_spec_proved (a : LiArray Float 4) (b : LiArray Float 1) :
+    broadcast_len1_add_float4_spec a b (broadcast_len1_add_float4_eval a b) := by
+  unfold broadcast_len1_add_float4_spec broadcast_len1_add_float4_eval
+  refine And.intro rfl (And.intro rfl (And.intro rfl rfl))
+
 /-!
 ## Vec3 CallProc chain (**P-linalg** / BUG-C-12)
 

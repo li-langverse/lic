@@ -1,12 +1,16 @@
 # BUG-C-03 — broadcast len-1 Lean semantics
 
 **Gap script:** `li-tests/tooling/broadcast_len1_codegen_lean_gap.sh`  
-**Status:** Open
+**Status:** Closed (2026-06-06)
 
 ## Summary (from gap script)
 
-G-math / PH-2i: length-1 broadcast lowers in MIR/codegen but has no Lean semantics or VC witness. Contrast: `mat2_at2_float_spec` / `dot4_int_spec` in Discharge.lean; manifest `compile_ok` only.
+G-math / PH-2i: length-1 broadcast lowers in MIR/codegen with Lean semantics and VC witness. Closed slice: `linalg_broadcast_len1_add_float4_closed.li` → `Li.Discharge.broadcast_len1_add_float4_spec`.
 
-## Owner action
+## Resolution
 
-Add Discharge spec + witness for broadcast_len1 lowering; agent: keep catalog `proof_status` ≤ open/target.
+- `Discharge.lean`: `broadcast_len1_add_float4_spec` / `_eval` / `_spec_proved`
+- `vc_witness.cpp` + `vc_emit_lean.cpp`: `witness_broadcast_len1_add_float4_spec`
+- Manifest: `contracts_verify/linalg_broadcast_len1_add_float4_closed.li` → `verify_ok`
+
+Int/mul/pow broadcast smoke tests remain `compile_ok`; general NumPy rank rules still open.

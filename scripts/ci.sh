@@ -113,11 +113,12 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
 
 li_phase "lic verify smoke (2e/2f)"
-chmod +x "$ROOT/scripts/lean-verify-stub.sh" "$ROOT/li-tests/tooling/lic_verify_smoke.sh" \
+chmod +x "$ROOT/scripts/check-phase-2e-gates.sh" \
+  "$ROOT/scripts/lean-verify-stub.sh" "$ROOT/li-tests/tooling/lic_verify_smoke.sh" \
   "$ROOT/li-tests/tooling/vc_emit_contracts.sh" "$ROOT/li-tests/tooling/contracts_verify_lean.sh"
 export LI_REPO_ROOT="$ROOT"
+"$ROOT/scripts/check-phase-2e-gates.sh"
 "$ROOT/li-tests/tooling/lic_verify_smoke.sh"
-"$ROOT/li-tests/tooling/vc_emit_contracts.sh"
 "$ROOT/li-tests/tooling/contracts_verify_lean.sh"
 
 li_phase "lic JSON diagnostics (Vision-LLM)"

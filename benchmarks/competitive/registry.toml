@@ -140,3 +140,13 @@ csv_lang = ""
 kernel_honesty = "n/a"
 last_reviewed = "2026-05-31"
 notes = "RLlib RolloutWorker stub column."
+
+[[ecosystem]]
+id = "petsc_hypre_heat_implicit"
+track = "watch"
+repo_url = "https://petsc.org/"
+compare = ["pde_heat_implicit_jacobi"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-08"
+notes = "PETSc SNES/KSP + hypre BoomerAMG CPU oracle — pde_oracle.toml stub driver (lic#108)."

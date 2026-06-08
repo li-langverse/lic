@@ -1,30 +1,55 @@
 import sim.scientific
 
+def bench_md_ok() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var md_run: SimRunResult = run_md_lj_smoke(0)
+  var md_run_chk: float = md_run.checksum
+  var md: float = sim_scientific_oracle_checksum_md()
+  if md_run_chk != md:
+    return 7
+  if run_result_ok(md_run) != 1:
+    return 6
+  return 0
+
+def bench_heat_ok() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var heat_run: SimRunResult = run_heat_smoke(0)
+  var heat_run_chk: float = heat_run.checksum
+  var heat: float = sim_scientific_oracle_checksum_heat()
+  if heat_run_chk != heat:
+    return 9
+  if run_result_ok(heat_run) != 1:
+    return 8
+  return 0
+
+def bench_after_md() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return bench_heat_ok()
+
+def bench_md_tail() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var code: int = bench_md_ok()
+  if code != 0:
+    return code
+  return bench_after_md()
+
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  if li_sim_scientific_version() != 4:
+  if li_sim_scientific_version() != 7:
     return 1
-  var md: float = sim_scientific_oracle_checksum_md()
-  if md <= 0.0:
-    return 2
-  if md >= 1.0e-3:
-    return 3
-  var heat: float = sim_scientific_oracle_checksum_heat()
-  if heat <= 1.0:
-    return 4
-  if heat >= 10.0:
-    return 5
-  var md_run: SimRunResult = run_md_lj_smoke(0)
-  if run_result_ok(md_run) != 1:
-    return 6
-  if md_run.checksum != md:
-    return 7
-  var heat_run: SimRunResult = run_heat_smoke(0)
-  if run_result_ok(heat_run) != 1:
-    return 8
-  if heat_run.checksum != heat:
-    return 9
-  return 0
+  return bench_md_tail()

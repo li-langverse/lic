@@ -1,0 +1,30 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var md_expected: float = sim_scientific_oracle_checksum_md()
+  var md105: SimRunResult = run_algo(105, 1)
+  var md_chk: float = md105.checksum
+  if md_chk != md_expected:
+    return 3
+  if run_result_ok(md105) != 1:
+    return 1
+  if md105.algo_id != 105:
+    return 2
+  if md_chk == 1.001:
+    return 4
+  var heat_expected: float = sim_scientific_oracle_checksum_heat()
+  var heat201: SimRunResult = run_algo(algo_pde_heat_explicit_2d(), 2)
+  var heat_chk: float = heat201.checksum
+  if heat_chk != heat_expected:
+    return 7
+  if run_result_ok(heat201) != 1:
+    return 5
+  if heat201.algo_id != algo_pde_heat_explicit_2d():
+    return 6
+  if heat_chk == 1.001:
+    return 8
+  return 0

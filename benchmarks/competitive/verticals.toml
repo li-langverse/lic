@@ -43,7 +43,7 @@ workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
 last_reviewed = "2026-05-23"
-notes = "PH-CAE FEA track; engineering-cae-fundamentals.md; no bench oracle yet."
+notes = "tier-2 verify green; Li oracle `sim_scientific_oracle_checksum_fea()` (1D bar Jacobi scaffold); full CalculiX parity deferred to WP-SCI-05."
 
 [[vertical]]
 id = "cfd_lid_driven_cavity"
@@ -53,7 +53,7 @@ workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
 last_reviewed = "2026-05-23"
-notes = "PH-CAE CFD track; canonical cavity target; no bench oracle yet."
+notes = "PH-CAE CFD track; Li oracle `sim_scientific_oracle_checksum_cfd()` (lid-driven 1D proxy); full cavity parity deferred to WP-SCI-06."
 
 [[vertical]]
 id = "drug_litl"

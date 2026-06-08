@@ -140,3 +140,23 @@ csv_lang = ""
 kernel_honesty = "n/a"
 last_reviewed = "2026-05-31"
 notes = "RLlib RolloutWorker stub column."
+
+[[ecosystem]]
+id = "lammps_lj_micro"
+track = "watch"
+repo_url = "https://github.com/lammps/lammps"
+compare = ["md_lennard_jones"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-06"
+notes = "Layer B MD oracle — validity column (stub). See benchmarks/competitive/md_oracle.toml."
+
+[[ecosystem]]
+id = "gromacs_lj_micro"
+track = "watch"
+repo_url = "https://gitlab.com/gromacs/gromacs"
+compare = ["md_lennard_jones"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-06"
+notes = "Layer B MD oracle — validity column (stub). See benchmarks/competitive/md_oracle.toml."

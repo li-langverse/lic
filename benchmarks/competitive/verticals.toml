@@ -23,7 +23,7 @@ workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
 last_reviewed = "2026-05-23"
-notes = "tier-2 verify green; Li oracle `sim_scientific_oracle_checksum_md()` (8-step 4-particle LJ chain); Layer B csv_lang lammps/gromacs stubs — not LAMMPS/GROMACS parity."
+notes = "tier-2 verify green; Li oracle `sim_scientific_oracle_checksum_md()` (8-step 4-particle LJ chain); Layer B `md_oracle.toml` pins lammps/gromacs (stub B0) — not LAMMPS/GROMACS parity until B1/B2."
 
 [[vertical]]
 id = "pde_heat_2d"

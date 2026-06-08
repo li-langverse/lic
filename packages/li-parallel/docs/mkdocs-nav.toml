@@ -50,6 +50,11 @@ path = "packages/li-parallel/docs/benchmark-dual-mode.md"
 doc_id = "DOC-PAR-09"
 
 [[nav.entries]]
+title = "Portability policy matrix"
+path = "packages/li-parallel/docs/portability-policy-matrix.md"
+doc_id = "DOC-PAR-11"
+
+[[nav.entries]]
 title = "Proofs table"
 path = "packages/li-parallel/docs/proofs-table.md"
 doc_id = "DOC-PAR-10"

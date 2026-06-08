@@ -26,6 +26,12 @@ note = "PH-SCI-GPU-02 @gpu MD/heat oracle checksums"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/qm_dft_scf_interface_smoke.li"
+outcome = "verify_ok"
+note = "chem-r2 qm_dft_scf_energy (418) registry + vertical_qm_dft H2 SCF oracle"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/echem_aimd_interface_smoke.li"
 outcome = "verify_ok"
 note = "WP-ECHEM-09 AIMD interface registry + 8-step DFT energy drift oracle"

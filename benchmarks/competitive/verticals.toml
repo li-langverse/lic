@@ -148,12 +148,12 @@ notes = "mmorpg.toml composable import_mmo_shard.li; mmo profile shard stub — 
 [[vertical]]
 id = "qm_dft"
 incumbent = "Gaussian / ORCA / PySCF / Psi4"
-kernel_or_api = "DFT single-point energy (STO-3G H LDA)"
+kernel_or_api = "DFT SCF total energy (H₂ STO-3G LDA) — algo 418 qm_dft_scf_energy"
 workload_class = "pilot"
-oracle = "pyscf"
-li_package = "chem"
-last_reviewed = "2026-06-05"
-notes = "ph-sci-chem-dft-competitive.json; Li chem_dft_energy_kernel_hartree mini radial scaffold vs PySCF RKS/LDA (Apache-2.0); ORCA external_manual only (not bundled); parity_gate loose until full Gaussian DFT."
+oracle = "external_binary"
+li_package = "sim.scientific"
+last_reviewed = "2026-06-07"
+notes = "chem-r2 (#355): run_qm_dft_scf_tier2_registry + sim_scientific_oracle_checksum_qm_dft_scf; Psi4 subprocess oracle benchmarks/harness/qm_external_oracle.py (optional profile chem-external-oracle); PySCF fallback; family template schrodinger_1d_barrier; threshold_ratio_cpp=1.2 locked; not full Gaussian parity until integral chain 401-404."
 
 [[vertical]]
 id = "echem_che_h"

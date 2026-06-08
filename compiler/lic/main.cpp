@@ -395,9 +395,13 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   vc.ensures_witnessed = witness.ensures_witnessed;
   vc.mir_return_linked = witness.mir_return_linked;
   const std::size_t mir_parallel_disjoint = li::count_mir_parallel_disjoint_proven(mir);
+  const std::size_t mir_parallel_policy_static =
+      li::count_mir_parallel_policy_static_chunk(mir);
   const std::size_t mir_vectorized_proc = li::count_mir_vectorized_proc(mir);
   const std::size_t mir_gpu_def = li::count_mir_gpu_def(mir);
   const std::size_t mir_gpu_multi_device_def = li::count_mir_gpu_multi_device_def(mir);
+  const char* mir_parallel_policy =
+      mir_parallel_policy_static > 0 ? "static_chunk" : "none";
   std::cout << "verify: procs=" << vc.proc_count << " mir_fns=" << vc.mir_fn_count
             << " requires=" << vc.requires_count << " ensures=" << vc.ensures_count
             << " prob_ensures=" << vc.prob_ensures_count
@@ -405,6 +409,7 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
             << " witnessed_ensures=" << vc.ensures_witnessed
             << " mir_return_linked=" << vc.mir_return_linked
             << " mir_parallel_disjoint=" << mir_parallel_disjoint
+            << " mir_parallel_policy=" << mir_parallel_policy
             << " mir_vectorized_proc=" << mir_vectorized_proc
             << " mir_gpu_def=" << mir_gpu_def
             << " mir_gpu_multi_device_def=" << mir_gpu_multi_device_def << '\n';

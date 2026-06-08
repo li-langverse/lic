@@ -45,4 +45,16 @@ std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir) {
   return n;
 }
 
+std::size_t count_mir_parallel_policy_static_chunk(const MirModule& mir) {
+  std::size_t n = 0;
+  for (const auto& fn : mir.functions) {
+    for (const auto& ins : fn.body) {
+      if (ins.op == MirOp::OmpParallelFor) {
+        ++n;
+      }
+    }
+  }
+  return n;
+}
+
 }  // namespace li

@@ -12,6 +12,8 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 `@parallel` on a `parallel for` loop requires a disjointness proof hint, e.g. `disjoint_elem(i, buf)` in the loop contract list.
 
+Proved `parallel for` lowers to **`li_parallel_for_*`** with **static chunk** scheduling (OpenMP `schedule(static)` equivalent). `lic verify` reports `mir_parallel_policy=static_chunk` when a proved site exists; see the [RAJA policy portability rubric](../superpowers/specs/2026-06-07-li-raja-policy-portability-rubric.md) (lic#109) for Li → RAJA → Kokkos → OpenMP mapping.
+
 ## Status
 
 Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).

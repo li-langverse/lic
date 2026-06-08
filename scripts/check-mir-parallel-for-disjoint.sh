@@ -7,5 +7,6 @@ LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 GOOD="$ROOT/li-tests/race_shared_memory/good_disjoint_parallel.li"
 out="$("$LIC" verify "$GOOD" 2>&1)"
 echo "$out" | grep -q 'mir_parallel_disjoint=1'
+echo "$out" | grep -q 'mir_parallel_policy=static_chunk'
 "$ROOT/li-tests/run_all.sh" race_shared_memory >/dev/null
 echo "check-mir-parallel-for-disjoint: ok"

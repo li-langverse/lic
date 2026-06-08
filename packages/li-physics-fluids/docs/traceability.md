@@ -12,6 +12,15 @@
 
 Link design-spec `REQ-*` items when this package implements normative language or std behavior.
 
+### Implicit PDE tier ([lic#117](https://github.com/li-langverse/lic/issues/117))
+
+| REQ | Planned API | Benches |
+|-----|-------------|---------|
+| REQ-PDE-PC-4 | `AdvectionDiffusionSolver` | `advection_diffusion_2d` |
+| REQ-PDE-PC-4 | `PressurePoisson` | `euler_fluid_2d`, `wind_field_bc` |
+
+Normative rubric: [tier2-implicit-pde-preconditioner-rubric.md](../../../docs/numerics/tier2-implicit-pde-preconditioner-rubric.md). Package promotion tracked in [lic#14](https://github.com/li-langverse/lic/issues/14).
+
 ## Releases
 
 Update `CHANGELOG.md` and `li.toml` `version` together; tag `vX.Y.Z` on GitHub.

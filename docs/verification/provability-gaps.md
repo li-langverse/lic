@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-30  
+**Last updated:** 2026-06-07  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -39,7 +39,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-par-dist** | Partial | **Closed slice:** block partition via `li_dpar_block_partition_*` + `distributed for` MIR (`dpar_for_range.li` smoke); Lean partition proofs open |
 | **G-hetero** | Partial | **Closed slice:** CPU+GPU+TPU+ASIC orchestration via `li_rt_hetero_*` runtime seams + chip package probes; address-space proofs open |
 | **G-dec** | Partial | **Closed slice:** MIR telemetry + corpus scripts; Lean **P-dec** open |
-| **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
+| **G-math** | Partial+ | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus. **Planned (doc):** tier-2 implicit PDE Krylov + Jacobi PC rubric — [tier2-implicit-pde-preconditioner-rubric.md](../numerics/tier2-implicit-pde-preconditioner-rubric.md) ([lic#117](https://github.com/li-langverse/lic/issues/117)); native solvers blocked until Krylov slice closes |
 | **G-bnd** | Partial | **Closed slice:** `bounds_refinement_release_ok.li` + `check_release_bounds_ir.sh`; `discharge_refinement_lean.sh` |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
 | **G-oop** | Partial | Lean `ensures` on methods; trait laws in kernel |
@@ -50,14 +50,14 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-net** | Partial | Net effect codegen + proofs |
 | **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
 | **G-ann** | Missing | PEP 649 deferred annotations |
-| **G-gpu** | Partial | **Closed slice:** `@gpu` MIR telemetry; **Wave 13:** `ml_gpu_device_buffer_pipeline` + `lig_gpu_device_buffer_ready` host contract. Still open: address-space proofs, full LKIR lowering |
+| **G-gpu** | Partial | **Closed slice:** `@gpu` MIR telemetry; **Wave 13:** `ml_gpu_device_buffer_pipeline` + `lig_gpu_device_buffer_ready` host contract. **Planned (doc):** device-native Jacobi (`PCBJKOKKOS`) parity depends on Kokkos execution spaces ([#28](https://github.com/li-langverse/lic/issues/28)) — [tier2-implicit-pde-preconditioner-rubric.md](../numerics/tier2-implicit-pde-preconditioner-rubric.md). Still open: address-space proofs, full LKIR lowering |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |
 | **G-proof-db** | Partial | [Proof database](proof-database.md): register at `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`) |
-| **G-physics** | Partial | **P-physics** slice: 7× `P-AX-*` + 3× `P-LM-*`; 2× proved scalar lemmas in `Discharge.lean`; tier-2 **modeling_gap** on extern stubs |
+| **G-physics** | Partial | **P-physics** slice: 7× `P-AX-*` + 3× `P-LM-*`; 2× proved scalar lemmas in `Discharge.lean`; tier-2 **modeling_gap** on extern stubs. **Planned (doc):** implicit PDE preconditioner rubric links physics package scaffolds ([#14](https://github.com/li-langverse/lic/issues/14)) to tier-2 implicit rows — [tier2-implicit-pde-preconditioner-rubric.md](../numerics/tier2-implicit-pde-preconditioner-rubric.md) |
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
-| **G-num** | Stub | **WP0-A:** planned entries/num-*.toml + proof-db/num/; Peano/order linkage via **G-math**; no discharge slice yet |
+| **G-num** | Partial (doc) | **WP0-A:** planned entries/num-*.toml + proof-db/num/; Peano/order linkage via **G-math**; no discharge slice yet. **Planned (doc):** implicit PDE stability (CFL, diffusion CFL) conjectures referenced from [tier2-implicit-pde-preconditioner-rubric.md](../numerics/tier2-implicit-pde-preconditioner-rubric.md) |
 | **G-discrete** | Stub | **WP0-A:** combinatorics / finitary specs; catalog rows TBD; specimens after num axiom layer |
 | **G-stats** | Stub | **WP0-A:** descriptive stats + confidence stubs; tier-2 bench hooks (**5b**) TBD |
 | **G-ml** | Stub | **WP0-C:** [ml-convergence-program](ml-convergence-program.md) — parallel Lean + specimen tracks; no closed convergence VC |

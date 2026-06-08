@@ -1,0 +1,33 @@
+# PDE implicit solver vendor oracle registry (lic#108).
+# Validate: scripts/ph-sci-pde-implicit-competitive-gates.sh
+
+[meta]
+version = 1
+updated = "2026-06-08"
+catalog_row = "pde_heat_implicit_jacobi"
+algo_id = 204
+
+[[oracle]]
+id = "petsc_ksp_hypre_boomeramg"
+engine = "PETSc"
+version = "3.25.0"
+hypre_version = "2.32.0"
+workload_class = "stub"
+status = "stub"
+driver = "benchmarks/competitive/petsc_heat_implicit_stub.py"
+compare_metric = "field_sum_checksum"
+kernel_honesty = "external_binary"
+license = "BSD-2-Clause"
+notes = "DM → KSP → PCHYPRE BoomerAMG; GPU path PCBJKOKKOS documented, not CI-bundled"
+
+[[oracle]]
+id = "li_jacobi_assembled_8"
+engine = "Li physics.fluids"
+version = "2"
+workload_class = "pilot"
+status = "active"
+driver = "scripts/bench-ph-sci-pde-implicit-li.sh"
+compare_metric = "field_sum_checksum"
+kernel_honesty = "pure_li"
+license = "Apache-2.0 OR MIT"
+notes = "8-cell 1D Jacobi scaffold — assembled + matrix-free API in packages/li-physics-fluids"

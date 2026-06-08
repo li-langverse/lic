@@ -13,10 +13,10 @@ type Idx4 = {i: int | 0 <= i and i < 4}
 
 def li_std_physics_fluids_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def sph_kernel_poly6(r: float, h: float) -> float
   requires h > 0.0
@@ -50,6 +50,79 @@ def heat_step_explicit(
   while i < 8
     u[i] = u[i] + alpha * dt * lap[i]
     i = i + 1
+
+# lic#108 — matrix-free Laplacian apply for 1D implicit heat (8-cell scaffold).
+def heat_implicit_matvec_1d(u: var array[8, float], out: var array[8, float], r: float) -> unit
+  requires r > 0.0
+  ensures true
+  decreases 0
+=
+  out[0] = u[0]
+  out[7] = u[7]
+  var i: int = 1
+  while i < 7
+    out[i] = u[i] + r * (u[i - 1] + u[i + 1] - 2.0 * u[i])
+    i = i + 1
+
+# lic#108 — assembled Jacobi sweep for (I - r*L) x = b on 8-cell 1D grid.
+def jacobi_heat_implicit_assembled_step(
+    u: var array[8, float], b: var array[8, float], x: var array[8, float], r: float) -> unit
+  requires r > 0.0
+  ensures true
+  decreases 0
+=
+  x[0] = b[0]
+  x[7] = b[7]
+  var denom: float = 1.0 + 2.0 * r
+  var i: int = 1
+  while i < 7
+    x[i] = (b[i] + r * (u[i - 1] + u[i + 1])) / denom
+    i = i + 1
+  i = 0
+  while i < 8
+    u[i] = x[i]
+    i = i + 1
+
+def pde_implicit_jacobi_init_field(u: var array[8, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  u[0] = 0.0
+  u[1] = 0.24740395925499513
+  u[2] = 0.479425538604203
+  u[3] = 0.6816387600826449
+  u[4] = 0.8414709848078965
+  u[5] = 0.9489843753576942
+  u[6] = 0.9974949866040994
+  u[7] = 0.9974949866040994
+
+# lic#108 — tier-2 catalog row pde_heat_implicit_jacobi (algo_id 204) Li oracle.
+def pde_implicit_jacobi_oracle_checksum() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var u: array[8, float]
+  var b: array[8, float]
+  var x: array[8, float]
+  var alpha: float = 0.25
+  var dx: float = 0.125
+  var dt: float = 0.0001
+  var r: float = alpha * dt / (dx * dx)
+  pde_implicit_jacobi_init_field(u)
+  var step: int = 0
+  while step < 200
+    var i: int = 0
+    while i < 8
+      b[i] = u[i]
+      i = i + 1
+    var j: int = 0
+    while j < 4
+      jacobi_heat_implicit_assembled_step(u, b, x, r)
+      j = j + 1
+    step = step + 1
+  return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
 
 def cloth_pbd_distance(
     px: var array[4, float], py: var array[4, float],

@@ -28,12 +28,12 @@ notes = "tier-2 verify green; Li oracle `sim_scientific_oracle_checksum_md()` (8
 [[vertical]]
 id = "pde_heat_2d"
 incumbent = "OpenFOAM / PETSc"
-kernel_or_api = "explicit heat step, CFL stability"
+kernel_or_api = "explicit heat step; implicit Jacobi + KSP/hypre plan"
 workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
-last_reviewed = "2026-05-23"
-notes = "heat_equation_2d in verify.py; Li oracle `sim_scientific_oracle_checksum_heat()` (explicit 1D laplacian stencil); FEA/CFD split to fea_linear_elasticity + cfd_lid_driven_cavity (PH-CAE)."
+last_reviewed = "2026-06-08"
+notes = "heat_equation_2d explicit oracle in verify.py; implicit slice lic#108 — `physics.fluids.pde_implicit_jacobi_oracle_checksum`, PETSc 3.25 + hypre 2.32 pins in ph-sci-pde-implicit.toml; FEA/CFD split to fea_linear_elasticity + cfd_lid_driven_cavity (PH-CAE)."
 
 [[vertical]]
 id = "fea_linear_elasticity"

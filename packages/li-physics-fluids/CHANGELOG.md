@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **lic#108 implicit heat API** — `heat_implicit_matvec_1d`, `jacobi_heat_implicit_assembled_step`, `pde_implicit_jacobi_oracle_checksum`; smoke `pde_implicit_jacobi_oracle.li`.
 - Initial scaffold via `scripts/li-new-package` (PKG-li-std-physics-fluids).
+
+### Changed
+
+- `li_std_physics_fluids_version` → 2.
 
 ## [0.1.0] - 2026-05-16
 

@@ -726,7 +726,7 @@ gaps:
 - id: gap-hpc-petsc-kokkos-implicit-pde
   gap_kind: competitor_feature
   title: PETSc 3.25 Kokkos-native KSP/PC (aijkokkos, PCBJKOKKOS) implicit PDE stack
-  status: open
+  status: partial
   priority: 7
   discovered_by: gap_explorer
   evidence:
@@ -752,7 +752,7 @@ gaps:
 - id: gap-hpc-hypre-boomeramg-tier2-pde
   gap_kind: competitor_feature
   title: hypre BoomerAMG + parallel CSR for large-scale implicit PDE
-  status: open
+  status: partial
   priority: 6
   discovered_by: gap_explorer
   evidence:

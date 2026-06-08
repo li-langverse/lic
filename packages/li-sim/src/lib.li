@@ -297,6 +297,20 @@ def algo_pde_heat_explicit_2d() -> int
 =
   return 201
 
+def algo_cfd_simple() -> int
+  requires true
+  ensures result == 206
+  decreases 0
+=
+  return 206
+
+def algo_fea_linear_elasticity() -> int
+  requires true
+  ensures result == 214
+  decreases 0
+=
+  return 214
+
 def algo_rigid_semi_implicit() -> int
   requires true
   ensures result == 301

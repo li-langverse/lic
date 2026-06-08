@@ -198,6 +198,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.
 - **Acceptance:** `run_algo_registry_tier2.li` extended; stub only for explicitly documented IDs.
 - **Priority / effort:** P1 / L
+- **Status:** partial (2026-06-08) — tier-2 dispatch for heat 201–204, CFD 205–210, FEA 211–216, QM 401–432; stub retained for drug/bio/ml/am/viz/robo/auto; `run_algo_registry_tier2.li` extended.
 
 #### WP-SCI-04 — `sim.viz` → wgpu field draw (extends existing ID)
 

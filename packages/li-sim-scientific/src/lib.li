@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -719,6 +719,33 @@ def run_echem_sei_kmc_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+# chem-r2 / sim-p2 — qm_dft_scf_energy (418): H₂ STO-3G mini SCF scaffold via li-chem.
+def sim_scientific_oracle_checksum_qm_dft_scf() -> float
+  requires true
+  ensures result == echem_dft_h2_energy_hartree()
+  ensures result <= 0.0
+  decreases 0
+=
+  return echem_dft_h2_energy_hartree()
+
+def run_qm_dft_scf_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id == algo_qm_dft_scf_energy()
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm_dft_scf()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -749,6 +776,9 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_echem_sei_kmc():
     var d_sei: int = detail
     return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
+  if algo_id == algo_qm_dft_scf_energy():
+    var d_qm: int = detail
+    return run_qm_dft_scf_tier2_registry(algo_id, d_qm)
   var d3: int = detail
   return run_algo_registry_stub(algo_id, d3)
 
@@ -782,6 +812,9 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_echem_sei_kmc():
     var d_sei: int = detail
     return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
+  if algo_id == algo_qm_dft_scf_energy():
+    var d_qm: int = detail
+    return run_qm_dft_scf_tier2_registry(algo_id, d_qm)
   if algo_in_registry(reg_chk) == 1:
     var d4: int = detail
     return run_algo_registry(reg_run, d4)

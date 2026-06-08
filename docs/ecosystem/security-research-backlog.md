@@ -3,7 +3,8 @@
 **Status:** Active  
 **Agent:** `security_auditor`  
 **Goal:** `offensive_security`  
-**Branch:** `cursor/security-research-loop`
+**Branch:** `cursor/security-research-loop`  
+**Plan:** [2026-06-06-security-research-sec-r1-r3-plan.md](../superpowers/plans/2026-06-06-security-research-sec-r1-r3-plan.md) · **Issue:** [#521](https://github.com/li-langverse/lic/issues/521)
 
 ---
 
@@ -15,17 +16,20 @@ todos:
   study_only: true
 
 - id: sec-r1-httpd-fuzz-smoke
-  content: "security-research: pending plan todo sec-r1-httpd-fuzz-smoke — gap orchestrator"
-  status: pending
+  content: "httpd fuzz table — libFuzzer http_parse_fuzz smoke + tier5 exploit smoke vs live li-httpd (3-row pr profile)"
+  status: completed
   study_only: true
+  plan_ref: docs/superpowers/plans/2026-06-06-security-research-sec-r1-r3-plan.md#A--sec-r1-httpd-fuzz-smoke-study-only-gate
 
 - id: sec-r2-tier5-gap-exploit
-  content: "security-research: pending plan todo sec-r2-tier5-gap-exploit — gap orchestrator"
-  status: pending
+  content: "Close one Top25 CWE tier5 row (CWE-20 or CWE-862) — catalog + exploit TOML + live stricter-or-equal vs nginx"
+  status: completed
+  plan_ref: docs/superpowers/plans/2026-06-06-security-research-sec-r1-r3-plan.md#B--sec-r2-tier5-gap-exploit-live-parity
 
 - id: sec-r3-runtime-surface
-  content: "security-research: pending plan todo sec-r3-runtime-surface — gap orchestrator"
-  status: pending
+  content: "Runtime attack surface — parse/crypto/HTTP native cores; ASan slice on touched *_core.c"
+  status: completed
+  plan_ref: docs/superpowers/plans/2026-06-06-security-research-sec-r1-r3-plan.md#C--sec-r3-runtime-surface-asan-slice
 
 ---
 
@@ -37,3 +41,4 @@ todos:
 - Deliverable: `docs/security/studies/YYYY-MM-DD-<todo-id>.md` (see `security-research-grading.md`).
 - Survey todos (`study_only: true`): gates require study file; benches optional unless code changes.
 - Push branch `cursor/security-research-loop` every iteration.
+- Plan: [#521](https://github.com/li-langverse/lic/issues/521) · [sec-r1-r3 plan](../superpowers/plans/2026-06-06-security-research-sec-r1-r3-plan.md)

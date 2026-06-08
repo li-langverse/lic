@@ -1525,6 +1525,31 @@ static int path_is_safe(const char* path, int plen) {
   return 1;
 }
 
+/* libFuzzer / smoke: exercise HTTP request parse helpers without network I/O. */
+int32_t li_rt_http_fuzz_parse_request(const uint8_t* data, size_t size) {
+  enum { kMax = 65536, kHeaderBlock = 8192 };
+  if (data == NULL || size == 0) {
+    return 0;
+  }
+  char buf[kMax + 1];
+  size_t n = size > kMax ? kMax : size;
+  memcpy(buf, data, n);
+  buf[n] = '\0';
+  int hdr_end = hdr_end_at_c(buf, (int)n);
+  if (hdr_end < 0) {
+    hdr_end = (int)n;
+  }
+  httpd_req_info_t info;
+  (void)parse_request_line_c(buf, hdr_end, &info);
+  (void)request_headers_unsafe_c(buf, hdr_end);
+  (void)parse_request_body_meta_c(buf, hdr_end, &info);
+  if (info.path_len > 0) {
+    (void)path_is_safe(info.path, info.path_len);
+  }
+  (void)li_rt_http_parse_request_len_tag(buf, kHeaderBlock, HTTPD_MAX_BODY);
+  return 0;
+}
+
 static int tcp_connect_loopback_port(int port) {
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));

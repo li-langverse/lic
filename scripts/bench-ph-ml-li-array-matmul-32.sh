@@ -73,11 +73,18 @@ cpu_sec = float(cpu_raw) if cpu_raw else None
 executed = compile_ok and run_rc == 0 and cpu_sec is not None
 validity = executed
 
+blas_env = os.environ.get("LI_ARRAY_BLAS", "").strip().lower()
+blas_requested = blas_env not in ("", "0", "off", "false", "no")
+blas_backend = "openblas" if blas_requested else "none"
+workload_class = "blas_labeled" if blas_requested else "cpu_native"
+
 report = {
     "suite": "ph-ml-li-array-matmul-32",
     "id": "li_array_matmul_32x32",
     "workload_size": 32,
-    "workload_note": "32x32 logical f32 via ArrayDesc -> ml_matmul_cpu_logical_32; run-only 50x mean; ratio_vs_li = numpy/cpu",
+    "workload_note": "32x32 logical f32 via ArrayDesc -> ml_matmul_cpu_logical_32 (BLAS when LI_ARRAY_BLAS=openblas); run-only 50x mean; ratio_vs_li = numpy/cpu",
+    "blas_backend": blas_backend,
+    "workload_class": workload_class,
     "compile_ok": compile_ok,
     "executed": executed,
     "validity_gate_pass": validity,

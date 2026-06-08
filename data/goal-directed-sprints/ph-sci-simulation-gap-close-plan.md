@@ -74,7 +74,7 @@ Legacy Phase 0 worker (`li-ph-sci-simulation-gap-close`) is superseded; keep sca
 | Package | Maturity | Test coverage | `lic build` lib | Real vs placeholder | Known blockers |
 |---------|----------|---------------|-----------------|---------------------|----------------|
 | **li-sim** | contract-only / partial | CPU: `sim_step_stub`, env pool, profile bridge (`compile_open_ok`). No `@gpu`. | Runtime smokes OK; lib large, open VC on strict build | **Real:** deterministic tick/replay/env-pool contracts. **Placeholder:** `SimSessionStub` (no `SimWorld`), `sim_step` increments tick only | Object-call codegen #322 blocks some composables; SIM-4 full replay buffer stub |
-| **li-sim-scientific** | partial → tier-2 oracle | CPU + `@gpu` MD oracle smoke | Lib builds with open VC; smokes verify | **Real:** 4-particle LJ chain + 1D heat stencil oracles, `run_multi_physics_at_step`. **Placeholder:** `run_algo_registry_stub` (checksum 1.001) for most registry IDs | WP-SCI-03 registry; CFD/FEA rows stub; no LAMMPS/GROMACS external oracle |
+| **li-sim-scientific** | partial → tier-2 oracle | CPU + `@gpu` MD oracle smoke | Lib builds with open VC; smokes verify | **Real:** 4-particle LJ chain + 1D heat stencil + QM/CFD/FEA tier-2 oracles, `run_multi_physics_at_step`. **Placeholder:** `run_algo_registry_stub` (checksum 1.001) for drug/bio/ml/am/robo rows | WP-SCI-03 partial (QM/CFD/FEA landed); no LAMMPS/GROMACS external oracle |
 | **li-sim-viz** | stub / contract-only | CPU: `viz_pipeline`, `viz_viewport_fields` (`check_ok`). No `@gpu` | Open VC | **Real:** panel state machine + viewport field compose contract. **Placeholder:** `sim_viz_workload_class_stub`, no wgpu volume/field draw | WP-SCI-04; depends WP-GD-05 wgpu |
 | **li-sim-sensors** | partial stub | CPU: `sensor_bus_raycast_contract` | Open VC likely | **Real:** bounded hit distances + session persistence. **Placeholder:** analytic ray distances, not mesh/scene intersection | SIM-5 partial; no lidar mesh |
 | **li-sim-robotics** | partial | CPU: `tick_stub`, `workspace_bounds`, `robo_ik_6dof` | Open VC | **Real:** 2-DOF FK, 6-DOF numeric IK step, workspace checks. **Placeholder:** `sim_robotics_tick_at` wraps session + IK, not dynamics/collision | Not Gazebo/MoveIt; WP-ROBO-04/05 open |
@@ -191,12 +191,13 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 
 ### Phase 2 — Deepen simulation verticals (P1–P2) — **OPEN** (see [ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md))
 
-#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID)
+#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID) — **partial**
 
 - **Goal:** Replace `run_algo_registry_stub` for CFD/FEA/QM rows with real dispatch or tier-2 oracles.
 - **Scope:** `li-sim-scientific/src/lib.li`, `benchmarks/competitive/algo_registry.json`, `verticals.toml`.
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.
 - **Acceptance:** `run_algo_registry_tier2.li` extended; stub only for explicitly documented IDs.
+- **Status (2026-06-08):** QM (401–432), CFD (205–211), FEA (212–216) tier-2 oracles + dispatch landed; drug/bio/ml/am remain stub.
 - **Priority / effort:** P1 / L
 
 #### WP-SCI-04 — `sim.viz` → wgpu field draw (extends existing ID)

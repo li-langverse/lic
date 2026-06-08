@@ -191,10 +191,11 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 
 ### Phase 2 — Deepen simulation verticals (P1–P2) — **OPEN** (see [ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md))
 
-#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID)
+#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID) — **partial (2026-06-07)**
 
 - **Goal:** Replace `run_algo_registry_stub` for CFD/FEA/QM rows with real dispatch or tier-2 oracles.
 - **Scope:** `li-sim-scientific/src/lib.li`, `benchmarks/competitive/algo_registry.json`, `verticals.toml`.
+- **Status:** QM (`401–432` → `chem_dft_energy_kernel_hartree`), CFD (`205–210` → `1.0035` scaffold), FEA (`211–216` → bar displacement `2.0`) tier-2 dispatch landed; drug/bio/am/viz rows still stub. Full cavity SOR oracle deferred to WP-SCI-06.
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.
 - **Acceptance:** `run_algo_registry_tier2.li` extended; stub only for explicitly documented IDs.
 - **Priority / effort:** P1 / L

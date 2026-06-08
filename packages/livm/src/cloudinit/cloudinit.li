@@ -1,0 +1,30 @@
+# Cloud-init datasource stubs (Wave 2).
+# NoCloud for Linux guests; ConfigDrive for Windows on KVM workers.
+
+def cloudinit_datasource_nocloud() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def cloudinit_datasource_configdrive() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def cloudinit_datasource_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def cloudinit_probe_signal() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

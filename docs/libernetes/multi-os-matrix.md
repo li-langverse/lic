@@ -1,6 +1,6 @@
 # livm multi-OS matrix
 
-Support matrix for **livm** VM runtime backends. Wave 1 ships stubs and scheduling labels; full probes and launch paths follow in Wave 2.
+Support matrix for **livm** VM runtime backends. Wave 1 shipped stubs and scheduling labels; Wave 2 adds qcow2 disk, cloud-init, KVM probe, and Windows guest stubs.
 
 ## Backends
 
@@ -11,14 +11,23 @@ Support matrix for **livm** VM runtime backends. Wave 1 ships stubs and scheduli
 
 ## Host OS × architecture
 
-| Host OS | Arch | Hypervisor | Worker label | Wave 1 status |
+| Host OS | Arch | Hypervisor | Worker label | Wave 2 status |
 |---------|------|------------|--------------|-----------------|
-| Linux | amd64 | KVM | `libernetes.io/arch=amd64` | stub (`kvm_probe_signal` → 0) |
-| Linux | arm64 | KVM | `libernetes.io/arch=arm64` | stub |
+| Linux | amd64 | KVM | `libernetes.io/arch=amd64` | probe stub (`kvm_probe.li`) |
+| Linux | arm64 | KVM | `libernetes.io/arch=arm64` | probe stub |
 | LiOS | amd64 | native | `libernetes.io/os=lios` | planned |
 | LiOS | arm64 | native | `libernetes.io/os=lios` | planned |
 | macOS | arm64 | — | — | out of scope (Wave 3) |
-| Windows | amd64 | — | — | out of scope (Wave 3) |
+| Windows | amd64 | — | — | host out of scope (Wave 3) |
+
+## Guest OS (KVM workers)
+
+| Guest OS | Arch | Disk | Cloud-init module | Wave 2 status |
+|----------|------|------|-------------------|-----------------|
+| Linux | amd64, arm64 | qcow2 (`disk/qcow2.li`) | NoCloud (`cloudinit/cloudinit.li`) | stub |
+| Windows | amd64 | qcow2 | ConfigDrive | stub (Wave 2) |
+
+Windows guests run on Linux KVM workers via qcow2 backing images and ConfigDrive cloud-init; full launch paths follow in Wave 3.
 
 ## Scheduling
 
@@ -30,5 +39,6 @@ Support matrix for **livm** VM runtime backends. Wave 1 ships stubs and scheduli
 
 ```bash
 bash scripts/check-libernetes-livm-wave1-gate.sh
+bash scripts/check-libernetes-livm-wave2-gate.sh
 bash scripts/check-libernetes-livm-gate.sh
 ```

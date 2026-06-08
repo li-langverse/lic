@@ -1,0 +1,23 @@
+# QCOW2 disk image format stub (Wave 2).
+# Full image open/resize lands when li-kvm runtime seam is wired.
+
+def qcow2_magic() -> int
+  requires true
+  ensures result == 1363560955
+  decreases 0
+=
+  return 1363560955
+
+def qcow2_format_version() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def qcow2_probe_signal() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

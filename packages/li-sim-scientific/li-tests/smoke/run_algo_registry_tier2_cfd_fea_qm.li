@@ -1,0 +1,37 @@
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
+  var fea_oracle: float = sim_scientific_oracle_checksum_fea()
+  var qm_oracle: float = sim_scientific_oracle_checksum_qm()
+  var cfd206: SimRunResult = run_algo(algo_cfd_simple(), 1)
+  if run_result_ok(cfd206) != 1:
+    return 1
+  if cfd206.algo_id != 206:
+    return 2
+  if cfd206.checksum != cfd_oracle:
+    return 3
+  if cfd206.checksum == 1.001:
+    return 4
+  var fea214: SimRunResult = run_algo(algo_fea_linear_elasticity(), 0)
+  if run_result_ok(fea214) != 1:
+    return 5
+  if fea214.algo_id != 214:
+    return 6
+  if fea214.checksum != fea_oracle:
+    return 7
+  if fea214.checksum == 1.001:
+    return 8
+  var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  if run_result_ok(qm418) != 1:
+    return 9
+  if qm418.algo_id != 418:
+    return 10
+  if qm418.checksum != qm_oracle:
+    return 11
+  return 0

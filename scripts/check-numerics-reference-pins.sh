@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BACKLOG="$ROOT/docs/ecosystem/numerics-reference-backlog.md"
 PLAN="$ROOT/docs/superpowers/plans/2026-06-07-eigen-numerics-reference-policy.md"
+MATH_README="$ROOT/packages/li-math/README.md"
+MATH_PUBLISH="$ROOT/packages/li-math/PUBLISH.md"
 
 fail() { echo "check-numerics-reference-pins: $*" >&2; exit 1; }
 
@@ -16,5 +18,11 @@ done
 
 grep -qi 'hand-rolled\|cpp_handrolled' "$BACKLOG" \
   || fail "backlog must document hand-rolled cpp oracle honesty"
+
+for doc in "$MATH_README" "$MATH_PUBLISH"; do
+  test -f "$doc" || fail "missing $doc"
+  grep -qi 'numerics-reference-backlog' "$doc" \
+    || fail "$doc must cross-link numerics-reference-backlog"
+done
 
 echo "OK: numerics reference pins present in $BACKLOG"

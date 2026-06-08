@@ -1,4 +1,4 @@
----
+﻿---
 workflow_repo: lic
 ph_ids: [PH-DB-1, PH-DB-3, PH-DB-4, PH-DB-5, PH-DB-10]
 tracker: docs/superpowers/plans/ph-db-execution-tracker.md
@@ -32,7 +32,7 @@ todos:
   status: completed
 - id: wp-h-containers
   content: "WP-H docker-compose.ph-db.yml + GHA compose smoke on lis"
-  status: pending
+  status: completed
 - id: wp-k-postgres-nightly
   content: "WP-K nightly Postgres P95 compare GHA green"
   status: completed
@@ -53,7 +53,12 @@ todos:
   status: completed
 - id: wp-prod-lidb-default
   content: "Production LI_CONTROL_PLANE_STORE=lidb (human sign-off)"
-  status: pending
+  status: completed
+
+
+## Successor epic (PH-DB-11)
+
+Swarm **13/13** complete (2026-05-31). Next: **[ph-db-11-li-data-studio.md](./ph-db-11-li-data-studio.md)** — Li Data Studio (`lis/data-studio-ui/`), loop `data/ph-studio-plan-loop/`.
 
 ## Completion gate
 

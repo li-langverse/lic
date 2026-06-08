@@ -8,7 +8,7 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 
 HTTPD="${LI_HTTPD_BIN:-$ROOT/build/li-httpd}"
 HARNESS="$BENCHMARKS_ROOT/harness"
-export PYTHONPATH="$HARNESS:$ROOT/scripts${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$TIER5_PYTHONPATH"
 export LI_HTTPD_BIN="$HTTPD"
 export PATH="/usr/sbin:/usr/local/bin:${PATH:-}"
 
@@ -57,7 +57,7 @@ EXPLOIT_OUT="${HTTPD_REGRESSION_EXPLOIT_CSV:-$BENCHMARKS_RESULTS/tier5_exploit_r
 # Li-only exploits (RNG, leak censor, h2) run in check-tier5-exploit-runtime.sh; re-running
 # them in --compare-nginx re-binds the same pick_port() and flakes with "Address already in use".
 # slowloris: nginx legitimate_client_ok flakes on shared CI after half-open drain (li passes);
-# covered in check-tier5-exploit-runtime.sh — skip nginx↔li compare until benchmarks#276 lands.
+# covered in check-tier5-exploit-runtime.sh — skip nginx↔li compare until benchmarks#302 lands.
 HTTPD_TIER5_SKIP_NGINX_COMPARE="${HTTPD_TIER5_SKIP_NGINX_COMPARE:-slowloris}"
 mapfile -t COMPARE_EXPLOIT_IDS < <(
   python3 -c "

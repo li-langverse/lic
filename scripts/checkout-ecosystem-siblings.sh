@@ -8,7 +8,7 @@ LIT_ORG="${LIT_ORG:-li-langverse/lit}"
 BENCHMARKS_ORG="${BENCHMARKS_ORG:-li-langverse/benchmarks}"
 REF="${ECOSYSTEM_REF:-main}"
 # Until benchmarks#276 merges: tier-0 stability.py paths after repo split.
-# tier5 slowloris nginx flake: retry legitimate GET after attack (benchmarks e49c6c8).
+# server_config paths (benchmarks#288) + slowloris nginx flake retry (benchmarks#302).
 BENCHMARKS_REF="${BENCHMARKS_REF:-fix/tier5-slowloris-nginx-flake-retry}"
 
 clone_repo() {

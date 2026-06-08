@@ -1,0 +1,20 @@
+{
+  "competitor_id": "lammps",
+  "suite": "ph-sci-md-competitor-lammps",
+  "workload": "lj_chain_4atom_8step_drift",
+  "executed": false,
+  "cpu_sec": null,
+  "energy_drift_checksum": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
+  "device": "cpu",
+  "note": "lammps/lmp not in PATH \u2014 install LAMMPS for external oracle; see benchmarks/competitive/README-md-oracle.md",
+  "n_particles": 4,
+  "spacing": 1.12,
+  "dt": 0.004,
+  "steps": 8,
+  "rc": 2.5,
+  "generated_at": "2026-06-06T13:35:45Z",
+  "license": "GPL-2.0-only"
+}

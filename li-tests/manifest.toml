@@ -1647,6 +1647,12 @@ outcome = "compile_open_ok"
 note = "PH-SCI-GPU-02 @gpu MD/heat oracle"
 
 [[tests]]
+suite = "smoke"
+file = "packages/li-sim-scientific/li-tests/smoke/md_external_oracle_gate.li"
+outcome = "verify_ok"
+note = "md-r3-oracle-plan — algo 104 md_oracle_external; gate scripts/ph-sci-md-oracle-competitive-gates.sh"
+
+[[tests]]
 suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/physics_gpu_md_mini_step.li"
 outcome = "compile_open_ok"

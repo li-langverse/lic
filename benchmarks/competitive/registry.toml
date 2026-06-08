@@ -82,6 +82,16 @@ last_reviewed = "2026-05-16"
 notes = "Performance portability; watch Kokkos 4 OpenMP/SYCL backends."
 
 [[ecosystem]]
+id = "lammps"
+track = "watch"
+repo_url = "https://github.com/lammps/lammps"
+compare = ["md_lennard_jones"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-06"
+notes = "PH-SCI MD external oracle — benchmarks/competitive/ph-sci-md-oracle.toml; GPL user-installed; gate scripts/ph-sci-md-oracle-competitive-gates.sh"
+
+[[ecosystem]]
 id = "sycl_dpcpp"
 track = "watch"
 repo_url = "https://github.com/intel/llvm"

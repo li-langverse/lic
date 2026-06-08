@@ -35,8 +35,8 @@ todos:
   status: pending
 
 - id: sim-p1-md-neighbor-cell
-  content: "sim: pending plan todo sim-p1-md-neighbor-cell — gap orchestrator"
-  status: pending
+  content: "Implement algo_id=105 md_neighbor_cell_list cell-list forces + parity smoke"
+  status: completed
 
 - id: sim-p2-qm-dft-scf
   content: "sim: pending plan todo sim-p2-qm-dft-scf — gap orchestrator"

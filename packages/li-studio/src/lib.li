@@ -9457,11 +9457,11 @@ def studio_vertical_dod_sim_scientific_composable_ok() -> int raises IO
   ensures result <= 1
   decreases 0
 =
-  var md_oracle: float = sim_scientific_oracle_checksum_md()
+  var md_neighbor_oracle: float = sim_scientific_oracle_checksum_md_neighbor()
   var md105: SimRunResult = run_algo(105, 1)
   if run_result_ok(md105) != 1:
     return 0
-  if md105.checksum != md_oracle:
+  if md105.checksum != md_neighbor_oracle:
     return 0
   var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_scientific())
   var sess: SimSessionStub = sim_session_stub_default()

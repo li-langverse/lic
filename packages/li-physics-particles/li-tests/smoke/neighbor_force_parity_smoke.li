@@ -1,0 +1,16 @@
+# sim-p1-md-neighbor-cell: cell-list vs brute force parity @ N=16.
+import physics.particles
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if neighbor_particle_count() != 16:
+    return 1
+  if neighbor_force_parity_smoke() != 1:
+    return 2
+  var chk: float = neighbor_oracle_checksum()
+  if chk <= 0.0:
+    return 3
+  return 0

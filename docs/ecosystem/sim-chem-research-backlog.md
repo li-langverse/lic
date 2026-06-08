@@ -21,7 +21,7 @@ todos:
 
 - id: chem-r2-dft-scf-gap
   content: "sim-chem-research: pending plan todo chem-r2-dft-scf-gap — gap orchestrator"
-  status: pending
+  status: completed
   handoff_implement: sim-p2-qm-dft-scf
 
 - id: chem-r3-package-placement

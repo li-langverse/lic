@@ -538,6 +538,42 @@ GPU side (with numeric Phase 3):
 | `hostbuffer[T]` | Pinned/pageable host mirror |
 | `ndview[Shape, T]` | View with strides (non-contiguous) |
 
+#### Memory + execution spaces (#110 — spec-only, no codegen)
+
+Kokkos 4.6+ separates **where data lives** (`MemorySpace`) from **where work runs** (`ExecutionSpace`). Li tier-2 physics must match this before pure-Li kernels replace `shared_c_kernel` rows. Full rubric: [kokkos-memory-execution-spaces-rubric.md](../../hpc/kokkos-memory-execution-spaces-rubric.md). Layout / stride ABI: [#128](https://github.com/li-langverse/lic/issues/128).
+
+**`MemorySpace` enum** (static placement tag on buffers and views):
+
+| Variant | Buffer alias | Semantics |
+|---------|--------------|-----------|
+| `Host` | `hostbuffer[T]` | Authoritative for `@cpu` kernels |
+| `Device` | `devicebuffer[T]` | GPU-resident; sync before host read |
+| `Unified` | `unifiedbuffer[T]` (reserved) | Managed / HBW alias — document-only v1 |
+
+**`ExecutionSpace` enum** (where parallel work runs):
+
+| Variant | v1 status | Tier-2 default |
+|---------|-----------|----------------|
+| `Serial` | Spec + `@cpu` serial | Debug / oracle |
+| `OpenMP` | **Default** for `parallel for` | Yes |
+| `Threads` | Opt-in; OpenMP conflict documented | No |
+| `Cuda` / `HIP` / `SYCL` | Reserved (#116 offload) | N/A |
+
+**`View[T, Space, Layout]`** — non-owning slice over owning buffer in space `Space`:
+
+```text
+# Spec sketch (not parsed yet)
+var u: hostbuffer[f64, N * M]
+var v: View[f64, Host, layout_right] = u.view()
+```
+
+- Allocate, use, and destroy views in the **same** `MemorySpace` as the backing buffer unless `@sync_host` / `@sync_device` appears in the sync chain.
+- No implicit DualView — paired `hostbuffer` + `devicebuffer` require explicit sync at coupling boundaries.
+- Cross-space read without prior sync → **compile error** (E-mem-sync).
+- OpenMP vs Threads: default `ExecutionSpace.OpenMP`; see rubric for Trilinos #1391 hazard.
+
+Decorator lowering ([#15](https://github.com/li-langverse/lic/issues/15)) maps `@cpu` / `@gpu` / `@parallel` to execution-space + sync MIR tags (`mem_host`, `mem_sync_device`, `exec_omp`, etc.).
+
 ---
 
 ### Phase 4 — advanced & domain structures

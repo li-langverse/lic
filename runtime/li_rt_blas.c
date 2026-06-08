@@ -11,13 +11,13 @@
 enum CBLAS_ORDER { CblasRowMajor = 101, CblasColMajor = 102 };
 enum CBLAS_TRANSPOSE { CblasNoTrans = 111, CblasTrans = 112 };
 
-typedef void (*cblas_sgemm_fn)(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA,
+typedef void (*cblas_dgemm_fn)(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA,
                                enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-                               const float alpha, const float* A, const int lda, const float* B,
-                               const int ldb, const float beta, float* C, const int ldc);
+                               const double alpha, const double* A, const int lda, const double* B,
+                               const int ldb, const double beta, double* C, const int ldc);
 
 static void* g_openblas_lib;
-static cblas_sgemm_fn p_cblas_sgemm;
+static cblas_dgemm_fn p_cblas_dgemm;
 static int g_blas_init_done;
 static int g_blas_ready;
 
@@ -64,8 +64,8 @@ static void li_rt_blas_init_once(void) {
   if (g_openblas_lib == NULL) {
     return;
   }
-  p_cblas_sgemm = (cblas_sgemm_fn)li_rt_dlsym(g_openblas_lib, "cblas_sgemm");
-  if (p_cblas_sgemm != NULL) {
+  p_cblas_dgemm = (cblas_dgemm_fn)li_rt_dlsym(g_openblas_lib, "cblas_dgemm");
+  if (p_cblas_dgemm != NULL) {
     g_blas_ready = 1;
   }
 }
@@ -75,8 +75,8 @@ int32_t li_rt_blas_sgemm_ready(void) {
   return g_blas_ready ? 1 : 0;
 }
 
-int32_t li_rt_blas_sgemm_f32(int32_t m, int32_t n, int32_t k, int32_t ld, float* a, float* b,
-                             float* c) {
+int32_t li_rt_blas_sgemm_f32(int32_t m, int32_t n, int32_t k, int32_t ld, double* a, double* b,
+                             double* c) {
   if (a == NULL || b == NULL || c == NULL) {
     return 1;
   }
@@ -87,10 +87,10 @@ int32_t li_rt_blas_sgemm_f32(int32_t m, int32_t n, int32_t k, int32_t ld, float*
     return 1;
   }
   li_rt_blas_init_once();
-  if (!g_blas_ready || p_cblas_sgemm == NULL) {
+  if (!g_blas_ready || p_cblas_dgemm == NULL) {
     return 1;
   }
-  p_cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, (int)m, (int)n, (int)k, 1.0f, a, (int)ld,
-                b, (int)ld, 0.0f, c, (int)ld);
+  p_cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, (int)m, (int)n, (int)k, 1.0, a, (int)ld,
+                b, (int)ld, 0.0, c, (int)ld);
   return 0;
 }

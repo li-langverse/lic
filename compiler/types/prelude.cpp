@@ -46,7 +46,11 @@ bool is_reserved_decorator_name(const std::string_view name) {
 
 bool is_std_module_symbol(const std::string_view name) {
   // Sync with std/**/*.li top-level symbols (see scripts/gen-stdlib-manifest.sh).
-  return in_set(name, {"__execution_decorators_doc", "Bytes", "StringView", "Reader",
+  return in_set(name, {"__execution_decorators_doc", "__memory_spaces_doc", "View",
+                       "memory_space_host", "memory_space_device", "memory_space_unified",
+                       "execution_space_serial", "execution_space_openmp",
+                       "execution_space_threads", "view_space_host", "view_space_device",
+                       "default_execution_space_tier2", "Bytes", "StringView", "Reader",
                        "Writer", "bytes_len", "bytes_slice", "bytes_append", "bytes_byte_at",
                        "bytes_push_byte", "stringview_len", "stringview_byte_at", "reader_new",
                        "reader_remaining", "reader_read_byte", "reader_read_chunk", "writer_new",

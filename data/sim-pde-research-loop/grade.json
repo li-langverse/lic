@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-06-08T03:00:36Z",
+  "vertical": "pde",
+  "validity_ok": true,
+  "perf_ok": true,
+  "memory_ok": true,
+  "security_ok": true,
+  "security_note": "skip",
+  "stability_ok": true,
+  "size_scaling_ok": true,
+  "study_only": true,
+  "overall_ok": true,
+  "package": "li-sim-scientific",
+  "benches": "pde_heat_implicit_jacobi,heat_equation_2d",
+  "gate_log_tail": ""
+}

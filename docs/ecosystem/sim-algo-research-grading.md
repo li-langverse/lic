@@ -49,6 +49,7 @@ Each `docs/numerics/studies/YYYY-MM-DD-<slug>.md` must end with:
 | Vertical | Package | Benches / smokes |
 |----------|---------|------------------|
 | **md** | `li-sim-scientific` | `md_lennard_jones`, `heat_equation_2d`; `md_neighbor_cell_list` when present |
+| **pde** | `li-sim-scientific` | `pde_heat_implicit_jacobi`, `heat_equation_2d`; `pde_oracle_external` when present |
 | **chem** | composable + future `chem` | `import_chem_dft_smoke` when present; survey todos may pass on study-only |
 
 ---
@@ -56,7 +57,7 @@ Each `docs/numerics/studies/YYYY-MM-DD-<slug>.md` must end with:
 ## Enforcement
 
 ```bash
-SIM_RESEARCH_VERTICAL=md|chem ./scripts/sim-algo-research-gates.sh
+SIM_RESEARCH_VERTICAL=md|pde|chem ./scripts/sim-algo-research-gates.sh
 ```
 
 Writes `data/sim-<vertical>-research-loop/grade.json` for the live agents canvas.

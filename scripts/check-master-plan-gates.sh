@@ -47,6 +47,10 @@ fi
 li_phase "tier 0 bench"
 "$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 0 || fail "bench tier 0"
 
+li_phase "phase 2e exit gates (G-vc closed slice)"
+chmod +x "$ROOT/scripts/check-phase-2e-gates.sh"
+"$ROOT/scripts/check-phase-2e-gates.sh" || fail "phase 2e gates"
+
 li_phase "toolchain / doc / package smoke"
 chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/scripts/check-li-toolchain.sh" \
@@ -70,10 +74,9 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
 "$ROOT/scripts/check-li-toolchain.sh"
 "$ROOT/li-tests/tooling/li_new_package_smoke.sh"
 "$ROOT/li-tests/tooling/lip_lit_smoke.sh"
-"$ROOT/li-tests/tooling/vc_emit_contracts.sh"
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 "$ROOT/li-tests/tooling/discharge_sqrt_contract_lean.sh"
-"$ROOT/li-tests/tooling/contracts_discharge_corpus.sh"
+"$ROOT/li-tests/tooling/contracts_verify_lean.sh"
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
 
 li_phase "hpc competitive registry (optional advisory)"

@@ -16,7 +16,7 @@ todos:
   gap_orchestrator: true
 - id: gap-sim-sim-p2-qm-dft-scf
   content: "sim: pending plan todo sim-p2-qm-dft-scf"
-  status: pending
+  status: completed
   gap_orchestrator: true
 
 
@@ -40,7 +40,7 @@ todos:
 
 - id: sim-p2-qm-dft-scf
   content: "sim: pending plan todo sim-p2-qm-dft-scf — gap orchestrator"
-  status: pending
+  status: completed
 
 ---
 

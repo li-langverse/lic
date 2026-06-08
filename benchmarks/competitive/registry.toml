@@ -72,6 +72,16 @@ last_reviewed = "2026-05-16"
 notes = "HPC PGAS reference; manual release-note review quarterly."
 
 [[ecosystem]]
+id = "raja"
+track = "watch"
+repo_url = "https://github.com/LLNL/RAJA"
+compare = ["reduce_sum", "reduce_sum_parallel"]
+csv_lang = ""
+kernel_honesty = "n/a"
+last_reviewed = "2026-06-07"
+notes = "Policy-based loop abstractions; ICS 2025 portability rubric lic#109; doc-only parity for reduce_sum — no harness column yet."
+
+[[ecosystem]]
 id = "kokkos"
 track = "watch"
 repo_url = "https://github.com/kokkos/kokkos"
@@ -79,7 +89,7 @@ compare = ["md_lennard_jones", "heat_2d"]
 csv_lang = ""
 kernel_honesty = "n/a"
 last_reviewed = "2026-05-16"
-notes = "Performance portability; watch Kokkos 4 OpenMP/SYCL backends."
+notes = "Performance portability; watch Kokkos 4 OpenMP/SYCL backends; memory spaces lic#110."
 
 [[ecosystem]]
 id = "sycl_dpcpp"

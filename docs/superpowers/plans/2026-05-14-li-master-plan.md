@@ -340,7 +340,8 @@ See [local-ci-docker-images.md](../ecosystem/local-ci-docker-images.md).
 |-----|------|-----------|
 | **Doc-a** | **Gap register** — keep `provability-gaps.md` current; link from index, overview, master plan, mkdocs, [plan-cross-links](../ecosystem/plan-cross-links.md) | Register lists every open **G-*** row; last-updated date |
 | **Doc-b** | **Handbook audit** — every `docs/language/*`, `docs/guide/*`, `docs/compiler/*` uses *target vs today* where spec ≠ `lic` | No page implies Lean runs on `lic build` without a status note |
-| **Doc-c** | **Spec stubs** — decorator, math, language design cross-link gaps | `2026-05-16-li-execution-decorators.md`, `2026-05-16-li-math-linalg-surface.md` point at **G-*** |
+| **Doc-c₁** | **Phase exit gates** — plans 02 / 03 / 07 cite **G-*** at exit criteria | Each plan’s exit gate lists open gap IDs (or N/A rationale); tracked in [#31](https://github.com/li-langverse/lic/issues/31) |
+| **Doc-c₂** | **Spec stubs** — decorator, math, language design cross-link gaps | `2026-05-16-li-execution-decorators.md`, `2026-05-16-li-math-linalg-surface.md`, [language design spec](../specs/2026-05-14-li-language-design.md) point at **G-*** |
 | **Doc-d** | **Contributing rule** — [documentation style](../contributing/documentation.md) § Provability | PR template / agent skill: “updated gap register?” |
 | **Doc-e** | **CI doc check** (optional) — `scripts/check-doc-provability-claims.sh` greps for forbidden phrases without nearby “gap” link | Fails on `proofs closed` without `provability-gaps` in changed docs |
 
@@ -384,7 +385,8 @@ Track in phase **Doc** until each is checked:
 - [x] **Doc-a** — gap register complete and linked site-wide (mkdocs nav; README audit ongoing)  
 - [x] **Doc-b** — [linear-algebra.md](../language/linear-algebra.md) stub + [decorators.md](../language/decorators.md); fast-math guide audit partial  
 - [x] **Doc-b** — [language design spec](../specs/2026-05-14-li-language-design.md) banner: “implementation status → provability-gaps”  
-- [x] **Doc-c** — phase plan files (02, 03, 07) link **G-*** in exit gates  
+- [x] **Doc-c₁** — phase plan files (02, 03, 07) link **G-*** in exit gates ([#31](https://github.com/li-langverse/lic/issues/31))  
+- [x] **Doc-c₂** — decorator + math spec stubs and language design banner cite **G-*** ([execution-decorators](../specs/2026-05-16-li-execution-decorators.md), [math-linalg](../specs/2026-05-16-li-math-linalg-surface.md))  
 - [x] **Doc-d** — `.cursor/skills/build-li-master-plan/SKILL.md` includes gap-register update step  
 - [x] **Doc-e** — `check-doc-provability-claims.sh` in `scripts/ci.sh`  
 
@@ -470,7 +472,8 @@ Track in phase **Doc** until each is checked:
 - [ ] Phase 8p — Parallel compile + CI throughput — **partial (8p-a/b/c/d):** 8p-a parallel `run_all` + isolated `LI_BUILD_DIR` ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200)); 8p-c/d `ResourceOptions` + `lic build --jobs` reserved pass + CI test-job smokes (`compiler/common/`, `scripts/ci.sh`); **open:** 8p-b workspace pool, wall-time SLO ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
-- [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
+- [x] Phase Doc-c₁ — Phase 02 / 03 / 07 plans link **G-*** IDs in exit gates ([#31](https://github.com/li-langverse/lic/issues/31), [#29](https://github.com/li-langverse/lic/issues/29))
+- [x] Phase Doc-c₂ — Spec stubs (decorators, math, language design) cite **G-***
 - [x] Phase Doc-d — Contributing / build skill requires gap-register updates
 - [x] Phase Doc-e — `scripts/check-doc-provability-claims.sh` in `scripts/ci.sh` (expand patterns over time)
 - [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../ecosystem/agent-handover-formats.md))

@@ -47,6 +47,15 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
 
+## Doc-c tracker (PH-Doc-c)
+
+Master plan **Doc-c** is split so plan-verifier and agents do not conflate spec stubs with phase exit gates ([#29](https://github.com/li-langverse/lic/issues/29)):
+
+| Sub | Scope | Evidence |
+|-----|-------|----------|
+| **Doc-c₁** | Phase plans **02 / 03 / 07** — **G-*** at exit gates | [phase-02](../superpowers/plans/2026-05-14-phase-02-typechecker.md) · [phase-03](../superpowers/plans/2026-05-14-phase-03-mir-codegen.md) · [phase-07](../superpowers/plans/2026-05-14-phase-07-native-hpc.md) |
+| **Doc-c₂** | Spec stubs cite **G-*** | [execution-decorators](../superpowers/specs/2026-05-16-li-execution-decorators.md) · [math-linalg](../superpowers/specs/2026-05-16-li-math-linalg-surface.md) · [language design](../superpowers/specs/2026-05-14-li-language-design.md) |
+
 ## Open master-plan tracker rows (2026-05-30)
 
 Preflight: `benchmarks/data/latest/ecosystem-audit.json` · `plan_completion_audit.summary.open_tracker_items: 5`. Do not mark **Done** without cited evidence.

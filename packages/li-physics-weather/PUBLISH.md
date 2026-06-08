@@ -1,11 +1,11 @@
-# Publish metadata — PKG-li-std-physics-weather
+# Publish metadata — PKG-li-physics-weather
 
 | Field | Value |
 |-------|--------|
-| **PKG id** | `PKG-li-std-physics-weather` |
-| **Registry name** | `li-std-physics-weather` (lip, phase 8d) |
+| **PKG id** | `PKG-li-physics-weather` |
+| **Registry name** | `li-physics-weather` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-std-physics-weather |
+| **Repository** | https://github.com/li-langverse/li-physics-weather |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)

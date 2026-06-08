@@ -4,4 +4,4 @@
 suite = "smoke"
 file = "smoke/builds.li"
 outcome = "verify_ok"
-note = "T-PKG-li-std-physics-rigid-smoke"
+note = "T-PKG-li-physics-rigid-smoke"

@@ -1,6 +1,6 @@
-# li-std-physics-core
+# li-physics-core
 
-Li package li-std-physics-core
+Li package li-physics-core
 
 ## Scalar precision (per simulation, not org-wide)
 
@@ -16,7 +16,7 @@ Presets: `precision_default()`, `precision_float32()`, `precision_quantized_fp8(
 ## Build
 
 ```bash
-lic build src/lib.li -o li-std-physics-core
+lic build src/lib.li -o li-physics-core
 ```
 
 From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
@@ -25,8 +25,8 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 
 | ID | Link |
 |----|------|
-| Package | `PKG-li-std-physics-core` |
-| Org repo | https://github.com/li-langverse/li-std-physics-core |
+| Package | `PKG-li-physics-core` |
+| Org repo | https://github.com/li-langverse/li-physics-core |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
 
 See `PUBLISH.md` and `docs/traceability.md`.

@@ -398,6 +398,8 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   const std::size_t mir_vectorized_proc = li::count_mir_vectorized_proc(mir);
   const std::size_t mir_gpu_def = li::count_mir_gpu_def(mir);
   const std::size_t mir_gpu_multi_device_def = li::count_mir_gpu_multi_device_def(mir);
+  const std::size_t mir_executor_def = li::count_mir_executor_def(mir);
+  const std::size_t mir_executor_physics_def = li::count_mir_executor_physics_def(mir);
   std::cout << "verify: procs=" << vc.proc_count << " mir_fns=" << vc.mir_fn_count
             << " requires=" << vc.requires_count << " ensures=" << vc.ensures_count
             << " prob_ensures=" << vc.prob_ensures_count
@@ -407,7 +409,9 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
             << " mir_parallel_disjoint=" << mir_parallel_disjoint
             << " mir_vectorized_proc=" << mir_vectorized_proc
             << " mir_gpu_def=" << mir_gpu_def
-            << " mir_gpu_multi_device_def=" << mir_gpu_multi_device_def << '\n';
+            << " mir_gpu_multi_device_def=" << mir_gpu_multi_device_def
+            << " mir_executor_def=" << mir_executor_def
+            << " mir_executor_physics_def=" << mir_executor_physics_def << '\n';
   if (li::terminal_color_enabled()) {
     std::cout << li::styled_success("verify") << li::styled_dim(" telemetry") << li::reset_style()
               << '\n';

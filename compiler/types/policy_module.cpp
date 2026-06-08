@@ -259,6 +259,37 @@ void check_gpu_decorator(const Decorator& d, const std::string& file, Diagnostic
   }
 }
 
+bool executor_pool_ok(const std::string& pool) {
+  return pool == "physics" || pool == "io" || pool == "default";
+}
+
+void check_executor_decorator(const Decorator& d, const std::string& file, DiagnosticBag& diags) {
+  if (d.name != "executor") {
+    return;
+  }
+  bool saw_pool = false;
+  for (const auto& arg : d.args) {
+    if (arg.name == "pool") {
+      saw_pool = true;
+      if (!arg.value || arg.value->kind != Expr::Kind::Ident ||
+          !executor_pool_ok(arg.value->ident)) {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                   "executor decorator: `pool=` must be `physics`, `io`, or `default`.",
+                   "Use `@executor(pool=physics)` with a closed-table pool name.");
+      }
+      continue;
+    }
+    diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+               "executor decorator: unsupported argument `" + arg.name + "`.",
+               "Use only `@executor(pool=physics|io|default)`.");
+  }
+  if (!saw_pool) {
+    diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+               "executor decorator: requires `pool=` binding.",
+               "Use `@executor(pool=physics)` for tier-2 game physics work-stealing pools.");
+  }
+}
+
 void check_stmt_decorators(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
   for (const auto& d : stmt.decorators) {
     check_gpu_decorator(d, file, diags);
@@ -391,6 +422,7 @@ void walk_stmts(const std::vector<Stmt>& stmts, const std::vector<std::string>& 
 void check_proc_decorators(const std::vector<Decorator>& decos, const std::string& file,
                            DiagnosticBag& diags) {
   for (const auto& d : decos) {
+    check_executor_decorator(d, file, diags);
     check_gpu_decorator(d, file, diags);
     check_offload_decorator(d, file, diags);
     if (d.name == "parallel") {

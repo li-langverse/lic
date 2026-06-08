@@ -1,7 +1,20 @@
 # Proof corpus and verification roadmap
 
 **Audience:** agents extending **2e/2f**, reviewers judging “is `lic build` a proof certificate?”  
-**Related:** [Provability gaps](provability-gaps.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
+**Related:** [Provability gaps](provability-gaps.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md) · [Phase 2e exit gates](../superpowers/plans/2026-05-14-phase-02e-contracts-vc.md)
+
+## Phase 2e exit gate (partial)
+
+Green **`./scripts/check-phase-2e-exit-gates.sh`** on every PR that touches VC emit or witnesses:
+
+| Script | Role |
+|--------|------|
+| `vc_emit_contracts.sh` | Typed `AutoVC.lean` (no bare `True` on contract specimens) |
+| `mir_vc_witness.sh` | `lic verify` → `witnessed_ensures=` + `mir_return_linked=` |
+| `contracts_discharge_corpus.sh` | Closed discharge slices + `check-autovc-open-goals.sh` |
+| `compiler/verify/vc_witness.cpp` | MIR return-shape witnesses (implementation anchor) |
+
+**G-vc** remains **Partial** until opaque returns and **P-ensures-witness** close — see [phase 2e plan § full gate](../superpowers/plans/2026-05-14-phase-02e-contracts-vc.md#phase-2e-exit-gate-full--future-g-vc--done).
 
 ## What “testing proofs” means in this repo
 

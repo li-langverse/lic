@@ -112,6 +112,13 @@ li_phase "doc provability claims"
 chmod +x "$ROOT/scripts/check-doc-provability-claims.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
 
+li_phase "Phase 2e exit gates (G-vc partial)"
+chmod +x "$ROOT/scripts/check-phase-2e-exit-gates.sh" \
+  "$ROOT/li-tests/tooling/vc_emit_contracts.sh" \
+  "$ROOT/li-tests/tooling/mir_vc_witness.sh" \
+  "$ROOT/li-tests/tooling/contracts_discharge_corpus.sh"
+"$ROOT/scripts/check-phase-2e-exit-gates.sh"
+
 li_phase "lic verify smoke (2e/2f)"
 chmod +x "$ROOT/scripts/lean-verify-stub.sh" "$ROOT/li-tests/tooling/lic_verify_smoke.sh" \
   "$ROOT/li-tests/tooling/vc_emit_contracts.sh" "$ROOT/li-tests/tooling/contracts_verify_lean.sh"

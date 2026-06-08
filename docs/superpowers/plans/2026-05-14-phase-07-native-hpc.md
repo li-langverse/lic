@@ -90,3 +90,26 @@
 - [x] `./li-tests/run_all.sh math_linalg`
 - [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`)
 - [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard)
+
+### Phase 7e Done criteria — SIMD / blocked GEMM (PH-7e · G-math)
+
+**Tracker flip:** master-plan `- [ ] Phase 7e` may become `- [x]` only when **every** box below is checked **or** an open row has an explicit deferral with superseding PH-ID in this table (not silent omission).
+
+| # | Slice | Done when | Harness / test |
+|---|-------|-----------|----------------|
+| 1 | **1d dot** (`ArrayDotF64`) | 4-wide gather SIMD in `emit.cpp`; pure-Li `simd_dot` driver has zero `__li_simd_*` | `benchmarks/tier1_micro/simd_dot/li/main.li`, `li-tests/math_linalg/` |
+| 2 | **Element-wise** (`ArrayBinOpF64`) | `+ - * /` on `array[N, float]` uses same gather/scatter SIMD path | `li-tests/math_linalg/scalar_elementwise/`, `docs/language/linear-algebra.md` |
+| 3 | **Naive 2d `@`** (`ArrayMatMul2DF64`) | IKJ loop + `llvm.fmuladd` inner `j`; `--numerically-stable` disables FMA | `li-tests/tooling/matmul_loop_codegen_witness_gap.sh`, `li-tests/math_linalg/matmul_25x25_at_codegen.li` |
+| 4 | **Blocked 2d `@`** (`ArrayMatMulBlocked2DF64`) | 512³ `@` routes to cache-blocked IKJ (`BK=64`); `emit_matmul2d_blocked_ijk` | `compiler/mir/lower.cpp` (`ArrayMatMulBlocked2DF64`), study [matmul-blocked-7e](../../numerics/studies/2026-05-30-matmul-blocked-7e.md) |
+| 5 | **Tier-1 `matmul_naive`** | `ratio_vs_cpp` ≤1.2 advisory on refreshed CSV | `python3 benchmarks/harness/bench.py --tier 1 --only matmul_naive`, `scripts/check-tier1-li-vs-cpp.sh` |
+| 6 | **Tier-1 `matmul_blocked`** | `ratio_vs_cpp` ≤1.2 advisory on refreshed CSV | `python3 benchmarks/harness/bench.py --tier 1 --only matmul_blocked`, `scripts/check-tier1-li-vs-cpp.sh` |
+| 7 | **Tier-1 `horner_pure_li`** | FMA Horner unroll honors `fp_numerically_stable`; ≤1.2 advisory | `li-tests/tooling/horner_fma_numerically_stable_gap.sh`, `li-tests/math_linalg/horner_fma_codegen_probe.li` |
+| 8 | **Strict gate (optional)** | `LI_TIER1_PERF_STRICT=1 ./scripts/check-tier1-li-vs-cpp.sh` exits 0 | `scripts/check-master-plan-gates.sh` advisory path |
+
+**Deferred (do not block 7e tracker flip alone):**
+
+| Slice | Superseding PH-ID | Rationale |
+|-------|-------------------|-----------|
+| Full float `@` Lean Props (general N×M) | **PH-2f** / **G-lean** | Closed 2×2 float `@` (`mat2_at2_float_spec`) done; general matmul Props tracked in [proof-corpus-roadmap](../../verification/proof-corpus-roadmap.md) |
+| `@parallel` outer tiling on `matmul_blocked` driver | **PH-7d** / **G-par** | Math surface lowering (7e) separate from structured `disjoint=` proofs |
+| `num_gmres` tier-1 ratio | **PH-5b** / **G-math** | Krylov micro-kernel; shared-C wrapper overhead — [PH-7e tier-1 honesty](2026-05-30-ph7e-tier1-red-benchmark-honesty.md) sub-phase E |

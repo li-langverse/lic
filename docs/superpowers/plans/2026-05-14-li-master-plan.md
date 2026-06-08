@@ -369,7 +369,7 @@ Maps **master plan phases** to gap IDs and what “mathematical provability esta
 | 7d-a | Decorator parse | **G-dec** | (partial) parse only — mark **Partial** | decorators spec |
 | 7d-b–e | Decorator elaborate + exploits | **G-dec** | Elaboration + `decorator_exploits` CI green | language/decorators.md (new), fast-math guide |
 | 2i | Math surface types | **G-math** | `A @ B` / `dot` shape errors at typecheck; **P-linalg** closed VCs (#151) | linear-algebra.md, math spec, `contracts_verify/linalg_*` |
-| 7e | Math → SIMD MIR | **G-math** | Tier 1 Li sources math-only; lowering proved or documented | gaps, benchmarks plan, `discharge_linalg_int_lean.sh` |
+| 7e | Math → SIMD MIR | **G-math** | All [phase-07 §7e Done criteria](2026-05-14-phase-07-native-hpc.md#phase-7e-done-criteria--simd--blocked-gemm-ph-7e--g-math) checked (SIMD dot/binop, naive+blocked `@` codegen, tier-1 `simd_dot`/`matmul_*`/`horner_pure_li` ≤1.2× advisory) or explicitly deferred with superseding PH-ID | gaps, phase-07 plan, `check-tier1-li-vs-cpp.sh`, `matmul_loop_codegen_witness_gap.sh` |
 | 2f | P-linalg corpus | **G-lean**, **G-math** | Closed dot/sum/matmul-entry; loop dot open | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
 | 2g / 2h | `def`, math syntax | — | Syntax only unless tied to VC | language overview |
 | 4 | Deferred annotations | **G-ann** | PEP 649 resolve at check time | architecture diagram |
@@ -455,7 +455,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155):** default `lake build AutoVC` on `lic build`; **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; intentional open: `sqrt_open_bound`; **G-lean** / **G-vc** still open — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (#150 7d-c):** `@vectorized` on `for` → `ArraySimdScope`; **7d-b** lanes=4; **def `@parallel(disjoint=)`** inherits to nested `parallel for` (policy); **open:** full MIR proc tags, Lean **G-par** proofs
-- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150, #155):** loop matmul + FMA horner; tier-1 advisory ≤1.2× (`matmul_naive`, `horner_pure_li`); **`check-tier1-li-vs-cpp.sh`** strict optional; **open:** remaining tier-1 slices, full float Lean Props
+- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150, #155, #27):** `ArrayDotF64`/`ArrayBinOpF64` SIMD done; `ArrayMatMul2DF64` + `ArrayMatMulBlocked2DF64` codegen partial; **flip `- [ ]` → `- [x]` when** [phase-07 §7e Done criteria](2026-05-14-phase-07-native-hpc.md#phase-7e-done-criteria--simd--blocked-gemm-ph-7e--g-math) rows 1–8 all checked (tier-1 `matmul_naive`/`matmul_blocked`/`horner_pure_li` ≤1.2× advisory); **deferred:** general float `@` Lean Props → **PH-2f**
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, validate/explain/flatten-config, overlap reject, Bearer auth (C), `packages/li-log` (#158); **next:** Li `net.httpd` lib build + M1 ship gate Lean ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
@@ -500,7 +500,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | v2 item | Gap ID(s) | Why still open |
 |---------|-----------|----------------|
 | **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
-| **2i / 7e** | **G-math** | broadcast, loop-dot proof, remaining tier-1 strict rows |
+| **2i / 7e** | **G-math** | broadcast, loop-dot proof; tier-1 `matmul_blocked`/`horner_pure_li` advisory gaps — see [phase-07 §7e Done criteria](2026-05-14-phase-07-native-hpc.md#phase-7e-done-criteria--simd--blocked-gemm-ph-7e--g-math) |
 | **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |

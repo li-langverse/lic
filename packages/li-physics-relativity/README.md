@@ -1,11 +1,11 @@
-# li-std-physics-relativity
+# li-physics-relativity
 
-Li package li-std-physics-relativity
+Li package li-physics-relativity
 
 ## Build
 
 ```bash
-lic build src/lib.li -o li-std-physics-relativity
+lic build src/lib.li -o li-physics-relativity
 ```
 
 From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
@@ -14,8 +14,8 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 
 | ID | Link |
 |----|------|
-| Package | `PKG-li-std-physics-relativity` |
-| Org repo | https://github.com/li-langverse/li-std-physics-relativity |
+| Package | `PKG-li-physics-relativity` |
+| Org repo | https://github.com/li-langverse/li-physics-relativity |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
 
 See `PUBLISH.md` and `docs/traceability.md`.

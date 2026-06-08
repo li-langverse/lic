@@ -4,7 +4,7 @@
 suite = "smoke"
 file = "smoke/builds.li"
 outcome = "verify_ok"
-note = "T-PKG-li-std-physics-em-smoke"
+note = "T-PKG-li-physics-em-smoke"
 
 [[tests]]
 suite = "smoke"

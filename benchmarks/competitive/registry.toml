@@ -6,7 +6,7 @@
 [meta]
 version = 1
 registry_review_days_warn = 90
-updated = "2026-05-16"
+updated = "2026-06-06"
 
 # track: watch | bench_tier0 | bench_tier1 | bench_tier2 | execution_resource_sweep
 # csv_lang: column in benchmarks/results/latest.csv (must match bench.py LANGS when bench_*)
@@ -120,6 +120,26 @@ csv_lang = ""
 kernel_honesty = "n/a"
 last_reviewed = "2026-05-16"
 notes = "Tier-0 stability + race rejects gate CI; not wall-time competitive."
+
+[[ecosystem]]
+id = "lammps_lj_micro"
+track = "watch"
+repo_url = "https://github.com/lammps/lammps"
+compare = ["md_lennard_jones", "md_oracle_external"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-06"
+notes = "Layer B MD oracle — md_oracle.toml; validity column (energy drift); stub until B1 deck."
+
+[[ecosystem]]
+id = "gromacs_lj_micro"
+track = "watch"
+repo_url = "https://gitlab.com/gromacs/gromacs"
+compare = ["md_lennard_jones", "md_oracle_external"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-06"
+notes = "Layer B MD oracle — md_oracle.toml; gmx mdrun micro stub until B2."
 
 [[ecosystem]]
 id = "sb3_vecenv"

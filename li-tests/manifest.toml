@@ -869,6 +869,13 @@ outcome = "compile_open_ok"
 note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via physics.rigid import"
 
 [[tests]]
+suite = "smoke"
+file = "packages/li-sim-scientific/li-tests/smoke/md_external_oracle_bench.li"
+packages = ["li-sim-scientific", "li-sim"]
+outcome = "verify_ok"
+note = "md-r3-oracle-plan algo 104 md_oracle_external — driver benchmarks/harness/md_external_oracle.py"
+
+[[tests]]
 suite = "composable"
 file = "composable/import_studio_sim_profile_bridge.li"
 packages = ["li-sim", "li-studio", "li-gui", "li-ui"]

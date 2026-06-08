@@ -58,14 +58,15 @@ def li_array_matmul_f32(a, af, b, bf, c) -> int  # delegates ml_tensor_matmul_64
 
 ## Path to BLAS parity
 
-| Phase | Work | Bench |
-|-------|------|-------|
-| A (this PR) | `ArrayDesc`, broadcast guards, 4×4 matmul via `li-ml` | `ph-ml-li-array-matmul.json` |
-| B | Dynamic M/N/K tile loops, stride views | extend competitive row |
-| C | `@vectorized` blocked matmul on flat storage | tier-1 `matmul_blocked` |
-| D | LKIR/GPU tile dispatch from `ArrayDesc` | lig parity gate |
-| E | Batch matmul API (explicit leading dim) | transformer forward |
-| F | BLAS/OpenBLAS backend hook | numpy parity row |
+| Phase | Work | Bench | Status |
+|-------|------|-------|--------|
+| A | `ArrayDesc`, broadcast guards, 4×4 matmul via `li-ml` | `ph-ml-li-array-matmul.json` | **done** |
+| B | Dynamic M/N/K tile loops, stride views | extend competitive row | **done** |
+| C | `@vectorized` blocked matmul on flat storage | tier-1 `matmul_blocked` | **done** |
+| D | LKIR/GPU tile dispatch from `ArrayDesc` | lig parity gate | **done** |
+| E | Batch matmul API (explicit leading dim) | transformer forward | **done** |
+| F | BLAS/OpenBLAS reference + run-only 32×32 bench | `ph-ml-li-array-matmul-32.json` `ratio_vs_li` | **done** — see [li-array-perf-gemv-gemm.md](li-array-perf-gemv-gemm.md) |
+| G | Blocked CPU GEMM, 50-run mean, drop LKIR from 32×32 hot path | `ph-ml-li-array-perf-gates.sh` | **done** — `li_over_numpy` 16386→710 (23×) |
 
 Run-only timing: bench scripts record `cpu_sec` on binary execution only; `build_cpu_sec` is separate (already in `bench-ph-ml-lkir-matmul.sh`).
 

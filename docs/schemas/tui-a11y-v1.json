@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://li-langverse.github.io/schemas/tui-a11y-v1.json",
+  "title": "Li TUI accessibility audit envelope (v1)",
+  "description": "Machine-readable output from li-cursor-agents ux-harness run_audit.py for TUI targets (ui and ux modes).",
+  "type": "object",
+  "required": ["generated_at", "platform", "summary", "targets"],
+  "additionalProperties": false,
+  "properties": {
+    "generated_at": { "type": "string", "format": "date-time" },
+    "platform": { "type": "string" },
+    "summary": { "$ref": "#/$defs/summary" },
+    "targets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/target" }
+    }
+  },
+  "$defs": {
+    "summary": {
+      "type": "object",
+      "required": ["total", "failing", "passing", "skipped"],
+      "additionalProperties": false,
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "failing": { "type": "integer", "minimum": 0 },
+        "passing": { "type": "integer", "minimum": 0 },
+        "skipped": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "target": {
+      "type": "object",
+      "required": ["target_id", "repo", "surface", "surface_class", "status"],
+      "additionalProperties": true,
+      "properties": {
+        "target_id": { "type": "string" },
+        "repo": { "type": "string" },
+        "surface": { "const": "tui" },
+        "surface_class": { "type": "string", "enum": ["tui_app", "tui_gen"] },
+        "status": { "type": "string", "enum": ["pass", "fail", "skip"] },
+        "mode": { "type": "string", "enum": ["fixture"] },
+        "artifacts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Paths to frame.txt, a11y-plain.txt, journey-log.json when present."
+        },
+        "fixture_exit_code": { "type": "integer" },
+        "timeout": { "type": "boolean" },
+        "stdout": { "type": "string" },
+        "stderr": { "type": "string" },
+        "journeys": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/journey" }
+        },
+        "friction_points": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "rubric_scores": { "$ref": "#/$defs/rubric_scores" },
+        "rubric_threshold": { "type": "number" },
+        "rubric_min": { "type": "number" },
+        "missing_states": { "type": "array", "items": { "type": "string" } },
+        "skip_reason": { "type": "string" }
+      }
+    },
+    "journey": {
+      "type": "object",
+      "required": ["id", "steps", "completed", "step_count"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "steps": { "type": "array", "items": { "type": "string" } },
+        "step_trace": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["step", "status"],
+            "properties": {
+              "step": { "type": "string" },
+              "status": { "type": "string", "enum": ["pass", "fail"] }
+            }
+          }
+        },
+        "completed": { "type": "boolean" },
+        "step_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "rubric_scores": {
+      "type": "object",
+      "properties": {
+        "nav_clarity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "task_efficiency": { "type": "number", "minimum": 0, "maximum": 1 },
+        "empty_states": { "type": "number", "minimum": 0, "maximum": 1 },
+        "error_handling": { "type": "number", "minimum": 0, "maximum": 1 },
+        "cognitive_load": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    }
+  }
+}

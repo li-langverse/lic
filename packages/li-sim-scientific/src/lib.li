@@ -3,13 +3,14 @@ import sim
 import chem
 import physics.particles
 import physics.rigid
+import physics.fluids
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -207,6 +208,98 @@ def sim_scientific_oracle_checksum_heat() -> float
     heat_oracle_stencil_step(u, v, r)
     step = step + 1
   return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
+
+# WP-SCI-03 — tier-2 Li oracle: Euler scalar advection (8-cell field, 32 steps).
+def sim_scientific_oracle_checksum_cfd() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var field: array[8, float]
+  var vx: array[8, float]
+  var dt: float = 0.01
+  var dx: float = 0.125
+  field[0] = 0.0
+  field[1] = 0.25
+  field[2] = 0.5
+  field[3] = 0.75
+  field[4] = 1.0
+  field[5] = 0.75
+  field[6] = 0.5
+  field[7] = 0.25
+  vx[0] = 0.0
+  vx[1] = 0.1
+  vx[2] = 0.2
+  vx[3] = 0.15
+  vx[4] = 0.05
+  vx[5] = -0.05
+  vx[6] = -0.1
+  vx[7] = 0.0
+  var step: int = 0
+  while step < 32
+    euler_advect_scalar(field, vx, dt, dx)
+    step = step + 1
+  return field[0] + field[1] + field[2] + field[3] + field[4] + field[5] + field[6] + field[7]
+
+# WP-SCI-03 — tier-2 Li oracle: PBD distance constraints on 4-node chain (24 iterations).
+def fea_oracle_chain_length(px: array[4, float], py: array[4, float]) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var dx0: float = px[1] - px[0]
+  var dy0: float = py[1] - py[0]
+  var dx1: float = px[2] - px[1]
+  var dy1: float = py[2] - py[1]
+  var dx2: float = px[3] - px[2]
+  var dy2: float = py[3] - py[2]
+  var len0: float = dx0 * dx0 + dy0 * dy0
+  var len1: float = dx1 * dx1 + dy1 * dy1
+  var len2: float = dx2 * dx2 + dy2 * dy2
+  return len0 + len1 + len2
+
+def sim_scientific_oracle_checksum_fea() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var px: array[4, float]
+  var py: array[4, float]
+  px[0] = 0.0
+  py[0] = 0.0
+  px[1] = 1.2
+  py[1] = 0.0
+  px[2] = 2.35
+  py[2] = 0.0
+  px[3] = 3.55
+  py[3] = 0.0
+  var rest: float = 1.0
+  var stiffness: float = 0.85
+  var step: int = 0
+  while step < 24
+    cloth_pbd_distance(px, py, 0, 1, rest, stiffness)
+    cloth_pbd_distance(px, py, 1, 2, rest, stiffness)
+    cloth_pbd_distance(px, py, 2, 3, rest, stiffness)
+    step = step + 1
+  return fea_oracle_chain_length(px, py)
+
+# WP-SCI-03 — tier-2 Li oracle: STO-3G SCF energy convergence drift (8 iterations).
+def sim_scientific_oracle_checksum_qm() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var e0: float = chem_dft_energy_kernel_hartree()
+  var e1: float = chem_dft_scf_iteration_scaffold(8)
+  var denom: float = e0
+  if e1 < denom:
+    denom = e1
+  if denom > -1.0e-12:
+    denom = -1.0e-12
+  var diff: float = e1 - e0
+  if diff < 0.0:
+    diff = -diff
+  return diff / -denom
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int
@@ -650,7 +743,7 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
   requires algo_id >= 201
-  requires algo_id <= 216
+  requires algo_id <= 204
   ensures result.ok == 1
   ensures result.algo_id == algo_id
   ensures result.detail_emitted == detail
@@ -661,6 +754,63 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.ok = 1
   r.algo_id = algo_id
   r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_cfd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 205
+  requires algo_id <= 211
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_cfd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 212
+  requires algo_id <= 216
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_fea()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 401
+  requires algo_id <= 432
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
   r.checksum = chk
   r.detail_emitted = detail
   return r
@@ -731,9 +881,24 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
       var d0: int = detail
       return run_md_tier2_registry(algo_id, d0)
   if algo_id >= 201:
-    if algo_id <= 216:
+    if algo_id <= 204:
       var d1: int = detail
       return run_heat_tier2_registry(algo_id, d1)
+  if algo_id >= 205:
+    if algo_id <= 211:
+      var d_cfd: int = detail
+      return run_cfd_tier2_registry(algo_id, d_cfd)
+  if algo_id >= 212:
+    if algo_id <= 216:
+      var d_fea: int = detail
+      return run_fea_tier2_registry(algo_id, d_fea)
+  if algo_id >= 401:
+    if algo_id <= 432:
+      if algo_id == algo_qm_dft_scf_energy():
+        var d_qm_stub: int = detail
+        return run_algo_registry_stub(algo_id, d_qm_stub)
+      var d_qm: int = detail
+      return run_qm_tier2_registry(algo_id, d_qm)
   if algo_id >= 301:
     if algo_id <= 305:
       var d2: int = detail

@@ -44,7 +44,8 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-16-li-ecosystem-governance.md` | **PH-Pkg** governance |
 | `ph-db-lidb-platform.md` | **PH-DB** (roadmap ADR owns detail) |
 | `2026-05-30-ph7e-tier1-red-benchmark-honesty.md` | **PH-7e** tier-1 honesty · **G-math** doc sync |
-| `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
+| `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par**, **G-gpu** |
+| `2026-06-07-doc-c-g-star-phase-exit-gates.md` | **Doc-c₁** — phase 02/03/07 exit **G-*** tables ([#31](https://github.com/li-langverse/lic/issues/31)) |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
 
 ## Open master-plan tracker rows (2026-05-30)

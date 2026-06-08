@@ -9,7 +9,7 @@
 | li-oci | stub | licontainers |
 | li-kvm | missing | livm Linux backend |
 | licontainers | scaffold | containers |
-| livm | scaffold | VMs |
+| livm | wave2 stub | VMs |
 | li-libernetes-core | scaffold | shared types |
 
 Update this file as stubs land.

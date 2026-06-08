@@ -1,6 +1,23 @@
+import disk.qcow2
+import cloudinit.cloudinit
+import hypervisor.kvm_probe
+
 def livm_version() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  return 0
+
+def livm_wave2_smoke() -> int
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  if qcow2_format_version() < 2:
+    return 1
+  if cloudinit_datasource_nocloud() != 1:
+    return 1
+  if kvm_probe_smoke() != 0:
+    return 1
   return 0

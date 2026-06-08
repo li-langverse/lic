@@ -1,0 +1,69 @@
+import sim
+import sim.scientific
+
+def smoke_cfd_tier2() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 3
+  decreases 0
+=
+  var cfd: float = sim_scientific_oracle_checksum_cfd()
+  if cfd <= 0.0:
+    return 1
+  var cfd_run: SimRunResult = run_algo(210, 2)
+  var cfd_chk: float = cfd_run.checksum
+  if cfd_run.algo_id != 210:
+    return 2
+  if cfd_chk != cfd:
+    return 3
+  return 0
+
+def smoke_fea_tier2() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 3
+  decreases 0
+=
+  var fea: float = sim_scientific_oracle_checksum_fea()
+  if fea <= 0.0:
+    return 1
+  var fea_run: SimRunResult = run_algo(214, 1)
+  var fea_chk: float = fea_run.checksum
+  if fea_run.algo_id != 214:
+    return 2
+  if fea_chk != fea:
+    return 3
+  return 0
+
+def smoke_qm_tier2() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 3
+  decreases 0
+=
+  var qm: float = sim_scientific_oracle_checksum_qm()
+  if qm < 0.0:
+    return 1
+  var qm_run: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  var qm_chk: float = qm_run.checksum
+  if qm_run.algo_id != algo_qm_dft_scf_energy():
+    return 2
+  if qm_chk != qm:
+    return 3
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var cfd_rc: int = smoke_cfd_tier2()
+  if cfd_rc != 0:
+    return 10 + cfd_rc
+  var fea_rc: int = smoke_fea_tier2()
+  if fea_rc != 0:
+    return 20 + fea_rc
+  var qm_rc: int = smoke_qm_tier2()
+  if qm_rc != 0:
+    return 30 + qm_rc
+  return 0

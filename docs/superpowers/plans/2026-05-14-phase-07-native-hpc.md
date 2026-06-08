@@ -90,3 +90,15 @@
 - [x] `./li-tests/run_all.sh math_linalg`
 - [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`)
 - [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard)
+
+### Exit gate — G-* register
+
+Every applicable row from [provability-gaps.md](../../verification/provability-gaps.md) is cited below (or **N/A** with rationale). Register status is **Partial** unless noted — this table is cross-link honesty only, not gap closure.
+
+| G-* ID | Applicability | Exit-gate evidence (today) | Notes |
+|--------|---------------|------------------------------|-------|
+| [**G-par**](../../verification/provability-gaps.md#g-par) | **Yes** | `li-tests/race_shared_memory/`, `good_disjoint_parallel.li` | 7b — Lean proofs open |
+| [**G-dec**](../../verification/provability-gaps.md#g-dec) | **Yes** | `li-tests/decorators/`, `decorator_exploits/` | 7d — elaboration partial |
+| [**G-math**](../../verification/provability-gaps.md#g-math) | **Yes** | `li-tests/math_linalg/`, tier-1 advisory benches | 7e — see [ph7e plan](2026-05-30-ph7e-tier1-red-benchmark-honesty.md) |
+| [**G-gpu**](../../verification/provability-gaps.md#g-gpu) | **Yes** | `ml_gpu_device_buffer.li`, `check-mir-gpu-decorator.sh` | Partial address-space proofs |
+| [**G-lean**](../../verification/provability-gaps.md#g-lean) | **Partial cite** | P-linalg / P-par open in exit 7e row | Cross-link only; closure is 2f |

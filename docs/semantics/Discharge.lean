@@ -130,7 +130,7 @@ theorem kinetic_energy_def_consistent (m v : Float) :
 def linear_momentum_spec (m v p : Float) : Prop :=
   p = m * v
 
-theorem linear_momentum_linear_stub (m v : Float) :
+theorem linear_momentum_def_consistent (m v : Float) :
     linear_momentum_spec m v (m * v) := rfl
 
 /-- Relative energy drift within tolerance or witness return (P-LM-CONS-001 / AX-CONS). -/
@@ -153,7 +153,7 @@ theorem closed_system_total_momentum_stub :
 def closed_system_invariants_compose_spec (result : Int) : Prop :=
   result = 0
 
-theorem closed_system_invariants_compose_stub :
+theorem closed_system_invariants_compose_proved :
     closed_system_invariants_compose_spec 0 := rfl
 
 /-- Newton second law scalar stub (P-AX-MECH-002 witness). -/

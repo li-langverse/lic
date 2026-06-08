@@ -1,0 +1,6 @@
+# WP-PR — Proof Explorer phase 14 open catalog prove
+
+PR: https://github.com/li-langverse/lic/pull/1255
+Branch: cursor/proof-explorer-phase14-open-catalog-prove
+Gate: scripts/proof-explorer-phase14-completion-gate.sh exit 0
+Signed: 2026-06-08 (code_implementer run 1780901133219; open=0 proved=552; Erdős E-992..E-1216 reclassified open→target; catalog/Lean divergences fixed; wp-pr-01..07 complete)

@@ -46,6 +46,7 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-30-ph7e-tier1-red-benchmark-honesty.md` | **PH-7e** tier-1 honesty · **G-math** doc sync |
 | `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
+| `2026-06-07-li-chapel-28-hpc-portability-rubric.md` | **PH-7d**, **PH-7e**, **PH-5b** · **G-par**, **G-gpu**, **G-ai** (doc) · lic#113 |
 
 ## Open master-plan tracker rows (2026-05-30)
 

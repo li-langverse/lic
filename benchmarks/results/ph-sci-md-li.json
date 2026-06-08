@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-06-07T21:59:17Z",
+  "suite": "ph-sci-md-li",
+  "smoke": "packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li",
+  "workload": "md_lj_chain_4p_8vv",
+  "kernel": "sim.scientific.oracle_checksum_md",
+  "compile_ok": false,
+  "executed": false,
+  "validity_gate_pass": false,
+  "cpu_sec": 0.002532,
+  "energy_drift": 6.9691228e-05,
+  "energy_source": "li_native_python_mirror",
+  "device": "cpu",
+  "run_exit_code": 1,
+  "stderr_tail": "po/build-wsl/compiler/lic/lic: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.38' not found (required by /app/data/workspaces/li-langverse/lic/code_implementer-1780869437585/repo/build-wsl/compiler/lic/lic)\n/app/data/workspaces/li-langverse/lic/code_implementer-1780869437585/repo/build-wsl/compiler/lic/lic: /lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by /app/data/workspaces/li-langverse/lic/code_implementer-1780869437585/repo/build-wsl/compiler/lic/lic)"
+}

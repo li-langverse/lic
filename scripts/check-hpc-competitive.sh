@@ -122,4 +122,74 @@ if [[ "$rc" -ne 0 ]]; then
   exit "$rc"
 fi
 li_gate_ok "HPC competitive registry"
+
+MD_ORACLE="$ROOT/benchmarks/competitive/md_oracle.toml"
+if [[ -f "$MD_ORACLE" ]]; then
+  li_phase "MD external oracle registry"
+  export MD_ORACLE WARN_DAYS
+  python3 - <<'PY'
+from __future__ import annotations
+
+import os
+import sys
+from datetime import date
+from pathlib import Path
+
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib  # type: ignore
+
+path = Path(os.environ["MD_ORACLE"])
+warn_days = int(os.environ["WARN_DAYS"])
+data = tomllib.loads(path.read_text())
+errors: list[str] = []
+warnings: list[str] = []
+
+meta = data.get("meta") or {}
+if not meta.get("benchmark"):
+    errors.append("md_oracle: meta.benchmark required")
+
+oracles = data.get("oracle")
+if not isinstance(oracles, list) or not oracles:
+    errors.append("md_oracle: [[oracle]] must be a non-empty array")
+
+ids: set[str] = set()
+for o in oracles or []:
+    oid = o.get("id")
+    if not oid:
+        errors.append("md_oracle: oracle id required")
+        continue
+    if oid in ids:
+        errors.append(f"md_oracle: duplicate id {oid}")
+    ids.add(oid)
+    for key in ("csv_lang", "status", "kernel", "compare_metric"):
+        if not o.get(key):
+            errors.append(f"md_oracle: {oid} missing {key}")
+    reviewed = o.get("last_reviewed") or meta.get("updated")
+    if reviewed:
+        try:
+            age = (date.today() - date.fromisoformat(str(reviewed))).days
+            if age > warn_days:
+                warnings.append(f"md_oracle: {oid} last_reviewed {reviewed} ({age}d)")
+        except ValueError:
+            pass
+
+rows = data.get("row")
+if not isinstance(rows, list) or not rows:
+    errors.append("md_oracle: [[row]] must be a non-empty array")
+
+for w in warnings:
+    print(f"warn: {w}", file=sys.stderr)
+for e in errors:
+    print(f"error: {e}", file=sys.stderr)
+sys.exit(1 if errors else 0)
+PY
+  rc=$?
+  if [[ "$rc" -ne 0 ]]; then
+    li_gate_fail "MD external oracle registry"
+    exit "$rc"
+  fi
+  li_gate_ok "MD external oracle registry"
+fi
 exit 0

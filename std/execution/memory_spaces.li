@@ -1,0 +1,77 @@
+# std/execution/memory_spaces.li — MemorySpace / ExecutionSpace spec enums (lic#110)
+#
+# Spec-only v1: documents Kokkos-aligned placement tags for tier-2 physics.
+# No parser/codegen yet — see docs/hpc/kokkos-memory-execution-spaces-rubric.md
+# Layout parameter on View defers to #128 mdspan ABI.
+
+type MemorySpace = enum
+  Host
+  Device
+  Unified
+
+type ExecutionSpace = enum
+  Serial
+  OpenMP
+  Threads
+  SYCL
+  Cuda
+  HIP
+
+# View[T, Space, Layout] — spec surface; Layout from #128 (RowMajor, SoA, …)
+# Lifecycle: construct → use → destroy in same Space unless @sync_host / @sync_device.
+
+def memory_space_host() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def memory_space_device() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def memory_space_unified() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def execution_space_serial() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def execution_space_openmp() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def execution_space_threads() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def execution_space_default_tier2() -> int
+  requires true
+  ensures result == execution_space_openmp()
+  decreases 0
+=
+  return execution_space_openmp()
+
+def __memory_spaces_doc() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

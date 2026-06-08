@@ -5,6 +5,8 @@ type FileHandle = object
 type IoError = object
   public code: int
 
+type FileContents = str
+
 def io_tag() -> int
   requires true
   ensures result == 4
@@ -28,12 +30,13 @@ def file_close(handle: FileHandle) -> unit
 =
   return
 
-def file_read_all_stub() -> int
+def file_read_all_stub(path: Path) -> FileContents
   requires true
-  ensures result == 0
+  ensures result == ""
   decreases 0
 =
-  return 0
+  var _unused: Path = path
+  return ""
 
 def path_join(a: Path, b: Path) -> Path
   requires true

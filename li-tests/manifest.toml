@@ -1216,6 +1216,12 @@ file = "stdlib_coverage/build_std_summary_plot.li"
 outcome = "verify_open_ok"
 note = "PH-IO-7/5: std.summary + std.plot import harness (summary_tag=7, plot_tag=5)"
 
+[[tests]]
+suite = "std_io"
+file = "std_io/file_read_all_stub_returns_empty.li"
+outcome = "verify_ok"
+note = "PH-IO-4: std.io file_read_all_stub returns empty string (compile-time stub; no runtime IO)"
+
 # --- stdlib_seal (4s — prelude/stdlib names cannot be shadowed) ---
 # Coverage policy: std/**/*.li requires 100% line coverage (scripts/check-stdlib-coverage.sh).
 note = "open VC until 2f full (Lean gate on devbox)"

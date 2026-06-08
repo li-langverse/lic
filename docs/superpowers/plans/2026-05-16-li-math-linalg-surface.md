@@ -101,6 +101,20 @@ flowchart LR
 
 **Proofs:** shape/dimension errors at compile time; `A @ B` requires inner dim match; parallel outer loops still need `disjoint=`.
 
+### Element-wise broadcast policy (PH-2i-b)
+
+Li rejects NumPy-style **rank broadcast**. Only explicit, compile-time rules apply:
+
+| Rule | Example | Result |
+|------|---------|--------|
+| Same 1d length | `array[4] * array[4]` | OK |
+| Length-1 → longer 1d | `array[1] * array[4]` | OK (`broadcast_len1_*.li`) |
+| Mismatched 1d (no len-1) | `array[2] * array[4]` | **compile_fail** (`broadcast_invalid_len2_vs_len4.li`) |
+| 2d element-wise (any shape) | `array[M,array[N]] * array[M,array[1]]` | **compile_fail** — no `(M,N)` vs `(M,1)` promotion ([#526](https://github.com/li-langverse/lic/issues/526)) |
+| Rank mismatch | `array[N] * array[M,array[K]]` | **compile_fail** (`broadcast_invalid_1d_vs_2d_float.li`) |
+
+**Deferred:** general NumPy rank rules (trailing-axis alignment, scalar promotion across ranks) — tracked in [#526](https://github.com/li-langverse/lic/issues/526).
+
 ---
 
 ## Sub-phases
@@ -171,6 +185,6 @@ Use existing [benchmarks plan](2026-05-14-benchmarks-and-simulations.md) harness
 - [x] Handbook pages published (`linear-algebra.md`, `math-hpc-examples.md`)
 - [x] No user-facing doc recommends `__li_simd_*` as the default path
 - [x] **2i-b** `norm`, `sum`/`dot`, `reductions/` suite; same-length `**` / prelude `axpy` / scalar×array (no broadcast) — float Lean Props still open
-- [x] **2i-broadcast** length-1 element-wise broadcast (`broadcast_len1_*.li`); non-broadcast length mismatch (`broadcast_invalid_len2_vs_len4.li`, `elementwise_len_mismatch.li`) — full NumPy rank rules open
+- [x] **2i-broadcast** length-1 element-wise broadcast (`broadcast_len1_*.li`); non-broadcast length mismatch (`broadcast_invalid_len2_vs_len4.li`, `elementwise_len_mismatch.li`); **2-rank reject gate** (`broadcast_invalid_2x3_vs_2x1_float.li`, `broadcast_invalid_2x3_vs_2x4_float.li`, `broadcast_invalid_1d_vs_2d_float.li`) — full NumPy rank broadcast **deferred** ([#526](https://github.com/li-langverse/lic/issues/526))
 - [x] **P-linalg** loop implementation ≡ closed-form `ensures` in Lean (**G-lean**) (`linalg_dot4_int_loop_open.li` + `discharge_linalg_int_lean.sh`; float Props still **G-math** open)
 - [ ] Tier 1 perf ≤1.2× C++ (benchmarks dashboard)

@@ -1062,6 +1062,24 @@ expected_substr = "length-1 broadcast"
 
 [[tests]]
 suite = "math_linalg"
+file = "math_linalg/broadcast_invalid_2x3_vs_2x1_float.li"
+outcome = "compile_fail"
+expected_substr = "NumPy rank broadcast is not supported"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/broadcast_invalid_2x3_vs_2x4_float.li"
+outcome = "compile_fail"
+expected_substr = "NumPy rank broadcast is not supported"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/broadcast_invalid_1d_vs_2d_float.li"
+outcome = "compile_fail"
+expected_substr = "matching array rank"
+
+[[tests]]
+suite = "math_linalg"
 file = "math_linalg/sum_elementwise_product.li"
 outcome = "verify_ok"
 

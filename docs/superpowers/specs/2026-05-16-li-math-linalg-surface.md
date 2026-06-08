@@ -9,7 +9,7 @@
 Mathematical notation is **static**:
 
 - `A @ B` — matrix multiply is **shape-checked at compile time**; wrong dimensions → **`lic build` fails**  
-- `a * b` — element-wise/broadcast rules decided in the typechecker, not at run time  
+- `a * b` — element-wise on **1d** numeric arrays only; length-1 broadcast to a longer 1d array is allowed; **2d matrices and NumPy rank broadcast are rejected at compile time** ([#526](https://github.com/li-langverse/lic/issues/526))
 - `dot`, `sum` — lowering to SIMD/reduction MIR at compile time  
 
 Users never call `simd(...)` or lane intrinsics in normal code. There is no “slow path” that discovers shapes at runtime.

@@ -8,7 +8,7 @@ last_verified_lic_commit = "708c67b8"
 id = "CHEM-LM-BC-IG-001"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Ideal gas law PV=nRT (form 1)."
 
@@ -16,7 +16,7 @@ statement = "Ideal gas law PV=nRT (form 1)."
 id = "CHEM-LM-BC-RX-002"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Rate law first order -dA/dt = k A (form 2)."
 
@@ -24,7 +24,7 @@ statement = "Rate law first order -dA/dt = k A (form 2)."
 id = "CHEM-LM-BC-EQ-003"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 3)."
 
@@ -32,7 +32,7 @@ statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu a
 id = "CHEM-LM-BC-TH-004"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 4)."
 
@@ -48,7 +48,7 @@ statement = "Conservation of mass in closed reaction (form 5)."
 id = "CHEM-LM-BC-IG-006"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Ideal gas law PV=nRT (form 6)."
 
@@ -56,7 +56,7 @@ statement = "Ideal gas law PV=nRT (form 6)."
 id = "CHEM-LM-BC-RX-007"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Rate law first order -dA/dt = k A (form 7)."
 
@@ -64,7 +64,7 @@ statement = "Rate law first order -dA/dt = k A (form 7)."
 id = "CHEM-LM-BC-EQ-008"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 8)."
 
@@ -72,7 +72,7 @@ statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu a
 id = "CHEM-LM-BC-TH-009"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 9)."
 
@@ -88,7 +88,7 @@ statement = "Conservation of mass in closed reaction (form 10)."
 id = "CHEM-LM-BC-IG-011"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Ideal gas law PV=nRT (form 11)."
 
@@ -96,7 +96,7 @@ statement = "Ideal gas law PV=nRT (form 11)."
 id = "CHEM-LM-BC-RX-012"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Rate law first order -dA/dt = k A (form 12)."
 
@@ -104,7 +104,7 @@ statement = "Rate law first order -dA/dt = k A (form 12)."
 id = "CHEM-LM-BC-EQ-013"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 13)."
 
@@ -112,7 +112,7 @@ statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu a
 id = "CHEM-LM-BC-TH-014"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 14)."
 
@@ -128,7 +128,7 @@ statement = "Conservation of mass in closed reaction (form 15)."
 id = "CHEM-LM-BC-IG-016"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Ideal gas law PV=nRT (form 16)."
 
@@ -136,7 +136,7 @@ statement = "Ideal gas law PV=nRT (form 16)."
 id = "CHEM-LM-BC-RX-017"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Rate law first order -dA/dt = k A (form 17)."
 
@@ -144,7 +144,7 @@ statement = "Rate law first order -dA/dt = k A (form 17)."
 id = "CHEM-LM-BC-EQ-018"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 18)."
 
@@ -152,7 +152,7 @@ statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu a
 id = "CHEM-LM-BC-TH-019"
 kind = "lemma"
 tranche = 2
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 19)."
 
@@ -168,7 +168,7 @@ statement = "Conservation of mass in closed reaction (form 20)."
 id = "CHEM-LM-BC-IG-021"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Ideal gas law PV=nRT (form 21)."
 
@@ -176,7 +176,7 @@ statement = "Ideal gas law PV=nRT (form 21)."
 id = "CHEM-LM-BC-RX-022"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Rate law first order -dA/dt = k A (form 22)."
 
@@ -184,7 +184,7 @@ statement = "Rate law first order -dA/dt = k A (form 22)."
 id = "CHEM-LM-BC-EQ-023"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 23)."
 
@@ -192,7 +192,7 @@ statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu a
 id = "CHEM-LM-BC-TH-024"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 24)."
 
@@ -208,7 +208,7 @@ statement = "Conservation of mass in closed reaction (form 25)."
 id = "CHEM-LM-BC-IG-026"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Ideal gas law PV=nRT (form 26)."
 
@@ -216,7 +216,7 @@ statement = "Ideal gas law PV=nRT (form 26)."
 id = "CHEM-LM-BC-RX-027"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Rate law first order -dA/dt = k A (form 27)."
 
@@ -224,7 +224,7 @@ statement = "Rate law first order -dA/dt = k A (form 27)."
 id = "CHEM-LM-BC-EQ-028"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 28)."
 
@@ -232,7 +232,7 @@ statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu a
 id = "CHEM-LM-BC-TH-029"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 29)."
 
@@ -248,7 +248,7 @@ statement = "Conservation of mass in closed reaction (form 30)."
 id = "CHEM-LM-BC-IG-031"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Ideal gas law PV=nRT (form 31)."
 
@@ -256,7 +256,7 @@ statement = "Ideal gas law PV=nRT (form 31)."
 id = "CHEM-LM-BC-RX-032"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Rate law first order -dA/dt = k A (form 32)."
 
@@ -264,7 +264,7 @@ statement = "Rate law first order -dA/dt = k A (form 32)."
 id = "CHEM-LM-BC-EQ-033"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 33)."
 
@@ -272,7 +272,7 @@ statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu a
 id = "CHEM-LM-BC-TH-034"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 34)."
 
@@ -288,7 +288,7 @@ statement = "Conservation of mass in closed reaction (form 35)."
 id = "CHEM-LM-BC-IG-036"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Ideal gas law PV=nRT (form 36)."
 
@@ -296,7 +296,7 @@ statement = "Ideal gas law PV=nRT (form 36)."
 id = "CHEM-LM-BC-RX-037"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Rate law first order -dA/dt = k A (form 37)."
 
@@ -304,7 +304,7 @@ statement = "Rate law first order -dA/dt = k A (form 37)."
 id = "CHEM-LM-BC-EQ-038"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 38)."
 
@@ -312,7 +312,7 @@ statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu a
 id = "CHEM-LM-BC-TH-039"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 39)."
 
@@ -328,7 +328,7 @@ statement = "Conservation of mass in closed reaction (form 40)."
 id = "CHEM-LM-BC-IG-041"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Ideal gas law PV=nRT (form 41)."
 
@@ -336,7 +336,7 @@ statement = "Ideal gas law PV=nRT (form 41)."
 id = "CHEM-LM-BC-RX-042"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Rate law first order -dA/dt = k A (form 42)."
 
@@ -344,7 +344,7 @@ statement = "Rate law first order -dA/dt = k A (form 42)."
 id = "CHEM-LM-BC-EQ-043"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 43)."
 
@@ -352,7 +352,7 @@ statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu a
 id = "CHEM-LM-BC-TH-044"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 44)."
 
@@ -368,7 +368,7 @@ statement = "Conservation of mass in closed reaction (form 45)."
 id = "CHEM-LM-BC-IG-046"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Ideal gas law PV=nRT (form 46)."
 
@@ -376,7 +376,7 @@ statement = "Ideal gas law PV=nRT (form 46)."
 id = "CHEM-LM-BC-RX-047"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Rate law first order -dA/dt = k A (form 47)."
 
@@ -384,7 +384,7 @@ statement = "Rate law first order -dA/dt = k A (form 47)."
 id = "CHEM-LM-BC-EQ-048"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 48)."
 
@@ -392,7 +392,7 @@ statement = "Equilibrium constant K = prod [products]^nu / prod [reactants]^mu a
 id = "CHEM-LM-BC-TH-049"
 kind = "lemma"
 tranche = 3
-proof_status = "open"
+proof_status = "proved"
 domain = "physical-chemistry"
 statement = "Gibbs free energy Delta G = Delta H - T Delta S (form 49)."
 

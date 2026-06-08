@@ -46,6 +46,14 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-30-ph7e-tier1-red-benchmark-honesty.md` | **PH-7e** tier-1 honesty · **G-math** doc sync |
 | `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
+| `2026-06-07-g-meta-competitive-safety-matrix.md` | **G-meta** positioning — Carbon/Mojo/Rust vs Li ([competitive-safety-matrix.md](competitive-safety-matrix.md); lic#65) |
+
+## G-meta positioning (lic#65)
+
+| Doc | Role |
+|-----|------|
+| [competitive-safety-matrix.md](competitive-safety-matrix.md) | One-page Carbon / Mojo / Rust vs Li on proof-by-default, safety model, interop, agent surfaces |
+| [provability-gaps.md § G-meta](../verification/provability-gaps.md#g-meta) | Honest limit — matrix is positioning, not compiler ≡ Lean proof |
 
 ## Open master-plan tracker rows (2026-05-30)
 

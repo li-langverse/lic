@@ -3,6 +3,9 @@
 # Users write @cpu, @parallel(disjoint=disjoint_elem), @vectorized on def/for/while.
 # The compiler elaborates these at compile time; they are NOT runtime calls.
 #
+# Portability rubric (Li ↔ RAJA ↔ Kokkos ↔ OpenMP): packages/li-parallel/docs/portability-policy-matrix.md
+# Verify telemetry: mir_parallel_disjoint=, mir_omp_parallel_for= (no silent serial fallback for @parallel).
+#
 # Reserved (cannot user decorator def): parallel, vectorized, async, cpu, gpu, tpu,
 # user_defined, serial, no_vectorize.
 #

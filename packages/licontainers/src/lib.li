@@ -1,6 +1,34 @@
+import oci.spec
+import oci.image
+import cri.v1
+import runtime.linux_backend
+import runtime.create
+import runtime.start
+
 def licontainers_version() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  return 0
+
+def licontainers_cri_lifecycle_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if oci_spec_version() != 1:
+    return 1
+  if cri_v1_api_version() != 1:
+    return 2
+  if oci_image_pull_tag() != 1:
+    return 3
+  if runtime_create_container_tag() != 2:
+    return 4
+  if runtime_start_container_tag() != 3:
+    return 5
+  if linux_backend_namespaces_tag() != 1:
+    return 6
+  if linux_backend_cgroups_tag() != 2:
+    return 7
   return 0

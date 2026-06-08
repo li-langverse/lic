@@ -1,0 +1,7 @@
+# CRI StartContainer runtime path (Wave 2 stub).
+def runtime_start_container_tag() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3

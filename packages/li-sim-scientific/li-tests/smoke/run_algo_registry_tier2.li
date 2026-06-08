@@ -6,25 +6,23 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  var md_oracle: float = sim_scientific_oracle_checksum_md()
-  var heat_oracle: float = sim_scientific_oracle_checksum_heat()
   var md105: SimRunResult = run_algo(105, 1)
   if run_result_ok(md105) != 1:
     return 1
   if md105.algo_id != 105:
     return 2
-  if md105.checksum != md_oracle:
+  if md105.checksum != sim_scientific_oracle_checksum_md():
     return 3
   if md105.checksum == 1.001:
     return 4
-  var heat210: SimRunResult = run_algo(210, 2)
-  if run_result_ok(heat210) != 1:
+  var heat205: SimRunResult = run_algo(205, 2)
+  if run_result_ok(heat205) != 1:
     return 5
-  if heat210.algo_id != 210:
+  if heat205.algo_id != 205:
     return 6
-  if heat210.checksum != heat_oracle:
+  if heat205.checksum != sim_scientific_oracle_checksum_heat():
     return 7
-  if heat210.checksum == 1.001:
+  if heat205.checksum == 1.001:
     return 8
   var rigid302: SimRunResult = run_algo(302, 0)
   if run_result_ok(rigid302) != 1:
@@ -36,8 +34,10 @@ def main() -> int
   var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(qm418) != 1:
     return 12
-  if qm418.checksum != 1.001:
+  if qm418.checksum != sim_scientific_oracle_checksum_qm_dft():
     return 13
+  if qm418.checksum == 1.001:
+    return 43
   var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
   if echem_oracle <= 0.0:
     return 14

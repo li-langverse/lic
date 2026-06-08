@@ -1,0 +1,45 @@
+import sim
+import sim.scientific
+
+# WP-SCI-03 Phase 2 — CFD/FEA/QM tier-2 dispatch (isolated from MD/echem stack depth).
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var heat205: SimRunResult = run_algo(205, 2)
+  if run_result_ok(heat205) != 1:
+    return 1
+  if heat205.checksum != sim_scientific_oracle_checksum_heat():
+    return 2
+  if heat205.checksum == 1.001:
+    return 3
+  var cfd207: SimRunResult = run_algo(207, 1)
+  if run_result_ok(cfd207) != 1:
+    return 4
+  if cfd207.checksum != sim_scientific_oracle_checksum_cfd():
+    return 5
+  if cfd207.checksum == 1.001:
+    return 6
+  var fea213: SimRunResult = run_algo(213, 1)
+  if run_result_ok(fea213) != 1:
+    return 7
+  if fea213.checksum != sim_scientific_oracle_checksum_fea():
+    return 8
+  if fea213.checksum == 1.001:
+    return 9
+  var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  if run_result_ok(qm418) != 1:
+    return 10
+  if qm418.checksum != sim_scientific_oracle_checksum_qm_dft():
+    return 11
+  if qm418.checksum == 1.001:
+    return 12
+  var qm411: SimRunResult = run_algo(411, 0)
+  if run_result_ok(qm411) != 1:
+    return 13
+  if qm411.checksum != sim_scientific_oracle_checksum_qm_dft():
+    return 14
+  if qm411.checksum == 1.001:
+    return 15
+  return 0

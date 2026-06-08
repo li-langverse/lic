@@ -408,11 +408,13 @@ gaps:
 - id: gap-plan-pending-sim-md-research-md-r3-oracle-plan
   gap_kind: plan_debt
   title: 'sim-md-research: pending plan todo md-r3-oracle-plan'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim-md-research plan_pending=md-r3-oracle-plan
+  - snapshot sim-md-research completed_ids includes md-r3-oracle-plan
+  - study docs/numerics/studies/2026-06-06-md-r3-oracle-plan.md
   runner_id: sim-md-research
   plan_todo_id: md-r3-oracle-plan
   suggested_loop: sim-md-research

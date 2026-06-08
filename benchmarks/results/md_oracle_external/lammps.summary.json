@@ -1,0 +1,21 @@
+{
+  "schema": "li_sim_summary_v1",
+  "benchmark": "md_oracle_external",
+  "vertical_id": "md_lennard_jones",
+  "workload_class": "v0_micro",
+  "lang": "lammps",
+  "variant": "external_binary_stub",
+  "ok": true,
+  "metrics": {
+    "energy_drift_rel": 6.969122800372497e-05,
+    "checksum": "6.96912280037e-05"
+  },
+  "invariants": {
+    "energy_drift_ok": true
+  },
+  "artifacts": {
+    "params": "benchmarks/tier2_physics/md_oracle_external/PINNED.md",
+    "oracle_driver": "benchmarks/harness/md_external_oracle.py"
+  },
+  "updated": "2026-06-06T14:50:54.761951+00:00"
+}

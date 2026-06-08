@@ -1,0 +1,25 @@
+import sim.scientific
+
+# md-r3-oracle-plan — smoke cites external oracle harness path (Li T0 checksum + algo 104).
+# Driver gate: li-tests/tooling/md_external_oracle_stub.sh → benchmarks/harness/md_external_oracle.py
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() < 4:
+    return 1
+  var md_oracle: float = sim_scientific_oracle_checksum_md()
+  if md_oracle <= 0.0:
+    return 2
+  if md_oracle >= 1.0e-2:
+    return 3
+  var md104: SimRunResult = run_algo(104, 0)
+  if run_result_ok(md104) != 1:
+    return 4
+  if md104.algo_id != 104:
+    return 5
+  if md104.checksum != md_oracle:
+    return 6
+  return 0

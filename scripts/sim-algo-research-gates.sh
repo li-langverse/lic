@@ -54,6 +54,22 @@ if [[ "$STUDY_ONLY" == "1" ]]; then
       gate_log="missing required study: ${SIM_RESEARCH_REQUIRE_STUDY}"
     fi
   fi
+  if [[ "$VERT" == "md" && "$validity_ok" -eq 1 ]]; then
+    if ! grep -qE 'md_external_oracle|md_oracle_external' \
+      "$ROOT/packages/li-sim-scientific/li-tests/manifest.toml" \
+      "$ROOT/li-tests/manifest.toml" \
+      "$ROOT/benchmarks/tier2_physics/md_oracle_external/README.md" 2>/dev/null; then
+      validity_ok=0
+      gate_log="${gate_log}\nmd-r3 oracle manifest path check failed"
+    fi
+    if [[ ! -x "$ROOT/benchmarks/harness/md_external_oracle.py" ]]; then
+      chmod +x "$ROOT/benchmarks/harness/md_external_oracle.py" 2>/dev/null || true
+    fi
+    if ! python3 "$ROOT/benchmarks/harness/md_external_oracle.py" --engine lammps --dry-run >/dev/null 2>&1; then
+      validity_ok=0
+      gate_log="${gate_log}\nmd_external_oracle.py --dry-run failed"
+    fi
+  fi
 else
   echo "==> sim-algo-research-gates vertical=$VERT package=$SIM_PLAN_PACKAGE"
   if ! bash "$ROOT/scripts/sim-plan-gates.sh" 2>&1 | tee /tmp/sim-research-gates-last.log; then

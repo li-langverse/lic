@@ -10,7 +10,13 @@ note = "T-PKG-li-sim-scientific-smoke"
 suite = "smoke"
 file = "smoke/scientific_oracle_bench.li"
 outcome = "verify_ok"
-note = "WP-SCI-03 tier-2 MD/heat oracle checksums"
+note = "WP-SCI-03 tier-2 MD/heat oracle checksums; pde_external_oracle.py stub (lic#108)"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/pde_implicit_oracle_sketch.li"
+outcome = "verify_ok"
+note = "lic#108 implicit PDE API sketch (matrix-free micro checksum)"
 
 [[tests]]
 suite = "smoke"

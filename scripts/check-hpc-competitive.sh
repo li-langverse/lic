@@ -122,4 +122,48 @@ if [[ "$rc" -ne 0 ]]; then
   exit "$rc"
 fi
 li_gate_ok "HPC competitive registry"
+
+PDE_ORACLE="$BENCHMARKS_COMPETITIVE/pde_oracle.toml"
+if [[ -f "$PDE_ORACLE" ]]; then
+  export PDE_ORACLE
+  python3 - <<'PY'
+from __future__ import annotations
+
+import os
+import sys
+from pathlib import Path
+
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib  # type: ignore
+
+path = Path(os.environ["PDE_ORACLE"])
+data = tomllib.loads(path.read_text())
+errors: list[str] = []
+meta = data.get("meta", {})
+if not meta.get("issue"):
+    errors.append("pde_oracle.toml: meta.issue required")
+oracles = data.get("oracle", [])
+if not oracles:
+    errors.append("pde_oracle.toml: [[oracle]] must be non-empty")
+required = ("id", "bench_id", "engine", "status")
+for i, row in enumerate(oracles):
+    for key in required:
+        if key not in row:
+            errors.append(f"pde_oracle.toml oracle[{i}]: missing {key}")
+    if row.get("status") != "deferred" and not row.get("driver"):
+        errors.append(f"pde_oracle.toml oracle[{i}]: driver required unless status=deferred")
+for e in errors:
+    print(f"error: {e}", file=sys.stderr)
+sys.exit(1 if errors else 0)
+PY
+  rc=$?
+  if [[ "$rc" -ne 0 ]]; then
+    li_gate_fail "PDE oracle registry"
+    exit "$rc"
+  fi
+  li_gate_ok "PDE oracle registry"
+fi
+
 exit 0

@@ -444,7 +444,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
 - [x] Phase 2j — Full OOP surface — **2j-a…f done** (#83+); Lean method/trait `ensures` sugar still **G-oop** open — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
 - [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); **`for i in start..<end`** (`for_range_sum.li`); Python `range()` deferred (**G-math-syn**)
-- [ ] Phase 2i — Math / linalg surface — **partial:** **2i-a/c** (#148); **2i-b** `norm`, `sum`/`dot`, `reductions/`, same-length `**`, prelude `axpy`, scalar×array; **length-1 broadcast** (`array[1]`→`array[N]` element-wise); full NumPy rank broadcast still open; float `@` Props closed (`mat2_at2_eval`)
+- [ ] Phase 2i — Math / linalg surface — **partial:** **2i-a/c** (#148); **2i-b** `norm`, `sum`/`dot`, `reductions/`, same-length `**`, prelude `axpy`, scalar×array; **2i-broadcast** length-1 (`array[1]`→`array[N]`, `broadcast_len1_*.li`) **done** — **open:** full NumPy rank broadcast (**G-math**, defer **AL-10**); float `@` Props closed (`mat2_at2_eval`)
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
 - [x] Phase 4s — Stdlib seal (prelude/`std/` names cannot be shadowed; `stdlib_seal/` CI)
@@ -500,7 +500,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | v2 item | Gap ID(s) | Why still open |
 |---------|-----------|----------------|
 | **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
-| **2i / 7e** | **G-math** | broadcast, loop-dot proof, remaining tier-1 strict rows |
+| **2i / 7e** | **G-math** | full-rank broadcast (**AL-10**), loop-dot proof, remaining tier-1 strict rows (`matmul_blocked`) |
 | **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |

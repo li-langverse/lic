@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -451,6 +451,14 @@ def sim_scientific_oracle_checksum_echem_sei_kmc() -> float
     diff = -diff
   return diff / denom
 
+# WP-SCI-03 Phase 2 — tier-2 Li oracle: STO-3G Hartree SCF scaffold (H atom).
+def sim_scientific_oracle_checksum_qm_dft() -> float
+  requires true
+  ensures result != 1.001
+  decreases 0
+=
+  return chem_dft_scf_iteration_scaffold(6)
+
 def sim_scientific_checksum_combine(chk_md: float, chk_heat: float, chk_rigid: float, step_index: int) -> float
   requires step_index >= 1
   requires step_index <= 64
@@ -616,9 +624,6 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   decreases 0
 =
   var vert: int = 0
-  if algo_id >= 401:
-    if algo_id <= 432:
-      vert = vertical_qm_dft()
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo_id
@@ -719,6 +724,25 @@ def run_echem_sei_kmc_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 401
+  requires algo_id <= 432
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm_dft()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -749,6 +773,10 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_echem_sei_kmc():
     var d_sei: int = detail
     return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
+  if algo_id >= 401:
+    if algo_id <= 432:
+      var d_qm: int = detail
+      return run_qm_tier2_registry(algo_id, d_qm)
   var d3: int = detail
   return run_algo_registry_stub(algo_id, d3)
 

@@ -266,7 +266,7 @@ def three_body_step_mini(
     vy[i] = vy[i] + fy[i] * dt
     i = i + 1
 
-# Smoke: BDF-1 integrates y'=-y to t=1 within 1e-6 rel vs exp(-1) at dt=1e-4.
+# Smoke: BDF-1 integrates y'=-y to t=1; compare vs discrete exact (1/(1+dt))^n.
 def numerics_stiff_ode_bdf_smoke() -> int
   requires true
   ensures result >= 0
@@ -276,13 +276,16 @@ def numerics_stiff_ode_bdf_smoke() -> int
   var y: float = 1.0
   var dt: float = 0.0001
   var steps: int = 0
+  var target: float = 1.0
   while steps < 10000
     bdf1_step_scalar(y, dt)
+    target = target / (1.0 + dt)
     steps = steps + 1
-  var target: float = 0.36787944117144233
   var err: float = y - target
   if err < 0.0:
     err = -err
+  if target <= 0.0:
+    return 0
   if err / target > 0.000001:
     return 0
   return 1

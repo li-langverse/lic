@@ -117,3 +117,4 @@
 | 2026-06-03T21:15:00Z | code_implementer | BUG-C-13 partial | phase10-completion-gate exit 0 | Merged lic #747 + proof-library #7; proof_db_* axiom VC discharge (peano_succ_injective cite); axiom_decl_vc_skip_gap.sh PASS; gate exit 0 |
 | 2026-06-05T12:00:00Z | code_implementer | wp-cq-01..08 | phase12-completion-gate exit 0 | Phase12 catalog quality: 27→≤5 divergent; domain axioms axiomatic; physics placeholders discrepancy; stdlib sorry honesty; library.json rebuild |
 | 2026-06-06T08:00:00Z | code_implementer | wp-t10-01..10 | phase13-completion-gate | Phase13 ten-of-ten: site sync lic main; stale PRs closed; proof-library rebuild; gap audit honest; axiom+Erdős+CI gates |
+| 2026-06-07T00:00:00Z | coordinator | wp-pr | phase14-kickoff | Phase 14 open-catalog-prove; baseline open=1109 (208 non-Erdős, 901 Erdős); K8s worker retarget |

@@ -1,0 +1,17 @@
+{
+  "phase": 14,
+  "recorded_at": "2026-06-07",
+  "source": "proof-library/data/library.json",
+  "total": 1561,
+  "by_catalog_status": {
+    "proved": 354,
+    "open": 1109,
+    "axiomatic": 86,
+    "target": 7,
+    "discrepancy": 5
+  },
+  "open_non_erdos": 208,
+  "open_erdos": 901,
+  "divergent": 0,
+  "completion_target_open": 0
+}

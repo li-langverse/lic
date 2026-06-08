@@ -7,7 +7,8 @@ parent: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close — Phase 2 kickoff
 
-**Last updated:** 2026-06-06 · **main @** `e87165b7` (Phase 0/1 + echem merged; start from latest `main`)  
+**Last updated:** 2026-06-08 · **main @** `e87165b7` (Phase 0/1 + echem merged; start from latest `main`)  
+**WP-SCI-03 partial:** QM ids 401–432 tier-2 dispatch landed (`run_qm_tier2_registry`); CFD/FEA rows remain for WP-SCI-05/06.  
 **Prerequisite:** `bash scripts/ph-sci-phase0-gates.sh` passes (regression spine).  
 **Parent plan:** [ph-sci-simulation-gap-close-plan.md](ph-sci-simulation-gap-close-plan.md) — Phase 2 WPs (11 open).
 
@@ -17,7 +18,7 @@ Phase 2 is complete when the WPs below are landed and documented; no single gate
 
 ## P0 order (start here)
 
-1. **WP-SCI-03** — `run_algo_registry` real kernels (CFD/FEA/QM rows); extend `run_algo_registry_tier2.li`.
+1. **WP-SCI-03** — `run_algo_registry` real kernels (CFD/FEA/QM rows); extend `run_algo_registry_tier2.li`. **Partial (2026-06-08):** QM registry 401–432 tier-2 via `sim_scientific_oracle_checksum_qm` (`chem_dft_energy_kernel_hartree`); CFD/FEA rows remain stub (WP-SCI-05/06).
 2. **WP-PLAT-05** — LAMMPS/GROMACS external oracle column (unblocks SCI-03 MD rows).
 3. **WP-SCI-04** — `sim.viz` → wgpu field draw (depends WP-GD-05 / PH-HW-2).
 

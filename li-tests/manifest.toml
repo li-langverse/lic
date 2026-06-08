@@ -47,6 +47,7 @@ note = "contract requires/ensures may use implies (lower precedence than or)"
 suite = "decorators"
 file = "decorators/cpu_only_ok.li"
 outcome = "verify_ok"
+note = "PH-7d/G-dec: @cpu is visible in MIR telemetry (mir_cpu_def=1)"
 
 [[tests]]
 suite = "decorators"
@@ -86,7 +87,8 @@ outcome = "verify_ok"
 [[tests]]
 suite = "decorators"
 file = "decorators/parallel_def_disjoint_inherit.li"
-outcome = "compile_ok"
+outcome = "verify_ok"
+note = "PH-7d/G-dec: proc @parallel(disjoint=) → mir_parallel_disjoint telemetry"
 
 [[tests]]
 suite = "decorators"
@@ -98,6 +100,11 @@ suite = "decorators"
 file = "decorators/vectorized_dot_proc_ok.li"
 outcome = "verify_open_ok"
 note = "open VC until 2f full (Lean gate on devbox)"
+[[tests]]
+suite = "decorators"
+file = "decorators/vectorized_def_scope_ok.li"
+outcome = "verify_open_ok"
+note = "PH-7d/G-dec: @vectorized on def → ArraySimdScope MIR (mir_vectorized_def_scope)"
 [[tests]]
 suite = "decorators"
 file = "decorators/no_vectorize_dot_ok.li"

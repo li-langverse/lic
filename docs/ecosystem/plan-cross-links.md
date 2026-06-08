@@ -51,11 +51,16 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 
 Preflight: `benchmarks/data/latest/ecosystem-audit.json` · `plan_completion_audit.summary.open_tracker_items: 5`. Do not mark **Done** without cited evidence.
 
+**Closure evidence:** each partial row has a **Definition of done** checklist in [master plan § Partial tracker rows](../superpowers/plans/2026-05-14-li-master-plan.md#partial-tracker-rows--definition-of-done) — cite `li-tests` paths, Lean gate scripts, or CI workflow names in the closing PR; update [provability-gaps.md](../verification/provability-gaps.md) in the same PR when **G-*** rows move.
+
 | PH | Gap ID(s) | Phase plan (lic) |
 |----|-----------|------------------|
+| **2e** — Contracts (tracker checked, **G-vc** open) | **G-vc** | [phase-02-typechecker](../superpowers/plans/2026-05-14-phase-02-typechecker.md) · [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
+| **2f** — Lean verify (tracker checked, **G-lean** open) | **G-lean**, **G-vc**, **G-trust** | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) · [semantics/README](../semantics/README.md) |
 | **2i** — Math / linalg | **G-math**, **G-math-syn** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) |
 | **7d** — Execution decorators | **G-dec**, **G-par** | [2026-05-16-li-execution-decorators.md](../superpowers/specs/2026-05-16-li-execution-decorators.md) · [phase-07-native-hpc](../superpowers/plans/2026-05-14-phase-07-native-hpc.md) |
 | **7e** — Math → SIMD lowering | **G-math** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) · [ph7e-tier1-red-benchmark-honesty](../superpowers/plans/2026-05-30-ph7e-tier1-red-benchmark-honesty.md) |
+| **H** — li-httpd M1 ship | **G-lean**, **G-net**, **G-async** | [2026-05-16-li-httpd-plan.md](../superpowers/plans/2026-05-16-li-httpd-plan.md) · [httpd-prerequisites](httpd-prerequisites.md) |
 | **8p** — Parallel compile / CI | — | [2026-05-22-parallel-compile-ci.md](../superpowers/plans/2026-05-22-parallel-compile-ci.md) |
 | **Vision-LLM** — Agent JSON diagnostics | — | [2026-05-16-li-llm-first-design.md](../superpowers/specs/2026-05-16-li-llm-first-design.md) |
 

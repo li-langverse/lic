@@ -147,6 +147,20 @@ def vertical_echem_sei_kmc() -> int
 =
   return 7
 
+def vertical_fea_linear_elasticity() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def vertical_cfd_lid_driven_cavity() -> int
+  requires true
+  ensures result == 9
+  decreases 0
+=
+  return 9
+
 def algo_registry_count() -> int
   requires true
   ensures result == 127
@@ -282,6 +296,20 @@ def algo_pde_heat_explicit_2d() -> int
   decreases 0
 =
   return 201
+
+def algo_cfd_simple() -> int
+  requires true
+  ensures result == 206
+  decreases 0
+=
+  return 206
+
+def algo_fea_stiffness_assembly() -> int
+  requires true
+  ensures result == 212
+  decreases 0
+=
+  return 212
 
 def algo_rigid_semi_implicit() -> int
   requires true

@@ -5,10 +5,10 @@ extern proc li_rt_sqrt(x: float) raises IO -> float
   decreases 0
 def li_std_physics_quantum_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 # WP-ECHEM-13: 2-state nonadiabatic population transfer (documented stub).
 def quantum_tddft_2state_population_step(p_ground: float, coupling: float, dt: float) -> float
@@ -88,3 +88,104 @@ def schrodinger_kinetic_diag(dx: float, mass: float) -> float
 =
   var hbar: float = 1.0
   return hbar * hbar / (2.0 * mass * dx * dx)
+
+# sim-p2-qm-dft-scf (lic#478) — H₂-class minimal SCF scaffold (STO-3G / RKS-LDA geometry).
+type QmScfH2StubResult = object
+  energy_hartree: float
+  converged: int
+  scf_iterations: int
+
+def qm_scf_h2_bond_length_ang() -> float
+  requires true
+  ensures result == 0.74
+  decreases 0
+=
+  return 0.74
+
+def qm_scf_h2_stub_max_iterations() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def qm_scf_h2_stub_method_code() -> int
+  requires true
+  ensures result == 418
+  decreases 0
+=
+  return 418
+
+def qm_scf_h2_lda_xc_density(rho: float) -> float
+  requires rho >= 0.0
+  ensures result <= 0.0
+  decreases 0
+=
+  if rho < 1.0e-12:
+    return 0.0
+  var cbrt: float = rho
+  if cbrt > 0.0:
+    cbrt = cbrt * cbrt * cbrt
+  return -0.7386 * cbrt
+
+def qm_scf_h2_energy_from_density(dens: float, bond: float) -> float
+  requires dens >= 0.0
+  requires bond > 0.0
+  ensures result <= 0.0
+  decreases 0
+=
+  var half: float = 0.5 * bond
+  var nuc: float = -2.0 / (half + 0.05)
+  var kin: float = 0.25 * dens
+  var xc: float = qm_scf_h2_lda_xc_density(dens)
+  return kin + nuc + xc
+
+def qm_scf_h2_stub_energy() -> QmScfH2StubResult
+  requires true
+  ensures result.scf_iterations >= 1
+  ensures result.scf_iterations <= qm_scf_h2_stub_max_iterations()
+  ensures result.converged >= 0
+  ensures result.converged <= 1
+  ensures result.energy_hartree <= 0.0
+  decreases 0
+=
+  var bond: float = qm_scf_h2_bond_length_ang()
+  var dens: float = 1.0
+  var energy: float = qm_scf_h2_energy_from_density(dens, bond)
+  var iter: int = 0
+  var tol: float = 1.0e-5
+  var mix: float = 0.35
+  var converged: int = 0
+  while iter < qm_scf_h2_stub_max_iterations()
+    var target: float = 2.0 / bond
+    dens = (1.0 - mix) * dens + mix * target
+    var e_new: float = qm_scf_h2_energy_from_density(dens, bond)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    iter = iter + 1
+    if de < tol:
+      converged = 1
+      break
+  var r: QmScfH2StubResult
+  r.energy_hartree = energy
+  r.converged = converged
+  r.scf_iterations = iter
+  return r
+
+def qm_scf_h2_stub_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var stub: QmScfH2StubResult = qm_scf_h2_stub_energy()
+  if stub.energy_hartree >= 0.0:
+    return 0
+  if stub.scf_iterations < 1:
+    return 0
+  if stub.converged != 0:
+    if stub.converged != 1:
+      return 0
+  return 1

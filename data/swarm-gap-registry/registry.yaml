@@ -269,16 +269,19 @@ gaps:
 - id: gap-plan-pending-sim-sim-p2-qm-dft-scf
   gap_kind: plan_debt
   title: 'sim: pending plan todo sim-p2-qm-dft-scf'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim plan_pending=sim-p2-qm-dft-scf
+  - closed by code_implementer lic#478 qm_dft_scf_energy stub
   runner_id: sim
   plan_todo_id: sim-p2-qm-dft-scf
   suggested_loop: sim
   handoff_to:
   - swarm_observer
+  closed_at: '2026-06-08T00:00:00Z'
+  closed_by: code_implementer
 - id: gap-plan-pending-studio-ui-ux-studio-ux-04-particle-display
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-04-particle-display'

@@ -730,6 +730,12 @@ note = "WP-PAR-15 Phase 1.1: parallel for reduce(+:) → li_parallel_for_reduce_
 
 [[tests]]
 suite = "parallel_codegen"
+file = "parallel_codegen/parallel_no_silent_serial.li"
+outcome = "verify_ok"
+note = "lic#109: mir_parallel_policy=static_chunk + li_parallel_for_i64 when --cores>1"
+
+[[tests]]
+suite = "parallel_codegen"
 file = "parallel_codegen/dpar_for_range.li"
 outcome = "verify_ok"
 note = "WP-PAR-23: distributed for MIR → li_distributed_for_i64"

@@ -47,6 +47,10 @@ fi
 li_phase "tier 0 bench"
 "$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 0 || fail "bench tier 0"
 
+li_phase "phase 2e exit gates (G-vc closed slice)"
+chmod +x "$ROOT/scripts/check-phase-2e-gates.sh"
+"$ROOT/scripts/check-phase-2e-gates.sh" || fail "phase 2e gates"
+
 li_phase "toolchain / doc / package smoke"
 chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/scripts/check-li-toolchain.sh" \

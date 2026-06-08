@@ -1,7 +1,26 @@
 # Proof corpus and verification roadmap
 
 **Audience:** agents extending **2e/2f**, reviewers judging “is `lic build` a proof certificate?”  
-**Related:** [Provability gaps](provability-gaps.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
+**Related:** [Provability gaps](provability-gaps.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md) · [Phase 2e exit gates](../superpowers/plans/2026-05-14-phase-02e-contracts-vc.md)
+
+## Phase 2e exit gates (G-vc closed slice)
+
+Consolidated CI gate:
+
+```bash
+./scripts/check-phase-2e-gates.sh
+```
+
+| ID | Evidence | Output |
+|----|----------|--------|
+| **2e-a** | `vc_emit_contracts.sh` | Real `Prop` in `AutoVC.lean` (not `True` stubs) |
+| **2e-b** | `mir_vc_witness.sh` | `lic verify` → `witnessed_ensures=` + `mir_return_linked=` |
+| **2e-c** | `compiler/verify/vc_witness.cpp` | C++ witness lowering in `lic` |
+| **2e-d** | `contracts_discharge_corpus.sh` | Closed slice → `check-autovc-open-goals.sh` ok |
+| **2e-f** | `run_all.sh contracts_verify` | Manifest rows honest |
+| **2e-g** | `prove_reject/weak_ensures_true.li` | **E0303** reject |
+
+Full checklist: [2026-05-14-phase-02e-contracts-vc.md](../superpowers/plans/2026-05-14-phase-02e-contracts-vc.md).
 
 ## What “testing proofs” means in this repo
 

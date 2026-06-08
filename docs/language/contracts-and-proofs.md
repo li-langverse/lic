@@ -3,7 +3,7 @@
 Li is **provable-only** by design: if proof obligations are not discharged, there should be **no binary**.
 
 !!! note "Implementation status"
-    **Today:** every `lic build` emits `build/generated/AutoVC.lean` and runs **Lean typecheck** when `lake` is installed; **open** obligations fail the build unless `--allow-open-vc`. Kernel discharge of all ensures is still **partial** — see **[Provability gaps](../verification/provability-gaps.md)**.
+    **Today:** every `lic build` emits `build/generated/AutoVC.lean` and runs **Lean typecheck** when `lake` is installed; **open** obligations fail the build unless `--allow-open-vc`. Kernel discharge of all ensures is still **partial** — see **[Provability gaps](../verification/provability-gaps.md)**. Phase **2e v1 exit gates** (typed AutoVC, MIR witness telemetry, open-goals checker on closed corpus) are documented in the **[phase-02e plan](../superpowers/plans/2026-05-14-phase-02e-contracts.md)**.
 
 ## On every procedure
 

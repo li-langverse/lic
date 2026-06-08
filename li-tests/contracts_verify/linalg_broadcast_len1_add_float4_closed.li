@@ -1,0 +1,22 @@
+# P-linalg: length-1 rhs broadcast add — Li.Discharge.broadcast_len1_add_float4_spec (PH-2i / G-math).
+def broadcast_len1_add_float4(a: array[4, float], b: array[1, float]) -> array[4, float]
+  requires true
+  ensures result[0] == a[0] + b[0] and result[1] == a[1] + b[0] and result[2] == a[2] + b[0] and result[3] == a[3] + b[0]
+  decreases 0
+=
+  return a + b
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var a: array[4, float]
+  a[0] = 1.0
+  a[1] = 2.0
+  a[2] = 3.0
+  a[3] = 4.0
+  var b: array[1, float]
+  b[0] = 10.0
+  var c: array[4, float] = broadcast_len1_add_float4(a, b)
+  return 0

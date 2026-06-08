@@ -497,6 +497,8 @@ Runnable on `dev` after `./scripts/build.sh`:
 
 ### Full master plan — **not complete** (v2 backlog)
 
+**Closure evidence (binding DoD):** [2026-06-07-partial-tracker-closure-evidence.md](2026-06-07-partial-tracker-closure-evidence.md) ([#25](https://github.com/li-langverse/lic/issues/25)) — agents must run cited gates before removing **partial** or flipping tracker rows.
+
 | v2 item | Gap ID(s) | Why still open |
 |---------|-----------|----------------|
 | **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |

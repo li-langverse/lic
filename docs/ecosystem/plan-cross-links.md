@@ -44,20 +44,24 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-16-li-ecosystem-governance.md` | **PH-Pkg** governance |
 | `ph-db-lidb-platform.md` | **PH-DB** (roadmap ADR owns detail) |
 | `2026-05-30-ph7e-tier1-red-benchmark-honesty.md` | **PH-7e** tier-1 honesty · **G-math** doc sync |
+| `2026-06-07-partial-tracker-closure-evidence.md` | **#25** — DoD gates for partial tracker rows (2e/2f/2i/7d/7e/H/Vision-LLM) |
 | `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
 
 ## Open master-plan tracker rows (2026-05-30)
 
-Preflight: `benchmarks/data/latest/ecosystem-audit.json` · `plan_completion_audit.summary.open_tracker_items: 5`. Do not mark **Done** without cited evidence.
+Preflight: `benchmarks/data/latest/ecosystem-audit.json` · `plan_completion_audit.summary.open_tracker_items: 5`. Do not mark **Done** without cited evidence. **DoD gates:** [2026-06-07-partial-tracker-closure-evidence.md](../superpowers/plans/2026-06-07-partial-tracker-closure-evidence.md) ([#25](https://github.com/li-langverse/lic/issues/25)).
 
 | PH | Gap ID(s) | Phase plan (lic) |
 |----|-----------|------------------|
+| **2e** — Contracts (partial `[x]`) | **G-vc** | DoD § PH-2e in [closure-evidence plan](../superpowers/plans/2026-06-07-partial-tracker-closure-evidence.md) |
+| **2f** — Lean verify (partial `[x]`) | **G-lean**, **G-vc**, **G-trust** | DoD § PH-2f in [closure-evidence plan](../superpowers/plans/2026-06-07-partial-tracker-closure-evidence.md) |
 | **2i** — Math / linalg | **G-math**, **G-math-syn** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) |
 | **7d** — Execution decorators | **G-dec**, **G-par** | [2026-05-16-li-execution-decorators.md](../superpowers/specs/2026-05-16-li-execution-decorators.md) · [phase-07-native-hpc](../superpowers/plans/2026-05-14-phase-07-native-hpc.md) |
 | **7e** — Math → SIMD lowering | **G-math** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) · [ph7e-tier1-red-benchmark-honesty](../superpowers/plans/2026-05-30-ph7e-tier1-red-benchmark-honesty.md) |
 | **8p** — Parallel compile / CI | — | [2026-05-22-parallel-compile-ci.md](../superpowers/plans/2026-05-22-parallel-compile-ci.md) |
 | **Vision-LLM** — Agent JSON diagnostics | — | [2026-05-16-li-llm-first-design.md](../superpowers/specs/2026-05-16-li-llm-first-design.md) |
+| **H** — li-httpd M1 (partial `[x]`) | **G-net**, **G-async** (partial) | [2026-05-16-li-httpd-plan.md](../superpowers/plans/2026-05-16-li-httpd-plan.md) · DoD § PH-H in [closure-evidence plan](../superpowers/plans/2026-06-07-partial-tracker-closure-evidence.md) |
 
 ## UI/UX quality (`ui_ux_quality` research goal)
 

@@ -14,6 +14,12 @@ note = "WP-SCI-03 tier-2 MD/heat oracle checksums; pde_external_oracle.py stub (
 
 [[tests]]
 suite = "smoke"
+file = "smoke/pde_implicit_oracle_sketch.li"
+outcome = "verify_ok"
+note = "lic#108 implicit PDE API sketch (matrix-free micro checksum)"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/run_algo_registry_tier2.li"
 outcome = "verify_ok"
 note = "WP-SCI-03 run_algo_registry MD/heat tier-2 dispatch"

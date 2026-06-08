@@ -48,7 +48,7 @@ Pinned: PETSc **3.25.x**, hypre **2.32.x** — see `benchmarks/tier2_physics/pde
 |------|--------|----------|
 | Validity (stub) | pass | `pde_external_oracle_stub.sh` exit 0 |
 | Registry | pass | `check-hpc-competitive.sh` + `pde_oracle.toml` |
-| API sketch | pass | `apply_heat_laplacian_1d`, `pde_implicit_jacobi_micro_checksum` |
+| API sketch | pass | `pde_implicit_oracle_nx`, `pde_implicit_jacobi_micro_checksum` (+ smoke `pde_implicit_oracle_sketch.li`) |
 | Perf | skip | No PETSc wall-time row |
 | Memory | skip | Study-only |
 | Security | skip | No native FFI |

@@ -45,4 +45,30 @@ std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir) {
   return n;
 }
 
+std::size_t count_mir_executor_def(const MirModule& mir) {
+  std::size_t n = 0;
+  for (const auto& fn : mir.functions) {
+    for (const auto& d : fn.decorators) {
+      if (d.executor) {
+        ++n;
+        break;
+      }
+    }
+  }
+  return n;
+}
+
+std::size_t count_mir_executor_physics_def(const MirModule& mir) {
+  std::size_t n = 0;
+  for (const auto& fn : mir.functions) {
+    for (const auto& d : fn.decorators) {
+      if (d.executor && d.executor_pool == "physics") {
+        ++n;
+        break;
+      }
+    }
+  }
+  return n;
+}
+
 }  // namespace li

@@ -88,7 +88,7 @@ void check_decorator_policies(const std::string& code, const std::string& file,
     }
     static const char* const kReserved[] = {
         "cpu", "gpu", "tpu", "user_defined", "parallel", "vectorized",
-        "async", "serial", "no_vectorize", nullptr,
+        "async", "executor", "serial", "no_vectorize", nullptr,
     };
     for (const char* const* p = kReserved; *p != nullptr; ++p) {
       const std::string prefix = std::string(*p) + "_";

@@ -446,6 +446,12 @@ note = "P-linalg closed: mat2_at2_float_spec_proved"
 
 [[tests]]
 suite = "contracts_verify"
+file = "contracts_verify/linalg_broadcast_len1_add_float4_closed.li"
+outcome = "prove_lean_ok"
+note = "P-linalg closed: broadcast_len1_add_float4_spec_proved (PH-2i / G-math)"
+
+[[tests]]
+suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_callproc_float_closed.li"
 outcome = "prove_lean_ok"
 note = "P-linalg closed"

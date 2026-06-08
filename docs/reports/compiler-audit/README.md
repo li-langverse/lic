@@ -13,7 +13,7 @@ Agents **must not** edit `compiler/` from proof-explorer goals. File or update t
 |----|------------|--------|-----------------|------------|
 | BUG-C-01 | `dot4_loop_ensures_lean_stub_gap.sh` | [BUG-C-01.md](BUG-C-01.md) | **Resolved** — [PR #696](https://github.com/li-langverse/lic/pull/696) | PASS |
 | BUG-C-02 | `bounds_guard_codegen_gap.sh` | [BUG-C-02.md](BUG-C-02.md) | **Resolved** | PASS |
-| BUG-C-03 | `broadcast_len1_codegen_lean_gap.sh` | [BUG-C-03.md](BUG-C-03.md) | Open (Lean spec) | PASS |
+| BUG-C-03 | `broadcast_len1_codegen_lean_gap.sh` | [BUG-C-03.md](BUG-C-03.md) | Closed slice (add) | PASS |
 | BUG-C-04 | `horner_fma_numerically_stable_gap.sh` | [BUG-C-04.md](BUG-C-04.md) | **Resolved** | PASS |
 | BUG-C-05 | `mat2_at2_mir_codegen_lean_gap.sh` | [BUG-C-05.md](BUG-C-05.md) | **Resolved** (eval; MIR lemma deferred) | PASS |
 | BUG-C-06 | `matmul_loop_codegen_witness_gap.sh` | [BUG-C-06.md](BUG-C-06.md) | **Resolved** (partial 2×2 witness) | PASS |

@@ -441,6 +441,50 @@ bool expr_is_mat2_int_spec(const Expr& e, const std::string& a, const std::strin
   return true;
 }
 
+bool expr_is_broadcast_len1_add_ij_entry_eq(const Expr* e, const std::string& c,
+                                            const std::string& a, const std::string& b,
+                                            std::int64_t idx) {
+  if (e == nullptr || e->kind != Expr::Kind::BinOp || e->bin_op != BinOp::Eq || !e->lhs ||
+      !e->rhs) {
+    return false;
+  }
+  const Expr* lhs = e->lhs.get();
+  const Expr* rhs = e->rhs.get();
+  if (lhs->kind != Expr::Kind::Index || !expr_is_ident(lhs->base.get(), c) ||
+      !expr_is_int_lit(lhs->index.get(), idx)) {
+    return false;
+  }
+  if (rhs->kind != Expr::Kind::BinOp || rhs->bin_op != BinOp::Add || !rhs->lhs || !rhs->rhs) {
+    return false;
+  }
+  const auto a_idx_ok = [&](const Expr* side) -> bool {
+    return side && side->kind == Expr::Kind::Index && expr_is_ident(side->base.get(), a) &&
+           expr_is_int_lit(side->index.get(), idx);
+  };
+  const auto b0_ok = [&](const Expr* side) -> bool {
+    return side && side->kind == Expr::Kind::Index && expr_is_ident(side->base.get(), b) &&
+           expr_is_int_lit(side->index.get(), 0);
+  };
+  return (a_idx_ok(rhs->lhs.get()) && b0_ok(rhs->rhs.get())) ||
+         (a_idx_ok(rhs->rhs.get()) && b0_ok(rhs->lhs.get()));
+}
+
+bool expr_is_broadcast_len1_add_spec(const Expr& e, const std::string& a, const std::string& b,
+                                     const std::string& c) {
+  std::vector<const Expr*> terms;
+  collect_and_chain_terms(&e, terms);
+  if (terms.size() != 4) {
+    return false;
+  }
+  for (std::int64_t idx = 0; idx < 4; ++idx) {
+    if (!expr_is_broadcast_len1_add_ij_entry_eq(terms[static_cast<std::size_t>(idx)], c, a, b,
+                                                idx)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 
 bool expr_is_float_lit(const Expr* e, double v) {
   return e && e->kind == Expr::Kind::FloatLit && std::fabs(e->float_value - v) < 1e-15;
@@ -497,6 +541,18 @@ bool witness_mat2_int_at2_spec_impl(const ProcDecl& proc, const Expr& ensures_ex
     return false;
   }
   return expr_is_mat2_int_spec(ensures_expr, ret->lhs->ident, ret->rhs->ident, "result");
+}
+
+bool witness_broadcast_len1_add_spec_impl(const ProcDecl& proc, const Expr& ensures_expr) {
+  const Expr* ret = single_return_expr(proc);
+  if (ret == nullptr || ret->kind != Expr::Kind::BinOp || ret->bin_op != BinOp::Add || !ret->lhs ||
+      !ret->rhs) {
+    return false;
+  }
+  if (ret->lhs->kind != Expr::Kind::Ident || ret->rhs->kind != Expr::Kind::Ident) {
+    return false;
+  }
+  return expr_is_broadcast_len1_add_spec(ensures_expr, ret->lhs->ident, ret->rhs->ident, "result");
 }
 
 bool expr_is_vec3_len_sq_callproc(const Expr& ensures_expr, const std::string& a) {
@@ -679,6 +735,9 @@ bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const
   if (witness_mat2_int_at2_spec_impl(proc, *c.expr)) {
     return true;
   }
+  if (witness_broadcast_len1_add_spec_impl(proc, *c.expr)) {
+    return true;
+  }
   if (witness_vec3_len_sq_callproc_impl(proc, *c.expr)) {
     return true;
   }
@@ -822,6 +881,10 @@ bool witness_mat2_int_at2_spec(const ProcDecl& proc, const Expr& ensures_expr) {
 
 bool witness_matmul2_at2_spec(const ProcDecl& proc, const Expr& ensures_expr) {
   return witness_mat2_int_at2_spec_impl(proc, ensures_expr);
+}
+
+bool witness_broadcast_len1_add_spec(const ProcDecl& proc, const Expr& ensures_expr) {
+  return witness_broadcast_len1_add_spec_impl(proc, ensures_expr);
 }
 
 bool witness_vec3_len_sq_callproc(const ProcDecl& proc, const Expr& ensures_expr) {

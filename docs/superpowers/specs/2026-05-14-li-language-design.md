@@ -361,10 +361,16 @@ Requires: hardware feature detection, explicit conversion rules (`f32` ↔ `bf16
 |---------|---------|
 | `tensor[Shape, T]` | Shape in the type — e.g. `tensor[(3, 3), f64]` vs `tensor[(3,), f64]`; dimension errors at compile time |
 | `array[N, T]` (v1) | Fixed rank-1/2 stack arrays; Tetris boards, small grids |
-| GPU buffers `device[T]` / `host[T]` | Separate address spaces; copy semantics explicit |
+| `MemorySpace` enum | `Host`, `Device`, `Unified` — static placement tag (Kokkos-class; [#110](https://github.com/li-langverse/lic/issues/110)) |
+| `ExecutionSpace` enum | `Serial`, `OpenMP`, `Threads` (v1); `SYCL` / `Cuda` / `HIP` reserved ([#116](https://github.com/li-langverse/lic/issues/116)) |
+| `View[T, Space, Layout]` | Allocated buffer bound to one memory space; lifecycle construct → use → destroy in same space unless `@sync_*` |
+| `hostbuffer[T]` / `devicebuffer[T]` / `unifiedbuffer[T]` | Separate address spaces; **no** implicit DualView mirror |
+| `@sync_host(view)` / `@sync_device(view)` | Explicit host↔device copy (compile-time elaboration; [#15](https://github.com/li-langverse/lic/issues/15)) |
 | Kernel `gpu proc` | Entry points for CUDA / Metal / Vulkan compute (one backend chosen first) |
 
-Depends on Phase 1 numerics (including SIMD) and a stable MIR → LLVM path (or secondary GPU IR).
+**Normative policy:** [Kokkos memory & execution spaces rubric](../../hpc/kokkos-memory-execution-spaces-rubric.md) · [Copy/sync contract](../../hpc/kokkos-copy-sync-contract.md).
+
+Depends on Phase 1 numerics (including SIMD) and a stable MIR → LLVM path (or secondary GPU IR). Layout / stride ABI: [#128](https://github.com/li-langverse/lic/issues/128).
 
 ---
 
@@ -534,9 +540,13 @@ GPU side (with numeric Phase 3):
 
 | Type | Purpose |
 |------|---------|
-| `devicebuffer[T]` | GPU-owned contiguous storage |
-| `hostbuffer[T]` | Pinned/pageable host mirror |
-| `ndview[Shape, T]` | View with strides (non-contiguous) |
+| `MemorySpace` | `Host` \| `Device` \| `Unified` — compile-time placement (see rubric #110) |
+| `ExecutionSpace` | `Serial` \| `OpenMP` \| `Threads` (+ reserved GPU backends) |
+| `View[T, Space, Layout]` | Kokkos-class owning view; explicit sync for cross-space access |
+| `devicebuffer[T]` | GPU-owned contiguous storage (`MemorySpace.Device`) |
+| `hostbuffer[T]` | Pinned/pageable host storage (`MemorySpace.Host`); not an implicit device mirror |
+| `unifiedbuffer[T]` | Managed / unified memory (`MemorySpace.Unified`); no silent migration on read |
+| `ndview[Shape, T]` | Non-owning view with strides (non-contiguous); layout ABI in #128 |
 
 ---
 

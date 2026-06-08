@@ -1,0 +1,10 @@
+{
+  "mode": "stub_ok",
+  "engine": "petsc_hypre",
+  "oracle_ids": [
+    "petsc_hypre_heat_implicit"
+  ],
+  "grid": 64,
+  "petsc_dir_set": false,
+  "updated": "2026-06-08T02:12:17Z"
+}

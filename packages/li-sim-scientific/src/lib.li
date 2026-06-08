@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 7
+  ensures result == 8
   decreases 0
 =
-  return 7
+  return 8
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -289,6 +289,14 @@ def sim_scientific_oracle_checksum_fea() -> float
   var u2: float = 0.0005
   var energy: float = fea_oracle_cst_strain_energy(u0, u1, u2, E, nu, area)
   return energy + area
+
+# WP-SCI-03 — tier-2 Li oracle: STO-3G H LDA DFT single-point energy (chem_dft kernel).
+def sim_scientific_oracle_checksum_qm_dft() -> float
+  requires true
+  ensures result <= 0.0
+  decreases 0
+=
+  return chem_dft_energy_kernel_hartree()
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int
@@ -697,14 +705,10 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
-  var vert: int = 0
-  if algo_id >= 401:
-    if algo_id <= 432:
-      vert = vertical_qm_dft()
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo_id
-  r.vertical_id = vert
+  r.vertical_id = 0
   r.checksum = 1.001
   r.detail_emitted = detail
   return r
@@ -781,6 +785,25 @@ def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.ok = 1
   r.algo_id = algo_id
   r.vertical_id = vertical_fea_linear_elasticity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 401
+  requires algo_id <= 432
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm_dft()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
   r.checksum = chk
   r.detail_emitted = detail
   return r
@@ -889,6 +912,10 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_echem_sei_kmc():
     var d_sei: int = detail
     return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
+  if algo_id >= 401:
+    if algo_id <= 432:
+      var d_qm: int = detail
+      return run_qm_tier2_registry(algo_id, d_qm)
   var d3: int = detail
   return run_algo_registry_stub(algo_id, d3)
 
@@ -916,6 +943,9 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_fea_linear_elasticity():
     var d_fea: int = detail
     return run_fea_tier2_registry(algo_id, d_fea)
+  if algo_id == algo_qm_dft_scf_energy():
+    var d_qm: int = detail
+    return run_qm_tier2_registry(algo_id, d_qm)
   if algo_id == algo_rigid_semi_implicit():
     var d3: int = detail
     return run_rigid_smoke(d3)

@@ -285,6 +285,8 @@ std::size_t count_mir_vectorized_proc(const MirModule& mir);
 std::size_t count_mir_gpu_def(const MirModule& mir);
 std::size_t count_mir_gpu_multi_device_def(const MirModule& mir);
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
+/** Count `OmpParallelFor` MIR sites — proves parallel policy lowering, not serial fallback. */
+std::size_t count_mir_omp_parallel_for(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
 

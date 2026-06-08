@@ -1,11 +1,11 @@
-# Publish metadata — PKG-li-std-physics-particles
+# Publish metadata — PKG-li-physics-particles
 
 | Field | Value |
 |-------|--------|
-| **PKG id** | `PKG-li-std-physics-particles` |
-| **Registry name** | `li-std-physics-particles` (lip, phase 8d) |
+| **PKG id** | `PKG-li-physics-particles` |
+| **Registry name** | `li-physics-particles` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-std-physics-particles |
+| **Repository** | https://github.com/li-langverse/li-physics-particles |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)

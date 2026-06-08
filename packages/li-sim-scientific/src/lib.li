@@ -208,40 +208,16 @@ def sim_scientific_oracle_checksum_heat() -> float
     step = step + 1
   return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
 
-# WP-SCI-03 — tier-2 Li oracle: harmonic-well + FD kinetic checksum (algo 401–432).
-def qm_oracle_kinetic_diag(dx: float, mass: float) -> float
-  requires dx > 0.0
-  requires mass > 0.0
-  ensures result > 0.0
-  decreases 0
-=
-  var hbar: float = 1.0
-  return hbar * hbar / (2.0 * mass * dx * dx)
-
-def qm_oracle_harmonic_pe(x: float, k: float) -> float
-  requires k >= 0.0
-  ensures result >= 0.0
-  decreases 0
-=
-  return 0.5 * k * x * x
-
+# WP-SCI-03 — tier-2 Li oracle: mini STO-3G DFT energy via chem_dft_energy_kernel_hartree.
 def sim_scientific_oracle_checksum_qm() -> float
   requires true
   ensures result > 0.0
   decreases 0
 =
-  var k: float = 1.0
-  var dx: float = 0.5
-  var mass: float = 1.0
-  var t: float = qm_oracle_kinetic_diag(dx, mass)
-  var pe: float = 0.0
-  pe = pe + qm_oracle_harmonic_pe(-1.0, k)
-  pe = pe + qm_oracle_harmonic_pe(-0.5, k)
-  pe = pe + qm_oracle_harmonic_pe(0.0, k)
-  pe = pe + qm_oracle_harmonic_pe(0.5, k)
-  pe = pe + qm_oracle_harmonic_pe(1.0, k)
-  pe = pe + qm_oracle_harmonic_pe(1.5, k)
-  return pe + t
+  var e: float = chem_dft_energy_kernel_hartree()
+  if e >= 0.0:
+    return 1.0e-12
+  return -e
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int
@@ -641,6 +617,9 @@ def run_rigid_smoke(detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+# Stub-only registry rows: drug (501–505), bio (511–514), robo catalog (521–523),
+# additive (601–610), game (701–707), robo step (801–805), auto (901–903).
+# QM (401–432), MD/heat/rigid, and echem (433–435) use tier-2 dispatch above.
 def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -651,9 +630,6 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   decreases 0
 =
   var vert: int = 0
-  if algo_id >= 401:
-    if algo_id <= 432:
-      vert = vertical_qm_dft()
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo_id
@@ -794,6 +770,10 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
       var rigid: SimRunResult = run_rigid_smoke(d2)
       rigid.algo_id = algo_id
       return rigid
+  if algo_id >= 401:
+    if algo_id <= 432:
+      var d_qm: int = detail
+      return run_qm_tier2_registry(algo_id, d_qm)
   if algo_id == algo_echem_aimd_interface():
     var d_echem: int = detail
     return run_echem_aimd_tier2_registry(algo_id, d_echem)

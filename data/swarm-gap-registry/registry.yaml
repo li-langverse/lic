@@ -603,11 +603,12 @@ gaps:
 - id: gap-plan-pending-security-research-sec-r1-httpd-fuzz-smoke
   gap_kind: plan_debt
   title: 'security-research: pending plan todo sec-r1-httpd-fuzz-smoke'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=security-research plan_pending=sec-r1-httpd-fuzz-smoke
+  - closed by lic#521 — http_parse_fuzz smoke + study 2026-06-07-sec-r1-httpd-fuzz-smoke.md
   runner_id: security-research
   plan_todo_id: sec-r1-httpd-fuzz-smoke
   suggested_loop: security-research
@@ -616,11 +617,12 @@ gaps:
 - id: gap-plan-pending-security-research-sec-r2-tier5-gap-exploit
   gap_kind: plan_debt
   title: 'security-research: pending plan todo sec-r2-tier5-gap-exploit'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=security-research plan_pending=sec-r2-tier5-gap-exploit
+  - closed by lic#521 — CWE-20 catalog + study 2026-06-07-sec-r2-tier5-gap-exploit.md
   runner_id: security-research
   plan_todo_id: sec-r2-tier5-gap-exploit
   suggested_loop: security-research
@@ -629,11 +631,12 @@ gaps:
 - id: gap-plan-pending-security-research-sec-r3-runtime-surface
   gap_kind: plan_debt
   title: 'security-research: pending plan todo sec-r3-runtime-surface'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=security-research plan_pending=sec-r3-runtime-surface
+  - closed by lic#521 — ASan slice + study 2026-06-07-sec-r3-runtime-surface.md
   runner_id: security-research
   plan_todo_id: sec-r3-runtime-surface
   suggested_loop: security-research

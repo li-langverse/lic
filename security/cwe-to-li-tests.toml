@@ -114,6 +114,13 @@ template = "cwe676_extern_no_contract.li"
 notes = "Dangerous function seam — extern without contracts rejected"
 
 [[pattern]]
+cwe = "CWE-20"
+li_obligation = "httpd_validation"
+suite = "security"
+template = "httpd-fuzz-smoke.sh"
+notes = "HTTP input validation — http_parse_fuzz smoke + tier5 bad_method/oversized_request_line"
+
+[[pattern]]
 cwe = "CWE-UNKNOWN"
 li_obligation = "compile_fail"
 suite = "prove_reject"

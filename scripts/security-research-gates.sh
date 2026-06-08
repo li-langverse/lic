@@ -67,6 +67,16 @@ if [[ "$STUDY_ONLY" == "1" ]]; then
       gate_log="${gate_log}; missing study: ${SECURITY_RESEARCH_REQUIRE_STUDY}"
     fi
   fi
+  if [[ "${HTTPD_FUZZ_SMOKE:-0}" == "1" || "${SECURITY_RESEARCH_HTTPD_FUZZ:-0}" == "1" ]]; then
+    if [[ -x "$ROOT/scripts/httpd-fuzz-smoke.sh" ]]; then
+      if ! "$ROOT/scripts/httpd-fuzz-smoke.sh" 2>&1 | tail -n 15; then
+        posture_ok=0
+        gate_log="${gate_log}; httpd-fuzz-smoke failed"
+      else
+        gate_log="${gate_log}; httpd-fuzz-smoke ok"
+      fi
+    fi
+  fi
   cwe_feed_ok=1
 else
   if [[ -x "$ROOT/li-tests/run_security.sh" ]]; then
@@ -81,6 +91,17 @@ else
       asan_ok=0
       posture_ok=0
     fi
+  fi
+fi
+
+if [[ "${LI_SECURITY_ASAN:-0}" == "1" && -x "$ROOT/li-tests/security/run_security_asan_slice.sh" ]]; then
+  security_note="asan native slice"
+  if ! "$ROOT/li-tests/security/run_security_asan_slice.sh" 2>&1 | tail -n 15; then
+    asan_ok=0
+    posture_ok=0
+    gate_log="${gate_log}; asan slice failed"
+  else
+    gate_log="${gate_log}; asan slice ok"
   fi
 fi
 

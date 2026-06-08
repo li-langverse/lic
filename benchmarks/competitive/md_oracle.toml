@@ -1,0 +1,80 @@
+# Domain MD external oracle registry (Layer B).
+# Plan: docs/benchmarks/competitive-engines-plan.md
+# Gate: scripts/ph-sci-md-oracle-competitive-gates.sh
+
+[meta]
+version = 1
+benchmark = "md_lennard_jones"
+updated = "2026-06-06"
+schema = "li_ph_sci_md_oracle_competitive_v1"
+registry_review_days_warn = 90
+
+[harness]
+script = "scripts/bench-ph-sci-md-oracle-competitive.sh"
+output_competitive = "benchmarks/results/md_lennard_jones/oracle_stub.json"
+driver = "benchmarks/harness/md_external_oracle.py"
+gate_script = "scripts/ph-sci-md-oracle-competitive-gates.sh"
+li_tests = "li-tests/tooling/md_external_oracle_stub.sh"
+
+# status: stub | active | retired
+# workload_class: v0_micro | full (per BENCH_WORKLOADS honesty)
+# oracle: external_binary (domain executable, not shared C kernel)
+
+[[oracle]]
+id = "lammps_lj_micro"
+incumbent = "LAMMPS"
+repo_url = "https://github.com/lammps/lammps"
+pinned_version = "2024.06.27"
+pinned_tag = "stable_22Jun2024"
+csv_lang = "lammps"
+track = "oracle_stub"
+workload_class = "v0_micro"
+kernel_or_api = "LJ NVE micro — 256 particles, 10k steps, reduced units"
+oracle = "external_binary"
+compare_metric = "energy_drift"
+reference = "sim_scientific_oracle_checksum_md() (Li in-repo micro)"
+driver = "benchmarks/harness/md_external_oracle.py"
+input_stub = "benchmarks/competitive/lammps_mdlj.lammps"
+status = "stub"
+last_reviewed = "2026-06-06"
+notes = "B0: stub records Li micro reference; LAMMPS deck skeleton only. B1: align FCC+MB IC with md_core."
+
+[[oracle]]
+id = "gromacs_lj_micro"
+incumbent = "GROMACS"
+repo_url = "https://gitlab.com/gromacs/gromacs"
+pinned_version = "2024.2"
+pinned_tag = "v2024.2"
+csv_lang = "gromacs"
+track = "oracle_stub"
+workload_class = "v0_micro"
+kernel_or_api = "LJ NVE micro — same contract as lammps_lj_micro"
+oracle = "external_binary"
+compare_metric = "energy_drift"
+reference = "sim_scientific_oracle_checksum_md() (Li in-repo micro)"
+driver = "benchmarks/harness/md_external_oracle.py"
+input_stub = "benchmarks/competitive/gromacs_mdlj.mdp"
+status = "stub"
+last_reviewed = "2026-06-06"
+notes = "B0: stub only. B2: gmx mdrun after mdp matches reduced LJ + MIC box."
+
+[[row]]
+id = "md_lj_micro_oracle"
+kernel = "sim.scientific.oracle_checksum_md"
+workload_class = "v0_micro"
+workload = "4_particle_lj_chain_8vv"
+algo_registry_id = 104
+algo_registry_name = "md_oracle_external"
+energy_drift_tolerance = 1.0e-3
+incumbent = "LAMMPS/GROMACS micro (external_binary)"
+competitors = ["lammps", "gromacs"]
+
+[competitor.lammps]
+license = "GPL-2.0"
+bundled = false
+notes = "User-run only — see README-md-oracle.md"
+
+[competitor.gromacs]
+license = "LGPL-2.1"
+bundled = false
+notes = "User-run only — see README-md-oracle.md"

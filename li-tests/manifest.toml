@@ -1570,6 +1570,12 @@ note = "WP-PAR-99: killer gate script + sub-gates; full stack in GHA lipar-kille
 
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
+[[tests]]
+suite = "tooling"
+file = "tooling/md_external_oracle_stub.sh"
+outcome = "script_ok"
+note = "md-r3-oracle-plan: md_oracle.toml + ph-sci-md-oracle-competitive-gates.sh"
+
 # --- stdlib_parity (WP0-D — compile-only until WP-WA + WP1 runtime) ---
 
 [[tests]]

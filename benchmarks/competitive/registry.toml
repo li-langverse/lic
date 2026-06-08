@@ -92,6 +92,26 @@ last_reviewed = "2026-05-16"
 notes = "SYCL/oneAPI; GPU offload out of scope until Li device story exists."
 
 [[ecosystem]]
+id = "lammps_lj_micro"
+track = "watch"
+repo_url = "https://github.com/lammps/lammps"
+compare = ["md_lennard_jones"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-06"
+notes = "Layer B MD oracle; md_oracle.toml lammps_lj_micro stub; B1 real deck."
+
+[[ecosystem]]
+id = "gromacs_lj_micro"
+track = "watch"
+repo_url = "https://gitlab.com/gromacs/gromacs"
+compare = ["md_lennard_jones"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-06"
+notes = "Layer B MD oracle; md_oracle.toml gromacs_lj_micro stub; B2 gmx mdrun."
+
+[[ecosystem]]
 id = "zig"
 track = "watch"
 repo_url = "https://github.com/ziglang/zig"

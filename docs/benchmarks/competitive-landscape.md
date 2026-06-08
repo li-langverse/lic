@@ -12,6 +12,8 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 | Rust | bench_tier2 | `rust` | Same kernels via shared C core | shared_c_kernel |
 | Julia | bench_tier2 | `julia` | Tier-2 physics + micro | shared_c_kernel |
 | Li | bench_tier2 | `li` | Same fixtures | mixed (pure_li vs shared) |
+| LAMMPS (MD oracle) | watch | `lammps` (planned) | External validity column | external_binary stub |
+| GROMACS (MD oracle) | watch | `gromacs` (planned) | External validity column | external_binary stub |
 | OpenMP / races | bench_tier0 | — | Tier-0 correctness, race rejects | CI strict |
 
 ## Watch list (manual review)

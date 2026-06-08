@@ -1,0 +1,16 @@
+{
+  "schema": "li_md_oracle_stub_v1",
+  "benchmark": "md_lennard_jones",
+  "mode": "stub_ok",
+  "reference_energy_drift": 6.969122800372497e-05,
+  "oracle_ids": [
+    "lammps_lj_micro",
+    "gromacs_lj_micro"
+  ],
+  "pending_real_drivers": [],
+  "updated": "2026-06-06T16:05:56.327236+00:00",
+  "plan": "docs/benchmarks/competitive-engines-plan.md",
+  "registry": "benchmarks/competitive/md_oracle.toml",
+  "gate_script": "scripts/ph-sci-md-oracle-competitive-gates.sh",
+  "li_tests": "li-tests/tooling/md_external_oracle_stub.sh"
+}

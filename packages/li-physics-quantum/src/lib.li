@@ -5,10 +5,10 @@ extern proc li_rt_sqrt(x: float) raises IO -> float
   decreases 0
 def li_std_physics_quantum_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 # WP-ECHEM-13: 2-state nonadiabatic population transfer (documented stub).
 def quantum_tddft_2state_population_step(p_ground: float, coupling: float, dt: float) -> float
@@ -88,3 +88,190 @@ def schrodinger_kinetic_diag(dx: float, mass: float) -> float
 =
   var hbar: float = 1.0
   return hbar * hbar / (2.0 * mass * dx * dx)
+
+# WP-SIM-P2 / lic#478: H₂ STO-3G-class minimal SCF stub (algo_id=418 kernel tier T0).
+def qm_scf_h2_bond_length_ang() -> float
+  requires true
+  ensures result == 0.74
+  decreases 0
+=
+  return 0.74
+
+def qm_scf_h2_stub_grid_n() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def qm_scf_h2_stub_grid_r_at(i: int) -> float
+  requires i >= 0
+  requires i < qm_scf_h2_stub_grid_n()
+  ensures result > 0.0
+  decreases 0
+=
+  return 0.12 + 0.22 * float(i)
+
+def qm_scf_h2_stub_grid_dr() -> float
+  requires true
+  ensures result == 0.22
+  decreases 0
+=
+  return 0.22
+
+def qm_scf_h2_stub_nuclear_potential(r: float, half_bond: float) -> float
+  requires r > 0.0
+  requires half_bond > 0.0
+  ensures result < 0.0
+  decreases 0
+=
+  var d1: float = r + half_bond
+  var d2: float = r + half_bond
+  if d1 < 0.05:
+    d1 = 0.05
+  if d2 < 0.05:
+    d2 = 0.05
+  return -1.0 / d1 - 1.0 / d2
+
+def qm_scf_h2_stub_fill_uniform(dens: var array[8, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < qm_scf_h2_stub_grid_n()
+    dens[i] = 0.125
+    i = i + 1
+
+def qm_scf_h2_stub_fill_target(dens: var array[8, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < qm_scf_h2_stub_grid_n()
+    var r: float = qm_scf_h2_stub_grid_r_at(i)
+    dens[i] = 1.0 / (1.0 + r * r)
+    i = i + 1
+
+def qm_scf_h2_stub_normalize(dens: var array[8, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var s: float = 0.0
+  var dr: float = qm_scf_h2_stub_grid_dr()
+  var i: int = 0
+  while i < qm_scf_h2_stub_grid_n()
+    s = s + dens[i] * dr
+    i = i + 1
+  if s < 1.0e-12:
+    return
+  var inv: float = 1.0 / s
+  i = 0
+  while i < qm_scf_h2_stub_grid_n()
+    dens[i] = dens[i] * inv
+    i = i + 1
+
+def qm_scf_h2_stub_energy_from_density(dens: array[8, float]) -> float
+  requires true
+  ensures result <= 0.0
+  decreases 0
+=
+  var dr: float = qm_scf_h2_stub_grid_dr()
+  var half_bond: float = 0.5 * qm_scf_h2_bond_length_ang()
+  var kin: float = schrodinger_kinetic_diag(dr, 1.0)
+  var pot: float = 0.0
+  var i: int = 0
+  while i < qm_scf_h2_stub_grid_n()
+    var r: float = qm_scf_h2_stub_grid_r_at(i)
+    var rho: float = dens[i]
+    pot = pot + rho * qm_scf_h2_stub_nuclear_potential(r, half_bond) * dr
+    i = i + 1
+  return kin + pot
+
+def qm_scf_h2_stub_mix_step(dens: var array[8, float], mix: float) -> float
+  requires mix > 0.0
+  requires mix <= 1.0
+  ensures result <= 0.0
+  decreases 0
+=
+  var target: array[8, float]
+  qm_scf_h2_stub_fill_target(target)
+  var i: int = 0
+  while i < qm_scf_h2_stub_grid_n()
+    dens[i] = (1.0 - mix) * dens[i] + mix * target[i]
+    i = i + 1
+  qm_scf_h2_stub_normalize(dens)
+  return qm_scf_h2_stub_energy_from_density(dens)
+
+def qm_scf_h2_stub_energy() -> float
+  requires true
+  ensures result <= 0.0
+  decreases 0
+=
+  var dens: array[8, float]
+  qm_scf_h2_stub_fill_uniform(dens)
+  qm_scf_h2_stub_normalize(dens)
+  var energy: float = qm_scf_h2_stub_energy_from_density(dens)
+  var iter: int = 0
+  var tol: float = 1.0e-4
+  var mix: float = 0.35
+  while iter < 8
+    var e_new: float = qm_scf_h2_stub_mix_step(dens, mix)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    if de < tol:
+      return energy
+    iter = iter + 1
+  return energy
+
+def qm_scf_h2_stub_converged() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var dens: array[8, float]
+  qm_scf_h2_stub_fill_uniform(dens)
+  qm_scf_h2_stub_normalize(dens)
+  var energy: float = qm_scf_h2_stub_energy_from_density(dens)
+  var iter: int = 0
+  var tol: float = 1.0e-4
+  var mix: float = 0.35
+  while iter < 8
+    var e_new: float = qm_scf_h2_stub_mix_step(dens, mix)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    if de < tol:
+      return 1
+    iter = iter + 1
+  return 0
+
+def qm_scf_h2_stub_iterations() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 8
+  decreases 0
+=
+  var dens: array[8, float]
+  qm_scf_h2_stub_fill_uniform(dens)
+  qm_scf_h2_stub_normalize(dens)
+  var energy: float = qm_scf_h2_stub_energy_from_density(dens)
+  var iter: int = 0
+  var tol: float = 1.0e-4
+  var mix: float = 0.35
+  while iter < 8
+    var e_new: float = qm_scf_h2_stub_mix_step(dens, mix)
+    var de: float = e_new - energy
+    if de < 0.0:
+      de = -de
+    energy = e_new
+    iter = iter + 1
+    if de < tol:
+      return iter
+  return 8

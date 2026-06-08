@@ -1,0 +1,31 @@
+# sim-p2-qm-dft-scf: algo_id=418 H2 STO-3G LDA SCF stub + vertical dispatch.
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() != 7:
+    return 1
+  var oracle: float = qm_dft_scf_energy_smoke_checksum()
+  if oracle >= 0.0:
+    return 2
+  var qm: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 1)
+  if run_result_ok(qm) != 1:
+    return 3
+  if qm.algo_id != algo_qm_dft_scf_energy():
+    return 4
+  if qm.vertical_id != vertical_qm_dft():
+    return 5
+  if qm.checksum != oracle:
+    return 6
+  if qm.checksum == 1.001:
+    return 7
+  var vert: SimRunResult = run_simulation(vertical_qm_dft(), 0)
+  if run_result_ok(vert) != 1:
+    return 8
+  if vert.checksum != oracle:
+    return 9
+  return 0

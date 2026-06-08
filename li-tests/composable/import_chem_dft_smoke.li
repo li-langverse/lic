@@ -1,0 +1,25 @@
+import chem
+import sim
+import sim.scientific
+
+def smoke_chem_dft_scf_crosslink() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var e_h2: float = echem_dft_h2_energy_hartree()
+  if e_h2 >= 0.0:
+    return 1
+  var qm: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  if run_result_ok(qm) != 1:
+    return 2
+  if qm.checksum == 1.001:
+    return 3
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return smoke_chem_dft_scf_crosslink()

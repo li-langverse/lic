@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `QmDftScfStubResult`, `qm_dft_scf_h2_lda_stub`, and `qm_dft_scf_energy_smoke_checksum` for algo_id=418 (H2 STO-3G LDA minimal SCF stub).
 - Initial scaffold via `scripts/li-new-package` (PKG-li-std-physics-quantum).
 
 ## [0.1.0] - 2026-05-16

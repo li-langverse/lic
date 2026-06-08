@@ -3,13 +3,14 @@ import sim
 import chem
 import physics.particles
 import physics.rigid
+import physics.quantum
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -581,6 +582,22 @@ def run_heat_smoke(detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_qm_dft_scf_energy_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == 418
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_qm_dft_scf_energy()
+  r.vertical_id = vertical_qm_dft()
+  r.checksum = qm_dft_scf_energy_smoke_checksum()
+  r.detail_emitted = detail
+  return r
+
 def run_rigid_smoke(detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -701,6 +718,24 @@ def run_echem_gc_aimd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_qm_dft_scf_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id == algo_qm_dft_scf_energy()
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = qm_dft_scf_energy_smoke_checksum()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_echem_sei_kmc_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -749,6 +784,9 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_echem_sei_kmc():
     var d_sei: int = detail
     return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
+  if algo_id == algo_qm_dft_scf_energy():
+    var d_qm: int = detail
+    return run_qm_dft_scf_tier2_registry(algo_id, d_qm)
   var d3: int = detail
   return run_algo_registry_stub(algo_id, d3)
 
@@ -773,6 +811,9 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_rigid_semi_implicit():
     var d3: int = detail
     return run_rigid_smoke(d3)
+  if algo_id == algo_qm_dft_scf_energy():
+    var d_qm: int = detail
+    return run_qm_dft_scf_energy_smoke(d_qm)
   if algo_id == algo_echem_aimd_interface():
     var d_echem: int = detail
     return run_echem_aimd_tier2_registry(algo_id, d_echem)

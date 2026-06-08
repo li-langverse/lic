@@ -41,3 +41,9 @@ suite = "smoke"
 file = "smoke/echem_sei_kmc_interface_smoke.li"
 outcome = "verify_ok"
 note = "WP-ECHEM-15 SEI growth kMC registry + 48-step NEB-barrier deposition oracle"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/qm_dft_scf_interface_smoke.li"
+outcome = "verify_ok"
+note = "sim-p2-qm-dft-scf algo_id=418 H2 STO-3G LDA SCF stub + vertical dispatch"

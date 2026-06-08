@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Docs:** PDE implicit PETSc + hypre oracle plan for tier-2 `pde_heat_implicit_jacobi` (lic#108) — [2026-06-07-pde-r1-hypre-petsc-oracle-plan.md](docs/release-notes/2026-06-07-pde-r1-hypre-petsc-oracle-plan.md); opens `sim-pde-research` backlog.
+
 - **Docs:** GitHub Pages handbook hub at https://li-langverse.github.io/lic/ (`site/index.html`, `pages.yml`) — [2026-05-30-lic-handbook-pages.md](docs/release-notes/2026-05-30-lic-handbook-pages.md), [2026-05-30-lic-pages-site-artifact.md](docs/release-notes/2026-05-30-lic-pages-site-artifact.md) (fix missing `site/` artifact after #535).
 
 ### Changed

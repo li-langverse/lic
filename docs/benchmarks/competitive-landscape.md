@@ -20,6 +20,7 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 |-----------|-----------|----------------|
 | Chapel | PGAS HPC language | Locale / distribution model → future G-* |
 | Kokkos | Performance portability | Team policies, backends → LLVM/OpenMP alignment |
+| PETSc + hypre | Implicit PDE / AMG solvers | Layer B oracle for `pde_heat_implicit_jacobi` — [competitive-pde-engines-plan.md](competitive-pde-engines-plan.md) (lic#108) |
 | SYCL / oneAPI | Heterogeneous offload | Watch; no Li GPU story in v1 |
 | Zig | Low-level SIMD/comptime | Patterns for codegen, not a bench column yet |
 | NumPy / BLAS | ML tier baselines | Tier-3 only; label BLAS explicitly |

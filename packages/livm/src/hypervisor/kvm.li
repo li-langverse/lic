@@ -1,0 +1,23 @@
+# Linux KVM hypervisor backend stub (Wave 1).
+# Probes and VM lifecycle land in Wave 2; tag values align with backend.li.
+
+def kvm_backend_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def kvm_probe_signal() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def kvm_api_version() -> int
+  requires true
+  ensures result == 12
+  decreases 0
+=
+  return 12

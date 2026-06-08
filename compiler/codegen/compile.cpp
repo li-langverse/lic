@@ -171,6 +171,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_xfer_plan_path = resolve_runtime_c("li_xfer_plan.c");
   const std::filesystem::path rt_fl_path = resolve_runtime_c("li_fl.c");
   const std::filesystem::path rt_hetero_path = resolve_runtime_c("li_rt_hetero.c");
+  const std::filesystem::path rt_rng_path = resolve_runtime_c("li_rt_rng.c");
 
   MirModule rt_needs;
   mir_collect_runtime_link_needs(mir, rt_needs);
@@ -227,6 +228,11 @@ bool compile_module(const Module& module, const std::string& output_path,
     }
     if (std::filesystem::exists(rt_inference_sse_path)) {
       cmd << " -x c \"" << rt_inference_sse_path.string() << "\"";
+    }
+  }
+  if (link_runtime_full || rt_needs.needs_rt_rng) {
+    if (std::filesystem::exists(rt_rng_path)) {
+      cmd << " -x c \"" << rt_rng_path.string() << "\"";
     }
   }
   const std::filesystem::path rt_studio_paint_path = resolve_runtime_c("li_rt_studio_paint_capture.c");

@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -207,6 +207,59 @@ def sim_scientific_oracle_checksum_heat() -> float
     heat_oracle_stencil_step(u, v, r)
     step = step + 1
   return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
+
+# WP-SCI-03 — tier-2 Li oracle: 3-node 1D bar linear elasticity (E=A=L=1).
+def fea_oracle_bar_solve_u1_u2(k01: float, k12: float, load: float) -> float
+  requires k01 > 0.0
+  requires k12 > 0.0
+  requires load > 0.0
+  ensures result > 0.0
+  decreases 0
+=
+  var k11: float = k01 + k12
+  var k22: float = k12
+  var u1: float = k12 * load / (k11 * k22 - k12 * k12)
+  var u2: float = (load + k12 * u1) / k22
+  return u1 + u2
+
+def sim_scientific_oracle_checksum_fea() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return fea_oracle_bar_solve_u1_u2(1.0, 1.0, 1.0)
+
+# WP-SCI-03 — tier-2 Li oracle: 1D lid-driven channel (Jacobi u-field, constant indices).
+def cfd_oracle_channel_jacobi_step(u: var array[5, float], omega: float) -> unit
+  requires omega > 0.0
+  ensures true
+  decreases 0
+=
+  var avg1: float = 0.5 * (u[0] + u[2])
+  u[1] = (1.0 - omega) * u[1] + omega * avg1
+  var avg2: float = 0.5 * (u[1] + u[3])
+  u[2] = (1.0 - omega) * u[2] + omega * avg2
+  var avg3: float = 0.5 * (u[2] + u[4])
+  u[3] = (1.0 - omega) * u[3] + omega * avg3
+  u[0] = 0.0
+  u[4] = 1.0
+
+def sim_scientific_oracle_checksum_cfd() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var u: array[5, float]
+  u[0] = 0.0
+  u[1] = 0.0
+  u[2] = 0.0
+  u[3] = 0.0
+  u[4] = 1.0
+  var step: int = 0
+  while step < 32
+    cfd_oracle_channel_jacobi_step(u, 1.2)
+    step = step + 1
+  return u[1] + u[2] + u[3]
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int
@@ -719,6 +772,44 @@ def run_echem_sei_kmc_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 511
+  requires algo_id <= 514
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_fea()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_fea_linear_elasticity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_cfd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 521
+  requires algo_id <= 523
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_cfd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_cfd_lid_driven_cavity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
 def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -749,6 +840,14 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_echem_sei_kmc():
     var d_sei: int = detail
     return run_echem_sei_kmc_tier2_registry(algo_id, d_sei)
+  if algo_id >= 511:
+    if algo_id <= 514:
+      var d_fea: int = detail
+      return run_fea_tier2_registry(algo_id, d_fea)
+  if algo_id >= 521:
+    if algo_id <= 523:
+      var d_cfd: int = detail
+      return run_cfd_tier2_registry(algo_id, d_cfd)
   var d3: int = detail
   return run_algo_registry_stub(algo_id, d3)
 

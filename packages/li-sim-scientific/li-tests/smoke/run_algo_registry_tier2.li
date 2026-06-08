@@ -80,4 +80,28 @@ def main() -> int
     return 30
   if sei435.checksum == 1.001:
     return 31
+  var fea_oracle: float = sim_scientific_oracle_checksum_fea()
+  if fea_oracle <= 0.0:
+    return 32
+  var fea511: SimRunResult = run_algo(511, 1)
+  if run_result_ok(fea511) != 1:
+    return 33
+  if fea511.algo_id != 511:
+    return 34
+  if fea511.checksum != fea_oracle:
+    return 35
+  if fea511.checksum == 1.001:
+    return 36
+  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
+  if cfd_oracle <= 0.0:
+    return 37
+  var cfd521: SimRunResult = run_algo(521, 2)
+  if run_result_ok(cfd521) != 1:
+    return 38
+  if cfd521.algo_id != 521:
+    return 39
+  if cfd521.checksum != cfd_oracle:
+    return 40
+  if cfd521.checksum == 1.001:
+    return 41
   return 0

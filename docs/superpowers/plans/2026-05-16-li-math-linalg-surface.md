@@ -173,4 +173,4 @@ Use existing [benchmarks plan](2026-05-14-benchmarks-and-simulations.md) harness
 - [x] **2i-b** `norm`, `sum`/`dot`, `reductions/` suite; same-length `**` / prelude `axpy` / scalar×array (no broadcast) — float Lean Props still open
 - [x] **2i-broadcast** length-1 element-wise broadcast (`broadcast_len1_*.li`); non-broadcast length mismatch (`broadcast_invalid_len2_vs_len4.li`, `elementwise_len_mismatch.li`) — full NumPy rank rules open
 - [x] **P-linalg** loop implementation ≡ closed-form `ensures` in Lean (**G-lean**) (`linalg_dot4_int_loop_open.li` + `discharge_linalg_int_lean.sh`; float Props still **G-math** open)
-- [ ] Tier 1 perf ≤1.2× C++ (benchmarks dashboard)
+- [ ] Tier 1 perf ≤1.2× C++ (benchmarks dashboard) — flip rules: [phase-07 §7e Done criteria](2026-05-14-phase-07-native-hpc.md#phase-7e-done-criteria--simd--blocked-gemm-ph-7e--g-math)

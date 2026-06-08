@@ -5,10 +5,10 @@ extern proc li_rt_sqrt(x: float) raises IO -> float
   decreases 0
 def li_std_physics_quantum_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 # WP-ECHEM-13: 2-state nonadiabatic population transfer (documented stub).
 def quantum_tddft_2state_population_step(p_ground: float, coupling: float, dt: float) -> float
@@ -88,3 +88,55 @@ def schrodinger_kinetic_diag(dx: float, mass: float) -> float
 =
   var hbar: float = 1.0
   return hbar * hbar / (2.0 * mass * dx * dx)
+
+# sim-p2 / chem-r2 T0 — H₂ STO-3G RKS/LDA reference band (honest stub tier; dispatch via li-chem).
+def qm_scf_h2_bond_length_ang() -> float
+  requires true
+  ensures result == 0.74
+  decreases 0
+=
+  return 0.74
+
+def qm_scf_h2_stub_basis_label() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def qm_scf_h2_stub_method_label() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def qm_scf_h2_stub_max_iterations() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def qm_scf_h2_stub_energy() -> float
+  requires true
+  ensures result <= 0.0
+  ensures result >= -2.0
+  decreases 0
+=
+  return -1.117
+
+def qm_scf_h2_stub_converged() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def qm_scf_h2_stub_iterations() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= qm_scf_h2_stub_max_iterations()
+  decreases 0
+=
+  return 6

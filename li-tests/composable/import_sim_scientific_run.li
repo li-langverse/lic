@@ -19,4 +19,6 @@ def smoke_sim_outputs() -> int
   var r4: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(r4) != 1:
     return 1
+  if r4.checksum == 1.001:
+    return 1
   return 0

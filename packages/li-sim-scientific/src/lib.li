@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -207,6 +207,105 @@ def sim_scientific_oracle_checksum_heat() -> float
     heat_oracle_stencil_step(u, v, r)
     step = step + 1
   return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
+
+# WP-SCI-03 / WP-SCI-06 — lid-driven cavity tier-2 oracle (5×5 explicit diffusion + moving lid).
+def cfd_oracle_cavity_apply_lid(u: var array[25, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  u[21] = 1.0
+  u[22] = 1.0
+  u[23] = 1.0
+
+def cfd_oracle_cavity_diffuse_step(u: var array[25, float], r: float) -> unit
+  requires r > 0.0
+  ensures true
+  decreases 0
+=
+  var n6: float = u[6] + r * (u[5] + u[7] + u[1] + u[11] - 4.0 * u[6])
+  var n7: float = u[7] + r * (u[6] + u[8] + u[2] + u[12] - 4.0 * u[7])
+  var n8: float = u[8] + r * (u[7] + u[9] + u[3] + u[13] - 4.0 * u[8])
+  var n11: float = u[11] + r * (u[10] + u[12] + u[6] + u[16] - 4.0 * u[11])
+  var n12: float = u[12] + r * (u[11] + u[13] + u[7] + u[17] - 4.0 * u[12])
+  var n13: float = u[13] + r * (u[12] + u[14] + u[8] + u[18] - 4.0 * u[13])
+  var n16: float = u[16] + r * (u[15] + u[17] + u[11] + u[21] - 4.0 * u[16])
+  var n17: float = u[17] + r * (u[16] + u[18] + u[12] + u[22] - 4.0 * u[17])
+  var n18: float = u[18] + r * (u[17] + u[19] + u[13] + u[23] - 4.0 * u[18])
+  u[6] = n6
+  u[7] = n7
+  u[8] = n8
+  u[11] = n11
+  u[12] = n12
+  u[13] = n13
+  u[16] = n16
+  u[17] = n17
+  u[18] = n18
+  cfd_oracle_cavity_apply_lid(u)
+
+def sim_scientific_oracle_checksum_cfd() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var u: array[25, float]
+  var i: int = 0
+  while i < 25
+    u[i] = 0.0
+    i = i + 1
+  u[21] = 1.0
+  u[22] = 1.0
+  u[23] = 1.0
+  var r: float = 0.25
+  var step: int = 0
+  while step < 48
+    cfd_oracle_cavity_diffuse_step(u, r)
+    step = step + 1
+  return u[6] + u[7] + u[8] + u[11] + u[12] + u[13] + u[16] + u[17] + u[18]
+
+# WP-SCI-03 / WP-SCI-05 — 1D bar linear elasticity: 3-DOF truss assembly + Jacobi solve.
+def fea_oracle_bar_jacobi_sweep(
+    u0: var float, u1: var float, u2: var float,
+    f0: float, f1: float, f2: float) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var n0: float = (f0 + u1) / 2.0
+  var n1: float = (f1 + u0 + u2) / 2.0
+  var n2: float = (f2 + u1) / 1.0
+  u0 = n0
+  u1 = n1
+  u2 = n2
+
+def sim_scientific_oracle_checksum_fea() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var u0: float = 0.0
+  var u1: float = 0.0
+  var u2: float = 0.0
+  var iter: int = 0
+  while iter < 32
+    fea_oracle_bar_jacobi_sweep(u0, u1, u2, 0.0, 0.0, 1.0)
+    iter = iter + 1
+  return u0 + u1 + u2
+
+# WP-SCI-03 — QM registry tier-2 oracle: mini STO-3G LDA SCF energy drift vs kernel seed.
+def sim_scientific_oracle_checksum_qm() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var e0: float = chem_dft_energy_kernel_hartree()
+  var e1: float = chem_dft_scf_iteration_scaffold(6)
+  var diff: float = e1 - e0
+  if diff < 0.0:
+    diff = -diff
+  if diff < 1.0e-12:
+    diff = 1.0e-12
+  return diff
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int
@@ -650,7 +749,7 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
   requires algo_id >= 201
-  requires algo_id <= 216
+  requires algo_id <= 204
   ensures result.ok == 1
   ensures result.algo_id == algo_id
   ensures result.detail_emitted == detail
@@ -661,6 +760,64 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.ok = 1
   r.algo_id = algo_id
   r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_cfd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 205
+  requires algo_id <= 210
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_cfd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_cfd_lid_driven_cavity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 211
+  requires algo_id <= 216
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_fea()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_fea_linear_elasticity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 401
+  requires algo_id <= 432
+  requires algo_qm_registry_documented_stub(algo_id) == 0
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
   r.checksum = chk
   r.detail_emitted = detail
   return r
@@ -731,9 +888,22 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
       var d0: int = detail
       return run_md_tier2_registry(algo_id, d0)
   if algo_id >= 201:
-    if algo_id <= 216:
+    if algo_id <= 204:
       var d1: int = detail
       return run_heat_tier2_registry(algo_id, d1)
+  if algo_id >= 205:
+    if algo_id <= 210:
+      var d_cfd: int = detail
+      return run_cfd_tier2_registry(algo_id, d_cfd)
+  if algo_id >= 211:
+    if algo_id <= 216:
+      var d_fea: int = detail
+      return run_fea_tier2_registry(algo_id, d_fea)
+  if algo_id >= 401:
+    if algo_id <= 432:
+      if algo_qm_registry_documented_stub(algo_id) == 0:
+        var d_qm: int = detail
+        return run_qm_tier2_registry(algo_id, d_qm)
   if algo_id >= 301:
     if algo_id <= 305:
       var d2: int = detail

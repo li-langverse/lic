@@ -5,26 +5,34 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_sim_scientific_version() != 4:
+  if li_sim_scientific_version() != 7:
     return 1
-  var md: float = sim_scientific_oracle_checksum_md()
-  if md <= 0.0:
+  if run_result_ok(run_algo(203, 0)) != 1:
     return 2
-  if md >= 1.0e-3:
+  var cfd_a: SimRunResult = run_algo(206, 0)
+  var cfd_b: SimRunResult = run_algo(210, 0)
+  if run_result_ok(cfd_a) != 1:
     return 3
-  var heat: float = sim_scientific_oracle_checksum_heat()
-  if heat <= 1.0:
+  if cfd_a.checksum == 1.001:
     return 4
-  if heat >= 10.0:
+  if cfd_b.checksum != cfd_a.checksum:
     return 5
-  var md_run: SimRunResult = run_md_lj_smoke(0)
-  if run_result_ok(md_run) != 1:
+  var fea_a: SimRunResult = run_algo(214, 0)
+  var fea_b: SimRunResult = run_algo(211, 0)
+  if run_result_ok(fea_a) != 1:
     return 6
-  if md_run.checksum != md:
+  if fea_a.checksum == 1.001:
     return 7
-  var heat_run: SimRunResult = run_heat_smoke(0)
-  if run_result_ok(heat_run) != 1:
+  if fea_b.checksum != fea_a.checksum:
     return 8
-  if heat_run.checksum != heat:
+  if run_result_ok(run_algo(302, 0)) != 1:
     return 9
+  var qm_a: SimRunResult = run_algo(418, 0)
+  var qm_b: SimRunResult = run_algo(401, 0)
+  if run_result_ok(qm_a) != 1:
+    return 10
+  if qm_a.checksum == 1.001:
+    return 11
+  if qm_b.checksum != qm_a.checksum:
+    return 12
   return 0

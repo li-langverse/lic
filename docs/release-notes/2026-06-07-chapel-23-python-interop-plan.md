@@ -1,7 +1,7 @@
 # Release note: Chapel 2.3+ Python/NumPy interop reference policy plan (lic#54)
 
 **Date:** 2026-06-07  
-**Type:** Planning / documentation only — no compiler or runtime behavior change  
+**Type:** Documentation only — no compiler or runtime behavior change  
 **Issue:** [lic#54](https://github.com/li-langverse/lic/issues/54)
 
 ## Summary
@@ -26,4 +26,6 @@ AI-first foreign bindings reference · **Vision-LLM**, **PH-IO-4/5/7**, **PH-ML*
 
 ## Next steps
 
-Human **`plan-approved`** on #54 → implementers scope PH-FFI / `std/foreign` tracks separately; lic#113 companion for HPC portability.
+- Human merge of PR #1055 closes the lic#54 documentation ask.
+- PH-FFI / `std/foreign` codegen tracks remain separate PH-gated implement issues.
+- lic#113 companion for HPC portability (sparse/GPU cross-link only).

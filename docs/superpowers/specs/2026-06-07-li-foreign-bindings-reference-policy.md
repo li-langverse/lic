@@ -1,7 +1,7 @@
 # Chapel 2.3+ → Li foreign bindings reference policy (normative rubric v1)
 
 **Date:** 2026-06-07  
-**Status:** Planning slice — spec-only until `plan-approved` on [lic#54](https://github.com/li-langverse/lic/issues/54)  
+**Status:** Normative reference v1 — `plan-approved` on [lic#54](https://github.com/li-langverse/lic/issues/54); no `std/foreign` codegen in this slice  
 **Depends on:** [Language design](2026-05-14-li-language-design.md), [LLM-first design](2026-05-16-li-llm-first-design.md), [Trusted net RFC](2026-05-16-li-trusted-net-rfc.md)  
 **Companion:** [lic#113](https://github.com/li-langverse/lic/issues/113) (Chapel 2.8 HPC portability — G-par slice)  
 **Plan:** [Chapel 2.3 Python interop reference policy](../plans/2026-06-07-li-chapel-23-python-interop-reference-policy.md)

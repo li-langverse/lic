@@ -111,14 +111,13 @@ Full normative detail: [Foreign bindings reference policy spec](../specs/2026-06
 
 ## Rollout
 
-1. Merge **this plan PR** (draft → ready) + human **`plan-approved`** on #54.
-2. **Spec PR** (sub-phase A) — normative policy only; fix broken digest link (`2026-05-19-gaps.md` not `2026-05-19-explorer.md`).
-3. **lic#113** implementers consume sparse/GPU cross-link; no duplicate portability matrix.
-4. **lic#13** PH-IO implementers use § ingest-before-FFI guidance.
-5. Implementation handoff → `code_implementer` only after `plan-approved` + explicit PH-FFI track scoped by human.
+1. Merge **PR #1055** — normative policy + **G-ai** stub row (closes lic#54 documentation ask).
+2. **lic#113** implementers consume sparse/GPU cross-link; no duplicate portability matrix.
+3. **lic#13** PH-IO implementers use § ingest-before-FFI guidance.
+4. **PH-FFI** / `std/foreign` codegen → separate implement issues after human PH scope.
 
 ## Human-only
 
-- [ ] Label **`plan-approved`** on #54 before any `std/foreign` codegen agents run.
+- [x] Label **`plan-approved`** on #54 (present — codegen agents still need explicit PH-FFI scope).
 - [ ] Decide whether to open **PH-FFI** master-plan row (proposed; not in this PR).
 - [ ] Approve any `trusted.lean` axioms for Python C-API seam (separate human issue).

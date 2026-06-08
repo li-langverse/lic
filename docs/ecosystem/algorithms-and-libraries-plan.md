@@ -341,7 +341,8 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 
 - [Engineering standards](engineering-standards.md)  
 - [Official packages](official-packages.md)  
-- [CAD fundamentals](./cad-fundamentals.md) (canonical; [li-language source](https://github.com/li-langverse/li-language/blob/dev/docs/ecosystem/cad-fundamentals.md))  
+- [CAD fundamentals](./cad-fundamentals.md) (canonical; [li-language source](https://github.com/li-langverse/li-language/blob/dev/docs/ecosystem/cad-fundamentals.md))
+- [Foreign bindings reference policy](../superpowers/specs/2026-06-07-li-foreign-bindings-reference-policy.md) (**G-ai**, lic#54 — Chapel 2.3+ Python/NumPy interop)  
 - [Master plan phase map](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 **Maintainers:** Update §7 when adding/removing `packages/*` members. Bump `updated` in `verticals.toml` / `registry.toml` on quarterly SOTA review.

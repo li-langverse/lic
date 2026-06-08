@@ -1,0 +1,16 @@
+[package]
+name = "licontainers"
+version = "0.0.1"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "OCI/CRI container runtime for libernetes"
+
+[package.metadata.li]
+github_repo = "licontainers"
+import_name = "licontainers"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-licontainers"
+
+[package.repository]
+url = "https://github.com/li-langverse/licontainers"

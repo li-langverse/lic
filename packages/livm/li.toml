@@ -1,0 +1,16 @@
+[package]
+name = "livm"
+version = "0.0.1"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "VM runtime for libernetes (KVM + LiOS hypervisor)"
+
+[package.metadata.li]
+github_repo = "livm"
+import_name = "livm"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-livm"
+
+[package.repository]
+url = "https://github.com/li-langverse/livm"

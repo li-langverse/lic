@@ -10,5 +10,6 @@ members = ["li-parallel", "li-sim", "li-sim-scientific", "li-sim-automotive", "l
   "li-physics-weather", "li-prob", "li-rng", "li-schema", "li-scene", "li-tls",
   "li-ui", "li-gui", "li-gpu", "li-tpu", "li-asic", "li-ml", "li-array", "li-ml-rl", "li-llm", "li-render", "li-studio",
   "li-studio-ai", "li-world", "li-assets", "li-player",
+  "li-libernetes-core", "li-etcd", "li-watch", "li-workqueue", "li-grpc",
 ]
 resolver = "path"

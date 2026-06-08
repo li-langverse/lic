@@ -1,0 +1,14 @@
+# Backend kind for hypervisor isolation.
+def backend_kvm_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def backend_lios_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2

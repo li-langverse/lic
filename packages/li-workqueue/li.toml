@@ -1,0 +1,13 @@
+[package]
+name = "li-workqueue"
+version = "0.0.1"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Rate-limited workqueue for libernetes controllers"
+
+[package.metadata.li]
+github_repo = "libernetes"
+import_name = "workqueue"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-workqueue"

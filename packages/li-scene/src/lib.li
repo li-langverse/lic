@@ -1,4 +1,4 @@
-import lig.memory
+import ligpu.memory
 
 type EntityId = object
   public value: int

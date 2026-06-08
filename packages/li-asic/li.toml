@@ -1,0 +1,22 @@
+[package]
+name = "li-asic"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li ASIC/FPGA device layer — backend probe and orchestration hooks (import liasic)"
+
+[package.metadata.li]
+github_repo = "li-asic"
+import_name = "liasic"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-asic"
+
+[package.metadata.studio]
+device_probe = "bench/device_probe.toml"
+bench_hook = "packages/li-asic/bench/device_probe.toml"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-asic"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-asic/"
+changelog = "https://github.com/li-langverse/li-asic/blob/main/CHANGELOG.md"

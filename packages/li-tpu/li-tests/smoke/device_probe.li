@@ -1,0 +1,8 @@
+import litpu
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return litpu_device_probe_smoke()

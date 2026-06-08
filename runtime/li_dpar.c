@@ -132,10 +132,12 @@ int li_dpar_init_from_env(void) {
         remote.sin_port = htons((uint16_t)(base_port + peer));
         inet_pton(AF_INET, hosts[peer], &remote.sin_addr);
         int fd = (int)socket(AF_INET, SOCK_STREAM, 0);
+        int connected = 0;
         for (int retry = 0; retry < 200; ++retry) {
           if (connect(fd, (struct sockaddr*)&remote, sizeof(remote)) == 0) {
             g_dpar_peer_fd[peer] = fd;
             g_dpar_peer_count++;
+            connected = 1;
             break;
           }
 #if defined(_WIN32)
@@ -143,6 +145,17 @@ int li_dpar_init_from_env(void) {
 #else
           usleep(10000);
 #endif
+        }
+        if (!connected) {
+          fprintf(stderr,
+                  "li_dpar: rank %d failed to connect to peer %d on port %d after 200 retries\n",
+                  g_dpar_rank, peer, base_port + peer);
+#if defined(_WIN32)
+          closesocket(fd);
+#else
+          close(fd);
+#endif
+          exit(1);
         }
       }
     }
@@ -239,4 +252,18 @@ long long li_dpar_block_partition_end(long long global_n, int rank, int world) {
     rank = world - 1;
   }
   return (global_n * (rank + 1)) / world;
+}
+
+void li_distributed_for_i64(long long start, long long end, void (*body)(long long)) {
+  if (body == NULL || end <= start) {
+    return;
+  }
+  const int rank = li_dpar_rank();
+  const int world = li_dpar_world_size();
+  const long long global_n = end - start;
+  const long long local_begin = li_dpar_block_partition_begin(global_n, rank, world);
+  const long long local_end = li_dpar_block_partition_end(global_n, rank, world);
+  for (long long k = local_begin; k < local_end; ++k) {
+    body(start + k);
+  }
 }

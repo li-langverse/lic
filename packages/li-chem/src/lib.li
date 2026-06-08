@@ -1,4 +1,4 @@
-import lig
+import ligpu
 
 # PH-SCI-GPU-CHEM — mini STO-3G-style basis + DFT energy kernel (CPU lib; @gpu smokes call in).
 def chem_dft_energy_stub_hartree() -> float

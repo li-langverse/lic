@@ -30,6 +30,18 @@ def rel_to_root(path: Path) -> str:
         return str(path)
 
 
+def resolve_hook_path(rel: str) -> Path:
+    """Resolve registry hook path; accept legacy packages/lig after WP-PAR-79 rename."""
+    primary = ROOT / rel
+    if primary.is_file():
+        return primary
+    if rel.startswith("packages/lig/"):
+        legacy = ROOT / rel.replace("packages/lig/", "packages/li-gpu/", 1)
+        if legacy.is_file():
+            return legacy
+    return primary
+
+
 def main() -> None:
     if not REGISTRY.is_file():
         fail(f"missing {rel_to_root(REGISTRY)}")
@@ -78,7 +90,7 @@ def main() -> None:
         if not isinstance(hook, dict):
             continue
         rel = hook.get("path", "")
-        if rel and not (ROOT / rel).is_file():
+        if rel and not resolve_hook_path(rel).is_file():
             fail(f"hook {hook.get('id', '?')}: missing path {rel}")
 
     for path, label in ((LATEST, "latest-bench"), (COMPETITIVE, "competitive")):

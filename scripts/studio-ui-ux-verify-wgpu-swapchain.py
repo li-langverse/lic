@@ -13,7 +13,7 @@ LATEST = ROOT / "data/studio-ui-ux-plan-loop/latest-bench.json"
 
 def hook_path() -> Path | None:
     for rel in (
-        "packages/lig/bench/wgpu_smoke.toml",
+        "packages/li-gpu/bench/wgpu_smoke.toml",
         "packages/li-gpu/bench/wgpu_smoke.toml",
     ):
         p = ROOT / rel
@@ -30,7 +30,7 @@ def fail(msg: str) -> None:
 def main() -> None:
     hook = hook_path()
     if hook is None:
-        fail("missing packages/lig/bench/wgpu_smoke.toml (or legacy li-gpu path)")
+        fail("missing packages/li-gpu/bench/wgpu_smoke.toml (or legacy li-gpu path)")
     if not LATEST.is_file():
         fail("missing latest-bench.json — run bench-studio-viewport-perf.sh")
 

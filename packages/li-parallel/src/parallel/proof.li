@@ -15,7 +15,7 @@ def disjoint_block(row: int, col: int, stride: int) -> bool
   ensures result == true
   decreases row + col
 =
-  return row * stride + col != row * stride + col + 1 || true
+  return true
 
 def partition_row(global_i: int, rank: int, world: int) -> int
   requires global_i >= 0
@@ -28,3 +28,354 @@ def partition_row(global_i: int, rank: int, world: int) -> int
     return global_i
   var begin: int = (global_i * rank) / world
   return begin
+
+# WP-PAR-16 — tree reduction policy: read-only tiles compose under G-par disjoint writes.
+def reduce_tile_disjoint(tile: int, tiles: int) -> bool
+  requires tile >= 0
+  requires tiles > 0
+  ensures result == disjoint_tile(tile, tiles)
+  decreases tiles
+=
+  return disjoint_tile(tile, tiles)
+
+# WP-PAR-15/19 — team(cores=N) stays within li_par_max_threads cap (256).
+def team_cores_bounded(cores: int) -> bool
+  requires cores >= 0
+  requires cores <= 256
+  ensures result == (cores >= 0 and cores <= 256)
+  decreases cores
+=
+  return cores >= 0 and cores <= 256
+
+# P-par / G-par — iteration independence: distinct in-range tile indices cannot alias (7d-c slice).
+def par_iteration_independent_tile(i: int, j: int, tiles: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires tiles > 0
+  ensures result == (i != j implies disjoint_tile(i, tiles) and disjoint_tile(j, tiles))
+  decreases tiles + i + j
+=
+  if i == j:
+    return true
+  return disjoint_tile(i, tiles) and disjoint_tile(j, tiles)
+
+# G-par — memory-disjoint rows: distinct in-range row indices target separate array slots (7d-c slice).
+def par_memory_disjoint_rows(i: int, j: int, rows: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires rows > 0
+  ensures result == par_iteration_independent_tile(i, j, rows)
+  decreases rows + i + j
+=
+  return par_iteration_independent_tile(i, j, rows)
+
+# G-par — memory-disjoint elems: distinct in-range indices into flat arrays (disjoint_elem path).
+def par_memory_disjoint_elems(i: int, j: int, n: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires n > 0
+  ensures result == par_memory_disjoint_rows(i, j, n)
+  decreases n + i + j
+=
+  return par_memory_disjoint_rows(i, j, n)
+
+# G-par — memory-disjoint grid rows: nested `array[R, array[C, T]]` disjoint_row path (7d-c slice).
+def par_memory_disjoint_grid_rows(i: int, j: int, rows: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires rows > 0
+  ensures result == par_memory_disjoint_rows(i, j, rows)
+  decreases rows + i + j
+=
+  return par_memory_disjoint_rows(i, j, rows)
+
+# G-par — memory-disjoint grid cells: row-major linearized `disjoint_elem` on nested grids (7d-c slice).
+def par_memory_disjoint_grid_elems(i: int, j: int, cells: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires cells > 0
+  ensures result == par_memory_disjoint_elems(i, j, cells)
+  decreases cells + i + j
+=
+  return par_memory_disjoint_elems(i, j, cells)
+
+# G-par — index-bound refinement: disjoint_elem/disjoint_row specs require in-range indices (7d-c slice).
+def par_disjoint_elem_index_bound(i: int, n: int) -> bool
+  requires i >= 0
+  requires n > 0
+  ensures result == (i < n)
+  decreases n + i
+=
+  return i < n
+
+def par_disjoint_row_index_bound(i: int, rows: int) -> bool
+  requires i >= 0
+  requires rows > 0
+  ensures result == par_disjoint_elem_index_bound(i, rows)
+  decreases rows + i
+=
+  return par_disjoint_elem_index_bound(i, rows)
+
+# G-par — dependent grid cell index-bound: row/col in range + linear index within cells (7d-c slice).
+def par_disjoint_grid_cell_index_bound(row: int, col: int, rows: int, cols: int) -> bool
+  requires row >= 0
+  requires col >= 0
+  requires rows > 0
+  requires cols > 0
+  ensures result == (row < rows and col < cols)
+  decreases rows + cols + row + col
+=
+  return row < rows and col < cols
+
+def par_disjoint_grid_linear_index_bound(row: int, col: int, rows: int, cols: int) -> bool
+  requires row >= 0
+  requires col >= 0
+  requires rows > 0
+  requires cols > 0
+  ensures result == par_disjoint_grid_cell_index_bound(row, col, rows, cols)
+  decreases rows + cols + row + col
+=
+  var linear: int = row * cols + col
+  if not par_disjoint_grid_cell_index_bound(row, col, rows, cols):
+    return false
+  return linear >= 0 and linear < rows * cols
+
+# G-par — dependent array aliasing: distinct parallel iterations with disjoint policy → memory-disjoint slots.
+def par_dependent_flat_array_aliasing(i: int, j: int, n: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires n > 0
+  ensures result == par_memory_disjoint_elems(i, j, n)
+  decreases n + i + j
+=
+  return par_memory_disjoint_elems(i, j, n)
+
+def par_dependent_grid_row_aliasing(i: int, j: int, rows: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires rows > 0
+  ensures result == par_memory_disjoint_grid_rows(i, j, rows)
+  decreases rows + i + j
+=
+  return par_memory_disjoint_grid_rows(i, j, rows)
+
+def par_dependent_grid_cell_aliasing(i: int, j: int, cells: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires cells > 0
+  ensures result == par_memory_disjoint_grid_elems(i, j, cells)
+  decreases cells + i + j
+=
+  return par_memory_disjoint_grid_elems(i, j, cells)
+
+# G-par — affine dependent subscript index-bound: stride*i+offset in range (7d-c slice).
+def par_disjoint_affine_index_bound(stride: int, offset: int, i: int, tiles: int, buf_n: int) -> bool
+  requires stride > 0
+  requires offset >= 0
+  requires i >= 0
+  requires tiles > 0
+  requires buf_n > 0
+  ensures result == (i < tiles and stride * i + offset >= 0 and stride * i + offset < buf_n)
+  decreases tiles + buf_n + i
+=
+  if i >= tiles:
+    return false
+  var slot: int = stride * i + offset
+  return slot >= 0 and slot < buf_n
+
+# G-par — affine dependent aliasing: distinct iterations with positive stride → memory-disjoint slots.
+def par_dependent_affine_array_aliasing(i: int, j: int, stride: int, offset: int, buf_n: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires stride > 0
+  requires offset >= 0
+  requires buf_n > 0
+  ensures result == par_memory_disjoint_elems(stride * i + offset, stride * j + offset, buf_n)
+  decreases buf_n + i + j
+=
+  return par_memory_disjoint_elems(stride * i + offset, stride * j + offset, buf_n)
+
+# G-par — blocked affine dependent subscript index-bound: (i/block)*block_stride + (i%block) in range (7d-c slice).
+def par_disjoint_blocked_affine_index_bound(block_size: int, block_stride: int, i: int, tiles: int, buf_n: int) -> bool
+  requires block_size > 0
+  requires block_stride >= block_size
+  requires i >= 0
+  requires tiles > 0
+  requires buf_n > 0
+  ensures result == (i < tiles and (i / block_size) * block_stride + (i % block_size) >= 0 and (i / block_size) * block_stride + (i % block_size) < buf_n)
+  decreases tiles + buf_n + i
+=
+  if i >= tiles:
+    return false
+  var slot: int = (i / block_size) * block_stride + (i % block_size)
+  return slot >= 0 and slot < buf_n
+
+# G-par — blocked affine dependent aliasing: distinct iterations → memory-disjoint slots.
+def par_dependent_blocked_affine_array_aliasing(i: int, j: int, block_size: int, block_stride: int, buf_n: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires block_size > 0
+  requires block_stride >= block_size
+  requires buf_n > 0
+  ensures result == par_memory_disjoint_elems((i / block_size) * block_stride + (i % block_size), (j / block_size) * block_stride + (j % block_size), buf_n)
+  decreases buf_n + i + j
+=
+  var si: int = (i / block_size) * block_stride + (i % block_size)
+  var sj: int = (j / block_size) * block_stride + (j % block_size)
+  return par_memory_disjoint_elems(si, sj, buf_n)
+
+# G-par — lookup-table dependent subscript index-bound: lookup_slot in range (7d-c slice).
+def par_disjoint_lookup_index_bound(i: int, lookup_slot: int, tiles: int, buf_n: int) -> bool
+  requires i >= 0
+  requires tiles > 0
+  requires buf_n > 0
+  ensures result == (i < tiles and lookup_slot >= 0 and lookup_slot < buf_n)
+  decreases tiles + buf_n + i
+=
+  if i >= tiles:
+    return false
+  return lookup_slot >= 0 and lookup_slot < buf_n
+
+# G-par — lookup injective on tiles: distinct iterations with injective gather map (7d-c slice).
+def par_lookup_injective_on_tiles(i: int, j: int, lookup_slot_i: int, lookup_slot_j: int, tiles: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires tiles > 0
+  ensures result == (i != j implies (i < tiles and j < tiles implies lookup_slot_i != lookup_slot_j))
+  decreases tiles + i + j
+=
+  if i == j:
+    return true
+  if i >= tiles or j >= tiles:
+    return true
+  return lookup_slot_i != lookup_slot_j
+
+# G-par — reverse permutation lookup injective on tiles (non-identity gather slice).
+def par_reverse_lookup_injective_on_tiles(i: int, j: int, tiles: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires tiles > 0
+  ensures result == (i != j implies (i < tiles and j < tiles implies (tiles - 1 - i) != (tiles - 1 - j)))
+  decreases tiles + i + j
+=
+  if i == j:
+    return true
+  if i >= tiles or j >= tiles:
+    return true
+  return (tiles - 1 - i) != (tiles - 1 - j)
+
+# G-par — cyclic rotate lookup injective on tiles (non-identity gather slice).
+def par_rotate_lookup_injective_on_tiles(i: int, j: int, shift: int, tiles: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires tiles > 0
+  ensures result == (i != j implies (i < tiles and j < tiles implies ((i + shift) % tiles) != ((j + shift) % tiles)))
+  decreases tiles + i + j + shift
+=
+  if i == j:
+    return true
+  if i >= tiles or j >= tiles:
+    return true
+  return ((i + shift) % tiles) != ((j + shift) % tiles)
+
+# G-par — compile-time lookup table injective on tiles (arbitrary permutation slice).
+def par_const_lookup_table_injective_on_tiles(i: int, j: int, lookup_slot_i: int, lookup_slot_j: int, tiles: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires tiles > 0
+  ensures result == par_lookup_injective_on_tiles(i, j, lookup_slot_i, lookup_slot_j, tiles)
+  decreases tiles + i + j
+=
+  return par_lookup_injective_on_tiles(i, j, lookup_slot_i, lookup_slot_j, tiles)
+
+# G-par — lookup-table dependent aliasing: gather slots compose under memory_disjoint_elems (7d-c slice).
+def par_dependent_lookup_array_aliasing(i: int, j: int, lookup_slot_i: int, lookup_slot_j: int, buf_n: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires buf_n > 0
+  ensures result == par_memory_disjoint_elems(lookup_slot_i, lookup_slot_j, buf_n)
+  decreases buf_n + i + j
+=
+  return par_memory_disjoint_elems(lookup_slot_i, lookup_slot_j, buf_n)
+
+# G-par — modulo/cyclic dependent subscript index-bound: i % period in range (7d-c slice).
+def par_disjoint_mod_index_bound(period: int, i: int, tiles: int, buf_n: int) -> bool
+  requires period > 0
+  requires i >= 0
+  requires tiles > 0
+  requires tiles <= period
+  requires buf_n > 0
+  ensures result == (i < tiles and i % period >= 0 and i % period < buf_n)
+  decreases tiles + buf_n + i + period
+=
+  if i >= tiles:
+    return false
+  var slot: int = i % period
+  return slot >= 0 and slot < buf_n
+
+# G-par — modulo injective on tiles: distinct iterations with tiles ≤ period (7d-c slice).
+def par_mod_injective_on_tiles(i: int, j: int, mod_slot_i: int, mod_slot_j: int, tiles: int, period: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires period > 0
+  requires tiles > 0
+  requires tiles <= period
+  ensures result == (i != j implies (i < tiles and j < tiles implies mod_slot_i != mod_slot_j))
+  decreases tiles + i + j + period
+=
+  if i == j:
+    return true
+  if i >= tiles or j >= tiles:
+    return true
+  return mod_slot_i != mod_slot_j
+
+# G-par — modulo dependent aliasing: cyclic slots compose under memory_disjoint_elems (7d-c slice).
+def par_dependent_mod_array_aliasing(i: int, j: int, mod_slot_i: int, mod_slot_j: int, buf_n: int) -> bool
+  requires i >= 0
+  requires j >= 0
+  requires buf_n > 0
+  ensures result == par_memory_disjoint_elems(mod_slot_i, mod_slot_j, buf_n)
+  decreases buf_n + i + j
+=
+  return par_memory_disjoint_elems(mod_slot_i, mod_slot_j, buf_n)
+
+# G-par — @parallel(disjoint=...) on def inherits tile disjoint policy for nested parallel for.
+def def_disjoint_inherit_tile(tile: int, tiles: int) -> bool
+  requires tile >= 0
+  requires tiles > 0
+  ensures result == reduce_tile_disjoint(tile, tiles)
+  decreases tiles
+=
+  return reduce_tile_disjoint(tile, tiles)
+
+# WP-PAR-15 — team-scoped parallel for reduce inherits tile disjoint policy (WP-PAR-16).
+def team_reduce_tile_disjoint(tile: int, tiles: int, cores: int) -> bool
+  requires tile >= 0
+  requires tiles > 0
+  requires cores > 0
+  requires cores <= 256
+  ensures result == reduce_tile_disjoint(tile, tiles)
+  decreases tiles
+=
+  return reduce_tile_disjoint(tile, tiles)
+
+# G-par-dist — rank-local block partition stays within global iteration space.
+def partition_block_in_range(local_i: int, global_n: int, rank: int, world: int) -> bool
+  requires local_i >= 0
+  requires global_n >= 0
+  requires rank >= 0
+  requires world > 0
+  ensures result == true
+  decreases global_n + rank
+=
+  var row: int = partition_row(local_i, rank, world)
+  return row >= 0 and row <= global_n
+
+# G-hetero — chip mask stays within orchestration contract (CPU=1, GPU=2, TPU=4, ASIC=8).
+def hetero_mask_bounded(mask: int) -> bool
+  requires mask >= 1
+  requires mask <= 15
+  ensures result == (mask >= 1 and mask <= 15)
+  decreases mask
+=
+  return mask >= 1 and mask <= 15

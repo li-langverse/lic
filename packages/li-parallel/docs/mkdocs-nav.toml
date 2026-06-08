@@ -1,0 +1,70 @@
+# mkdocs nav manifest for li-parallel (WP-PAR-54 / DOC-PAR-11)
+# Wire into lic-docs mkdocs.yml when publishing li-parallel Pages.
+
+[nav]
+title = "li-parallel"
+
+[[nav.entries]]
+title = "Handbook"
+path = "docs/handbook/li-parallel.md"
+doc_id = "DOC-PAR-01"
+
+[[nav.entries]]
+title = "Design spec"
+path = "docs/superpowers/specs/2026-06-06-li-parallel-design.md"
+doc_id = "DOC-PAR-02"
+
+[[nav.entries]]
+title = "API — shared memory"
+path = "packages/li-parallel/docs/api-shared-memory.md"
+doc_id = "DOC-PAR-03"
+
+[[nav.entries]]
+title = "API — distributed"
+path = "packages/li-parallel/docs/api-distributed.md"
+doc_id = "DOC-PAR-04"
+
+[[nav.entries]]
+title = "API — kernels & ghost"
+path = "packages/li-parallel/docs/api-kernels-ghost.md"
+doc_id = "DOC-PAR-05"
+
+[[nav.entries]]
+title = "Migrate from OpenMP"
+path = "packages/li-parallel/docs/migrate-openmp.md"
+doc_id = "DOC-PAR-06"
+
+[[nav.entries]]
+title = "Migrate from MPI"
+path = "packages/li-parallel/docs/migrate-mpi.md"
+doc_id = "DOC-PAR-07"
+
+[[nav.entries]]
+title = "Examples"
+path = "packages/li-parallel/docs/examples/README.md"
+doc_id = "DOC-PAR-08"
+
+[[nav.entries]]
+title = "Benchmark dual-mode"
+path = "packages/li-parallel/docs/benchmark-dual-mode.md"
+doc_id = "DOC-PAR-09"
+
+[[nav.entries]]
+title = "Proofs table"
+path = "packages/li-parallel/docs/proofs-table.md"
+doc_id = "DOC-PAR-10"
+
+[[nav.entries]]
+title = "Gap register"
+path = "packages/li-parallel/docs/gap-register.md"
+doc_id = "DOC-PAR-12"
+
+[[nav.entries]]
+title = "Traceability"
+path = "packages/li-parallel/docs/traceability.md"
+doc_id = "DOC-PAR-13"
+
+[[nav.entries]]
+title = "Release notes — perf gate"
+path = "docs/release-notes/2026-06-06-li-parallel-perf-gate.md"
+doc_id = "DOC-PAR-14"

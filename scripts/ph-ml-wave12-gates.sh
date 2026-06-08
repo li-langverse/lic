@@ -81,7 +81,7 @@ li_ensure_lic "$ROOT" "ph-ml-wave12-gates: build lic (./scripts/build.sh or --bu
 grep -q 'Wave 12' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 12"; exit 1; }
 grep -q 'ml_gpu_lkir_launch_pipeline' packages/li-ml/src/lib.li || { echo "li-ml missing launch pipeline"; exit 1; }
 grep -q 'llm_safetensors_tensor_bytes_mmap' packages/li-llm/src/lib.li || { echo "li-llm missing mmap loader"; exit 1; }
-grep -q 'lig_emit_vendor_progress' packages/lig/src/lib.li || { echo "lig missing emit progress"; exit 1; }
+grep -q 'lig_emit_vendor_progress' packages/li-gpu/src/lib.li || { echo "lig missing emit progress"; exit 1; }
 grep -q 'sim_rl_env_ipc_fork_os_ready' packages/li-sim/src/lib.li || { echo "li-sim missing fork os ready"; exit 1; }
 
 lic_check_smokes "$LIC" || exit 1

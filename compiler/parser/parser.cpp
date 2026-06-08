@@ -68,6 +68,7 @@ struct Parser {
   std::unique_ptr<Expr> parse_contract_expr();
   void parse_prob_ensures_tail(Contract& c);
   Contract parse_contract();
+  bool try_parse_par_reduce_clause(Stmt& s);
   std::unique_ptr<Expr> parse_decorator_value();
   Decorator parse_decorator();
   std::vector<Decorator> parse_decorator_list();
@@ -670,6 +671,56 @@ Contract Parser::parse_contract() {
   return c;
 }
 
+bool Parser::try_parse_par_reduce_clause(Stmt& s) {
+  if (!at(TokenKind::Ident) || cur().text != "reduce") {
+    return false;
+  }
+  const Token start = cur();
+  i++;
+  if (!at(TokenKind::LParen)) {
+    diags.error(loc(start), "expected '(' after reduce");
+    return true;
+  }
+  i++;
+  ParReduceKind kind = ParReduceKind::None;
+  if (at(TokenKind::Plus)) {
+    kind = ParReduceKind::Add;
+    i++;
+  } else if (at(TokenKind::Ident) && cur().text == "min") {
+    kind = ParReduceKind::Min;
+    i++;
+  } else if (at(TokenKind::Ident) && cur().text == "max") {
+    kind = ParReduceKind::Max;
+    i++;
+  } else {
+    diags.error(loc(start), "reduce v1 supports '+', 'min', or 'max'");
+    return true;
+  }
+  if (!at(TokenKind::Colon)) {
+    diags.error(loc(start), "expected ':' in reduce(+|min|max: var)");
+    return true;
+  }
+  i++;
+  if (!at(TokenKind::Ident)) {
+    diags.error(loc(start), "expected variable name in reduce clause");
+    return true;
+  }
+  if (s.par_reduce_kind != ParReduceKind::None) {
+    diags.error(loc(start), "only one reduce clause allowed on parallel for");
+    return true;
+  }
+  s.par_reduce_var = std::string(cur().text);
+  s.par_reduce_kind = kind;
+  i++;
+  if (!at(TokenKind::RParen)) {
+    diags.error(loc(start), "expected ')' after reduce clause");
+    return true;
+  }
+  i++;
+  skip_newlines();
+  return true;
+}
+
 std::vector<Stmt> Parser::parse_block() {
   std::vector<Stmt> body;
   skip_newlines();
@@ -848,10 +899,17 @@ Stmt Parser::parse_stmt() {
       skip_newlines();
       if (accept(TokenKind::Indent)) {
         skip_newlines();
-        while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
-               at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
-               at(TokenKind::KwInvariant)) {
-          s.par_contracts.push_back(parse_contract());
+        while (true) {
+          if (try_parse_par_reduce_clause(s)) {
+            continue;
+          }
+          if (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+              at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+              at(TokenKind::KwInvariant)) {
+            s.par_contracts.push_back(parse_contract());
+            continue;
+          }
+          break;
         }
         expect(TokenKind::Dedent, "dedent");
         skip_newlines();
@@ -1016,6 +1074,207 @@ Stmt Parser::parse_stmt() {
     s.while_body = parse_block();
     return s;
   }
+  if (at(TokenKind::Ident) && cur().text == "overlap") {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "comm") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'comm' after 'overlap'");
+      return s;
+    }
+    i++;
+    s.kind = Stmt::Kind::OverlapComm;
+    s.span = {start_tok.start, cur().start};
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "elide") {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "copy") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'copy' after 'elide'");
+      return s;
+    }
+    i++;
+    s.kind = Stmt::Kind::ElideCopy;
+    s.span = {start_tok.start, cur().start};
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "fuse") {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "xfer") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'xfer' after 'fuse'");
+      return s;
+    }
+    i++;
+    s.kind = Stmt::Kind::FuseXfer;
+    s.span = {start_tok.start, cur().start};
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "d2d") {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "path") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'path' after 'd2d'");
+      return s;
+    }
+    i++;
+    s.kind = Stmt::Kind::D2dPath;
+    s.span = {start_tok.start, cur().start};
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "rdma") {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "gpu") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'gpu' after 'rdma'");
+      return s;
+    }
+    i++;
+    s.kind = Stmt::Kind::RdmaGpu;
+    s.span = {start_tok.start, cur().start};
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "team") {
+    const Token start_tok = cur();
+    i++;
+    s.kind = Stmt::Kind::TeamBlock;
+    s.par_start = 0;
+    if (accept(TokenKind::LParen)) {
+      while (!at(TokenKind::RParen) && !at(TokenKind::Eof)) {
+        if (at(TokenKind::Ident) && cur().text == "cores") {
+          i++;
+          if (accept(TokenKind::Eq) && at(TokenKind::IntLit)) {
+            s.par_start = cur().int_value;
+            i++;
+          }
+        } else if (at(TokenKind::Ident)) {
+          i++;
+          if (accept(TokenKind::Eq)) {
+            (void)parse_decorator_value();
+          }
+        } else {
+          break;
+        }
+        accept(TokenKind::Comma);
+      }
+      expect(TokenKind::RParen, "')'");
+    }
+    skip_newlines();
+    if (accept(TokenKind::Eq)) {
+      skip_newlines();
+      if (at(TokenKind::Indent)) {
+        s.par_body = parse_block();
+      }
+    }
+    s.span = {start_tok.start, cur().start};
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "cluster") {
+    const Token start_tok = cur();
+    i++;
+    s.kind = Stmt::Kind::ClusterBlock;
+    s.par_start = 0;
+    if (accept(TokenKind::LParen)) {
+      while (!at(TokenKind::RParen) && !at(TokenKind::Eof)) {
+        if (at(TokenKind::Ident) && cur().text == "world") {
+          i++;
+          if (accept(TokenKind::Eq) && at(TokenKind::IntLit)) {
+            s.par_start = cur().int_value;
+            i++;
+          }
+        } else if (at(TokenKind::Ident) && cur().text == "hosts") {
+          i++;
+          if (accept(TokenKind::Eq) && at(TokenKind::StringLit)) {
+            const std::string raw(cur().text);
+            if (raw.size() >= 2 && raw.front() == '"' && raw.back() == '"') {
+              s.exec_hosts = raw.substr(1, raw.size() - 2);
+            } else {
+              s.exec_hosts = raw;
+            }
+            i++;
+          }
+        } else if (at(TokenKind::Ident)) {
+          i++;
+          if (accept(TokenKind::Eq)) {
+            (void)parse_decorator_value();
+          }
+        } else {
+          break;
+        }
+        accept(TokenKind::Comma);
+      }
+      expect(TokenKind::RParen, "')'");
+    }
+    skip_newlines();
+    if (accept(TokenKind::Eq)) {
+      skip_newlines();
+      if (at(TokenKind::Indent)) {
+        s.par_body = parse_block();
+      }
+    }
+    s.span = {start_tok.start, cur().start};
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "distributed") {
+    const Token start_tok = cur();
+    i++;
+    if (!consume_for_kw()) {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "expected 'for' after 'distributed'");
+    }
+    s.kind = Stmt::Kind::DistributedFor;
+    if (!at(TokenKind::Ident)) {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "expected loop variable");
+    } else {
+      s.par_iter = std::string(cur().text);
+      i++;
+    }
+    if (!at(TokenKind::Ident) || cur().text != "in") {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "expected 'in' in distributed for");
+    } else {
+      i++;
+    }
+    if (at(TokenKind::IntLit)) {
+      s.par_start = cur().int_value;
+      i++;
+    }
+    if (at(TokenKind::DotDotLt)) {
+      i++;
+    } else {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "distributed for requires '..<' range");
+    }
+    if (at(TokenKind::IntLit)) {
+      s.par_end = cur().int_value;
+      i++;
+    }
+    skip_newlines();
+    if (accept(TokenKind::Indent)) {
+      skip_newlines();
+      while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+             at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+             at(TokenKind::KwInvariant)) {
+        s.par_contracts.push_back(parse_contract());
+      }
+      expect(TokenKind::Dedent, "dedent");
+      skip_newlines();
+    }
+    if (accept(TokenKind::Eq)) {
+      skip_newlines();
+      if (at(TokenKind::Indent)) {
+        s.par_body = parse_block();
+      }
+    }
+    s.span = {start_tok.start, cur().start};
+    return s;
+  }
   if (at(TokenKind::Ident) && cur().text == "parallel") {
     const Token start_tok = cur();
     i++;
@@ -1054,10 +1313,17 @@ Stmt Parser::parse_stmt() {
     skip_newlines();
     if (accept(TokenKind::Indent)) {
       skip_newlines();
-      while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
-             at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
-             at(TokenKind::KwInvariant)) {
-        s.par_contracts.push_back(parse_contract());
+      while (true) {
+        if (try_parse_par_reduce_clause(s)) {
+          continue;
+        }
+        if (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+            at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+            at(TokenKind::KwInvariant)) {
+          s.par_contracts.push_back(parse_contract());
+          continue;
+        }
+        break;
       }
       expect(TokenKind::Dedent, "dedent");
       skip_newlines();

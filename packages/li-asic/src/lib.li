@@ -1,0 +1,105 @@
+# li-asic — ASIC/FPGA device layer (WP-PAR-84): backend probe via runtime seam only.
+
+extern proc li_rt_liasic_device_kind() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 3
+  decreases 0
+
+extern proc li_rt_liasic_backend_available(backend_id: int) -> int
+  requires backend_id >= 1
+  requires backend_id <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases backend_id
+
+extern proc li_rt_liasic_backend_select_auto() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 3
+  decreases 0
+
+extern proc li_rt_liasic_capability_json() raises IO, Alloc -> str
+  requires true
+  ensures result != ""
+  decreases 0
+
+def li_std_liasic_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def liasic_backend_fpga() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def liasic_backend_custom_lab() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def liasic_backend_systolic() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def liasic_device_kind() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 3
+  decreases 0
+=
+  return li_rt_liasic_device_kind()
+
+def liasic_backend_available(backend_id: int) -> int raises IO
+  requires backend_id >= 1
+  requires backend_id <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases backend_id
+=
+  return li_rt_liasic_backend_available(backend_id)
+
+def liasic_backend_select_auto() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 3
+  decreases 0
+=
+  return li_rt_liasic_backend_select_auto()
+
+def liasic_capability_json() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return li_rt_liasic_capability_json()
+
+def liasic_device_probe_smoke() -> int raises IO, Alloc
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  if li_std_liasic_version() < 1:
+    return 1
+  var kind: int = liasic_device_kind()
+  if kind < liasic_backend_fpga() or kind > liasic_backend_systolic():
+    return 1
+  if liasic_backend_available(kind) != 1:
+    return 1
+  var auto_id: int = liasic_backend_select_auto()
+  if liasic_backend_available(auto_id) != 1:
+    return 1
+  var cap: str = liasic_capability_json()
+  if cap == "":
+    return 1
+  return 0

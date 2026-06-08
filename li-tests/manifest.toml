@@ -717,6 +717,23 @@ suite = "parallel_codegen"
 file = "parallel_codegen/three_float_arrays_12.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "parallel_codegen"
+file = "parallel_codegen/par_sum_f64.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "parallel_codegen"
+file = "parallel_codegen/par_for_reduce_f64.li"
+outcome = "verify_ok"
+note = "WP-PAR-15 Phase 1.1: parallel for reduce(+:) → li_parallel_for_reduce_add_f64"
+
+[[tests]]
+suite = "parallel_codegen"
+file = "parallel_codegen/dpar_for_range.li"
+outcome = "verify_ok"
+note = "WP-PAR-23: distributed for MIR → li_distributed_for_i64"
+
 # --- simd (native vector types) ---
 
 [[tests]]
@@ -935,9 +952,15 @@ note = "PH-HW WP4 chem lig backend"
 
 [[tests]]
 suite = "smoke"
-file = "packages/lig/li-tests/smoke/kernel_matmul_parity.li"
+file = "packages/li-gpu/li-tests/smoke/kernel_matmul_parity.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-kernel-matmul-parity"
+
+[[tests]]
+suite = "smoke"
+file = "packages/li-parallel/li-tests/smoke/kernels_ghost.li"
+outcome = "verify_ok"
+note = "T-PKG-li-parallel-kernels-ghost (WP-PAR-31/32)"
 
 # --- httpd (Phase H placeholder) ---
 
@@ -1509,6 +1532,42 @@ file = "tooling/lean_lake_lock_smoke.sh"
 outcome = "script_ok"
 note = "parallel li-tests must serialize lake AutoVC via .autovc.lock (G-lean)"
 
+[[tests]]
+suite = "tooling"
+file = "tooling/li_par_pool_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-10: persistent pthread pool static-chunk parallel dispatch"
+
+[[tests]]
+suite = "tooling"
+file = "tooling/li_par_pool_schedule_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-12: dynamic and guided schedulers on persistent pool"
+
+[[tests]]
+suite = "tooling"
+file = "tooling/li_par_reduce_sum_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-13: li_par_reduce_sum_f64 uses persistent pool partitions"
+
+[[tests]]
+suite = "tooling"
+file = "tooling/li_dpar_for_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-23: li_distributed_for_i64 block partition runtime"
+
+[[tests]]
+suite = "tooling"
+file = "tooling/li_dpar_for_codegen_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-23: distributed for codegen links li_dpar.c"
+
+[[tests]]
+suite = "tooling"
+file = "tooling/li_parallel_killer_gate_smoke.sh"
+outcome = "script_ok"
+note = "WP-PAR-99: killer gate script + sub-gates; full stack in GHA lipar-killer-gate"
+
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
 # --- stdlib_parity (WP0-D — compile-only until WP-WA + WP1 runtime) ---
@@ -1563,13 +1622,13 @@ expected_substr = "array index must be constant"
 
 [[tests]]
 suite = "smoke"
-file = "packages/lig/li-tests/smoke/present_blit_rgba8.li"
+file = "packages/li-gpu/li-tests/smoke/present_blit_rgba8.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-present-blit"
 
 [[tests]]
 suite = "smoke"
-file = "packages/lig/li-tests/smoke/present_wgpu_readback_stub.li"
+file = "packages/li-gpu/li-tests/smoke/present_wgpu_readback_stub.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-present-wgpu-readback"
 
@@ -1725,7 +1784,7 @@ note = "WP-ECHEM-12 grand-canonical SHE AIMD — 10-step charge neutrality drift
 [[tests]]
 suite = "composable"
 file = "composable/import_echem_ml_surrogate_smoke.li"
-packages = ["li-chem", "li-ml", "lig"]
+packages = ["li-chem", "li-ml", "li-gpu"]
 outcome = "compile_open_ok"
 note = "WP-ECHEM-14 ML surrogate — holdout MAE vs DFT + 80-step AIMD drift (10× baseline)"
 

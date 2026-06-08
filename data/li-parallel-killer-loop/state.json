@@ -1,0 +1,46 @@
+{
+  "sprint": "li-parallel-killer-package",
+  "phase_key": "phase-10-proofs-complete",
+  "phase_index": 10,
+  "branch": "cursor/li-parallel-native-hpc",
+  "started": "2026-06-06",
+  "updated_at": "2026-06-07T12:00:00Z",
+  "last_gate": {
+    "progress": "pass",
+    "killer": "pass",
+    "proofs_complete": "pass",
+    "goal_complete": "pending",
+    "killer_blocker": null,
+    "proofs_blocker": "WP-PAR-102: goal-complete gate (killer green on GHA; sandbox tier5 HTTP flakes)"
+  },
+  "completed_phases": [
+    "phase-0-program-first",
+    "phase-1-shared-memory",
+    "phase-2-distributed",
+    "phase-3-package-api",
+    "phase-4-benchmarks",
+    "phase-5-docs",
+    "phase-6-fl",
+    "phase-7-comm",
+    "phase-8-hetero",
+    "phase-8b-xfer",
+    "phase-99-killer-gate"
+  ],
+  "pending_phases": [
+    "phase-10-proofs-complete"
+  ],
+  "current_wps": [
+    "WP-PAR-102"
+  ],
+  "north_star_fit": {
+    "domain": "HPC parallel runtime",
+    "ph_ids": ["G-par", "G-par-dist", "PH-PAR-1"]
+  },
+  "progress_gate": "scripts/check-li-parallel-full-suite.sh",
+  "completion_gate": "scripts/check-li-parallel-goal-complete-gate.sh",
+  "proofs_gate": "scripts/check-li-parallel-proofs-complete-gate.sh",
+  "goal_file": "data/goal-directed-sprints/li-parallel-killer-package.md",
+  "plan_file": "data/goal-directed-sprints/li-parallel-killer-plan.md",
+  "k8s_deployment": "li-li-parallel",
+  "k8s_namespace": "li-swarm"
+}

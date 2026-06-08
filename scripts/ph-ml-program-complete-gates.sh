@@ -47,7 +47,7 @@ export LIG_EMIT_CUDA=1
 
 bash scripts/ph-ml-wave13-gates.sh
 
-grep -q 'lig_emit_vendor_lowering_ready' packages/lig/src/lib.li \
+grep -q 'lig_emit_vendor_lowering_ready' packages/li-gpu/src/lib.li \
   || { echo "T1: lig missing lig_emit_vendor_lowering_ready"; exit 1; }
 bash scripts/lig-emit-vendor-stub.sh
 test -s build/lig-emit-vendor.ptx 2>/dev/null || test -s benchmarks/results/lig-emit-vendor-artifact.txt 2>/dev/null \

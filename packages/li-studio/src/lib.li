@@ -13,9 +13,9 @@ import scene
 import physics.runtime
 import world
 import assets
-import lig
-import lig.present
-import lig.memory
+import ligpu
+import ligpu.present
+import ligpu.memory
 import render
 
 # li-studio — compose dock + timeline + inspector + agent chrome (PH-UX-05/06/07).

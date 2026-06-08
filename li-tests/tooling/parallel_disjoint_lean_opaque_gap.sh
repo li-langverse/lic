@@ -2,14 +2,12 @@
 # G-par (#387): parallel-for disjoint_row/disjoint_elem/row_ok contracts emit Li.Discharge specs in AutoVC.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-cd "$ROOT"
-LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
+LIC="$("$ROOT/scripts/resolve-lic.sh")"
 EXPLICIT="$ROOT/li-tests/race_shared_memory/good_disjoint_parallel.li"
 DECORATOR="$ROOT/li-tests/decorators/parallel_with_disjoint.li"
 INHERIT="$ROOT/li-tests/decorators/parallel_def_disjoint_inherit.li"
 VC_EMIT="$ROOT/compiler/verify/vc_emit_lean.cpp"
 DISCHARGE="$ROOT/docs/semantics/Discharge.lean"
-AUTOVC="$ROOT/build/generated/AutoVC.lean"
 
 if [[ ! -x "$LIC" ]]; then
   echo "SKIP: lic not built at $LIC" >&2
@@ -27,8 +25,22 @@ for f in "$DISCHARGE"; do
   fi
 done
 
-rm -f "$AUTOVC"
-"$LIC" build "$EXPLICIT" -o /dev/null 2>/dev/null
+build_autovc() {
+  local src="$1"
+  local tmp name autovc
+  tmp="$(mktemp -d)"
+  name="$(basename "$src")"
+  cp "$src" "$tmp/$name"
+  (
+    cd "$tmp"
+    unset LI_REPO_ROOT
+    "$LIC" build "$name" -o /dev/null --no-lean-verify
+  )
+  autovc="$tmp/build/generated/AutoVC.lean"
+  echo "$autovc"
+}
+
+AUTOVC="$(build_autovc "$EXPLICIT")"
 if grep -q 'VC requires (opaque): source expr not yet translated' "$AUTOVC"; then
   echo "FAIL: disjoint_row requires should translate to Li.Discharge (not opaque)" >&2
   exit 1
@@ -45,12 +57,10 @@ if ! grep -q 'Li.Discharge.row_ok_spec' "$AUTOVC"; then
   echo "FAIL: par invariant should emit Li.Discharge.row_ok_spec" >&2
   exit 1
 fi
-
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"
 "$ROOT/scripts/check-autovc-open-goals.sh" "$AUTOVC" >/dev/null
 
-rm -f "$AUTOVC"
-"$LIC" build "$INHERIT" -o /dev/null 2>/dev/null
+AUTOVC="$(build_autovc "$INHERIT")"
 if grep -q 'par0_requires' "$AUTOVC"; then
   echo "FAIL: decorator-inherited disjoint should not emit par requires VC" >&2
   exit 1
@@ -60,8 +70,7 @@ if ! grep -q 'par0_decreases_0' "$AUTOVC"; then
   exit 1
 fi
 
-rm -f "$AUTOVC"
-"$LIC" build "$DECORATOR" -o /dev/null 2>/dev/null
+AUTOVC="$(build_autovc "$DECORATOR")"
 if ! grep -q 'Li.Discharge.disjoint_elem_spec' "$AUTOVC"; then
   echo "FAIL: decorator disjoint_elem should emit Li.Discharge.disjoint_elem_spec" >&2
   exit 1

@@ -1,0 +1,23 @@
+# li-parallel dual-mode entry (WP-PAR-48).
+# Harness runs this when LI_PARALLEL=1; runtime pool + C overrides apply parallel execution.
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+extern proc li_orbit_two_body_kernel()
+  requires true
+  ensures true
+
+extern proc li_orbit_two_body_checksum() -> float
+  requires true
+  ensures true
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  li_orbit_two_body_kernel()
+  li_rt_volatile_sink_f64(li_orbit_two_body_checksum())
+  return 0

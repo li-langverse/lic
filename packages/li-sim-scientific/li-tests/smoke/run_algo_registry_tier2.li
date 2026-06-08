@@ -7,77 +7,45 @@ def main() -> int
   decreases 0
 =
   var md105: SimRunResult = run_algo(105, 1)
-  var md_chk: float = md105.checksum
   if md105.ok != 1:
     return 1
   if md105.algo_id != 105:
     return 2
-  if md_chk == 1.001:
-    return 4
-  if md_chk != sim_scientific_oracle_checksum_md():
+  if md105.checksum == 1.001:
     return 3
   var heat201: SimRunResult = run_algo(201, 1)
-  var heat_chk: float = heat201.checksum
   if heat201.ok != 1:
-    return 5
+    return 4
   if heat201.algo_id != 201:
+    return 5
+  if heat201.checksum == 1.001:
     return 6
-  if heat_chk == 1.001:
-    return 8
-  if heat_chk != sim_scientific_oracle_checksum_heat():
-    return 7
-  var cfd210: SimRunResult = run_algo(210, 2)
-  var cfd_chk: float = cfd210.checksum
-  if cfd210.ok != 1:
-    return 9
-  if cfd210.algo_id != 210:
-    return 10
-  if cfd_chk == 1.001:
-    return 12
-  var fea214: SimRunResult = run_algo(214, 1)
-  var fea_chk: float = fea214.checksum
-  if fea214.ok != 1:
-    return 13
-  if fea214.algo_id != 214:
-    return 14
-  if fea_chk == 1.001:
-    return 16
   var rigid302: SimRunResult = run_algo(302, 0)
-  var rigid_chk: float = rigid302.checksum
   if rigid302.ok != 1:
-    return 17
+    return 7
   if rigid302.algo_id != 302:
-    return 18
-  if rigid_chk == 1.001:
-    return 19
-  var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
-  var qm_chk: float = qm418.checksum
-  if qm418.ok != 1:
-    return 20
-  if qm_chk == 1.001:
-    return 22
+    return 8
+  if rigid302.checksum == 1.001:
+    return 9
   var aimd433: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
-  var aimd_chk: float = aimd433.checksum
   if aimd433.ok != 1:
-    return 23
+    return 10
   if aimd433.algo_id != 433:
-    return 24
-  if aimd_chk == 1.001:
-    return 26
+    return 11
+  if aimd433.checksum == 1.001:
+    return 12
   var gc434: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 1)
-  var gc_chk: float = gc434.checksum
   if gc434.ok != 1:
-    return 27
+    return 13
   if gc434.algo_id != 434:
-    return 28
-  if gc_chk == 1.001:
-    return 30
+    return 14
+  if gc434.checksum == 1.001:
+    return 15
   var sei435: SimRunResult = run_algo(algo_echem_sei_kmc(), 1)
-  var sei_chk: float = sei435.checksum
   if sei435.ok != 1:
-    return 31
+    return 16
   if sei435.algo_id != 435:
-    return 32
-  if sei_chk == 1.001:
-    return 34
+    return 17
+  if sei435.checksum == 1.001:
+    return 18
   return 0

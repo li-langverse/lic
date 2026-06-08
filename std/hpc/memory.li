@@ -1,0 +1,27 @@
+# std/hpc/memory.li — Kokkos-class memory + execution spaces (PH-7e, #110)
+#
+# Spec v1: enum types compile; variant literals and View[T, Space] lowering
+# land in #15 / #116 after plan-approved ABI (#128).
+#
+# See: docs/hpc/kokkos-memory-execution-spaces-rubric.md
+#      docs/hpc/copy-sync-contract-110.md
+
+type MemorySpace = enum
+  Host
+  Device
+  Unified
+
+type ExecutionSpace = enum
+  Serial
+  OpenMP
+  Threads
+
+# Reserved for #116 offload backends (not selectable in v1 tier-2 pilots):
+# SYCL, Cuda, HIP — map to decorator @gpu + lig vendor tables.
+
+def hpc_memory_spec_tag() -> int
+  requires true
+  ensures result == 110
+  decreases 0
+=
+  return 110

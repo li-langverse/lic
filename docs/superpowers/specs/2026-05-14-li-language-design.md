@@ -534,9 +534,21 @@ GPU side (with numeric Phase 3):
 
 | Type | Purpose |
 |------|---------|
-| `devicebuffer[T]` | GPU-owned contiguous storage |
-| `hostbuffer[T]` | Pinned/pageable host mirror |
+| `devicebuffer[T]` | GPU-owned contiguous storage (`MemorySpace.Device`) |
+| `hostbuffer[T]` | Pinned/pageable host mirror (`MemorySpace.Host`) |
 | `ndview[Shape, T]` | View with strides (non-contiguous) |
+| `View[T, Space, Layout]` | Kokkos-class view; static `MemorySpace` tag — [#110](https://github.com/li-langverse/lic/issues/110) |
+
+**Memory + execution spaces (#110, spec v1):**
+
+| Enum | Variants (v1) | Reserved |
+|------|---------------|----------|
+| `MemorySpace` | `Host`, `Device`, `Unified` | `HBW` → `Unified` alias on tiered DRAM |
+| `ExecutionSpace` | `Serial`, `OpenMP`, `Threads` | `SYCL`, `Cuda`, `HIP` ([#116](https://github.com/li-langverse/lic/issues/116)) |
+
+Stdlib: `std/hpc/memory.li`. Rubric: [kokkos-memory-execution-spaces-rubric.md](../../hpc/kokkos-memory-execution-spaces-rubric.md).
+
+**Sync contract (no DualView):** `@sync_host(view)` / `@sync_device(view)` before cross-space reads; compile error if omitted. See [copy-sync-contract-110.md](../../hpc/copy-sync-contract-110.md). Default tier-2 execution space: `OpenMP` (Threads opt-in — [Trilinos #1391](https://github.com/trilinos/Trilinos/issues/1391)).
 
 ---
 

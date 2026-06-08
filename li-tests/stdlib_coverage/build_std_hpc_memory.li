@@ -1,0 +1,17 @@
+import std.hpc.memory
+
+def use_spaces(ms: MemorySpace, es: ExecutionSpace) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if hpc_memory_spec_tag() != 110:
+    return 1
+  return 0

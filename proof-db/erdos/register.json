@@ -10531,7 +10531,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/879",
       "li_specimen": "proof-db/erdos/specimens/E-879.li"
     },
@@ -10555,7 +10555,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/881",
       "li_specimen": "proof-db/erdos/specimens/E-881.li"
     },
@@ -10567,7 +10567,7 @@
         "primitive_sets"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/882",
       "li_specimen": "proof-db/erdos/specimens/E-882.li"
     },
@@ -10579,7 +10579,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/883",
       "li_specimen": "proof-db/erdos/specimens/E-883.li"
     },
@@ -10591,7 +10591,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/884",
       "li_specimen": "proof-db/erdos/specimens/E-884.li"
     },
@@ -10603,7 +10603,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/885",
       "li_specimen": "proof-db/erdos/specimens/E-885.li"
     },
@@ -10615,7 +10615,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/886",
       "li_specimen": "proof-db/erdos/specimens/E-886.li"
     },
@@ -10627,7 +10627,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/887",
       "li_specimen": "proof-db/erdos/specimens/E-887.li"
     },
@@ -10639,7 +10639,7 @@
         "squares"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/888",
       "li_specimen": "proof-db/erdos/specimens/E-888.li"
     },
@@ -10650,7 +10650,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/889",
       "li_specimen": "proof-db/erdos/specimens/E-889.li"
     },
@@ -10662,7 +10662,7 @@
         "primes"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/890",
       "li_specimen": "proof-db/erdos/specimens/E-890.li"
     },
@@ -10673,7 +10673,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/891",
       "li_specimen": "proof-db/erdos/specimens/E-891.li"
     },
@@ -10685,7 +10685,7 @@
         "primitive_sets"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/892",
       "li_specimen": "proof-db/erdos/specimens/E-892.li"
     },
@@ -10697,7 +10697,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/893",
       "li_specimen": "proof-db/erdos/specimens/E-893.li"
     },
@@ -10732,7 +10732,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/896",
       "li_specimen": "proof-db/erdos/specimens/E-896.li"
     },
@@ -10743,7 +10743,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/897",
       "li_specimen": "proof-db/erdos/specimens/E-897.li"
     },
@@ -10788,7 +10788,7 @@
         "hypergraphs"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/901",
       "li_specimen": "proof-db/erdos/specimens/E-901.li"
     },
@@ -10799,7 +10799,7 @@
         "graph_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/902",
       "li_specimen": "proof-db/erdos/specimens/E-902.li"
     },
@@ -10844,7 +10844,7 @@
         "iterated_functions"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/906",
       "li_specimen": "proof-db/erdos/specimens/E-906.li"
     },
@@ -10889,7 +10889,7 @@
         "topology"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/910",
       "li_specimen": "proof-db/erdos/specimens/E-910.li"
     },
@@ -10901,7 +10901,7 @@
         "ramsey_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/911",
       "li_specimen": "proof-db/erdos/specimens/E-911.li"
     },
@@ -10913,7 +10913,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/912",
       "li_specimen": "proof-db/erdos/specimens/E-912.li"
     },
@@ -10924,7 +10924,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/913",
       "li_specimen": "proof-db/erdos/specimens/E-913.li"
     },
@@ -10946,7 +10946,7 @@
         "graph_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/915",
       "li_specimen": "proof-db/erdos/specimens/E-915.li"
     },
@@ -10970,7 +10970,7 @@
         "graph_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/917",
       "li_specimen": "proof-db/erdos/specimens/E-917.li"
     },
@@ -10982,7 +10982,7 @@
         "graph_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/918",
       "li_specimen": "proof-db/erdos/specimens/E-918.li"
     },
@@ -10994,7 +10994,7 @@
         "graph_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/919",
       "li_specimen": "proof-db/erdos/specimens/E-919.li"
     },
@@ -11006,7 +11006,7 @@
         "graph_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/920",
       "li_specimen": "proof-db/erdos/specimens/E-920.li"
     },
@@ -11067,7 +11067,7 @@
         "ramsey_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/925",
       "li_specimen": "proof-db/erdos/specimens/E-925.li"
     },
@@ -11089,7 +11089,7 @@
         "graph_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/927",
       "li_specimen": "proof-db/erdos/specimens/E-927.li"
     },
@@ -11100,7 +11100,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/928",
       "li_specimen": "proof-db/erdos/specimens/E-928.li"
     },
@@ -11111,7 +11111,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/929",
       "li_specimen": "proof-db/erdos/specimens/E-929.li"
     },
@@ -11122,7 +11122,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/930",
       "li_specimen": "proof-db/erdos/specimens/E-930.li"
     },
@@ -11133,7 +11133,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/931",
       "li_specimen": "proof-db/erdos/specimens/E-931.li"
     },
@@ -11144,7 +11144,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/932",
       "li_specimen": "proof-db/erdos/specimens/E-932.li"
     },
@@ -11155,7 +11155,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/933",
       "li_specimen": "proof-db/erdos/specimens/E-933.li"
     },
@@ -11166,7 +11166,7 @@
         "graph_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/934",
       "li_specimen": "proof-db/erdos/specimens/E-934.li"
     },
@@ -11178,7 +11178,7 @@
         "powerful"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/935",
       "li_specimen": "proof-db/erdos/specimens/E-935.li"
     },
@@ -11190,7 +11190,7 @@
         "powerful"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/936",
       "li_specimen": "proof-db/erdos/specimens/E-936.li"
     },
@@ -11214,7 +11214,7 @@
         "powerful"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/938",
       "li_specimen": "proof-db/erdos/specimens/E-938.li"
     },

@@ -59,11 +59,11 @@ LKIR path preserved in `ml_matmul_lkir_logical_32` for lig smoke tests when `ml_
 
 ### Exit criteria
 
-- [ ] `ml_matmul_cpu_nested(8,8,8)` + `ml_matmul_cpu_logical_32` in `packages/li-ml/src/lib.li`
-- [ ] `array_matmul` routes 32×32 through CPU logical path
-- [ ] Bench script: 3 warmup + 50 runs (mean `cpu_sec`)
-- [ ] `ph-ml-li-array-perf-gates.sh` green
-- [ ] `li_over_numpy` materially improved (target ≥10×; stretch 100×; honest if still ≫2.0)
+- [x] `ml_matmul_cpu_nested(8,8,8)` + `ml_matmul_cpu_logical_32` in `packages/li-ml/src/lib.li`
+- [x] `array_matmul` routes 32×32 through CPU logical path
+- [x] Bench script: 3 warmup + 50 runs (mean `cpu_sec`)
+- [x] `ph-ml-li-array-perf-gates.sh` green
+- [x] `li_over_numpy` materially improved (target ≥10×; stretch 100×; honest if still ≫2.0)
 
 ## References
 

@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-30  
+**Last updated:** 2026-06-07  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -46,7 +46,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-math-syn** | Partial | **Closed slice:** `for i in start..<end` (`math_syntax/for_range_sum.li`); Python `range()` / dynamic bounds open |
 | **G-stdlib** | Partial | Full workspace cycle + seal edge cases |
 | **G-narrow** | Partial | Proved width narrowing (beyond `cast[` reject) |
-| **G-async** | Partial | `await` + structured concurrency proofs |
+| **G-async** | Partial | `@async` requires `raises Async`; `await` not parsed. Normative sender/receiver tier-2 scheduling: [sender/receiver async surface](../superpowers/specs/2026-06-07-li-sender-receiver-async-scheduling-surface.md) (lic#125) |
 | **G-net** | Partial | Net effect codegen + proofs |
 | **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
 | **G-ann** | Missing | PEP 649 deferred annotations |
@@ -98,7 +98,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; **`for i in 0..<n`** (`for_range_sum.li`); `range()` helper + dynamic bounds open | **2h** | `li-tests/math_syntax/` |
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
 | **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Partial** — MIR telemetry + **Wave 13** device-buffer host contract (`ml_gpu_device_buffer.li`); vendor codegen slice via `lig_emit_vendor_lowering_ready`; address-space proofs open | **3+**, **7d** | `li-tests/decorators/gpu_*`, `packages/li-ml/li-tests/smoke/ml_gpu_device_buffer.li`, `scripts/check-mir-gpu-decorator.sh` |
-| **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; await not parsed | **2+**, **7d** | `li-tests/effects/` |
+| **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; `await`/`when_all` spec-only (lic#125); sender graph proofs open | **2+**, **7d** | `li-tests/effects/`, [lic#125 plan](../superpowers/plans/2026-06-07-li-stdexecution-sender-receiver-tier2-scheduling.md) |
 | **G-net** | `raises Net` | Trusted syscall surface | **Partial** — effect propagation + `trusted.lean` axioms; no codegen | **H**, **2f** | `li-tests/effects/net_*.li` |
 | **G-trust** | Trusted base growth | Only `trusted.lean` | **Stub** — file exists; `Core.lean` / `MIR.lean` **planned** | **2f** | [semantics/README.md](../semantics/README.md) |
 | **G-meta** | Compiler correctness | C++ compiler ≡ Lean semantics | **Missing** (research) | long-term | Not started |

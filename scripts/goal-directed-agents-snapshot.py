@@ -210,19 +210,29 @@ def _line_is_loop_process(line: str) -> bool:
 
 
 def systemd_active(unit: str) -> tuple[bool, str]:
-    proc = subprocess.run(
-        ["systemctl", "--user", "is-active", unit],
-        capture_output=True,
-        text=True,
-    )
+    try:
+        proc = subprocess.run(
+            ["systemctl", "--user", "is-active", unit],
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        return False, ""
     state = (proc.stdout or "").strip()
     if state in ("active", "activating"):
         return True, f"systemd:{unit} ({state})"
     return False, ""
 
 
+def _run_capture(cmd: list[str]) -> subprocess.CompletedProcess[str]:
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True)
+    except FileNotFoundError:
+        return subprocess.CompletedProcess(cmd, returncode=127, stdout="", stderr="")
+
+
 def detect_loop_running(cfg: dict, log_path: Path) -> tuple[bool, str]:
-    repo: Path = cfg["repo"]
+    repo: Path = resolve_runner_repo(cfg)
 
     unit = cfg.get("systemd_unit")
     if unit:
@@ -240,21 +250,20 @@ def detect_loop_running(cfg: dict, log_path: Path) -> tuple[bool, str]:
         if not pattern or pattern in seen:
             continue
         seen.add(pattern)
-        proc = subprocess.run(["pgrep", "-af", pattern], capture_output=True, text=True)
+        proc = _run_capture(["pgrep", "-af", pattern])
+        if proc.returncode == 127:
+            break
         for line in (proc.stdout or "").splitlines():
             if not _line_is_loop_process(line):
                 continue
             if _line_matches_repo(line, repo) or pattern in line:
                 return True, line.strip()[:120]
 
-    agent_proc = subprocess.run(
-        ["pgrep", "-af", "run-agent.js"],
-        capture_output=True,
-        text=True,
-    )
-    for line in (agent_proc.stdout or "").splitlines():
-        if _line_matches_repo(line, repo):
-            return True, line.strip()[:120]
+    agent_proc = _run_capture(["pgrep", "-af", "run-agent.js"])
+    if agent_proc.returncode != 127:
+        for line in (agent_proc.stdout or "").splitlines():
+            if _line_matches_repo(line, repo):
+                return True, line.strip()[:120]
 
     if log_path.is_file():
         age = time.time() - log_path.stat().st_mtime
@@ -317,11 +326,9 @@ def current_iteration_line(log_path: Path) -> str:
 
 
 def detect_agent(repo: Path) -> dict:
-    proc = subprocess.run(
-        ["pgrep", "-af", "run-agent.js"],
-        capture_output=True,
-        text=True,
-    )
+    proc = _run_capture(["pgrep", "-af", "run-agent.js"])
+    if proc.returncode == 127:
+        return {"agent_live": False, "agent": "", "goal_file": ""}
     repo_s = str(repo.resolve())
     for line in (proc.stdout or "").splitlines():
         cwd_m = re.search(r"--cwd\s+(\S+)", line)
@@ -423,8 +430,21 @@ def enrich_ph_db_branches(entry: dict) -> None:
 
 
 
-def build_runner(cfg: dict) -> dict:
+def resolve_runner_repo(cfg: dict) -> Path:
+    """Prefer configured worktree; fall back to monorepo lic hosting this script."""
     repo: Path = cfg["repo"]
+    if repo.is_dir():
+        return repo
+    if ROOT.is_dir():
+        return ROOT
+    fallback = LANGVERSE / "lic"
+    if fallback.is_dir():
+        return fallback
+    return repo
+
+
+def build_runner(cfg: dict) -> dict:
+    repo: Path = resolve_runner_repo(cfg)
     plan_p = repo / cfg["plan"]
     state_p = repo / cfg["state"]
     log_p = resolve_runner_log(repo, cfg["log"])

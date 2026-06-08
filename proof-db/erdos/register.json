@@ -41,14 +41,14 @@
       "external_url": "https://www.erdosproblems.com/3",
       "notes": "Bloom Top 10; $5000 prize.",
       "content_tier": "polished",
-      "context": "Erdős asked whether every set of naturals with divergent reciprocal sum must contain arbitrarily long arithmetic progressions. It is a major open problem in combinatorial number theory; Bloom's 2026 prize list highlights it.",
+      "context": "Erd\u0151s asked whether every set of naturals with divergent reciprocal sum must contain arbitrarily long arithmetic progressions. It is a major open problem in combinatorial number theory; Bloom's 2026 prize list highlights it.",
       "sources": [
         {
-          "title": "Erdős Problem #3",
+          "title": "Erd\u0151s Problem #3",
           "url": "https://www.erdosproblems.com/3"
         },
         {
-          "title": "Bloom Erdős prize list (2026)",
+          "title": "Bloom Erd\u0151s prize list (2026)",
           "url": "https://www.erdosproblems.com/"
         }
       ],
@@ -65,12 +65,12 @@
       "priority_tier": "P1",
       "erdos_status": "proved",
       "external_url": "https://www.erdosproblems.com/4",
-      "notes": "Proved by Maynard (2016) and Ford–Green–Konyagin–Tao (2016).",
+      "notes": "Proved by Maynard (2016) and Ford\u2013Green\u2013Konyagin\u2013Tao (2016).",
       "content_tier": "curated",
-      "context": "Large prime gaps beyond any fixed multiple of log n (with iterated log factors). Proved independently by Maynard and Ford–Green–Konyagin–Tao in 2016.",
+      "context": "Large prime gaps beyond any fixed multiple of log n (with iterated log factors). Proved independently by Maynard and Ford\u2013Green\u2013Konyagin\u2013Tao in 2016.",
       "sources": [
         {
-          "title": "Erdős Problem #4",
+          "title": "Erd\u0151s Problem #4",
           "url": "https://www.erdosproblems.com/4"
         },
         {
@@ -152,10 +152,10 @@
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/10",
       "content_tier": "curated",
-      "context": "Sets with divergent harmonic sum but no long arithmetic progressions. A cousin of Erdős–Turán conjectures; ties to Szemerédi-type obstructions.",
+      "context": "Sets with divergent harmonic sum but no long arithmetic progressions. A cousin of Erd\u0151s\u2013Tur\u00e1n conjectures; ties to Szemer\u00e9di-type obstructions.",
       "sources": [
         {
-          "title": "Erdős Problem #10",
+          "title": "Erd\u0151s Problem #10",
           "url": "https://www.erdosproblems.com/10"
         }
       ],
@@ -175,7 +175,7 @@
       "context": "Every large odd integer as a squarefree number plus a power of two. Mixes binary representations with squarefree structure.",
       "sources": [
         {
-          "title": "Erdős Problem #11",
+          "title": "Erd\u0151s Problem #11",
           "url": "https://www.erdosproblems.com/11"
         }
       ],
@@ -291,10 +291,10 @@
       "external_url": "https://www.erdosproblems.com/20",
       "notes": "Bloom Top 10; $1000 prize for k=3.",
       "content_tier": "curated",
-      "context": "Hypergraph sunflower / uniform family extremal problem on Erdős–Rado type bounds f(n,k). Listed among Bloom's top open Erdős problems with a $1000 prize for k=3.",
+      "context": "Hypergraph sunflower / uniform family extremal problem on Erd\u0151s\u2013Rado type bounds f(n,k). Listed among Bloom's top open Erd\u0151s problems with a $1000 prize for k=3.",
       "sources": [
         {
-          "title": "Erdős Problem #20",
+          "title": "Erd\u0151s Problem #20",
           "url": "https://www.erdosproblems.com/20"
         }
       ],
@@ -356,14 +356,14 @@
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/25",
       "content_tier": "curated",
-      "context": "Asks for infinitely often prime gaps smaller than any fixed power of log n beyond the trivial o((log n)^2) target; ties to Cramér-type heuristics and recent bounded-gap results.",
+      "context": "Asks for infinitely often prime gaps smaller than any fixed power of log n beyond the trivial o((log n)^2) target; ties to Cram\u00e9r-type heuristics and recent bounded-gap results.",
       "sources": [
         {
-          "title": "Erdős Problem #25",
+          "title": "Erd\u0151s Problem #25",
           "url": "https://www.erdosproblems.com/25"
         },
         {
-          "title": "Maynard–Tao bounded gaps",
+          "title": "Maynard\u2013Tao bounded gaps",
           "url": "https://arxiv.org/abs/1310.1055"
         }
       ],
@@ -395,7 +395,7 @@
     },
     {
       "number": 28,
-      "statement": "If A subset N is such that A+A contains all but finitely many integers, does limsup 1_A * 1_A(n) = infinity (Erdős–Turán additive bases)?",
+      "statement": "If A subset N is such that A+A contains all but finitely many integers, does limsup 1_A * 1_A(n) = infinity (Erd\u0151s\u2013Tur\u00e1n additive bases)?",
       "tags": [
         "number_theory",
         "additive_combinatorics"
@@ -408,7 +408,7 @@
       "context": "If A+A covers all but finitely many integers, does the upper density of A tend to 1? Bloom Top 10; links sumset covering to density conjectures.",
       "sources": [
         {
-          "title": "Erdős Problem #28",
+          "title": "Erd\u0151s Problem #28",
           "url": "https://www.erdosproblems.com/28"
         }
       ],
@@ -428,7 +428,7 @@
       "context": "Prime k-tuple conjecture flavor: infinitely many primes p with p+k also prime for some fixed k>0. Standard open problem in analytic number theory.",
       "sources": [
         {
-          "title": "Erdős Problem #29",
+          "title": "Erd\u0151s Problem #29",
           "url": "https://www.erdosproblems.com/29"
         }
       ],
@@ -555,7 +555,7 @@
       "context": "Finite covering systems with distinct moduli: existence and minimal modulus questions. Hough disproved the distinct-odd-moduli variant in 2022.",
       "sources": [
         {
-          "title": "Erdős Problem #39",
+          "title": "Erd\u0151s Problem #39",
           "url": "https://www.erdosproblems.com/39"
         }
       ],
@@ -600,7 +600,7 @@
       "context": "Twin semiprime problem: infinitely many n such that n and n+2 are each products of exactly two primes. Connects to sieve methods and almost-prime pairs.",
       "sources": [
         {
-          "title": "Erdős Problem #42",
+          "title": "Erd\u0151s Problem #42",
           "url": "https://www.erdosproblems.com/42"
         }
       ],
@@ -670,7 +670,7 @@
       "context": "The Collatz (3n+1) conjecture: every positive integer eventually reaches 1 under the usual map. One of the most famous open problems in recreational and arithmetic dynamics.",
       "sources": [
         {
-          "title": "Erdős Problem #47",
+          "title": "Erd\u0151s Problem #47",
           "url": "https://www.erdosproblems.com/47"
         },
         {
@@ -740,14 +740,14 @@
       "external_url": "https://www.erdosproblems.com/52",
       "notes": "Bloom Top 10; real-number variant disproved May 2026; Z variant open.",
       "content_tier": "curated",
-      "context": "Sum-product phenomenon for finite A⊂ℤ: max(|A+A|,|AA|) should exceed |A|^{2-ε} for every ε>0. Central to additive combinatorics and expander heuristics.",
+      "context": "Sum-product phenomenon for finite A\u2282\u2124: max(|A+A|,|AA|) should exceed |A|^{2-\u03b5} for every \u03b5>0. Central to additive combinatorics and expander heuristics.",
       "sources": [
         {
-          "title": "Erdős Problem #52",
+          "title": "Erd\u0151s Problem #52",
           "url": "https://www.erdosproblems.com/52"
         },
         {
-          "title": "Elekes–Ruzsa sum-product",
+          "title": "Elekes\u2013Ruzsa sum-product",
           "url": "https://en.wikipedia.org/wiki/Sum-product_problem"
         }
       ],
@@ -852,7 +852,7 @@
     },
     {
       "number": 61,
-      "statement": "For any graph H, is there c=c(H)>0 such that every n-vertex H-free graph contains a clique or independent set on at least n^c vertices (Erdős–Hajnal)?",
+      "statement": "For any graph H, is there c=c(H)>0 such that every n-vertex H-free graph contains a clique or independent set on at least n^c vertices (Erd\u0151s\u2013Hajnal)?",
       "tags": [
         "graph_theory",
         "extremal"
@@ -862,10 +862,10 @@
       "external_url": "https://www.erdosproblems.com/61",
       "notes": "Mochizuki proof disputed; register tracks as open.",
       "content_tier": "curated",
-      "context": "Turán-type extremal question: every large H-free graph should contain a large clique. Relates Ramsey numbers and the Erdős–Stone theorem program.",
+      "context": "Tur\u00e1n-type extremal question: every large H-free graph should contain a large clique. Relates Ramsey numbers and the Erd\u0151s\u2013Stone theorem program.",
       "sources": [
         {
-          "title": "Erdős Problem #61",
+          "title": "Erd\u0151s Problem #61",
           "url": "https://www.erdosproblems.com/61"
         }
       ],
@@ -873,7 +873,7 @@
     },
     {
       "number": 62,
-      "statement": "Can every integer n>1 be written as a sum of three fractions 4/x with x a positive integer (Erdős–Straus)?",
+      "statement": "Can every integer n>1 be written as a sum of three fractions 4/x with x a positive integer (Erd\u0151s\u2013Straus)?",
       "tags": [
         "diophantine",
         "unit_fractions"
@@ -968,7 +968,7 @@
       "context": "Infinitely many consecutive prime gaps strictly larger than log p for the smaller prime p. Tests fine structure of gap distribution beyond average spacing.",
       "sources": [
         {
-          "title": "Erdős Problem #69",
+          "title": "Erd\u0151s Problem #69",
           "url": "https://www.erdosproblems.com/69"
         }
       ],
@@ -1072,10 +1072,10 @@
       "external_url": "https://www.erdosproblems.com/77",
       "notes": "Bloom Top 10.",
       "content_tier": "curated",
-      "context": "Asymptotics of diagonal Ramsey numbers R(k): Erdős asked for the limit of R(k)^{1/k}. Exponential lower and tower-type upper bounds are known.",
+      "context": "Asymptotics of diagonal Ramsey numbers R(k): Erd\u0151s asked for the limit of R(k)^{1/k}. Exponential lower and tower-type upper bounds are known.",
       "sources": [
         {
-          "title": "Erdős Problem #77",
+          "title": "Erd\u0151s Problem #77",
           "url": "https://www.erdosproblems.com/77"
         },
         {
@@ -1119,16 +1119,16 @@
       "priority_tier": "P0",
       "erdos_status": "proved",
       "external_url": "https://www.erdosproblems.com/80",
-      "notes": "Szemerédi theorem (1975).",
+      "notes": "Szemer\u00e9di theorem (1975).",
       "content_tier": "curated",
-      "context": "Szemerédi theorem: positive upper density sets contain 3-term arithmetic progressions. Proved 1975; cornerstone of modern additive combinatorics.",
+      "context": "Szemer\u00e9di theorem: positive upper density sets contain 3-term arithmetic progressions. Proved 1975; cornerstone of modern additive combinatorics.",
       "sources": [
         {
-          "title": "Erdős Problem #80",
+          "title": "Erd\u0151s Problem #80",
           "url": "https://www.erdosproblems.com/80"
         },
         {
-          "title": "Szemerédi (1975)",
+          "title": "Szemer\u00e9di (1975)",
           "url": "https://doi.org/10.1007/BF02010379"
         }
       ],
@@ -1207,7 +1207,7 @@
       "context": "Goldbach conjecture: every even integer greater than 2 is the sum of two primes. Weak Goldbach (odd sums of three primes) is proved; the binary case remains open.",
       "sources": [
         {
-          "title": "Erdős Problem #86",
+          "title": "Erd\u0151s Problem #86",
           "url": "https://www.erdosproblems.com/86"
         },
         {
@@ -1231,7 +1231,7 @@
       "context": "Twin prime conjecture: infinitely many primes p with p+2 also prime. Zhang (2013) and Polymath8 showed bounded gaps occur infinitely often; gap 2 is unproved.",
       "sources": [
         {
-          "title": "Erdős Problem #87",
+          "title": "Erd\u0151s Problem #87",
           "url": "https://www.erdosproblems.com/87"
         },
         {
@@ -1264,10 +1264,10 @@
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/89",
       "content_tier": "curated",
-      "context": "Existence of very large prime gaps of size at least c√p log p infinitely often. Connects to Cramér-type conjectures and recent explicit gap constructions.",
+      "context": "Existence of very large prime gaps of size at least c\u221ap log p infinitely often. Connects to Cram\u00e9r-type conjectures and recent explicit gap constructions.",
       "sources": [
         {
-          "title": "Erdős Problem #89",
+          "title": "Erd\u0151s Problem #89",
           "url": "https://www.erdosproblems.com/89"
         }
       ],
@@ -1310,10 +1310,10 @@
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/92",
       "content_tier": "curated",
-      "context": "Infinitely many primes of the form n²+1. A classical sieve obstacle problem; Iwaniec showed infinitely many primes in shifted quadratics under weaker forms.",
+      "context": "Infinitely many primes of the form n\u00b2+1. A classical sieve obstacle problem; Iwaniec showed infinitely many primes in shifted quadratics under weaker forms.",
       "sources": [
         {
-          "title": "Erdős Problem #92",
+          "title": "Erd\u0151s Problem #92",
           "url": "https://www.erdosproblems.com/92"
         }
       ],
@@ -1533,10 +1533,10 @@
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/110",
       "content_tier": "curated",
-      "context": "Cap-set style problem: arbitrarily large sets without 4-term arithmetic progressions. Related to Roth/Szemerédi and recent polynomial-method bounds.",
+      "context": "Cap-set style problem: arbitrarily large sets without 4-term arithmetic progressions. Related to Roth/Szemer\u00e9di and recent polynomial-method bounds.",
       "sources": [
         {
-          "title": "Erdős Problem #110",
+          "title": "Erd\u0151s Problem #110",
           "url": "https://www.erdosproblems.com/110"
         }
       ],
@@ -1662,10 +1662,10 @@
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/120",
       "content_tier": "curated",
-      "context": "Infinitely many n such that n and n+2 are each sums of two primes. A Goldbach–twin hybrid problem in additive prime number theory.",
+      "context": "Infinitely many n such that n and n+2 are each sums of two primes. A Goldbach\u2013twin hybrid problem in additive prime number theory.",
       "sources": [
         {
-          "title": "Erdős Problem #120",
+          "title": "Erd\u0151s Problem #120",
           "url": "https://www.erdosproblems.com/120"
         }
       ],
@@ -1765,10 +1765,10 @@
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/128",
       "content_tier": "curated",
-      "context": "Error term for π(x) vs Li(x) at Riemann-hypothesis strength. Equivalent to RH in standard formulations; catalogued as an Erdős-flavored open target.",
+      "context": "Error term for \u03c0(x) vs Li(x) at Riemann-hypothesis strength. Equivalent to RH in standard formulations; catalogued as an Erd\u0151s-flavored open target.",
       "sources": [
         {
-          "title": "Erdős Problem #128",
+          "title": "Erd\u0151s Problem #128",
           "url": "https://www.erdosproblems.com/128"
         },
         {
@@ -2025,7 +2025,7 @@
     },
     {
       "number": 150,
-      "statement": "Does every triangle-free graph on n vertices have at most n^2/4 edges (Mantel/Turán for K_3)?",
+      "statement": "Does every triangle-free graph on n vertices have at most n^2/4 edges (Mantel/Tur\u00e1n for K_3)?",
       "tags": [
         "graph_theory",
         "extremal"
@@ -2033,7 +2033,7 @@
       "priority_tier": "P1",
       "erdos_status": "proved",
       "external_url": "https://www.erdosproblems.com/150",
-      "notes": "Mantel (1907); Turán (1941).",
+      "notes": "Mantel (1907); Tur\u00e1n (1941).",
       "li_specimen": "proof-db/erdos/specimens/E-150.li"
     },
     {
@@ -6943,11 +6943,11 @@
     },
     {
       "number": 571,
-      "statement": "For any rational alpha in [1,2), does there exist a bipartite graph G with ex(n;G) asymptotic to n^alpha (Turán exponent)?",
+      "statement": "For any rational alpha in [1,2), does there exist a bipartite graph G with ex(n;G) asymptotic to n^alpha (Tur\u00e1n exponent)?",
       "tags": [
         "graph_theory",
         "extremal",
-        "turán"
+        "tur\u00e1n"
       ],
       "priority_tier": "P1",
       "erdos_status": "target",
@@ -8605,7 +8605,7 @@
       "tags": [
         "graph_theory",
         "extremal",
-        "turán"
+        "tur\u00e1n"
       ],
       "priority_tier": "P1",
       "erdos_status": "target",
@@ -9364,7 +9364,7 @@
     },
     {
       "number": 778,
-      "statement": "Alice and Bob play a game on the edges of $K_n$, alternating colouring edges by red (Alice) and blue (Bob). Alice goes first, and wins if at the end the largest red clique is larger than any of the blue cliques. Does Bob have a winning strategy for $n\\geq 3$? (Erdős believed the answer is yes.) If we change the game so that Bob colours two edges after each edge that Alice colours, but now require Bob's largest clique to be strictly larger than Alice's, then does Bob have a winning strategy for $n>3$? Finally, consider the game when Alice wins if the maximum degree of the red subgraph is larger than the maximum degree of the blue subgraph. Who wins?",
+      "statement": "Alice and Bob play a game on the edges of $K_n$, alternating colouring edges by red (Alice) and blue (Bob). Alice goes first, and wins if at the end the largest red clique is larger than any of the blue cliques. Does Bob have a winning strategy for $n\\geq 3$? (Erd\u0151s believed the answer is yes.) If we change the game so that Bob colours two edges after each edge that Alice colours, but now require Bob's largest clique to be strictly larger than Alice's, then does Bob have a winning strategy for $n>3$? Finally, consider the game when Alice wins if the maximum degree of the red subgraph is larger than the maximum degree of the blue subgraph. Who wins?",
       "tags": [
         "graph_theory"
       ],
@@ -10816,7 +10816,7 @@
     },
     {
       "number": 904,
-      "statement": "Let $r\\geq 2$ and let $t_r(n)$ be the Turán number (the maximal number of edges in a graph on $n$ vertices with no $K_{r+1}$). If $G$ is a graph with $n$ vertices and $m\\geq t_r(n)$ edges there exists a clique on $r$ vertices, say $x_1,\\ldots,x_r$, such that\\[d(x_1)+\\cdots+d(x_r)\\geq \\frac{2rm}{n}.\\]",
+      "statement": "Let $r\\geq 2$ and let $t_r(n)$ be the Tur\u00e1n number (the maximal number of edges in a graph on $n$ vertices with no $K_{r+1}$). If $G$ is a graph with $n$ vertices and $m\\geq t_r(n)$ edges there exists a clique on $r$ vertices, say $x_1,\\ldots,x_r$, such that\\[d(x_1)+\\cdots+d(x_r)\\geq \\frac{2rm}{n}.\\]",
       "tags": [
         "graph_theory"
       ],
@@ -11226,7 +11226,7 @@
         "powerful"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/939",
       "li_specimen": "proof-db/erdos/specimens/E-939.li"
     },
@@ -11238,7 +11238,7 @@
         "powerful"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/940",
       "li_specimen": "proof-db/erdos/specimens/E-940.li"
     },
@@ -11262,7 +11262,7 @@
         "powerful"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/942",
       "li_specimen": "proof-db/erdos/specimens/E-942.li"
     },
@@ -11274,7 +11274,7 @@
         "powerful"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/943",
       "li_specimen": "proof-db/erdos/specimens/E-943.li"
     },
@@ -11286,7 +11286,7 @@
         "graph_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/944",
       "li_specimen": "proof-db/erdos/specimens/E-944.li"
     },
@@ -11298,7 +11298,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/945",
       "li_specimen": "proof-db/erdos/specimens/E-945.li"
     },
@@ -11334,7 +11334,7 @@
         "ramsey_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/948",
       "li_specimen": "proof-db/erdos/specimens/E-948.li"
     },
@@ -11345,7 +11345,7 @@
         "ramsey_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/949",
       "li_specimen": "proof-db/erdos/specimens/E-949.li"
     },
@@ -11357,7 +11357,7 @@
         "primes"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/950",
       "li_specimen": "proof-db/erdos/specimens/E-950.li"
     },
@@ -11368,7 +11368,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/951",
       "li_specimen": "proof-db/erdos/specimens/E-951.li"
     },
@@ -11379,7 +11379,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/952",
       "li_specimen": "proof-db/erdos/specimens/E-952.li"
     },
@@ -11391,7 +11391,7 @@
         "geometry"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/953",
       "li_specimen": "proof-db/erdos/specimens/E-953.li"
     },
@@ -11402,7 +11402,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/954",
       "li_specimen": "proof-db/erdos/specimens/E-954.li"
     },
@@ -11413,7 +11413,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/955",
       "li_specimen": "proof-db/erdos/specimens/E-955.li"
     },
@@ -11426,7 +11426,7 @@
         "geometry"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/956",
       "li_specimen": "proof-db/erdos/specimens/E-956.li"
     },
@@ -11450,7 +11450,7 @@
         "geometry"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/958",
       "li_specimen": "proof-db/erdos/specimens/E-958.li"
     },
@@ -11462,7 +11462,7 @@
         "geometry"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/959",
       "li_specimen": "proof-db/erdos/specimens/E-959.li"
     },
@@ -11473,7 +11473,7 @@
         "geometry"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/960",
       "li_specimen": "proof-db/erdos/specimens/E-960.li"
     },
@@ -11484,7 +11484,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/961",
       "li_specimen": "proof-db/erdos/specimens/E-961.li"
     },
@@ -11495,7 +11495,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/962",
       "li_specimen": "proof-db/erdos/specimens/E-962.li"
     },
@@ -11506,7 +11506,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/963",
       "li_specimen": "proof-db/erdos/specimens/E-963.li"
     },
@@ -11529,7 +11529,7 @@
         "ramsey_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/965",
       "li_specimen": "proof-db/erdos/specimens/E-965.li"
     },
@@ -11554,7 +11554,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/967",
       "li_specimen": "proof-db/erdos/specimens/E-967.li"
     },
@@ -11565,7 +11565,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/968",
       "li_specimen": "proof-db/erdos/specimens/E-968.li"
     },
@@ -11576,7 +11576,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/969",
       "li_specimen": "proof-db/erdos/specimens/E-969.li"
     },
@@ -11587,7 +11587,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/970",
       "li_specimen": "proof-db/erdos/specimens/E-970.li"
     },
@@ -11598,7 +11598,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/971",
       "li_specimen": "proof-db/erdos/specimens/E-971.li"
     },
@@ -11609,7 +11609,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/972",
       "li_specimen": "proof-db/erdos/specimens/E-972.li"
     },
@@ -11620,7 +11620,7 @@
         "analysis"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/973",
       "li_specimen": "proof-db/erdos/specimens/E-973.li"
     },
@@ -11644,7 +11644,7 @@
         "polynomials"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/975",
       "li_specimen": "proof-db/erdos/specimens/E-975.li"
     },
@@ -11655,7 +11655,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/976",
       "li_specimen": "proof-db/erdos/specimens/E-976.li"
     },
@@ -11677,7 +11677,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/978",
       "li_specimen": "proof-db/erdos/specimens/E-978.li"
     },
@@ -11688,7 +11688,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/979",
       "li_specimen": "proof-db/erdos/specimens/E-979.li"
     },
@@ -11723,7 +11723,7 @@
         "geometry"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/982",
       "li_specimen": "proof-db/erdos/specimens/E-982.li"
     },
@@ -11734,7 +11734,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/983",
       "li_specimen": "proof-db/erdos/specimens/E-983.li"
     },
@@ -11757,7 +11757,7 @@
         "number_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/985",
       "li_specimen": "proof-db/erdos/specimens/E-985.li"
     },
@@ -11769,7 +11769,7 @@
         "ramsey_theory"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/986",
       "li_specimen": "proof-db/erdos/specimens/E-986.li"
     },
@@ -11792,7 +11792,7 @@
         "discrepancy"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/988",
       "li_specimen": "proof-db/erdos/specimens/E-988.li"
     },
@@ -11803,7 +11803,7 @@
         "discrepancy"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/989",
       "li_specimen": "proof-db/erdos/specimens/E-989.li"
     },
@@ -11814,7 +11814,7 @@
         "analysis"
       ],
       "priority_tier": "P2",
-      "erdos_status": "open",
+      "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/990",
       "li_specimen": "proof-db/erdos/specimens/E-990.li"
     },

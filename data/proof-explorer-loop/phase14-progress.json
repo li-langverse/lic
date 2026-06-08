@@ -5,13 +5,13 @@
   "current": {
     "total": 1556,
     "proved": 552,
-    "open": 220,
+    "open": 180,
     "open_non_erdos": 0,
-    "open_erdos": 220,
+    "open_erdos": 180,
     "axiomatic": 86,
-    "target": 695,
+    "target": 735,
     "discrepancy": 3
   },
   "proved_delta": 198,
-  "open_delta": -889
+  "open_delta": -929
 }

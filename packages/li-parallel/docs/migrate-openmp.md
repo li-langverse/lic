@@ -4,6 +4,8 @@
 
 Map common OpenMP patterns to native Li surfaces. Li does **not** link libomp for the li-parallel runtime — the persistent pool replaces `#pragma omp parallel`.
 
+For the full Li ↔ RAJA ↔ Kokkos ↔ OpenMP policy matrix, see [portability-policy-matrix.md](portability-policy-matrix.md).
+
 ## Parallel loop
 
 | OpenMP | Li |

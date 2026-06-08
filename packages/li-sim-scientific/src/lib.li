@@ -6,10 +6,10 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -451,6 +451,16 @@ def sim_scientific_oracle_checksum_echem_sei_kmc() -> float
     diff = -diff
   return diff / denom
 
+# WP-SCI-03 Phase 2 — QM DFT SCF tier-2 oracle (algo 418; family 401–432).
+# Normalized [0,1] checksum via chem DFT SCF scaffold (PH-SCI-GPU-16 pattern).
+def sim_scientific_oracle_checksum_qm_dft() -> float
+  requires true
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  return chem_dft_gpu_energy_checksum()
+
 def sim_scientific_checksum_combine(chk_md: float, chk_heat: float, chk_rigid: float, step_index: int) -> float
   requires step_index >= 1
   requires step_index <= 64
@@ -616,14 +626,15 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   decreases 0
 =
   var vert: int = 0
-  if algo_id >= 401:
-    if algo_id <= 432:
-      vert = vertical_qm_dft()
+  var chk: float = 1.001
+  if algo_family_num(algo_id) == 5:
+    vert = vertical_qm_dft()
+    chk = chem_dft_gpu_energy_checksum()
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo_id
   r.vertical_id = vert
-  r.checksum = 1.001
+  r.checksum = chk
   r.detail_emitted = detail
   return r
 
@@ -715,6 +726,25 @@ def run_echem_sei_kmc_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.ok = 1
   r.algo_id = algo_id
   r.vertical_id = vertical_echem_sei_kmc()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 401
+  requires algo_id <= 432
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = chem_dft_gpu_energy_checksum()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
   r.checksum = chk
   r.detail_emitted = detail
   return r

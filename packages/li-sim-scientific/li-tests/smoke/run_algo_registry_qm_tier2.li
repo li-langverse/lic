@@ -1,0 +1,20 @@
+import sim
+import sim.scientific
+
+# WP-SCI-03 Phase 2 — QM registry dispatch; warm MD tier-2 before QM (lic call-order).
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var md105: SimRunResult = run_algo(105, 0)
+  if run_result_ok(md105) != 1:
+    return 1
+  var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  if run_result_ok(qm418) != 1:
+    return 2
+  if qm418.algo_id != algo_qm_dft_scf_energy():
+    return 3
+  if qm418.checksum == 1.001:
+    return 4
+  return 0

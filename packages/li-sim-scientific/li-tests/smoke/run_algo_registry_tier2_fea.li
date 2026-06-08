@@ -1,0 +1,13 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var fea: SimRunResult = run_fea_tier2_registry(214, 2)
+  if fea.checksum == 1.001:
+    return 1
+  if fea.checksum != sim_scientific_oracle_checksum_fea():
+    return 2
+  return 0

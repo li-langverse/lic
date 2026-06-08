@@ -6,8 +6,8 @@ export LI_REPO_ROOT="$ROOT"
 export LIC_ROOT="${LIC_ROOT:-$ROOT}"
 
 VERT="${SIM_RESEARCH_VERTICAL:-}"
-if [[ "$VERT" != "md" && "$VERT" != "chem" ]]; then
-  echo "sim-algo-research-gates: set SIM_RESEARCH_VERTICAL=md|chem" >&2
+if [[ "$VERT" != "md" && "$VERT" != "chem" && "$VERT" != "pde" ]]; then
+  echo "sim-algo-research-gates: set SIM_RESEARCH_VERTICAL=md|pde|chem" >&2
   exit 1
 fi
 
@@ -22,6 +22,10 @@ case "$VERT" in
   md)
     export SIM_PLAN_PACKAGE="${SIM_PLAN_PACKAGE:-li-sim-scientific}"
     export SIM_RESEARCH_BENCHES="${SIM_RESEARCH_BENCHES:-md_lennard_jones,heat_equation_2d}"
+    ;;
+  pde)
+    export SIM_PLAN_PACKAGE="${SIM_PLAN_PACKAGE:-li-sim-scientific}"
+    export SIM_RESEARCH_BENCHES="${SIM_RESEARCH_BENCHES:-pde_heat_implicit_jacobi,heat_equation_2d}"
     ;;
   chem)
     export SIM_PLAN_PACKAGE="${SIM_PLAN_PACKAGE:-li-sim-scientific}"
@@ -63,6 +67,14 @@ else
   fi
 fi
 export SIM_RESEARCH_SECURITY_NOTE="$security_note"
+
+if [[ "$VERT" == "pde" && "$STUDY_ONLY" != "1" ]]; then
+  chmod +x "$ROOT/li-tests/tooling/pde_external_oracle_stub.sh" 2>/dev/null || true
+  if ! "$ROOT/li-tests/tooling/pde_external_oracle_stub.sh" 2>&1; then
+    validity_ok=0
+    gate_log="${gate_log}\npde external oracle stub gate failed"
+  fi
+fi
 
 if [[ "$VERT" == "chem" && "$STUDY_ONLY" != "1" ]]; then
   comp="$ROOT/li-tests/composable/import_chem_dft_smoke.li"

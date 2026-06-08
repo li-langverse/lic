@@ -1,3 +1,4 @@
+import sim
 import sim.scientific
 
 def main() -> int
@@ -5,26 +6,41 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_sim_scientific_version() != 4:
+  if li_sim_scientific_version() != 7:
     return 1
-  var md: float = sim_scientific_oracle_checksum_md()
-  if md <= 0.0:
+  var md105: SimRunResult = run_algo(105, 0)
+  if run_result_ok(md105) != 1:
     return 2
-  if md >= 1.0e-3:
+  if md105.checksum == 1.001:
     return 3
-  var heat: float = sim_scientific_oracle_checksum_heat()
-  if heat <= 1.0:
+  var heat201: SimRunResult = run_algo(201, 0)
+  if run_result_ok(heat201) != 1:
     return 4
-  if heat >= 10.0:
+  if heat201.checksum == 1.001:
     return 5
+  var cfd206: SimRunResult = run_algo(algo_cfd_simple(), 0)
+  if run_result_ok(cfd206) != 1:
+    return 6
+  if cfd206.checksum == 1.001:
+    return 7
+  var fea215: SimRunResult = run_algo(algo_fea_linear_elasticity(), 0)
+  if run_result_ok(fea215) != 1:
+    return 8
+  if fea215.checksum == 1.001:
+    return 9
+  var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  if run_result_ok(qm418) != 1:
+    return 10
+  if qm418.checksum == 1.001:
+    return 11
   var md_run: SimRunResult = run_md_lj_smoke(0)
   if run_result_ok(md_run) != 1:
-    return 6
-  if md_run.checksum != md:
-    return 7
+    return 12
+  if md_run.checksum == 1.001:
+    return 13
   var heat_run: SimRunResult = run_heat_smoke(0)
   if run_result_ok(heat_run) != 1:
-    return 8
-  if heat_run.checksum != heat:
-    return 9
+    return 14
+  if heat_run.checksum == 1.001:
+    return 15
   return 0

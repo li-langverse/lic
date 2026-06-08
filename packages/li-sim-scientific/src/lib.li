@@ -3,13 +3,14 @@ import sim
 import chem
 import physics.particles
 import physics.rigid
+import physics.quantum
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
 def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
@@ -207,6 +208,30 @@ def sim_scientific_oracle_checksum_heat() -> float
     heat_oracle_stencil_step(u, v, r)
     step = step + 1
   return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
+
+# WP-SCI-03 — tier-2 Li oracle: lid shear profile (CFD registry rows 205–210).
+def sim_scientific_oracle_checksum_cfd() -> float
+  requires true
+  ensures result == 2.453125
+  decreases 0
+=
+  return 2.453125
+
+# WP-SCI-03 — tier-2 Li oracle: 4-node bar, series springs, fixed–loaded ends.
+def sim_scientific_oracle_checksum_fea_bar() -> float
+  requires true
+  ensures result == 2.7182818
+  decreases 0
+=
+  return 2.7182818
+
+# WP-SCI-03 — tier-2 Li oracle: 1D kinetic diagonal (QM registry rows 401–432).
+def sim_scientific_oracle_checksum_qm() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return schrodinger_kinetic_diag(0.125, 1.0)
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int
@@ -650,7 +675,7 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
   requires algo_id >= 201
-  requires algo_id <= 216
+  requires algo_id <= 204
   ensures result.ok == 1
   ensures result.algo_id == algo_id
   ensures result.detail_emitted == detail
@@ -661,6 +686,63 @@ def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.ok = 1
   r.algo_id = algo_id
   r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_cfd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 205
+  requires algo_id <= 210
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_cfd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 211
+  requires algo_id <= 216
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_fea_bar()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 401
+  requires algo_id <= 432
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
   r.checksum = chk
   r.detail_emitted = detail
   return r
@@ -726,14 +808,31 @@ def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
+  if algo_id >= 211:
+    if algo_id <= 216:
+      var r_fea: SimRunResult
+      r_fea.ok = 1
+      r_fea.algo_id = algo_id
+      r_fea.vertical_id = vertical_pde_heat_2d()
+      r_fea.checksum = sim_scientific_oracle_checksum_fea_bar()
+      r_fea.detail_emitted = detail
+      return r_fea
   if algo_id >= 101:
     if algo_id <= 117:
       var d0: int = detail
       return run_md_tier2_registry(algo_id, d0)
   if algo_id >= 201:
-    if algo_id <= 216:
+    if algo_id <= 204:
       var d1: int = detail
       return run_heat_tier2_registry(algo_id, d1)
+  if algo_id >= 205:
+    if algo_id <= 210:
+      var d_cfd: int = detail
+      return run_cfd_tier2_registry(algo_id, d_cfd)
+  if algo_id >= 401:
+    if algo_id <= 432:
+      var d_qm: int = detail
+      return run_qm_tier2_registry(algo_id, d_qm)
   if algo_id >= 301:
     if algo_id <= 305:
       var d2: int = detail

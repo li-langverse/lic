@@ -119,6 +119,24 @@ file = "decorators/vectorized_lanes8_fail.li"
 outcome = "compile_fail"
 expected_substr = "lanes=4"
 
+[[tests]]
+suite = "decorators"
+file = "decorators/executor_physics_ok.li"
+outcome = "compile_open_ok"
+note = "lic#112 @executor(pool=physics) MIR stub"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/executor_bad_pool_fail.li"
+outcome = "compile_fail"
+expected_substr = "pool="
+
+[[tests]]
+suite = "decorators"
+file = "decorators/executor_missing_pool_fail.li"
+outcome = "compile_fail"
+expected_substr = "pool="
+
 # --- decorator_exploits (7d-e — must reject) ---
 
 [[tests]]
@@ -816,6 +834,24 @@ suite = "effects"
 file = "effects/async_keyword_missing_raises.li"
 outcome = "compile_fail"
 expected_substr = "raises Async"
+
+[[tests]]
+suite = "effects"
+file = "effects/then_conflicting_var_fail.li"
+outcome = "compile_fail"
+expected_substr = "then: conflicting mutable borrow"
+
+[[tests]]
+suite = "effects"
+file = "effects/then_conflicting_var_param_fail.li"
+outcome = "compile_fail"
+expected_substr = "then: conflicting mutable borrow"
+
+[[tests]]
+suite = "effects"
+file = "effects/then_disjoint_ok.li"
+outcome = "compile_open_ok"
+note = "lic#112 then continuation disjoint var args"
 
 [[tests]]
 suite = "effects"

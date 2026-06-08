@@ -1,0 +1,25 @@
+async def task_a(buf: var array[4, int]) raises Async -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  borrow mut x = buf
+  x[0] = 1
+  return 0
+
+async def task_b(other: var array[4, int]) raises Async -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  borrow mut y = other
+  y[1] = 2
+  return 0
+
+async def main(buf: var array[4, int], scratch: var array[4, int]) raises Async -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  then(task_a(buf), task_b(scratch))
+  return 0

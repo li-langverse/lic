@@ -40,13 +40,14 @@ bool is_prelude_proc_name(const std::string_view name) {
 
 bool is_reserved_decorator_name(const std::string_view name) {
   return in_set(name, {"cpu",          "gpu",          "tpu",          "user_defined",
-                       "parallel",     "vectorized",   "async",        "serial",
-                       "no_vectorize", nullptr});
+                       "parallel",     "vectorized",   "async",        "executor",
+                       "serial",       "no_vectorize", nullptr});
 }
 
 bool is_std_module_symbol(const std::string_view name) {
   // Sync with std/**/*.li top-level symbols (see scripts/gen-stdlib-manifest.sh).
-  return in_set(name, {"__execution_decorators_doc", "Bytes", "StringView", "Reader",
+  return in_set(name, {"__execution_decorators_doc", "__execution_futures_doc", "Bytes",
+                       "StringView", "Reader",
                        "Writer", "bytes_len", "bytes_slice", "bytes_append", "bytes_byte_at",
                        "bytes_push_byte", "stringview_len", "stringview_byte_at", "reader_new",
                        "reader_remaining", "reader_read_byte", "reader_read_chunk", "writer_new",

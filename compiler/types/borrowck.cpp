@@ -409,6 +409,146 @@ bool has_effect(const std::vector<std::string>& raises, const std::string& name)
   return false;
 }
 
+void collect_then_var_conflicts(const Expr& e,
+                                const std::map<std::string, const ProcDecl*>& proc_map,
+                                std::map<std::string, std::size_t>& var_pass_counts) {
+  if (e.kind != Expr::Kind::Call || e.ident != "then" || e.args.size() < 2) {
+    return;
+  }
+  for (std::size_t arg_idx = 0; arg_idx < e.args.size(); ++arg_idx) {
+    const auto& arg = e.args[arg_idx];
+    if (!arg || arg->kind != Expr::Kind::Call) {
+      continue;
+    }
+    const Expr& child = *arg;
+    const auto it = proc_map.find(child.ident);
+    if (it == proc_map.end()) {
+      continue;
+    }
+    const ProcDecl& callee = *it->second;
+    for (std::size_t i = 0; i < child.args.size() && i < callee.params.size(); ++i) {
+      if (!child.args[i] || child.args[i]->kind != Expr::Kind::Ident) {
+        continue;
+      }
+      if (callee.params[i].type.is_var) {
+        var_pass_counts[child.args[i]->ident]++;
+      }
+    }
+  }
+}
+
+void walk_expr_then(const Expr& e, const std::map<std::string, const ProcDecl*>& proc_map,
+                    DiagnosticBag& diags, const SourceLoc& loc) {
+  if (e.kind == Expr::Kind::Call && e.ident == "then") {
+    std::map<std::string, std::size_t> var_pass_counts;
+    collect_then_var_conflicts(e, proc_map, var_pass_counts);
+    for (const auto& [name, count] : var_pass_counts) {
+      if (count > 1) {
+        diags.error(loc, "then: conflicting mutable borrow of `" + name +
+                             "` across continuation callees");
+      }
+    }
+  }
+  switch (e.kind) {
+    case Expr::Kind::BinOp:
+      if (e.lhs) {
+        walk_expr_then(*e.lhs, proc_map, diags, loc);
+      }
+      if (e.rhs) {
+        walk_expr_then(*e.rhs, proc_map, diags, loc);
+      }
+      break;
+    case Expr::Kind::Call:
+      for (const auto& arg : e.args) {
+        if (arg) {
+          walk_expr_then(*arg, proc_map, diags, loc);
+        }
+      }
+      break;
+    case Expr::Kind::Await:
+      if (e.operand) {
+        walk_expr_then(*e.operand, proc_map, diags, loc);
+      }
+      break;
+    case Expr::Kind::UnaryNot:
+      if (e.operand) {
+        walk_expr_then(*e.operand, proc_map, diags, loc);
+      }
+      break;
+    case Expr::Kind::Index:
+      if (e.base) {
+        walk_expr_then(*e.base, proc_map, diags, loc);
+      }
+      if (e.index) {
+        walk_expr_then(*e.index, proc_map, diags, loc);
+      }
+      break;
+    case Expr::Kind::FieldAccess:
+      if (e.base) {
+        walk_expr_then(*e.base, proc_map, diags, loc);
+      }
+      break;
+    case Expr::Kind::MethodCall:
+      if (e.base) {
+        walk_expr_then(*e.base, proc_map, diags, loc);
+      }
+      for (const auto& arg : e.args) {
+        if (arg) {
+          walk_expr_then(*arg, proc_map, diags, loc);
+        }
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+void walk_stmt_then(const Stmt& s, const std::map<std::string, const ProcDecl*>& proc_map,
+                    DiagnosticBag& diags, const SourceLoc& loc) {
+  if (s.expr) {
+    walk_expr_then(*s.expr, proc_map, diags, loc);
+  }
+  if (s.init) {
+    walk_expr_then(*s.init, proc_map, diags, loc);
+  }
+  if (s.cond) {
+    walk_expr_then(*s.cond, proc_map, diags, loc);
+  }
+  for (const auto& child : s.then_body) {
+    walk_stmt_then(child, proc_map, diags, loc);
+  }
+  if (s.else_body) {
+    for (const auto& child : *s.else_body) {
+      walk_stmt_then(child, proc_map, diags, loc);
+    }
+  }
+  for (const auto& child : s.while_body) {
+    walk_stmt_then(child, proc_map, diags, loc);
+  }
+  for (const auto& child : s.for_body) {
+    walk_stmt_then(child, proc_map, diags, loc);
+  }
+  for (const auto& child : s.par_body) {
+    walk_stmt_then(child, proc_map, diags, loc);
+  }
+}
+
+void then_check_module(const Module& module, DiagnosticBag& diags) {
+  std::map<std::string, const ProcDecl*> proc_map;
+  for (const auto& proc : module.procs) {
+    proc_map[proc.name] = &proc;
+  }
+  for (const auto& proc : module.procs) {
+    if (proc.is_extern) {
+      continue;
+    }
+    const SourceLoc loc{"module", 1, 1, proc.span.start};
+    for (const auto& s : proc.body) {
+      walk_stmt_then(s, proc_map, diags, loc);
+    }
+  }
+}
+
 }  // namespace
 
 void borrow_check_module(const Module& module, DiagnosticBag& diags) {
@@ -447,6 +587,7 @@ bool proc_mentions_extern_call(const ProcDecl& p,
 }
 
 void effects_check_module(const Module& module, DiagnosticBag& diags) {
+  then_check_module(module, diags);
   std::map<std::string, const ProcDecl*> proc_map;
   for (const auto& proc : module.procs) {
     proc_map[proc.name] = &proc;

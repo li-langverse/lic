@@ -1,0 +1,20 @@
+# std/execution/futures.li — Future[T] async continuation surface (lic#112, G-async)
+#
+# HPX-style lightweight futures for tier-2 game physics scheduling.
+# Distinct from data-parallel @parallel / parallel for (G-par).
+# See docs/superpowers/specs/2026-06-07-li-hpx-async-futures-surface.md
+#
+# Surface (v1 spec — parser/codegen deferred):
+#   Future[T]           typed async result handle
+#   async expr          launch expression as future
+#   then(fut, fn)       continuation when ready (borrow-checked)
+#   @executor(pool=…)   work-stealing pool binding (physics|io|default)
+#
+# Cross-link: lic#125 when_all structured join semantics.
+
+def __execution_futures_doc() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

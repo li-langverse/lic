@@ -193,6 +193,9 @@ struct MirDecorator {
   bool offload = false;
   bool parallel = false;
   bool disjoint_proven = false;
+  /** `@executor(pool=…)` work-stealing pool tag (lic#112); codegen deferred. */
+  bool executor = false;
+  std::string executor_pool;
 };
 
 struct MirFn {
@@ -285,6 +288,8 @@ std::size_t count_mir_vectorized_proc(const MirModule& mir);
 std::size_t count_mir_gpu_def(const MirModule& mir);
 std::size_t count_mir_gpu_multi_device_def(const MirModule& mir);
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
+std::size_t count_mir_executor_def(const MirModule& mir);
+std::size_t count_mir_executor_physics_def(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
 

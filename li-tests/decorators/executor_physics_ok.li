@@ -1,0 +1,15 @@
+@executor(pool=physics)
+@async
+def rigid_body_substep() raises Async -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+async def main() raises Async -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return await rigid_body_substep()

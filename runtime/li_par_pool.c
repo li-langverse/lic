@@ -820,6 +820,87 @@ void li_par_pool_shutdown(void) {
   g_li_par_pool.team_size = 0;
 }
 
+static int g_li_occupancy_warned = 0;
+
+static int li_par_physical_cores(void) {
+#if defined(_WIN32)
+  SYSTEM_INFO info;
+  GetSystemInfo(&info);
+  int cores = (int)info.dwNumberOfProcessors;
+#else
+  long cores = sysconf(_SC_NPROCESSORS_ONLN);
+#endif
+  if (cores < 1) {
+    return 1;
+  }
+  const int cap = li_par_max_threads();
+  if (cores > cap) {
+    return cap;
+  }
+  return (int)cores;
+}
+
+static int li_par_mpi_ranks(void) {
+  const char* ompi = getenv("OMPI_COMM_WORLD_SIZE");
+  if (ompi && *ompi) {
+    const int ranks = atoi(ompi);
+    if (ranks > 0) {
+      return ranks;
+    }
+  }
+  const char* pmi = getenv("PMI_SIZE");
+  if (pmi && *pmi) {
+    const int ranks = atoi(pmi);
+    if (ranks > 0) {
+      return ranks;
+    }
+  }
+  return 1;
+}
+
+static int li_par_warn_oversubscribe_enabled(void) {
+  const char* v = getenv("LI_EXEC_WARN_OVERSUBSCRIBE");
+  if (v == NULL) {
+    return 1;
+  }
+  if (v[0] == '0' && v[1] == '\0') {
+    return 0;
+  }
+  return 1;
+}
+
+static int li_par_effective_team_for_occupancy(int team_size) {
+  if (team_size <= 0) {
+    team_size = li_par_env_team_size();
+  }
+  const int cap = li_par_max_threads();
+  if (team_size > cap) {
+    team_size = cap;
+  }
+  if (team_size < 1) {
+    team_size = 1;
+  }
+  return team_size;
+}
+
+static void li_warn_occupancy_once(int team_size) {
+  if (g_li_occupancy_warned || !li_par_warn_oversubscribe_enabled()) {
+    return;
+  }
+  const int physical = li_par_physical_cores();
+  const int ranks = li_par_mpi_ranks();
+  const int effective_team = li_par_effective_team_for_occupancy(team_size);
+  const int total = effective_team * ranks;
+  if (total <= physical) {
+    return;
+  }
+  fprintf(stderr,
+          "lic: warning: parallel team (%d) × mpi_ranks (%d) = %d exceeds physical cores (%d); "
+          "see docs/language/parallelism.md#hybrid-mpi-openmp\n",
+          effective_team, ranks, total, physical);
+  g_li_occupancy_warned = 1;
+}
+
 static int li_warn_omp_alias_once(void) {
   static int warned = 0;
   if (!warned) {
@@ -832,6 +913,7 @@ static int li_warn_omp_alias_once(void) {
 }
 
 void li_parallel_for_i64(long long start, long long end, void (*body)(long long), int team_size) {
+  li_warn_occupancy_once(team_size);
   li_par_pool_fork_join(start, end, body, li_par_clamp_team(team_size, end - start));
 }
 

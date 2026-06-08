@@ -1514,6 +1514,18 @@ suite = "execution_resources"
 file = "execution_resources/smoke.sh"
 outcome = "script_ok"
 
+# --- execution_occupancy (lic#129 Phase 1 — MPI×threads oversubscribe warn) ---
+
+[[tests]]
+suite = "execution_occupancy"
+file = "execution_occupancy/parallel_disjoint_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "execution_occupancy"
+file = "execution_occupancy/smoke.sh"
+outcome = "script_ok"
+
 [[tests]]
 suite = "tooling"
 file = "tooling/lint_manifest_no_duplicate_keys.sh"

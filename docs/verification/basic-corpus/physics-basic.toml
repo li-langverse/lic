@@ -32,7 +32,7 @@ statement = "Newton III: pairwise interaction forces sum to zero."
 id = "P-LM-BC-MEC-004"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "mechanics"
 statement = "Impulse equals change of linear momentum."
 
@@ -40,7 +40,7 @@ statement = "Impulse equals change of linear momentum."
 id = "P-LM-BC-MEC-005"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "mechanics"
 statement = "Work-energy: W = integral F dot dx."
 
@@ -48,7 +48,7 @@ statement = "Work-energy: W = integral F dot dx."
 id = "P-LM-BC-MEC-006"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "mechanics"
 statement = "Kinetic energy T = (1/2) m v^2 for point mass."
 
@@ -64,7 +64,7 @@ statement = "Angular momentum L = r x p definition."
 id = "P-LM-BC-MEC-008"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "mechanics"
 statement = "Torque equals time derivative of angular momentum."
 
@@ -72,7 +72,7 @@ statement = "Torque equals time derivative of angular momentum."
 id = "P-LM-BC-MEC-009"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "mechanics"
 statement = "Center of mass moves as if all mass were concentrated there."
 
@@ -80,7 +80,7 @@ statement = "Center of mass moves as if all mass were concentrated there."
 id = "P-LM-BC-MEC-010"
 kind = "lemma"
 tranche = 1
-proof_status = "open"
+proof_status = "proved"
 domain = "mechanics"
 statement = "Reduced mass for two-body central force problem."
 

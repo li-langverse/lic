@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar-22 Dqc libli_cache.a CMakeFiles/li_cache.dir/check_cache.cpp.o
+/usr/bin/llvm-ranlib-22 -D libli_cache.a

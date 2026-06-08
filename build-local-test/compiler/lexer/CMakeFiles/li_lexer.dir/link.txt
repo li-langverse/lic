@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar-22 Dqc libli_lexer.a CMakeFiles/li_lexer.dir/lexer.cpp.o CMakeFiles/li_lexer.dir/token.cpp.o
+/usr/bin/llvm-ranlib-22 -D libli_lexer.a

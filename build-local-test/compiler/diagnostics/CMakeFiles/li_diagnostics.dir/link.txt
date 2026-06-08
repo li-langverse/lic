@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar-22 Dqc libli_diagnostics.a CMakeFiles/li_diagnostics.dir/diagnostics.cpp.o CMakeFiles/li_diagnostics.dir/error_codes.cpp.o CMakeFiles/li_diagnostics.dir/terminal.cpp.o
+/usr/bin/llvm-ranlib-22 -D libli_diagnostics.a

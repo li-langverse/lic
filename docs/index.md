@@ -25,7 +25,7 @@ Li is a language for **programs you can trust in production**: contracts checked
 
     ---
 
-    [Build pipeline](compiler/build-pipeline.md) and [Why provable](compiler/why-provable.md).
+    [Build pipeline](compiler/build-pipeline.md), [Why provable](compiler/why-provable.md), and [Decorator lowering map](compiler/execution-decorator-lowering-map.md).
 
 -   :material-shield-check:{ .lg .middle } **Trust but verify**
 

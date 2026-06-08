@@ -1,0 +1,25 @@
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var cfd206: SimRunResult = run_algo(algo_cfd_simple(), 1)
+  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
+  if cfd206.checksum != cfd_oracle:
+    return 1
+  if cfd206.algo_id != 206:
+    return 2
+  if cfd206.checksum == 1.001:
+    return 3
+  var fea215: SimRunResult = run_algo(algo_fea_linear_elasticity(), 2)
+  var fea_oracle: float = sim_scientific_oracle_checksum_fea()
+  if fea215.checksum != fea_oracle:
+    return 4
+  if fea215.algo_id != 215:
+    return 5
+  if fea215.checksum == 1.001:
+    return 6
+  return 0

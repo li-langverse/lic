@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-SCI-03 Phase 2 tier-2 QM/CFD/FEA** — `sim_scientific_oracle_checksum_qm`, `_cfd`, `_fea`; `run_qm_tier2_registry` (401–432), `run_cfd_tier2_registry` (205–210), `run_fea_tier2_registry` (211–216); `vertical_cfd_lid_driven_cavity` / `vertical_fea_linear_elasticity`; extended `run_algo_registry_tier2.li`.
 - **WP-ECHEM-15 multiscale SEI growth kMC** — `sim_scientific_oracle_checksum_echem_sei_kmc`, `run_echem_sei_kmc_tier2_registry`, `algo_echem_sei_kmc()` (435) dispatch; 48-step NEB-barrier deposition kMC vs mean-field growth law; smoke `echem_sei_kmc_interface_smoke.li`.
 - **WP-ECHEM-12 grand-canonical SHE AIMD** — `sim_scientific_oracle_checksum_echem_gc_aimd`, `run_echem_gc_aimd_tier2_registry`, `algo_echem_gc_aimd_interface()` (434) dispatch; 10-step constant-potential MD with `echem_gc_charge_neutrality_step` feedback; smoke `echem_gc_aimd_interface_smoke.li`.
 - **WP-ECHEM-09 AIMD coupling** — `sim_scientific_oracle_checksum_echem_aimd`, `run_echem_aimd_tier2_registry`, `algo_echem_aimd_interface()` (433) dispatch; 8-step velocity-Verlet + Berendsen toy thermostat calling `chem_dft_energy_kernel_hartree` each step; smoke `echem_aimd_interface_smoke.li`.
@@ -16,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `run_md_lj_smoke` / `run_heat_smoke` use tier-2 oracle checksums (not scalar stub / constant 1.0); `li_sim_scientific_version` → 6 (WP-ECHEM-15).
+- `run_md_lj_smoke` / `run_heat_smoke` use tier-2 oracle checksums (not scalar stub / constant 1.0); `li_sim_scientific_version` → 7 (WP-SCI-03 Phase 2).
 - **WP-SCI-01 multi-physics tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` (MD + heat + rigid smokes); smoke `li-tests/smoke/multi_physics_tick.li`.
 
 ### Changed (prior)

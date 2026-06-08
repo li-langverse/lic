@@ -1,0 +1,37 @@
+# Reflector/informer cache cycle for libernetes controllers (Wave 2 stub).
+
+def reflector_resync_period_ms() -> int
+  requires true
+  ensures result == 30000
+  decreases 0
+=
+  return 30000
+
+def reflector_list(resource_tag: int) -> int
+  requires resource_tag >= 0
+  ensures result == 0
+  decreases resource_tag
+=
+  return 0
+
+def reflector_store_replace(resource_tag: int, item_count: int) -> int
+  requires resource_tag >= 0
+  requires item_count >= 0
+  ensures result == 0
+  decreases resource_tag + item_count
+=
+  return 0
+
+def reflector_watch_from_revision(rev: int) -> int
+  requires rev >= 0
+  ensures result == 0
+  decreases rev
+=
+  return 0
+
+def reflector_delta_event_kind() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

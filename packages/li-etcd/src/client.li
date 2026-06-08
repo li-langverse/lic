@@ -1,0 +1,37 @@
+# etcd v3 client surface for libernetes apiserver persistence (Wave 2 stub).
+
+def etcd_client_endpoint_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def etcd_client_connect(endpoint_tag: int) -> int
+  requires endpoint_tag >= 1
+  ensures result == 0
+  decreases endpoint_tag
+=
+  return 0
+
+def etcd_client_put(key_len: int, val_len: int) -> int
+  requires key_len >= 0
+  requires val_len >= 0
+  ensures result == 0
+  decreases key_len + val_len
+=
+  return 0
+
+def etcd_client_get(key_len: int) -> int
+  requires key_len >= 0
+  ensures result == 0
+  decreases key_len
+=
+  return 0
+
+def etcd_client_watch_revision(rev: int) -> int
+  requires rev >= 0
+  ensures result == 0
+  decreases rev
+=
+  return 0

@@ -1,0 +1,38 @@
+# Rate-limited workqueue for libernetes controller reconciliation (Wave 2 stub).
+
+def workqueue_add(key_len: int) -> int
+  requires key_len >= 0
+  ensures result == 0
+  decreases key_len
+=
+  return 0
+
+def workqueue_get(key_len: int) -> int
+  requires key_len >= 0
+  ensures result == 0
+  decreases key_len
+=
+  return 0
+
+def workqueue_done(key_len: int) -> int
+  requires key_len >= 0
+  ensures result == 0
+  decreases key_len
+=
+  return 0
+
+def workqueue_forget(key_len: int) -> int
+  requires key_len >= 0
+  ensures result == 0
+  decreases key_len
+=
+  return 0
+
+def workqueue_rate_limit_backoff_ms(retry: int) -> int
+  requires retry >= 0
+  ensures result >= 0
+  decreases retry
+=
+  if retry <= 0
+    return 0
+  return retry * 100

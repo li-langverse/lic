@@ -1,0 +1,16 @@
+[package]
+name = "li-grpc"
+version = "0.0.1"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "gRPC transport for libernetes CRI and admission webhooks"
+
+[package.metadata.li]
+github_repo = "libernetes"
+import_name = "grpc"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-grpc"
+
+[package.repository]
+url = "https://github.com/li-langverse/libernetes"

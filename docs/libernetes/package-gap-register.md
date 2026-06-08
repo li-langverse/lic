@@ -3,7 +3,7 @@
 | Package | Status | Needed for |
 |---------|--------|------------|
 | li-etcd | stub | apiserver persistence |
-| li-grpc | missing | CRI, webhooks |
+| li-grpc | stub | CRI, webhooks |
 | li-watch | stub | informers |
 | li-workqueue | stub | controllers |
 | li-oci | stub | licontainers |

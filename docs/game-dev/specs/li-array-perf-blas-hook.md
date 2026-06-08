@@ -14,7 +14,8 @@ Phase G reduced `li_over_numpy` from ~16386× to ~343× by dropping LKIR from th
 
 - Enable with `LI_ARRAY_BLAS=openblas` (or `1`, `auto`; disable with `0` / `off`).
 - `dlopen` `libopenblas.so.0` / `libopenblas.so` (or Windows `.dll` variants).
-- Resolve `cblas_sgemm`; row-major `C = A·B` with shared leading dimension `ld`.
+- Resolve `cblas_dgemm` (Li `float` codegen is f64); row-major `C = A·B` with shared leading dimension `ld`.
+- Skip BLAS when `m·n·k < 4096` — OpenBLAS fixed cost loses to `@vectorized` 8×8 CPU on the pilot tile.
 - No link-time `-lopenblas` — CI and dev machines without OpenBLAS keep Phase G fallback.
 
 ### Li dispatch

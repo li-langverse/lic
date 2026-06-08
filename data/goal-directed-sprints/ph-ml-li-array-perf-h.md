@@ -55,6 +55,20 @@ Close the remaining ~343× gap toward NumPy CPU matmul @ 32×32 using native Li 
 - [ ] Gate prints `ratio_target_met`; **warn** not hard-fail when still >2.0
 - [ ] `ph-ml-competitive.json` row `li_array_matmul_32x32` refreshed
 
+## Phase H perf investigation (post-#1320)
+
+**Symptom:** Pod bench with `LI_ARRAY_BLAS=openblas` reported `li_over_numpy≈3320` vs Phase G `≈343` on the same workload.
+
+**Findings (2026-06-08):**
+
+| Check | Result |
+|-------|--------|
+| `cpu_sec` includes compile? | **No** — run-only 50× mean after 3 warmup; compile is separate (`build_cpu_sec` null). |
+| `cblas_dgemm` row-major dims | **Correct** for 8×8×8, `ld=8` (`M,N,K` order, `lda=ldb=ldc=ld`). Li `float` codegen is f64, so `dgemm` matches storage (not `sgemm`). |
+| dlopen per call? | **No** — `li_rt_blas_init_once()` guards load. |
+| Root cause | **Two issues:** (1) 8×8 `cblas_dgemm` loses to `@vectorized` CPU; (2) `ml_blas_matmul_f32` called `li_rt_blas_sgemm_ready()` before the size gate, so **every bench subprocess paid `dlopen`** (~50× per gate). Pod: `cpu_sec` 0.00306 (BLAS env) vs 0.00066 (CPU off). |
+| Fix | Skip BLAS when `m·n·k < 4096` (16³) **before** `dlopen`; call `li_rt_blas_sgemm_f32` directly (no `ready()` first); pin `OPENBLAS_NUM_THREADS=1`. Full 32×32 BLAS awaits denser buffer (Phase I/J). |
+
 ## Agent rules
 
 - Native Li only for perf measurements — exclude compile from `cpu_sec`.

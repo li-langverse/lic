@@ -44,6 +44,7 @@ if [[ -f "$LIC" && -f "$SMOKE" ]]; then
   if [[ "$PH_ML_LI_ARRAY32_COMPILE_OK" == "1" && -x "$PH_ML_LI_ARRAY32_BIN" ]]; then
     PH_ML_LI_ARRAY32_WARMUP="${PH_ML_LI_ARRAY32_WARMUP:-3}"
     PH_ML_LI_ARRAY32_RUNS="${PH_ML_LI_ARRAY32_RUNS:-50}"
+    export LI_ARRAY_BLAS="${LI_ARRAY_BLAS-}"
     for _w in $(seq 1 "$PH_ML_LI_ARRAY32_WARMUP"); do
       "$PH_ML_LI_ARRAY32_BIN" >/dev/null 2>&1 || true
     done

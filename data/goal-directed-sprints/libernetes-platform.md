@@ -23,8 +23,8 @@ Platform foundation for libernetes: docs, workspace wiring, foundation packages 
 | **LB-P0** | `docs/libernetes/` tree | **DONE** | `check-libernetes-platform-docs-gate.sh` |
 | **LB-P1** | `packages/li-libernetes-core/` scaffold | **DONE** | `check-libernetes-platform-package-gate.sh` |
 | **LB-P2** | Foundation package dirs + README | **DONE** | `check-libernetes-foundation-stubs-gate.sh` |
-| **LB-P3** | `src/lib.li` for `li-etcd`, `li-watch`, `li-workqueue` | pending | `check-libernetes-platform-wave1-gate.sh` |
-| **LB-P4** | Register libernetes packages in `packages/li.toml` workspace | pending | same wave1 gate |
+| **LB-P3** | `src/lib.li` for `li-etcd`, `li-watch`, `li-workqueue` | **DONE** | `check-libernetes-platform-wave1-gate.sh` |
+| **LB-P4** | Register libernetes packages in `packages/li.toml` workspace | **DONE** | same wave1 gate |
 
 ## Iteration rules
 

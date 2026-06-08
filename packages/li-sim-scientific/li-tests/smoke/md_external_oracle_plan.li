@@ -1,0 +1,30 @@
+import sim.scientific
+
+# md-r3-oracle-plan: external LAMMPS/GROMACS oracle column plan (B0 stub).
+# Registry: benchmarks/competitive/md_oracle.toml
+# Gate: scripts/check-md-oracle.sh · li-tests/tooling/md_external_oracle_stub.sh
+
+def md_external_oracle_plan_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  # Internal Li oracle must remain green while external oracle columns are stubbed.
+  var md: float = sim_scientific_oracle_checksum_md()
+  if md <= 0.0:
+    return 1
+  if md >= 1.0e-3:
+    return 2
+  var md_run: SimRunResult = run_md_lj_smoke(0)
+  if run_result_ok(md_run) != 1:
+    return 3
+  if md_run.checksum != md:
+    return 4
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return md_external_oracle_plan_smoke()

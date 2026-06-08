@@ -26,6 +26,12 @@ note = "PH-SCI-GPU-02 @gpu MD/heat oracle checksums"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/md_external_oracle_plan.li"
+outcome = "verify_ok"
+note = "md-r3-oracle-plan: external LAMMPS/GROMACS oracle — gate scripts/check-md-oracle.sh; registry benchmarks/competitive/md_oracle.toml"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/echem_aimd_interface_smoke.li"
 outcome = "verify_ok"
 note = "WP-ECHEM-09 AIMD interface registry + 8-step DFT energy drift oracle"

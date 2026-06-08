@@ -1,12 +1,12 @@
-# Traceability — PKG-li-std-physics-quantum
+# Traceability — PKG-li-physics-quantum
 
-<!-- DOC-traceability-PKG-li-std-physics-quantum -->
+<!-- DOC-traceability-PKG-li-physics-quantum -->
 
 | Type | ID | Artifact |
 |------|-----|----------|
-| Package | PKG-li-std-physics-quantum | This repository |
+| Package | PKG-li-physics-quantum | This repository |
 | Phase | PH-Pkg | [Package scaffold](https://github.com/li-langverse/li-language/blob/dev/docs/superpowers/plans/2026-05-16-li-package-scaffold.md) |
-| Test | T-PKG-li-std-physics-quantum-smoke | `li-tests/smoke/builds.li` |
+| Test | T-PKG-li-physics-quantum-smoke | `li-tests/smoke/builds.li` |
 
 ## Requirements
 

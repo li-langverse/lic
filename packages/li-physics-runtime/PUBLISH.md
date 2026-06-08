@@ -1,11 +1,11 @@
-# Publish metadata — PKG-li-std-physics-runtime
+# Publish metadata — PKG-li-physics-runtime
 
 | Field | Value |
 |-------|--------|
-| **PKG id** | `PKG-li-std-physics-runtime` |
-| **Registry name** | `li-std-physics-runtime` (lip, phase 8d) |
+| **PKG id** | `PKG-li-physics-runtime` |
+| **Registry name** | `li-physics-runtime` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-std-physics-runtime |
+| **Repository** | https://github.com/li-langverse/li-physics-runtime |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)

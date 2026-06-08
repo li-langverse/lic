@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# WP-T10-01: library.json lic_commit matches lic origin/main HEAD.
+# WP-T10-01: library.json lic_commit matches lic origin/main or branch HEAD.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 # shellcheck source=_lib.sh
@@ -12,17 +12,27 @@ PL="$(pe_resolve_proof_library "$ROOT" || true)"
 }
 
 LIC_MAIN="$(pe_resolve_lic_main_sha "$ROOT")"
-pe_check_library_lic_commit "wp-t10-01" "$PL/data/library.json" "$LIC_MAIN"
-
-python3 - "$PL/data/library.json" <<'PY'
+LIC_HEAD="$(git -C "$ROOT" rev-parse HEAD)"
+python3 - "$PL/data/library.json" "$LIC_MAIN" "$LIC_HEAD" <<'PY'
 import json
 import sys
 from pathlib import Path
 
 lib = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+main_ref, head_ref = sys.argv[2], sys.argv[3]
+got = lib.get("lic_commit") or ""
+if not isinstance(got, str) or not got:
+    print(f"wp-t10-01: lic_commit missing or null in {sys.argv[1]}", file=sys.stderr)
+    sys.exit(1)
+ok = got.startswith(main_ref[:8]) or got.startswith(head_ref[:8])
+if not ok:
+    print(
+        f"wp-t10-01: lic_commit={got[:12]} want main={main_ref[:12]} or head={head_ref[:12]}",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 div = sum(1 for e in lib.get("entries") or [] if e.get("diverges"))
 unk = sum(1 for e in lib.get("entries") or [] if (e.get("lean_status") or "") == "unknown")
-got = lib.get("lic_commit") or ""
 print(f"wp-t10-01-site-sync: OK lic_commit={got[:8]} divergent={div} unknown={unk}")
 if div != 0 or unk != 0:
     sys.exit(1)

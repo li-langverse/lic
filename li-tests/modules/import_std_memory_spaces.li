@@ -1,0 +1,8 @@
+import std.execution.memory_spaces
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return memory_execution_spaces_ok()

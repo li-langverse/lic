@@ -538,6 +538,26 @@ GPU side (with numeric Phase 3):
 | `hostbuffer[T]` | Pinned/pageable host mirror |
 | `ndview[Shape, T]` | View with strides (non-contiguous) |
 
+#### Memory and execution spaces (PH-7e, #110)
+
+Kokkos-class placement without Kokkos headers. Normative rubric: [kokkos-memory-execution-spaces-rubric.md](../../hpc/kokkos-memory-execution-spaces-rubric.md).
+
+| Surface | Purpose |
+|---------|---------|
+| `MemorySpace` | `Host`, `Device`, `Unified` — static tag on buffers (no runtime discovery) |
+| `ExecutionSpace` | `Serial`, `OpenMP`, `Threads` (v1); `SYCL` / `Cuda` / `HIP` reserved (#116) |
+| `View[T, Space, Layout]` | Kokkos `View` analog: allocate → use in matching space → destroy; explicit sync between spaces |
+
+Spec constants (compile-only v1): `import std.execution.memory_spaces` (`memory_space_host()`, `execution_space_openmp()`, …).
+
+**Sync contract (spec-only until #15 lowering):**
+
+- `@sync_host(view)` — device → host before host read
+- `@sync_device(view)` — host → device before device kernel
+- Cross-space read without prior sync: **compile error** (REQ-SYNC-02)
+
+**Policy:** tier-2 defaults to `ExecutionSpace::OpenMP`; no implicit `DualView` (explicit `hostbuffer` + `devicebuffer` pair). Layout/strides: [#128](https://github.com/li-langverse/lic/issues/128).
+
 ---
 
 ### Phase 4 — advanced & domain structures

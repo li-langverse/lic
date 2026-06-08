@@ -11,6 +11,8 @@
 **Depends on:** Phase 2  
 **Blocks:** Phase 4
 
+**Proof gaps (Doc-c):** [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-vc](../../verification/provability-gaps.md#g-vc) · [G-gpu](../../verification/provability-gaps.md#g-gpu) · [G-meta](../../verification/provability-gaps.md#g-meta)
+
 ---
 
 ## MIR instruction set (v1)
@@ -96,10 +98,21 @@ def main() -> int =
 
 ---
 
-**Proof gaps (Doc-c):** [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-meta](../../verification/provability-gaps.md#g-meta)
-
 ### Phase 3 exit gate
 
 - [x] Native binary from minimal proc
 - [x] `-O2` flag forwarded to clang in `--release` (C++: `-O3 -march=native` in `compile.cpp` when `--release`)
-- [x] Bounds check calls present in IR for dynamic index
+- [x] Bounds check calls present in IR for dynamic index (**G-bnd** — `check_release_bounds_ir.sh`, `panic_if_oob` in MIR)
+
+### Exit gate — G-* register
+
+Every applicable row from [provability-gaps.md](../../verification/provability-gaps.md) is cited below (or **N/A** with rationale). Register status is **Partial** unless noted — this table is cross-link honesty only, not gap closure.
+
+| G-* ID | Applicability | Exit-gate evidence (today) | Notes |
+|--------|---------------|------------------------------|-------|
+| [**G-bnd**](../../verification/provability-gaps.md#g-bnd) | **Yes** | `check_release_bounds_ir.sh`, `panic_if_oob` in MIR | Primary phase-3 gap |
+| [**G-vc**](../../verification/provability-gaps.md#g-vc) | **Yes** | MIR lowering preserves contract sites; AutoVC emission | Partial — ties to 2e/2f |
+| [**G-gpu**](../../verification/provability-gaps.md#g-gpu) | **Partial cite** | MIR `@gpu` telemetry scripts | Wave 13 slice only |
+| **G-meta** | **N/A** | — | Compiler-correctness research; not phase-3 deliverable |
+| **G-dec** | **N/A** | — | Phase 7d elaboration |
+| **G-math** | **N/A** | — | Lowering in phase 7e (math→SIMD) |

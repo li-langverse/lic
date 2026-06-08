@@ -81,12 +81,14 @@
 
 | Sub | Task | Exit |
 |-----|------|------|
-| **7e-a** | Lower `*`, `+`, `dot`, `sum` to 7a SIMD MIR | **partial:** `simd_dot` pure-Li `a @ b` (#148) |
-| **7e-b** | Lower `A @ B` for Tier 1 matmul benches | **partial:** `matmul_naive` / `matmul_blocked` pure-Li; **≤1.2× C++** advisory |
+| **7e-a** | Lower `*`, `+`, `dot`, `sum` to 7a SIMD MIR | **done:** `simd_dot` pure-Li `a @ b` (#148); `ArrayDotF64` 4-wide gather |
+| **7e-b** | Lower `A @ B` for Tier 1 matmul benches | **partial:** `ArrayMatMul2DF64` + `ArrayMatMulBlocked2DF64` codegen **done**; perf **open** `matmul_blocked` (#463) |
 | **7e-c** | `docs/language/linear-algebra.md`, `docs/guide/math-hpc-examples.md` | **done** on `main` |
-| **7e-d/e** | `ArrayDotF64` / `ArrayBinOpF64` gather SIMD | **partial** on `main` (#148) |
+| **7e-d/e** | `ArrayDotF64` / `ArrayBinOpF64` gather SIMD | **done** on `main` (#148); explicit matmul inner SIMD **deferred** (#463-B) |
 | **2f / P-linalg** | Contract corpus for dot/sum/matmul entry | **partial:** #151 closed + loop open — **G-math**, **G-lean** |
+
+**Done criteria:** [2026-06-07-ph7e-simd-matmul-done-criteria.md](2026-06-07-ph7e-simd-matmul-done-criteria.md) (issue **#27**).
 
 - [x] `./li-tests/run_all.sh math_linalg`
 - [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`)
-- [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard)
+- [ ] Tier 1 perf: `matmul_naive` + `matmul_blocked` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`; `horner_pure_li` tracked under **PH-2f** / #463-F)

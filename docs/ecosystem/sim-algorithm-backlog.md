@@ -39,8 +39,8 @@ todos:
   status: pending
 
 - id: sim-p2-qm-dft-scf
-  content: "sim: pending plan todo sim-p2-qm-dft-scf — gap orchestrator"
-  status: pending
+  content: "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics"
+  status: completed
 
 ---
 

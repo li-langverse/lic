@@ -1826,6 +1826,10 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                              false));
   module->getOrInsertFunction("li_rt_studio_demo_trace_open",
                               llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_ui_snapshot_tag_from_id",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_ui_snapshot_id_name",
+                              llvm::FunctionType::get(i8_ptr(context), {i32_ty(context)}, false));
   module->getOrInsertFunction("li_rt_lig_device_kind",
                               llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction("li_rt_lig_backend_available",

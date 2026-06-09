@@ -1790,3 +1790,47 @@ int32_t li_rt_match_route_fixture(const char* method, const char* path) {
 void li_async_frame_enter(void) {}
 
 void li_async_frame_leave(void) {}
+
+typedef struct {
+  const char* id;
+  int32_t tag;
+} LiUiSnapshotIdEntry;
+
+static const LiUiSnapshotIdEntry k_ui_snapshot_ids[] = {
+    {"shell.topbar.profile_chip", 101},
+    {"shell.dock.slot.0", 110},
+    {"shell.dock.slot.1", 111},
+    {"shell.dock.slot.2", 112},
+    {"shell.dock.slot.3", 113},
+    {"shell.outliner.row.root", 122},
+    {"shell.inspector.field.selection_name", 141},
+    {"shell.timeline.play_button", 130},
+    {"shell.agent.send_button", 153},
+    {"shell.palette.search", 160},
+    {"shell.palette.row.0", 161},
+    {"shell.palette.row.1", 162},
+    {"shell.viewport.menu.tier_chip", 102},
+};
+
+int32_t li_rt_ui_snapshot_tag_from_id(const char* id) {
+  size_t i;
+  if (id == NULL || id[0] == '\0') {
+    return 0;
+  }
+  for (i = 0; i < sizeof(k_ui_snapshot_ids) / sizeof(k_ui_snapshot_ids[0]); i++) {
+    if (strcmp(id, k_ui_snapshot_ids[i].id) == 0) {
+      return k_ui_snapshot_ids[i].tag;
+    }
+  }
+  return 0;
+}
+
+const char* li_rt_ui_snapshot_id_name(int32_t tag) {
+  size_t i;
+  for (i = 0; i < sizeof(k_ui_snapshot_ids) / sizeof(k_ui_snapshot_ids[0]); i++) {
+    if (k_ui_snapshot_ids[i].tag == tag) {
+      return k_ui_snapshot_ids[i].id;
+    }
+  }
+  return "";
+}

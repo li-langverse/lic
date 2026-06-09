@@ -10294,10 +10294,13 @@ def studio_demo_replay_emit_step(compose: var StudioShellCompose, step: DemoScri
       hf = hf + 1
     return out
   if step.kind == studio_demo_step_kind_ui_key():
-    var _key: int = studio_ui_key_tag(compose, step.key_tag)
     if step.key_tag == studio_ui_key_tag_cmd_k():
       compose.palette.is_open = studio_palette_open_flag()
+      compose.panel.palette_open = studio_palette_open_flag()
+      studio_reactive_resync_palette(compose)
       studio_reactive_flush_palette(compose)
+    if step.key_tag != studio_ui_key_tag_cmd_k():
+      var _key: int = studio_ui_key_tag(compose, step.key_tag)
     if studio_demo_emit_compose_frame(compose, w, h) != 1:
       out.ok = 0
     return out

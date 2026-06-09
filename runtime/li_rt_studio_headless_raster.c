@@ -36,6 +36,12 @@ static void profile_bg(int32_t profile_id, unsigned char* r, unsigned char* g, u
   *b = 23;
 }
 
+static uint32_t pixel_hash(int32_t x, int32_t y, uint32_t seed) {
+  uint32_t h = (uint32_t)x * 374761393u + (uint32_t)y * 668265263u + seed * 362437u;
+  h = (h ^ (h >> 13)) * 1274126177u;
+  return h ^ (h >> 16);
+}
+
 int32_t li_rt_studio_headless_raster_ppm(const char* path, int32_t width, int32_t height,
                                          int32_t profile_id, int32_t cmd_count, int32_t cpu_pixels,
                                          int32_t digest) {
@@ -51,31 +57,29 @@ int32_t li_rt_studio_headless_raster_ppm(const char* path, int32_t width, int32_
   unsigned char ar = 0, ag = 0, ab = 0;
   profile_bg(profile_id, &br, &bg, &bb);
   profile_accent(profile_id, &ar, &ag, &ab);
-  for (int y = 0; y < height; y++) {
-    for (int x = 0; x < width; x++) {
-      unsigned char* p = rgb + (y * width + x) * 3;
-      p[0] = br;
-      p[1] = bg;
-      p[2] = bb;
-    }
-  }
+  const uint32_t seed =
+      (uint32_t)digest ^ ((uint32_t)cmd_count << 7) ^ ((uint32_t)cpu_pixels << 14) ^
+      ((uint32_t)profile_id << 21);
   const int band_y = 8 + (digest % (height > 16 ? height - 16 : 1));
   const int band_h = 4 + (cmd_count % 12);
   const int stripe_x = 8 + (cpu_pixels % (width > 16 ? width - 16 : 1));
-  for (int y = band_y; y < band_y + band_h && y < height; y++) {
+  for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       unsigned char* p = rgb + (y * width + x) * 3;
-      p[0] = ar;
-      p[1] = ag;
-      p[2] = ab;
-    }
-  }
-  for (int y = 0; y < height; y++) {
-    for (int x = stripe_x; x < stripe_x + 3 && x < width; x++) {
-      unsigned char* p = rgb + (y * width + x) * 3;
-      p[0] = (unsigned char)((ar + br) / 2);
-      p[1] = (unsigned char)((ag + bg) / 2);
-      p[2] = (unsigned char)((ab + bb) / 2);
+      const uint32_t h = pixel_hash(x, y, seed);
+      p[0] = (unsigned char)((br + (h & 31u)) % 256u);
+      p[1] = (unsigned char)((bg + ((h >> 5) & 31u)) % 256u);
+      p[2] = (unsigned char)((bb + ((h >> 10) & 31u)) % 256u);
+      if (y >= band_y && y < band_y + band_h) {
+        p[0] = (unsigned char)((ar + (h & 15u)) % 256u);
+        p[1] = (unsigned char)((ag + ((h >> 4) & 15u)) % 256u);
+        p[2] = (unsigned char)((ab + ((h >> 8) & 15u)) % 256u);
+      }
+      if (x >= stripe_x && x < stripe_x + 3) {
+        p[0] = (unsigned char)(((ar + br) / 2 + ((h >> 12) & 7u)) % 256u);
+        p[1] = (unsigned char)(((ag + bg) / 2 + ((h >> 15) & 7u)) % 256u);
+        p[2] = (unsigned char)(((ab + bb) / 2 + ((h >> 18) & 7u)) % 256u);
+      }
     }
   }
   FILE* f = fopen(path, "wb");

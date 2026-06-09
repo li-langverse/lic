@@ -256,6 +256,8 @@ int32_t li_rt_studio_demo_frame_count(void);
 int32_t li_rt_studio_demo_scenario_id_from_env(void);
 int32_t li_rt_studio_demo_trace_open(const char* path);
 int32_t li_rt_studio_demo_trace_append(const char* path, int32_t step_idx, int32_t kind, int32_t arg);
+int32_t li_rt_ui_snapshot_tag_from_id(const char* id);
+const char* li_rt_ui_snapshot_id_name(int32_t tag);
 int32_t li_rt_studio_viewport_display_bg(void);
 int32_t li_rt_studio_viewport_display_set_bg(int32_t bg);
 int32_t li_rt_studio_viewport_display_particle_tier(void);

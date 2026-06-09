@@ -8,7 +8,7 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 
 | Ecosystem | Track | CSV `lang` | What we compare | Honesty |
 |-----------|-------|------------|-----------------|---------|
-| C++ / Clang OpenMP | bench_tier2 | `cpp` | MD, matmul, SIMD micro, PDE | Native reference |
+| C++ / Clang OpenMP | bench_tier2 | `cpp` | MD, matmul, SIMD micro, PDE | Native reference (tier-1 matmul: hand-rolled IKJ C, not Eigen — see [numerics-reference-backlog.md](../ecosystem/numerics-reference-backlog.md)) |
 | Rust | bench_tier2 | `rust` | Same kernels via shared C core | shared_c_kernel |
 | Julia | bench_tier2 | `julia` | Tier-2 physics + micro | shared_c_kernel |
 | Li | bench_tier2 | `li` | Same fixtures | mixed (pure_li vs shared) |
@@ -27,7 +27,7 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 ## Process
 
 1. **Registry** — add/change ecosystems in `registry.toml`.
-2. **Validate** — `./scripts/check-hpc-competitive.sh`.
+2. **Validate** — `./scripts/check-hpc-competitive.sh` (includes numerics reference pin gate).
 3. **Bench** — `bench.py --tier 12`; read `benchmarks/results/latest.csv`.
 4. **Review** — quarterly manual release notes for `watch` rows; bump `last_reviewed`.
 5. **Gaps** — file master-plan **G-*** items when adoption needs a proof path.

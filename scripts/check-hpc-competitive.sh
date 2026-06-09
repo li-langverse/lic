@@ -122,4 +122,11 @@ if [[ "$rc" -ne 0 ]]; then
   exit "$rc"
 fi
 li_gate_ok "HPC competitive registry"
+
+PINS_SCRIPT="$ROOT/scripts/check-numerics-reference-pins.sh"
+if [[ -x "$PINS_SCRIPT" ]]; then
+  "$PINS_SCRIPT"
+  li_gate_ok "Numerics reference pins"
+fi
+
 exit 0

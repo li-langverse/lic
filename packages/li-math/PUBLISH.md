@@ -19,3 +19,16 @@ Document public `def` names and types here as the API stabilizes.
 | `lic build` | Yes |
 | `lit test --coverage` ≥ 80% | Yes (lip 8e) |
 | ed25519 manifest signature | Yes (lip 8c) |
+
+## Numerics reference policy
+
+Dense LA benchmarks compare against pinned C++/BLAS references — not ad-hoc vendor drift.
+
+| Axis | Pin |
+|------|-----|
+| Eigen (CI) | 3.4.1 |
+| Eigen (forward) | 5.0.0 |
+| C++ | C++17 |
+| BLAS | OpenBLAS 0.3.x |
+
+Canonical policy: [numerics-reference-backlog.md](../../docs/ecosystem/numerics-reference-backlog.md) · [lic#33](https://github.com/li-langverse/lic/issues/33)

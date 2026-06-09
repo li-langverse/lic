@@ -23,6 +23,7 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 | Package | `PKG-li-std-math` |
 | Org repo | https://github.com/li-langverse/li-std-math |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
+| Numerics pins | [numerics-reference-backlog.md](../../docs/ecosystem/numerics-reference-backlog.md) (Eigen 3.4.1 / 5.0.0, C++17, OpenBLAS) |
 
 See `PUBLISH.md` and `docs/traceability.md`.
 

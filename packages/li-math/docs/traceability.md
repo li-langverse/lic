@@ -6,6 +6,7 @@
 |------|-----|----------|
 | Package | PKG-li-std-math | This repository |
 | Phase | PH-Pkg | [Package scaffold](https://github.com/li-langverse/li-language/blob/dev/docs/superpowers/plans/2026-05-16-li-package-scaffold.md) |
+| Numerics policy | PH-5b / G-math | [numerics-reference-backlog.md](../../../docs/ecosystem/numerics-reference-backlog.md) |
 | Test | T-PKG-li-std-math-smoke | `li-tests/smoke/builds.li` |
 
 ## Requirements

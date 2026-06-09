@@ -323,7 +323,8 @@ int32_t httpd_tls_drain_writes(int32_t slot, int32_t fd) {
   if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_slot_ssl[slot] || fd < 0) {
     return 0;
   }
-  while (httpd_tls_wbio_pending(slot) > 0 && rounds++ < 4096) {
+  /* Best-effort only: never block the epoll thread (poll timeout 0). */
+  while (httpd_tls_wbio_pending(slot) > 0 && rounds++ < 64) {
     if (httpd_tls_flush_wbio(slot) == 0) {
       return 0;
     }
@@ -331,11 +332,11 @@ int32_t httpd_tls_drain_writes(int32_t slot, int32_t fd) {
     pfd.fd = (int)fd;
     pfd.events = (short)POLLOUT;
     pfd.revents = 0;
-    if (poll(&pfd, 1, 5000) <= 0) {
-      return -1;
+    if (poll(&pfd, 1, 0) <= 0) {
+      break;
     }
   }
-  return httpd_tls_wbio_pending(slot) > 0 ? -1 : 0;
+  return httpd_tls_wbio_pending(slot) > 0 ? 1 : 0;
 }
 
 void httpd_tls_shutdown_slot(int32_t slot) {

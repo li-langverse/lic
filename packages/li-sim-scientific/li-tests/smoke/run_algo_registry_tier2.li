@@ -106,5 +106,5 @@ def main() -> int
   if sei435.checksum != sei_oracle:
     return 31
   if sei435.checksum == 1.001:
-    return 34
+    return 43
   return 0

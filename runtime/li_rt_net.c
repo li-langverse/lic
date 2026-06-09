@@ -3449,19 +3449,10 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
   g_proxy_resp_hdr_bytes_cached = 0;
 }
 
-static uint32_t httpd_proxy_client_epoll_events_for(int32_t slot, uint32_t events) {
-  /* TLS clients (e.g. Windows Schannel) drain slowly: level-trigger EPOLLOUT, not EPOLLET. */
-  if ((events & EPOLLOUT) && httpd_tls_slot_proto(slot) == 1) {
-    events &= ~EPOLLET;
-  }
-  return events;
-}
-
 static void httpd_proxy_client_epoll_mod(int epfd, int32_t slot, uint32_t events) {
   if (epfd < 0 || slot < 0 || g_slots[slot].fd < 0) {
     return;
   }
-  events = httpd_proxy_client_epoll_events_for(slot, events);
   if (g_slots[slot].proxy_client_epoll_events == events) {
     return;
   }
@@ -3474,7 +3465,7 @@ static void httpd_proxy_client_epoll_mod(int epfd, int32_t slot, uint32_t events
 
 /* EPOLLET delivers one EPOLLOUT edge per level transition; re-arm after partial TLS write. */
 static void httpd_proxy_client_epoll_arm_out(int epfd, int32_t slot) {
-  uint32_t want = httpd_proxy_client_epoll_events_for(slot, EPOLLIN | EPOLLOUT | EPOLLET);
+  uint32_t want = EPOLLIN | EPOLLOUT | EPOLLET;
   if (epfd < 0 || slot < 0 || g_slots[slot].fd < 0) {
     return;
   }

@@ -43,8 +43,8 @@
 |-----|------|------|
 | **7d-a** | Lexer `@`, decorator lists on `def`/`for`/`while`, AST attrs | Parse tests — **done** |
 | **7d-e (partial)** | Policy: `reserved_name`, typosquat, `parallel_requires_disjoint` | `decorator_exploits/` CI |
-| **7d-b** | Elaboration → `ParallelFor` / `simd` / host placement MIR tags | `li-tests/decorators/` positive — **partial:** `@vectorized(lanes=4)`, `@no_vectorize` |
-| **7d-c** | Structured `disjoint=`; scoped `@vectorized` on `for` (`ArraySimdScope`) | `vectorized_for_scope_ok.li` — **partial:** disjoint= still **G-par** open |
+| **7d-b** | Elaboration → `ParallelFor` / `simd` / host placement MIR tags | `li-tests/decorators/` positive — **partial:** `@vectorized(lanes=4)` + `@parallel(disjoint=)` MIR proc tags on `def` (`mir_vectorized_proc=`, `mir_parallel_disjoint=`) |
+| **7d-c** | Structured `disjoint=`; scoped `@vectorized` on `for` (`ArraySimdScope`) | `vectorized_for_scope_ok.li` + `parallel_disjoint_lean_opaque_gap.sh` — **partial:** full iteration-independence Props still **G-par** open |
 | **7d-d** | `std/execution/decorators.li` + `docs/language/decorators.md` | Handbook + gallery |
 | **7d-e** | `decorator def` with **strict naming** (package prefix, typosquat ban), expansion whitelist | `li-tests/decorator_exploits/` all **fail** except control; CI on every PR |
 
@@ -72,6 +72,7 @@
 **7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):**
 
 - [x] `./li-tests/run_all.sh decorators decorator_exploits`
+- [x] **G-par / G-dec (7d-b/c):** `@parallel(disjoint=…)` / `@vectorized(lanes=4)` on `def` → `mir_parallel_disjoint=` / `mir_vectorized_proc=` (`scripts/check-mir-*-decorator.sh`, `li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh`)
 - [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
 - [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds (`compiler/fuzz/corpus/seed_decorators`)
 

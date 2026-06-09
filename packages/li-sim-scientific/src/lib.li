@@ -304,6 +304,13 @@ type AimdBatchResult = object
   public final_x: float
   public final_vx: float
 
+def echem_aimd_batch_smoke_steps() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
 def echem_aimd_batch_steps_valid(steps: int) -> int
   requires true
   ensures result >= 0

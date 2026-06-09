@@ -2349,6 +2349,77 @@ static int parse_resp_content_length(const char* hdr, int hdr_len, int* out_keep
   return cl;
 }
 
+static int httpd_proxy_hdr_line_skip(const char* line, int line_len) {
+  if (line_len >= 12 && memcmp(line, "Connection:", 11) == 0) {
+    return 1;
+  }
+  if (line_len >= 18 && memcmp(line, "Proxy-Connection:", 17) == 0) {
+    return 1;
+  }
+  /* Nginx proxy_set_header Accept-Encoding "" — avoid upstream chunked+gzip bodies
+   * that stall reverse-proxy relay (GitLab/Rails common case). */
+  if (line_len >= 17 && httpd_header_name_eq_ci(line, line_len, "accept-encoding")) {
+    return 1;
+  }
+  return 0;
+}
+
+static int httpd_inject_hdr_before_blank(int32_t slot, int hdr_end, const char* line) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || hdr_end <= 0 || line == NULL || line[0] == '\0') {
+    return hdr_end;
+  }
+  int add = (int)strlen(line);
+  int tail = g_slots[slot].len - hdr_end;
+  if (add <= 0 || g_slots[slot].len + add >= HTTPD_IO_BUF) {
+    return hdr_end;
+  }
+  memmove(g_slots[slot].buf + hdr_end + add, g_slots[slot].buf + hdr_end, (size_t)tail);
+  memcpy(g_slots[slot].buf + hdr_end, line, (size_t)add);
+  g_slots[slot].len += add;
+  return hdr_end + add;
+}
+
+/* Inject reverse-proxy headers expected by GitLab/Omnibus behind li-httpd TLS terminate. */
+static int httpd_inject_proxy_forward_headers(int32_t slot, int hdr_end) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || hdr_end <= 0) {
+    return hdr_end;
+  }
+  char* buf = g_slots[slot].buf;
+  char line[320];
+
+  if (!hdr_has_token_c(buf, hdr_end, "X-Forwarded-Proto:")) {
+    const char* proto = (httpd_tls_slot_proto(slot) == 1) ? "https" : "http";
+    snprintf(line, sizeof(line), "X-Forwarded-Proto: %s\r\n", proto);
+    hdr_end = httpd_inject_hdr_before_blank(slot, hdr_end, line);
+    buf = g_slots[slot].buf;
+  }
+  if (!hdr_has_token_c(buf, hdr_end, "X-Forwarded-Host:")) {
+    char host[256];
+    host[0] = '\0';
+    if (httpd_req_header_value(buf, hdr_end, "host", host, (int)sizeof(host)) >= 0) {
+      snprintf(line, sizeof(line), "X-Forwarded-Host: %s\r\n", host);
+      hdr_end = httpd_inject_hdr_before_blank(slot, hdr_end, line);
+      buf = g_slots[slot].buf;
+    }
+  }
+  if (g_slots[slot].client_ipv4 != 0) {
+    uint32_t ip = ntohl(g_slots[slot].client_ipv4);
+    char ipstr[32];
+    snprintf(ipstr, sizeof(ipstr), "%u.%u.%u.%u", (ip >> 24) & 0xffu, (ip >> 16) & 0xffu, (ip >> 8) & 0xffu,
+             ip & 0xffu);
+    if (!hdr_has_token_c(buf, hdr_end, "X-Real-IP:")) {
+      snprintf(line, sizeof(line), "X-Real-IP: %s\r\n", ipstr);
+      hdr_end = httpd_inject_hdr_before_blank(slot, hdr_end, line);
+      buf = g_slots[slot].buf;
+    }
+    if (!hdr_has_token_c(buf, hdr_end, "X-Forwarded-For:")) {
+      snprintf(line, sizeof(line), "X-Forwarded-For: %s\r\n", ipstr);
+      hdr_end = httpd_inject_hdr_before_blank(slot, hdr_end, line);
+    }
+  }
+  return hdr_end;
+}
+
 /* Nginx proxy_set_header Connection "" — drop Connection / Proxy-Connection lines to upstream. */
 static int httpd_proxy_compact_req_hdr(int32_t slot, int hdr_end) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN || hdr_end <= 0) {
@@ -2367,12 +2438,7 @@ static int httpd_proxy_compact_req_hdr(int32_t slot, int hdr_end) {
     }
     i += 2;
     int line_len = i - line_start;
-    int skip = 0;
-    if (line_len >= 12 && memcmp(buf + line_start, "Connection:", 11) == 0) {
-      skip = 1;
-    } else if (line_len >= 18 && memcmp(buf + line_start, "Proxy-Connection:", 17) == 0) {
-      skip = 1;
-    }
+    int skip = httpd_proxy_hdr_line_skip(buf + line_start, line_len);
     if (!skip) {
       if (w != line_start) {
         memmove(buf + w, buf + line_start, (size_t)line_len);
@@ -3130,6 +3196,7 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     }
     if (req.body_mode == 0) {
       hdr_end = httpd_inject_traceparent_if_missing(slot, hdr_end);
+      hdr_end = httpd_inject_proxy_forward_headers(slot, hdr_end);
       hdr_end = httpd_proxy_compact_req_hdr(slot, hdr_end);
     }
     httpd_proxy_client_epoll_mod(g_httpd_epfd, slot, EPOLLIN | EPOLLET);
@@ -5876,6 +5943,10 @@ int32_t httpd_proxy_compact_req_hdr_i(int32_t slot, int32_t hdr_end) {
 
 int32_t httpd_inject_traceparent_slot_i(int32_t slot, int32_t hdr_end) {
   return (int32_t)httpd_inject_traceparent_if_missing(slot, (int)hdr_end);
+}
+
+int32_t httpd_inject_proxy_forward_headers_i(int32_t slot, int32_t hdr_end) {
+  return (int32_t)httpd_inject_proxy_forward_headers(slot, (int)hdr_end);
 }
 
 int32_t httpd_lb_pick_port_i(void) { return httpd_lb_pick_port(); }

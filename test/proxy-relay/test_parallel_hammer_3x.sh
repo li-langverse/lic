@@ -56,7 +56,7 @@ while [ "$round" -le "$ROUNDS" ]; do
       if [ -f "$out" ]; then
         wire=$(wc -c < "$out" | tr -d ' ')
       fi
-      echo "$code $wire $clen $path" > "$res"
+      echo "${code}|${wire}|${clen}|${path}" > "$res"
     ) &
     pids="$pids $!"
   done < "$ASSETS"
@@ -65,7 +65,7 @@ while [ "$round" -le "$ROUNDS" ]; do
   fail=0
   for res in "$tmpdir"/*.result; do
     [ -f "$res" ] || continue
-    read -r code wire clen path < "$res" || true
+    IFS='|' read -r code wire clen path < "$res" || true
     if [ "$code" = "200" ] && [ -n "$clen" ] && [ "$wire" = "$clen" ]; then
       pass=$((pass + 1))
     else

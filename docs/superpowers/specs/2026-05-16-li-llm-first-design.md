@@ -28,6 +28,8 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 | Replace Lean with LLM “verification” | Proof certificate stays kernel-checked |
 | Break default `lic check` human output | JSON is opt-in (`--format=json`, `lic diagnose`) |
 | Terse syntax that cannot elaborate to Core | Sugar must desugar to provable core |
+| Structured `fix_hint` patch objects in diagnostics | Deferred — `lic-fix-suggest.sh` uses jq heuristics only; agents edit source manually |
+| `lic edit --patch=json` | Spec only — compact edit IR not implemented |
 
 ## Concrete ideas (phased)
 
@@ -43,8 +45,9 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 |------|--------|
 | `lic check --format=json` | **Implemented** — `docs/schemas/diagnostic-v1.json` |
 | `lic diagnose` | **Implemented** — JSON to stdout |
-| `scripts/lic-fix-suggest.sh` | **Stub** — jq hints from JSON |
+| `scripts/lic-fix-suggest.sh` | **v0** — jq hints from JSON (`type.index`, `parse.indent`); structured `fix_hint` deferred (non-goal) |
 | Compact test manifest slice for agents | **Implemented** — `scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json` |
+| `scripts/gen-li-agent-manifest.sh` | **Implemented** — CI smoke → `li-agent.json` + `.cursor/AGENTS.generated.md` |
 | `lic edit --patch=json` | **Spec only** — compact edit IR |
 
 ### Docs & rules

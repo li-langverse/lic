@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Vision-LLM (v0):** `gen-li-agent-manifest.sh` wired in CI; agent manifest smoke asserts `li-agent.json` + `.cursor/AGENTS.generated.md` — [2026-06-09-vision-llm-agent-manifest-ci.md](docs/release-notes/2026-06-09-vision-llm-agent-manifest-ci.md).
+
 - **Docs:** GitHub Pages handbook hub at https://li-langverse.github.io/lic/ (`site/index.html`, `pages.yml`) — [2026-05-30-lic-handbook-pages.md](docs/release-notes/2026-05-30-lic-handbook-pages.md), [2026-05-30-lic-pages-site-artifact.md](docs/release-notes/2026-05-30-lic-pages-site-artifact.md) (fix missing `site/` artifact after #535).
 
 ### Changed

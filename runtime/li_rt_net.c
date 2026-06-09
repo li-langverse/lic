@@ -3577,6 +3577,9 @@ static int httpd_proxy_client_read(httpd_slot_t* s, char* out) {
 static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data, size_t len);
 
 static int httpd_proxy_feed_cached_header(int epfd, int32_t slot, const char* data, size_t len) {
+  if (httpd_proxy_snap_disabled()) {
+    return 0;
+  }
   httpd_slot_t* s = &g_slots[slot];
   size_t need = (size_t)g_proxy_resp_hdr_bytes_cached - (size_t)s->proxy_resp_hdr_len;
   if (need == 0) {
@@ -4222,7 +4225,7 @@ static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
   if (cl >= 0) {
     s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
     s->proxy_resp_body_left = cl;
-    if (g_proxy_resp_cl_cached < 0) {
+    if (g_proxy_resp_cl_cached < 0 && !httpd_proxy_snap_disabled()) {
       g_proxy_resp_cl_cached = cl;
       g_proxy_resp_hdr_bytes_cached = hdr_end;
       if (hdr_end > 0 && hdr_end <= (int)sizeof(g_proxy_resp_hdr_copy)) {

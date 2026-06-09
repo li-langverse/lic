@@ -361,8 +361,13 @@ Requires: hardware feature detection, explicit conversion rules (`f32` ↔ `bf16
 |---------|---------|
 | `tensor[Shape, T]` | Shape in the type — e.g. `tensor[(3, 3), f64]` vs `tensor[(3,), f64]`; dimension errors at compile time |
 | `array[N, T]` (v1) | Fixed rank-1/2 stack arrays; Tetris boards, small grids |
-| GPU buffers `device[T]` / `host[T]` | Separate address spaces; copy semantics explicit |
+| `MemorySpace` enum | `Host`, `Device`, `Unified` — static placement tag (Kokkos-aligned; lic#110) |
+| `ExecutionSpace` enum | `Serial`, `OpenMP`, `Threads` (v1 host); `SYCL`/`Cuda`/`HIP` reserved (#116) |
+| `View[T, Space, Layout]` | Kokkos `View` analog — lifecycle in same `Space` unless `@sync_host` / `@sync_device` |
+| GPU buffers `hostbuffer[T]` / `devicebuffer[T]` | Separate address spaces; **no DualView** — explicit pair + sync |
 | Kernel `gpu proc` | Entry points for CUDA / Metal / Vulkan compute (one backend chosen first) |
+
+**Memory / execution policy:** [kokkos-memory-execution-spaces-rubric.md](../../hpc/kokkos-memory-execution-spaces-rubric.md). Layout `Layout` defers to [#128](https://github.com/li-langverse/lic/issues/128) mdspan ABI. Spec enums: `std/execution/memory_spaces.li`.
 
 Depends on Phase 1 numerics (including SIMD) and a stable MIR → LLVM path (or secondary GPU IR).
 
@@ -534,9 +539,12 @@ GPU side (with numeric Phase 3):
 
 | Type | Purpose |
 |------|---------|
-| `devicebuffer[T]` | GPU-owned contiguous storage |
-| `hostbuffer[T]` | Pinned/pageable host mirror |
-| `ndview[Shape, T]` | View with strides (non-contiguous) |
+| `MemorySpace` | `Host` \| `Device` \| `Unified` — compile-time placement (no runtime discovery) |
+| `ExecutionSpace` | `Serial` \| `OpenMP` \| `Threads` (+ reserved GPU backends) |
+| `View[T, Space, Layout]` | Typed buffer in a memory space; explicit sync before cross-space read |
+| `devicebuffer[T]` | `MemorySpace.Device` contiguous storage |
+| `hostbuffer[T]` | `MemorySpace.Host` mirror — paired explicitly, not auto-synced |
+| `ndview[Shape, T]` | View with strides (non-contiguous); layout ABI in #128 |
 
 ---
 

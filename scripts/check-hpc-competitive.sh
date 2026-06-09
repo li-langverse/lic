@@ -122,4 +122,13 @@ if [[ "$rc" -ne 0 ]]; then
   exit "$rc"
 fi
 li_gate_ok "HPC competitive registry"
+
+# WP-PLAT-05 — MD external oracle registry (Layer B lammps/gromacs stub columns).
+MD_ORACLE_REG="$BENCHMARKS_COMPETITIVE/md_oracle.toml"
+if [[ -f "$MD_ORACLE_REG" ]]; then
+  li_phase "MD oracle registry (WP-PLAT-05)"
+  bash "$ROOT/scripts/ph-sci-md-oracle-gates.sh"
+  li_gate_ok "MD oracle registry"
+fi
+
 exit 0

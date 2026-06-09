@@ -94,7 +94,7 @@ static int epoll_wait(int epfd, struct epoll_event* events, int maxevents, int t
 #define HTTPD_MAX_HEADER_LINES 128
 #define HTTPD_PROXY_RELAY_BUF 65536
 /* Fairness: cap relay work per epoll callback so parallel TLS proxies do not starve. */
-#define HTTPD_PROXY_PUMP_BUDGET_BYTES (512 * 1024)
+#define HTTPD_PROXY_PUMP_BUDGET_BYTES (256 * 1024)
 #define HTTPD_ACCEPT_BURST 32
 /* Defaults match li-httpd [limits] ??? overridden via runtime.conf (see httpd_limits.py). */
 #define HTTPD_DEFAULT_MAX_REQUEST_BODY (1024 * 1024)
@@ -417,7 +417,7 @@ static void httpd_proxy_tls_cl_defer_flush(int epfd, int32_t slot);
 static int httpd_proxy_resp_feed(int epfd, int32_t slot, const char* data, size_t len);
 static int httpd_proxy_hdr_flush_resume(int epfd, int32_t slot);
 
-#define HTTPD_PROXY_DEFER_MAX 64
+#define HTTPD_PROXY_DEFER_MAX 128
 static int g_proxy_defer_slots[HTTPD_PROXY_DEFER_MAX];
 static int g_proxy_defer_count = 0;
 
@@ -5138,6 +5138,10 @@ static int httpd_proxy_tick_slot_needs_work(int32_t slot, httpd_slot_t* s) {
     return 1;
   }
   if (!s->proxy_cl_body_active && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && !s->proxy_resp_parsing) {
+    return 1;
+  }
+  if (s->proxy_cl_body_active && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0 &&
+      s->proxy_pump_budget <= 0 && !httpd_proxy_upstream_recv_blocked(slot, s)) {
     return 1;
   }
   return 0;

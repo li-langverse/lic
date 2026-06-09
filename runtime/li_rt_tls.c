@@ -324,14 +324,27 @@ size_t httpd_tls_write_pending(int32_t slot) {
 }
 
 int32_t httpd_tls_drain_writes(int32_t slot, int32_t fd) {
+  return httpd_tls_drain_writes_budget(slot, fd, 0);
+}
+
+int32_t httpd_tls_drain_writes_budget(int32_t slot, int32_t fd, size_t max_bytes) {
   int rounds = 0;
+  size_t drained = 0;
   if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_slot_ssl[slot] || fd < 0) {
     return 0;
   }
   /* Best-effort only: never block the epoll thread (poll timeout 0). */
   while (httpd_tls_wbio_pending(slot) > 0 && rounds++ < 512) {
+    long pending_before = httpd_tls_wbio_pending(slot);
     if (httpd_tls_flush_wbio(slot) == 0) {
       return 0;
+    }
+    long pending_after = httpd_tls_wbio_pending(slot);
+    if (pending_after < pending_before) {
+      drained += (size_t)(pending_before - pending_after);
+      if (max_bytes > 0 && drained >= max_bytes) {
+        break;
+      }
     }
     struct pollfd pfd;
     pfd.fd = (int)fd;

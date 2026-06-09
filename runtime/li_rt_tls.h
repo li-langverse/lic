@@ -41,6 +41,8 @@ int32_t httpd_tls_handshake_slot(int32_t slot, int32_t fd);
 
 size_t httpd_tls_write_pending(int32_t slot);
 int32_t httpd_tls_drain_writes(int32_t slot, int32_t fd);
+/* max_bytes==0 means unlimited (same as httpd_tls_drain_writes). */
+int32_t httpd_tls_drain_writes_budget(int32_t slot, int32_t fd, size_t max_bytes);
 void httpd_tls_shutdown_slot(int32_t slot);
 void httpd_tls_free_slot(int32_t slot);
 

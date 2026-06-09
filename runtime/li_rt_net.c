@@ -94,7 +94,7 @@ static int epoll_wait(int epfd, struct epoll_event* events, int maxevents, int t
 #define HTTPD_MAX_HEADER_LINES 128
 #define HTTPD_PROXY_RELAY_BUF 65536
 /* Fairness: cap relay work per epoll callback so parallel TLS proxies do not starve. */
-#define HTTPD_PROXY_PUMP_BUDGET_BYTES (256 * 1024)
+#define HTTPD_PROXY_PUMP_BUDGET_BYTES (64 * 1024)
 /* Per-slot byte budget per epoll tick (round-robin relay pump). */
 #define HTTPD_PROXY_TICK_BUDGET_BYTES (64 * 1024)
 #define HTTPD_ACCEPT_BURST 32
@@ -5489,6 +5489,9 @@ static void httpd_proxy_epoll_out_drain(int epfd, int32_t slot) {
       return;
     }
     if (httpd_proxy_flush_client_out_lim(epfd, slot, budget)) {
+      httpd_proxy_upstream_hold_sync(epfd, slot);
+      httpd_proxy_client_epoll_arm_out(epfd, slot);
+      httpd_proxy_schedule_pump(epfd, slot);
       return;
     }
     if (!s->proxy_active) {
@@ -5544,10 +5547,9 @@ static void httpd_proxy_epoll_out_drain(int epfd, int32_t slot) {
     httpd_proxy_relay_maybe_done(epfd, slot);
     return;
   }
-  if (s->proxy_pump_budget <= 0) {
-    httpd_proxy_pump_budget_reset(slot);
+  if (!httpd_proxy_upstream_recv_blocked(slot, s)) {
+    httpd_proxy_schedule_pump(epfd, slot);
   }
-  httpd_proxy_pump_relay(epfd, slot);
 }
 
 static int httpd_sse_idle_watch_active(void) {
@@ -6111,8 +6113,11 @@ static void httpd_dispatch_epoll_event(int epfd, int listen_fd, struct epoll_eve
   if ((eu & HTTPD_EPOLL_UP_TAG) == HTTPD_EPOLL_UP_TAG) {
     int32_t up_slot = (int32_t)(eu & 0xffffffffu);
     if (up_slot >= 0 && up_slot < HTTPD_MAX_CONN) {
-      httpd_proxy_pump_budget_reset(up_slot);
+      g_slots[up_slot].proxy_pump_budget = HTTPD_PROXY_TICK_BUDGET_BYTES;
       httpd_proxy_up_handler(epfd, up_slot, ev->events);
+      if (g_active_proxy_streams > 1) {
+        httpd_proxy_tick_starved_relays(epfd);
+      }
     }
     return;
   }
@@ -6186,8 +6191,11 @@ static void httpd_dispatch_epoll_event(int epfd, int listen_fd, struct epoll_eve
   }
   if (slot >= 0 && slot < HTTPD_MAX_CONN) {
     if (g_slots[slot].proxy_active) {
-      httpd_proxy_pump_budget_reset(slot);
+      g_slots[slot].proxy_pump_budget = HTTPD_PROXY_TICK_BUDGET_BYTES;
       httpd_proxy_client_handler(epfd, slot, ev->events);
+      if (g_active_proxy_streams > 1) {
+        httpd_proxy_tick_starved_relays(epfd);
+      }
       return;
     }
     if (httpd_tls_enabled_i() && httpd_tls_handshake_pending(slot)) {

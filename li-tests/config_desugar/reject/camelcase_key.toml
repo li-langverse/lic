@@ -1,0 +1,14 @@
+# Reject: camelCase TOML keys (policy: snake_case only — docs/toml-style.md)
+[server]
+listen = "127.0.0.1:39221"
+document_root = "./public"
+
+[limits]
+maxBody = "1m"
+max_header = "16k"
+
+[upstreams.llm]
+peers = ["http://127.0.0.1:11434"]
+
+[routes]
+"GET /health" = "static:healthcheck"

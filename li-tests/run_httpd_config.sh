@@ -68,7 +68,8 @@ for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
   name="$(basename "$rej")"
   # M1.5/TOML policy rejects are covered by dedicated Python gate scripts, not C E0501–E0504.
   case "$name" in
-    leak_censor_bad_pattern.toml \
+    camelcase_key.toml \
+    | leak_censor_bad_pattern.toml \
     | m15_inference_no_traceparent.toml \
     | m15_missing_stream_limits.toml \
     | m2_http2_no_tls.toml \

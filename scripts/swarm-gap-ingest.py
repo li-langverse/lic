@@ -117,6 +117,39 @@ def ingest_plan_debt(audit: dict, gaps_by_id: dict[str, dict]) -> int:
     return added
 
 
+def _runner_completed_todos(runner: dict) -> set[str]:
+    """Union of state.completed_ids and todos marked completed/done."""
+    rid = runner.get("id") or "runner"
+    completed = set(str(x) for x in (runner.get("state", {}).get("completed_ids") or []))
+    for todo in runner.get("todos") or []:
+        if not isinstance(todo, dict):
+            continue
+        if todo.get("status") not in ("completed", "done"):
+            continue
+        tid = todo.get("id")
+        if not tid:
+            continue
+        raw = str(tid)
+        completed.add(raw)
+        completed.add(_normalize_plan_todo_id(raw, rid))
+    return completed
+
+
+def _runner_pending_todos(runner: dict) -> set[str]:
+    """Normalized todo ids still pending per snapshot plan_pending + todo status."""
+    rid = runner.get("id") or "runner"
+    pending = {_normalize_plan_todo_id(str(todo_id), rid) for todo_id in (runner.get("plan_pending") or [])}
+    for todo in runner.get("todos") or []:
+        if not isinstance(todo, dict):
+            continue
+        if todo.get("status") not in (None, "pending", "in_progress"):
+            continue
+        tid = todo.get("id")
+        if tid:
+            pending.add(_normalize_plan_todo_id(str(tid), rid))
+    return pending
+
+
 def ingest_snapshot_plan_pending(snap: dict, gaps_by_id: dict[str, dict]) -> int:
     added = 0
     for runner in snap.get("runners") or []:
@@ -127,6 +160,13 @@ def ingest_snapshot_plan_pending(snap: dict, gaps_by_id: dict[str, dict]) -> int
             norm = _normalize_plan_todo_id(str(todo_id), rid)
             gid = f"gap-plan-pending-{rid}-{_slug(norm)}"
             if gid in gaps_by_id:
+                gap = gaps_by_id[gid]
+                if gap.get("status") == "closed":
+                    gap["status"] = "open"
+                    ev = gap.setdefault("evidence", [])
+                    note = f"snapshot runner={rid} plan_pending={norm} (reopened)"
+                    if note not in ev:
+                        ev.append(note)
                 continue
             gaps_by_id[gid] = {
                 "id": gid,
@@ -170,13 +210,13 @@ def dedupe_plan_pending_gaps(gaps_by_id: dict[str, dict]) -> int:
 
 
 def reconcile_snapshot_completed(snap: dict, gaps_by_id: dict[str, dict]) -> int:
-    """Close plan_debt rows whose todo is in runner state.completed_ids."""
+    """Close plan_debt rows whose todo is completed in snapshot state or todos[]."""
     closed = 0
     for runner in snap.get("runners") or []:
         if not isinstance(runner, dict):
             continue
         rid = runner.get("id") or "runner"
-        completed = set(runner.get("state", {}).get("completed_ids") or [])
+        completed = _runner_completed_todos(runner)
         for gap in gaps_by_id.values():
             if not isinstance(gap, dict) or gap.get("status") != "open":
                 continue
@@ -186,14 +226,42 @@ def reconcile_snapshot_completed(snap: dict, gaps_by_id: dict[str, dict]) -> int
             if not raw:
                 continue
             norm = _normalize_plan_todo_id(str(raw), rid)
-            if norm in completed or raw in completed:
+            if norm in completed or str(raw) in completed:
                 gap["status"] = "closed"
                 ev = gap.setdefault("evidence", [])
-                note = f"snapshot {rid} completed_ids includes {norm}"
+                note = f"snapshot {rid} todo completed ({norm})"
                 if note not in ev:
                     ev.append(note)
                 closed += 1
     return closed
+
+
+def reconcile_snapshot_pending(snap: dict, gaps_by_id: dict[str, dict]) -> int:
+    """Reopen plan_debt rows when snapshot still lists the todo as pending."""
+    reopened = 0
+    for runner in snap.get("runners") or []:
+        if not isinstance(runner, dict):
+            continue
+        rid = runner.get("id") or "runner"
+        pending = _runner_pending_todos(runner)
+        for gap in gaps_by_id.values():
+            if not isinstance(gap, dict) or gap.get("status") != "closed":
+                continue
+            if gap.get("runner_id") != rid:
+                continue
+            raw = gap.get("plan_todo_id")
+            if not raw:
+                continue
+            norm = _normalize_plan_todo_id(str(raw), rid)
+            if norm not in pending and str(raw) not in pending:
+                continue
+            gap["status"] = "open"
+            ev = gap.setdefault("evidence", [])
+            note = f"snapshot runner={rid} plan_pending={norm} (reopened)"
+            if note not in ev:
+                ev.append(note)
+            reopened += 1
+    return reopened
 
 
 def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> int:
@@ -224,9 +292,8 @@ def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> in
 
 
 def ingest_verticals_stubs(gaps_by_id: dict[str, dict]) -> int:
-    vert = Path(os.environ["BENCHMARKS_COMPETITIVE"]) / "verticals.toml"
-    if not vert.is_file():
-        vert = Path(os.environ.get("BENCHMARKS_COMPETITIVE", str(LANGVERSE / "benchmarks/workloads/competitive"))/verticals.toml"
+    default = LANGVERSE / "benchmarks" / "workloads" / "competitive"
+    vert = Path(os.environ.get("BENCHMARKS_COMPETITIVE", str(default))) / "verticals.toml"
     if not vert.is_file():
         return 0
     text = vert.read_text(encoding="utf-8")
@@ -273,6 +340,7 @@ def main() -> int:
     stats = {
         "missing_std": ingest_missing_std(explorer, gaps_by_id),
         "plan_debt_audit": ingest_plan_debt(audit, gaps_by_id),
+        "snapshot_pending_reopen": reconcile_snapshot_pending(snap, gaps_by_id),
         "plan_debt_snapshot": ingest_snapshot_plan_pending(snap, gaps_by_id),
         "snapshot_completed": reconcile_snapshot_completed(snap, gaps_by_id),
         "plan_debt_dedupe": dedupe_plan_pending_gaps(gaps_by_id),

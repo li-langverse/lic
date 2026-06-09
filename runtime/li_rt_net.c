@@ -2651,8 +2651,10 @@ static int32_t httpd_route_pool_port_for_request(const char* buf, int hdr_end, c
     if (!path_prefix_match(req->path, req->path_len, r)) {
       continue;
     }
-    if (r->vhost[0] != '\0' && host[0] != '\0' && strcasecmp(r->vhost, host) != 0) {
-      continue;
+    if (r->vhost[0] != '\0') {
+      if (host[0] == '\0' || strcasecmp(r->vhost, host) != 0) {
+        continue;
+      }
     }
     int32_t port = httpd_pool_map_port(r->pool_name);
     if (port > 0) {
@@ -4338,6 +4340,9 @@ static int httpd_proxy_resp_feed(int epfd, int32_t slot, const char* data, size_
       if (s->proxy_resp_body_left > 0) {
         s->proxy_resp_body_left -= (int)take;
       }
+      if (rc == 0) {
+        return 0;
+      }
       continue;
     }
     if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CHUNKED) {
@@ -4499,11 +4504,15 @@ static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
     if ((size_t)s->proxy_resp_body_left < take) {
       take = (size_t)s->proxy_resp_body_left;
     }
-    if (httpd_proxy_relay_to_client(epfd, slot, s->proxy_rbuf, take) < 0) {
+    int relay_rc = httpd_proxy_relay_to_client(epfd, slot, s->proxy_rbuf, take);
+    if (relay_rc < 0) {
       httpd_proxy_finish_err(epfd, slot);
       return;
     }
     s->proxy_resp_body_left -= (int)take;
+    if (relay_rc == 0) {
+      return;
+    }
     if (s->proxy_resp_body_left <= 0) {
       httpd_proxy_relay_maybe_done(epfd, slot);
       return;
@@ -4915,12 +4924,25 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   g_proxy_resp_cl_cached = -1;
   g_proxy_resp_hdr_bytes_cached = 0;
   int32_t peer_port = httpd_route_pool_port_for_request(g_slots[slot].buf, hdr_end, req);
-  /* edge: vhost routes must not fall back to global LB */
+  if (peer_port <= 0) {
+    peer_port = httpd_lb_pick_port_for_request(slot, g_slots[slot].buf, hdr_end);
+  }
   if (peer_port <= 0) {
     return -1;
   }
   int up = upstream_pool_acquire(peer_port);
-  /* edge: no cross-pool fallback — wrong pool yields 404/400 from alien backends */
+  if (up < 0 && g_up_peer_count > 1) {
+    for (int i = 0; i < g_up_peer_count; i++) {
+      if (g_up_peers[i].down || g_up_peers[i].port == peer_port) {
+        continue;
+      }
+      peer_port = g_up_peers[i].port;
+      up = upstream_pool_acquire(peer_port);
+      if (up >= 0) {
+        break;
+      }
+    }
+  }
   if (up < 0) {
     return -1;
   }

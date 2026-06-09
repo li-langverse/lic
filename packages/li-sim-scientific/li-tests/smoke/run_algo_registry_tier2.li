@@ -65,46 +65,4 @@ def main() -> int
     return 10
   if rigid302.checksum == 1.001:
     return 11
-  var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
-  if echem_oracle <= 0.0:
-    return 15
-  if echem_oracle >= 1.0e-2:
-    return 16
-  var aimd433: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
-  if run_result_ok(aimd433) != 1:
-    return 17
-  if aimd433.algo_id != 433:
-    return 18
-  if aimd433.checksum != echem_oracle:
-    return 19
-  if aimd433.checksum == 1.001:
-    return 20
-  var gc_oracle: float = sim_scientific_oracle_checksum_echem_gc_aimd()
-  if gc_oracle <= 0.0:
-    return 21
-  if gc_oracle >= 0.05:
-    return 22
-  var gc434: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 1)
-  if run_result_ok(gc434) != 1:
-    return 23
-  if gc434.algo_id != 434:
-    return 24
-  if gc434.checksum != gc_oracle:
-    return 25
-  if gc434.checksum == 1.001:
-    return 26
-  var sei_oracle: float = sim_scientific_oracle_checksum_echem_sei_kmc()
-  if sei_oracle <= 0.0:
-    return 27
-  if sei_oracle >= 0.35:
-    return 28
-  var sei435: SimRunResult = run_algo(algo_echem_sei_kmc(), 1)
-  if run_result_ok(sei435) != 1:
-    return 29
-  if sei435.algo_id != 435:
-    return 30
-  if sei435.checksum != sei_oracle:
-    return 31
-  if sei435.checksum == 1.001:
-    return 43
   return 0

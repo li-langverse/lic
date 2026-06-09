@@ -27,6 +27,17 @@ def main() -> int
 
 Other packages embed the same calls in their own `def main` — no copy-paste of server loop.
 
+## Runtime limits (`[limits]`)
+
+| TOML key | `runtime.conf` key | Default |
+|----------|-------------------|---------|
+| `max_body` | `max_request_body_bytes` | `1m` |
+| `max_header` | `max_header_bytes` | `16k` |
+| `proxy_max_response_body` | `max_proxy_response_body_bytes` | `64m` |
+| `max_routes` | `max_routes` | `0` (unlimited dynamic route table) |
+
+Set `max_routes` to a positive integer to pre-allocate and cap the route table; config load fails if the flattened config has more routes than the cap.
+
 ## Build
 
 ```bash

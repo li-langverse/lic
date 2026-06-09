@@ -118,6 +118,12 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
         lines.append(f"stream_max_duration_sec={parse_duration(limits['stream_max_duration'], 'limits.stream_max_duration')}")
     if limits.get("concurrent_streams") is not None:
         lines.append(f"concurrent_streams={int(limits['concurrent_streams'])}")
+    if limits.get("max_routes") is not None:
+        n = int(limits["max_routes"])
+        if n < 0:
+            raise ValueError("limits.max_routes must be >= 0 (0 = unlimited)")
+        if n > 0:
+            lines.append(f"max_routes={n}")
 
     routes = load_httpd_config(cfg_path)
     proxy_any = False

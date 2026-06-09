@@ -244,14 +244,23 @@ static char g_m3_token_budget_header[64] = "x-token-budget";
 static httpd_route_t* g_routes = NULL;
 static int g_routes_cap = 0;
 static int g_route_count = 0;
+/* 0 = unlimited dynamic growth; N>0 hard cap (see [limits] max_routes in TOML). */
+static int g_max_routes = 0;
 
 static int httpd_routes_ensure_cap(int need) {
+  if (g_max_routes > 0 && need > g_max_routes) {
+    return -1;
+  }
   if (need <= g_routes_cap) {
     return 0;
   }
   int new_cap = g_routes_cap > 0 ? g_routes_cap : HTTPD_ROUTES_INIT_CAP;
-  while (new_cap < need) {
-    new_cap *= 2;
+  if (g_max_routes > 0) {
+    new_cap = g_max_routes;
+  } else {
+    while (new_cap < need) {
+      new_cap *= 2;
+    }
   }
   httpd_route_t* p = (httpd_route_t*)realloc(g_routes, (size_t)new_cap * sizeof(httpd_route_t));
   if (!p) {
@@ -5490,6 +5499,7 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_doc_root_len = 0;
   g_proxy_all = 0;
   g_route_count = 0;
+  g_max_routes = 0;
   g_pool_map_count = 0;
   g_cur_upstream_pool[0] = '\0';
   g_rate_limit_rps = 0;
@@ -5544,6 +5554,7 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_leak_scrub_hit_count = 0;
   char pending_require[16][600];
   int pending_require_n = 0;
+  int routes_rejected = 0;
   char line[4096];
   while (fgets(line, sizeof(line), f)) {
     trim_line(line);
@@ -5627,6 +5638,16 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       int n = atoi(val);
       if (n > 0) {
         g_max_proxy_response_body_bytes = n;
+      }
+    } else if (strcmp(key, "max_routes") == 0) {
+      int n = atoi(val);
+      if (n >= 0) {
+        g_max_routes = n;
+        if (n > 0 && httpd_routes_ensure_cap(n) != 0) {
+          fprintf(stderr, "li-httpd: max_routes=%d pre-allocation failed\n", n);
+          fclose(f);
+          return -1;
+        }
       }
     } else if (strcmp(key, "health_max_fails") == 0) {
       g_health_max_fails = atoi(val);
@@ -5786,9 +5807,17 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
           }
         }
         if (httpd_routes_ensure_cap(g_route_count + 1) != 0) {
-          fprintf(stderr, "li-httpd: route table realloc failed\n");
-          fclose(f);
-          return -1;
+          if (g_max_routes > 0) {
+            fprintf(stderr,
+                    "li-httpd: route limit exceeded (max_routes=%d), rejecting route: %s\n",
+                    g_max_routes, val);
+            routes_rejected++;
+          } else {
+            fprintf(stderr, "li-httpd: route table realloc failed\n");
+            fclose(f);
+            return -1;
+          }
+          continue;
         }
         httpd_route_t* r = &g_routes[g_route_count++];
         memset(r, 0, sizeof(*r));
@@ -5863,7 +5892,11 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       return -1;
     }
   }
-  fprintf(stderr, "li-httpd: loaded %d routes (cap %d)\n", g_route_count, g_routes_cap);
+  if (routes_rejected > 0) {
+    fprintf(stderr, "li-httpd: config rejected %d route(s) over max_routes=%d\n", routes_rejected,
+            g_max_routes);
+    return -1;
+  }
   return 0;
 }
 

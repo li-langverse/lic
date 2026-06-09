@@ -1,5 +1,7 @@
 # libernetes master plan (Wave 0–9)
 
+**Rendered roadmap (diagrams + wave table):** [../libernetes-roadmap.md](../libernetes-roadmap.md)
+
 Canonical detailed plan: Cursor plan `libernetes_master_plan_bc3b669a.plan.md`.
 
 ## Delivery waves (K8s runners)

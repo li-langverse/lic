@@ -540,6 +540,9 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
       if fwd < 0:
         net_buf_free(chunk)
         return proxy_li_finish_err(epfd, slot)
+      if fwd == 0:
+        net_buf_free(chunk)
+        return 0
       left = left - take
       httpd_li_proxy_set_resp_body_left_i(slot, left)
   net_buf_free(chunk)
@@ -579,10 +582,13 @@ def proxy_li_finish_resp_headers(epfd: var int, slot: var int) raises Net, Alloc
   var tail: int = hlen - hdr_bytes
   if tail > 0:
     var conn: int = httpd_slot_conn_i(slot)
-    if tcp_send_nb_i(conn, acc, hdr_bytes, tail) < 0:
+    var sent: int = tcp_send_nb_i(conn, acc, hdr_bytes, tail)
+    if sent == -2:
       return proxy_li_finish_err(epfd, slot)
+    if sent <= 0:
+      return 0
     var left0: int = httpd_li_proxy_get_resp_body_left_i(slot)
-    httpd_li_proxy_set_resp_body_left_i(slot, left0 - tail)
+    httpd_li_proxy_set_resp_body_left_i(slot, left0 - sent)
   return proxy_li_pump_cl(epfd, slot)
 
 def proxy_li_feed_cached_hdr(epfd: var int, slot: var int, data: var ptr, n: var int) raises Net, Alloc, IO -> int

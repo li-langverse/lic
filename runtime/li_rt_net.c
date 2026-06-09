@@ -6233,6 +6233,10 @@ int32_t httpd_epoll_unregister_fd_i(int32_t epfd, int32_t fd) {
 }
 
 int32_t httpd_proxy_splice_cl_i(int32_t up_fd, int32_t client_fd, int32_t max_bytes) {
+  int32_t slot = httpd_slot_find_fd(client_fd);
+  if (slot >= 0 && httpd_tls_slot_proto(slot) == 1) {
+    return -1;
+  }
   httpd_proxy_splice_pipe_init();
   if (g_proxy_splice_pipe[0] < 0 || max_bytes <= 0) {
     return -1;

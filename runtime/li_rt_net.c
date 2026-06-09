@@ -3642,8 +3642,12 @@ static int httpd_proxy_feed_cached_header(int epfd, int32_t slot, const char* da
     if ((size_t)s->proxy_resp_body_left < tail) {
       return -1;
     }
-    if (httpd_proxy_relay_to_client(epfd, slot, data + take, tail) < 0) {
+    int tail_rc = httpd_proxy_relay_to_client(epfd, slot, data + take, tail);
+    if (tail_rc < 0) {
       return -1;
+    }
+    if (tail_rc == 0) {
+      return 0;
     }
     s->proxy_resp_body_left -= (int)tail;
     s->proxy_relay_got_data = 1;
@@ -4427,12 +4431,12 @@ static int httpd_proxy_resp_feed(int epfd, int32_t slot, const char* data, size_
       if (rc < 0) {
         return -1;
       }
+      if (rc == 0) {
+        return 0;
+      }
       i += take;
       if (s->proxy_resp_body_left > 0) {
         s->proxy_resp_body_left -= (int)take;
-      }
-      if (rc == 0) {
-        return 0;
       }
       continue;
     }
@@ -4559,7 +4563,8 @@ static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
       return;
     }
 #ifdef __linux__
-    if (!g_proxy_snap_recording && g_proxy_splice_pipe[0] >= 0 && httpd_tls_slot_proto(slot) != 1) {
+    if (!g_proxy_snap_recording && g_pool_map_count <= 0 && g_proxy_splice_pipe[0] >= 0 &&
+        httpd_tls_slot_proto(slot) != 1) {
       size_t cap = (size_t)s->proxy_resp_body_left;
       if (cap > sizeof(s->proxy_rbuf)) {
         cap = sizeof(s->proxy_rbuf);
@@ -4608,10 +4613,10 @@ static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
       httpd_proxy_finish_err(epfd, slot);
       return;
     }
-    s->proxy_resp_body_left -= (int)take;
     if (relay_rc == 0) {
       return;
     }
+    s->proxy_resp_body_left -= (int)take;
     if (s->proxy_resp_body_left <= 0) {
       httpd_proxy_relay_maybe_done(epfd, slot);
       return;

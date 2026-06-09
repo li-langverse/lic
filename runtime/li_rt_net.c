@@ -480,25 +480,6 @@ static int httpd_proxy_drain_tls_wbio_nb(int32_t slot, int32_t fd) {
   return (int)httpd_tls_drain_writes(slot, fd);
 }
 
-/* Brief blocking wbio drain at response end (finish_ok). 0=drained, 1=pending, -1=error. */
-static int httpd_proxy_drain_tls_wbio_finish(int32_t slot, int32_t fd) {
-  if (slot < 0 || httpd_tls_slot_proto(slot) != 1 || fd < 0) {
-    return 0;
-  }
-  for (int round = 0; round < 32; round++) {
-    if (httpd_tls_wbio_pending(slot) <= 0) {
-      return 0;
-    }
-    if (httpd_tls_flush_wbio(slot) == 0) {
-      return 0;
-    }
-    if (wait_writable_ms(fd, 50) < 0) {
-      return -1;
-    }
-  }
-  return httpd_tls_wbio_pending(slot) > 0 ? 1 : 0;
-}
-
 /* Block until OpenSSL wbio empty (connection close only). Returns 0 ok, 1 still pending, -1 error. */
 static int httpd_proxy_drain_tls_wbio(int32_t slot, int32_t fd) {
   if (slot < 0 || httpd_tls_slot_proto(slot) != 1 || fd < 0) {
@@ -3680,7 +3661,7 @@ static void httpd_proxy_finish_ok(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
   httpd_proxy_flush_client_out(epfd, slot);
   if (s->proxy_active && httpd_tls_slot_proto(slot) == 1 && s->fd >= 0) {
-    int drain = httpd_proxy_drain_tls_wbio_finish(slot, s->fd);
+    int drain = httpd_proxy_drain_tls_wbio_nb(slot, s->fd);
     if (drain < 0) {
       httpd_conn_close_slot(epfd, slot);
       return;

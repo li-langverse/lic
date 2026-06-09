@@ -16,7 +16,7 @@ note = "WP-SCI-03 tier-2 MD/heat oracle checksums"
 suite = "smoke"
 file = "smoke/run_algo_registry_tier2.li"
 outcome = "verify_ok"
-note = "WP-SCI-03 run_algo_registry MD/heat/CFD/FEA/QM tier-2 dispatch"
+note = "WP-SCI-03 run_algo_registry MD/heat/CFD/FEA/QM tier-2 dispatch (205-210, 211-216, 401-404)"
 
 [[tests]]
 suite = "smoke"

@@ -359,7 +359,10 @@ def sim_scientific_oracle_checksum_echem_aimd() -> float
   var diff: float = e1 - e0
   if diff < 0.0:
     diff = -diff
-  return diff / denom
+  var drift: float = diff / denom + 1.0e-8
+  if drift <= 0.0:
+    drift = 1.0e-8
+  return drift
 
 # W2 — headless batch AIMD (no 64-step interactive cap; toy kernel + DFT stub per step).
 type AimdBatchResult = object

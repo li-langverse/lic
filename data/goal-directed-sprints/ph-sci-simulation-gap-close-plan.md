@@ -197,6 +197,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 - **Scope:** `li-sim-scientific/src/lib.li`, `benchmarks/competitive/algo_registry.json`, `verticals.toml`.
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.
 - **Acceptance:** `run_algo_registry_tier2.li` extended; stub only for explicitly documented IDs.
+- **Status (2026-06-08):** **Partial** — CFD 205–211, FEA 212–216, QM 401–432 tier-2 oracles; heat narrowed to 201–204; drug/bio/ml/am/viz/robo/auto remain documented stubs.
 - **Priority / effort:** P1 / L
 
 #### WP-SCI-04 — `sim.viz` → wgpu field draw (extends existing ID)

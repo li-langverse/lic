@@ -191,12 +191,13 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 
 ### Phase 2 — Deepen simulation verticals (P1–P2) — **OPEN** (see [ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md))
 
-#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID)
+#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID) — **partial** (PR pending)
 
 - **Goal:** Replace `run_algo_registry_stub` for CFD/FEA/QM rows with real dispatch or tier-2 oracles.
 - **Scope:** `li-sim-scientific/src/lib.li`, `benchmarks/competitive/algo_registry.json`, `verticals.toml`.
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.
 - **Acceptance:** `run_algo_registry_tier2.li` extended; stub only for explicitly documented IDs.
+- **Landed (partial):** CFD lid-cavity diffuse oracle (`sim_scientific_oracle_checksum_cfd`); FEA/QM tier-2 checksum witnesses; `run_cfd_tier2_registry` / `run_fea_tier2_registry` / `run_qm_tier2_registry` dispatch for algo 205–210, 211–216, 401–432. Remaining: full FEA elasticity kernel (WP-SCI-05), external MD oracle column (WP-PLAT-05).
 - **Priority / effort:** P1 / L
 
 #### WP-SCI-04 — `sim.viz` → wgpu field draw (extends existing ID)
@@ -315,7 +316,7 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 |-------|----------|--------|---------|
 | Phase 0 | 4 | **DONE** (BUILD-01..03, GPU-00) | regression only |
 | Phase 1 | 15 | **DONE** (GPU-01..15 on `main`; + GPU-16..19 via #847) | regression only |
-| Phase 2 | 11 | **OPEN** | WP-SCI-03 registry |
+| Phase 2 | 11 | **OPEN** (WP-SCI-03 partial) | WP-PLAT-05 / WP-SCI-04 |
 | Phase 3 | 3 | **OPEN** | WP-SCI-GPU-VENDOR-01 |
 | **Total** | **33** | **19 done (~58%)** | |
 

@@ -1,0 +1,59 @@
+# Mirrors lic/.github/workflows/ci.yml (version + build-and-test on Ubuntu).
+# macOS job omitted — add dedicated macos runner tag if needed.
+#
+# Requires: group runner with kubernetes executor (homelab-k8s on engine).
+
+stages:
+  - version
+  - test
+
+default:
+  tags:
+    - homelab-k8s
+  interruptible: true
+
+variables:
+  LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+  CC: clang-22
+  CXX: clang++-22
+
+.version_template: &version_job
+  stage: version
+  image: ubuntu:24.04
+  script:
+    - apt-get update -qq && apt-get install -y -qq git bash
+    - chmod +x scripts/check-version.sh
+    - ./scripts/check-version.sh
+
+version:main:
+  <<: *version_job
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+version:mr:
+  <<: *version_job
+  variables:
+    GITHUB_BASE_REF: main
+  script:
+    - apt-get update -qq && apt-get install -y -qq git bash
+    - chmod +x scripts/check-version.sh
+    - ./scripts/check-version.sh --pr
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+build-and-test:
+  stage: test
+  image: ubuntu:24.04
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq git curl ca-certificates sudo python3
+  script:
+    - chmod +x scripts/checkout-ecosystem-siblings.sh scripts/ci-install-llvm.sh
+      scripts/ci.sh scripts/build.sh scripts/check-version.sh scripts/resolve-lic.sh li-tests/run_security.sh
+    - ./scripts/checkout-ecosystem-siblings.sh
+    - sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+    - ./scripts/ci.sh
+    - ./scripts/check-version.sh --build
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"

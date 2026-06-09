@@ -10,7 +10,7 @@ note = "T-PKG-li-sim-scientific-smoke"
 suite = "smoke"
 file = "smoke/scientific_oracle_bench.li"
 outcome = "verify_ok"
-note = "WP-SCI-03 tier-2 MD/heat oracle checksums"
+note = "WP-SCI-03 tier-2 MD/heat/CFD/FEA/QM oracle checksums"
 
 [[tests]]
 suite = "smoke"

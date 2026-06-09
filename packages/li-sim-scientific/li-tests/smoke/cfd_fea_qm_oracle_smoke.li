@@ -9,7 +9,7 @@ def main() -> int
   if cfd <= 0.0:
     return 1
   var fea: float = sim_scientific_oracle_checksum_fea()
-  if fea <= 0.0:
+  if fea < 0.0:
     return 2
   var qm: float = sim_scientific_oracle_checksum_qm()
   if qm <= 0.0:

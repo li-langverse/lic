@@ -94,7 +94,7 @@ static int epoll_wait(int epfd, struct epoll_event* events, int maxevents, int t
 #define HTTPD_MAX_HEADER_LINES 128
 #define HTTPD_PROXY_RELAY_BUF 65536
 /* Fairness: cap relay work per epoll callback so parallel TLS proxies do not starve. */
-#define HTTPD_PROXY_PUMP_BUDGET_BYTES (256 * 1024)
+#define HTTPD_PROXY_PUMP_BUDGET_BYTES (512 * 1024)
 #define HTTPD_ACCEPT_BURST 32
 /* Defaults match li-httpd [limits] ??? overridden via runtime.conf (see httpd_limits.py). */
 #define HTTPD_DEFAULT_MAX_REQUEST_BODY (1024 * 1024)
@@ -3760,23 +3760,9 @@ static void httpd_proxy_client_epoll_mod(int epfd, int32_t slot, uint32_t events
   epoll_ctl((int)epfd, EPOLL_CTL_MOD, g_slots[slot].fd, &cev);
 }
 
-/* Level-trigger EPOLLOUT while TLS relay backlog pending; ET otherwise. */
-static uint32_t httpd_proxy_client_relay_epoll_events(int32_t slot) {
-  httpd_slot_t* s;
-  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
-    return EPOLLIN | EPOLLOUT | EPOLLET;
-  }
-  s = &g_slots[slot];
-  if (s->proxy_active && s->proxy_phase == HTTPD_PROXY_PHASE_RELAY &&
-      (httpd_proxy_tls_outstanding(slot, s) || httpd_proxy_relay_pending_client(s))) {
-    return EPOLLIN | EPOLLOUT;
-  }
-  return EPOLLIN | EPOLLOUT | EPOLLET;
-}
-
 /* EPOLLET delivers one EPOLLOUT edge per level transition; re-arm after partial TLS write. */
 static void httpd_proxy_client_epoll_arm_out(int epfd, int32_t slot) {
-  uint32_t want = httpd_proxy_client_relay_epoll_events(slot);
+  uint32_t want = EPOLLIN | EPOLLOUT | EPOLLET;
   if (epfd < 0 || slot < 0 || g_slots[slot].fd < 0) {
     return;
   }
@@ -4069,7 +4055,7 @@ static void httpd_proxy_enter_relay(int epfd, int32_t slot) {
   s->proxy_resp_chunk_remain = 0;
   s->proxy_resp_chunk_line_len = 0;
   httpd_proxy_up_mod(epfd, slot, EPOLLIN | EPOLLET);
-  httpd_proxy_client_epoll_mod(epfd, slot, httpd_proxy_client_relay_epoll_events(slot));
+  httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
   httpd_proxy_pump_relay(epfd, slot);
 }
 
@@ -5102,7 +5088,7 @@ static void httpd_proxy_tick_starved_relays(int epfd) {
     }
     if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0 &&
         !httpd_proxy_upstream_recv_blocked(i, s)) {
-      httpd_proxy_schedule_pump(epfd, i);
+      httpd_proxy_pump_relay(epfd, i);
     } else if (httpd_proxy_cl_relay_complete(s)) {
       httpd_proxy_relay_maybe_done(epfd, i);
     }
@@ -6096,7 +6082,7 @@ int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
       httpd_dispatch_epoll_event(epfd, listen_fd, &events[i]);
     }
     httpd_proxy_tick_starved_relays(epfd);
-    for (;;) {
+    for (int drain_guard = 64; drain_guard > 0; drain_guard--) {
       httpd_proxy_run_deferred(epfd);
       httpd_proxy_tick_starved_relays(epfd);
       int n2 = epoll_wait(epfd, events, 256, 0);

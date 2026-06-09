@@ -10,18 +10,29 @@ services:
     build:
       context: ../..
       dockerfile: test/proxy-repro/Dockerfile.proxy
-    depends_on: [backend]
+    depends_on:
+      backend:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-sk", "--http1.1", "--resolve", "gitlab.lilangverse.xyz:8443:127.0.0.1", "-o", "/dev/null", "https://gitlab.lilangverse.xyz:8443/users/sign_in"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 15s
     ports:
       - "18443:8443"
     networks: [repro]
 
   tester:
     image: curlimages/curl:8.12.1
-    depends_on: [proxy]
+    depends_on:
+      proxy:
+        condition: service_healthy
     networks: [repro]
     volumes:
       - ./run-test.sh:/run-test.sh:ro
-    entrypoint: ["/bin/sh", "/run-test.sh"]
+      - ./parallel-run-test.sh:/parallel-run-test.sh:ro
+    entrypoint: ["/bin/sh", "-c", "/run-test.sh && PROXY_HOST=proxy PROXY_PORT=8443 sh /parallel-run-test.sh"]
     environment:
       PROXY_HOST: proxy
       PROXY_PORT: "8443"

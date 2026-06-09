@@ -1,4 +1,4 @@
-# Models blackpearl edge: TLS terminate + multi-site proxy to plain HTTP upstream.
+# Models blackpearl edge: TLS terminate + proxy to loopback upstream (socat → backend).
 [server]
 listen = ":8443"
 document_root = "/empty"
@@ -6,7 +6,7 @@ document_root = "/empty"
 [server.tls]
 mode = "self_signed"
 cert_dir = "/certs"
-min_protocol = "1.2"
+min_protocol = "1.3"
 terminate = true
 
 [server.tls.self_signed]
@@ -22,10 +22,6 @@ proxy_max_response_body = "64m"
 balance = "round_robin"
 peers = ["http://backend:8080"]
 
-[[site]]
-host = "gitlab.lilangverse.xyz"
-listen = ":8443"
-
-[site.routes]
+[routes]
 "GET /users/sign_in" = "proxy:gitlab"
 "GET /assets/*" = "proxy:gitlab"

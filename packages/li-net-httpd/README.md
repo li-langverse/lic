@@ -27,6 +27,30 @@ def main() -> int
 
 Other packages embed the same calls in their own `def main` — no copy-paste of server loop.
 
+## Upstream load balancing (`[upstreams.<id>]`)
+
+Each upstream pool may list multiple loopback peers and a balancing **policy** (alias: `balance`):
+
+| Policy | Behavior |
+|--------|----------|
+| `round_robin` | Rotate across healthy peers (default) |
+| `least_conn` | Peer with fewest active proxy connections |
+| `ip_hash` | Sticky by client IPv4 (use for GitLab/session apps) |
+| `cookie` | Sticky via `li_route` cookie set by the gateway |
+| `first_available` | First healthy peer in `peers` order |
+
+Example (GitLab behind two NodePorts):
+
+```toml
+[upstreams.gitlab]
+policy = "ip_hash"
+peers = ["http://127.0.0.1:30481", "http://127.0.0.1:30482"]
+```
+
+Flattened runtime lines: `upstream_peer=gitlab|127.0.0.1|30481`, `upstream_balance=gitlab|ip_hash`. Edge multi-pool configs pick only peers from the route’s pool (no cross-pool fallback).
+
+Isolated proof: `lic/test/proxy-repro/docker-compose.lb.yml` (two nginx backends, `ip_hash` stickiness). Host script: `./scripts/test-lb-sticky-sessions.sh`.
+
 ## Runtime limits (`[limits]`)
 
 | TOML key | `runtime.conf` key | Default |

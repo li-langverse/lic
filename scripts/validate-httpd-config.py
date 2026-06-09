@@ -21,7 +21,9 @@ except ModuleNotFoundError:
 
 FORBIDDEN_SUBSTRINGS = ("..", "include ", "load_module", "proxy_pass http://")
 LOOPBACK_HOSTS = frozenset({"127.0.0.1", "::1", "localhost"})
-UPSTREAM_BALANCE_ALLOW = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})
+UPSTREAM_BALANCE_ALLOW = frozenset(
+    {"round_robin", "least_conn", "ip_hash", "cookie", "first_available"}
+)
 
 
 def load(path: Path) -> dict:
@@ -85,7 +87,7 @@ def validate(cfg: dict, allow_hosts: frozenset[str]) -> list[str]:
         errs.append("routes table or [[site]] is required (may be empty in tests)")
 
     def pool_balance(pool_id: str, block: dict) -> str | None:
-        bal = block.get("balance")
+        bal = block.get("balance") if block.get("balance") is not None else block.get("policy")
         if bal is None:
             return None
         name = str(bal).strip()

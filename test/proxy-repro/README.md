@@ -7,7 +7,7 @@ curl (tester) --TLS--> li-httpd (proxy) --HTTP--> nginx (backend)
                          :8443                      :8080
 ```
 
-The backend serves `/users/sign_in` (HTML referencing CSS) and `/assets/application-deadbeef.css` at **835437 bytes** — same probe size as GitLab edge acceptance.
+The backend serves `/users/sign_in` with **6 assets** (3 CSS + 3 JS) spanning **460 B – 1.3 MB** — sizes taken from GitLab `sign_in`.
 
 ## Quick run (Docker)
 
@@ -37,4 +37,14 @@ PROXY_HOST=127.0.0.1 PROXY_PORT=18443 sh test/proxy-repro/run-test.sh
 
 ## Pass criteria
 
-`run-test.sh` exits 0 on **10/10** runs: sign-in **200/302**, CSS `size_download` **835437**.
+- `run-test.sh`: **10/10** sequential runs (sign-in **200/302**, large CSS **835437** bytes).
+- `parallel-run-test.sh`: **6/6** parallel CSS+JS fetches (browser-like load).
+
+## Two-backend load balancer (`ip_hash`)
+
+```bash
+docker compose -f test/proxy-repro/docker-compose.lb.yml build
+docker compose -f test/proxy-repro/docker-compose.lb.yml up --abort-on-container-exit lb-tester
+```
+
+`run-lb-test.sh` expects **one** distinct `X-Li-Backend` header across 24 requests (peer-a vs peer-b nginx).

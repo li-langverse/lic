@@ -23,7 +23,7 @@ Options:
   -h, --help            show this help
 
 Auto-discovered node labels (see docs/libernetes/heterogeneous-workers.md):
-  libernetes.io/arch, libernetes.io/kvm, libernetes.io/container, libernetes.io/gpu, libernetes.io/os
+  libernetes.io/arch, libernetes.io/hypervisor, libernetes.io/container, libernetes.io/gpu, libernetes.io/os
 EOF
 }
 
@@ -42,11 +42,14 @@ detect_arch() {
   esac
 }
 
-detect_kvm() {
-  if [[ -e /dev/kvm && -r /dev/kvm ]]; then
-    echo "true"
+detect_hypervisor() {
+  # Li-native hypervisor only — KVM/QEMU probing removed from target architecture.
+  if [[ -f /etc/lios-release ]]; then
+    echo "li-native"
+  elif [[ -e /dev/li-hypervisor || -S /var/run/livm/hypervisor.sock ]]; then
+    echo "li-native"
   else
-    echo "false"
+    echo "none"
   fi
 }
 
@@ -77,16 +80,16 @@ detect_os() {
 }
 
 print_labels() {
-  local arch kvm container gpu os
+  local arch hypervisor container gpu os
   arch="$(detect_arch)"
-  kvm="$(detect_kvm)"
+  hypervisor="$(detect_hypervisor)"
   container="$(detect_container)"
   gpu="$(detect_gpu)"
   os="$(detect_os)"
 
   echo "libernetes worker join: discovered capabilities:"
   echo "  libernetes.io/arch=$arch"
-  echo "  libernetes.io/kvm=$kvm"
+  echo "  libernetes.io/hypervisor=$hypervisor"
   echo "  libernetes.io/container=$container"
   echo "  libernetes.io/gpu=$gpu"
   echo "  libernetes.io/os=$os"

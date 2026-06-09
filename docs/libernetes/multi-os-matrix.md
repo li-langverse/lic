@@ -1,39 +1,45 @@
 # livm multi-OS matrix
 
-Support matrix for **livm** VM runtime backends. Wave 1 shipped stubs and scheduling labels; Wave 2 adds qcow2 disk, cloud-init, KVM probe, and Windows guest stubs.
+Support matrix for **livm** VM runtime. Li-native hypervisor and firmware are the production path; industry stacks cited for learn-from and guest-compat only.
 
-## Backends
+## Li-native production path
 
-| Backend | Module | Tag (`backend.li`) | Host signal |
-|---------|--------|--------------------|-------------|
-| KVM (Linux) | `packages/livm/src/hypervisor/kvm.li` | `1` | `/dev/kvm` → `libernetes.io/kvm=true` |
-| LiOS native | `packages/livm/src/hypervisor/backend.li` | `2` | LiOS kernel → `libernetes.io/os=lios` |
+| Component | Li-native way | Industry reference |
+|-----------|---------------|-------------------|
+| Hypervisor | `li-hypervisor` / LiOS ABI (`backend.li` tag `2`) | KVM/QEMU design patterns |
+| Firmware | `li-firmware` measured boot (no OVMF blobs) | OVMF/UEFI for guest image compat notes |
+| Disk | `li-disk` CoW (`disk/qcow2.li`) | qemu-img CoW as reference |
+| Config | `li-cloud-init` (NoCloud / ConfigDrive) | cloud-init, Ignition subsets |
+| API | `VirtualMachine` CRD (`kubevirt.io/v1` shape) | KubeVirt API compat |
 
 ## Host OS × architecture
 
-| Host OS | Arch | Hypervisor | Worker label | Wave 2 status |
-|---------|------|------------|--------------|-----------------|
-| Linux | amd64 | KVM | `libernetes.io/arch=amd64` | probe stub (`kvm_probe.li`) |
-| Linux | arm64 | KVM | `libernetes.io/arch=arm64` | probe stub |
-| LiOS | amd64 | native | `libernetes.io/os=lios` | planned |
-| LiOS | arm64 | native | `libernetes.io/os=lios` | planned |
+| Host OS | Arch | Hypervisor | Worker label | Status |
+|---------|------|------------|--------------|--------|
+| LiOS | amd64 | `li-hypervisor` native | `libernetes.io/hypervisor=li-native` | production target |
+| LiOS | arm64 | `li-hypervisor` native | `libernetes.io/hypervisor=li-native` | production target |
+| Linux | amd64 | — (no KVM production path) | `libernetes.io/container=true` | container-only until LiOS node |
 | macOS | arm64 | — | — | out of scope (Wave 3) |
 | Windows | amd64 | — | — | host out of scope (Wave 3) |
 
-## Guest OS (KVM workers)
+> **Interim shim (dev-only):** Wave 1 `kvm.li` stub exists for gate compatibility — not a production backend. Do not extend.
 
-| Guest OS | Arch | Disk | Cloud-init module | Wave 2 status |
-|----------|------|------|-------------------|-----------------|
-| Linux | amd64, arm64 | qcow2 (`disk/qcow2.li`) | NoCloud (`cloudinit/cloudinit.li`) | stub |
-| Windows | amd64 | qcow2 | ConfigDrive | stub (Wave 2) |
+## Guest OS (Li-native hypervisor workers)
 
-Windows guests run on Linux KVM workers via qcow2 backing images and ConfigDrive cloud-init; full launch paths follow in Wave 3.
+| Guest OS | Arch | Boot | Config injection | Status |
+|----------|------|------|------------------|--------|
+| Linux | amd64, arm64 | Li-native firmware | NoCloud (`cloudinit/cloudinit.li`) | Wave 2 stub |
+| Windows | amd64 | Li-native firmware | ConfigDrive | Wave 2 stub |
+| FreeBSD / BSD | amd64 | Li-native firmware | cloud-init subset | planned |
+| LiOS guest | amd64, arm64 | LiOS hypervisor ABI | native | LiOS M2+ |
+
+Guests boot via **Li-native firmware** + measured boot — not UEFI+OVMF as the primary framing. Cloud-init remains for first-boot config injection.
 
 ## Scheduling
 
-- **RuntimeClass** values: `vm`, `microvm` (see [heterogeneous-workers.md](heterogeneous-workers.md)).
-- Scheduler matches `WorkerProfile` capabilities (`kvm`, `gpu`) and node labels to `VirtualMachine` specs.
-- KVM workers require `libernetes.io/kvm=true`; LiOS workers use the native hypervisor path when `libernetes.io/os=lios`.
+- **RuntimeClass** values: `vm`, `microvm` (see [heterogeneous-workers.md](heterogeneous-workers.md))
+- Scheduler matches `WorkerProfile` capabilities (`hypervisor`, `gpu`) and `libernetes.io/hypervisor=li-native`
+- **Industry reference:** KubeVirt instancetype/preference patterns for VM sizing
 
 ## Verification
 

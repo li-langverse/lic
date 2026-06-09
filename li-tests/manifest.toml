@@ -1807,3 +1807,26 @@ suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/echem_solvent_gr_smoke.li"
 outcome = "compile_open_ok"
 note = "WP-ECHEM-10 explicit water sphere g(r) peak smoke"
+
+# --- science oracle tier-2 (WP-SCI-03) ---
+
+[[tests]]
+suite = "science_oracle"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li"
+packages = ["li-sim-scientific", "li-sim"]
+outcome = "verify_open_ok"
+note = "WP-SCI-03 tier-2 MD/heat oracle checksums (li_sim_scientific_version 7)"
+
+[[tests]]
+suite = "science_oracle"
+file = "packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "verify_open_ok"
+note = "WP-SCI-03 run_algo_registry MD/heat/CFD/FEA/QM tier-2 dispatch (205-210, 211-216, 401-404, 418)"
+
+[[tests]]
+suite = "science_oracle"
+file = "packages/li-sim-scientific/li-tests/smoke/run_algo_registry_qm_tier2.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "verify_open_ok"
+note = "WP-SCI-03 QM DFT tier-2 dispatch (algo 418)"

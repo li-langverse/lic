@@ -1,7 +1,7 @@
 # TLS proxy CL defer / upstream-hold / accounting invariants (C selftest).
 extern proc li_rt_httpd_proxy_relay_selftest() -> int
   requires true
-  ensures -8 <= result
+  ensures -15 <= result
   ensures result <= 0
 
 def main() raises IO -> int

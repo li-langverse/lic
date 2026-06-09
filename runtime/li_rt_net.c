@@ -508,6 +508,7 @@ static void slots_init_once(void) {
     g_slots[i].fd = -1;
     g_slots[i].len = 0;
     g_slots[i].proxy_active = 0;
+    g_slots[i].proxy_stream_counted = 0;
     g_slots[i].proxy_up_fd = -1;
     g_slots[i].proxy_phase = HTTPD_PROXY_PHASE_IDLE;
   }
@@ -2003,7 +2004,8 @@ static int httpd_m2_any_peer_available(void) {
 
 static int httpd_m2_queue_saturated(void) {
   if (g_m2_queue_max_depth <= 0) {
-    return !httpd_m2_any_peer_available();
+    /* No queue cap: upstream availability is handled at acquire time (502), not 429. */
+    return 0;
   }
   if (g_queue_depth >= g_m2_queue_max_depth) {
     return 1;
@@ -3485,7 +3487,6 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     return keep ? 1 : -1;
   }
   if (!httpd_rate_limit_allow_request(req.path, req.path_len, &req)) {
-    fprintf(stderr, "li-httpd: rate_limit 429 path=%.*s slot=%d\n", req.path_len, req.path, (int)slot);
     if (httpd_send_status(conn, 429, "Too Many Requests",
                           "Retry-After: 1\r\n", keep) < 0) {
       return -2;
@@ -5705,8 +5706,6 @@ static int httpd_proxy_check_stream_policy(int epfd, int32_t slot, int hdr_end, 
   }
   (void)epfd;
   if (g_concurrent_streams_max > 0 && g_active_proxy_streams >= g_concurrent_streams_max) {
-    fprintf(stderr, "li-httpd: concurrent_streams saturated active=%d max=%d slot=%d\n",
-            g_active_proxy_streams, g_concurrent_streams_max, (int)slot);
     httpd_send_status(conn_from_slot(slot), 429, "Too Many Requests", "Retry-After: 1\r\n", 0);
     return -1;
   }

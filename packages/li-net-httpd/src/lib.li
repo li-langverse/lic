@@ -974,6 +974,10 @@ def proxy_dispatch_client_loaded(epfd: var int, slot_c: int, rev: int) raises Ne
   if net_epoll_readable(rev) == 1:
     var rc2: int = proxy_handle_client_in(epfd, slot_c)
     if rc2 < 0:
+      if httpd_li_proxy_active_i(slot_c) == 1:
+        var ec3: int = epfd
+        httpd_li_proxy_finish_err_i(ec3, slot_c)
+        return 0
       var conn2: int = httpd_slot_conn_i(slot_c)
       epoll_ctl_del_i(epfd, conn2)
       tcp_close(conn2)

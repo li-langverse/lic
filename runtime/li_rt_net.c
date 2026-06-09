@@ -5121,14 +5121,28 @@ static void httpd_proxy_upstream_hold_sync(int epfd, int32_t slot) {
   }
 }
 
+static int httpd_proxy_tick_slot_needs_work(int32_t slot, httpd_slot_t* s) {
+  if (!s->proxy_active || s->proxy_phase != HTTPD_PROXY_PHASE_RELAY) {
+    return 0;
+  }
+  if (httpd_proxy_tls_outstanding(slot, s) || httpd_proxy_relay_pending_client(s)) {
+    return 1;
+  }
+  if (!s->proxy_cl_body_active && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && !s->proxy_resp_parsing) {
+    return 1;
+  }
+  if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0 &&
+      !httpd_proxy_upstream_recv_blocked(slot, s)) {
+    return 1;
+  }
+  return 0;
+}
+
 /* EPOLLET client OUT can miss edges under parallel TLS relay — scan active slots. */
 static void httpd_proxy_tick_starved_relays(int epfd) {
   for (int i = 0; i < HTTPD_MAX_CONN; i++) {
     httpd_slot_t* s = &g_slots[i];
-    if (!s->proxy_active || s->proxy_phase != HTTPD_PROXY_PHASE_RELAY) {
-      continue;
-    }
-    if (!httpd_proxy_tls_outstanding(i, s) && !httpd_proxy_relay_pending_client(s)) {
+    if (!httpd_proxy_tick_slot_needs_work((int32_t)i, s)) {
       continue;
     }
     httpd_proxy_pump_budget_reset(i);

@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `run_md_lj_smoke` / `run_heat_smoke` use tier-2 oracle checksums (not scalar stub / constant 1.0); `li_sim_scientific_version` → 7 (WP-SCI-03 CFD/FEA/QM).
-- **WP-SCI-03 echem smoke alignment** — echem interface smokes expect `li_sim_scientific_version` 7; AIMD oracle checksum floor `1.0e-8` when energy drift is exactly zero.
+- **WP-SCI-03 echem smoke alignment** — echem interface smokes expect `li_sim_scientific_version` 7; AIMD oracle uses kinetic-PE / negated-DFT fallback when energy drift is exactly zero; `scientific_oracle_bench` version gate → 7.
 - **WP-SCI-01 multi-physics tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` (MD + heat + rigid smokes); smoke `li-tests/smoke/multi_physics_tick.li`.
 
 ### Changed (prior)

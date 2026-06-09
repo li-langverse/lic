@@ -74,7 +74,7 @@ Legacy Phase 0 worker (`li-ph-sci-simulation-gap-close`) is superseded; keep sca
 | Package | Maturity | Test coverage | `lic build` lib | Real vs placeholder | Known blockers |
 |---------|----------|---------------|-----------------|---------------------|----------------|
 | **li-sim** | contract-only / partial | CPU: `sim_step_stub`, env pool, profile bridge (`compile_open_ok`). No `@gpu`. | Runtime smokes OK; lib large, open VC on strict build | **Real:** deterministic tick/replay/env-pool contracts. **Placeholder:** `SimSessionStub` (no `SimWorld`), `sim_step` increments tick only | Object-call codegen #322 blocks some composables; SIM-4 full replay buffer stub |
-| **li-sim-scientific** | partial → tier-2 oracle | CPU + `@gpu` MD oracle smoke | Lib builds with open VC; smokes verify | **Real:** 4-particle LJ chain + 1D heat stencil oracles, `run_multi_physics_at_step`. **Placeholder:** `run_algo_registry_stub` (checksum 1.001) for most registry IDs | WP-SCI-03 registry; CFD/FEA rows stub; no LAMMPS/GROMACS external oracle |
+| **li-sim-scientific** | partial → tier-2 oracle | CPU + `@gpu` MD oracle smoke | Lib builds with open VC; smokes verify | **Real:** 4-particle LJ chain + 1D heat stencil oracles, `run_multi_physics_at_step`, CFD/FEA/QM tier-2 registry dispatch (205–216, 401–432). **Placeholder:** `run_algo_registry_stub` (checksum 1.001) for drug/robo/auto rows | WP-SCI-03 partial; WP-PLAT-05 MD oracle stub column (`md_oracle.toml`); LAMMPS/GROMACS drivers not executed yet |
 | **li-sim-viz** | stub / contract-only | CPU: `viz_pipeline`, `viz_viewport_fields` (`check_ok`). No `@gpu` | Open VC | **Real:** panel state machine + viewport field compose contract. **Placeholder:** `sim_viz_workload_class_stub`, no wgpu volume/field draw | WP-SCI-04; depends WP-GD-05 wgpu |
 | **li-sim-sensors** | partial stub | CPU: `sensor_bus_raycast_contract` | Open VC likely | **Real:** bounded hit distances + session persistence. **Placeholder:** analytic ray distances, not mesh/scene intersection | SIM-5 partial; no lidar mesh |
 | **li-sim-robotics** | partial | CPU: `tick_stub`, `workspace_bounds`, `robo_ik_6dof` | Open VC | **Real:** 2-DOF FK, 6-DOF numeric IK step, workspace checks. **Placeholder:** `sim_robotics_tick_at` wraps session + IK, not dynamics/collision | Not Gazebo/MoveIt; WP-ROBO-04/05 open |
@@ -270,11 +270,12 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 - **Acceptance:** composable entity pose matches `game_physics_step_hook`.
 - **Priority / effort:** P1 / L
 
-#### WP-PLAT-05 — LAMMPS/GROMACS oracle column
+#### WP-PLAT-05 — LAMMPS/GROMACS oracle column — **stub landed (2026-06-09)**
 
 - **Scope:** benchmarks, `li-sim-scientific`.
 - **Dependencies:** compliance for `external_binary`.
 - **Acceptance:** tier-2 csv column + `md_oracle.toml` driver.
+- **Landed:** `benchmarks/competitive/md_oracle.toml`, `scripts/bench-md-oracle-stub.sh`, `scripts/ph-sci-md-oracle-gates.sh`, `ph-sci-md-oracle-competitive.json` (lammps/gromacs stub rows); smoke `md_oracle_li_checksum.li`.
 - **Priority / effort:** P1 / L
 
 ---

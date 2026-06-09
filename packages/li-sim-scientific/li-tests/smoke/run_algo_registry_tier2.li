@@ -73,11 +73,16 @@ def main() -> int
     return 10
   if rigid302.checksum == 1.001:
     return 11
+  var qm_dft_oracle: float = sim_scientific_oracle_checksum_qm_dft()
+  if qm_dft_oracle == 1.001:
+    return 49
   var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(qm418) != 1:
     return 12
-  if qm418.checksum != 1.001:
+  if qm418.checksum != qm_dft_oracle:
     return 13
+  if qm418.checksum == 1.001:
+    return 50
   var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
   if echem_oracle <= 0.0:
     return 14

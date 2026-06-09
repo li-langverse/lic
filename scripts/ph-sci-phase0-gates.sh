@@ -33,4 +33,9 @@ bash scripts/check-science-gpu-gate.sh
 [[ -f data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md ]] \
   || { echo "missing sprint goal file"; exit 1; }
 
+if [[ -f benchmarks/competitive/md_oracle.toml ]]; then
+  echo "==> WP-PLAT-05: MD external oracle stub column"
+  bash scripts/ph-sci-md-oracle-gates.sh
+fi
+
 echo "ph-sci-simulation-gap-close: Phase 0 gate OK"

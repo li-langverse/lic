@@ -283,7 +283,7 @@ static int g_auth_required = 0;
 static int g_auth_key_count = 0;
 static char g_auth_keys[HTTPD_MAX_AUTH_KEYS][HTTPD_AUTH_KEY_LEN];
 
-#define HTTPD_MAX_UPSTREAM_PEERS 8
+#define HTTPD_MAX_UPSTREAM_PEERS 32
 #define HTTPD_POOL_PER_PEER 32
 
 typedef struct {

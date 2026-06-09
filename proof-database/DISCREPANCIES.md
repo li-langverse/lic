@@ -21,7 +21,7 @@
 | `disc-P-linalg-dot4-int-closed-missing-lean` | `missing_lemma` | G-math | open |
 | `disc-g-hw-float-model` | `hardware_axiom` | G-hw | wontfix |
 | `disc-g-lean-universal-autovc-open` | `open_vc` | G-lean | intentional |
-| `disc-g-par-lean-disjoint-missing` | `missing_lemma` | G-par | pending |
+| `disc-g-par-lean-disjoint-missing` | `missing_lemma` | G-par | closed_slice — `Li.Discharge.disjoint_*_spec` + `parallel_disjoint_lean_opaque_gap.sh` |
 | `disc-linalg-loop-manifest-drift` | `spec_drift` | G-vc | intentional |
 | `disc-mat2-trusted-vs-mir` | `spec_drift` | G-trust | pending |
 | `disc-sqrt-open-bound-missing-spec` | `missing_lemma` | G-lean | open |

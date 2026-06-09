@@ -4116,7 +4116,7 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
     if (left > sizeof(s->proxy_rbuf)) {
       return -1;
     }
-    memcpy(s->proxy_rbuf, send_data + off, left);
+    memmove(s->proxy_rbuf, send_data + off, left);
     s->proxy_rbuf_len = (int)left;
     s->proxy_rbuf_sent = 0;
     httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
@@ -4458,9 +4458,12 @@ static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
       httpd_proxy_relay_maybe_done(epfd, slot);
       return;
     }
+    if (httpd_proxy_relay_pending_client(s)) {
+      httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
+      return;
+    }
 #ifdef __linux__
-    if (!g_proxy_snap_recording && !httpd_proxy_relay_pending_client(s) && g_proxy_splice_pipe[0] >= 0 &&
-        httpd_tls_slot_proto(slot) != 1) {
+    if (!g_proxy_snap_recording && g_proxy_splice_pipe[0] >= 0 && httpd_tls_slot_proto(slot) != 1) {
       size_t cap = (size_t)s->proxy_resp_body_left;
       if (cap > sizeof(s->proxy_rbuf)) {
         cap = sizeof(s->proxy_rbuf);
@@ -4694,6 +4697,11 @@ static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
   }
   if (s->proxy_resp_parsing == HTTPD_PROXY_RESP_PARSE_CACHED) {
     for (;;) {
+      httpd_proxy_flush_client_out(epfd, slot);
+      if (httpd_proxy_relay_pending_client(s)) {
+        httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
+        return;
+      }
       ssize_t r = recv(s->proxy_up_fd, s->proxy_rbuf, sizeof(s->proxy_rbuf), 0);
       if (r < 0) {
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -4726,6 +4734,11 @@ static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
     }
   }
   for (;;) {
+    httpd_proxy_flush_client_out(epfd, slot);
+    if (httpd_proxy_relay_pending_client(s)) {
+      httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
+      return;
+    }
     ssize_t r = recv(s->proxy_up_fd, s->proxy_rbuf, sizeof(s->proxy_rbuf), 0);
     if (r < 0) {
       if (errno == EAGAIN || errno == EWOULDBLOCK) {

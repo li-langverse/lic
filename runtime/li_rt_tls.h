@@ -49,6 +49,7 @@ ssize_t httpd_tls_read_slot(int32_t slot, void* buf, size_t cap);
 ssize_t httpd_tls_write_slot(int32_t slot, const void* buf, size_t len);
 ssize_t httpd_tls_write_fd(int32_t fd, const void* buf, size_t len);
 long httpd_tls_wbio_pending(int32_t slot);
+int httpd_tls_ssl_pending(int32_t slot);
 /* 0 = drained, 1 = want POLLOUT, -1 = error */
 int32_t httpd_tls_flush_wbio(int32_t slot);
 

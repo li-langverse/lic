@@ -76,6 +76,8 @@ typedef int (*ssl_shutdown_fn)(SSL*);
 static ssl_shutdown_fn p_SSL_shutdown;
 typedef void* (*ssl_get_wbio_fn)(const SSL*);
 static ssl_get_wbio_fn p_SSL_get_wbio;
+typedef int (*ssl_pending_fn)(const SSL*);
+static ssl_pending_fn p_SSL_pending;
 typedef long (*bio_ctrl_fn)(void*, int, long, void*);
 static bio_ctrl_fn p_BIO_ctrl;
 typedef int (*bio_flush_fn)(void*);
@@ -271,6 +273,9 @@ static int tls_load_openssl(void) {
   }
   if (tls_load_sym(g_ssl_lib, "SSL_get_wbio", (void**)&p_SSL_get_wbio) != 0) {
     p_SSL_get_wbio = NULL;
+  }
+  if (tls_load_sym(g_ssl_lib, "SSL_pending", (void**)&p_SSL_pending) != 0) {
+    p_SSL_pending = NULL;
   }
   if (tls_load_sym(g_crypto_lib, "BIO_ctrl", (void**)&p_BIO_ctrl) != 0) {
     p_BIO_ctrl = NULL;
@@ -699,6 +704,13 @@ long httpd_tls_wbio_pending(int32_t slot) {
     return 0;
   }
   return (long)p_BIO_ctrl(wbio, HTTPD_TLS_BIO_CTRL_PENDING, 0, NULL);
+}
+
+int httpd_tls_ssl_pending(int32_t slot) {
+  if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_slot_ssl[slot] || !p_SSL_pending) {
+    return 0;
+  }
+  return p_SSL_pending(g_slot_ssl[slot]);
 }
 
 /* 0 = drained, 1 = want POLLOUT, -1 = error */

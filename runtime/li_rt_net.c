@@ -505,6 +505,9 @@ static int httpd_proxy_defer_pump(int32_t slot) {
       return 0;
     }
   }
+  if (g_proxy_defer_count >= HTTPD_PROXY_DEFER_MAX / 2) {
+    httpd_proxy_defer_prune_inactive();
+  }
   if (g_proxy_defer_count >= HTTPD_PROXY_DEFER_MAX) {
     return -1;
   }
@@ -522,6 +525,19 @@ static void httpd_proxy_defer_cancel(int32_t slot) {
       continue;
     }
     g_proxy_defer_slots[w++] = g_proxy_defer_slots[i];
+  }
+  g_proxy_defer_count = w;
+}
+
+static void httpd_proxy_defer_prune_inactive(void) {
+  int w = 0;
+  for (int i = 0; i < g_proxy_defer_count; i++) {
+    int ds = g_proxy_defer_slots[i];
+    if (ds < 0 || ds >= HTTPD_MAX_CONN || !g_slots[ds].proxy_active ||
+        g_slots[ds].proxy_phase != HTTPD_PROXY_PHASE_RELAY) {
+      continue;
+    }
+    g_proxy_defer_slots[w++] = ds;
   }
   g_proxy_defer_count = w;
 }
@@ -6354,8 +6370,10 @@ int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
     int wait_ms = -1;
     if (httpd_sse_idle_watch_active()) {
       wait_ms = 250;
+    } else if (g_active_proxy_streams > 8) {
+      wait_ms = 5;
     } else if (g_active_proxy_streams > 0) {
-      wait_ms = 25;
+      wait_ms = 15;
     }
     int n = epoll_wait(epfd, events, 256, wait_ms);
     if (n < 0) {
@@ -6365,6 +6383,7 @@ int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
       net_fail("epoll_wait");
     }
     if (n == 0) {
+      httpd_proxy_defer_prune_inactive();
       httpd_proxy_sweep_stuck_relays(epfd);
       httpd_proxy_tick_starved_relays(epfd);
       httpd_proxy_run_deferred(epfd);

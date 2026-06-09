@@ -1,7 +1,6 @@
 #!/bin/sh
 # Hammer gate: N parallel asset fetches, 3 consecutive rounds without process restart.
 set -eu
-ROOT=$(CDPATH= cd -- "$(diname "$0")/../.." && pwd)
 HOST="${PROXY_HOST:-127.0.0.1}"
 PORT="${PROXY_PORT:-18443}"
 VHOST="${PROXY_VHOST:-gitlab.lilangverse.xyz}"
@@ -37,14 +36,13 @@ round=1
 while [ "$round" -le "$ROUNDS" ]; do
   echo "== hammer round ${round}/${ROUNDS} (${n} assets) =="
   tmpdir=$(mktemp -d)
-  results="$tmpdir/results.txt"
-  : > "$results"
   pids=""
   while IFS= read -r path; do
     (
-      safe=$(echo "$path" | tr '/.' '__')
+      safe=$(printf '%s' "$path" | md5sum | awk '{print $1}')
       out="$tmpdir/${safe}.body"
       hdr="$tmpdir/${safe}.hdr"
+      res="$tmpdir/${safe}.result"
       if [ "$USE_CONNECT_TO" -eq 1 ]; then
         curl -sk $CURL_EXTRA --connect-to "${VHOST}:${PORT}:${HOST}:${PORT}" -D "$hdr" -o "$out" \
           --max-time 180 "https://${VHOST}:${PORT}${path}" 2>/dev/null || true
@@ -54,22 +52,27 @@ while [ "$round" -le "$ROUNDS" ]; do
       fi
       code=$(grep -m1 'HTTP/' "$hdr" 2>/dev/null | awk '{print $2}' || echo 000)
       clen=$(grep -i '^content-length:' "$hdr" 2>/dev/null | tail -1 | awk '{print $2}' | tr -d '\r')
-      wire=$(wc -c < "$out" 2>/dev/null | tr -d ' ')
-      echo "$code $wire $clen $path" >> "$results"
+      wire=0
+      if [ -f "$out" ]; then
+        wire=$(wc -c < "$out" | tr -d ' ')
+      fi
+      echo "$code $wire $clen $path" > "$res"
     ) &
     pids="$pids $!"
   done < "$ASSETS"
   for pid in $pids; do wait "$pid" || true; done
   pass=0
   fail=0
-  while read -r code wire clen path; do
+  for res in "$tmpdir"/*.result; do
+    [ -f "$res" ] || continue
+    read -r code wire clen path < "$res" || true
     if [ "$code" = "200" ] && [ -n "$clen" ] && [ "$wire" = "$clen" ]; then
       pass=$((pass + 1))
     else
       fail=$((fail + 1))
       echo "FAIL round=${round} $code wire=$wire clen=$clen $path"
     fi
-  done < "$results"
+  done
   rm -rf "$tmpdir"
   [ "$fail" -eq 0 ] || { echo "FAIL parallel_hammer_3x round=${round}: ${pass}/${n}"; exit 1; }
   echo "PASS round ${round}: ${pass}/${n}"

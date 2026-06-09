@@ -5,6 +5,27 @@ Standalone rendered view of delivery waves, K8s runner topology, and cluster-ope
 **Canonical detail:** [libernetes/master-plan.md](libernetes/master-plan.md)  
 **Full plan (Cursor):** `libernetes_master_plan_bc3b669a.plan.md` in Cursor plans
 
+![libernetes delivery roadmap — waves, bootstrap, and cluster operations](libernetes-roadmap.png)
+
+**Rendered diagrams:** [waves](libernetes-roadmap-waves.png) · [bootstrap & git policy](libernetes-roadmap-bootstrap.png) · [cluster operations (W7–9)](libernetes-roadmap-cluster-ops.png)
+
+---
+
+## Li-native first, industry-informed
+
+Every libernetes subsystem has a **Li-native production path**. Industry stacks (KVM, QEMU, OVMF/UEFI, containerd/runc, KubeVirt, bridge CNI) remain useful as **learn-from**, **API-compat**, **benchmark baseline**, or **interim dev shim** — never as the north-star architecture.
+
+| Area | Li-native way (ship) | Industry reference (OK to cite) | Interim shim (dev-only) |
+|------|----------------------|----------------------------------|-------------------------|
+| Hypervisor | `li-hypervisor` / LiOS ABI | KVM/QEMU design patterns | `kvm.li` Wave 1 stub filename |
+| Firmware | `li-firmware` measured boot | OVMF/UEFI guest-compat notes | — |
+| Containers | `LiOSBackend` + licontainers | OCI/CRI spec, containerd API shape | `linux_backend.li` cgroups shim |
+| Disk | `li-disk` CoW native | qemu-img CoW as reference | — |
+| CNI | `li-cni` native plugins | CNI spec, bridge plugin compat | — |
+| API | `li-apiserver` native | K8s API parity matrix | k3s migration context |
+
+**Pattern for docs and diagrams:** Li-native nodes are solid and primary; foreign stacks appear dashed or in footnotes when shown at all.
+
 ---
 
 ## K8s runner waves (W0–W10+)
@@ -126,18 +147,25 @@ flowchart TB
 
 ---
 
-## Target VM runtime (Li-native hypervisor)
+## Target runtime stack (Li-native primary)
 
-livm uses **Li-native hypervisor** (`li-hypervisor` / LiOS ABI) as the sole production backend. KVM/QEMU/libvirt are eradicated from the target architecture.
+**livm** ships on `li-hypervisor` + `li-firmware` (measured boot) + `li-disk` + `li-cloud-init`. **licontainers** ships on `LiOSBackend`; Linux cgroups is an interim dev shim only. Worker join registers `libernetes.io/hypervisor=li-native` when the LiOS hypervisor is present.
+
+> **Industry reference:** KubeVirt API compat for `VirtualMachine` CRDs; cold-boot benchmarks in `li-cluster-bench` may compare against KVM/QEMU baselines during transition. OVMF/UEFI cited only for guest image compat notes — production firmware is Li-native.
 
 ```mermaid
 flowchart TB
-  subgraph livm [livm node agent]
+  subgraph livm [livm — production]
     vapi[li-vm API]
     hypervisor[li-hypervisor]
-    disk[li-disk]
-    firmware[li-firmware]
+    disk[li-disk CoW]
+    firmware[li-firmware measured boot]
     cloudinit[li-cloud-init]
+  end
+
+  subgraph licont [licontainers — production]
+    cri[li-cri]
+    liosbe[LiOSBackend]
   end
 
   subgraph lios [LiOS]
@@ -145,16 +173,27 @@ flowchart TB
     hv[li-hypervisor syscall surface]
   end
 
+  subgraph ref ["industry reference (learn-from / compat)"]
+    kvmref["KVM/QEMU patterns"]
+    ovmfref["OVMF/UEFI compat notes"]
+    cgroupsref["Linux cgroups shim"]
+  end
+
   kubelet[li-kubelet] --> vapi
+  kubelet --> cri
   vapi --> hypervisor
   hypervisor --> disk
   hypervisor --> firmware
   hypervisor --> cloudinit
   hypervisor --> hv
+  cri --> liosbe
+  liosbe --> abi
   hv --> abi
-```
 
-Worker join registers `libernetes.io/hypervisor=li-native` (not `kvm`) when the LiOS hypervisor is available.
+  kvmref -.-> hypervisor
+  ovmfref -.-> firmware
+  cgroupsref -.-> liosbe
+```
 
 ---
 

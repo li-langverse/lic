@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-31T00:53:15Z'
+updated_at: '2026-06-07T14:54:15Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -243,11 +243,12 @@ gaps:
 - id: gap-plan-pending-sim-sim-p1-num-dot-axpy
   gap_kind: plan_debt
   title: 'sim: pending plan todo sim-p1-num-dot-axpy'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim plan_pending=sim-p1-num-dot-axpy
+  - snapshot sim completed todo sim-p1-num-dot-axpy
   runner_id: sim
   plan_todo_id: sim-p1-num-dot-axpy
   suggested_loop: sim
@@ -256,11 +257,12 @@ gaps:
 - id: gap-plan-pending-sim-sim-p1-md-neighbor-cell
   gap_kind: plan_debt
   title: 'sim: pending plan todo sim-p1-md-neighbor-cell'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim plan_pending=sim-p1-md-neighbor-cell
+  - snapshot sim completed todo sim-p1-md-neighbor-cell
   runner_id: sim
   plan_todo_id: sim-p1-md-neighbor-cell
   suggested_loop: sim
@@ -269,11 +271,12 @@ gaps:
 - id: gap-plan-pending-sim-sim-p2-qm-dft-scf
   gap_kind: plan_debt
   title: 'sim: pending plan todo sim-p2-qm-dft-scf'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim plan_pending=sim-p2-qm-dft-scf
+  - snapshot sim completed todo sim-p2-qm-dft-scf
   runner_id: sim
   plan_todo_id: sim-p2-qm-dft-scf
   suggested_loop: sim

@@ -39,6 +39,7 @@ int32_t httpd_tls_handshake_spin(int32_t slot, int32_t fd, int32_t max_rounds);
 /* Non-blocking TLS accept after TCP accept; sets slot proto. Returns 0 ok, -1 fail. */
 int32_t httpd_tls_handshake_slot(int32_t slot, int32_t fd);
 
+void httpd_tls_shutdown_slot(int32_t slot);
 void httpd_tls_free_slot(int32_t slot);
 
 /* recv/send wrappers — use when httpd_tls_slot_proto(slot) != 0 */

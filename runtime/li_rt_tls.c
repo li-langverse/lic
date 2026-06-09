@@ -72,6 +72,8 @@ typedef long (*ssl_set_mode_fn)(SSL*, long);
 static ssl_set_mode_fn p_SSL_set_mode;
 typedef int (*ssl_clear_fn)(SSL*);
 static ssl_clear_fn p_SSL_clear;
+typedef int (*ssl_shutdown_fn)(SSL*);
+static ssl_shutdown_fn p_SSL_shutdown;
 
 static SSL_CTX* g_tls_ctx;
 static int g_tls_wanted;
@@ -254,6 +256,12 @@ static int tls_load_openssl(void) {
   if (tls_load_sym(g_ssl_lib, "SSL_set_mode", (void**)&p_SSL_set_mode) != 0) {
     p_SSL_set_mode = NULL;
   }
+  if (tls_load_sym(g_ssl_lib, "SSL_clear", (void**)&p_SSL_clear) != 0) {
+    p_SSL_clear = NULL;
+  }
+  if (tls_load_sym(g_ssl_lib, "SSL_shutdown", (void**)&p_SSL_shutdown) != 0) {
+    p_SSL_shutdown = NULL;
+  }
 #undef LOAD
   if (tls_load_sym(g_ssl_lib, "OPENSSL_init_ssl", (void**)&p_OPENSSL_init_ssl) != 0) {
     p_OPENSSL_init_ssl = NULL;
@@ -287,10 +295,24 @@ void* httpd_tls_slot_ssl(int32_t slot) {
   return g_slot_ssl[slot];
 }
 
+void httpd_tls_shutdown_slot(int32_t slot) {
+  if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_slot_ssl[slot] || !p_SSL_shutdown) {
+    return;
+  }
+  int rc = p_SSL_shutdown(g_slot_ssl[slot]);
+  if (rc < 0 && p_SSL_get_error) {
+    int err = p_SSL_get_error(g_slot_ssl[slot], rc);
+    if (err != 2 && err != 3) {
+      return;
+    }
+  }
+}
+
 void httpd_tls_free_slot(int32_t slot) {
   if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS) {
     return;
   }
+  httpd_tls_shutdown_slot(slot);
   if (g_tls_ssl_reuse && g_slot_ssl[slot]) {
     g_slot_proto[slot] = 0;
     g_slot_hs_pending[slot] = 0;

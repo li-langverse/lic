@@ -20,6 +20,12 @@ note = "WP-SCI-03 run_algo_registry MD/heat/CFD/FEA/QM tier-2 dispatch"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/run_algo_registry_qm_tier2.li"
+outcome = "verify_ok"
+note = "WP-SCI-03 QM registry tier-2 SCF scaffold oracle (418)"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/scientific_gpu_md_oracle.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-02 @gpu MD/heat oracle checksums"

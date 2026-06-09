@@ -54,8 +54,8 @@ def main() -> int
     return 42
   if fea214.checksum == heat_oracle:
     return 43
-  var qm_oracle: float = sim_scientific_oracle_checksum_qm_overlap()
-  if qm_oracle <= 0.0:
+  var qm_oracle: float = sim_scientific_oracle_checksum_qm_dft()
+  if qm_oracle >= 0.0:
     return 44
   var qm402: SimRunResult = run_algo(402, 0)
   if run_result_ok(qm402) != 1:
@@ -76,8 +76,10 @@ def main() -> int
   var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(qm418) != 1:
     return 12
-  if qm418.checksum != 1.001:
+  if qm418.checksum == 1.001:
     return 13
+  if qm418.checksum != qm_oracle:
+    return 49
   var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
   if echem_oracle <= 0.0:
     return 14

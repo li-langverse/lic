@@ -1632,6 +1632,20 @@ file = "packages/li-gpu/li-tests/smoke/present_wgpu_readback_stub.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-present-wgpu-readback"
 
+# --- science / simulation oracle smokes (WP-SCI-03 / md-r3-oracle-plan) ---
+
+[[tests]]
+suite = "smoke"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li"
+outcome = "verify_ok"
+note = "WP-SCI-03 tier-2 MD/heat oracle checksums (md-r3-oracle-plan gate path)"
+
+[[tests]]
+suite = "smoke"
+file = "packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li"
+outcome = "verify_ok"
+note = "WP-SCI-03 run_algo_registry MD/heat tier-2 dispatch (md-r3-oracle-plan gate path)"
+
 # --- science / simulation @gpu (PH-SCI-GPU) ---
 
 [[tests]]

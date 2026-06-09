@@ -54,6 +54,16 @@ if [[ "$STUDY_ONLY" == "1" ]]; then
       gate_log="missing required study: ${SIM_RESEARCH_REQUIRE_STUDY}"
     fi
   fi
+  if [[ "$VERT" == "md" && -x "$ROOT/scripts/check-md-oracle-plan.sh" ]]; then
+    if [[ "${SIM_RESEARCH_REQUIRE_STUDY:-}" == *"md-r3-oracle-plan"* ]]; then
+      if ! bash "$ROOT/scripts/check-md-oracle-plan.sh"; then
+        validity_ok=0
+        gate_log="${gate_log}\nmd-r3-oracle-plan gate failed"
+      else
+        gate_log="${gate_log}\nmd-r3-oracle-plan gate ok"
+      fi
+    fi
+  fi
 else
   echo "==> sim-algo-research-gates vertical=$VERT package=$SIM_PLAN_PACKAGE"
   if ! bash "$ROOT/scripts/sim-plan-gates.sh" 2>&1 | tee /tmp/sim-research-gates-last.log; then

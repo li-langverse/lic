@@ -7,7 +7,7 @@
 | li-watch | stub | informers |
 | li-workqueue | stub | controllers |
 | li-oci | stub | licontainers |
-| li-kvm | missing | livm Linux backend |
+| li-hypervisor | missing | livm Li-native VM backend (LiOS ABI) |
 | licontainers | scaffold | containers |
 | livm | scaffold | VMs |
 | li-libernetes-core | scaffold | shared types |

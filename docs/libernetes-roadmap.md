@@ -126,6 +126,38 @@ flowchart TB
 
 ---
 
+## Target VM runtime (Li-native hypervisor)
+
+livm uses **Li-native hypervisor** (`li-hypervisor` / LiOS ABI) as the sole production backend. KVM/QEMU/libvirt are eradicated from the target architecture.
+
+```mermaid
+flowchart TB
+  subgraph livm [livm node agent]
+    vapi[li-vm API]
+    hypervisor[li-hypervisor]
+    disk[li-disk]
+    firmware[li-firmware]
+    cloudinit[li-cloud-init]
+  end
+
+  subgraph lios [LiOS]
+    abi[LiOS kernel ABI]
+    hv[li-hypervisor syscall surface]
+  end
+
+  kubelet[li-kubelet] --> vapi
+  vapi --> hypervisor
+  hypervisor --> disk
+  hypervisor --> firmware
+  hypervisor --> cloudinit
+  hypervisor --> hv
+  hv --> abi
+```
+
+Worker join registers `libernetes.io/hypervisor=li-native` (not `kvm`) when the LiOS hypervisor is available.
+
+---
+
 ## Related docs
 
 - [libernetes/master-plan.md](libernetes/master-plan.md) — condensed master plan in-repo

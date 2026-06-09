@@ -40,10 +40,12 @@ no manual `kubectl label` for the baseline set.
 | Signal | Label |
 |--------|-------|
 | `uname -m` | `libernetes.io/arch` |
-| `/dev/kvm` readable | `libernetes.io/kvm=true` |
+| LiOS kernel + `li-hypervisor` available | `libernetes.io/hypervisor=li-native` |
 | cgroups v2 (`cgroup.controllers`) | `libernetes.io/container=true` |
 | `nvidia-smi` or `/dev/vfio` | `libernetes.io/gpu=true` |
 | `/etc/lios-release` | `libernetes.io/os=lios` |
+
+> **Removed:** `libernetes.io/kvm` and `/dev/kvm` probing — KVM/QEMU are not part of the livm production path.
 
 Profiles such as `vm-gpu-pool` add scheduling constraints on top of discovered
 labels. See [heterogeneous-workers.md](heterogeneous-workers.md).
@@ -60,7 +62,7 @@ sequenceDiagram
   Admin->>CP: libernetes init --profile homelab
   Admin->>CP: create bootstrap token
   Admin->>W: libernetes worker join URL --token T --profile auto
-  W->>W: detect arch/kvm/container/gpu/os
+  W->>W: detect arch/hypervisor/container/gpu/os
   W->>CP: validate token + register Node
   W->>K: start kubelet (CRI + livm sockets)
   CP-->>Admin: NodeReady

@@ -47,8 +47,36 @@ flowchart LR
 
 1. **libernetes** — 100% Li Kubernetes control plane (containers + VMs)
 2. **licontainers** — OCI/CRI runtime
-3. **livm** — multi-OS VM runtime (KVM + LiOS hypervisor)
-4. **LiOS** — kernel ABI + native hypervisor (parallel track)
+3. **livm** — multi-OS VM runtime via **Li-native hypervisor** (`li-hypervisor` / LiOS ABI)
+4. **LiOS** — kernel ABI + native hypervisor (production VM path)
+
+**Hypervisor policy:** KVM/QEMU/libvirt are **removed** from the target architecture — not a default, fallback, or production backend. Interim Wave 1–2 scaffolds may still reference `kvm.li` filenames; those are legacy stubs scheduled for deletion once `li-hypervisor` lands.
+
+## Target architecture
+
+```mermaid
+flowchart TB
+  subgraph runtime [livm]
+    vapi[li-vm API]
+    hypervisor[li-hypervisor Li-native]
+    disk[li-disk qcow2/raw]
+    firmware[li-firmware OVMF]
+    cloudinit[li-cloud-init]
+  end
+
+  subgraph os [LiOS]
+    lios[LiOS kernel ABI]
+    hvabi[li-hypervisor syscall surface]
+  end
+
+  kubelet[li-kubelet] --> vapi
+  vapi --> hypervisor
+  hypervisor --> disk
+  hypervisor --> firmware
+  hypervisor --> cloudinit
+  hypervisor --> hvabi
+  hvabi --> lios
+```
 
 ## Easy setup (product requirement)
 
@@ -57,7 +85,7 @@ libernetes init --profile homelab
 libernetes worker join https://cp:6443 --token <token> --profile auto
 ```
 
-Auto-discover: arch, KVM, GPU, container/VM runtimes. See [easy-setup.md](easy-setup.md) and [heterogeneous-workers.md](heterogeneous-workers.md).
+Auto-discover: arch, `libernetes.io/hypervisor=li-native`, GPU, container/VM runtimes. See [easy-setup.md](easy-setup.md) and [heterogeneous-workers.md](heterogeneous-workers.md).
 
 ## Goal-directed workers
 

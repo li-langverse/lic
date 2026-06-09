@@ -678,6 +678,8 @@ def run_rigid_smoke(detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+# WP-SCI-03 stub fallback — checksum 1.001 for registry families without tier-2 kernels yet:
+#   501–523 drug/bio LITL, 601–610 am/viz, 701–707 robo, 801–805 auto, 901–903 mmo.
 def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3

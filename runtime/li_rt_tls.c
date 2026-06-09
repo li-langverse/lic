@@ -416,8 +416,16 @@ int32_t httpd_tls_global_init_files(const char* cert_path, const char* key_path)
       }
     }
   }
-  if (p_SSL_CTX_use_certificate_file(g_tls_ctx, cert_path, 1) != 1 ||
-      p_SSL_CTX_use_PrivateKey_file(g_tls_ctx, key_path, 1) != 1) {
+  typedef int (*ssl_ctx_use_chain_fn)(SSL_CTX*, const char*);
+  ssl_ctx_use_chain_fn p_use_chain = NULL;
+  int cert_ok = 0;
+  if (tls_load_sym(g_ssl_lib, "SSL_CTX_use_certificate_chain_file", (void**)&p_use_chain) == 0 &&
+      p_use_chain && p_use_chain(g_tls_ctx, cert_path) == 1) {
+    cert_ok = 1;
+  } else if (p_SSL_CTX_use_certificate_file(g_tls_ctx, cert_path, 1) == 1) {
+    cert_ok = 1;
+  }
+  if (!cert_ok || p_SSL_CTX_use_PrivateKey_file(g_tls_ctx, key_path, 1) != 1) {
     fprintf(stderr, "li-httpd tls: failed to load cert/key\n");
     p_SSL_CTX_free(g_tls_ctx);
     g_tls_ctx = NULL;

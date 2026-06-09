@@ -4754,9 +4754,11 @@ static void httpd_proxy_flush_client_out(int epfd, int32_t slot) {
       return;
     }
     if (rc == 0 || s->proxy_rbuf_sent == before) {
+      httpd_proxy_try_tls_flush(slot);
       httpd_proxy_client_epoll_arm_out(epfd, slot);
       return;
     }
+    httpd_proxy_try_tls_flush(slot);
   }
 }
 

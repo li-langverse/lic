@@ -2,6 +2,8 @@
 
 Configure request, header, and proxy response caps in TOML — same role as common **nginx** `client_max_body_size` / buffer limits, with one extra knob for streamed reverse-proxy egress.
 
+**Key style:** all TOML keys use `snake_case` (e.g. `max_body`, not `maxBody`). Canonical guide: [li-httpd `docs/toml-style.md`](https://github.com/li-langverse/li-httpd/blob/main/docs/toml-style.md).
+
 ## Quick start (homelab / GitLab edge)
 
 ```toml

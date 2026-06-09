@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 
 from httpd_config import ConfigError, load_httpd_config, load_httpd_sites
 from httpd_rng import validate_rng_config
+from httpd_toml_style import validate_toml_key_style
 
 try:
     import tomllib
@@ -60,6 +61,7 @@ def validate_peer_url(url: str, allow_hosts: frozenset[str]) -> str | None:
 
 def validate(cfg: dict, allow_hosts: frozenset[str]) -> list[str]:
     errs: list[str] = []
+    errs.extend(validate_toml_key_style(cfg))
     raw = str(cfg)
     for bad in FORBIDDEN_SUBSTRINGS:
         if bad in raw:

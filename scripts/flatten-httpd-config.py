@@ -29,6 +29,7 @@ from httpd_m2 import ConfigError as M2Error, m2_flatten_lines
 from httpd_m3 import ConfigError as M3Error, m3_flatten_lines
 from httpd_limits import ConfigError as LimitsError, limits_flatten_lines
 from httpd_tls import ConfigError as TlsError, tls_flatten_lines
+from httpd_toml_style import validate_toml_key_style
 
 
 def parse_listen(raw: str) -> int:
@@ -49,6 +50,9 @@ def peer_port(url: str) -> int:
 
 def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
     data = tomllib.loads(cfg_path.read_text(encoding="utf-8"))
+    style_errs = validate_toml_key_style(data)
+    if style_errs:
+        raise ConfigError(style_errs[0])
     lines: list[str] = []
     server = data.get("server") or {}
     listen = server.get("listen")

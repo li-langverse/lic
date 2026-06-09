@@ -1,11 +1,11 @@
-# li-std-physics-runtime
+# li-physics-runtime
 
-Li package li-std-physics-runtime
+Li package li-physics-runtime
 
 ## Build
 
 ```bash
-lic build src/lib.li -o li-std-physics-runtime
+lic build src/lib.li -o li-physics-runtime
 ```
 
 From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
@@ -14,8 +14,8 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 
 | ID | Link |
 |----|------|
-| Package | `PKG-li-std-physics-runtime` |
-| Org repo | https://github.com/li-langverse/li-std-physics-runtime |
+| Package | `PKG-li-physics-runtime` |
+| Org repo | https://github.com/li-langverse/li-physics-runtime |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
 
 See `PUBLISH.md` and `docs/traceability.md`.

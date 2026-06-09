@@ -1,12 +1,12 @@
-# Traceability — PKG-li-std-physics-weather
+# Traceability — PKG-li-physics-weather
 
-<!-- DOC-traceability-PKG-li-std-physics-weather -->
+<!-- DOC-traceability-PKG-li-physics-weather -->
 
 | Type | ID | Artifact |
 |------|-----|----------|
-| Package | PKG-li-std-physics-weather | This repository |
+| Package | PKG-li-physics-weather | This repository |
 | Phase | PH-Pkg | [Package scaffold](https://github.com/li-langverse/li-language/blob/dev/docs/superpowers/plans/2026-05-16-li-package-scaffold.md) |
-| Test | T-PKG-li-std-physics-weather-smoke | `li-tests/smoke/builds.li` |
+| Test | T-PKG-li-physics-weather-smoke | `li-tests/smoke/builds.li` |
 
 ## Requirements
 

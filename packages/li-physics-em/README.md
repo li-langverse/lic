@@ -1,11 +1,11 @@
-# li-std-physics-em
+# li-physics-em
 
-Li package li-std-physics-em
+Li package li-physics-em
 
 ## Build
 
 ```bash
-lic build src/lib.li -o li-std-physics-em
+lic build src/lib.li -o li-physics-em
 ```
 
 From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
@@ -14,8 +14,8 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 
 | ID | Link |
 |----|------|
-| Package | `PKG-li-std-physics-em` |
-| Org repo | https://github.com/li-langverse/li-std-physics-em |
+| Package | `PKG-li-physics-em` |
+| Org repo | https://github.com/li-langverse/li-physics-em |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
 
 See `PUBLISH.md` and `docs/traceability.md`.

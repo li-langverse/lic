@@ -1,0 +1,17 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
+  var chk: float = r.checksum
+  var oracle: float = sim_scientific_oracle_checksum_qm_dft()
+  if r.algo_id != 418:
+    return 1
+  if chk == 1.001:
+    return 2
+  if chk != oracle:
+    return 3
+  return 0

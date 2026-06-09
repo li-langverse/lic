@@ -33,9 +33,11 @@ services:
       - ./run-test.sh:/run-test.sh:ro
       - ./parallel-run-test.sh:/parallel-run-test.sh:ro
       - ../proxy/proxy-curl-env.sh:/proxy-curl-env.sh:ro
+      - ./parallel-wc-test.sh:/parallel-wc-test.sh:ro
+      - ../proxy-relay/test_parallel_fairness.sh:/relay-fairness.sh:ro
       - ../proxy-relay/test_parallel_same_asset.sh:/relay-same.sh:ro
       - ../proxy-relay/test_parallel_multi_asset.sh:/relay-multi.sh:ro
-    entrypoint: ["/bin/sh", "-c", "/run-test.sh && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=gitlab.lilangverse.xyz sh /parallel-run-test.sh && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=gitlab.lilangverse.xyz PARALLEL_N=6 sh /relay-same.sh && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=gitlab.lilangverse.xyz sh /relay-multi.sh"]
+    entrypoint: ["/bin/sh", "-c", "/run-test.sh && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=gitlab.lilangverse.xyz sh /parallel-run-test.sh && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=gitlab.lilangverse.xyz PARALLEL_N=6 sh /relay-fairness.sh && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=gitlab.lilangverse.xyz PARALLEL_N=6 sh /relay-same.sh && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=gitlab.lilangverse.xyz sh /relay-multi.sh"]
     environment:
       PROXY_HOST: proxy
       PROXY_PORT: "8443"

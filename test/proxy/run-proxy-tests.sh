@@ -163,6 +163,7 @@ if [ "$INTEGRATION_ONLY" -eq 1 ] && [ "$SKIP_DOCKER" -eq 1 ]; then
   echo "=== proxy host integration (PROXY_PORT) ==="
   export PROXY_HOST="${PROXY_HOST:-127.0.0.1}"
   export PROXY_PORT="${PROXY_PORT:-18443}"
+  run_one test_parallel_fairness test/proxy-relay/test_parallel_fairness.sh
   run_one test_parallel_same_asset test/proxy-relay/test_parallel_same_asset.sh
   run_one test_parallel_multi_asset test/proxy-relay/test_parallel_multi_asset.sh
 fi

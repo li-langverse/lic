@@ -7,9 +7,13 @@ parent: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close — Phase 2 kickoff
 
-**Last updated:** 2026-06-06 · **main @** `e87165b7` (Phase 0/1 + echem merged; start from latest `main`)  
+**Last updated:** 2026-06-09 · **main @** `51ad0ba4` (Phase 0/1 + echem merged; WP-SCI-03 Phase 2 partial on branch `chore/agent-code_implementer-wp-sci-03-1781044313`)  
 **Prerequisite:** `bash scripts/ph-sci-phase0-gates.sh` passes (regression spine).  
 **Parent plan:** [ph-sci-simulation-gap-close-plan.md](ph-sci-simulation-gap-close-plan.md) — Phase 2 WPs (11 open).
+
+## WP-SCI-03 status (partial)
+
+CFD (205–210), FEA (211–216), and QM (401–432) rows now dispatch tier-2 Li oracles instead of `run_algo_registry_stub` checksum 1.001. MD external oracle (WP-PLAT-05) remains open.
 
 ## Exit criteria (Phase 2)
 

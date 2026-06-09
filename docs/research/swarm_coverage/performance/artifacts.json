@@ -1,0 +1,15 @@
+{
+  "goal_id": "swarm_coverage",
+  "slug": "performance-2026-06-06",
+  "title": "Swarm gap orchestration — performance dimension",
+  "agent": "swarm_observer",
+  "run_id": "1780758592672",
+  "generated_at": "2026-06-06T15:24:00Z",
+  "domains": ["ecosystem", "ai"],
+  "validity_grade": "B-",
+  "status": "staging",
+  "markdown_path": "whitepapers/2026-06/swarm_coverage/performance/2026-06-06-whitepaper.md",
+  "dimension": "performance",
+  "worker_id": "f77d8326",
+  "north_star_fit": "PH-7e performance backlog routing; proof-before-perf"
+}

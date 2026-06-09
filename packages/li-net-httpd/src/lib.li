@@ -558,7 +558,8 @@ def proxy_li_finish_resp_headers(epfd: var int, slot: var int) raises Net, Alloc
     return proxy_li_finish_err(epfd, slot)
   if proxy_parse_resp_cl(acc, he_end) < 0:
     return proxy_li_finish_err(epfd, slot)
-  httpd_li_proxy_store_resp_cache_i(slot)
+  if httpd_proxy_snap_disabled_i() == 0:
+    httpd_li_proxy_store_resp_cache_i(slot)
   var hdr_bytes: int = httpd_li_proxy_cached_hdr_len_i()
   if hdr_bytes <= 0:
     return proxy_li_finish_err(epfd, slot)
@@ -614,6 +615,9 @@ def proxy_li_enter_relay(epfd: var int, slot: var int) raises Net, Alloc, IO -> 
   httpd_li_proxy_set_phase_i(slot, proxy_phase_relay())
   var cl_cached: int = httpd_li_proxy_cached_cl_i()
   var hdr_cached: int = httpd_li_proxy_cached_hdr_len_i()
+  if httpd_proxy_snap_disabled_i() == 1:
+    cl_cached = -1
+    hdr_cached = 0
   if cl_cached >= 0:
     if hdr_cached > 0:
       httpd_li_proxy_set_resp_parsing_i(slot, proxy_parse_cached())

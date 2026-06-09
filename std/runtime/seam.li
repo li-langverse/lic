@@ -442,6 +442,11 @@ extern proc httpd_li_proxy_snap_ready_i() -> int
   ensures true
   decreases 0
 
+extern proc httpd_proxy_snap_disabled_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
 extern proc httpd_li_proxy_try_snap_i(conn: var int, slot: var int, hdr_end: var int, keep: var int) -> int
   requires conn >= 0
   ensures true

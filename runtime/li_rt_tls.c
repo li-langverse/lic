@@ -607,8 +607,8 @@ ssize_t httpd_tls_write_slot(int32_t slot, const void* buf, size_t len) {
     int w = (int)p_SSL_write(g_slot_ssl[slot], (const char*)buf + off, chunk);
     if (w <= 0) {
       int err = p_SSL_get_error(g_slot_ssl[slot], w);
-      if (err == 2 || err == 3 && off == 0) {
-        return 0;
+      if (err == 2 || err == 3) {
+        return off > 0 ? (ssize_t)off : 0;
       }
       return off > 0 ? (ssize_t)off : -1;
     }

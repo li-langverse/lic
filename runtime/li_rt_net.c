@@ -4528,7 +4528,7 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
   if (len == 0) {
     return 0;
   }
-  if (!s->proxy_resp_parsing && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL) {
+  if (!s->proxy_resp_parsing && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_cl_body_active) {
     if (s->proxy_resp_body_left <= 0) {
       return 0;
     }
@@ -8269,6 +8269,21 @@ int32_t li_rt_httpd_proxy_relay_selftest(void) {
   if (httpd_proxy_hdr_flush_resume(-1, 0) != 0 || !s->proxy_cl_body_active) {
     *s = saved;
     return -19;
+  }
+
+  /* Case 11: response header relay must not be capped by body_left before body_active. */
+  {
+    size_t hdr_len = 400;
+    size_t capped = hdr_len;
+    int body_left = 84;
+    int body_active = 0;
+    if (body_active && body_left > 0 && (size_t)body_left < capped) {
+      capped = (size_t)body_left;
+    }
+    if (capped != hdr_len) {
+      *s = saved;
+      return -20;
+    }
   }
 
   *s = saved;

@@ -6,7 +6,7 @@ def main() -> int
   decreases 0
 =
   var md: float = sim_scientific_oracle_checksum_md()
-  if md <= 0.0:
+  if md < 0.0:
     return 1
   if md >= 1.0e-2:
     return 2

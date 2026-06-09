@@ -74,6 +74,13 @@ typedef int (*ssl_clear_fn)(SSL*);
 static ssl_clear_fn p_SSL_clear;
 typedef int (*ssl_shutdown_fn)(SSL*);
 static ssl_shutdown_fn p_SSL_shutdown;
+typedef void* (*ssl_get_wbio_fn)(const SSL*);
+static ssl_get_wbio_fn p_SSL_get_wbio;
+typedef long (*bio_ctrl_fn)(void*, int, long, void*);
+static bio_ctrl_fn p_BIO_ctrl;
+typedef int (*bio_flush_fn)(void*);
+static bio_flush_fn p_BIO_flush;
+#define HTTPD_TLS_BIO_CTRL_PENDING 10
 
 static SSL_CTX* g_tls_ctx;
 static int g_tls_wanted;
@@ -262,6 +269,15 @@ static int tls_load_openssl(void) {
   if (tls_load_sym(g_ssl_lib, "SSL_shutdown", (void**)&p_SSL_shutdown) != 0) {
     p_SSL_shutdown = NULL;
   }
+  if (tls_load_sym(g_ssl_lib, "SSL_get_wbio", (void**)&p_SSL_get_wbio) != 0) {
+    p_SSL_get_wbio = NULL;
+  }
+  if (tls_load_sym(g_crypto_lib, "BIO_ctrl", (void**)&p_BIO_ctrl) != 0) {
+    p_BIO_ctrl = NULL;
+  }
+  if (tls_load_sym(g_crypto_lib, "BIO_flush", (void**)&p_BIO_flush) != 0) {
+    p_BIO_flush = NULL;
+  }
 #undef LOAD
   if (tls_load_sym(g_ssl_lib, "OPENSSL_init_ssl", (void**)&p_OPENSSL_init_ssl) != 0) {
     p_OPENSSL_init_ssl = NULL;
@@ -295,6 +311,33 @@ void* httpd_tls_slot_ssl(int32_t slot) {
   return g_slot_ssl[slot];
 }
 
+long httpd_tls_wbio_pending(int32_t slot);
+
+size_t httpd_tls_write_pending(int32_t slot) {
+  long pending = httpd_tls_wbio_pending(slot);
+  return pending > 0 ? (size_t)pending : 0;
+}
+
+int32_t httpd_tls_drain_writes(int32_t slot, int32_t fd) {
+  int rounds = 0;
+  if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_slot_ssl[slot] || fd < 0) {
+    return 0;
+  }
+  while (httpd_tls_wbio_pending(slot) > 0 && rounds++ < 4096) {
+    if (httpd_tls_flush_wbio(slot) == 0) {
+      return 0;
+    }
+    struct pollfd pfd;
+    pfd.fd = (int)fd;
+    pfd.events = (short)POLLOUT;
+    pfd.revents = 0;
+    if (poll(&pfd, 1, 5000) <= 0) {
+      return -1;
+    }
+  }
+  return httpd_tls_wbio_pending(slot) > 0 ? -1 : 0;
+}
+
 void httpd_tls_shutdown_slot(int32_t slot) {
   if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_slot_ssl[slot] || !p_SSL_shutdown) {
     return;
@@ -312,7 +355,6 @@ void httpd_tls_free_slot(int32_t slot) {
   if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS) {
     return;
   }
-  httpd_tls_shutdown_slot(slot);
   if (g_tls_ssl_reuse && g_slot_ssl[slot]) {
     g_slot_proto[slot] = 0;
     g_slot_hs_pending[slot] = 0;
@@ -645,4 +687,39 @@ ssize_t httpd_tls_write_slot(int32_t slot, const void* buf, size_t len) {
     off += (size_t)w;
   }
   return (ssize_t)off;
+}
+
+long httpd_tls_wbio_pending(int32_t slot) {
+  if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_slot_ssl[slot] || !p_SSL_get_wbio || !p_BIO_ctrl) {
+    return 0;
+  }
+  void* wbio = p_SSL_get_wbio(g_slot_ssl[slot]);
+  if (!wbio) {
+    return 0;
+  }
+  return (long)p_BIO_ctrl(wbio, HTTPD_TLS_BIO_CTRL_PENDING, 0, NULL);
+}
+
+/* 0 = drained, 1 = want POLLOUT, -1 = error */
+int32_t httpd_tls_flush_wbio(int32_t slot) {
+  if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_slot_ssl[slot]) {
+    return 0;
+  }
+  if (httpd_tls_wbio_pending(slot) <= 0) {
+    return 0;
+  }
+  if (!p_SSL_get_wbio || !p_BIO_ctrl) {
+    return 1;
+  }
+  void* wbio = p_SSL_get_wbio(g_slot_ssl[slot]);
+  if (!wbio) {
+    return 0;
+  }
+  if (p_BIO_flush) {
+    int rc = p_BIO_flush(wbio);
+    if (rc <= 0) {
+      return 1;
+    }
+  }
+  return httpd_tls_wbio_pending(slot) > 0 ? 1 : 0;
 }

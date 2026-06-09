@@ -421,6 +421,7 @@ static void httpd_drain_upstream_fd(int fd);
 static void httpd_proxy_pump_relay(int epfd, int32_t slot);
 static void httpd_proxy_schedule_pump(int epfd, int32_t slot);
 static void httpd_proxy_defer_cancel(int32_t slot);
+static void httpd_proxy_defer_prune_inactive(void);
 static void httpd_proxy_sweep_stuck_relays(int epfd);
 static void httpd_proxy_debug_snapshot(const char* tag);
 static void httpd_proxy_tls_cl_defer_flush(int epfd, int32_t slot);

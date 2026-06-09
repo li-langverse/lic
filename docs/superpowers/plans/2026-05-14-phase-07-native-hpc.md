@@ -72,8 +72,11 @@
 **7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):**
 
 - [x] `./li-tests/run_all.sh decorators decorator_exploits`
-- [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
+- [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords) — **G-dec** / **G-par** partial ([#387](https://github.com/li-langverse/lic/issues/387))
 - [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds (`compiler/fuzz/corpus/seed_decorators`)
+- [x] **G-par** closed slice: `@parallel(disjoint=…)` + `parallel for` → `mir_parallel_disjoint=` — `check-mir-parallel-{decorator,for-disjoint}.sh`, `parallel_disjoint_lean_opaque_gap.sh` ([#387](https://github.com/li-langverse/lic/issues/387))
+- [x] **G-dec** closed slice: `@vectorized` / `@parallel` proc tags on `def` — `check-mir-{parallel,vectorized}-decorator.sh`, wired in `contracts_discharge_corpus.sh` ([#387](https://github.com/li-langverse/lic/issues/387))
+- [ ] **G-par** iteration-independence Lean proofs (beyond `disjoint_*_policy_witness` stubs) — **P-par** open ([#387](https://github.com/li-langverse/lic/issues/387))
 
 **7e (mathematical surface — user writes formulas, not `simd(...)`):**
 

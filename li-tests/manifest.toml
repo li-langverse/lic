@@ -1090,6 +1090,24 @@ expected_substr = "inner dimension mismatch"
 
 [[tests]]
 suite = "math_linalg"
+file = "math_linalg/matmul_2x2_golden.li"
+outcome = "verify_ok"
+note = "2×2 GEMM numeric golden (PH-2i shape slice)"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/matmul_3d_rank_reject.li"
+outcome = "compile_fail"
+expected_substr = "matrix multiply '@'"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/array_dot_int_reject.li"
+outcome = "compile_fail"
+expected_substr = "matrix multiply '@'"
+
+[[tests]]
+suite = "math_linalg"
 file = "math_linalg/array_sum.li"
 outcome = "verify_open_ok"
 note = "open VC until 2f full (Lean gate on devbox)"

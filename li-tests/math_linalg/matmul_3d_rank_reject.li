@@ -1,0 +1,11 @@
+# Rank-3 nested array `@` must fail at typecheck (v1 rejects rank > 2).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var A: array[2, array[2, array[2, float]]]
+  var B: array[2, array[2, array[2, float]]]
+  var C: array[2, array[2, array[2, float]]] = A @ B
+  return 0

@@ -41,10 +41,20 @@ def parse_listen(raw: str) -> int:
 
 
 def peer_port(url: str) -> int:
-    m = re.match(r"https?://[^:]+:(\d+)", url.strip())
-    if not m:
-        raise ValueError(f"peer URL must be loopback with port: {url!r}")
-    return int(m.group(1))
+    _host, port = peer_host_port(url)
+    return port
+
+
+def peer_host_port(url: str) -> tuple[str, int]:
+    from urllib.parse import urlparse
+
+    u = urlparse(url.strip())
+    if u.scheme not in ("http", "https"):
+        raise ValueError(f"peer URL must be http(s): {url!r}")
+    host = u.hostname or "127.0.0.1"
+    if not u.port:
+        raise ValueError(f"peer URL must include explicit port: {url!r}")
+    return host, int(u.port)
 
 
 def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
@@ -130,6 +140,7 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
     for r in routes:
         kind = r.path_kind if r.path_kind in ("exact", "prefix", "prefix_strip") else "prefix"
         action = "proxy" if r.action.startswith("proxy:") else "static"
+        pool = r.action.split(":", 1)[1] if r.action.startswith("proxy:") else ""
         if action == "proxy":
             proxy_any = True
         rps = int(getattr(r, "rate_limit_rps", 0) or 0)
@@ -137,7 +148,12 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
             burst = int(getattr(r, "rate_limit_burst", 0) or 0)
             if burst <= 0:
                 burst = rps
-            lines.append(f"route={r.method}|{r.path}|{kind}|{action}|{rps}|{burst}")
+            if pool:
+                lines.append(f"route={r.method}|{r.path}|{kind}|{action}|{pool}|{rps}|{burst}")
+            else:
+                lines.append(f"route={r.method}|{r.path}|{kind}|{action}|{rps}|{burst}")
+        elif pool:
+            lines.append(f"route={r.method}|{r.path}|{kind}|{action}|{pool}")
         else:
             lines.append(f"route={r.method}|{r.path}|{kind}|{action}")
         for req in getattr(r, "requires", []):
@@ -148,12 +164,12 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
 
     def flatten_upstream_pool(pool_id: str, val: dict) -> None:
         for peer in val.get("peers") or []:
-            p = peer_port(str(peer))
+            host, p = peer_host_port(str(peer))
             pool_ports[pool_id] = p
-            lines.append(f"upstream_peer={p}")
-        bal = val.get("balance")
+            lines.append(f"upstream_peer={pool_id}|{host}|{p}")
+        bal = val.get("balance") if val.get("balance") is not None else val.get("policy")
         if bal is not None and str(bal).strip():
-            lines.append(f"upstream_balance={str(bal).strip()}")
+            lines.append(f"upstream_balance={pool_id}|{str(bal).strip()}")
 
     pool_ports: dict[str, int] = {}
     nested = data.get("upstreams") or {}

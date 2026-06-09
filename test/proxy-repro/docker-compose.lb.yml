@@ -1,0 +1,42 @@
+# Two-backend ip_hash LB repro: proxy-lb → backend-a / backend-b (identifiable X-Li-Backend).
+services:
+  backend-a:
+    build:
+      context: ../..
+      dockerfile: test/proxy-repro/Dockerfile.backend
+    networks: [repro]
+
+  backend-b:
+    build:
+      context: ../..
+      dockerfile: test/proxy-repro/Dockerfile.backend-b
+    networks: [repro]
+
+  proxy-lb:
+    build:
+      context: ../..
+      dockerfile: test/proxy-repro/Dockerfile.proxy-lb
+    depends_on:
+      backend-a:
+        condition: service_started
+      backend-b:
+        condition: service_started
+    ports:
+      - "18444:8443"
+    networks: [repro]
+
+  lb-tester:
+    image: curlimages/curl:8.12.1
+    depends_on:
+      proxy-lb:
+        condition: service_started
+    networks: [repro]
+    volumes:
+      - ./run-lb-test.sh:/run-lb-test.sh:ro
+    entrypoint: ["/bin/sh", "/run-lb-test.sh"]
+    environment:
+      PROXY_HOST: proxy-lb
+      PROXY_PORT: "8443"
+
+networks:
+  repro:

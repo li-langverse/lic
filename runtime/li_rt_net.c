@@ -4974,10 +4974,6 @@ static void httpd_proxy_flush_client_out(int epfd, int32_t slot) {
       if (slot >= 0 && httpd_tls_slot_proto(slot) == 1) {
         (void)httpd_tls_flush_wbio(slot);
         if (httpd_tls_wbio_pending(slot) > 0) {
-          if (s->proxy_tls_cl_defer > INT_MAX - nbytes) {
-            httpd_proxy_finish_err(epfd, slot);
-            return;
-          }
           s->proxy_tls_cl_defer += nbytes;
           httpd_proxy_client_epoll_arm_out(epfd, slot);
           return;
@@ -6602,7 +6598,7 @@ int32_t httpd_upstream_acquire_for_slot_i(int32_t slot) {
   if (parse_request_line_c(g_slots[slot].buf, hdr_end, &req) != 0) {
     return -1;
   }
-  int32_t peer_port = httpd_route_pool_port_for_request(g_slots[slot].buf, hdr_end, &req);
+  int32_t peer_port = httpd_route_pool_port_for_request(g_slots[slot].buf, hdr_end, &req, (int)slot);
   /* edge: vhost routes must not fall back to global LB */
   if (peer_port <= 0) {
     return -1;
@@ -6611,6 +6607,10 @@ int32_t httpd_upstream_acquire_for_slot_i(int32_t slot) {
   /* edge: no cross-pool fallback */
   if (up < 0) {
     return -1;
+  }
+  httpd_upstream_peer_t* up_peer = upstream_peer_find(peer_port);
+  if (up_peer) {
+    up_peer->active++;
   }
   g_slots[slot].proxy_peer_port = peer_port;
   set_nonblocking(up);

@@ -39,3 +39,12 @@ PROXY_HOST=127.0.0.1 PROXY_PORT=18443 sh test/proxy-repro/run-test.sh
 
 - `run-test.sh`: **10/10** sequential runs (sign-in **200/302**, large CSS **835437** bytes).
 - `parallel-run-test.sh`: **6/6** parallel CSS+JS fetches (browser-like load).
+
+## Two-backend load balancer (`ip_hash`)
+
+```bash
+docker compose -f test/proxy-repro/docker-compose.lb.yml build
+docker compose -f test/proxy-repro/docker-compose.lb.yml up --abort-on-container-exit lb-tester
+```
+
+`run-lb-test.sh` expects **one** distinct `X-Li-Backend` header across 24 requests (peer-a vs peer-b nginx).

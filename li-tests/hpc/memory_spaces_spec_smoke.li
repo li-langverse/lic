@@ -1,0 +1,16 @@
+import std.execution.memory_spaces
+
+def main() -> int
+  requires true
+  ensures result == 0
+  ensures memory_execution_spaces_ok() == 1
+  ensures execution_space_default_tier2() == execution_space_openmp()
+  decreases 0
+=
+  if memory_space_host() != 0:
+    return 1
+  if memory_space_device() != 1:
+    return 1
+  if execution_space_default_tier2() != execution_space_openmp():
+    return 1
+  return 0

@@ -1,0 +1,85 @@
+# std/execution/memory_spaces.li — MemorySpace + ExecutionSpace spec constants (#110, PH-7e)
+#
+# Spec-only v1: integer tags for docs, smokes, and future parser elaboration.
+# No runtime Kokkos linkage. Buffer codegen deferred to #15 / #116.
+
+def memory_space_host() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def memory_space_device() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def memory_space_unified() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def execution_space_serial() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def execution_space_openmp() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def execution_space_threads() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def execution_space_sycl() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+def execution_space_cuda() -> int
+  requires true
+  ensures result == 11
+  decreases 0
+=
+  return 11
+
+def execution_space_hip() -> int
+  requires true
+  ensures result == 12
+  decreases 0
+=
+  return 12
+
+def execution_space_default_tier2() -> int
+  requires true
+  ensures result == execution_space_openmp()
+  decreases 0
+=
+  return execution_space_openmp()
+
+def memory_execution_spaces_ok() -> int
+  requires true
+  ensures result == 1
+  ensures memory_space_host() == 0
+  ensures memory_space_device() == 1
+  ensures memory_space_unified() == 2
+  ensures execution_space_default_tier2() == execution_space_openmp()
+  decreases 0
+=
+  return 1

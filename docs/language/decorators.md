@@ -14,7 +14,7 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 ## Status
 
-Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
+Parsing and policy checks run in `lic check`. MIR proc tags for `@cpu`, `@parallel`, `@vectorized`, and `@gpu` are visible via `lic verify` (`mir_*_def=` telemetry). Full LLVM/LKIR lowering and Lean **P-dec** proofs remain open — see **G-dec** and **G-par** in [provability-gaps](../verification/provability-gaps.md).
 
 ## Resource knobs (`lic build`)
 

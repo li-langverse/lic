@@ -1,6 +1,6 @@
 # Execution decorators (spec stub)
 
-**Status:** Phase 7d in progress (`@gpu` / `@gpu(devices=N)` MIR telemetry landed; LKIR/codegen open)
+**Status:** Phase 7d in progress (`@cpu`/`@parallel`/`@vectorized`/`@gpu` MIR proc tags + `lic verify` telemetry; LKIR/codegen open)
 **Plan:** `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md`  
 **Gaps:** [Provability gaps](../../verification/provability-gaps.md) **G-dec**
 
@@ -23,6 +23,19 @@ User `decorator def` macros expand at **compile time** to a whitelist of builtin
 Reserved stdlib names: `cpu`, `gpu`, `tpu`, `user_defined`, `parallel`, `vectorized`, `async`, `serial`, `no_vectorize`.
 
 User `decorator def` names: strict package-prefixed snake_case; typosquat ban; expansion whitelist to builtins only.
+
+## MIR proc tags (7d-b)
+
+`copy_decorators()` lowers builtin decorators to `MirDecorator` on each `MirFn`:
+
+| Decorator | MIR field | `lic verify` telemetry |
+|-----------|-----------|------------------------|
+| `@cpu` | `cpu` | `mir_cpu_def` |
+| `@parallel(disjoint=…)` | `parallel`, `disjoint_proven` | `mir_parallel_disjoint` |
+| `@vectorized(lanes=N)` | `vectorized`, `lanes` | `mir_vectorized_proc` |
+| `@gpu` / `@gpu(devices=N)` | `gpu`, `gpu_devices` | `mir_gpu_def`, `mir_gpu_multi_device_def` |
+
+Gates: `scripts/check-mir-{cpu,parallel,vectorized,gpu}-decorator.sh` (also in `contracts_discharge_corpus.sh`). Related gaps: **G-dec** (elaboration), **G-par** (disjoint proofs), **G-gpu** (LKIR/codegen).
 
 ## GPU placement slice
 

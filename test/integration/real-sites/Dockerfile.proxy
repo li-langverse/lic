@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libssl3 openssl
   && rm -rf /var/lib/apt/lists/*
 COPY --from=build /src/build/li-httpd /usr/local/bin/li-httpd
 COPY --from=build /src/scripts /opt/lic-scripts
-COPY test/proxy-repro/proxy/httpd-lb.toml /proxy/httpd-lb.toml
-COPY test/proxy-repro/entrypoint-proxy-lb.sh /entrypoint.sh
+COPY test/integration/real-sites/proxy/httpd.toml /proxy/httpd.toml
+COPY test/integration/real-sites/entrypoint-proxy.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh && mkdir -p /empty /certs
 ENTRYPOINT ["/entrypoint.sh"]

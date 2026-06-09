@@ -1,0 +1,32 @@
+# Real website proxy integration: curl → li-httpd TLS → nginx static (18+ assets).
+services:
+  backend:
+    build:
+      context: ../../..
+      dockerfile: test/integration/real-sites/Dockerfile.backend
+    networks: [real-site]
+
+  proxy:
+    build:
+      context: ../../..
+      dockerfile: test/integration/real-sites/Dockerfile.proxy
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "18543:8443"
+    networks: [real-site]
+
+  tester:
+    image: curlimages/curl:8.12.1
+    depends_on:
+      proxy:
+        condition: service_started
+    networks: [real-site]
+    volumes:
+      - ./test-real-website-parallel.sh:/test.sh:ro
+      - ../../proxy/proxy-curl-env.sh:/proxy-curl-env.sh:ro
+    entrypoint: ["/bin/sh", "-c", "sleep 3 && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=real-site.test sh /test.sh"]
+
+networks:
+  real-site:

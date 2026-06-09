@@ -1,4 +1,5 @@
-# Two-backend ip_hash LB repro: proxy-lb → backend-a / backend-b (identifiable X-Li-Backend).
+# Two-backend LB e2e: proxy-lb → backend-a / backend-b (X-Li-Backend markers).
+# Set LB_POLICY=round_robin|least_conn|ip_hash before compose up.
 services:
   backend-a:
     build:
@@ -24,6 +25,8 @@ services:
     ports:
       - "18444:8443"
     networks: [repro]
+    environment:
+      LB_POLICY: "${LB_POLICY:-ip_hash}"
 
   lb-tester:
     image: curlimages/curl:8.12.1
@@ -32,11 +35,13 @@ services:
         condition: service_started
     networks: [repro]
     volumes:
-      - ./run-lb-test.sh:/run-lb-test.sh:ro
-    entrypoint: ["/bin/sh", "/run-lb-test.sh"]
+      - ./test-lb-e2e.sh:/test-lb-e2e.sh:ro
+      - ../proxy/proxy-curl-env.sh:/proxy-curl-env.sh:ro
+    entrypoint: ["/bin/sh", "-c", "sleep 2 && PROXY_HOST=proxy-lb PROXY_PORT=8443 LB_POLICY=${LB_POLICY:-ip_hash} sh /test-lb-e2e.sh"]
     environment:
       PROXY_HOST: proxy-lb
       PROXY_PORT: "8443"
+      LB_POLICY: "${LB_POLICY:-ip_hash}"
 
 networks:
   repro:

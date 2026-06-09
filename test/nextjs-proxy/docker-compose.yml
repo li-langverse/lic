@@ -24,6 +24,7 @@ services:
     networks: [nextjs]
     volumes:
       - ./parallel-chunks-test.sh:/test.sh:ro
+      - ../proxy/proxy-curl-env.sh:/proxy-curl-env.sh:ro
     entrypoint: ["/bin/sh", "-c", "sleep 3 && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=nextjs.test sh /test.sh"]
 
 networks:

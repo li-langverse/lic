@@ -1,8 +1,8 @@
-# Two loopback upstream peers (socat → backend-a / backend-b). ip_hash must pin one client IP.
+# GitLab sign_in edge proxy integration (isolated nginx backend mimicking GitLab assets).
 [server]
 listen = ":8443"
 document_root = "/empty"
-workers = 1
+workers = 2
 
 [server.tls]
 mode = "self_signed"
@@ -25,10 +25,9 @@ rate_limit_rps = 10000
 rate_limit_burst = 20000
 
 [upstreams.gitlab]
-policy = "ip_hash"
-peers = ["http://127.0.0.1:18080", "http://127.0.0.1:18081"]
+balance = "round_robin"
+peers = ["http://backend:8080"]
 
 [routes]
 "GET /users/sign_in" = "proxy:gitlab"
 "GET /assets/*" = "proxy:gitlab"
-"GET /probe" = "proxy:gitlab"

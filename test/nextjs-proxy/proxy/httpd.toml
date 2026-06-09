@@ -18,10 +18,11 @@ proxy_max_response_body = "64m"
 concurrent_streams = 32
 stream_idle_timeout = "300s"
 stream_max_duration = "3600s"
+rate_limit_rps = 10000
+rate_limit_burst = 20000
 
 [upstreams.nextjs]
 peers = ["http://backend:8080"]
 
 [routes]
-"GET /" = "proxy:nextjs"
-"GET /_next/static/*" = "proxy:nextjs"
+"GET /*" = "proxy:nextjs"

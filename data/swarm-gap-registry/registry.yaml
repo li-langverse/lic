@@ -206,6 +206,7 @@ gaps:
   evidence:
   - snapshot runner=httpd plan_pending=gap-phase2-perf-wrk-soak
   - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  - 'code_implementer-44559153: plan todo completed; gate check-tier5-perf-wrk-soak.sh (lic#477)'
   runner_id: httpd
   plan_todo_id: gap-phase2-perf-wrk-soak
   suggested_loop: httpd
@@ -235,6 +236,7 @@ gaps:
   evidence:
   - snapshot runner=httpd plan_pending=gap-phase2-streaming-wrk
   - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-streaming-wrk
+  - 'code_implementer-44559153: plan todo completed; gate check-tier5-streaming-soak.sh (lic#477)'
   runner_id: httpd
   plan_todo_id: gap-phase2-streaming-wrk
   suggested_loop: httpd

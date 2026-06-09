@@ -44,6 +44,8 @@ jobs:
 
       - name: Phase-2 httpd plan gates
         env:
+          LIC_ROOT: ${{ github.workspace }}
+          BENCHMARKS_ROOT: ${{ github.workspace }}/../benchmarks
           HTTPD_RUN_PHASE2_GATES: "1"
           HTTPD_BENCH_SKIP_TIMING: "0"
           HTTPD_BENCH_DURATION_SEC: "30"

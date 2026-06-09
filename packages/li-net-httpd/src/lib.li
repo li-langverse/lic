@@ -522,6 +522,10 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
     if sp > 0:
       left = left - sp
       httpd_li_proxy_set_resp_body_left_i(slot, left)
+    if sp == 0:
+      if httpd_li_proxy_relay_pending_i(slot) == 1:
+        net_buf_free(chunk)
+        return 0
     if sp <= 0:
       var r: int = tcp_recv_nb_i(up, chunk, 8192)
       if r == -2:
@@ -529,7 +533,11 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
         return proxy_li_finish_err(epfd, slot)
       if r == 0:
         net_buf_free(chunk)
-        return proxy_li_finish_err(epfd, slot)
+        if httpd_li_proxy_relay_pending_i(slot) == 1:
+          return 0
+        if left > 0:
+          return proxy_li_finish_err(epfd, slot)
+        return 0
       if r == -1:
         net_buf_free(chunk)
         return 0
@@ -540,9 +548,13 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
       if fwd < 0:
         net_buf_free(chunk)
         return proxy_li_finish_err(epfd, slot)
-      left = left - take
-      httpd_li_proxy_set_resp_body_left_i(slot, left)
+      if fwd == 0:
+        net_buf_free(chunk)
+        return 0
+      left = httpd_li_proxy_get_resp_body_left_i(slot)
   net_buf_free(chunk)
+  if httpd_li_proxy_relay_pending_i(slot) == 1:
+    return 0
   httpd_li_proxy_finish_ok_i(epfd, slot)
   return 0
 
@@ -556,24 +568,39 @@ def proxy_li_finish_resp_headers(epfd: var int, slot: var int) raises Net, Alloc
   var he_end: int = hdr_end_at(acc, 0, hlen)
   if he_end < 0:
     return proxy_li_finish_err(epfd, slot)
-  if proxy_parse_resp_cl(acc, he_end) < 0:
+  if httpd_li_proxy_inject_conn_close_i(slot) < 0:
     return proxy_li_finish_err(epfd, slot)
-  httpd_li_proxy_store_resp_cache_i(slot)
+  var hlen2: int = httpd_li_proxy_get_resp_hdr_len_i(slot)
+  he_end = hdr_end_at(acc, 0, hlen2)
+  if he_end < 0:
+    return proxy_li_finish_err(epfd, slot)
+  var cl: int = proxy_parse_resp_cl(acc, he_end)
+  if cl < 0:
+    return proxy_li_finish_err(epfd, slot)
+  if httpd_proxy_snap_disabled_i() == 0 and cl <= 4096 and he_end <= 4096:
+    httpd_li_proxy_store_resp_cache_i(slot)
   var hdr_bytes: int = httpd_li_proxy_cached_hdr_len_i()
+  var hdr_ptr: ptr = httpd_li_proxy_cached_hdr_ptr_i()
+  if httpd_proxy_snap_disabled_i() == 1:
+    hdr_bytes = he_end
+    hdr_ptr = acc
   if hdr_bytes <= 0:
     return proxy_li_finish_err(epfd, slot)
-  if httpd_li_proxy_forward_bytes_i(epfd, slot, httpd_li_proxy_cached_hdr_ptr_i(), hdr_bytes) < 0:
+  if httpd_li_proxy_forward_bytes_i(epfd, slot, hdr_ptr, hdr_bytes) < 0:
     return proxy_li_finish_err(epfd, slot)
   httpd_li_proxy_set_resp_parsing_i(slot, 0)
   httpd_li_proxy_set_resp_body_mode_i(slot, proxy_body_cl())
-  httpd_li_proxy_set_resp_body_left_i(slot, httpd_li_proxy_cached_cl_i())
-  var tail: int = hlen - hdr_bytes
+  var body_left: int = httpd_li_proxy_cached_cl_i()
+  if httpd_proxy_snap_disabled_i() == 1:
+    body_left = cl
+  httpd_li_proxy_set_resp_body_left_i(slot, body_left)
+  var tail: int = hlen2 - hdr_bytes
   if tail > 0:
-    var conn: int = httpd_slot_conn_i(slot)
-    if tcp_send_nb_i(conn, acc, hdr_bytes, tail) < 0:
+    var fwd_tail: int = httpd_li_proxy_forward_hdr_tail_i(epfd, slot, hdr_bytes, tail)
+    if fwd_tail < 0:
       return proxy_li_finish_err(epfd, slot)
-    var left0: int = httpd_li_proxy_get_resp_body_left_i(slot)
-    httpd_li_proxy_set_resp_body_left_i(slot, left0 - tail)
+    if fwd_tail == 0:
+      return 0
   return proxy_li_pump_cl(epfd, slot)
 
 def proxy_li_feed_cached_hdr(epfd: var int, slot: var int, data: var ptr, n: var int) raises Net, Alloc, IO -> int
@@ -614,6 +641,9 @@ def proxy_li_enter_relay(epfd: var int, slot: var int) raises Net, Alloc, IO -> 
   httpd_li_proxy_set_phase_i(slot, proxy_phase_relay())
   var cl_cached: int = httpd_li_proxy_cached_cl_i()
   var hdr_cached: int = httpd_li_proxy_cached_hdr_len_i()
+  if httpd_proxy_snap_disabled_i() == 1:
+    cl_cached = -1
+    hdr_cached = 0
   if cl_cached >= 0:
     if hdr_cached > 0:
       httpd_li_proxy_set_resp_parsing_i(slot, proxy_parse_cached())
@@ -820,6 +850,7 @@ def proxy_handle_client_in(epfd: var int, slot: var int) raises Net, Alloc, IO -
   var hdr_end: int = hdr_end_at(buf, 0, filled)
   if hdr_end < 0:
     return 0
+  httpd_li_proxy_reset_resp_cache_i(slot)
   var keep: int = 1
   if buf_has_connection_close(buf, hdr_end) == 1:
     keep = 0

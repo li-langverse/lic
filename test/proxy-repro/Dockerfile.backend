@@ -1,0 +1,9 @@
+FROM nginx:1.27-alpine
+COPY test/proxy-repro/backend/nginx.conf /etc/nginx/nginx.conf
+RUN mkdir -p /srv/www/users /srv/www/assets \
+  && dd if=/dev/zero of=/srv/www/assets/application-deadbeef.css bs=835437 count=1 status=none \
+  && printf '%s\n' \
+    '<!DOCTYPE html><html><head>' \
+    '<link rel="stylesheet" href="/assets/application-deadbeef.css">' \
+    '</head><body>sign in</body></html>' \
+    > /srv/www/users/sign_in

@@ -3211,6 +3211,22 @@ static void httpd_proxy_finish_err(int epfd, int32_t slot) {
 }
 
 static ssize_t httpd_send_nb_flags(int fd, const char* data, size_t total, size_t* off, int flags) {
+  int32_t slot = httpd_slot_find_fd((int32_t)fd);
+  if (slot >= 0 && httpd_tls_slot_proto(slot) == 1) {
+    (void)flags;
+    if (*off >= total) {
+      return 1;
+    }
+    ssize_t w = httpd_tls_write_slot(slot, data + *off, total - *off);
+    if (w < 0) {
+      return -1;
+    }
+    if (w == 0) {
+      return 0;
+    }
+    *off += (size_t)w;
+    return (*off >= total) ? 1 : 0;
+  }
   while (*off < total) {
     ssize_t n = send(fd, data + *off, total - *off, MSG_NOSIGNAL | flags);
     if (n < 0) {
@@ -4134,7 +4150,8 @@ static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
       return;
     }
 #ifdef __linux__
-    if (!g_proxy_snap_recording && !httpd_proxy_relay_pending_client(s) && g_proxy_splice_pipe[0] >= 0) {
+    if (!g_proxy_snap_recording && !httpd_proxy_relay_pending_client(s) && g_proxy_splice_pipe[0] >= 0 &&
+        httpd_tls_slot_proto(slot) != 1) {
       size_t cap = (size_t)s->proxy_resp_body_left;
       if (cap > sizeof(s->proxy_rbuf)) {
         cap = sizeof(s->proxy_rbuf);

@@ -585,7 +585,7 @@ def proxy_li_finish_resp_headers(epfd: var int, slot: var int) raises Net, Alloc
   if httpd_proxy_snap_disabled_i() == 1:
     body_left = cl
   httpd_li_proxy_set_resp_body_left_i(slot, body_left)
-  var tail: int = hlen - hdr_bytes
+  var tail: int = hlen2 - hdr_bytes
   if tail > 0:
     var conn: int = httpd_slot_conn_i(slot)
     var sent: int = tcp_send_nb_i(conn, acc, hdr_bytes, tail)

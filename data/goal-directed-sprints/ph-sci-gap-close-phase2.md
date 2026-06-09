@@ -7,7 +7,8 @@ parent: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close — Phase 2 kickoff
 
-**Last updated:** 2026-06-06 · **main @** `e87165b7` (Phase 0/1 + echem merged; start from latest `main`)  
+**Last updated:** 2026-06-09 · **main @** `e87165b7` (Phase 0/1 + echem merged; start from latest `main`)  
+**WP-SCI-03 partial:** QM/CFD/FEA tier-2 registry dispatch landed on branch `chore/agent-code_implementer-wp-sci-03-cfd-fea-qm-1781009406` (401–432, 501–523, 601–610); stub retained for 701+.  
 **Prerequisite:** `bash scripts/ph-sci-phase0-gates.sh` passes (regression spine).  
 **Parent plan:** [ph-sci-simulation-gap-close-plan.md](ph-sci-simulation-gap-close-plan.md) — Phase 2 WPs (11 open).
 

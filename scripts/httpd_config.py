@@ -202,8 +202,12 @@ def _run_config_oracle_validators(data: dict[str, Any], path: Path) -> list[str]
     from httpd_rng import validate_rng_config_raise
     from httpd_tls import ConfigError as TlsError
     from httpd_tls import validate_tls_config
+    from httpd_toml_style import validate_toml_key_style
 
     warnings: list[str] = []
+    style_errs = validate_toml_key_style(data)
+    if style_errs:
+        raise ConfigError(style_errs[0])
     try:
         validate_m15_limits(data)
         validate_route_match(data)

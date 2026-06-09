@@ -107,6 +107,25 @@ for w in warnings:
 for e in errors:
     print(f"error: {e}", file=sys.stderr)
 
+md_oracle = registry.parent / "md_oracle.toml"
+if md_oracle.is_file():
+    md = tomllib.loads(md_oracle.read_text())
+    md_rows = md.get("row")
+    if not isinstance(md_rows, list) or not md_rows:
+        errors.append("md_oracle.toml: [[row]] must be a non-empty array")
+    else:
+        for i, row in enumerate(md_rows):
+            if not isinstance(row, dict):
+                errors.append(f"md_oracle row[{i}]: not a table")
+                continue
+            if not row.get("id"):
+                errors.append(f"md_oracle row[{i}]: missing id")
+            comps = row.get("competitors") or []
+            if not isinstance(comps, list) or not comps:
+                errors.append(f"md_oracle row[{row.get('id', i)}]: competitors required")
+else:
+    warnings.append(f"no md_oracle.toml at {md_oracle} — WP-PLAT-05 registry skipped")
+
 if errors:
     sys.exit(1)
 if strict and warnings:

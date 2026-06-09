@@ -1,0 +1,39 @@
+[meta]
+version = 1
+updated = "2026-06-08"
+schema = "li_ph_sci_md_oracle_competitive_v1"
+
+[harness]
+script = "scripts/bench-ph-sci-md-oracle-competitive.sh"
+output_competitive = "benchmarks/results/ph-sci-md-oracle-competitive.json"
+gate_script = "scripts/ph-sci-md-oracle-competitive-gates.sh"
+
+[[row]]
+id = "md_lj_micro"
+kernel = "sim_scientific_oracle_checksum_md"
+workload_class = "v0_micro"
+workload = "4_particle_lj_chain_8_verlet"
+particles = 4
+steps = 8
+spacing = 1.12
+drift_tolerance = 0.001
+incumbent = "LAMMPS pair/lj/cut + velocity-Verlet"
+competitors = ["lammps", "gromacs"]
+
+[competitor.lammps]
+license = "GPL-2.0-only"
+bundled = false
+pinned_version = "2024.06.27"
+pinned_tag = "stable_22Jun2024"
+csv_lang = "lammps"
+import_json_field = "competitors[id=lammps].energy_drift"
+notes = "External binary oracle — stub in CI; see README-md-oracle.md"
+
+[competitor.gromacs]
+license = "LGPL-2.1-or-later"
+bundled = false
+pinned_version = "2024.2"
+pinned_tag = "v2024.2"
+csv_lang = "gromacs"
+import_json_field = "competitors[id=gromacs].energy_drift"
+notes = "External binary oracle — stub in CI; see README-md-oracle.md"

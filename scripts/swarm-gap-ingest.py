@@ -62,6 +62,31 @@ def _normalize_plan_todo_id(todo_id: str, runner_id: str) -> str:
     return tid or str(todo_id)
 
 
+_COMPLETED_TODO_STATUSES = frozenset({"completed", "done"})
+
+
+def _runner_completed_todo_ids(runner: dict) -> set[str]:
+    """Union state.completed_ids with todos marked completed/done."""
+    rid = runner.get("id") or "runner"
+    completed: set[str] = set()
+    for raw in runner.get("state", {}).get("completed_ids") or []:
+        s = str(raw).strip()
+        if s:
+            completed.add(s)
+            completed.add(_normalize_plan_todo_id(s, rid))
+    for todo in runner.get("todos") or []:
+        if not isinstance(todo, dict):
+            continue
+        if str(todo.get("status") or "").lower() not in _COMPLETED_TODO_STATUSES:
+            continue
+        tid = str(todo.get("id") or "").strip()
+        if not tid:
+            continue
+        completed.add(tid)
+        completed.add(_normalize_plan_todo_id(tid, rid))
+    return completed
+
+
 def ingest_missing_std(explorer: dict, gaps_by_id: dict[str, dict]) -> int:
     added = 0
     for row in explorer.get("missing_std_modules") or []:
@@ -170,13 +195,13 @@ def dedupe_plan_pending_gaps(gaps_by_id: dict[str, dict]) -> int:
 
 
 def reconcile_snapshot_completed(snap: dict, gaps_by_id: dict[str, dict]) -> int:
-    """Close plan_debt rows whose todo is in runner state.completed_ids."""
+    """Close plan_debt rows whose todo is completed in snapshot (state or todos[].status)."""
     closed = 0
     for runner in snap.get("runners") or []:
         if not isinstance(runner, dict):
             continue
         rid = runner.get("id") or "runner"
-        completed = set(runner.get("state", {}).get("completed_ids") or [])
+        completed = _runner_completed_todo_ids(runner)
         for gap in gaps_by_id.values():
             if not isinstance(gap, dict) or gap.get("status") != "open":
                 continue
@@ -186,10 +211,10 @@ def reconcile_snapshot_completed(snap: dict, gaps_by_id: dict[str, dict]) -> int
             if not raw:
                 continue
             norm = _normalize_plan_todo_id(str(raw), rid)
-            if norm in completed or raw in completed:
+            if norm in completed or str(raw) in completed:
                 gap["status"] = "closed"
                 ev = gap.setdefault("evidence", [])
-                note = f"snapshot {rid} completed_ids includes {norm}"
+                note = f"snapshot {rid} completed todo {norm}"
                 if note not in ev:
                     ev.append(note)
                 closed += 1
@@ -224,9 +249,11 @@ def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> in
 
 
 def ingest_verticals_stubs(gaps_by_id: dict[str, dict]) -> int:
-    vert = Path(os.environ["BENCHMARKS_COMPETITIVE"]) / "verticals.toml"
-    if not vert.is_file():
-        vert = Path(os.environ.get("BENCHMARKS_COMPETITIVE", str(LANGVERSE / "benchmarks/workloads/competitive"))/verticals.toml"
+    default_competitive = LANGVERSE / "benchmarks/workloads/competitive"
+    competitive_root = Path(
+        os.environ.get("BENCHMARKS_COMPETITIVE", str(default_competitive))
+    )
+    vert = competitive_root / "verticals.toml"
     if not vert.is_file():
         return 0
     text = vert.read_text(encoding="utf-8")
@@ -255,11 +282,63 @@ def ingest_verticals_stubs(gaps_by_id: dict[str, dict]) -> int:
     return added
 
 
+def _self_test() -> int:
+    snap = {
+        "runners": [
+            {
+                "id": "sim",
+                "todos": [
+                    {"id": "sim-p1-num-dot-axpy", "status": "completed"},
+                    {"id": "sim-p1-md-neighbor-cell", "status": "completed"},
+                    {"id": "sim-p9-still-open", "status": "pending"},
+                ],
+                "state": {"completed_ids": []},
+            },
+            {
+                "id": "studio-ui-ux",
+                "todos": [{"id": "studio-ux-04-particle-display", "status": "done"}],
+                "state": {"completed_ids": ["studio-ux-04-particle-display"]},
+            },
+        ]
+    }
+    gaps: dict[str, dict] = {
+        "gap-sim-axpy": {
+            "id": "gap-sim-axpy",
+            "status": "open",
+            "runner_id": "sim",
+            "plan_todo_id": "sim-p1-num-dot-axpy",
+        },
+        "gap-sim-open": {
+            "id": "gap-sim-open",
+            "status": "open",
+            "runner_id": "sim",
+            "plan_todo_id": "sim-p9-still-open",
+        },
+        "gap-studio": {
+            "id": "gap-studio",
+            "status": "open",
+            "runner_id": "studio-ui-ux",
+            "plan_todo_id": "studio-ux-04-particle-display",
+        },
+    }
+    closed = reconcile_snapshot_completed(snap, gaps)
+    assert closed == 2, closed
+    assert gaps["gap-sim-axpy"]["status"] == "closed"
+    assert gaps["gap-sim-open"]["status"] == "open"
+    assert gaps["gap-studio"]["status"] == "closed"
+    print("swarm-gap-ingest self-test: OK")
+    return 0
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--dry-run", action="store_true", help="Print summary only")
+    p.add_argument("--self-test", action="store_true", help="Run reconcile unit checks")
     p.add_argument("--registry", type=Path, default=REGISTRY)
     args = p.parse_args()
+
+    if args.self_test:
+        return _self_test()
 
     data = _load_yaml(args.registry)
     gaps_by_id = _gap_index(data.get("gaps") or [])

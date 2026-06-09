@@ -11,11 +11,18 @@ plan: docs/libernetes/master-plan.md
 
 ## Mission
 
-Build **livm** VM runtime on the **Li-native hypervisor** (`li-hypervisor` / LiOS ABI). KVM/QEMU/libvirt are **removed** from the target architecture — not a production or fallback backend.
+Build **livm** VM runtime on the **Li-native stack**:
+
+- **Hypervisor:** `li-hypervisor` / LiOS ABI (production)
+- **Firmware:** `li-firmware` measured boot (production)
+- **Disk:** `li-disk` CoW
+- **Config:** `li-cloud-init`
 
 Wave 0 **DONE**. Wave 1 **DONE**. Wave 2 adds disk/cloud-init modules, Li-native hypervisor probe, and Windows in multi-OS matrix.
 
-> **Interim stubs:** Wave 1 delivered `src/hypervisor/kvm.li` as a scaffold filename only. Do not extend KVM/QEMU — retarget new work to `li-hypervisor` and delete kvm stubs once the native backend gate passes.
+> **Industry reference:** KubeVirt API compat for CRDs; KVM/QEMU cold-boot baselines in `li-cluster-bench`; OVMF/UEFI cited for guest image compat only — not production firmware.
+>
+> **Interim shim (dev-only):** Wave 1 `src/hypervisor/kvm.li` is a stub filename for gate compatibility. Retarget new work to `li-hypervisor`; delete kvm stubs once native backend gate passes.
 
 ## Phase checklist
 
@@ -24,7 +31,7 @@ Wave 0 **DONE**. Wave 1 **DONE**. Wave 2 adds disk/cloud-init modules, Li-native
 | **LB-V0** | package scaffold | **DONE** | `check-libernetes-livm-scaffold-gate.sh` |
 | **LB-V1** | hypervisor backend interface | **DONE** | `check-libernetes-livm-hypervisor-gate.sh` |
 | **LB-V2** | VirtualMachine CRD yaml | **DONE** | `check-libernetes-livm-crd-gate.sh` |
-| **LB-V3** | `src/hypervisor/kvm.li` (legacy stub — **deprecated**) | **DONE** | `check-libernetes-livm-wave1-gate.sh` |
+| **LB-V3** | `src/hypervisor/kvm.li` (interim shim — dev-only) | **DONE** | `check-libernetes-livm-wave1-gate.sh` |
 | **LB-V4** | `docs/libernetes/multi-os-matrix.md` | **DONE** | same wave1 gate |
 | **LB-V5** | `li-tests/smoke/builds.li` | **DONE** | same wave1 gate |
 | **LB-V6** | `src/disk/qcow2.li` | pending | `check-libernetes-livm-wave2-gate.sh` |

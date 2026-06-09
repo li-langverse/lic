@@ -8,7 +8,9 @@
 | li-workqueue | stub | controllers |
 | li-oci | stub | licontainers |
 | li-hypervisor | missing | livm Li-native VM backend (LiOS ABI) |
-| licontainers | scaffold | containers |
+| li-firmware | missing | livm measured boot (Li-native; OVMF/UEFI compat notes only) |
+| li-disk | missing | livm CoW disk (qemu-img patterns as reference) |
+| licontainers | scaffold | containers (LiOSBackend primary) |
 | livm | scaffold | VMs |
 | li-libernetes-core | scaffold | shared types |
 

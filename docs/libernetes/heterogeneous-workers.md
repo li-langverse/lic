@@ -29,7 +29,9 @@ Join: `libernetes worker join ... --profile vm-gpu-pool`
 | GPU/VFIO | `libernetes.io/gpu=true` |
 | LiOS kernel | `libernetes.io/os=lios` |
 
-VM workloads schedule only onto nodes with `libernetes.io/hypervisor=li-native`. KVM/QEMU capability labels are deprecated and not registered.
+VM workloads schedule only onto nodes with `libernetes.io/hypervisor=li-native`.
+
+> **Industry reference:** KubeVirt-style `VirtualMachine` scheduling patterns inform WorkerProfile design. KVM/QEMU are learn-from baselines, not registered capability labels.
 
 ## Scheduling
 

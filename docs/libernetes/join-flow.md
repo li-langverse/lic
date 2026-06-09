@@ -45,7 +45,7 @@ no manual `kubectl label` for the baseline set.
 | `nvidia-smi` or `/dev/vfio` | `libernetes.io/gpu=true` |
 | `/etc/lios-release` | `libernetes.io/os=lios` |
 
-> **Removed:** `libernetes.io/kvm` and `/dev/kvm` probing — KVM/QEMU are not part of the livm production path.
+> **Production label:** `libernetes.io/hypervisor=li-native` — not `kvm`. KVM/QEMU cited as industry learn-from only; `/dev/kvm` is not probed on join.
 
 Profiles such as `vm-gpu-pool` add scheduling constraints on top of discovered
 labels. See [heterogeneous-workers.md](heterogeneous-workers.md).

@@ -195,6 +195,8 @@ flowchart TB
   cgroupsref -.-> liosbe
 ```
 
+![Li-native runtime stack — livm, licontainers, industry reference](libernetes-roadmap-architecture.png)
+
 ---
 
 ## Related docs

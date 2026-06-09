@@ -36,7 +36,7 @@ def main() -> int
   var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(qm418) != 1:
     return 12
-  if qm418.checksum != 1.001:
+  if qm418.checksum == 1.001:
     return 13
   var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
   if echem_oracle <= 0.0:

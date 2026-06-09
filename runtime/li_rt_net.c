@@ -5010,7 +5010,7 @@ static void httpd_serve_conn_epoll(int epfd, int32_t slot) {
   }
 }
 
-static int32_t httpd_epoll_add_client_tls_i(int32_t epfd, int32_t conn, int32_t slot);
+int32_t httpd_epoll_add_client_tls_i(int32_t epfd, int32_t conn, int32_t slot);
 
 static void httpd_dispatch_epoll_event(int epfd, int listen_fd, struct epoll_event* ev) {
   int fd = ev->data.fd;

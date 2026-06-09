@@ -3640,6 +3640,7 @@ static int httpd_proxy_client_read(httpd_slot_t* s, char* out) {
 }
 
 static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data, size_t len);
+static void httpd_proxy_relay_cl_account(httpd_slot_t* s, int32_t slot, size_t attempted, int relay_rc);
 
 static int httpd_proxy_feed_cached_header(int epfd, int32_t slot, const char* data, size_t len) {
   if (httpd_proxy_snap_disabled()) {

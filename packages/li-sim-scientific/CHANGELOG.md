@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `li_sim_scientific_version` → 7 (WP-SCI-03 Phase 2 QM/CFD/FEA tier-2 dispatch).
+- Align package smokes (`builds`, `scientific_oracle_bench`, echem interface smokes) with version 7.
 - **WP-SCI-01 multi-physics tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` (MD + heat + rigid smokes); smoke `li-tests/smoke/multi_physics_tick.li`.
 
 ### Changed (prior)

@@ -24,6 +24,13 @@ Reserved stdlib names: `cpu`, `gpu`, `tpu`, `user_defined`, `parallel`, `vectori
 
 User `decorator def` names: strict package-prefixed snake_case; typosquat ban; expansion whitelist to builtins only.
 
+## Host placement slice
+
+`@cpu` is visible in MIR and `lic verify` telemetry:
+
+- `mir_cpu_def` counts `def` declarations tagged with `@cpu`.
+- This is **placement metadata only** — host execution is the default domain; `@cpu` makes intent explicit for tier-2 workloads and handbook examples.
+
 ## GPU placement slice
 
 `@gpu` is now visible in MIR and `lic verify` telemetry:

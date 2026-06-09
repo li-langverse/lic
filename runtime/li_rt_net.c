@@ -161,6 +161,7 @@ typedef struct {
   double proxy_last_chunk_ts;
   double proxy_stream_start_ts;
   int proxy_tls_cl_defer; /* CL bytes in SSL wbio, not yet on wire */
+  int proxy_cl_body_active; /* 1: CL body_left accounting (skip response header bytes) */
   int proxy_upstream_hold; /* 1: defer upstream recv until client TLS backlog drains */
   int proxy_pump_budget; /* per-slot relay fairness budget */
 } httpd_slot_t;
@@ -3739,6 +3740,7 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
   g_slots[slot].proxy_resp_chunk_line_len = 0;
   g_slots[slot].proxy_resp_hdr_len = 0;
   g_slots[slot].proxy_tls_cl_defer = 0;
+  g_slots[slot].proxy_cl_body_active = 0;
   g_slots[slot].proxy_upstream_hold = 0;
   g_slots[slot].proxy_pump_budget = 0;
   g_slots[slot].proxy_client_epoll_events = 0;
@@ -4502,7 +4504,7 @@ static void httpd_proxy_tls_cl_defer_flush(int epfd, int32_t slot);
 
 static void httpd_proxy_relay_cl_account(httpd_slot_t* s, int32_t slot, size_t consumed) {
   size_t dec;
-  if (s->proxy_resp_body_mode != PROXY_RESP_BODY_CL || consumed == 0) {
+  if (s->proxy_resp_body_mode != PROXY_RESP_BODY_CL || consumed == 0 || !s->proxy_cl_body_active) {
     return;
   }
   if (s->proxy_resp_body_left <= 0) {
@@ -4635,7 +4637,7 @@ static void httpd_proxy_tls_cl_defer_flush(int epfd, int32_t slot) {
     }
     deferred = s->proxy_tls_cl_defer;
     s->proxy_tls_cl_defer = 0;
-    if (deferred > 0) {
+    if (deferred > 0 && s->proxy_cl_body_active) {
       httpd_proxy_relay_cl_account(s, slot, (size_t)deferred);
     }
     if (!s->proxy_active) {
@@ -4856,9 +4858,29 @@ static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
       return -1;
     }
   }
+  s->proxy_cl_body_active = 0;
   if (httpd_proxy_relay_to_client(epfd, slot, s->proxy_resp_hdr_acc, (size_t)hdr_end) < 0) {
     return -1;
   }
+  for (int hflush = 0; hflush < 64; hflush++) {
+    httpd_proxy_tls_cl_defer_flush(epfd, slot);
+    httpd_proxy_flush_client_out(epfd, slot);
+    if (!s->proxy_active) {
+      return 0;
+    }
+    if (!httpd_proxy_tls_outstanding(slot, s)) {
+      break;
+    }
+    if (s->fd >= 0) {
+      (void)httpd_tls_drain_writes(slot, s->fd);
+    }
+  }
+  if (httpd_proxy_tls_outstanding(slot, s)) {
+    httpd_proxy_upstream_hold_sync(epfd, slot);
+    httpd_proxy_client_epoll_arm_out(epfd, slot);
+    return 0;
+  }
+  s->proxy_cl_body_active = 1;
   if (s->proxy_is_sse) {
     s->proxy_sse_hdr_done = 1;
   }
@@ -5778,6 +5800,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_client_epoll_events = 0;
   s->proxy_up_epoll_events = 0;
   s->proxy_tls_cl_defer = 0;
+  s->proxy_cl_body_active = 0;
   s->proxy_upstream_hold = 0;
   s->proxy_pump_budget = HTTPD_PROXY_PUMP_BUDGET_BYTES;
   s->proxy_is_sse = httpd_client_wants_sse(g_slots[slot].buf, hdr_end);
@@ -8022,6 +8045,7 @@ int32_t li_rt_httpd_proxy_relay_selftest(void) {
   memset(s, 0, sizeof(*s));
   s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
   s->proxy_resp_body_left = 1321365;
+  s->proxy_cl_body_active = 1;
   httpd_proxy_relay_cl_account(s, 0, 1320984);
   if (s->proxy_resp_body_left != 381) {
     *s = saved;
@@ -8036,6 +8060,7 @@ int32_t li_rt_httpd_proxy_relay_selftest(void) {
   memset(s, 0, sizeof(*s));
   s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
   s->proxy_resp_body_left = 10645;
+  s->proxy_cl_body_active = 1;
   httpd_proxy_relay_cl_account(s, 0, 10264);
   s->proxy_rbuf_len = 381;
   s->proxy_rbuf_sent = 0;
@@ -8062,7 +8087,24 @@ int32_t li_rt_httpd_proxy_relay_selftest(void) {
     return -11;
   }
 
-  /* Case 7: concurrent_streams acquire/release via httpd_proxy_clear. */
+  /* Case 7: TLS defer for response headers must not decrement body_left. */
+  memset(s, 0, sizeof(*s));
+  s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
+  s->proxy_resp_body_left = 84;
+  s->proxy_cl_body_active = 0;
+  httpd_proxy_relay_cl_account(s, 0, 320);
+  if (s->proxy_resp_body_left != 84) {
+    *s = saved;
+    return -16;
+  }
+  s->proxy_cl_body_active = 1;
+  httpd_proxy_relay_cl_account(s, 0, 84);
+  if (s->proxy_resp_body_left != 0) {
+    *s = saved;
+    return -17;
+  }
+
+  /* Case 8: concurrent_streams acquire/release via httpd_proxy_clear. */
   {
     int saved_max = g_concurrent_streams_max;
     int saved_active = g_active_proxy_streams;

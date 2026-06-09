@@ -445,6 +445,9 @@ static int httpd_proxy_pump_budget_take(int32_t slot, size_t nbytes) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN) {
     return 1;
   }
+  if (g_active_proxy_streams > 4) {
+    return 0;
+  }
   httpd_slot_t* s = &g_slots[slot];
   if (s->proxy_pump_budget <= 0) {
     return 1;
@@ -5776,6 +5779,7 @@ static void httpd_proxy_pump_tunnel(int epfd, int32_t slot) {
 
 static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
+  httpd_proxy_pump_budget_reset(slot);
   if (s->proxy_resp_body_mode == PROXY_RESP_BODY_TUNNEL) {
     httpd_proxy_pump_tunnel(epfd, slot);
     return;

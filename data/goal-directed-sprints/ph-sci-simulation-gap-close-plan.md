@@ -63,7 +63,7 @@ Legacy Phase 0 worker (`li-ph-sci-simulation-gap-close`) is superseded; keep sca
 - **Phase 0 lib compile:** `li-physics-fluids`, `li-physics-em`, `li-physics-weather`, `li-math-numerics` build under `scripts/ph-sci-phase0-gates.sh` (WP-SCI-BUILD-01/02).
 - **Honest smokes:** Phase 0 blocked libs import `src/lib.li` exports (WP-SCI-BUILD-03).
 - **`@gpu` today:** MIR placement telemetry (`mir_gpu_def=1` via `scripts/check-mir-gpu-decorator.sh`). Vendor LKIR execution remains Phase 3 (WP-SCI-GPU-VENDOR-01).
-- **Remaining lib gaps (Phase 2):** `run_algo_registry_stub` for most CFD/FEA rows; `li-sim-viz` compose-only; scene `native_pixels` stub; particles MD force accumulation still weak.
+- **Remaining lib gaps (Phase 2):** `run_algo_registry_stub` for drug/bio/ml/am/viz/robo/auto rows only (CFD/FEA/QM tier-2 landed WP-SCI-03); `li-sim-viz` compose-only; scene `native_pixels` stub; particles MD force accumulation still weak.
 
 ---
 
@@ -74,7 +74,7 @@ Legacy Phase 0 worker (`li-ph-sci-simulation-gap-close`) is superseded; keep sca
 | Package | Maturity | Test coverage | `lic build` lib | Real vs placeholder | Known blockers |
 |---------|----------|---------------|-----------------|---------------------|----------------|
 | **li-sim** | contract-only / partial | CPU: `sim_step_stub`, env pool, profile bridge (`compile_open_ok`). No `@gpu`. | Runtime smokes OK; lib large, open VC on strict build | **Real:** deterministic tick/replay/env-pool contracts. **Placeholder:** `SimSessionStub` (no `SimWorld`), `sim_step` increments tick only | Object-call codegen #322 blocks some composables; SIM-4 full replay buffer stub |
-| **li-sim-scientific** | partial → tier-2 oracle | CPU + `@gpu` MD oracle smoke | Lib builds with open VC; smokes verify | **Real:** 4-particle LJ chain + 1D heat stencil oracles, `run_multi_physics_at_step`. **Placeholder:** `run_algo_registry_stub` (checksum 1.001) for most registry IDs | WP-SCI-03 registry; CFD/FEA rows stub; no LAMMPS/GROMACS external oracle |
+| **li-sim-scientific** | partial → tier-2 oracle | CPU + `@gpu` MD oracle smoke | Lib builds with open VC; smokes verify | **Real:** 4-particle LJ chain + 1D heat stencil + CFD/FEA/QM tier-2 oracles, `run_multi_physics_at_step`. **Placeholder:** `run_algo_registry_stub` (checksum 1.001) for drug/bio/ml/am/viz/robo/auto IDs | WP-SCI-03 partial (CFD/FEA/QM); no LAMMPS/GROMACS external oracle |
 | **li-sim-viz** | stub / contract-only | CPU: `viz_pipeline`, `viz_viewport_fields` (`check_ok`). No `@gpu` | Open VC | **Real:** panel state machine + viewport field compose contract. **Placeholder:** `sim_viz_workload_class_stub`, no wgpu volume/field draw | WP-SCI-04; depends WP-GD-05 wgpu |
 | **li-sim-sensors** | partial stub | CPU: `sensor_bus_raycast_contract` | Open VC likely | **Real:** bounded hit distances + session persistence. **Placeholder:** analytic ray distances, not mesh/scene intersection | SIM-5 partial; no lidar mesh |
 | **li-sim-robotics** | partial | CPU: `tick_stub`, `workspace_bounds`, `robo_ik_6dof` | Open VC | **Real:** 2-DOF FK, 6-DOF numeric IK step, workspace checks. **Placeholder:** `sim_robotics_tick_at` wraps session + IK, not dynamics/collision | Not Gazebo/MoveIt; WP-ROBO-04/05 open |

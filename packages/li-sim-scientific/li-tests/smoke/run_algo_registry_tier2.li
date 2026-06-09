@@ -1,4 +1,3 @@
-import sim
 import sim.scientific
 
 def main() -> int
@@ -17,67 +16,96 @@ def main() -> int
     return 3
   if md105.checksum == 1.001:
     return 4
-  var heat210: SimRunResult = run_algo(210, 2)
-  if run_result_ok(heat210) != 1:
+  var heat203: SimRunResult = run_algo(203, 2)
+  if run_result_ok(heat203) != 1:
     return 5
-  if heat210.algo_id != 210:
+  if heat203.algo_id != 203:
     return 6
-  if heat210.checksum != heat_oracle:
+  if heat203.checksum != heat_oracle:
     return 7
-  if heat210.checksum == 1.001:
+  if heat203.checksum == 1.001:
     return 8
+  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
+  if cfd_oracle <= 0.0:
+    return 9
+  var cfd206: SimRunResult = run_algo(206, 1)
+  if run_result_ok(cfd206) != 1:
+    return 10
+  if cfd206.algo_id != 206:
+    return 11
+  if cfd206.checksum != cfd_oracle:
+    return 12
+  if cfd206.checksum == 1.001:
+    return 13
+  var fea_oracle: float = sim_scientific_oracle_checksum_fea()
+  if fea_oracle <= 0.0:
+    return 14
+  var fea215: SimRunResult = run_algo(215, 0)
+  if run_result_ok(fea215) != 1:
+    return 15
+  if fea215.algo_id != 215:
+    return 16
+  if fea215.checksum != fea_oracle:
+    return 17
+  if fea215.checksum == 1.001:
+    return 18
   var rigid302: SimRunResult = run_algo(302, 0)
   if run_result_ok(rigid302) != 1:
-    return 9
+    return 19
   if rigid302.algo_id != 302:
-    return 10
+    return 20
   if rigid302.checksum == 1.001:
-    return 11
+    return 21
+  var qm_oracle: float = sim_scientific_oracle_checksum_qm()
+  if qm_oracle <= 0.0:
+    return 22
   var qm418: SimRunResult = run_algo(algo_qm_dft_scf_energy(), 0)
   if run_result_ok(qm418) != 1:
-    return 12
-  if qm418.checksum != 1.001:
-    return 13
+    return 23
+  if qm418.checksum != qm_oracle:
+    return 24
+  if qm418.vertical_id != vertical_qm_dft():
+    return 25
   var echem_oracle: float = sim_scientific_oracle_checksum_echem_aimd()
   if echem_oracle <= 0.0:
-    return 14
+    return 26
   if echem_oracle >= 1.0e-2:
-    return 15
+    return 27
   var aimd433: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
   if run_result_ok(aimd433) != 1:
-    return 16
+    return 28
   if aimd433.algo_id != 433:
-    return 17
+    return 29
   if aimd433.checksum != echem_oracle:
-    return 18
+    return 30
   if aimd433.checksum == 1.001:
-    return 19
+    return 31
   var gc_oracle: float = sim_scientific_oracle_checksum_echem_gc_aimd()
   if gc_oracle <= 0.0:
-    return 20
+    return 32
   if gc_oracle >= 0.05:
-    return 21
+    return 33
   var gc434: SimRunResult = run_algo(algo_echem_gc_aimd_interface(), 1)
   if run_result_ok(gc434) != 1:
-    return 22
+    return 34
   if gc434.algo_id != 434:
-    return 23
+    return 35
   if gc434.checksum != gc_oracle:
-    return 24
+    return 36
   if gc434.checksum == 1.001:
-    return 25
+    return 37
   var sei_oracle: float = sim_scientific_oracle_checksum_echem_sei_kmc()
   if sei_oracle <= 0.0:
-    return 26
+    return 38
   if sei_oracle >= 0.35:
-    return 27
+    return 39
   var sei435: SimRunResult = run_algo(algo_echem_sei_kmc(), 1)
   if run_result_ok(sei435) != 1:
-    return 28
+    return 40
   if sei435.algo_id != 435:
-    return 29
+    return 41
   if sei435.checksum != sei_oracle:
-    return 30
+    return 42
   if sei435.checksum == 1.001:
-    return 31
+    return 43
   return 0

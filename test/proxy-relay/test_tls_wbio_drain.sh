@@ -1,5 +1,5 @@
 #!/bin/sh
-# Content-Length accounting: body_left tracks consumed bytes exactly.
+# wbio/defer: relay must stay pending until CL defer drained.
 set -eu
 ROOT=$(CDPATH= cd -- "$(dirname "$0")/../.." && pwd)
 ORACLE=/tmp/proxy_relay_oracle

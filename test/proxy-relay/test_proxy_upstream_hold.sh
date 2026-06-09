@@ -1,5 +1,5 @@
 #!/bin/sh
-# Content-Length accounting: body_left tracks consumed bytes exactly.
+# Upstream recv blocked while TLS client backlog (defer/outstanding).
 set -eu
 ROOT=$(CDPATH= cd -- "$(dirname "$0")/../.." && pwd)
 ORACLE=/tmp/proxy_relay_oracle

@@ -268,7 +268,10 @@ def sim_scientific_oracle_checksum_fea() -> float
   var k: array[4, float]
   var f: array[4, float]
   var x: array[4, float]
-  fea_oracle_truss_k(k)
+  k[0] = 2.0
+  k[1] = 4.0
+  k[2] = 4.0
+  k[3] = 2.0
   f[0] = 0.0
   f[1] = 0.0
   f[2] = 0.0

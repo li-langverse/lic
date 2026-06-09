@@ -20,6 +20,12 @@ note = "WP-SCI-03 run_algo_registry MD/heat tier-2 dispatch"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/md_oracle_li_checksum.li"
+outcome = "verify_ok"
+note = "WP-PLAT-05 Li MD tier-2 oracle checksum (4-particle LJ chain)"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/scientific_gpu_md_oracle.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-02 @gpu MD/heat oracle checksums"

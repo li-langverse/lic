@@ -388,6 +388,10 @@ static int httpd_proxy_snap_disabled(void);
 static void httpd_proxy_per_req_cache_reset(int32_t slot);
 static int httpd_proxy_relay_pending_client(httpd_slot_t* s);
 static void httpd_proxy_flush_client_out(int epfd, int32_t slot);
+static void httpd_proxy_client_epoll_arm_out(int epfd, int32_t slot);
+static int httpd_proxy_tls_outstanding(int32_t slot, httpd_slot_t* s);
+static void httpd_proxy_try_tls_flush(int32_t slot);
+static void httpd_proxy_relay_maybe_done(int epfd, int32_t slot);
 static void httpd_drain_upstream_fd(int fd);
 
 static void slots_init_once(void) {

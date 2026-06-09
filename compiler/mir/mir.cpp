@@ -38,8 +38,21 @@ std::size_t count_mir_gpu_multi_device_def(const MirModule& mir) {
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir) {
   std::size_t n = 0;
   for (const auto& fn : mir.functions) {
+    bool proc_disjoint = false;
     for (const auto& d : fn.decorators) {
-      if (d.parallel && d.disjoint_proven) { ++n; }
+      if (d.parallel && d.disjoint_proven) {
+        ++n;
+        proc_disjoint = true;
+        break;
+      }
+    }
+    if (proc_disjoint) {
+      continue;
+    }
+    for (const auto& insn : fn.body) {
+      if (insn.op == MirOp::OmpParallelFor && insn.parallel_disjoint_proven) {
+        ++n;
+      }
     }
   }
   return n;

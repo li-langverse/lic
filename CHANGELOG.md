@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-7d / G-dec decorator MIR:** `@cpu` on `def` lowers to `MirDecorator.cpu` and `lic verify` reports `mir_cpu_def=`; `check-mir-cpu-decorator.sh` in 2f corpus — [2026-06-09-cpu-decorator-mir.md](docs/release-notes/2026-06-09-cpu-decorator-mir.md).
+
 - **Docs:** GitHub Pages handbook hub at https://li-langverse.github.io/lic/ (`site/index.html`, `pages.yml`) — [2026-05-30-lic-handbook-pages.md](docs/release-notes/2026-05-30-lic-handbook-pages.md), [2026-05-30-lic-pages-site-artifact.md](docs/release-notes/2026-05-30-lic-pages-site-artifact.md) (fix missing `site/` artifact after #535).
 
 ### Changed

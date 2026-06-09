@@ -1,6 +1,6 @@
 # Execution decorators (spec stub)
 
-**Status:** Phase 7d in progress (`@gpu` / `@gpu(devices=N)` MIR telemetry landed; LKIR/codegen open)
+**Status:** Phase 7d in progress (`@cpu`/`@gpu`/`@parallel`/`@vectorized` MIR proc tags landed; LKIR/codegen open)
 **Plan:** `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md`  
 **Gaps:** [Provability gaps](../../verification/provability-gaps.md) **G-dec**
 
@@ -23,6 +23,15 @@ User `decorator def` macros expand at **compile time** to a whitelist of builtin
 Reserved stdlib names: `cpu`, `gpu`, `tpu`, `user_defined`, `parallel`, `vectorized`, `async`, `serial`, `no_vectorize`.
 
 User `decorator def` names: strict package-prefixed snake_case; typosquat ban; expansion whitelist to builtins only.
+
+## Host placement slice
+
+`@cpu` is now visible in MIR and `lic verify` telemetry:
+
+- `mir_cpu_def` counts `def` declarations tagged with `@cpu`.
+- This is **host-placement metadata only** — it does not change codegen beyond existing CPU paths.
+
+See **G-dec** in [provability-gaps.md](../../verification/provability-gaps.md).
 
 ## GPU placement slice
 

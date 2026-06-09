@@ -12,6 +12,7 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_refinement_lean.sh" \
   "$ROOT/scripts/check-mir-parallel-decorator.sh" \
+  "$ROOT/scripts/check-mir-cpu-decorator.sh" \
   "$ROOT/scripts/check-mir-gpu-decorator.sh" \
   "$ROOT/scripts/check-mir-vectorized-decorator.sh" \
   "$ROOT/li-tests/tooling/check_release_bounds_ir.sh"

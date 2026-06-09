@@ -158,7 +158,10 @@ def sim_scientific_oracle_checksum_md() -> float
   var diff: float = e1 - e0
   if diff < 0.0:
     diff = -diff
-  return diff / denom
+  var rel: float = diff / denom
+  if rel < 0.0:
+    rel = -rel
+  return rel
 
 # WP-SCI-03 — tier-2 Li oracle: explicit 1D heat stencil (8-point grid).
 def heat_oracle_stencil_step(u: var array[8, float], v: var array[8, float], r: float) -> unit
@@ -359,7 +362,10 @@ def sim_scientific_oracle_checksum_echem_aimd() -> float
   var diff: float = e1 - e0
   if diff < 0.0:
     diff = -diff
-  return diff / denom
+  var rel: float = diff / denom
+  if rel < 0.0:
+    rel = -rel
+  return rel
 
 # W2 — headless batch AIMD (no 64-step interactive cap; toy kernel + DFT stub per step).
 type AimdBatchResult = object

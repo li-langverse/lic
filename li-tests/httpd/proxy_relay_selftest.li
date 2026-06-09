@@ -1,0 +1,17 @@
+# Proxy CL relay accounting selftest — wire-confirmed body_left, no cap desync.
+import std.runtime.seam
+
+extern proc li_rt_httpd_proxy_relay_selftest() -> int
+  requires true
+  ensures -20 <= result
+  ensures result <= 0
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var rc: int = li_rt_httpd_proxy_relay_selftest()
+  if rc != 0:
+    return rc
+  return 0

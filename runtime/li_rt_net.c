@@ -161,8 +161,6 @@ typedef struct {
   double proxy_stream_start_ts;
   int proxy_tls_cl_defer; /* CL bytes in SSL wbio, not yet on wire */
   int proxy_upstream_hold; /* 1: defer upstream recv until client TLS backlog drains */
-  int proxy_resp_cl_cap; /* hard Content-Length cap (-1 = none); independent of body_left */
-  int proxy_resp_bytes_committed; /* body bytes committed to client for this response */
   int proxy_pump_budget; /* per-slot relay fairness budget */
 } httpd_slot_t;
 
@@ -442,44 +440,21 @@ static int httpd_proxy_pump_budget_take(int32_t slot, size_t nbytes) {
   return 0;
 }
 
-static int httpd_proxy_cl_cap_remaining(const httpd_slot_t* s) {
-  if (!s || s->proxy_resp_cl_cap < 0) {
-    return -1;
-  }
-  int rem = s->proxy_resp_cl_cap - s->proxy_resp_bytes_committed;
-  return rem > 0 ? rem : 0;
-}
-
-static void httpd_proxy_cl_cap_reset(httpd_slot_t* s) {
-  if (!s) {
-    return;
-  }
-  s->proxy_resp_cl_cap = -1;
-  s->proxy_resp_bytes_committed = 0;
-}
-
-/* Track body bytes accepted into the client path (SSL/rbuf) for hard CL cap. */
-static void httpd_proxy_cl_cap_commit(httpd_slot_t* s, size_t nbytes) {
-  int rem;
-  if (!s || s->proxy_resp_cl_cap < 0 || nbytes == 0) {
-    return;
-  }
-  rem = s->proxy_resp_cl_cap - s->proxy_resp_bytes_committed;
-  if (rem <= 0) {
-    return;
-  }
-  if ((size_t)rem < nbytes) {
-    nbytes = (size_t)rem;
-  }
-  s->proxy_resp_bytes_committed += (int)nbytes;
-}
-
-/* CL response fully relayed to wire (not merely cap-committed into SSL/rbuf). */
+/* CL response fully relayed to wire (body_left + no pending rbuf/TLS defer). */
 static int httpd_proxy_cl_relay_complete(const httpd_slot_t* s) {
   if (!s || s->proxy_resp_body_mode != PROXY_RESP_BODY_CL) {
     return 1;
   }
-  return s->proxy_resp_body_left <= 0;
+  if (s->proxy_resp_body_left > 0) {
+    return 0;
+  }
+  if (s->proxy_tls_cl_defer > 0) {
+    return 0;
+  }
+  if (s->proxy_rbuf_len > 0 && s->proxy_rbuf_sent < (size_t)s->proxy_rbuf_len) {
+    return 0;
+  }
+  return 1;
 }
 
 /* All TLS ciphertext flushed and SSL layer idle. */
@@ -3743,7 +3718,6 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
   g_slots[slot].proxy_resp_hdr_len = 0;
   g_slots[slot].proxy_tls_cl_defer = 0;
   g_slots[slot].proxy_upstream_hold = 0;
-  httpd_proxy_cl_cap_reset(&g_slots[slot]);
   g_slots[slot].proxy_pump_budget = 0;
   g_slots[slot].proxy_client_epoll_events = 0;
   g_slots[slot].proxy_up_epoll_events = 0;
@@ -4000,8 +3974,6 @@ static int httpd_proxy_feed_cached_header(int epfd, int32_t slot, const char* da
   s->proxy_resp_parsing = 0;
   s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
   s->proxy_resp_body_left = g_proxy_resp_cl_cached;
-  s->proxy_resp_cl_cap = g_proxy_resp_cl_cached;
-  s->proxy_resp_bytes_committed = 0;
   size_t tail = len - take;
   if (tail > 0) {
     if ((size_t)s->proxy_resp_body_left < tail) {
@@ -4556,9 +4528,6 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
     if (left > sizeof(s->proxy_rbuf)) {
       return -1;
     }
-    if (off > 0) {
-      httpd_proxy_cl_cap_commit(s, off);
-    }
     memmove(s->proxy_rbuf, send_data + off, left);
     s->proxy_rbuf_len = (int)left;
     s->proxy_rbuf_sent = 0;
@@ -4578,23 +4547,23 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
     if (s->fd >= 0) {
       (void)httpd_tls_drain_writes(slot, s->fd);
     }
-    s->proxy_tls_cl_defer += (int)send_len;
-    httpd_proxy_cl_cap_commit(s, send_len);
-    httpd_proxy_upstream_hold_sync(epfd, slot);
-    httpd_proxy_client_epoll_arm_out(epfd, slot);
-    return 0;
+    if (httpd_tls_wbio_pending(slot) > 0 || httpd_tls_ssl_pending(slot) > 0) {
+      s->proxy_tls_cl_defer += (int)send_len;
+      httpd_proxy_upstream_hold_sync(epfd, slot);
+      httpd_proxy_client_epoll_arm_out(epfd, slot);
+      return 0;
+    }
+    return (int)len;
   }
   if (slot >= 0 && httpd_tls_slot_proto(slot) == 1) {
     (void)httpd_tls_flush_wbio(slot);
     if (httpd_tls_wbio_pending(slot) > 0) {
       s->proxy_tls_cl_defer += (int)send_len;
-      httpd_proxy_cl_cap_commit(s, send_len);
       httpd_proxy_upstream_hold_sync(epfd, slot);
       httpd_proxy_client_epoll_arm_out(epfd, slot);
       return 0;
     }
   }
-  httpd_proxy_cl_cap_commit(s, send_len);
   return (int)len;
 }
 
@@ -4811,8 +4780,6 @@ static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
   if (cl >= 0) {
     s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
     s->proxy_resp_body_left = cl;
-    s->proxy_resp_cl_cap = cl;
-    s->proxy_resp_bytes_committed = 0;
     if (g_proxy_resp_cl_cached < 0 && !httpd_proxy_snap_disabled() && cl <= 4096 &&
         hdr_end > 0 && hdr_end <= (int)sizeof(g_proxy_resp_hdr_copy)) {
       g_proxy_resp_cl_cached = cl;
@@ -5242,13 +5209,11 @@ static void httpd_proxy_flush_client_out(int epfd, int32_t slot) {
         (void)httpd_tls_flush_wbio(slot);
         if (httpd_tls_wbio_pending(slot) > 0) {
           s->proxy_tls_cl_defer += nbytes;
-          httpd_proxy_cl_cap_commit(s, (size_t)nbytes);
           httpd_proxy_upstream_hold_sync(epfd, slot);
           httpd_proxy_client_epoll_arm_out(epfd, slot);
           return;
         }
       }
-      httpd_proxy_cl_cap_commit(s, (size_t)nbytes);
       httpd_proxy_relay_cl_account(s, slot, (size_t)nbytes);
       httpd_proxy_upstream_hold_sync(epfd, slot);
       httpd_proxy_relay_maybe_done(epfd, slot);
@@ -5730,7 +5695,6 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_up_epoll_events = 0;
   s->proxy_tls_cl_defer = 0;
   s->proxy_upstream_hold = 0;
-  httpd_proxy_cl_cap_reset(s);
   s->proxy_pump_budget = HTTPD_PROXY_PUMP_BUDGET_BYTES;
   s->proxy_is_sse = httpd_client_wants_sse(g_slots[slot].buf, hdr_end);
   s->proxy_is_ws =
@@ -7332,7 +7296,7 @@ int32_t httpd_li_proxy_forward_hdr_tail_i(int32_t epfd, int32_t slot, int32_t sk
     return -1;
   }
   int rc = httpd_proxy_relay_to_client((int)epfd, slot, s->proxy_resp_hdr_acc + skip, (size_t)n);
-  if (rc >= 0) {
+  if (rc > 0 && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL) {
     httpd_proxy_relay_cl_account(s, slot, (size_t)rc);
   }
   return rc;
@@ -7404,8 +7368,6 @@ void httpd_li_proxy_arm_cl_cap_i(int32_t slot, int32_t cl) {
     return;
   }
   httpd_slot_t* s = &g_slots[slot];
-  s->proxy_resp_cl_cap = cl;
-  s->proxy_resp_bytes_committed = 0;
   s->proxy_resp_body_left = cl;
   s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
   g_lp_body_left[slot] = cl;
@@ -7904,4 +7866,77 @@ done:
   li_rt_sock_close(epfd);
   return echoed > 0 ? echoed : -4;
 #endif
+}
+
+/* Proxy CL relay invariants — TDD oracle (lic/test/proxy-relay/, li-tests/httpd/proxy_relay_selftest.li). */
+static size_t httpd_proxy_selftest_cl_take(size_t recv_n, int body_left) {
+  size_t take = recv_n;
+  if (body_left >= 0 && take > (size_t)body_left) {
+    take = (size_t)body_left;
+  }
+  return take;
+}
+
+int32_t li_rt_httpd_proxy_relay_selftest(void) {
+  httpd_slot_t saved;
+  httpd_slot_t* s;
+  size_t take;
+
+  slots_init_once();
+  s = &g_slots[0];
+  saved = *s;
+
+  /* Case 1: rbuf tail pending => relay not complete even if body_left==0. */
+  memset(s, 0, sizeof(*s));
+  s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
+  s->proxy_resp_body_left = 0;
+  s->proxy_rbuf_len = 381;
+  s->proxy_rbuf_sent = 0;
+  if (httpd_proxy_cl_relay_complete(s)) {
+    *s = saved;
+    return -1;
+  }
+  if (!httpd_proxy_relay_pending_client(s)) {
+    *s = saved;
+    return -2;
+  }
+
+  /* Case 2: TLS defer pending => not complete. */
+  memset(s, 0, sizeof(*s));
+  s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
+  s->proxy_resp_body_left = 0;
+  s->proxy_tls_cl_defer = 381;
+  if (httpd_proxy_cl_relay_complete(s)) {
+    *s = saved;
+    return -3;
+  }
+
+  /* Case 3: final chunk 10645 recv must not truncate (GitLab main.chunk.js -381 bug). */
+  take = httpd_proxy_selftest_cl_take(10645, 10645);
+  if (take != 10645u) {
+    *s = saved;
+    return -4;
+  }
+  take = httpd_proxy_selftest_cl_take(10645, 10264);
+  if (take != 10264u) {
+    *s = saved;
+    return -5;
+  }
+
+  /* Case 4: wire-confirmed only — body_left tracks remaining, not a separate cap. */
+  memset(s, 0, sizeof(*s));
+  s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
+  s->proxy_resp_body_left = 1321365;
+  httpd_proxy_relay_cl_account(s, 0, 1320984);
+  if (s->proxy_resp_body_left != 381) {
+    *s = saved;
+    return -6;
+  }
+  if (httpd_proxy_cl_relay_complete(s)) {
+    *s = saved;
+    return -7;
+  }
+
+  *s = saved;
+  return 0;
 }

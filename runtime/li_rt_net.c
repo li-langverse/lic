@@ -99,6 +99,8 @@ static int epoll_wait(int epfd, struct epoll_event* events, int maxevents, int t
 #define HTTPD_PROXY_PUMP_BUDGET_BYTES HTTPD_PROXY_UP_READ_BUF
 /* Per-slot byte budget per epoll tick (round-robin relay pump). */
 #define HTTPD_PROXY_TICK_BUDGET_BYTES HTTPD_PROXY_UP_READ_BUF
+/* Generous callback budget when this worker has parallel CL relays (auto-workers spread). */
+#define HTTPD_PROXY_PARALLEL_PUMP_BUDGET_BYTES (256 * 1024)
 #define HTTPD_ACCEPT_BURST 32
 /* Defaults match li-httpd [limits] ??? overridden via runtime.conf (see httpd_limits.py). */
 #define HTTPD_DEFAULT_MAX_REQUEST_BODY (1024 * 1024)
@@ -454,12 +456,12 @@ static int httpd_proxy_pump_budget_take(int32_t slot, size_t nbytes) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN) {
     return 1;
   }
-  /* LI_HTTPD_WORKERS=auto spreads load; disable byte cap when any parallel relay
-   * is active on this worker so CL bodies are not truncated (ae8257b81). */
-  if (g_active_proxy_streams > 1) {
-    return 0;
-  }
   httpd_slot_t* s = &g_slots[slot];
+  /* LI_HTTPD_WORKERS=auto spreads load (~1-2 streams/worker); use a generous but
+   * finite budget so relays yield between epoll ticks (avoid ae8257b81 spin). */
+  if (g_active_proxy_streams > 1 && s->proxy_pump_budget <= 0) {
+    s->proxy_pump_budget = HTTPD_PROXY_PARALLEL_PUMP_BUDGET_BYTES;
+  }
   if (s->proxy_pump_budget <= 0) {
     return 1;
   }
@@ -5372,8 +5374,14 @@ static void httpd_proxy_tick_starved_relays(int epfd) {
       }
       if (pass == 1 && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0 &&
           !httpd_proxy_upstream_recv_blocked((int32_t)i, s)) {
-        httpd_proxy_ensure_tick_budget((int32_t)i);
-        g_slots[i].proxy_pump_budget = (int)tick_budget;
+        if (g_active_proxy_streams > 1) {
+          if (g_slots[i].proxy_pump_budget <= 0) {
+            g_slots[i].proxy_pump_budget = HTTPD_PROXY_PARALLEL_PUMP_BUDGET_BYTES;
+          }
+        } else {
+          httpd_proxy_ensure_tick_budget((int32_t)i);
+          g_slots[i].proxy_pump_budget = (int)tick_budget;
+        }
         httpd_proxy_pump_relay(epfd, (int32_t)i);
         serviced++;
         continue;
@@ -5846,9 +5854,11 @@ static void httpd_proxy_pump_tunnel(int epfd, int32_t slot) {
 static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
   if (g_active_proxy_streams > 1) {
-    httpd_proxy_pump_budget_reset(slot);
+    if (s->proxy_pump_budget <= 0) {
+      s->proxy_pump_budget = HTTPD_PROXY_PARALLEL_PUMP_BUDGET_BYTES;
+    }
   } else {
-    httpd_proxy_ensure_tick_budget(slot);
+    httpd_proxy_pump_budget_reset(slot);
   }
   if (s->proxy_resp_body_mode == PROXY_RESP_BODY_TUNNEL) {
     httpd_proxy_pump_tunnel(epfd, slot);

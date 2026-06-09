@@ -1,0 +1,1752 @@
+{
+  "schema": "li-tests-agent-manifest-v1",
+  "source": "li-tests/manifest.toml",
+  "count": 302,
+  "suites": [
+    {
+      "name": "advisory",
+      "count": 3
+    },
+    {
+      "name": "async",
+      "count": 3
+    },
+    {
+      "name": "benchmarks",
+      "count": 3
+    },
+    {
+      "name": "borrow",
+      "count": 3
+    },
+    {
+      "name": "bytes",
+      "count": 1
+    },
+    {
+      "name": "codegen",
+      "count": 1
+    },
+    {
+      "name": "collections",
+      "count": 8
+    },
+    {
+      "name": "compile_ok",
+      "count": 3
+    },
+    {
+      "name": "composable",
+      "count": 26
+    },
+    {
+      "name": "contracts_verify",
+      "count": 32
+    },
+    {
+      "name": "cve_patterns",
+      "count": 8
+    },
+    {
+      "name": "decorator_exploits",
+      "count": 4
+    },
+    {
+      "name": "decorators",
+      "count": 14
+    },
+    {
+      "name": "effects",
+      "count": 12
+    },
+    {
+      "name": "encapsulation",
+      "count": 26
+    },
+    {
+      "name": "execution_resources",
+      "count": 2
+    },
+    {
+      "name": "generics",
+      "count": 8
+    },
+    {
+      "name": "httpd",
+      "count": 7
+    },
+    {
+      "name": "integration",
+      "count": 1
+    },
+    {
+      "name": "lexer_parser",
+      "count": 6
+    },
+    {
+      "name": "log",
+      "count": 1
+    },
+    {
+      "name": "math_linalg",
+      "count": 26
+    },
+    {
+      "name": "math_syntax",
+      "count": 4
+    },
+    {
+      "name": "modules",
+      "count": 5
+    },
+    {
+      "name": "net_trusted",
+      "count": 2
+    },
+    {
+      "name": "parallel_codegen",
+      "count": 5
+    },
+    {
+      "name": "physics",
+      "count": 3
+    },
+    {
+      "name": "prove_reject",
+      "count": 6
+    },
+    {
+      "name": "race_shared_memory",
+      "count": 10
+    },
+    {
+      "name": "routing",
+      "count": 2
+    },
+    {
+      "name": "runtime",
+      "count": 4
+    },
+    {
+      "name": "science_gpu",
+      "count": 20
+    },
+    {
+      "name": "simd",
+      "count": 2
+    },
+    {
+      "name": "smoke",
+      "count": 4
+    },
+    {
+      "name": "stdlib_abuse",
+      "count": 4
+    },
+    {
+      "name": "stdlib_coverage",
+      "count": 3
+    },
+    {
+      "name": "stdlib_parity",
+      "count": 3
+    },
+    {
+      "name": "stdlib_seal",
+      "count": 9
+    },
+    {
+      "name": "tetris",
+      "count": 1
+    },
+    {
+      "name": "tooling",
+      "count": 9
+    },
+    {
+      "name": "typecheck",
+      "count": 8
+    }
+  ],
+  "tests": [
+    {
+      "suite": "lexer_parser",
+      "file": "lexer_parser/fib.li",
+      "outcome": "parse_ok"
+    },
+    {
+      "suite": "lexer_parser",
+      "file": "lexer_parser/invalid_indent.li",
+      "outcome": "parse_fail",
+      "expected_substr": "indentation"
+    },
+    {
+      "suite": "lexer_parser",
+      "file": "lexer_parser/decorators_parse.li",
+      "outcome": "parse_ok"
+    },
+    {
+      "suite": "lexer_parser",
+      "file": "lexer_parser/async_await_parse.li",
+      "outcome": "parse_ok"
+    },
+    {
+      "suite": "lexer_parser",
+      "file": "lexer_parser/plus_minus_binop.li",
+      "outcome": "parse_ok"
+    },
+    {
+      "suite": "lexer_parser",
+      "file": "lexer_parser/implies_contract_parse.li",
+      "outcome": "parse_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/cpu_only_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/gpu_only_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/gpu_multi_device_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/gpu_devices_zero_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "gpu_devices"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/gpu_devices_ident_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "gpu_devices"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/gpu_vendor_arg_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "gpu decorator"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/parallel_with_disjoint.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/parallel_def_disjoint_inherit.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/vectorized_dot_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/vectorized_dot_proc_ok.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/no_vectorize_dot_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/vectorized_for_parse_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/vectorized_for_scope_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "decorators",
+      "file": "decorators/vectorized_lanes8_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "lanes=4"
+    },
+    {
+      "suite": "decorator_exploits",
+      "file": "decorator_exploits/reserved_def_parallel.li",
+      "outcome": "compile_fail"
+    },
+    {
+      "suite": "decorator_exploits",
+      "file": "decorator_exploits/typosquat_paralell.li",
+      "outcome": "check_ok",
+      "expected_substr": "W0403"
+    },
+    {
+      "suite": "decorator_exploits",
+      "file": "decorator_exploits/single_segment_name.li",
+      "outcome": "compile_fail"
+    },
+    {
+      "suite": "decorator_exploits",
+      "file": "decorator_exploits/missing_disjoint_at_parallel.li",
+      "outcome": "compile_fail"
+    },
+    {
+      "suite": "advisory",
+      "file": "advisory/check_ok.li",
+      "outcome": "check_ok"
+    },
+    {
+      "suite": "advisory",
+      "file": "advisory/check_deny_warn.li",
+      "outcome": "check_deny_warn"
+    },
+    {
+      "suite": "advisory",
+      "file": "advisory/deny/check_fail.li",
+      "outcome": "check_fail"
+    },
+    {
+      "suite": "typecheck",
+      "file": "typecheck/fib.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "typecheck",
+      "file": "typecheck/bad_array_index.li",
+      "outcome": "compile_fail",
+      "expected_substr": "out of range"
+    },
+    {
+      "suite": "typecheck",
+      "file": "typecheck/bad_numeric_mix.li",
+      "outcome": "compile_fail",
+      "expected_substr": "float"
+    },
+    {
+      "suite": "typecheck",
+      "file": "typecheck/bad_int_float_add.li",
+      "outcome": "compile_fail",
+      "expected_substr": "int"
+    },
+    {
+      "suite": "typecheck",
+      "file": "typecheck/scalar_width_ok.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "typecheck",
+      "file": "typecheck/scalar_width_mix_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "integer widths"
+    },
+    {
+      "suite": "typecheck",
+      "file": "typecheck/literal_suffix_ok.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "typecheck",
+      "file": "typecheck/binary_literal_ok.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "compile_ok",
+      "file": "compile_ok/int_ne_literal.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "compile_ok",
+      "file": "compile_ok/bitwise_ops.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "compile_ok",
+      "file": "compile_ok/volatile_sink_no_io.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "prove_reject",
+      "file": "prove_reject/uses_any.li",
+      "outcome": "compile_fail",
+      "expected_substr": "Any"
+    },
+    {
+      "suite": "prove_reject",
+      "file": "prove_reject/uses_sorry.li",
+      "outcome": "compile_fail",
+      "expected_substr": "sorry"
+    },
+    {
+      "suite": "prove_reject",
+      "file": "prove_reject/missing_contracts.li",
+      "outcome": "compile_fail",
+      "expected_substr": "requires"
+    },
+    {
+      "suite": "prove_reject",
+      "file": "prove_reject/missing_decreases.li",
+      "outcome": "compile_fail",
+      "expected_substr": "decreases"
+    },
+    {
+      "suite": "prove_reject",
+      "file": "prove_reject/bare_cast.li",
+      "outcome": "compile_fail",
+      "expected_substr": "cast"
+    },
+    {
+      "suite": "prove_reject",
+      "file": "prove_reject/weak_ensures_true.li",
+      "outcome": "compile_fail",
+      "expected_substr": "ensures true"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/sqrt_contract.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/false_ensures_strict_reject.li",
+      "outcome": "compile_fail",
+      "expected_substr": "allow-open-vc"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/false_ensures_allow_open_ok.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/sqrt_open_bound.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/index_refinement.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/bounds_refinement_release_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/discharge_trivial.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/http_parse_forward_closed.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/discharge_const.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/caller_requires_ok.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/caller_requires_local_ok.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/caller_requires_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "E0304"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/method_call_requires_ok.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/method_ensures_return_ok.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/method_call_requires_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "E0304"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/refinement_call_ok.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/refinement_inline_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/refinement_local_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/refinement_init_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/refinement_call_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "E0305"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/refinement_init_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "E0305"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/refinement_guard_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/extern_call_requires_ok.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/linalg_dot4_int_closed.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/linalg_sum4_int_closed.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/linalg_mat2_entry00_int_closed.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/linalg_dot4_int_loop_open.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/linalg_norm4_int_closed.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/linalg_axpy4_int_closed.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/linalg_dot4_float_closed.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/linalg_mat2_at2_float_closed.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "contracts_verify",
+      "file": "contracts_verify/linalg_mat2_callproc_float_closed.li",
+      "outcome": "prove_lean_ok"
+    },
+    {
+      "suite": "borrow",
+      "file": "borrow/double_mut.li",
+      "outcome": "compile_fail",
+      "expected_substr": "borrow"
+    },
+    {
+      "suite": "borrow",
+      "file": "borrow/use_after_move.li",
+      "outcome": "compile_fail",
+      "expected_substr": "move"
+    },
+    {
+      "suite": "borrow",
+      "file": "borrow/borrow_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/alloc_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "Alloc"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/alloc_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/io_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "IO"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/io_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "race_shared_memory",
+      "file": "race_shared_memory/shared_mut_write.li",
+      "outcome": "compile_fail",
+      "expected_substr": "parallel for"
+    },
+    {
+      "suite": "race_shared_memory",
+      "file": "race_shared_memory/overlap_par_slice.li",
+      "outcome": "compile_fail",
+      "expected_substr": "disjoint"
+    },
+    {
+      "suite": "race_shared_memory",
+      "file": "race_shared_memory/missing_disjoint_clause.li",
+      "outcome": "compile_fail",
+      "expected_substr": "disjoint"
+    },
+    {
+      "suite": "race_shared_memory",
+      "file": "race_shared_memory/mut_capture_no_sync.li",
+      "outcome": "compile_fail",
+      "expected_substr": "Sync"
+    },
+    {
+      "suite": "race_shared_memory",
+      "file": "race_shared_memory/borrow_mut_across_iters.li",
+      "outcome": "compile_fail",
+      "expected_substr": "borrow"
+    },
+    {
+      "suite": "race_shared_memory",
+      "file": "race_shared_memory/false_disjoint_proof.li",
+      "outcome": "compile_fail",
+      "expected_substr": "disjoint_row"
+    },
+    {
+      "suite": "race_shared_memory",
+      "file": "race_shared_memory/false_disjoint_requires_true.li",
+      "outcome": "compile_fail",
+      "expected_substr": "bare"
+    },
+    {
+      "suite": "race_shared_memory",
+      "file": "race_shared_memory/false_disjoint_requires_bare_row.li",
+      "outcome": "compile_fail",
+      "expected_substr": "bare"
+    },
+    {
+      "suite": "race_shared_memory",
+      "file": "race_shared_memory/false_disjoint_decorator_bare_row.li",
+      "outcome": "compile_fail",
+      "expected_substr": "disjoint_row"
+    },
+    {
+      "suite": "race_shared_memory",
+      "file": "race_shared_memory/good_disjoint_parallel.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "benchmarks",
+      "file": "benchmarks/tier0_correctness/md_energy_single_step.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "benchmarks",
+      "file": "benchmarks/tier0_correctness/float_binop.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "benchmarks",
+      "file": "benchmarks/tier0_correctness/three_body_invariants.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "generics",
+      "file": "generics/precision_real_alias.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "generics",
+      "file": "generics/precision_generic_fn.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "generics",
+      "file": "generics/identity.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "generics",
+      "file": "generics/box_alias.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "generics",
+      "file": "generics/callable_param.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "generics",
+      "file": "generics/protocol_sized_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "generics",
+      "file": "generics/return_mismatch.li",
+      "outcome": "compile_fail",
+      "expected_substr": "generic"
+    },
+    {
+      "suite": "generics",
+      "file": "generics/protocol_sized_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "Protocol"
+    },
+    {
+      "suite": "collections",
+      "file": "collections/list_param.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "collections",
+      "file": "collections/dict_param.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "collections",
+      "file": "collections/tuple_pair.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "collections",
+      "file": "collections/tuple_variadic.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "collections",
+      "file": "collections/named_tuple.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "collections",
+      "file": "collections/typedict_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "collections",
+      "file": "collections/enum_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "collections",
+      "file": "collections/dict_arity_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "dict"
+    },
+    {
+      "suite": "runtime",
+      "file": "runtime/extern_puts.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "runtime",
+      "file": "runtime/bytes_len_slice_link.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "bytes",
+      "file": "bytes/reader_writer_smoke.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "runtime",
+      "file": "runtime/tcp_stub_link.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "runtime",
+      "file": "runtime/argv_ptr_abi.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "tetris",
+      "file": "tetris/board_oob.li",
+      "outcome": "compile_fail",
+      "expected_substr": "out of range"
+    },
+    {
+      "suite": "integration",
+      "file": "../bootstrap/lic/main.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "parallel_codegen",
+      "file": "parallel_codegen/parallel_float_zero.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "parallel_codegen",
+      "file": "parallel_codegen/three_float_arrays_12.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "parallel_codegen",
+      "file": "parallel_codegen/par_sum_f64.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "parallel_codegen",
+      "file": "parallel_codegen/par_for_reduce_f64.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "parallel_codegen",
+      "file": "parallel_codegen/dpar_for_range.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "simd",
+      "file": "simd/simd_type_ok.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "simd",
+      "file": "simd/bad_lanes.li",
+      "outcome": "compile_fail",
+      "expected_substr": "lane"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/net_ok.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/net_forward_ok.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/net_missing_raises.li",
+      "outcome": "compile_fail",
+      "expected_substr": "raises Net"
+    },
+    {
+      "suite": "net_trusted",
+      "file": "net_trusted/seam_policy_ok.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "net_trusted",
+      "file": "net_trusted/seam_missing_net.li",
+      "outcome": "compile_fail",
+      "expected_substr": "raises Net"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/async_missing_raises.li",
+      "outcome": "compile_fail",
+      "expected_substr": "raises Async"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/async_ok.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "async",
+      "file": "async/await_codegen_ok.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "async",
+      "file": "async/reactor_selftest_link.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "async",
+      "file": "async/tcp_echo_smoke.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/await_outside_async.li",
+      "outcome": "compile_fail",
+      "expected_substr": "async proc"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/async_keyword_missing_raises.li",
+      "outcome": "compile_fail",
+      "expected_substr": "raises Async"
+    },
+    {
+      "suite": "effects",
+      "file": "effects/bytes_need_alloc.li",
+      "outcome": "compile_fail",
+      "expected_substr": "raises Alloc"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_http_lib.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_httpd_lib.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_log_lib.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "log",
+      "file": "log/redact_bearer.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_physics_relativity.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_physics_runtime.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_sim_scientific_run.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_studio_sim_profile_bridge.li",
+      "outcome": "check_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_studio_sim_step_stub.li",
+      "outcome": "check_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_studio_sim_step_by_profile.li",
+      "outcome": "check_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_sim_viz_pipeline_source_display.li",
+      "outcome": "check_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_ui_studio_shell.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_gui_viewport_panel_switch.li",
+      "outcome": "check_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_gui_studio_keyboard.li",
+      "outcome": "check_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_studio_compose.li",
+      "outcome": "check_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_world_roundtrip.li",
+      "outcome": "check_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_studio_agentic_run.li",
+      "outcome": "check_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_lig_kernel.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_lig_chem_backend.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "smoke",
+      "file": "packages/li-gpu/li-tests/smoke/kernel_matmul_parity.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "smoke",
+      "file": "packages/li-parallel/li-tests/smoke/kernels_ghost.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "httpd",
+      "file": "httpd/gate_placeholder.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "httpd",
+      "file": "httpd/reserved_wellknown_note.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "httpd",
+      "file": "httpd/parse_request_smoke.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "httpd",
+      "file": "httpd/route_key_valid.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "httpd",
+      "file": "httpd/serve_once_smoke.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "httpd",
+      "file": "httpd/serve_routed_once.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "httpd",
+      "file": "httpd/route_match_contract.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "routing",
+      "file": "routing/match_routes.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "routing",
+      "file": "routing/match_routes_toml.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/array_dot_matmul.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/dot_float_arrays.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/elementwise_mul_float.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/elementwise_mul_float10.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/broadcast_len1_add_float4.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/broadcast_len1_mul_int4.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/broadcast_len1_pow_int4.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/broadcast_invalid_len2_vs_len4.li",
+      "outcome": "compile_fail",
+      "expected_substr": "length-1 broadcast"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/sum_elementwise_product.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/elementwise_len_mismatch.li",
+      "outcome": "compile_fail",
+      "expected_substr": "matching lengths"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/array_dot_mismatch.li",
+      "outcome": "compile_fail",
+      "expected_substr": "matrix multiply"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/matmul_2x3_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/matmul_dim_mismatch.li",
+      "outcome": "compile_fail",
+      "expected_substr": "inner dimension mismatch"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/array_sum.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/norm_float4.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/norm_int4_sq.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/vec3_ops.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/elementwise_pow_float4.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/scale_float4.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/axpy_float4.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/reductions/sum_float4.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/reductions/dot_via_sum_product.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/reductions/dot_len_mismatch.li",
+      "outcome": "compile_fail",
+      "expected_substr": "dot expects two matching array"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/reductions/sum_non_array.li",
+      "outcome": "compile_fail",
+      "expected_substr": "sum expects a fixed array argument"
+    },
+    {
+      "suite": "physics",
+      "file": "physics/profile_defaults.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "physics",
+      "file": "physics/three_body_mini.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/golden_dot4_ones_twos.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "math_linalg",
+      "file": "math_linalg/golden_tier1_dot8.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "physics",
+      "file": "physics/golden_positions_sum.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "math_syntax",
+      "file": "math_syntax/int_mod.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "math_syntax",
+      "file": "math_syntax/int_floordiv.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "math_syntax",
+      "file": "math_syntax/int_pow.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "math_syntax",
+      "file": "math_syntax/for_range_sum.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "stdlib_coverage",
+      "file": "stdlib_coverage/build_std_decorators.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "stdlib_coverage",
+      "file": "stdlib_coverage/build_std_csv.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "stdlib_coverage",
+      "file": "stdlib_coverage/build_std_summary_plot.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "stdlib_seal",
+      "file": "stdlib_seal/ok_control.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "stdlib_seal",
+      "file": "stdlib_seal/shadow_echo.li",
+      "outcome": "compile_fail"
+    },
+    {
+      "suite": "stdlib_seal",
+      "file": "stdlib_seal/shadow_list_type.li",
+      "outcome": "compile_fail"
+    },
+    {
+      "suite": "stdlib_seal",
+      "file": "stdlib_seal/duplicate_proc.li",
+      "outcome": "compile_fail"
+    },
+    {
+      "suite": "stdlib_seal",
+      "file": "stdlib_seal/shadow_std_symbol.li",
+      "outcome": "compile_fail"
+    },
+    {
+      "suite": "stdlib_seal",
+      "file": "stdlib_seal/shadow_echo_via_import.li",
+      "outcome": "compile_fail"
+    },
+    {
+      "suite": "stdlib_seal",
+      "file": "stdlib_seal/import_std_collections_ok.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "stdlib_seal",
+      "file": "stdlib_seal/import_std_io_csv_ok.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "stdlib_seal",
+      "file": "stdlib_seal/import_std_summary_plot_ok.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/def_syntax_ok.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/def_multiline_params.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/proc_syntax_rejected.li",
+      "outcome": "compile_fail",
+      "expected_substr": "use 'def' for Li procedures"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/object_public_field.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "objects/object_field_smoke.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "objects/object_copy_init.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "objects/object_return_call.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "objects/object_whole_assign.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "objects/object_array_field_copy.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "objects/object_array_return_call.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "objects/object_mixed_scalar_array_return.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "objects/object_mixed_param_pass.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "objects/object_array_of_object_param_pass.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/import_parse.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/private_field_access.li",
+      "outcome": "compile_fail",
+      "expected_substr": "cannot access private field"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/leak_imported_vault.li",
+      "outcome": "compile_fail",
+      "expected_substr": "cannot access private field"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/def_method_call.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/def_method_parse.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/def_method_missing.li",
+      "outcome": "compile_fail",
+      "expected_substr": "No method"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/private_method_use.li",
+      "outcome": "compile_fail",
+      "expected_substr": "vault_secret"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/object_method_mutate.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/inheritance_subtype.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/inheritance_layout.li",
+      "outcome": "compile_fail",
+      "expected_substr": "incompatible with base layout"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/override_mismatch.li",
+      "outcome": "compile_fail",
+      "expected_substr": "override return type mismatch"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/trait_hash_impl.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "encapsulation",
+      "file": "encapsulation/trait_missing_impl.li",
+      "outcome": "compile_fail",
+      "expected_substr": "does not implement trait"
+    },
+    {
+      "suite": "modules",
+      "file": "modules/greeter/greeter.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "modules",
+      "file": "modules/import_std_decorators.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "modules",
+      "file": "modules/use_greeter.li",
+      "outcome": "verify_open_ok"
+    },
+    {
+      "suite": "modules",
+      "file": "modules/use_positive.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "modules",
+      "file": "modules/import_cycle_a.li",
+      "outcome": "compile_fail"
+    },
+    {
+      "suite": "cve_patterns",
+      "file": "cve_patterns/cwe787_oob_index.li",
+      "outcome": "compile_fail",
+      "expected_substr": "out of range"
+    },
+    {
+      "suite": "cve_patterns",
+      "file": "cve_patterns/cwe125_negative_index.li",
+      "outcome": "compile_fail",
+      "expected_substr": "out of range"
+    },
+    {
+      "suite": "cve_patterns",
+      "file": "cve_patterns/cwe120_stack_buffer_oob.li",
+      "outcome": "compile_fail",
+      "expected_substr": "out of range"
+    },
+    {
+      "suite": "cve_patterns",
+      "file": "cve_patterns/cwe787_dyn_index.li",
+      "outcome": "compile_fail",
+      "expected_substr": "array index must be constant"
+    },
+    {
+      "suite": "cve_patterns",
+      "file": "cve_patterns/cwe676_extern_no_contract.li",
+      "outcome": "compile_fail",
+      "expected_substr": "requires"
+    },
+    {
+      "suite": "cve_patterns",
+      "file": "cve_patterns/good_bounded_index.li",
+      "outcome": "verify_ok"
+    },
+    {
+      "suite": "cve_patterns",
+      "file": "cve_patterns/historic_ariane5_narrowing.li",
+      "outcome": "compile_fail",
+      "expected_substr": "bare cast"
+    },
+    {
+      "suite": "cve_patterns",
+      "file": "cve_patterns/historic_goto_fail.li",
+      "outcome": "compile_fail",
+      "expected_substr": "goto is forbidden"
+    },
+    {
+      "suite": "codegen",
+      "file": "codegen/fp_numerically_stable.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "execution_resources",
+      "file": "execution_resources/parallel_disjoint_ok.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "execution_resources",
+      "file": "execution_resources/smoke.sh",
+      "outcome": "script_ok"
+    },
+    {
+      "suite": "tooling",
+      "file": "tooling/lint_manifest_no_duplicate_keys.sh",
+      "outcome": "script_ok"
+    },
+    {
+      "suite": "tooling",
+      "file": "tooling/output_has_substr_smoke.sh",
+      "outcome": "script_ok"
+    },
+    {
+      "suite": "tooling",
+      "file": "tooling/lean_lake_lock_smoke.sh",
+      "outcome": "script_ok"
+    },
+    {
+      "suite": "tooling",
+      "file": "tooling/li_par_pool_smoke.sh",
+      "outcome": "script_ok"
+    },
+    {
+      "suite": "tooling",
+      "file": "tooling/li_par_pool_schedule_smoke.sh",
+      "outcome": "script_ok"
+    },
+    {
+      "suite": "tooling",
+      "file": "tooling/li_par_reduce_sum_smoke.sh",
+      "outcome": "script_ok"
+    },
+    {
+      "suite": "tooling",
+      "file": "tooling/li_dpar_for_smoke.sh",
+      "outcome": "script_ok"
+    },
+    {
+      "suite": "tooling",
+      "file": "tooling/li_dpar_for_codegen_smoke.sh",
+      "outcome": "script_ok"
+    },
+    {
+      "suite": "tooling",
+      "file": "tooling/li_parallel_killer_gate_smoke.sh",
+      "outcome": "script_ok"
+    },
+    {
+      "suite": "stdlib_parity",
+      "file": "stdlib_parity/collections_parity.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "stdlib_parity",
+      "file": "stdlib_parity/heapq_parity.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "stdlib_parity",
+      "file": "stdlib_parity/bisect_parity.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "stdlib_abuse",
+      "file": "security/stdlib_abuse/hash_flood_design.li",
+      "outcome": "compile_ok"
+    },
+    {
+      "suite": "stdlib_abuse",
+      "file": "security/stdlib_abuse/array_index_oob.li",
+      "outcome": "compile_fail",
+      "expected_substr": "out of range"
+    },
+    {
+      "suite": "stdlib_abuse",
+      "file": "security/stdlib_abuse/array_negative_index.li",
+      "outcome": "compile_fail",
+      "expected_substr": "out of range"
+    },
+    {
+      "suite": "stdlib_abuse",
+      "file": "security/stdlib_abuse/array_dyn_index.li",
+      "outcome": "compile_fail",
+      "expected_substr": "array index must be constant"
+    },
+    {
+      "suite": "smoke",
+      "file": "packages/li-gpu/li-tests/smoke/present_blit_rgba8.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "smoke",
+      "file": "packages/li-gpu/li-tests/smoke/present_wgpu_readback_stub.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-math-numerics/li-tests/smoke/numerics_gpu_three_body.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-sim-scientific/li-tests/smoke/scientific_gpu_md_oracle.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-physics-particles/li-tests/smoke/physics_gpu_md_mini_step.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-physics-fluids/li-tests/smoke/physics_gpu_fluids_heat_step.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-physics-em/li-tests/smoke/physics_gpu_em_jacobi.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-physics-chem/li-tests/smoke/physics_gpu_chem_combustion.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-physics-quantum/li-tests/smoke/physics_gpu_quantum_normalize.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-physics-weather/li-tests/smoke/physics_gpu_weather_diffuse.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-scene/li-tests/smoke/scene_gpu_md_particle_bench.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-sim-robotics/li-tests/smoke/robo_gpu_integrate_steps.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-sim-viz/li-tests/smoke/viz_gpu_pipeline_step.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-sim-sensors/li-tests/smoke/sensors_gpu_bus_step.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-sim-automotive/li-tests/smoke/auto_gpu_bicycle_steps.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-sim-additive/li-tests/smoke/additive_gpu_slicer.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-sim-drug-design/li-tests/smoke/drug_gpu_litl_workflow.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-chem/li-tests/smoke/chem_gpu_dft_energy.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-sim-drug-design/li-tests/smoke/drug_gpu_dft_stage.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-chem/li-tests/smoke/chem_gpu_dft_lkir.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-chem/li-tests/smoke/echem_gpu_che_h_ads.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_echem_che_h_smoke.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_echem_aimd_smoke.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_echem_solvent_smoke.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_echem_marcus_smoke.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_echem_gc_aimd_smoke.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_echem_ml_surrogate_smoke.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_echem_sei_kmc_smoke.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "composable",
+      "file": "composable/import_echem_tddft_smoke.li",
+      "outcome": "compile_open_ok"
+    },
+    {
+      "suite": "science_gpu",
+      "file": "packages/li-physics-particles/li-tests/smoke/echem_solvent_gr_smoke.li",
+      "outcome": "compile_open_ok"
+    }
+  ]
+}

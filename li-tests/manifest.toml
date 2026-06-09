@@ -1632,6 +1632,12 @@ file = "packages/li-gpu/li-tests/smoke/present_wgpu_readback_stub.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-present-wgpu-readback"
 
+[[tests]]
+suite = "smoke"
+file = "packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li"
+outcome = "compile_open_ok"
+note = "WP-SCI-03 run_algo_registry MD/heat/CFD/FEA/QM tier-2 dispatch"
+
 # --- science / simulation @gpu (PH-SCI-GPU) ---
 
 [[tests]]

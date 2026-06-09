@@ -191,12 +191,13 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 
 ### Phase 2 — Deepen simulation verticals (P1–P2) — **OPEN** (see [ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md))
 
-#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID)
+#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID) — **PARTIAL** (PR #1116)
 
 - **Goal:** Replace `run_algo_registry_stub` for CFD/FEA/QM rows with real dispatch or tier-2 oracles.
 - **Scope:** `li-sim-scientific/src/lib.li`, `benchmarks/competitive/algo_registry.json`, `verticals.toml`.
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.
 - **Acceptance:** `run_algo_registry_tier2.li` extended; stub only for explicitly documented IDs.
+- **Landed (slice):** tier-2 dispatch for heat/CFD/FEA (201–216) + QM (401–432); stub retained for drug/bio/am/ml (501+). Smokes: `run_algo_registry_tier2.li`, `scientific_oracle_bench.li`.
 - **Priority / effort:** P1 / L
 
 #### WP-SCI-04 — `sim.viz` → wgpu field draw (extends existing ID)
@@ -315,13 +316,13 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 |-------|----------|--------|---------|
 | Phase 0 | 4 | **DONE** (BUILD-01..03, GPU-00) | regression only |
 | Phase 1 | 15 | **DONE** (GPU-01..15 on `main`; + GPU-16..19 via #847) | regression only |
-| Phase 2 | 11 | **OPEN** | WP-SCI-03 registry |
+| Phase 2 | 11 | **OPEN** | WP-SCI-04 viz (WP-SCI-03 partial via #1116) |
 | Phase 3 | 3 | **OPEN** | WP-SCI-GPU-VENDOR-01 |
 | **Total** | **33** | **19 done (~58%)** | |
 
 ### Top 3 P0 items (Phase 2 — start here)
 
-1. **WP-SCI-03** — Replace `run_algo_registry_stub` for CFD/FEA/QM rows with real dispatch or tier-2 oracles.
+1. **WP-SCI-03** — ~~Replace `run_algo_registry_stub` for CFD/FEA/QM rows~~ **partial** (#1116); remaining: full FEA/CFD kernels (WP-SCI-05/06).
 2. **WP-SCI-04** — `sim.viz` → wgpu field draw for scientific profile (depends WP-GD-05).
 3. **WP-PLAT-05** — LAMMPS/GROMACS external oracle column for MD tier-2 bench.
 

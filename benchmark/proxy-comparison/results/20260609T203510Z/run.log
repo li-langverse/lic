@@ -1,0 +1,35 @@
+pull: caddy:2.9.1-alpine
+2.9.1-alpine: Pulling from library/caddy
+Digest: sha256:b4e3952384eb9524a887633ce65c752dd7c71314d2c2acf98cd5c715aaa534f0
+Status: Image is up to date for caddy:2.9.1-alpine
+docker.io/library/caddy:2.9.1-alpine
+pull: haproxy:2.9-alpine
+2.9-alpine: Pulling from library/haproxy
+Digest: sha256:3e29449a6beed63262e36104adf531b4e41b359f61937303f5ea8607987b3748
+Status: Image is up to date for haproxy:2.9-alpine
+docker.io/library/haproxy:2.9-alpine
+pull: ubuntu:24.04
+24.04: Pulling from library/ubuntu
+Digest: sha256:786a8b558f7be160c6c8c4a54f9a57274f3b4fb1491cf65146521ae77ff1dc54
+Status: Image is up to date for ubuntu:24.04
+docker.io/library/ubuntu:24.04
+pull: nginx:1.27-alpine
+1.27-alpine: Pulling from library/nginx
+Digest: sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+Status: Image is up to date for nginx:1.27-alpine
+docker.io/library/nginx:1.27-alpine
+pull: done
+[bench] lic feat/dynamic-httpd-routes @ e25c8b815
+[bench] results -> /mnt/c/Users/Julian/Documents/Programming/li/lic/benchmark/proxy-comparison/results/20260609T203510Z
+[bench] building backend...
+[bench] starting backend...
+[bench] === proxy: nginx-proxy (port 18444) ===
+[bench] done: nginx-proxy
+[bench] === proxy: caddy-proxy (port 18445) ===
+[bench] done: caddy-proxy
+[bench] === proxy: haproxy-proxy (port 18446) ===
+[bench] done: haproxy-proxy
+[bench] === proxy: li-httpd (port 18443) ===
+[bench] li-httpd: using local proxy-repro-proxy:latest image
+[bench] WARN: li-httpd not healthy — skipping
+[bench] wrote /mnt/c/Users/Julian/Documents/Programming/li/lic/benchmark/proxy-comparison/results/20260609T203510Z/RESULTS.md

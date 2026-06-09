@@ -94,7 +94,7 @@ static int epoll_wait(int epfd, struct epoll_event* events, int maxevents, int t
 #define HTTPD_MAX_HEADER_LINES 128
 #define HTTPD_PROXY_RELAY_BUF 65536
 /* Fairness: cap relay work per epoll callback so parallel TLS proxies do not starve. */
-#define HTTPD_PROXY_PUMP_BUDGET_BYTES (256 * 1024)
+#define HTTPD_PROXY_PUMP_BUDGET_BYTES (1024 * 1024)
 #define HTTPD_ACCEPT_BURST 32
 /* Defaults match li-httpd [limits] ??? overridden via runtime.conf (see httpd_limits.py). */
 #define HTTPD_DEFAULT_MAX_REQUEST_BODY (1024 * 1024)
@@ -410,6 +410,7 @@ static void httpd_proxy_relay_maybe_done(int epfd, int32_t slot);
 static void httpd_drain_upstream_fd(int fd);
 static void httpd_proxy_pump_relay(int epfd, int32_t slot);
 static void httpd_proxy_schedule_pump(int epfd, int32_t slot);
+static void httpd_proxy_tls_cl_defer_flush(int epfd, int32_t slot);
 
 static int g_proxy_pump_budget = 0;
 #define HTTPD_PROXY_DEFER_MAX 64
@@ -3718,7 +3719,11 @@ static void httpd_proxy_client_epoll_arm_out(int epfd, int32_t slot) {
 
 static void httpd_proxy_finish_ok(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
+  httpd_proxy_tls_cl_defer_flush(epfd, slot);
   httpd_proxy_flush_client_out(epfd, slot);
+  if (slot >= 0 && httpd_tls_slot_proto(slot) == 1 && s->fd >= 0) {
+    (void)httpd_tls_drain_writes(slot, s->fd);
+  }
   int keep = s->proxy_keep;
   int conn = s->fd;
   if (!httpd_proxy_snap_disabled() && g_proxy_snap_recording && g_proxy_snap_len > 0) {
@@ -4444,6 +4449,14 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
   httpd_slot_t* s = &g_slots[slot];
   if (len == 0) {
     return 0;
+  }
+  if (!s->proxy_resp_parsing && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL) {
+    if (s->proxy_resp_body_left <= 0) {
+      return 0;
+    }
+    if ((size_t)s->proxy_resp_body_left < len) {
+      len = (size_t)s->proxy_resp_body_left;
+    }
   }
   size_t send_len = len;
   const char* send_data = leak_censor_prepare(data, len, &send_len);
@@ -5592,6 +5605,8 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_resp_hdr_len = 0;
   s->proxy_client_epoll_events = 0;
   s->proxy_up_epoll_events = 0;
+  s->proxy_tls_cl_defer = 0;
+  s->proxy_upstream_hold = 0;
   s->proxy_is_sse = httpd_client_wants_sse(g_slots[slot].buf, hdr_end);
   s->proxy_is_ws =
       httpd_route_requires_websocket_for(req, req->path, req->path_len) &&

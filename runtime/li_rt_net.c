@@ -182,7 +182,7 @@ static char g_proxy_host[64] = "127.0.0.1";
 static int32_t g_proxy_port = 0;
 static int g_proxy_all = 0;
 
-#define HTTPD_MAX_ROUTES 256
+#define HTTPD_ROUTES_INIT_CAP 32
 typedef struct {
   char method[16];
   char path_prefix[512];
@@ -241,8 +241,29 @@ static int g_m3_token_budget_max = 0;
 static int g_m3_token_budget_reject_over = 1;
 static char g_m3_token_budget_header[64] = "x-token-budget";
 
-static httpd_route_t g_routes[HTTPD_MAX_ROUTES];
+static httpd_route_t* g_routes = NULL;
+static int g_routes_cap = 0;
 static int g_route_count = 0;
+
+static int httpd_routes_ensure_cap(int need) {
+  if (need <= g_routes_cap) {
+    return 0;
+  }
+  int new_cap = g_routes_cap > 0 ? g_routes_cap : HTTPD_ROUTES_INIT_CAP;
+  while (new_cap < need) {
+    new_cap *= 2;
+  }
+  httpd_route_t* p = (httpd_route_t*)realloc(g_routes, (size_t)new_cap * sizeof(httpd_route_t));
+  if (!p) {
+    return -1;
+  }
+  if (new_cap > g_routes_cap) {
+    memset(p + g_routes_cap, 0, (size_t)(new_cap - g_routes_cap) * sizeof(httpd_route_t));
+  }
+  g_routes = p;
+  g_routes_cap = new_cap;
+  return 0;
+}
 
 #define HTTPD_MAX_POOL_MAP 64
 static char g_pool_map_names[HTTPD_MAX_POOL_MAP][64];
@@ -5726,7 +5747,7 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       strncpy(pending_require[pending_require_n], val, sizeof(pending_require[0]) - 1);
       pending_require[pending_require_n][sizeof(pending_require[0]) - 1] = '\0';
       pending_require_n++;
-    } else if (strcmp(key, "route") == 0 && g_route_count < HTTPD_MAX_ROUTES) {
+    } else if (strcmp(key, "route") == 0) {
       char method[16] = "";
       char path[512] = "";
       char kind[16] = "";
@@ -5763,6 +5784,11 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
           if (part_n >= 6 && parts[5] && parts[5][0]) {
             rburst = atoi(parts[5]);
           }
+        }
+        if (httpd_routes_ensure_cap(g_route_count + 1) != 0) {
+          fprintf(stderr, "li-httpd: route table realloc failed\n");
+          fclose(f);
+          return -1;
         }
         httpd_route_t* r = &g_routes[g_route_count++];
         memset(r, 0, sizeof(*r));
@@ -5837,6 +5863,7 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       return -1;
     }
   }
+  fprintf(stderr, "li-httpd: loaded %d routes (cap %d)\n", g_route_count, g_routes_cap);
   return 0;
 }
 

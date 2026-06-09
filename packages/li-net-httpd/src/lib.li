@@ -556,18 +556,26 @@ def proxy_li_finish_resp_headers(epfd: var int, slot: var int) raises Net, Alloc
   var he_end: int = hdr_end_at(acc, 0, hlen)
   if he_end < 0:
     return proxy_li_finish_err(epfd, slot)
-  if proxy_parse_resp_cl(acc, he_end) < 0:
+  var cl: int = proxy_parse_resp_cl(acc, he_end)
+  if cl < 0:
     return proxy_li_finish_err(epfd, slot)
-  if httpd_proxy_snap_disabled_i() == 0:
+  if httpd_proxy_snap_disabled_i() == 0 and cl <= 4096 and he_end <= 4096:
     httpd_li_proxy_store_resp_cache_i(slot)
   var hdr_bytes: int = httpd_li_proxy_cached_hdr_len_i()
+  var hdr_ptr: ptr = httpd_li_proxy_cached_hdr_ptr_i()
+  if httpd_proxy_snap_disabled_i() == 1:
+    hdr_bytes = he_end
+    hdr_ptr = acc
   if hdr_bytes <= 0:
     return proxy_li_finish_err(epfd, slot)
-  if httpd_li_proxy_forward_bytes_i(epfd, slot, httpd_li_proxy_cached_hdr_ptr_i(), hdr_bytes) < 0:
+  if httpd_li_proxy_forward_bytes_i(epfd, slot, hdr_ptr, hdr_bytes) < 0:
     return proxy_li_finish_err(epfd, slot)
   httpd_li_proxy_set_resp_parsing_i(slot, 0)
   httpd_li_proxy_set_resp_body_mode_i(slot, proxy_body_cl())
-  httpd_li_proxy_set_resp_body_left_i(slot, httpd_li_proxy_cached_cl_i())
+  var body_left: int = httpd_li_proxy_cached_cl_i()
+  if httpd_proxy_snap_disabled_i() == 1:
+    body_left = cl
+  httpd_li_proxy_set_resp_body_left_i(slot, body_left)
   var tail: int = hlen - hdr_bytes
   if tail > 0:
     var conn: int = httpd_slot_conn_i(slot)

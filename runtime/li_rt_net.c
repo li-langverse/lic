@@ -4862,23 +4862,21 @@ static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
   if (httpd_proxy_relay_to_client(epfd, slot, s->proxy_resp_hdr_acc, (size_t)hdr_end) < 0) {
     return -1;
   }
-  for (int hflush = 0; hflush < 64; hflush++) {
+  for (int hflush = 0; hflush < 512; hflush++) {
     httpd_proxy_tls_cl_defer_flush(epfd, slot);
     httpd_proxy_flush_client_out(epfd, slot);
     if (!s->proxy_active) {
       return 0;
     }
-    if (!httpd_proxy_tls_outstanding(slot, s)) {
+    if (!httpd_proxy_tls_outstanding(slot, s) && !httpd_proxy_relay_pending_client(s)) {
       break;
     }
     if (s->fd >= 0) {
       (void)httpd_tls_drain_writes(slot, s->fd);
     }
   }
-  if (httpd_proxy_tls_outstanding(slot, s)) {
-    httpd_proxy_upstream_hold_sync(epfd, slot);
-    httpd_proxy_client_epoll_arm_out(epfd, slot);
-    return 0;
+  if (httpd_proxy_tls_outstanding(slot, s) || httpd_proxy_relay_pending_client(s)) {
+    return -1;
   }
   s->proxy_cl_body_active = 1;
   if (s->proxy_is_sse) {
@@ -5111,7 +5109,7 @@ static void httpd_proxy_tick_starved_relays(int epfd) {
     }
     if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0 &&
         !httpd_proxy_upstream_recv_blocked(i, s)) {
-      httpd_proxy_pump_relay(epfd, i);
+      httpd_proxy_schedule_pump(epfd, i);
     } else if (httpd_proxy_cl_relay_complete(s)) {
       httpd_proxy_relay_maybe_done(epfd, i);
     }

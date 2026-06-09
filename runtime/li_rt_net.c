@@ -4563,7 +4563,7 @@ static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
       return;
     }
 #ifdef __linux__
-    if (!g_proxy_snap_recording && g_pool_map_count <= 0 && g_proxy_splice_pipe[0] >= 0 &&
+    if (!g_proxy_snap_recording && !httpd_proxy_snap_disabled() && g_proxy_splice_pipe[0] >= 0 &&
         httpd_tls_slot_proto(slot) != 1) {
       size_t cap = (size_t)s->proxy_resp_body_left;
       if (cap > sizeof(s->proxy_rbuf)) {

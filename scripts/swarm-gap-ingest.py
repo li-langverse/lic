@@ -223,11 +223,23 @@ def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> in
     return added
 
 
+def _verticals_toml_path() -> Path | None:
+    candidates: list[Path] = []
+    env = os.environ.get("BENCHMARKS_COMPETITIVE")
+    if env:
+        candidates.append(Path(env) / "verticals.toml")
+    candidates.extend(
+        [
+            LANGVERSE / "benchmarks/workloads/competitive/verticals.toml",
+            BENCHMARKS / "workloads/competitive/verticals.toml",
+        ]
+    )
+    return next((c for c in candidates if c.is_file()), None)
+
+
 def ingest_verticals_stubs(gaps_by_id: dict[str, dict]) -> int:
-    vert = Path(os.environ["BENCHMARKS_COMPETITIVE"]) / "verticals.toml"
-    if not vert.is_file():
-        vert = Path(os.environ.get("BENCHMARKS_COMPETITIVE", str(LANGVERSE / "benchmarks/workloads/competitive"))/verticals.toml"
-    if not vert.is_file():
+    vert = _verticals_toml_path()
+    if vert is None:
         return 0
     text = vert.read_text(encoding="utf-8")
     added = 0

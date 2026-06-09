@@ -1,0 +1,132 @@
+# std/execution/spaces.li — Kokkos-class memory + execution space tags (PH-7e, #110)
+#
+# Spec-only v1: integer tags + host-only View helpers. No parser enums, no device
+# codegen, no silent DualView. Cross-space access requires explicit sync (future #15).
+#
+# See docs/hpc/kokkos-memory-execution-spaces-rubric.md
+
+# --- MemorySpace tags (REQ-MS-01) ---
+def memory_space_host() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def memory_space_device() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def memory_space_unified() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def memory_space_host_pinned() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+# --- ExecutionSpace tags (REQ-ES-01) ---
+def execution_space_serial() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def execution_space_openmp() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def execution_space_threads() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+# Reserved for #116 offload backends (spec-only; no runtime yet).
+def execution_space_sycl() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+def execution_space_cuda() -> int
+  requires true
+  ensures result == 11
+  decreases 0
+=
+  return 11
+
+def execution_space_hip() -> int
+  requires true
+  ensures result == 12
+  decreases 0
+=
+  return 12
+
+# --- View surface (REQ-MS-02) — host v1 uses array[N, T] backing store ---
+type View1D = object
+  public space: int
+  public length: int
+
+def view1d_new(space: int, length: int) -> View1D
+  requires space >= 0
+  requires length >= 0
+  ensures result.space == space
+  ensures result.length == length
+  decreases length
+=
+  var v: View1D
+  v.space = space
+  v.length = length
+  return v
+
+def view_space(v: View1D) -> int
+  requires true
+  ensures result == v.space
+  decreases v.length
+=
+  return v.space
+
+# Explicit host→host deep_copy (Kokkos deep_copy host path; REQ-SYNC-01 staging).
+def view_copy_host8(src: array[8, float], dst: var array[8, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  dst[0] = src[0]
+  dst[1] = src[1]
+  dst[2] = src[2]
+  dst[3] = src[3]
+  dst[4] = src[4]
+  dst[5] = src[5]
+  dst[6] = src[6]
+  dst[7] = src[7]
+
+def view_checksum_host8(data: array[8, float]) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return data[0] + data[1] + data[2] + data[3] + data[4] + data[5] + data[6] + data[7]
+
+def __execution_spaces_doc() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

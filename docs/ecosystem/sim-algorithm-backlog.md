@@ -27,7 +27,7 @@ todos:
   status: pending
 
 - id: sim-p0-heat-li-smoke
-  content: "Pure-Li heat_equation_2d smoke with harness verify row"
+  content: "Pure-Li heat_equation_2d smoke with harness verify row — migration plan in docs/hpc/tier2-shared-c-migration-appendix.md (#110 step 1)"
   status: pending
 
 - id: sim-p1-num-dot-axpy

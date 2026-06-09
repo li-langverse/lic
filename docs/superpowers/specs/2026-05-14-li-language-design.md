@@ -538,6 +538,15 @@ GPU side (with numeric Phase 3):
 | `hostbuffer[T]` | Pinned/pageable host mirror |
 | `ndview[Shape, T]` | View with strides (non-contiguous) |
 
+Memory + execution spaces (Kokkos-class, **#110 spec-only v1** — see `std/execution/spaces.li`):
+
+| Surface | Purpose |
+|---------|---------|
+| `MemorySpace` | `Host`, `Device`, `Unified`, `HostPinned` — static placement tags (`memory_space_*()`) |
+| `ExecutionSpace` | `Serial`, `OpenMP`, `Threads` (v1); `SYCL`/`Cuda`/`HIP` reserved (#116) |
+| `View[T, Space]` | Lifecycle in one space unless explicit `@sync_host` / `@sync_device` (#15) |
+| `deep_copy` | Named sync intrinsics; **no implicit DualView** (Kokkos 4.6 alignment) |
+
 ---
 
 ### Phase 4 — advanced & domain structures

@@ -313,7 +313,7 @@ static int g_auth_required = 0;
 static int g_auth_key_count = 0;
 static char g_auth_keys[HTTPD_MAX_AUTH_KEYS][HTTPD_AUTH_KEY_LEN];
 
-#define HTTPD_MAX_UPSTREAM_PEERS 8
+#define HTTPD_MAX_UPSTREAM_PEERS 32
 #define HTTPD_POOL_PER_PEER 32
 
 typedef struct {
@@ -5065,25 +5065,12 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   g_proxy_resp_cl_cached = -1;
   g_proxy_resp_hdr_bytes_cached = 0;
   int32_t peer_port = httpd_route_pool_port_for_request(g_slots[slot].buf, hdr_end, req);
-  if (peer_port <= 0) {
-    peer_port = httpd_lb_pick_port_for_request(slot, g_slots[slot].buf, hdr_end);
-  }
+  /* edge: vhost routes must not fall back to global LB */
   if (peer_port <= 0) {
     return -1;
   }
   int up = upstream_pool_acquire(peer_port);
-  if (up < 0 && g_up_peer_count > 1) {
-    for (int i = 0; i < g_up_peer_count; i++) {
-      if (g_up_peers[i].down || g_up_peers[i].port == peer_port) {
-        continue;
-      }
-      peer_port = g_up_peers[i].port;
-      up = upstream_pool_acquire(peer_port);
-      if (up >= 0) {
-        break;
-      }
-    }
-  }
+  /* edge: no cross-pool fallback */
   if (up < 0) {
     return -1;
   }
@@ -6255,25 +6242,12 @@ int32_t httpd_upstream_acquire_for_slot_i(int32_t slot) {
     return -1;
   }
   int32_t peer_port = httpd_route_pool_port_for_request(g_slots[slot].buf, hdr_end, &req);
-  if (peer_port <= 0) {
-    peer_port = httpd_lb_pick_port_for_request(slot, g_slots[slot].buf, hdr_end);
-  }
+  /* edge: vhost routes must not fall back to global LB */
   if (peer_port <= 0) {
     return -1;
   }
   int up = upstream_pool_acquire(peer_port);
-  if (up < 0 && g_up_peer_count > 1) {
-    for (int i = 0; i < g_up_peer_count; i++) {
-      if (g_up_peers[i].down || g_up_peers[i].port == peer_port) {
-        continue;
-      }
-      peer_port = g_up_peers[i].port;
-      up = upstream_pool_acquire(peer_port);
-      if (up >= 0) {
-        break;
-      }
-    }
-  }
+  /* edge: no cross-pool fallback */
   if (up < 0) {
     return -1;
   }

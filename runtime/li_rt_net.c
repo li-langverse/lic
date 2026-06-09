@@ -7329,6 +7329,18 @@ void httpd_li_proxy_set_resp_body_left_i(int32_t slot, int32_t v) {
   }
 }
 
+void httpd_li_proxy_arm_cl_cap_i(int32_t slot, int32_t cl) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || cl < 0) {
+    return;
+  }
+  httpd_slot_t* s = &g_slots[slot];
+  s->proxy_resp_cl_cap = cl;
+  s->proxy_resp_bytes_committed = 0;
+  s->proxy_resp_body_left = cl;
+  s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
+  g_lp_body_left[slot] = cl;
+}
+
 int32_t httpd_li_proxy_get_resp_hdr_len_i(int32_t slot) {
   return (slot >= 0 && slot < HTTPD_MAX_CONN) ? g_slots[slot].proxy_resp_hdr_len : 0;
 }
@@ -7454,6 +7466,13 @@ int32_t httpd_li_proxy_forward_bytes_i(int32_t epfd, int32_t slot, intptr_t data
     httpd_proxy_relay_cl_account(s, slot, (size_t)n, rc);
   }
   return rc;
+}
+
+int32_t httpd_li_proxy_forward_ptr_off_i(int32_t epfd, int32_t slot, intptr_t data, int32_t off, int32_t n) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || !data || off < 0 || n <= 0) {
+    return -1;
+  }
+  return httpd_li_proxy_forward_bytes_i(epfd, slot, data + off, n);
 }
 
 int32_t httpd_li_proxy_finish_ok_i(int32_t epfd, int32_t slot) {

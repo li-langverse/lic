@@ -41,8 +41,6 @@ int32_t httpd_tls_handshake_slot(int32_t slot, int32_t fd);
 
 size_t httpd_tls_write_pending(int32_t slot);
 int32_t httpd_tls_drain_writes(int32_t slot, int32_t fd);
-/* Block until wbio empty or timeout_ms elapsed; 0=drained, 1=still pending. */
-int32_t httpd_tls_drain_writes_blocking(int32_t slot, int32_t fd, int32_t timeout_ms);
 void httpd_tls_shutdown_slot(int32_t slot);
 void httpd_tls_free_slot(int32_t slot);
 

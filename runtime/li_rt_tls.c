@@ -339,37 +339,6 @@ int32_t httpd_tls_drain_writes(int32_t slot, int32_t fd) {
   return httpd_tls_wbio_pending(slot) > 0 ? 1 : 0;
 }
 
-int32_t httpd_tls_drain_writes_blocking(int32_t slot, int32_t fd, int32_t timeout_ms) {
-  int rounds = 0;
-  if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_slot_ssl[slot] || fd < 0) {
-    return 0;
-  }
-  if (timeout_ms <= 0) {
-    timeout_ms = 30000;
-  }
-  while (httpd_tls_wbio_pending(slot) > 0 && rounds++ < 4096) {
-    if (httpd_tls_flush_wbio(slot) == 0) {
-      return 0;
-    }
-#if !defined(_WIN32)
-    struct pollfd pfd;
-    pfd.fd = (int)fd;
-    pfd.events = (short)POLLOUT;
-    pfd.revents = 0;
-    int pr = poll(&pfd, 1, timeout_ms);
-    if (pr < 0 && errno == EINTR) {
-      continue;
-    }
-    if (pr <= 0) {
-      break;
-    }
-#else
-    break;
-#endif
-  }
-  return httpd_tls_wbio_pending(slot) > 0 ? 1 : 0;
-}
-
 void httpd_tls_shutdown_slot(int32_t slot) {
   if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_slot_ssl[slot] || !p_SSL_shutdown) {
     return;

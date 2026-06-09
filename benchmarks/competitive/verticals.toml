@@ -33,7 +33,7 @@ workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
 last_reviewed = "2026-05-23"
-notes = "heat_equation_2d in verify.py; Li oracle `sim_scientific_oracle_checksum_heat()` (explicit 1D laplacian stencil); FEA/CFD split to fea_linear_elasticity + cfd_lid_driven_cavity (PH-CAE)."
+notes = "heat_equation_2d in verify.py; Li oracle `sim_scientific_oracle_checksum_heat()` (explicit 1D laplacian stencil); PDE heat rows 201–204 tier-2; CFD rows 205–211 use `sim_scientific_oracle_checksum_cfd()` (Euler advection)."
 
 [[vertical]]
 id = "fea_linear_elasticity"
@@ -43,7 +43,7 @@ workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
 last_reviewed = "2026-05-23"
-notes = "PH-CAE FEA track; engineering-cae-fundamentals.md; no bench oracle yet."
+notes = "PH-CAE FEA track; engineering-cae-fundamentals.md; Li oracle `sim_scientific_oracle_checksum_fea()` (PBD chain scaffold); registry rows 212–216 tier-2."
 
 [[vertical]]
 id = "cfd_lid_driven_cavity"
@@ -53,7 +53,7 @@ workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
 last_reviewed = "2026-05-23"
-notes = "PH-CAE CFD track; canonical cavity target; no bench oracle yet."
+notes = "PH-CAE CFD track; canonical cavity target; Li oracle `sim_scientific_oracle_checksum_cfd()` (Euler advection); registry rows 205–211 tier-2; lid-driven cavity kernel deferred to WP-SCI-06."
 
 [[vertical]]
 id = "drug_litl"
@@ -153,7 +153,7 @@ workload_class = "pilot"
 oracle = "pyscf"
 li_package = "chem"
 last_reviewed = "2026-06-05"
-notes = "ph-sci-chem-dft-competitive.json; Li chem_dft_energy_kernel_hartree mini radial scaffold vs PySCF RKS/LDA (Apache-2.0); ORCA external_manual only (not bundled); parity_gate loose until full Gaussian DFT."
+notes = "ph-sci-chem-dft-competitive.json; Li chem_dft_energy_kernel_hartree mini radial scaffold vs PySCF RKS/LDA (Apache-2.0); registry rows 401–432 tier-2 via `sim_scientific_oracle_checksum_qm()` (418 stub until WP-QM-02); ORCA external_manual only (not bundled); parity_gate loose until full Gaussian DFT."
 
 [[vertical]]
 id = "echem_che_h"

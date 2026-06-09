@@ -10301,8 +10301,11 @@ def studio_demo_replay_emit_step(compose: var StudioShellCompose, step: DemoScri
       studio_reactive_flush_palette(compose)
     if step.key_tag != studio_ui_key_tag_cmd_k():
       var _key: int = studio_ui_key_tag(compose, step.key_tag)
-    if studio_demo_emit_compose_frame(compose, w, h) != 1:
-      out.ok = 0
+    var kf: int = 0
+    while kf < 3
+      if studio_demo_emit_compose_frame(compose, w, h) != 1:
+        out.ok = 0
+      kf = kf + 1
     return out
   if step.kind == studio_demo_step_kind_ui_click():
     var clicked: int = studio_ui_click_tag(compose, step.id_tag)
@@ -10310,8 +10313,11 @@ def studio_demo_replay_emit_step(compose: var StudioShellCompose, step: DemoScri
       compose.agent.task_state = studio_agent_task_running()
     if clicked != 1:
       out.ok = 0
-    if studio_demo_emit_compose_frame(compose, w, h) != 1:
-      out.ok = 0
+    var cf: int = 0
+    while cf < 3
+      if studio_demo_emit_compose_frame(compose, w, h) != 1:
+        out.ok = 0
+      cf = cf + 1
     return out
   if step.kind == studio_demo_step_kind_wait_frames():
     studio_ui_wait_frames(compose, step.wait_frames)

@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_sim_scientific_version() != 4:
+  if li_sim_scientific_version() != 7:
     return 1
   var md: float = sim_scientific_oracle_checksum_md()
   if md <= 0.0:
@@ -27,4 +27,13 @@ def main() -> int
     return 8
   if heat_run.checksum != heat:
     return 9
+  var fea: float = sim_scientific_oracle_checksum_fea()
+  if fea != 3.0:
+    return 10
+  var cfd: float = sim_scientific_oracle_checksum_cfd()
+  if cfd <= 0.0:
+    return 11
+  var qm: float = sim_scientific_oracle_checksum_qm_dft()
+  if qm == 1.001:
+    return 12
   return 0

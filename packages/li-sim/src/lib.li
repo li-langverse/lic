@@ -147,12 +147,26 @@ def vertical_echem_sei_kmc() -> int
 =
   return 7
 
-def algo_registry_count() -> int
+def vertical_fea_linear_elasticity() -> int
   requires true
-  ensures result == 127
+  ensures result == 8
   decreases 0
 =
-  return 127
+  return 8
+
+def vertical_cfd_lid_driven_cavity() -> int
+  requires true
+  ensures result == 9
+  decreases 0
+=
+  return 9
+
+def algo_registry_count() -> int
+  requires true
+  ensures result == 129
+  decreases 0
+=
+  return 129
 
 def algo_id_min() -> int
   requires true
@@ -182,7 +196,7 @@ def algo_in_registry(algo_id: int) -> int
     if algo_id <= 117:
       return 1
   if algo_id >= 201:
-    if algo_id <= 216:
+    if algo_id <= 218:
       return 1
   if algo_id >= 301:
     if algo_id <= 305:
@@ -231,7 +245,7 @@ def algo_family_num(algo_id: int) -> int
     if algo_id <= 117:
       return 2
   if algo_id >= 201:
-    if algo_id <= 216:
+    if algo_id <= 218:
       return 3
   if algo_id >= 301:
     if algo_id <= 305:
@@ -282,6 +296,20 @@ def algo_pde_heat_explicit_2d() -> int
   decreases 0
 =
   return 201
+
+def algo_fea_linear_elasticity() -> int
+  requires true
+  ensures result == 217
+  decreases 0
+=
+  return 217
+
+def algo_cfd_lid_driven_cavity() -> int
+  requires true
+  ensures result == 218
+  decreases 0
+=
+  return 218
 
 def algo_rigid_semi_implicit() -> int
   requires true

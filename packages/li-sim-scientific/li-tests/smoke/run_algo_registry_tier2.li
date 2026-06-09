@@ -8,6 +8,8 @@ def main() -> int
 =
   var md_oracle: float = sim_scientific_oracle_checksum_md()
   var heat_oracle: float = sim_scientific_oracle_checksum_heat()
+  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
+  var fea_oracle: float = sim_scientific_oracle_checksum_fea()
   var md105: SimRunResult = run_algo(105, 1)
   if run_result_ok(md105) != 1:
     return 1
@@ -26,6 +28,34 @@ def main() -> int
     return 7
   if heat210.checksum == 1.001:
     return 8
+  if cfd_oracle <= 0.0:
+    return 32
+  if fea_oracle <= 0.0:
+    return 33
+  if fea_oracle != 1.0:
+    return 34
+  var cfd206: SimRunResult = run_algo(algo_cfd_simple(), 1)
+  if run_result_ok(cfd206) != 1:
+    return 35
+  if cfd206.algo_id != 206:
+    return 36
+  if cfd206.checksum != cfd_oracle:
+    return 37
+  if cfd206.checksum == 1.001:
+    return 38
+  if cfd206.vertical_id != vertical_cfd_lid_driven_cavity():
+    return 39
+  var fea214: SimRunResult = run_algo(algo_fea_linear_elasticity(), 2)
+  if run_result_ok(fea214) != 1:
+    return 40
+  if fea214.algo_id != 214:
+    return 41
+  if fea214.checksum != fea_oracle:
+    return 42
+  if fea214.checksum == 1.001:
+    return 43
+  if fea214.vertical_id != vertical_fea_linear_elasticity():
+    return 44
   var rigid302: SimRunResult = run_algo(302, 0)
   if run_result_ok(rigid302) != 1:
     return 9

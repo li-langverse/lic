@@ -63,7 +63,7 @@ Legacy Phase 0 worker (`li-ph-sci-simulation-gap-close`) is superseded; keep sca
 - **Phase 0 lib compile:** `li-physics-fluids`, `li-physics-em`, `li-physics-weather`, `li-math-numerics` build under `scripts/ph-sci-phase0-gates.sh` (WP-SCI-BUILD-01/02).
 - **Honest smokes:** Phase 0 blocked libs import `src/lib.li` exports (WP-SCI-BUILD-03).
 - **`@gpu` today:** MIR placement telemetry (`mir_gpu_def=1` via `scripts/check-mir-gpu-decorator.sh`). Vendor LKIR execution remains Phase 3 (WP-SCI-GPU-VENDOR-01).
-- **Remaining lib gaps (Phase 2):** `run_algo_registry_stub` for most CFD/FEA rows; `li-sim-viz` compose-only; scene `native_pixels` stub; particles MD force accumulation still weak.
+- **Remaining lib gaps (Phase 2):** `run_algo_registry_stub` for QM ids 405–432 (418 DFT SCF still stub); `li-sim-viz` compose-only; scene `native_pixels` stub; particles MD force accumulation still weak. **Partial (2026-06-09):** CFD 205–210, FEA 211–216, QM 401–404 tier-2 oracles landed on branch `chore/agent-code_implementer-wp-sci-03-cfd-fea-qm-20260609d`.
 
 ---
 
@@ -191,13 +191,14 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 
 ### Phase 2 — Deepen simulation verticals (P1–P2) — **OPEN** (see [ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md))
 
-#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID)
+#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID) — **PARTIAL**
 
 - **Goal:** Replace `run_algo_registry_stub` for CFD/FEA/QM rows with real dispatch or tier-2 oracles.
 - **Scope:** `li-sim-scientific/src/lib.li`, `benchmarks/competitive/algo_registry.json`, `verticals.toml`.
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.
 - **Acceptance:** `run_algo_registry_tier2.li` extended; stub only for explicitly documented IDs.
 - **Priority / effort:** P1 / L
+- **Progress (2026-06-09):** Phase 2 slice — SPH CFD oracle (205–210), FEA scaffold (211–216), QM overlap (401–404); heat narrowed to 201–204; `vertical_cfd_lid_driven_cavity` / `vertical_fea_linear_elasticity` added. Remaining: QM 405–432, full DFT SCF (418).
 
 #### WP-SCI-04 — `sim.viz` → wgpu field draw (extends existing ID)
 

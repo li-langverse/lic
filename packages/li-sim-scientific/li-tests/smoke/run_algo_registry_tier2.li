@@ -6,8 +6,18 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
+  # WP-SCI-03 oracles before run_result_ok (codegen: object pass + float call ordering).
   var md_oracle: float = sim_scientific_oracle_checksum_md()
   var heat_oracle: float = sim_scientific_oracle_checksum_heat()
+  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
+  var fea_oracle: float = sim_scientific_oracle_checksum_fea()
+  var qm_oracle: float = sim_scientific_oracle_checksum_qm_overlap()
+  if cfd_oracle <= 0.0:
+    return 32
+  if fea_oracle <= 0.0:
+    return 38
+  if qm_oracle <= 0.0:
+    return 44
   var md105: SimRunResult = run_algo(105, 1)
   if run_result_ok(md105) != 1:
     return 1
@@ -26,9 +36,6 @@ def main() -> int
     return 7
   if heat203.checksum == 1.001:
     return 8
-  var cfd_oracle: float = sim_scientific_oracle_checksum_cfd()
-  if cfd_oracle <= 0.0:
-    return 32
   var cfd206: SimRunResult = run_algo(206, 1)
   if run_result_ok(cfd206) != 1:
     return 33
@@ -40,9 +47,6 @@ def main() -> int
     return 36
   if cfd206.checksum == heat_oracle:
     return 37
-  var fea_oracle: float = sim_scientific_oracle_checksum_fea()
-  if fea_oracle <= 0.0:
-    return 38
   var fea214: SimRunResult = run_algo(214, 1)
   if run_result_ok(fea214) != 1:
     return 39
@@ -54,9 +58,6 @@ def main() -> int
     return 42
   if fea214.checksum == heat_oracle:
     return 43
-  var qm_oracle: float = sim_scientific_oracle_checksum_qm_overlap()
-  if qm_oracle <= 0.0:
-    return 44
   var qm402: SimRunResult = run_algo(402, 0)
   if run_result_ok(qm402) != 1:
     return 45

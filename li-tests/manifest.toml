@@ -1648,6 +1648,13 @@ note = "PH-SCI-GPU-02 @gpu MD/heat oracle"
 
 [[tests]]
 suite = "science_gpu"
+file = "packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "compile_open_ok"
+note = "WP-SCI-03 run_algo_registry CFD/FEA/QM tier-2 dispatch"
+
+[[tests]]
+suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/physics_gpu_md_mini_step.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-03 @gpu MD mini step"

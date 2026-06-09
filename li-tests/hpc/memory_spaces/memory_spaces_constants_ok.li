@@ -1,0 +1,21 @@
+# PH-7e / lic#110 — memory + execution space constants compile smoke.
+import std.execution.memory_spaces
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if memory_space_host() != 0:
+    return 1
+  if memory_space_device() != 1:
+    return 1
+  if memory_space_unified() != 2:
+    return 1
+  if execution_space_openmp() != default_execution_space_tier2():
+    return 1
+  if view_space_host() != memory_space_host():
+    return 1
+  if view_space_device() != memory_space_device():
+    return 1
+  return __memory_spaces_doc()

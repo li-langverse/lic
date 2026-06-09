@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **WP-SCI-03 Phase 2 slice** — CFD/FEA/QM integral tier-2 oracles (`sim_scientific_oracle_checksum_cfd`, `_fea`, `_qm_overlap`); `run_cfd_tier2_registry`, `run_fea_tier2_registry`, `run_qm_integral_tier2_registry` for registry ids 205–210, 211–216, 401–404; `vertical_cfd_lid_driven_cavity` / `vertical_fea_linear_elasticity` in `li-sim`.
+- **WP-SCI-03 Phase 2 slice** — CFD/FEA/QM integral tier-2 oracles (`sim_scientific_oracle_checksum_cfd`, `_fea`, `_qm_overlap`); `run_cfd_tier2_registry`, `run_fea_tier2_registry`, `run_qm_integral_tier2_registry` for registry ids 205–210, 211–216, 401–404; `vertical_cfd_lid_driven_cavity` / `vertical_fea_linear_elasticity` in `li-sim`; FEA oracle uses scalar stiffness trace (avoids float-array codegen gap on host).
 
 ### Added (prior)
 

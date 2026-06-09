@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-06-09T21:00:52Z",
+  "suite": "ph-sci-md-oracle-competitive",
+  "benchmark": "md_lennard_jones",
+  "registry": "benchmarks/competitive/md_oracle.toml",
+  "workload_class": "v0_micro",
+  "rows": [
+    {
+      "id": "md_lennard_jones",
+      "li": {
+        "id": "li",
+        "csv_lang": "li",
+        "executed": true,
+        "checksum": 6.969122800372497e-05,
+        "oracle": "sim_scientific_oracle_checksum_md",
+        "workload_class": "v0_micro",
+        "validity_gate_pass": true,
+        "ratio_vs_li": 1.0
+      },
+      "competitors": [
+        {
+          "id": "lammps",
+          "csv_lang": "lammps",
+          "incumbent": "LAMMPS",
+          "executed": false,
+          "status": "stub",
+          "checksum": null,
+          "validity_gate_pass": false,
+          "ratio_vs_li": null,
+          "note": "Set LI_MD_ORACLE_LAMMPS=1 with lammps on PATH for B1 driver"
+        },
+        {
+          "id": "gromacs",
+          "csv_lang": "gromacs",
+          "incumbent": "GROMACS",
+          "executed": false,
+          "status": "stub",
+          "checksum": null,
+          "validity_gate_pass": false,
+          "ratio_vs_li": null,
+          "note": "Set LI_MD_ORACLE_GROMACS=1 with gmx on PATH for B2 driver"
+        }
+      ]
+    }
+  ]
+}

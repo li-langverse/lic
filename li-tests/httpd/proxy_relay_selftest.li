@@ -5,6 +5,7 @@ extern proc li_rt_httpd_proxy_relay_selftest() -> int
   requires true
   ensures -20 <= result
   ensures result <= 0
+  ensures result >= -11
 
 def main() raises IO -> int
   requires true

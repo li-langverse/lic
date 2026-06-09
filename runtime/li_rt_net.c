@@ -73,10 +73,8 @@ static int epoll_wait(int epfd, struct epoll_event* events, int maxevents, int t
 
 #ifdef __linux__
 #include <sys/epoll.h>
-#include <sys/ioctl.h>
 #include <sys/sendfile.h>
 #include <sys/uio.h>
-#include <poll.h>
 #ifndef SPLICE_F_MOVE
 #define SPLICE_F_MOVE 1
 #endif
@@ -528,32 +526,6 @@ static void tcp_ack_now(int32_t fd) {
 #endif
   (void)fd;
 }
-
-#if defined(__linux__)
-static void httpd_wait_tcp_outq(int fd) {
-  if (fd < 0) {
-    return;
-  }
-  for (int round = 0; round < 256; round++) {
-    int outq = 0;
-    if (ioctl(fd, TIOCOUTQ, &outq) != 0) {
-      return;
-    }
-    if (outq <= 0) {
-      return;
-    }
-    struct pollfd pfd;
-    pfd.fd = fd;
-    pfd.events = (short)POLLOUT;
-    pfd.revents = 0;
-    if (poll(&pfd, 1, 0) <= 0 && round > 8) {
-      return;
-    }
-  }
-}
-#else
-static void httpd_wait_tcp_outq(int fd) { (void)fd; }
-#endif
 
 static int httpd_cpu_count(void) { return li_rt_httpd_cpu_count(); }
 
@@ -3520,7 +3492,6 @@ static void httpd_proxy_finish_ok(int epfd, int32_t slot) {
   httpd_proxy_clear(epfd, slot);
   httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLET);
   if (!keep) {
-    httpd_wait_tcp_outq(conn);
     httpd_conn_close_slot(epfd, slot);
     return;
   }
@@ -4683,7 +4654,6 @@ static void httpd_proxy_enter_client_drain(int epfd, int32_t slot) {
     }
     httpd_proxy_try_tls_flush(slot);
     if (!httpd_proxy_tls_outstanding(slot, s)) {
-      httpd_wait_tcp_outq(s->fd);
       httpd_proxy_finish_ok(epfd, slot);
       return;
     }
@@ -5173,7 +5143,6 @@ static void httpd_proxy_client_handler(int epfd, int32_t slot, uint32_t events) 
         }
         httpd_proxy_try_tls_flush(slot);
         if (!httpd_proxy_tls_outstanding(slot, s)) {
-          httpd_wait_tcp_outq(s->fd);
           httpd_proxy_finish_ok(epfd, slot);
           return;
         }

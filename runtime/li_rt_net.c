@@ -454,6 +454,11 @@ static int httpd_proxy_pump_budget_take(int32_t slot, size_t nbytes) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN) {
     return 1;
   }
+  /* LI_HTTPD_WORKERS=auto spreads load; disable byte cap when any parallel relay
+   * is active on this worker so CL bodies are not truncated (ae8257b81). */
+  if (g_active_proxy_streams > 1) {
+    return 0;
+  }
   httpd_slot_t* s = &g_slots[slot];
   if (s->proxy_pump_budget <= 0) {
     return 1;
@@ -606,6 +611,10 @@ static void httpd_proxy_sweep_stuck_relays(int epfd) {
     }
     if (httpd_proxy_tick_slot_needs_work((int32_t)i, s)) {
       httpd_proxy_tick_service_slot(epfd, (int32_t)i, HTTPD_PROXY_TICK_BUDGET_BYTES);
+    } else if (!httpd_proxy_upstream_recv_blocked((int32_t)i, s) &&
+               s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0) {
+      httpd_proxy_pump_budget_reset((int32_t)i);
+      httpd_proxy_pump_relay(epfd, (int32_t)i);
     }
   }
 }
@@ -5836,7 +5845,11 @@ static void httpd_proxy_pump_tunnel(int epfd, int32_t slot) {
 
 static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
-  httpd_proxy_ensure_tick_budget(slot);
+  if (g_active_proxy_streams > 1) {
+    httpd_proxy_pump_budget_reset(slot);
+  } else {
+    httpd_proxy_ensure_tick_budget(slot);
+  }
   if (s->proxy_resp_body_mode == PROXY_RESP_BODY_TUNNEL) {
     httpd_proxy_pump_tunnel(epfd, slot);
     return;

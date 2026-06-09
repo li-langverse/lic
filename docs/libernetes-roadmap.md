@@ -5,9 +5,9 @@ Standalone rendered view of delivery waves, K8s runner topology, and cluster-ope
 **Canonical detail:** [libernetes/master-plan.md](libernetes/master-plan.md)  
 **Full plan (Cursor):** `libernetes_master_plan_bc3b669a.plan.md` in Cursor plans
 
-![libernetes delivery roadmap — waves, bootstrap, and cluster operations](libernetes-roadmap.png)
+![libernetes delivery roadmap — stacked waves (W0–W10+), bootstrap/git policy, and cluster operations (W7–9)](libernetes-roadmap.png)
 
-**Rendered diagrams:** [waves](libernetes-roadmap-waves.png) · [bootstrap & git policy](libernetes-roadmap-bootstrap.png) · [cluster operations (W7–9)](libernetes-roadmap-cluster-ops.png)
+**Rendered diagrams:** [waves (W0–W10+)](libernetes-roadmap-waves.png) · [bootstrap & git policy](libernetes-roadmap-bootstrap.png) · [cluster operations (W7–9)](libernetes-roadmap-cluster-ops.png)
 
 ---
 
@@ -33,27 +33,28 @@ Every libernetes subsystem has a **Li-native production path**. Industry stacks 
 Each wave gates four parallel tracks (platform, licontainers, livm, control). Wave 3 is wired into completion gates; Waves 4–9 ship gate scripts but stay unwired until the prior wave merges.
 
 ```mermaid
+%%{init: {'theme': 'base', 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 60, 'padding': 16}}}%%
 flowchart LR
-  subgraph done [Merged]
-    W0[Wave 0<br/>specs + easy-setup]
-    W1[Wave 1<br/>package scaffolds]
-    W2[Wave 2<br/>etcd CRI livm APIs]
+  subgraph done ["Merged"]
+    W0["Wave 0\nspecs + easy-setup"]
+    W1["Wave 1\npackage scaffolds"]
+    W2["Wave 2\netcd CRI livm APIs"]
   end
 
-  subgraph dist [Distributed workloads]
-    W3[Wave 3 ACTIVE<br/>libernetes-run-local]
-    W4[Wave 4<br/>multi-node join]
-    W5[Wave 5<br/>scheduler dispatch]
-    W6[Wave 6<br/>bench + e2e]
+  subgraph dist ["Distributed workloads"]
+    W3["Wave 3 ACTIVE\nlibernetes-run-local"]
+    W4["Wave 4\nmulti-node join"]
+    W5["Wave 5\nscheduler dispatch"]
+    W6["Wave 6\nbench + e2e"]
   end
 
-  subgraph cluster [Cluster operations]
-    W7[Wave 7<br/>self-healing]
-    W8[Wave 8<br/>reboot persistence]
-    W9[Wave 9<br/>metrics + dashboard]
+  subgraph cluster ["Cluster operations"]
+    W7["Wave 7\nself-healing"]
+    W8["Wave 8\nreboot persistence"]
+    W9["Wave 9\nmetrics + dashboard"]
   end
 
-  W10[Wave 10+<br/>conformance + k3s cutover]
+  W10["Wave 10+\nconformance + k3s cutover"]
 
   W0 --> W1 --> W2 --> W3 --> W4 --> W5 --> W6 --> W7 --> W8 --> W9 --> W10
 ```
@@ -86,22 +87,23 @@ flowchart LR
 Goal-directed K8s workers on the homelab engine cluster implement Waves 3–9 until libernetes replaces k3s.
 
 ```mermaid
+%%{init: {'theme': 'base', 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 60, 'padding': 16}}}%%
 flowchart TB
-  subgraph homelab [Homelab today]
-    k3s[k3s engine / li-swarm]
+  subgraph homelab ["Homelab today"]
+    k3s["k3s engine / li-swarm"]
   end
 
-  subgraph runners [Four K8s goal-directed runners]
+  subgraph runners ["Four K8s goal-directed runners"]
     platform[li-libernetes-platform]
     licont[li-libernetes-licontainers]
     livmW[li-libernetes-livm]
     control[li-libernetes-control]
   end
 
-  subgraph git [Org git policy]
-    bundle[li-libernetes-git-bundle<br/>entrypoint + k8s-git-auth]
-    gl[GitLab origin<br/>gitlab.lilangverse.xyz]
-    gh[GitHub mirror read-only]
+  subgraph git ["Org git policy"]
+    bundle["li-libernetes-git-bundle\nentrypoint + k8s-git-auth"]
+    gl["GitLab origin\ngitlab.lilangverse.xyz"]
+    gh["GitHub mirror read-only"]
   end
 
   k3s --> runners
@@ -109,7 +111,7 @@ flowchart TB
   runners -->|GITLAB_TOKEN push/pull| gl
   runners -->|GH_TOKEN fetch only| gh
   runners -->|implement Waves 3-9| libernetesShip[libernetes codebase]
-  libernetesShip --> heterogeneous[libernetes init + worker join auto]
+  libernetesShip --> heterogeneous["libernetes init + worker join auto"]
   heterogeneous -->|future: same agents on libernetes| runners
 ```
 
@@ -122,11 +124,12 @@ Future: same agent workloads run on libernetes with `WorkerProfile` scheduling i
 Waves 7–9 extend the control plane with self-healing, persistence, and observability. See [cluster-operations.md](libernetes/cluster-operations.md) for full detail.
 
 ```mermaid
+%%{init: {'theme': 'base', 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 60, 'padding': 16}}}%%
 flowchart TB
-  subgraph ops [Cluster operations Waves 7-9]
-    selfheal[li-controller self_heal.li]
-    storage[PV/PVC + etcd backup]
-    metrics[li-metrics + node conditions]
+  subgraph ops ["Cluster operations Waves 7-9"]
+    selfheal["li-controller self_heal.li"]
+    storage["PV/PVC + etcd backup"]
+    metrics["li-metrics + node conditions"]
     dashboard[libernetes-dashboard.sh]
   end
 
@@ -154,8 +157,9 @@ flowchart TB
 > **Industry reference:** KubeVirt API compat for `VirtualMachine` CRDs; cold-boot benchmarks in `li-cluster-bench` may compare against KVM/QEMU baselines during transition. OVMF/UEFI cited only for guest image compat notes — production firmware is Li-native.
 
 ```mermaid
+%%{init: {'theme': 'base', 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 60, 'padding': 16}}}%%
 flowchart TB
-  subgraph livm [livm — production]
+  subgraph livm ["livm — production"]
     vapi[li-vm API]
     hypervisor[li-hypervisor]
     disk[li-disk CoW]
@@ -163,7 +167,7 @@ flowchart TB
     cloudinit[li-cloud-init]
   end
 
-  subgraph licont [licontainers — production]
+  subgraph licont ["licontainers — production"]
     cri[li-cri]
     liosbe[LiOSBackend]
   end

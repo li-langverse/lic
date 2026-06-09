@@ -1,0 +1,24 @@
+%%{init: {'theme': 'base', 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 60, 'padding': 16}}}%%
+flowchart LR
+  subgraph done ["Merged"]
+    W0["Wave 0\nspecs + easy-setup"]
+    W1["Wave 1\npackage scaffolds"]
+    W2["Wave 2\netcd CRI livm APIs"]
+  end
+
+  subgraph dist ["Distributed workloads"]
+    W3["Wave 3 ACTIVE\nlibernetes-run-local"]
+    W4["Wave 4\nmulti-node join"]
+    W5["Wave 5\nscheduler dispatch"]
+    W6["Wave 6\nbench + e2e"]
+  end
+
+  subgraph cluster ["Cluster operations"]
+    W7["Wave 7\nself-healing"]
+    W8["Wave 8\nreboot persistence"]
+    W9["Wave 9\nmetrics + dashboard"]
+  end
+
+  W10["Wave 10+\nconformance + k3s cutover"]
+
+  W0 --> W1 --> W2 --> W3 --> W4 --> W5 --> W6 --> W7 --> W8 --> W9 --> W10

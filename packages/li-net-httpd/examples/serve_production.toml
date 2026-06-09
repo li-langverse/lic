@@ -7,6 +7,7 @@ workers = 2
 [limits]
 max_body = "1m"
 max_header = "16k"
+proxy_max_response_body = "64m"
 rate_limit_rps = 1000
 rate_limit_burst = 2000
 

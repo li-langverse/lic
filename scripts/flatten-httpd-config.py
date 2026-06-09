@@ -27,6 +27,7 @@ from httpd_leak_censor import (
 from httpd_m15 import ConfigError as M15Error, parse_duration, validate_route_match
 from httpd_m2 import ConfigError as M2Error, m2_flatten_lines
 from httpd_m3 import ConfigError as M3Error, m3_flatten_lines
+from httpd_limits import ConfigError as LimitsError, limits_flatten_lines
 from httpd_tls import ConfigError as TlsError, tls_flatten_lines
 
 
@@ -114,6 +115,7 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
         lines.append(f"stream_max_duration_sec={parse_duration(limits['stream_max_duration'], 'limits.stream_max_duration')}")
     if limits.get("concurrent_streams") is not None:
         lines.append(f"concurrent_streams={int(limits['concurrent_streams'])}")
+    lines.extend(limits_flatten_lines(data))
 
     routes = load_httpd_config(cfg_path)
     proxy_any = False
@@ -234,7 +236,7 @@ def main() -> int:
         return 1
     try:
         lines = flatten(args.config, cert_dir=args.cert_dir)
-    except (ConfigError, M15Error, M2Error, TlsError, ValueError) as e:
+    except (ConfigError, LimitsError, M15Error, M2Error, TlsError, ValueError) as e:
         print(f"flatten-httpd-config: {e}", file=sys.stderr)
         return 1
     if not any(l.startswith("listen_port=") for l in lines):

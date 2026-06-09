@@ -91,12 +91,12 @@ static int epoll_wait(int epfd, struct epoll_event* events, int maxevents, int t
 #define HTTPD_PROXY_PHASE_SEND_BODY 2
 #define HTTPD_PROXY_PHASE_RELAY 3
 
-#define HTTPD_MAX_HDR_RECV 16384
 #define HTTPD_MAX_HEADER_LINES 128
-#define HTTPD_MAX_BODY (1024 * 1024)
-/* Streamed proxy egress — separate from inbound request max_body (GitLab webpack ~1.3 MiB). */
-#define HTTPD_MAX_PROXY_RESP_BODY (64 * 1024 * 1024)
 #define HTTPD_PROXY_RELAY_BUF 65536
+/* Defaults match li-httpd [limits] — overridden via runtime.conf (see httpd_limits.py). */
+#define HTTPD_DEFAULT_MAX_REQUEST_BODY (1024 * 1024)
+#define HTTPD_DEFAULT_MAX_HEADER_RECV 16384
+#define HTTPD_DEFAULT_MAX_PROXY_RESP_BODY (64 * 1024 * 1024)
 
 typedef struct {
   char method[16];
@@ -253,6 +253,9 @@ static char g_cur_upstream_pool[64];
 static int g_access_log_enabled = 1;
 static int g_rate_limit_rps = 0;
 static int g_rate_limit_burst = 0;
+static int g_max_request_body_bytes = HTTPD_DEFAULT_MAX_REQUEST_BODY;
+static int g_max_header_recv_bytes = HTTPD_DEFAULT_MAX_HEADER_RECV;
+static int g_max_proxy_response_body_bytes = HTTPD_DEFAULT_MAX_PROXY_RESP_BODY;
 static double g_rate_tokens = 0.0;
 static double g_rate_last_ts = 0.0;
 
@@ -1454,8 +1457,8 @@ static void parse_request_body_meta_c(const char* buf, int hdr_end, httpd_req_in
       int v = 0;
       while (i < hdr_end && buf[i] >= '0' && buf[i] <= '9') {
         v = v * 10 + (buf[i] - '0');
-        if (v > HTTPD_MAX_BODY) {
-          v = HTTPD_MAX_BODY + 1;
+        if (v > g_max_request_body_bytes) {
+          v = g_max_request_body_bytes + 1;
           break;
         }
         i++;
@@ -1483,8 +1486,8 @@ static void parse_response_body_meta_c(const char* buf, int hdr_end, int* body_m
       int v = 0;
       while (i < hdr_end && buf[i] >= '0' && buf[i] <= '9') {
         v = v * 10 + (buf[i] - '0');
-        if (v > HTTPD_MAX_BODY) {
-          v = HTTPD_MAX_BODY + 1;
+        if (v > g_max_request_body_bytes) {
+          v = g_max_request_body_bytes + 1;
           break;
         }
         i++;
@@ -2960,7 +2963,7 @@ static int httpd_forward_body_chunked(int conn, int up) {
       return 0;
     }
     total += chunk_sz;
-    if (total > HTTPD_MAX_BODY) {
+    if (total > g_max_request_body_bytes) {
       return -1;
     }
     char tmp[8192];
@@ -3112,7 +3115,7 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     return -2;
   }
   parse_request_body_meta_c(g_slots[slot].buf, hdr_end, &req);
-  if (req.body_mode == 1 && req.content_length >= HTTPD_MAX_BODY) {
+  if (req.body_mode == 1 && req.content_length >= g_max_request_body_bytes) {
     int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
     if (httpd_send_status(conn, 413, "Payload Too Large", NULL, keep) < 0) {
       return -2;
@@ -3789,7 +3792,7 @@ static void httpd_proxy_try_send_chunked(int epfd, int32_t slot) {
           httpd_proxy_enter_relay(epfd, slot);
           return;
         }
-        if (chunk_sz > HTTPD_MAX_BODY) {
+        if (chunk_sz > g_max_request_body_bytes) {
           httpd_proxy_finish_err(epfd, slot);
           return;
         }
@@ -4205,7 +4208,7 @@ static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
   }
   s->proxy_resp_parsing = 0;
   if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL) {
-    if (s->proxy_resp_body_left > HTTPD_MAX_PROXY_RESP_BODY) {
+    if (s->proxy_resp_body_left > g_max_proxy_response_body_bytes) {
       return -1;
     }
   } else if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CHUNKED) {
@@ -4317,7 +4320,7 @@ static int httpd_proxy_resp_feed(int epfd, int32_t slot, const char* data, size_
               s->proxy_resp_body_mode = PROXY_RESP_BODY_NONE;
               s->proxy_resp_body_left = 0;
             } else {
-              if (chunk_sz > HTTPD_MAX_PROXY_RESP_BODY) {
+              if (chunk_sz > g_max_proxy_response_body_bytes) {
                 return -1;
               }
               s->proxy_resp_chunk_remain = chunk_sz;
@@ -4977,7 +4980,7 @@ static void httpd_serve_conn_epoll(int epfd, int32_t slot) {
       httpd_conn_close_slot(epfd, slot);
       return;
     }
-    if (g_slots[slot].len >= HTTPD_MAX_HDR_RECV && hdr_end_at_c(g_slots[slot].buf, g_slots[slot].len) < 0) {
+    if (g_slots[slot].len >= g_max_header_recv_bytes && hdr_end_at_c(g_slots[slot].buf, g_slots[slot].len) < 0) {
       httpd_conn_close_slot(epfd, slot);
       return;
     }
@@ -5469,6 +5472,9 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_cur_upstream_pool[0] = '\0';
   g_rate_limit_rps = 0;
   g_rate_limit_burst = 0;
+  g_max_request_body_bytes = HTTPD_DEFAULT_MAX_REQUEST_BODY;
+  g_max_header_recv_bytes = HTTPD_DEFAULT_MAX_HEADER_RECV;
+  g_max_proxy_response_body_bytes = HTTPD_DEFAULT_MAX_PROXY_RESP_BODY;
   g_rate_tokens = 0.0;
   g_rate_last_ts = 0.0;
   g_health_max_fails = 1;
@@ -5585,6 +5591,21 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       g_rate_limit_rps = atoi(val);
     } else if (strcmp(key, "rate_limit_burst") == 0) {
       g_rate_limit_burst = atoi(val);
+    } else if (strcmp(key, "max_request_body_bytes") == 0) {
+      int n = atoi(val);
+      if (n > 0) {
+        g_max_request_body_bytes = n;
+      }
+    } else if (strcmp(key, "max_header_bytes") == 0) {
+      int n = atoi(val);
+      if (n > 0) {
+        g_max_header_recv_bytes = n;
+      }
+    } else if (strcmp(key, "max_proxy_response_body_bytes") == 0) {
+      int n = atoi(val);
+      if (n > 0) {
+        g_max_proxy_response_body_bytes = n;
+      }
     } else if (strcmp(key, "health_max_fails") == 0) {
       g_health_max_fails = atoi(val);
       if (g_health_max_fails < 1) {
@@ -6370,7 +6391,7 @@ int32_t httpd_li_proxy_init_req_i(int32_t slot, int32_t hdr_end) {
     return -1;
   }
   parse_request_body_meta_c(s->buf, hdr_end, &req);
-  if (req.body_mode == 1 && req.content_length >= HTTPD_MAX_BODY) {
+  if (req.body_mode == 1 && req.content_length >= g_max_request_body_bytes) {
     return -1;
   }
   s->proxy_req = req;

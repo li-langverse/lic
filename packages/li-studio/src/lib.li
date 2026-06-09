@@ -6334,7 +6334,12 @@ def studio_aimd_final_viz_ok(batch: AimdBatchResult, path: str, width: int, heig
     return 0
   var tick: int = studio_aimd_final_tick_for_batch(batch)
   var digest: int = studio_aimd_final_viz_digest(batch, width, height)
-  var wrote: int = studio_vertical_capture_ppm(studio_profile_sim_scientific(), tick % 3, path, width, height)
+  var compose: StudioShellCompose = studio_vertical_demo_compose(studio_profile_sim_scientific(), tick % 3, 0)
+  var cmd_c: int = studio_shell_chrome_count_for_compose(compose)
+  if cmd_c <= 0:
+    cmd_c = 1
+  var cpu_pixels: int = cmd_c + batch.steps % 997 + batch.gpu_path * 113
+  var wrote: int = li_rt_studio_headless_raster_ppm(path, width, height, studio_profile_sim_scientific(), cmd_c, cpu_pixels, digest)
   if wrote != 1:
     return 0
   if digest <= 0:

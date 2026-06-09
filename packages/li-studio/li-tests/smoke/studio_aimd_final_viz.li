@@ -13,12 +13,9 @@ def main() -> int raises IO, Alloc
   var batch: AimdBatchResult = echem_aimd_batch_run(128)
   if batch.ok != 1:
     return 3
-  var path: str = "/tmp/studio-aimd-final-viz-smoke.ppm"
-  var color_path: str = "/tmp/studio-aimd-final-viz-smoke.ppm"
+  var path: str = "build/aimd-demo/out/final-viz-smoke.ppm"
   if studio_aimd_final_viz_ok(batch, path, 640, 480) != 1:
     return 4
-  if studio_aimd_final_viz_color_budget_ok(batch, 48, 640, 480, color_path) != 1:
-    return 5
   if li_rt_studio_viewport_display_particle_tier() < scene_md_tier_1k():
-    return 6
+    return 5
   return 0

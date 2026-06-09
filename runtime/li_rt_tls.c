@@ -324,7 +324,7 @@ int32_t httpd_tls_drain_writes(int32_t slot, int32_t fd) {
     return 0;
   }
   /* Best-effort only: never block the epoll thread (poll timeout 0). */
-  while (httpd_tls_wbio_pending(slot) > 0 && rounds++ < 64) {
+  while (httpd_tls_wbio_pending(slot) > 0 && rounds++ < 512) {
     if (httpd_tls_flush_wbio(slot) == 0) {
       return 0;
     }

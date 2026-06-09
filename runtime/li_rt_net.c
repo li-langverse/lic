@@ -4973,10 +4973,6 @@ static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
       return;
     }
     if (relay_rc == 0) {
-      if (s->proxy_tls_cl_defer > 0 || httpd_proxy_relay_pending_client(s) ||
-          httpd_proxy_tls_outstanding(slot, s)) {
-        return;
-      }
       httpd_proxy_relay_cl_account(s, slot, take, relay_rc);
       return;
     }

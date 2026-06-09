@@ -6391,7 +6391,12 @@ int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
     }
     for (int i = 0; i < n; i++) {
       httpd_dispatch_epoll_event(epfd, listen_fd, &events[i]);
+      if (g_active_proxy_streams > 4) {
+        httpd_proxy_defer_prune_inactive();
+        httpd_proxy_sweep_stuck_relays(epfd);
+      }
     }
+    httpd_proxy_defer_prune_inactive();
     httpd_proxy_sweep_stuck_relays(epfd);
     httpd_proxy_tick_starved_relays(epfd);
     for (int drain_guard = 64; drain_guard > 0; drain_guard--) {

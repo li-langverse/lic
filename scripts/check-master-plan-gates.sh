@@ -65,6 +65,7 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
 "$ROOT/scripts/check-mir-parallel-decorator.sh"
+"$ROOT/scripts/check-mir-cpu-decorator.sh"
 "$ROOT/scripts/check-mir-gpu-decorator.sh"
 "$ROOT/scripts/check-mir-vectorized-decorator.sh"
 "$ROOT/scripts/check-li-toolchain.sh"

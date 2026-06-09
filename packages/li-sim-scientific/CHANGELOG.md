@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **WP-SCI-03 Phase 2 tier-2 oracles** — `sim_scientific_oracle_checksum_qm` (particle-in-a-box), `_cfd`, `_fea`; `run_qm_tier2_registry` (401–432), `run_cfd_tier2_registry` (205–210), `run_fea_tier2_registry` (211–216); heat dispatch narrowed to 201–204; `vertical_fea_linear_elasticity` / `vertical_cfd_lid_driven_cavity` in `li-sim`; smoke `run_algo_registry_tier2.li` extended for CFD/FEA/QM rows.
+- **WP-SCI-03 Phase 2 tier-2 oracles** — `sim_scientific_oracle_checksum_qm` (`chem_dft_scf_iteration_scaffold`), `_cfd`, `_fea`; `run_qm_tier2_registry` (401–432), `run_cfd_tier2_registry` (205–210), `run_fea_tier2_registry` (211–216); heat dispatch narrowed to 201–204; `vertical_fea_linear_elasticity` / `vertical_cfd_lid_driven_cavity` in `li-sim`; smokes `run_algo_registry_tier2.li`, `run_algo_registry_qm_tier2.li`.
 - **WP-ECHEM-15 multiscale SEI growth kMC** — `sim_scientific_oracle_checksum_echem_sei_kmc`, `run_echem_sei_kmc_tier2_registry`, `algo_echem_sei_kmc()` (435) dispatch; 48-step NEB-barrier deposition kMC vs mean-field growth law; smoke `echem_sei_kmc_interface_smoke.li`.
 - **WP-ECHEM-12 grand-canonical SHE AIMD** — `sim_scientific_oracle_checksum_echem_gc_aimd`, `run_echem_gc_aimd_tier2_registry`, `algo_echem_gc_aimd_interface()` (434) dispatch; 10-step constant-potential MD with `echem_gc_charge_neutrality_step` feedback; smoke `echem_gc_aimd_interface_smoke.li`.
 - **WP-ECHEM-09 AIMD coupling** — `sim_scientific_oracle_checksum_echem_aimd`, `run_echem_aimd_tier2_registry`, `algo_echem_aimd_interface()` (433) dispatch; 8-step velocity-Verlet + Berendsen toy thermostat calling `chem_dft_energy_kernel_hartree` each step; smoke `echem_aimd_interface_smoke.li`.
@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `li_sim_scientific_version` → 7 (WP-SCI-03 Phase 2 QM/CFD/FEA tier-2 dispatch).
 - **WP-SCI-03 echem smoke alignment** — echem interface smokes expect `li_sim_scientific_version` 7; AIMD oracle relative drift floor `1.0e-15` when energy drift is exactly zero.
-- **WP-SCI-03 host float codegen** — CFD/FEA/QM tier-2 oracles use SPH-kernel and scalar witnesses safe on current lic codegen.
+- **WP-SCI-03 QM oracle** — registry 401–432 dispatch uses chem SCF scaffold (not registry stub 1.001); CFD/FEA use SPH-kernel and scalar witnesses safe on current lic codegen.
 - `run_md_lj_smoke` / `run_heat_smoke` use tier-2 oracle checksums (not scalar stub / constant 1.0); `li_sim_scientific_version` → 6 (WP-ECHEM-15).
 - **WP-SCI-01 multi-physics tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` (MD + heat + rigid smokes); smoke `li-tests/smoke/multi_physics_tick.li`.
 

@@ -458,6 +458,22 @@ static void httpd_proxy_cl_cap_reset(httpd_slot_t* s) {
   s->proxy_resp_bytes_committed = 0;
 }
 
+/* Track body bytes accepted into the client path (SSL/rbuf) for hard CL cap. */
+static void httpd_proxy_cl_cap_commit(httpd_slot_t* s, size_t nbytes) {
+  int rem;
+  if (!s || s->proxy_resp_cl_cap < 0 || nbytes == 0) {
+    return;
+  }
+  rem = s->proxy_resp_cl_cap - s->proxy_resp_bytes_committed;
+  if (rem <= 0) {
+    return;
+  }
+  if ((size_t)rem < nbytes) {
+    nbytes = (size_t)rem;
+  }
+  s->proxy_resp_bytes_committed += (int)nbytes;
+}
+
 static void httpd_proxy_defer_pump(int32_t slot) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN) {
     return;
@@ -4463,21 +4479,10 @@ static void httpd_proxy_relay_cl_account(httpd_slot_t* s, int32_t slot, size_t a
   if ((size_t)s->proxy_resp_body_left < dec) {
     dec = (size_t)s->proxy_resp_body_left;
   }
-  if (s->proxy_resp_cl_cap >= 0) {
-    int cap_rem = httpd_proxy_cl_cap_remaining(s);
-    if (cap_rem <= 0) {
-      dec = 0;
-    } else if ((size_t)cap_rem < dec) {
-      dec = (size_t)cap_rem;
-    }
-  }
   if (dec == 0) {
     return;
   }
   s->proxy_resp_body_left -= (int)dec;
-  if (s->proxy_resp_cl_cap >= 0) {
-    s->proxy_resp_bytes_committed += (int)dec;
-  }
   g_lp_body_left[slot] = s->proxy_resp_body_left;
 }
 
@@ -4531,6 +4536,9 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
     if (left > sizeof(s->proxy_rbuf)) {
       return -1;
     }
+    if (off > 0) {
+      httpd_proxy_cl_cap_commit(s, off);
+    }
     memmove(s->proxy_rbuf, send_data + off, left);
     s->proxy_rbuf_len = (int)left;
     s->proxy_rbuf_sent = 0;
@@ -4548,11 +4556,13 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
     (void)httpd_tls_flush_wbio(slot);
     if (httpd_tls_wbio_pending(slot) > 0) {
       s->proxy_tls_cl_defer += (int)send_len;
+      httpd_proxy_cl_cap_commit(s, send_len);
       httpd_proxy_upstream_hold_sync(epfd, slot);
       httpd_proxy_client_epoll_arm_out(epfd, slot);
       return 0;
     }
   }
+  httpd_proxy_cl_cap_commit(s, send_len);
   return 1;
 }
 
@@ -5179,11 +5189,13 @@ static void httpd_proxy_flush_client_out(int epfd, int32_t slot) {
         (void)httpd_tls_flush_wbio(slot);
         if (httpd_tls_wbio_pending(slot) > 0) {
           s->proxy_tls_cl_defer += nbytes;
+          httpd_proxy_cl_cap_commit(s, (size_t)nbytes);
           httpd_proxy_upstream_hold_sync(epfd, slot);
           httpd_proxy_client_epoll_arm_out(epfd, slot);
           return;
         }
       }
+      httpd_proxy_cl_cap_commit(s, (size_t)nbytes);
       httpd_proxy_relay_cl_account(s, slot, (size_t)nbytes, 1);
       httpd_proxy_upstream_hold_sync(epfd, slot);
       httpd_proxy_relay_maybe_done(epfd, slot);

@@ -1,0 +1,33 @@
+import sim
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var cfd206: SimRunResult = run_algo(algo_cfd_simple(), 1)
+  var cfd_ref: SimRunResult = run_cfd_tier2_registry(206, 1)
+  if run_result_ok(cfd206) != 1:
+    return 1
+  if cfd206.algo_id != 206:
+    return 2
+  if cfd206.vertical_id != vertical_cfd_lid_driven_cavity():
+    return 3
+  if cfd206.checksum != cfd_ref.checksum:
+    return 4
+  if cfd206.checksum == 1.001:
+    return 5
+  var fea214: SimRunResult = run_algo(algo_fea_linear_elasticity(), 1)
+  var fea_ref: SimRunResult = run_fea_tier2_registry(214, 1)
+  if run_result_ok(fea214) != 1:
+    return 7
+  if fea214.algo_id != 214:
+    return 8
+  if fea214.vertical_id != vertical_fea_linear_elasticity():
+    return 9
+  if fea214.checksum != fea_ref.checksum:
+    return 10
+  if fea214.checksum == 1.001:
+    return 11
+  return 0

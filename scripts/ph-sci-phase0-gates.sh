@@ -27,6 +27,9 @@ echo "==> WP-SCI-BUILD-03: honest package smokes (Phase 0 blocked libs)"
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-math-numerics/li-tests/smoke/builds.li -o /dev/null
 "$LIC" build "${BUILD_FLAGS[@]}" packages/li-physics-particles/li-tests/smoke/builds.li -o /dev/null
 
+echo "==> WP-SCI-03: run_algo_registry tier-2 smoke (QM/CFD/FEA dispatch)"
+"$LIC" build "${BUILD_FLAGS[@]}" packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li --run
+
 echo "==> WP-SCI-GPU-00: science_gpu suite"
 bash scripts/check-science-gpu-gate.sh
 

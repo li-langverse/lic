@@ -5172,7 +5172,7 @@ static void httpd_proxy_tick_starved_relays(int epfd) {
     }
     if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0 &&
         !httpd_proxy_upstream_recv_blocked(i, s)) {
-      httpd_proxy_schedule_pump(epfd, i);
+      httpd_proxy_pump_relay(epfd, i);
     } else if (httpd_proxy_cl_relay_complete(s)) {
       httpd_proxy_relay_maybe_done(epfd, i);
     }
@@ -6162,7 +6162,12 @@ int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
       httpd_tick_active_health_probes_i();
     }
     httpd_tick_sse_stream_idle(epfd);
-    int wait_ms = httpd_sse_idle_watch_active() ? 250 : -1;
+    int wait_ms = -1;
+    if (httpd_sse_idle_watch_active()) {
+      wait_ms = 250;
+    } else if (g_active_proxy_streams > 0) {
+      wait_ms = 25;
+    }
     int n = epoll_wait(epfd, events, 256, wait_ms);
     if (n < 0) {
       if (errno == EINTR) {

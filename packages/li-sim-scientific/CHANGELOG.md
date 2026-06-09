@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **WP-ECHEM-12 grand-canonical SHE AIMD** — `sim_scientific_oracle_checksum_echem_gc_aimd`, `run_echem_gc_aimd_tier2_registry`, `algo_echem_gc_aimd_interface()` (434) dispatch; 10-step constant-potential MD with `echem_gc_charge_neutrality_step` feedback; smoke `echem_gc_aimd_interface_smoke.li`.
 - **WP-ECHEM-09 AIMD coupling** — `sim_scientific_oracle_checksum_echem_aimd`, `run_echem_aimd_tier2_registry`, `algo_echem_aimd_interface()` (433) dispatch; 8-step velocity-Verlet + Berendsen toy thermostat calling `chem_dft_energy_kernel_hartree` each step; smoke `echem_aimd_interface_smoke.li`.
 - **WP-SCI-03 tier-2 kernels** — `sim_scientific_oracle_checksum_md`, `sim_scientific_oracle_checksum_heat`, `run_algo_registry` MD/heat/rigid dispatch; smokes `scientific_oracle_bench.li`, `run_algo_registry_tier2.li`.
+- **WP-SCI-03 Phase 2 CFD/FEA/QM registry** — `sim_scientific_oracle_checksum_cfd`, `_fea`, `_qm_integral`; `run_cfd_tier2_registry` (205–211), `run_fea_tier2_registry` (212–216), `run_qm_integral_tier2_registry` (401–404); `algo_qm_dft_scf_energy` (418) remains documented stub.
 
 ### Changed
 

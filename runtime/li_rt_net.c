@@ -4218,6 +4218,16 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
     g_proxy_snap_len += (int)send_len;
   }
   s->proxy_relay_got_data = 1;
+  if (httpd_tls_slot_proto(slot) == 1) {
+    ssize_t sent = send_all_nb(s->fd, send_data, send_len);
+    if (sent < 0 || (size_t)sent < send_len) {
+      return -1;
+    }
+    if (s->proxy_is_sse && s->proxy_phase == HTTPD_PROXY_PHASE_RELAY && s->proxy_sse_hdr_done && send_len > 0) {
+      s->proxy_last_chunk_ts = httpd_monotonic_now();
+    }
+    return 1;
+  }
   size_t off = 0;
   ssize_t rc = httpd_send_nb(s->fd, send_data, send_len, &off);
   if (rc < 0) {

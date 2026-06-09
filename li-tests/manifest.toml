@@ -1797,6 +1797,13 @@ note = "WP-ECHEM-15 SEI growth kMC — NEB-barrier deposition rate vs mean-field
 
 [[tests]]
 suite = "composable"
+file = "composable/import_qm_tier2_registry_smoke.li"
+packages = ["li-sim-scientific", "li-sim", "li-chem"]
+outcome = "compile_open_ok"
+note = "WP-SCI-03 QM tier-2 registry — algo 418 SCF scaffold oracle (non-stub)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_echem_tddft_smoke.li"
 packages = ["li-chem", "li-physics-quantum"]
 outcome = "compile_open_ok"

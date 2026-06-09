@@ -5396,6 +5396,7 @@ static void httpd_proxy_relay_maybe_done(int epfd, int32_t slot) {
 
 static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
+  httpd_proxy_pump_budget_reset(slot);
 #ifdef __linux__
   httpd_proxy_splice_pipe_init();
 #endif

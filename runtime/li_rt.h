@@ -250,6 +250,22 @@ int32_t li_rt_studio_viewport_error_set_mock(int32_t kind);
 int32_t li_rt_studio_viewport_error_retry(void);
 int32_t li_rt_studio_mcp_tool_from_name(const char* name);
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
+int32_t li_rt_studio_aimd_scenario_reset(void);
+int32_t li_rt_studio_aimd_scenario_set(int32_t steps, int32_t temperature_k, int32_t potential_mv,
+                                       int32_t algo_id);
+int32_t li_rt_studio_aimd_scenario_get_steps(void);
+int32_t li_rt_studio_aimd_scenario_get_temperature(void);
+int32_t li_rt_studio_aimd_scenario_get_potential(void);
+int32_t li_rt_studio_aimd_scenario_get_algo(void);
+int32_t li_rt_studio_aimd_scenario_is_configured(void);
+int32_t li_rt_studio_aimd_gpu_from_env(void);
+int32_t li_rt_studio_aimd_batch_steps_from_env(void);
+int32_t li_rt_studio_aimd_batch_write_json(const char* path, int32_t steps, int32_t ok,
+                                           double checksum, double energy_drift, int32_t gpu_path);
+int32_t li_rt_studio_ppm_unique_colors(const char* path);
+int32_t li_rt_studio_aimd_last_ppm_set(const char* path);
+const char* li_rt_studio_aimd_last_ppm_get(void);
+int32_t li_rt_ui_snapshot_tag_from_id(const char* id);
 int32_t li_rt_studio_demo_set_output(const char* dir, int32_t frame_start);
 int32_t li_rt_studio_demo_emit_scratch(const char* scratch_path);
 int32_t li_rt_studio_demo_frame_count(void);

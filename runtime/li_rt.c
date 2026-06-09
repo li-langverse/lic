@@ -268,6 +268,12 @@ static int32_t li_rt_studio_mcp_tool_match_name(const char* name) {
   if (li_rt_str_eq(name, "ui_session_stop")) {
     return 21;
   }
+  if (li_rt_str_eq(name, "aimd_configure_scenario")) {
+    return 22;
+  }
+  if (li_rt_str_eq(name, "aimd_get_scenario")) {
+    return 23;
+  }
   return 0;
 }
 
@@ -319,6 +325,10 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
       return "ui_session_start";
     case 21:
       return "ui_session_stop";
+    case 22:
+      return "aimd_configure_scenario";
+    case 23:
+      return "aimd_get_scenario";
     default:
       return "";
   }

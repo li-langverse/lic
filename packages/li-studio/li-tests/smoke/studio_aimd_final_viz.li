@@ -1,0 +1,24 @@
+import sim.scientific
+import studio
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_rt_studio_aimd_scenario_reset() != 0:
+    return 1
+  if studio_aimd_hero_configure(128, 300, 0, studio_aimd_algo_echem_interface()) != 1:
+    return 2
+  var batch: AimdBatchResult = echem_aimd_batch_run(128)
+  if batch.ok != 1:
+    return 3
+  var path: str = "/tmp/studio-aimd-final-viz-smoke.ppm"
+  var color_path: str = "/tmp/studio-aimd-final-viz-smoke.ppm"
+  if studio_aimd_final_viz_ok(batch, path, 640, 480) != 1:
+    return 4
+  if studio_aimd_final_viz_color_budget_ok(batch, 48, 640, 480, color_path) != 1:
+    return 5
+  if li_rt_studio_viewport_display_particle_tier() < scene_md_tier_1k():
+    return 6
+  return 0

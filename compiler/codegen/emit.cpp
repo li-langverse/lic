@@ -2227,6 +2227,32 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                              false));
   module->getOrInsertFunction("li_rt_studio_demo_trace_open",
                               llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_scenario_reset",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_aimd_scenario_set",
+      llvm::FunctionType::get(i32_ty(context),
+                             {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                             false));
+  module->getOrInsertFunction("li_rt_studio_aimd_scenario_get_steps",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_batch_steps_from_env",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_aimd_batch_write_json",
+      llvm::FunctionType::get(i32_ty(context),
+                             {i8_ptr(context), i32_ty(context), i32_ty(context),
+                              llvm::Type::getDoubleTy(context), llvm::Type::getDoubleTy(context),
+                              i32_ty(context)},
+                             false));
+  module->getOrInsertFunction("li_rt_studio_ppm_unique_colors",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_last_ppm_set",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_last_ppm_get",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_ui_snapshot_tag_from_id",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
   module->getOrInsertFunction("li_rt_lig_device_kind",
                               llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction("li_rt_lig_backend_available",

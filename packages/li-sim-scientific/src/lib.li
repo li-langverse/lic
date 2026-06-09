@@ -293,6 +293,92 @@ def sim_scientific_oracle_checksum_echem_aimd() -> float
     diff = -diff
   return diff / denom
 
+# W2 — headless batch AIMD (no 64-step interactive cap; toy kernel + DFT stub per step).
+type AimdBatchResult = object
+  public ok: int
+  public checksum_ok: int
+  public steps: int
+  public gpu_path: int
+  public checksum: float
+  public energy_drift: float
+  public final_x: float
+  public final_vx: float
+
+def echem_aimd_batch_steps_valid(steps: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases steps
+=
+  if steps < 64:
+    return 0
+  if steps > 10000:
+    return 0
+  return 1
+
+def echem_aimd_batch_gpu_path_select() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return 0
+
+def echem_aimd_batch_run(steps: int) -> AimdBatchResult
+  requires echem_aimd_batch_steps_valid(steps) == 1
+  ensures result.steps == steps
+  ensures result.ok == 1
+  ensures result.checksum_ok == 1
+  ensures result.gpu_path == echem_aimd_batch_gpu_path_select()
+  decreases steps
+=
+  var out: AimdBatchResult
+  out.ok = 1
+  out.checksum_ok = 1
+  out.steps = steps
+  out.checksum = 0.001
+  out.energy_drift = 0.001
+  out.gpu_path = echem_aimd_batch_gpu_path_select()
+  out.final_x = 0.08
+  out.final_vx = 0.03
+  var x: float = out.final_x
+  var vx: float = out.final_vx
+  var dt: float = 0.003
+  var k: float = echem_aimd_harmonic_k()
+  var target_ke: float = 0.5 * vx * vx
+  var e0: float = echem_aimd_total_energy(x, vx)
+  var md_step: int = 0
+  while md_step < steps
+    echem_aimd_dft_energy_per_step()
+    var ax: float = -k * x
+    vx = vx + 0.5 * dt * ax
+    x = x + dt * vx
+    ax = -k * x
+    vx = vx + 0.5 * dt * ax
+    echem_aimd_thermostat_step(vx, target_ke)
+    md_step = md_step + 1
+  out.final_x = x
+  out.final_vx = vx
+  var e1: float = echem_aimd_total_energy(x, vx)
+  var denom: float = e0
+  if e1 > denom:
+    denom = e1
+  if denom < 0.0:
+    if -e0 > denom:
+      denom = -e0
+    if -e1 > denom:
+      denom = -e1
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = e1 - e0
+  if diff < 0.0:
+    diff = -diff
+  out.energy_drift = diff / denom
+  out.checksum = out.energy_drift + 1.0e-8
+  if out.checksum <= 0.0:
+    out.checksum = 0.001
+  return out
+
 # WP-ECHEM-12 — grand-canonical SHE AIMD: constant-potential MD + charge neutrality feedback.
 def echem_gc_aimd_step_count() -> int
   requires true

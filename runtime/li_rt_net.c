@@ -4417,27 +4417,32 @@ static const char* leak_censor_prepare(const char* data, size_t len, size_t* out
   return g_leak_scrub_buf;
 }
 
-/* Decrement Content-Length body_left for bytes delivered to the client (TLS: on wire). */
+/* Decrement CL body_left when bytes are committed to the client path (SSL/rbuf). */
 static void httpd_proxy_tls_cl_defer_flush(int epfd, int32_t slot);
 
 static void httpd_proxy_relay_cl_account(httpd_slot_t* s, int32_t slot, size_t attempted, int relay_rc) {
+  size_t dec;
   if (s->proxy_resp_body_mode != PROXY_RESP_BODY_CL || attempted == 0 || relay_rc < 0) {
-    return;
-  }
-  /* relay_rc==0: partial rbuf or TLS wbio defer — account only after wire-confirmed drain. */
-  if (relay_rc == 0) {
-    return;
-  }
-  if (s->proxy_tls_cl_defer > 0) {
-    return;
-  }
-  if (slot >= 0 && httpd_tls_slot_proto(slot) == 1 && httpd_tls_wbio_pending(slot) > 0) {
     return;
   }
   if (s->proxy_resp_body_left <= 0) {
     return;
   }
-  size_t dec = attempted;
+  if (relay_rc == 1) {
+    dec = attempted;
+  } else if (relay_rc == 0) {
+    /* Partial rbuf: wait for flush_client_out. TLS defer: commit now. */
+    if (httpd_proxy_relay_pending_client(s)) {
+      return;
+    }
+    if (s->proxy_tls_cl_defer <= 0 &&
+        !(slot >= 0 && httpd_tls_slot_proto(slot) == 1 && httpd_tls_wbio_pending(slot) > 0)) {
+      return;
+    }
+    dec = attempted;
+  } else {
+    return;
+  }
   if ((size_t)s->proxy_resp_body_left < dec) {
     dec = (size_t)s->proxy_resp_body_left;
   }
@@ -4527,7 +4532,6 @@ static void httpd_proxy_tls_cl_defer_flush(int epfd, int32_t slot) {
     httpd_proxy_client_epoll_arm_out(epfd, slot);
     return;
   }
-  httpd_proxy_relay_cl_account(s, slot, (size_t)s->proxy_tls_cl_defer, 1);
   s->proxy_tls_cl_defer = 0;
   httpd_proxy_upstream_hold_sync(epfd, slot);
   httpd_proxy_relay_maybe_done(epfd, slot);
@@ -4810,6 +4814,7 @@ static int httpd_proxy_resp_feed(int epfd, int32_t slot, const char* data, size_
         return -1;
       }
       if (rc == 0) {
+        httpd_proxy_relay_cl_account(s, slot, take, rc);
         httpd_proxy_upstream_hold_sync(epfd, slot);
         httpd_proxy_client_epoll_arm_out(epfd, slot);
         return 0;
@@ -4938,6 +4943,7 @@ static void httpd_proxy_upstream_hold_sync(int epfd, int32_t slot) {
     s->proxy_upstream_hold = 0;
     ev = s->proxy_up_epoll_events | (uint32_t)EPOLLIN | (uint32_t)EPOLLET;
     httpd_proxy_up_mod(epfd, slot, ev);
+    httpd_proxy_schedule_pump(epfd, slot);
   }
 }
 
@@ -5019,6 +5025,9 @@ static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
     }
     httpd_proxy_flush_client_out(epfd, slot);
     if (!s->proxy_active || s->proxy_resp_body_left <= 0) {
+      if (s->proxy_active && s->proxy_up_fd >= 0) {
+        httpd_drain_upstream_fd(s->proxy_up_fd);
+      }
       httpd_proxy_relay_maybe_done(epfd, slot);
       return;
     }
@@ -5083,6 +5092,7 @@ static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
       return;
     }
     if (relay_rc == 0) {
+      httpd_proxy_relay_cl_account(s, slot, take, relay_rc);
       httpd_proxy_upstream_hold_sync(epfd, slot);
       httpd_proxy_client_epoll_arm_out(epfd, slot);
       return;
@@ -5125,6 +5135,7 @@ static void httpd_proxy_flush_client_out(int epfd, int32_t slot) {
         (void)httpd_tls_flush_wbio(slot);
         if (httpd_tls_wbio_pending(slot) > 0) {
           s->proxy_tls_cl_defer += nbytes;
+          httpd_proxy_relay_cl_account(s, slot, (size_t)nbytes, 0);
           httpd_proxy_upstream_hold_sync(epfd, slot);
           httpd_proxy_client_epoll_arm_out(epfd, slot);
           return;

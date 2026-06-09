@@ -2204,6 +2204,9 @@ static int httpd_upstream_fd_stale(int fd) {
   if (pfd.revents & POLLIN) {
     char peek;
     ssize_t r = recv(fd, &peek, 1, MSG_PEEK | MSG_DONTWAIT);
+    if (r > 0) {
+      return 1;
+    }
     if (r == 0) {
       return 1;
     }
@@ -2258,6 +2261,11 @@ static int upstream_pool_acquire(int32_t port) {
   }
   for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
     if (p->fds[i] >= 0 && !p->in_use[i]) {
+      if (httpd_upstream_fd_stale(p->fds[i])) {
+        httpd_upstream_pool_drop_fd(p, p->fds[i]);
+        continue;
+      }
+      httpd_drain_upstream_fd(p->fds[i]);
       if (httpd_upstream_fd_stale(p->fds[i])) {
         httpd_upstream_pool_drop_fd(p, p->fds[i]);
         continue;

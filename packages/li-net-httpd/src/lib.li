@@ -522,6 +522,10 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
     if sp > 0:
       left = left - sp
       httpd_li_proxy_set_resp_body_left_i(slot, left)
+    if sp == 0:
+      if httpd_li_proxy_relay_pending_i(slot) == 1:
+        net_buf_free(chunk)
+        return 0
     if sp <= 0:
       var r: int = tcp_recv_nb_i(up, chunk, 8192)
       if r == -2:

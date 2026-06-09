@@ -1,0 +1,31 @@
+# Models blackpearl edge: TLS terminate + multi-site proxy to plain HTTP upstream.
+[server]
+listen = ":8443"
+document_root = "/empty"
+
+[server.tls]
+mode = "self_signed"
+cert_dir = "/certs"
+min_protocol = "1.2"
+terminate = true
+
+[server.tls.self_signed]
+dev = true
+valid_days = 30
+
+[limits]
+max_body = "1m"
+max_header = "32k"
+proxy_max_response_body = "64m"
+
+[upstreams.gitlab]
+balance = "round_robin"
+peers = ["http://backend:8080"]
+
+[[site]]
+host = "gitlab.lilangverse.xyz"
+listen = ":8443"
+
+[site.routes]
+"GET /users/sign_in" = "proxy:gitlab"
+"GET /assets/*" = "proxy:gitlab"

@@ -1,0 +1,32 @@
+# Minimal edge chain: client → li-httpd (TLS) → nginx (static ~835KB CSS).
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: test/proxy-repro/Dockerfile.backend
+    networks: [repro]
+
+  proxy:
+    build:
+      context: ../..
+      dockerfile: test/proxy-repro/Dockerfile.proxy
+    depends_on: [backend]
+    ports:
+      - "18443:8443"
+    networks: [repro]
+
+  tester:
+    image: curlimages/curl:8.12.1
+    depends_on: [proxy]
+    networks: [repro]
+    volumes:
+      - ./run-test.sh:/run-test.sh:ro
+    entrypoint: ["/bin/sh", "/run-test.sh"]
+    environment:
+      PROXY_HOST: proxy
+      PROXY_PORT: "8443"
+      EXPECTED_BYTES: "835437"
+      RUNS: "10"
+
+networks:
+  repro:

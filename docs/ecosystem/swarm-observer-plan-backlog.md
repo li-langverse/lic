@@ -28,7 +28,7 @@ todos:
 
 - id: orch-r4-ui-ux-signals
   content: "Surface studio-ui-ux / gui_ux_tester signals as ui_ux gaps; link studio backlog if needed"
-  status: pending
+  status: completed
 
 ---
 

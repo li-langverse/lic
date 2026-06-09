@@ -1,7 +1,7 @@
-# Models blackpearl edge: TLS terminate + proxy to loopback upstream (socat → backend).
 [server]
 listen = ":8443"
 document_root = "/empty"
+workers = 2
 
 [server.tls]
 mode = "self_signed"
@@ -11,17 +11,17 @@ terminate = true
 
 [server.tls.self_signed]
 dev = true
-valid_days = 30
 
 [limits]
 max_body = "1m"
-max_header = "32k"
 proxy_max_response_body = "64m"
+concurrent_streams = 32
+stream_idle_timeout = "300s"
+stream_max_duration = "3600s"
 
-[upstreams.gitlab]
-balance = "round_robin"
+[upstreams.nextjs]
 peers = ["http://backend:8080"]
 
 [routes]
-"GET /users/sign_in" = "proxy:gitlab"
-"GET /assets/*" = "proxy:gitlab"
+"GET /" = "proxy:nextjs"
+"GET /_next/static/*" = "proxy:nextjs"

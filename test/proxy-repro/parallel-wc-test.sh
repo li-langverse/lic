@@ -9,11 +9,11 @@ N="${PARALLEL_N:-6}"
 ASSET="${PARALLEL_ASSET:-/assets/webpack/main.deadbeef.chunk.js}"
 EXPECTED="${EXPECTED_BYTES:-1321365}"
 CURL_EXTRA="${CURL_EXTRA:---tls-max 1.2}"
-CONNECT_TO=""
+USE_CONNECT_TO=0
 RESOLVE=""
 case "$HOST" in
   *[!0-9.]*)
-    CONNECT_TO="--connect-to ${VHOST}:${PORT}:${HOST}:${PORT}"
+    USE_CONNECT_TO=1
     ;;
   *)
     RESOLVE="${VHOST}:${PORT}:${HOST}"
@@ -29,8 +29,13 @@ while [ "$i" -le "$N" ]; do
   (
     out="$tmpdir/body_$i"
     hdr="$tmpdir/hdr_$i"
-    curl -sk $CURL_EXTRA --http1.1 $CONNECT_TO ${RESOLVE:+--resolve "$RESOLVE"} -D "$hdr" -o "$out" \
+    if [ "$USE_CONNECT_TO" -eq 1 ]; then
+      curl -sk $CURL_EXTRA --http1.1 --connect-to "${VHOST}:${PORT}:${HOST}:${PORT}" -D "$hdr" -o "$out" \
       -w '%{http_code}' --max-time 180 "https://${VHOST}:${PORT}${ASSET}" > "$tmpdir/code_$i" 2>/dev/null || echo 000 > "$tmpdir/code_$i"
+    else
+      curl -sk $CURL_EXTRA --http1.1 --resolve "$RESOLVE" -D "$hdr" -o "$out" \
+      -w '%{http_code}' --max-time 180 "https://${VHOST}:${PORT}${ASSET}" > "$tmpdir/code_$i" 2>/dev/null || echo 000 > "$tmpdir/code_$i"
+    fi
     code=$(cat "$tmpdir/code_$i")
     clen=$(grep -i '^content-length:' "$hdr" 2>/dev/null | tail -1 | awk '{print $2}' | tr -d '\r')
     wire=$(wc -c < "$out" | tr -d ' ')

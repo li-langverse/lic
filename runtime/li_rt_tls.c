@@ -429,7 +429,8 @@ int32_t httpd_tls_global_init_files(const char* cert_path, const char* key_path)
     typedef long (*ssl_ctx_set_options_fn)(SSL_CTX*, long);
     ssl_ctx_set_options_fn p_opts = NULL;
     if (tls_load_sym(g_ssl_lib, "SSL_CTX_set_options", (void**)&p_opts) == 0 && p_opts) {
-      p_opts(g_tls_ctx, 0x00080000L); /* SSL_OP_SINGLE_ECDH_USE */
+      /* SINGLE_ECDH_USE | NO_TX_CERTIFICATE_COMPRESSION (OpenSSL 3 unsolicited ext). */
+      p_opts(g_tls_ctx, 0x00080000L | 0x00020000L);
     }
     if (!g_tls_min_proto_12) {
       typedef int (*ssl_ctx_set_ciphersuites_fn)(SSL_CTX*, const char*);

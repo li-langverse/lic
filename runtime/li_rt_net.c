@@ -3764,18 +3764,6 @@ static void httpd_proxy_finish_ok(int epfd, int32_t slot) {
   }
   if (slot >= 0 && httpd_tls_slot_proto(slot) == 1 && s->fd >= 0) {
     (void)httpd_tls_drain_writes(slot, s->fd);
-    if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && httpd_proxy_cl_relay_complete(s) &&
-        (s->proxy_tls_cl_defer > 0 || httpd_tls_wbio_pending(slot) > 0)) {
-      if (httpd_proxy_drain_tls_wbio(slot, s->fd) > 0) {
-        httpd_proxy_upstream_hold_sync(epfd, slot);
-        httpd_proxy_client_epoll_arm_out(epfd, slot);
-        return;
-      }
-      httpd_proxy_tls_cl_defer_flush(epfd, slot);
-      if (!s->proxy_active) {
-        return;
-      }
-    }
   }
   if (!httpd_proxy_tls_write_complete(slot, s)) {
     httpd_proxy_upstream_hold_sync(epfd, slot);
@@ -4571,13 +4559,10 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
     if (s->fd >= 0) {
       (void)httpd_tls_drain_writes(slot, s->fd);
     }
-    if (httpd_tls_wbio_pending(slot) > 0 || httpd_tls_ssl_pending(slot) > 0) {
-      s->proxy_tls_cl_defer += (int)send_len;
-      httpd_proxy_upstream_hold_sync(epfd, slot);
-      httpd_proxy_client_epoll_arm_out(epfd, slot);
-      return 0;
-    }
-    return (int)len;
+    s->proxy_tls_cl_defer += (int)send_len;
+    httpd_proxy_upstream_hold_sync(epfd, slot);
+    httpd_proxy_client_epoll_arm_out(epfd, slot);
+    return 0;
   }
   if (slot >= 0 && httpd_tls_slot_proto(slot) == 1) {
     (void)httpd_tls_flush_wbio(slot);
@@ -5235,7 +5220,14 @@ static void httpd_proxy_flush_client_out(int epfd, int32_t slot) {
         if (s->fd >= 0) {
           (void)httpd_tls_drain_writes(slot, s->fd);
         }
-        if (httpd_tls_wbio_pending(slot) > 0 || httpd_tls_ssl_pending(slot) > 0) {
+        s->proxy_tls_cl_defer += nbytes;
+        httpd_proxy_upstream_hold_sync(epfd, slot);
+        httpd_proxy_client_epoll_arm_out(epfd, slot);
+        return;
+      }
+      if (slot >= 0 && httpd_tls_slot_proto(slot) == 1) {
+        (void)httpd_tls_flush_wbio(slot);
+        if (httpd_tls_wbio_pending(slot) > 0) {
           s->proxy_tls_cl_defer += nbytes;
           httpd_proxy_upstream_hold_sync(epfd, slot);
           httpd_proxy_client_epoll_arm_out(epfd, slot);

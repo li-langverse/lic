@@ -11,7 +11,7 @@ i=1
 while [ "$i" -le "$RUNS" ]; do
   out="/tmp/seq_wc_${i}.body"
   hdr="/tmp/seq_wc_${i}.hdr"
-  code=$(curl -sk --tls-max 1.2 --http1.1 --no-keepalive --resolve "$RESOLVE" \
+  code=$(curl -sk --tls-max "${TLS_MAX:-1.2}" --http1.1 --no-keepalive --resolve "$RESOLVE" \
     -D "$hdr" -o "$out" -w '%{http_code}' --max-time 120 \
     "https://${VHOST}:${PORT}${ASSET}" 2>/dev/null || echo 000)
   clen=$(grep -i '^content-length:' "$hdr" 2>/dev/null | tail -1 | awk '{print $2}' | tr -d '\r')

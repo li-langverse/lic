@@ -1,0 +1,16 @@
+FROM ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22 AS build
+WORKDIR /src
+COPY . .
+RUN ./scripts/build-li-httpd.sh
+
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl python3 socat \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=build /src/build/li-httpd /usr/local/bin/li-httpd
+COPY scripts/validate-httpd-config.py scripts/setup-tls-httpd.py scripts/flatten-httpd-config.py /opt/lic-scripts/
+COPY test/nextjs-proxy/proxy/httpd.toml /proxy/httpd.toml
+COPY test/nextjs-proxy/entrypoint-proxy.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh && mkdir -p /empty /certs
+WORKDIR /proxy
+EXPOSE 8443
+ENTRYPOINT ["/entrypoint.sh"]

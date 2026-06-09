@@ -8,11 +8,11 @@ VHOST="${PROXY_VHOST:-gitlab.lilangverse.xyz}"
 EXPECTED="${EXPECTED_BYTES:-835437}"
 RUNS="${RUNS:-10}"
 SLEEP="${PROBE_SLEEP:-0.2}"
-CONNECT_TO=""
+USE_CONNECT_TO=0
 RESOLVE=""
 case "$HOST" in
   *[!0-9.]*)
-    CONNECT_TO="--connect-to ${VHOST}:${PORT}:${HOST}:${PORT}"
+    USE_CONNECT_TO=1
     ;;
   *)
     RESOLVE="${CURL_RESOLVE:-${VHOST}:${PORT}:${HOST}}"
@@ -22,10 +22,17 @@ esac
 pass=0
 i=1
 while [ "$i" -le "$RUNS" ]; do
-  sign=$(curl -sk --http1.1 --no-keepalive $CONNECT_TO ${RESOLVE:+--resolve "$RESOLVE"} --max-time 30 \
-    -o /dev/null -w '%{http_code}' "https://${VHOST}:${PORT}/users/sign_in" 2>/dev/null || echo 000)
-  css=$(curl -sk --http1.1 --no-keepalive $CONNECT_TO ${RESOLVE:+--resolve "$RESOLVE"} --max-time 120 \
-    -o /dev/null -w '%{size_download}' "https://${VHOST}:${PORT}/assets/application-deadbeef.css" 2>/dev/null || echo 0)
+  if [ "$USE_CONNECT_TO" -eq 1 ]; then
+    sign=$(curl -sk --tls-max 1.2 --http1.1 --no-keepalive --connect-to "${VHOST}:${PORT}:${HOST}:${PORT}" --max-time 30 \
+      -o /dev/null -w '%{http_code}' "https://${VHOST}:${PORT}/users/sign_in" 2>/dev/null || echo 000)
+    css=$(curl -sk --tls-max 1.2 --http1.1 --no-keepalive --connect-to "${VHOST}:${PORT}:${HOST}:${PORT}" --max-time 120 \
+      -o /dev/null -w '%{size_download}' "https://${VHOST}:${PORT}/assets/application-deadbeef.css" 2>/dev/null || echo 0)
+  else
+    sign=$(curl -sk --tls-max 1.2 --http1.1 --no-keepalive --resolve "$RESOLVE" --max-time 30 \
+      -o /dev/null -w '%{http_code}' "https://${VHOST}:${PORT}/users/sign_in" 2>/dev/null || echo 000)
+    css=$(curl -sk --tls-max 1.2 --http1.1 --no-keepalive --resolve "$RESOLVE" --max-time 120 \
+      -o /dev/null -w '%{size_download}' "https://${VHOST}:${PORT}/assets/application-deadbeef.css" 2>/dev/null || echo 0)
+  fi
   ok=no
   case "$sign" in 200|302) [ "$css" = "$EXPECTED" ] && ok=yes && pass=$((pass + 1)) ;; esac
   echo "run $i: sign=$sign css_bytes=$css ok=$ok"

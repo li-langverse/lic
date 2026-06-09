@@ -315,15 +315,15 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 |-------|----------|--------|---------|
 | Phase 0 | 4 | **DONE** (BUILD-01..03, GPU-00) | regression only |
 | Phase 1 | 15 | **DONE** (GPU-01..15 on `main`; + GPU-16..19 via #847) | regression only |
-| Phase 2 | 11 | **OPEN** | WP-SCI-03 registry |
+| Phase 2 | 11 | **OPEN** (WP-SCI-03 tier-2 CFD/FEA/QM in review) | WP-PLAT-05 MD oracle |
 | Phase 3 | 3 | **OPEN** | WP-SCI-GPU-VENDOR-01 |
 | **Total** | **33** | **19 done (~58%)** | |
 
 ### Top 3 P0 items (Phase 2 — start here)
 
-1. **WP-SCI-03** — Replace `run_algo_registry_stub` for CFD/FEA/QM rows with real dispatch or tier-2 oracles.
+1. **WP-PLAT-05** — LAMMPS/GROMACS external oracle column for MD tier-2 bench.
 2. **WP-SCI-04** — `sim.viz` → wgpu field draw for scientific profile (depends WP-GD-05).
-3. **WP-PLAT-05** — LAMMPS/GROMACS external oracle column for MD tier-2 bench.
+3. **WP-SCI-03** — *(in review)* CFD/FEA/QM tier-2 registry dispatch landed on branch; stub retained for undocumented IDs only.
 
 ---
 

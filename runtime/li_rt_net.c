@@ -4270,39 +4270,6 @@ static int httpd_proxy_resp_force_connection_close(httpd_slot_t* s) {
   return 0;
 }
 
-static int httpd_proxy_resp_inject_connection_close(httpd_slot_t* s) {
-  if (!httpd_proxy_snap_disabled()) {
-    return 0;
-  }
-  int hdr_end = hdr_end_at_c(s->proxy_resp_hdr_acc, s->proxy_resp_hdr_len);
-  if (hdr_end < 0) {
-    return -1;
-  }
-  s->proxy_keep = 0;
-  if (wants_connection_close(s->proxy_resp_hdr_acc, hdr_end)) {
-    return 0;
-  }
-  int insert_at = 0;
-  int hdr_term = httpd_proxy_resp_blank_insert_at(s, &insert_at);
-  if (hdr_term < 4) {
-    return -1;
-  }
-  static const char line[] = "Connection: close\r\n";
-  int llen = (int)(sizeof(line) - 1);
-  if (insert_at + 3 >= s->proxy_resp_hdr_len || s->proxy_resp_hdr_acc[insert_at] != '\r' ||
-      s->proxy_resp_hdr_acc[insert_at + 1] != '\n') {
-    return -1;
-  }
-  if (s->proxy_resp_hdr_len + llen >= (int)sizeof(s->proxy_resp_hdr_acc)) {
-    return -1;
-  }
-  memmove(s->proxy_resp_hdr_acc + insert_at + llen, s->proxy_resp_hdr_acc + insert_at,
-          (size_t)(s->proxy_resp_hdr_len - insert_at));
-  memcpy(s->proxy_resp_hdr_acc + insert_at, line, (size_t)llen);
-  s->proxy_resp_hdr_len += llen;
-  return 0;
-}
-
 static int httpd_proxy_resp_inject_sticky_cookie(httpd_slot_t* s) {
   if (g_lb_mode != HTTPD_LB_MODE_COOKIE || s->proxy_peer_port <= 0) {
     return 0;
@@ -6240,7 +6207,15 @@ int32_t httpd_upstream_acquire_for_slot_i(int32_t slot) {
   if (hdr_end < 0) {
     return -1;
   }
-  int32_t peer_port = httpd_lb_pick_port_for_request(slot, g_slots[slot].buf, hdr_end);
+  httpd_req_info_t req;
+  memset(&req, 0, sizeof(req));
+  if (parse_request_line_c(g_slots[slot].buf, hdr_end, &req) != 0) {
+    return -1;
+  }
+  int32_t peer_port = httpd_route_pool_port_for_request(g_slots[slot].buf, hdr_end, &req);
+  if (peer_port <= 0) {
+    peer_port = httpd_lb_pick_port_for_request(slot, g_slots[slot].buf, hdr_end);
+  }
   if (peer_port <= 0) {
     return -1;
   }
@@ -6635,6 +6610,15 @@ static int32_t httpd_li_try_start_proxy_i(int32_t epfd, int32_t conn, int32_t sl
     return snap;
   }
   return 0;
+}
+
+void httpd_li_proxy_reset_resp_cache_i(int32_t slot) { httpd_proxy_per_req_cache_reset(slot); }
+
+int32_t httpd_li_proxy_inject_conn_close_i(int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return -1;
+  }
+  return httpd_proxy_resp_force_connection_close(&g_slots[slot]);
 }
 
 int32_t httpd_li_proxy_init_req_i(int32_t slot, int32_t hdr_end) {

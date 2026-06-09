@@ -559,6 +559,12 @@ def proxy_li_finish_resp_headers(epfd: var int, slot: var int) raises Net, Alloc
   var he_end: int = hdr_end_at(acc, 0, hlen)
   if he_end < 0:
     return proxy_li_finish_err(epfd, slot)
+  if httpd_li_proxy_inject_conn_close_i(slot) < 0:
+    return proxy_li_finish_err(epfd, slot)
+  var hlen2: int = httpd_li_proxy_get_resp_hdr_len_i(slot)
+  he_end = hdr_end_at(acc, 0, hlen2)
+  if he_end < 0:
+    return proxy_li_finish_err(epfd, slot)
   var cl: int = proxy_parse_resp_cl(acc, he_end)
   if cl < 0:
     return proxy_li_finish_err(epfd, slot)
@@ -838,6 +844,7 @@ def proxy_handle_client_in(epfd: var int, slot: var int) raises Net, Alloc, IO -
   var hdr_end: int = hdr_end_at(buf, 0, filled)
   if hdr_end < 0:
     return 0
+  httpd_li_proxy_reset_resp_cache_i(slot)
   var keep: int = 1
   if buf_has_connection_close(buf, hdr_end) == 1:
     keep = 0

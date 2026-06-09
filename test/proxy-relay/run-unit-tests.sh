@@ -57,6 +57,7 @@ if [ "$C_ONLY" -eq 0 ]; then
   run_one test_parallel_fairness test/proxy-relay/test_parallel_fairness.sh
   run_one test_parallel_same_asset test/proxy-relay/test_parallel_same_asset.sh
   run_one test_parallel_multi_asset test/proxy-relay/test_parallel_multi_asset.sh
+  run_one test_parallel_hammer_3x test/proxy-relay/test_parallel_hammer_3x.sh
 fi
 
 echo "RESULT unit-tests: pass=${pass} fail=${fail}"

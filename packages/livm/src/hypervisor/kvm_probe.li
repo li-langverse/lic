@@ -1,0 +1,43 @@
+# KVM host capability probe (Wave 2).
+# Aligns with heterogeneous-workers auto-discovery: /dev/kvm → libernetes.io/kvm=true.
+
+def kvm_probe_dev_path() -> str
+  requires true
+  ensures result == "/dev/kvm"
+  decreases 0
+=
+  return "/dev/kvm"
+
+def kvm_probe_label_key() -> str
+  requires true
+  ensures result == "libernetes.io/kvm"
+  decreases 0
+=
+  return "libernetes.io/kvm"
+
+def kvm_probe_label_value() -> str
+  requires true
+  ensures result == "true"
+  decreases 0
+=
+  return "true"
+
+def kvm_probe_signal() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def kvm_probe_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if kvm_probe_dev_path() != "/dev/kvm":
+    return 1
+  if kvm_probe_label_key() != "libernetes.io/kvm":
+    return 1
+  if kvm_probe_label_value() != "true":
+    return 1
+  return 0

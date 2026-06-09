@@ -1,0 +1,10 @@
+import licontainers
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if licontainers_version() != 0:
+    return 1
+  return 0

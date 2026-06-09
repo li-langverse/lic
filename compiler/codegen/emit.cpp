@@ -2359,6 +2359,8 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       for (const auto& p : fn.params) {
         if (p.is_string || p.is_i64) {
           param_tys.push_back(i8_ptr(context));
+        } else if (p.fixed_array_elems > 0) {
+          param_tys.push_back(llvm_array_param_ptr(context, p));
         } else {
           param_tys.push_back(llvm_scalar(context, p.is_float, false));
         }

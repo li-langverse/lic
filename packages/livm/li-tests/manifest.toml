@@ -1,0 +1,11 @@
+[[tests]]
+suite = "smoke"
+file = "smoke/builds.li"
+outcome = "verify_ok"
+note = "T-PKG-livm-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/wave2_modules.li"
+outcome = "verify_ok"
+note = "T-PKG-livm-wave2-smoke"

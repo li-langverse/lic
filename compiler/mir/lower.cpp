@@ -1758,7 +1758,8 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
       if (g_mir_module) {
         mir_note_runtime_callee(e.ident, *g_mir_module);
       }
-      for (const auto& arg : e.args) {
+      for (std::size_t ai = 0; ai < e.args.size(); ++ai) {
+        const auto& arg = e.args[ai];
         MirArg ma;
         if (arg->kind == Expr::Kind::StringLit) {
           ma.is_string = true;
@@ -1768,6 +1769,12 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           ma.int_value = arg->int_value;
         } else if (arg->kind == Expr::Kind::Ident) {
           ma.ident = arg->ident;
+          if (callee && ai < callee->params.size()) {
+            const TypeExpr* fpt = unwrap_refinement_type(&callee->params[ai].type);
+            if (fpt && fpt->kind == TypeKind::Array && fpt->array_size > 0) {
+              ma.is_array_ident = true;
+            }
+          }
         } else {
           ma.ident = lower_expr_to(*arg, module, out, float_names, simd_names, i64_locals);
         }

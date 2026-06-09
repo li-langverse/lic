@@ -1,0 +1,7 @@
+# OCI image pull (Wave 2 stub).
+def oci_image_pull_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

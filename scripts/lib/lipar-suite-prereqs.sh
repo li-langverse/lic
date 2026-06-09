@@ -34,6 +34,10 @@ lipar_suite_ensure_bench_scripts() {
     return 0
   fi
   find "$bench_root/scripts" -name '*.sh' -exec chmod +x {} + 2>/dev/null || true
+  local lic_root="${LIC_ROOT:-${LI_REPO_ROOT:-}}"
+  if [[ -n "$lic_root" && -f "$lic_root/scripts/patch-benchmarks-tier5-http-text-input.sh" ]]; then
+    BENCHMARKS_ROOT="$bench_root" bash "$lic_root/scripts/patch-benchmarks-tier5-http-text-input.sh" || true
+  fi
 }
 
 # Tier-5 HTTP ingest can drop perf rows from latest.csv; tier-7 registry rebuilds breadth.

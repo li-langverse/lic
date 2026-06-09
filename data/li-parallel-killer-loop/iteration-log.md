@@ -572,3 +572,11 @@
 - **Sprint status:** **GOAL_COMPLETE** — all WP-PAR phases **DONE**; no engineering or proofs blocker
 - **Gates (local):** `./scripts/build.sh` exit 0; `build/compiler/lic/lic check li-tests/stdlib_seal/import_std_io_csv_ok.li` exit 0; `check-li-parallel-full-suite.sh` **PASS** (~231s); `check-li-parallel-proofs-complete-gate.sh` **PASS** (~4s); killer gate not re-run this loop (prior loops + GHA `lipar-killer-gate` on merged PR #881)
 - **PR:** [#881](https://github.com/li-langverse/lic/pull/881) **MERGED** on `cursor/li-parallel-native-hpc`; no new code slice required
+
+## 2026-06-09 — tier5 harness fix + GOAL_COMPLETE re-verify (code_implementer-20260609)
+
+- **Implementation queue:** `std.io` (PH-IO-4) **closed** in registry (`gap-missing-std-std-io` status=closed) — fixture briefing stale; `std/io/io.li` + `import_std_io_csv_ok.li` compile harness green
+- **Sprint status:** **GOAL_COMPLETE** — all WP-PAR phases **DONE**; engineering + proofs gates green when tier5 deps present
+- **Fix:** lic `scripts/patch-benchmarks-tier5-http-text-input.sh` (applied via `lipar_suite_ensure_bench_scripts`) — `input=""` with `subprocess.run(..., text=True)` in tier5 `bench_tls_dhe_scenario` (Python 3.11 `AttributeError` blocked tier5 multi-oracle in killer gate step 3); upstream fix pending benchmarks repo PR
+- **Gates (local):** `./scripts/build.sh` exit 0; `import_std_io_csv_ok.li` check exit 0; `check-li-parallel-full-suite.sh` **PASS** (~250s); `check-li-parallel-proofs-complete-gate.sh` **PASS** (~4s); tier5 multi-oracle **PASS** after fix; killer gate step 3 exploits require `nginx` (not installed in agent sandbox — GHA `lipar-killer-gate` on PR #881 green)
+- **PR:** benchmarks fix branch `fix/bench-http-subprocess-text-input`; lic iteration log only on `cursor/li-parallel-native-hpc`

@@ -94,6 +94,8 @@ static int epoll_wait(int epfd, struct epoll_event* events, int maxevents, int t
 #define HTTPD_MAX_HDR_RECV 16384
 #define HTTPD_MAX_HEADER_LINES 128
 #define HTTPD_MAX_BODY (1024 * 1024)
+/* Streamed proxy egress — separate from inbound request max_body (GitLab webpack ~1.3 MiB). */
+#define HTTPD_MAX_PROXY_RESP_BODY (64 * 1024 * 1024)
 #define HTTPD_PROXY_RELAY_BUF 65536
 
 typedef struct {
@@ -4203,7 +4205,7 @@ static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
   }
   s->proxy_resp_parsing = 0;
   if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL) {
-    if (s->proxy_resp_body_left > HTTPD_MAX_BODY) {
+    if (s->proxy_resp_body_left > HTTPD_MAX_PROXY_RESP_BODY) {
       return -1;
     }
   } else if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CHUNKED) {
@@ -4315,7 +4317,7 @@ static int httpd_proxy_resp_feed(int epfd, int32_t slot, const char* data, size_
               s->proxy_resp_body_mode = PROXY_RESP_BODY_NONE;
               s->proxy_resp_body_left = 0;
             } else {
-              if (chunk_sz > HTTPD_MAX_BODY) {
+              if (chunk_sz > HTTPD_MAX_PROXY_RESP_BODY) {
                 return -1;
               }
               s->proxy_resp_chunk_remain = chunk_sz;

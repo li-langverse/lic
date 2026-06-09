@@ -7,7 +7,7 @@ parent: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close — Phase 2 kickoff
 
-**Last updated:** 2026-06-06 · **main @** `e87165b7` (Phase 0/1 + echem merged; start from latest `main`)  
+**Last updated:** 2026-06-09 · **main @** `51ad0ba44` (WP-SCI-03 partial slice on branch `chore/agent-code-implementer-wp-sci-03-1781025478`)  
 **Prerequisite:** `bash scripts/ph-sci-phase0-gates.sh` passes (regression spine).  
 **Parent plan:** [ph-sci-simulation-gap-close-plan.md](ph-sci-simulation-gap-close-plan.md) — Phase 2 WPs (11 open).
 

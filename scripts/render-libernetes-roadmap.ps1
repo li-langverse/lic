@@ -27,43 +27,79 @@ foreach ($d in $Diagrams) {
         -w 3200 -H $d.Height -b white -s 2
 }
 
-$stackScript = @'
+$pngScript = @'
 import os
+import sys
 from PIL import Image
 
-docs = os.environ["LIB_ROADMAP_DOCS"]
-parts = [
-    "libernetes-roadmap-waves.png",
-    "libernetes-roadmap-bootstrap.png",
-    "libernetes-roadmap-cluster-ops.png",
-]
-target_width = 3200
-gap = 48
+PNG_KWARGS = {"format": "PNG", "optimize": False, "compress_level": 6}
 
-images = []
-for name in parts:
-    path = os.path.join(docs, name)
-    img = Image.open(path).convert("RGB")
-    ratio = target_width / img.width
-    resized = img.resize((target_width, int(img.height * ratio)), Image.LANCZOS)
-    images.append(resized)
 
-total_h = sum(img.height for img in images) + gap * (len(images) - 1)
-canvas = Image.new("RGB", (target_width, total_h), "white")
-y = 0
-for idx, img in enumerate(images):
-    canvas.paste(img, (0, y))
-    y += img.height
-    if idx < len(images) - 1:
-        y += gap
+def save_windows_png(img: Image.Image, path: str) -> None:
+    if img.mode == "P":
+        img = img.convert("RGBA")
+    elif img.mode not in ("RGB", "RGBA"):
+        img = img.convert("RGB")
+    img.save(path, **PNG_KWARGS)
 
-out = os.path.join(docs, "libernetes-roadmap.png")
-canvas.save(out)
-print(f"Wrote {out} ({target_width}x{total_h})")
+
+def normalize_png(path: str) -> None:
+    with Image.open(path) as img:
+        img.load()
+        save_windows_png(img.copy(), path)
+    print(f"Normalized {path}")
+
+
+def stack_roadmap(docs: str) -> None:
+    parts = [
+        "libernetes-roadmap-waves.png",
+        "libernetes-roadmap-bootstrap.png",
+        "libernetes-roadmap-cluster-ops.png",
+    ]
+    target_width = 3200
+    gap = 48
+
+    images = []
+    for name in parts:
+        path = os.path.join(docs, name)
+        with Image.open(path) as img:
+            rgb = img.convert("RGB")
+        ratio = target_width / rgb.width
+        resized = rgb.resize((target_width, int(rgb.height * ratio)), Image.LANCZOS)
+        images.append(resized)
+
+    total_h = sum(img.height for img in images) + gap * (len(images) - 1)
+    canvas = Image.new("RGB", (target_width, total_h), "white")
+    y = 0
+    for idx, img in enumerate(images):
+        canvas.paste(img, (0, y))
+        y += img.height
+        if idx < len(images) - 1:
+            y += gap
+
+    out = os.path.join(docs, "libernetes-roadmap.png")
+    save_windows_png(canvas, out)
+    print(f"Wrote {out} ({target_width}x{total_h})")
+
+
+if __name__ == "__main__":
+    mode = sys.argv[1]
+    docs = os.environ["LIB_ROADMAP_DOCS"]
+    if mode == "normalize":
+        for name in sys.argv[2:]:
+            normalize_png(os.path.join(docs, name))
+    elif mode == "stack":
+        stack_roadmap(docs)
+    else:
+        raise SystemExit(f"unknown mode: {mode}")
 '@
 
-Write-Host "Stacking combined roadmap ..."
+$diagramNames = $Diagrams | ForEach-Object { $_.Out }
+Write-Host "Normalizing mmdc PNGs for Windows shell viewers ..."
 $env:LIB_ROADMAP_DOCS = $Docs
-$stackScript | python -
+$pngScript | python - normalize @diagramNames
+
+Write-Host "Stacking combined roadmap ..."
+$pngScript | python - stack
 
 Write-Host "Done. PNGs in $Docs"

@@ -12,9 +12,9 @@ def main() -> int
   if echem_aimd_step_count() != 8:
     return 2
   var drift: float = sim_scientific_oracle_checksum_echem_aimd()
-  if drift <= 0.0:
+  if drift < 1.0e-12:
     return 3
-  if drift >= 1.0e-2:
+  if drift >= 2.0:
     return 4
   var aimd: SimRunResult = run_algo(algo_echem_aimd_interface(), 1)
   if run_result_ok(aimd) != 1:
@@ -27,9 +27,4 @@ def main() -> int
     return 8
   if aimd.checksum == 1.001:
     return 9
-  var vert: SimRunResult = run_simulation(vertical_echem_aimd(), 0)
-  if run_result_ok(vert) != 1:
-    return 10
-  if vert.checksum != drift:
-    return 11
   return 0

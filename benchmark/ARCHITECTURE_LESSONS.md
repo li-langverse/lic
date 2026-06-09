@@ -52,7 +52,7 @@ Recent fix (`tick budget-exhausted CL relays`) addresses (3) partially; benchmar
 
 Priority order (from benchmark evidence + nginx model):
 
-1. **Per-connection buffer pools** — fixed-size upstream read buffer + client write buffer per active relay (nginx `proxy_buffers` analogue)
+1. **Per-connection buffer pools** — fixed-size upstream read buffer + client write buffer per active relay (nginx `proxy_buffers` analogue). Implemented in `li_rt_net.c`: **32 KiB** `proxy_up_rbuf` (upstream read) + **32 KiB** `proxy_wbuf` (client write staging) per slot — no shared relay buffer between read and write chains.
 2. **Worker processes ≥ 2** — match `[server] workers = 2` in config; ensure each worker has independent epoll loop and accept (already configured; verify `LI_HTTPD_WORKERS` not forced to 1 in prod entrypoints)
 3. **Fair write scheduling** — round-robin or deficit round-robin across active CL relays each epoll tick; never spend entire budget on one connection
 4. **Optional `proxy_buffering` mode** — config flag: buffered (copy upstream to pool, then drain to client) vs streaming (`off`); benchmark both for memory/latency tradeoff

@@ -13,5 +13,5 @@ python3 /opt/lic-scripts/validate-httpd-config.py /proxy/httpd.toml --allow-peer
 python3 /opt/lic-scripts/flatten-httpd-config.py /proxy/httpd.toml -o "$CONF"
 sed -i "s|^tls_cert_dir=.*|tls_cert_dir=$CERT_DIR|" "$CONF"
 grep -q '^m2_tls_terminate=1' "$CONF"
-WORKERS="${LI_HTTPD_WORKERS:-2}"
+WORKERS="${LI_HTTPD_WORKERS:-auto}"
 exec env LI_HTTPD_WORKERS="$WORKERS" /usr/local/bin/li-httpd "$CONF"

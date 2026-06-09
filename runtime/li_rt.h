@@ -180,6 +180,8 @@ int32_t httpd_tls_slot_h2_i(int32_t slot);
 int32_t httpd_h2_serve_slot_i(int32_t epfd, int32_t slot);
 void httpd_client_force_close_i(int32_t epfd, int32_t slot);
 int32_t httpd_fork_workers_i(void);
+int32_t httpd_tls_init_from_config_i(void);
+int32_t httpd_proxy_fair_relay_round_i(int32_t epfd);
 int32_t httpd_config_workers_i(void);
 int32_t httpd_config_listen_port_i(void);
 int32_t httpd_config_listen_port_http_i(void);

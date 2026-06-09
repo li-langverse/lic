@@ -1046,6 +1046,7 @@ def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Al
     var n: int = epoll_wait_tagged_timeout_ms_i(epfd, evbuf, 256, wait_ms)
     if n <= 0:
       running = 1
+    httpd_proxy_fair_relay_round_i(epfd)
     if n > 0:
       var i: int = 0
       while i < n:
@@ -1131,9 +1132,15 @@ def httpd_run_from_runtime_config(path: var ptr) raises Net, Alloc, IO -> int
   if httpd_begin_worker_pool() != 0:
     return 1
   if httpd_tls_enabled_i() == 1:
-    return httpd_upstream_proxy_epoll_loop(p, r)
+    if httpd_env_li_proxy_loop_i() == 1:
+      return httpd_upstream_proxy_epoll_loop(p, r)
+    var bp: int = 8080
+    return httpd_epoll_serve_proxy_i(p, r, bp)
   if httpd_proxy_configured_i() == 1:
-    return httpd_upstream_proxy_epoll_loop(p, r)
+    if httpd_env_li_proxy_loop_i() == 1:
+      return httpd_upstream_proxy_epoll_loop(p, r)
+    var bp2: int = 8080
+    return httpd_epoll_serve_proxy_i(p, r, bp2)
   return httpd_serve_port_root(p, r)
 
 def httpd_run_from_argv() raises Net, Alloc, IO -> int

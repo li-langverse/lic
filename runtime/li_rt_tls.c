@@ -394,26 +394,31 @@ int32_t httpd_tls_global_init(const char* cert_dir, int32_t http2_on) {
   return httpd_tls_global_init_paths(cert_dir, NULL, NULL, http2_on);
 }
 
+static char g_tls_saved_cert_path[4096];
+static char g_tls_saved_key_path[4096];
+
 int32_t httpd_tls_global_init_paths(const char* cert_dir, const char* manual_cert,
                                     const char* manual_key, int32_t http2_on) {
-  static char cert_path[4096];
-  static char key_path[4096];
-  cert_path[0] = key_path[0] = '\0';
+  g_tls_saved_cert_path[0] = g_tls_saved_key_path[0] = '\0';
   if (manual_cert && manual_cert[0] && manual_key && manual_key[0]) {
-    strncpy(cert_path, manual_cert, sizeof(cert_path) - 1);
-    strncpy(key_path, manual_key, sizeof(key_path) - 1);
+    strncpy(g_tls_saved_cert_path, manual_cert, sizeof(g_tls_saved_cert_path) - 1);
+    strncpy(g_tls_saved_key_path, manual_key, sizeof(g_tls_saved_key_path) - 1);
   } else if (cert_dir && cert_dir[0]) {
-    snprintf(cert_path, sizeof(cert_path), "%s/fullchain.pem", cert_dir);
-    snprintf(key_path, sizeof(key_path), "%s/privkey.pem", cert_dir);
+    snprintf(g_tls_saved_cert_path, sizeof(g_tls_saved_cert_path), "%s/fullchain.pem", cert_dir);
+    snprintf(g_tls_saved_key_path, sizeof(g_tls_saved_key_path), "%s/privkey.pem", cert_dir);
   }
   g_tls_http2 = http2_on ? 1 : 0;
-  return httpd_tls_global_init_files(cert_path, key_path);
+  return httpd_tls_global_init_files(g_tls_saved_cert_path, g_tls_saved_key_path);
 }
-
 
 int32_t httpd_tls_global_init_files(const char* cert_path, const char* key_path) {
   tls_read_env_mode();
   g_tls_wanted = 1;
+  if (g_tls_ctx && p_SSL_CTX_free) {
+    p_SSL_CTX_free(g_tls_ctx);
+    g_tls_ctx = NULL;
+  }
+  g_tls_ready = 0;
   memset(g_slot_proto, 0, sizeof(g_slot_proto));
   memset(g_slot_ssl, 0, sizeof(g_slot_ssl));
   memset(g_slot_hs_pending, 0, sizeof(g_slot_hs_pending));

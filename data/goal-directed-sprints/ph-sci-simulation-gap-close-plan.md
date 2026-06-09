@@ -63,7 +63,7 @@ Legacy Phase 0 worker (`li-ph-sci-simulation-gap-close`) is superseded; keep sca
 - **Phase 0 lib compile:** `li-physics-fluids`, `li-physics-em`, `li-physics-weather`, `li-math-numerics` build under `scripts/ph-sci-phase0-gates.sh` (WP-SCI-BUILD-01/02).
 - **Honest smokes:** Phase 0 blocked libs import `src/lib.li` exports (WP-SCI-BUILD-03).
 - **`@gpu` today:** MIR placement telemetry (`mir_gpu_def=1` via `scripts/check-mir-gpu-decorator.sh`). Vendor LKIR execution remains Phase 3 (WP-SCI-GPU-VENDOR-01).
-- **Remaining lib gaps (Phase 2):** `run_algo_registry_stub` for most CFD/FEA rows; `li-sim-viz` compose-only; scene `native_pixels` stub; particles MD force accumulation still weak.
+- **Remaining lib gaps (Phase 2):** `run_algo_registry_stub` for gaming/drug/cinematic rows (701–903); `li-sim-viz` compose-only; scene `native_pixels` stub; particles MD force accumulation still weak.
 
 ---
 
@@ -191,7 +191,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 
 ### Phase 2 — Deepen simulation verticals (P1–P2) — **OPEN** (see [ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md))
 
-#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID)
+#### WP-SCI-03 — `run_algo_registry` real kernels (extends existing ID) — **DONE**
 
 - **Goal:** Replace `run_algo_registry_stub` for CFD/FEA/QM rows with real dispatch or tier-2 oracles.
 - **Scope:** `li-sim-scientific/src/lib.li`, `benchmarks/competitive/algo_registry.json`, `verticals.toml`.

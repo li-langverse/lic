@@ -197,7 +197,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 - **Scope:** `li-sim-scientific/src/lib.li`, `benchmarks/competitive/algo_registry.json`, `verticals.toml`.
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.
 - **Acceptance:** `run_algo_registry_tier2.li` extended; stub only for explicitly documented IDs.
-- **Landed (slice):** tier-2 dispatch for CFD (205–210), FEA (211–216), QM overlap (401–404); stub retained for QM ids 405–432 and drug/bio/am/ml families. Smokes: `run_algo_registry_tier2.li`.
+- **Landed (slice):** tier-2 dispatch for CFD (205–210), FEA (211–216), QM DFT (401–432 via `chem_dft_scf_iteration_scaffold`); stub retained for drug/bio/am/ml families. Smokes: `run_algo_registry_tier2.li`.
 - **Priority / effort:** P1 / L
 
 #### WP-SCI-04 — `sim.viz` → wgpu field draw (extends existing ID)

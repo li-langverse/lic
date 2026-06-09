@@ -169,14 +169,67 @@ def dedupe_plan_pending_gaps(gaps_by_id: dict[str, dict]) -> int:
     return closed
 
 
+def _runner_plan_sets(runner: dict) -> tuple[str, set[str], set[str]]:
+    """Return runner id, normalized plan_pending, and completed todo ids."""
+    rid = runner.get("id") or "runner"
+    pending: set[str] = set()
+    for todo_id in runner.get("plan_pending") or []:
+        pending.add(_normalize_plan_todo_id(str(todo_id), rid))
+    completed: set[str] = set()
+    for cid in runner.get("state", {}).get("completed_ids") or []:
+        completed.add(_normalize_plan_todo_id(str(cid), rid))
+    for todo in runner.get("todos") or []:
+        if not isinstance(todo, dict) or todo.get("status") != "completed":
+            continue
+        tid = todo.get("id") or ""
+        if tid:
+            completed.add(_normalize_plan_todo_id(str(tid), rid))
+    return rid, pending, completed
+
+
+def reconcile_snapshot_plan_pending(snap: dict, gaps_by_id: dict[str, dict]) -> dict[str, int]:
+    """Sync plan_debt open/closed with snapshot plan_pending and completed todos."""
+    opened = 0
+    closed = 0
+    for runner in snap.get("runners") or []:
+        if not isinstance(runner, dict):
+            continue
+        rid, pending, completed = _runner_plan_sets(runner)
+        for gap in gaps_by_id.values():
+            if not isinstance(gap, dict) or gap.get("gap_kind") != "plan_debt":
+                continue
+            if gap.get("runner_id") != rid:
+                continue
+            raw = gap.get("plan_todo_id")
+            if not raw:
+                continue
+            norm = _normalize_plan_todo_id(str(raw), rid)
+            if norm in pending:
+                if gap.get("status") != "open":
+                    gap["status"] = "open"
+                    ev = gap.setdefault("evidence", [])
+                    note = f"snapshot {rid} plan_pending includes {norm}"
+                    if note not in ev:
+                        ev.append(note)
+                    opened += 1
+                continue
+            if norm in completed and norm not in pending and gap.get("status") == "open":
+                gap["status"] = "closed"
+                ev = gap.setdefault("evidence", [])
+                note = f"snapshot {rid} todo {norm} completed; not in plan_pending"
+                if note not in ev:
+                    ev.append(note)
+                closed += 1
+    return {"opened": opened, "closed": closed}
+
+
 def reconcile_snapshot_completed(snap: dict, gaps_by_id: dict[str, dict]) -> int:
     """Close plan_debt rows whose todo is in runner state.completed_ids."""
     closed = 0
     for runner in snap.get("runners") or []:
         if not isinstance(runner, dict):
             continue
-        rid = runner.get("id") or "runner"
-        completed = set(runner.get("state", {}).get("completed_ids") or [])
+        rid, pending, completed = _runner_plan_sets(runner)
         for gap in gaps_by_id.values():
             if not isinstance(gap, dict) or gap.get("status") != "open":
                 continue
@@ -186,6 +239,8 @@ def reconcile_snapshot_completed(snap: dict, gaps_by_id: dict[str, dict]) -> int
             if not raw:
                 continue
             norm = _normalize_plan_todo_id(str(raw), rid)
+            if norm in pending:
+                continue
             if norm in completed or raw in completed:
                 gap["status"] = "closed"
                 ev = gap.setdefault("evidence", [])
@@ -224,9 +279,12 @@ def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> in
 
 
 def ingest_verticals_stubs(gaps_by_id: dict[str, dict]) -> int:
-    vert = Path(os.environ["BENCHMARKS_COMPETITIVE"]) / "verticals.toml"
-    if not vert.is_file():
-        vert = Path(os.environ.get("BENCHMARKS_COMPETITIVE", str(LANGVERSE / "benchmarks/workloads/competitive"))/verticals.toml"
+    vert = Path(
+        os.environ.get(
+            "BENCHMARKS_COMPETITIVE",
+            str(LANGVERSE / "benchmarks/workloads/competitive"),
+        )
+    ) / "verticals.toml"
     if not vert.is_file():
         return 0
     text = vert.read_text(encoding="utf-8")
@@ -274,6 +332,7 @@ def main() -> int:
         "missing_std": ingest_missing_std(explorer, gaps_by_id),
         "plan_debt_audit": ingest_plan_debt(audit, gaps_by_id),
         "plan_debt_snapshot": ingest_snapshot_plan_pending(snap, gaps_by_id),
+        "snapshot_plan_sync": reconcile_snapshot_plan_pending(snap, gaps_by_id),
         "snapshot_completed": reconcile_snapshot_completed(snap, gaps_by_id),
         "plan_debt_dedupe": dedupe_plan_pending_gaps(gaps_by_id),
         "competitor_catalog": ingest_competitor_catalog(explorer, gaps_by_id),

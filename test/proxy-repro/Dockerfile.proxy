@@ -5,10 +5,10 @@ COPY . .
 RUN apt-get update && apt-get install -y --no-install-recommends libssl3 openssl \
   && rm -rf /var/lib/apt/lists/*
 ENV LI_CLOUD_SKIP_BENCHMARKS=1 LI_CLOUD_SKIP_PYTEST=1
-RUN ./scripts/build.sh && ./scripts/build-li-httpd.sh
+RUN rm -rf build && ./scripts/build.sh && ./scripts/build-li-httpd.sh
 
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y --no-install-recommends libssl3 openssl ca-certificates python3 \
+RUN apt-get update && apt-get install -y --no-install-recommends libssl3 openssl ca-certificates python3 curl socat \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /src/lic/build/li-httpd /usr/local/bin/li-httpd
 COPY --from=builder /src/lic/scripts /opt/lic-scripts

@@ -347,6 +347,7 @@ static int g_httpd_epfd = -1;
 static int g_li_proxy_mode = 0;
 #ifdef __linux__
 static int g_proxy_splice_pipe[2] = {-1, -1};
+static size_t g_splice_pipe_pending = 0;
 #endif
 
 /* Nginx loopback backend response cache (proxy_loopback): skip re-parse when stable. */
@@ -3578,22 +3579,46 @@ static ssize_t httpd_proxy_splice_once(int up_fd, int client_fd, size_t max_len)
   if (g_proxy_splice_pipe[0] < 0) {
     return -1;
   }
+  ssize_t total_sent = 0;
+  while (g_splice_pipe_pending > 0 && max_len > 0) {
+    size_t chunk = g_splice_pipe_pending;
+    if (chunk > max_len) {
+      chunk = max_len;
+    }
+    ssize_t w = splice(g_proxy_splice_pipe[0], NULL, client_fd, NULL, chunk, SPLICE_F_MOVE | SPLICE_F_NONBLOCK);
+    if (w > 0) {
+      g_splice_pipe_pending -= (size_t)w;
+      total_sent += w;
+      max_len -= (size_t)w;
+      continue;
+    }
+    if (w < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+      return total_sent > 0 ? total_sent : 0;
+    }
+    return total_sent > 0 ? total_sent : -1;
+  }
+  if (g_splice_pipe_pending > 0) {
+    return total_sent > 0 ? total_sent : 0;
+  }
   ssize_t n = splice(up_fd, NULL, g_proxy_splice_pipe[1], NULL, max_len, SPLICE_F_MOVE | SPLICE_F_NONBLOCK);
   if (n <= 0) {
-    return n;
+    return total_sent > 0 ? total_sent : n;
   }
-  size_t left = (size_t)n;
-  while (left > 0) {
-    ssize_t w = splice(g_proxy_splice_pipe[0], NULL, client_fd, NULL, left, SPLICE_F_MOVE | SPLICE_F_NONBLOCK);
-    if (w <= 0) {
-      if (w < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-        return (ssize_t)((size_t)n - left);
-      }
-      return -1;
+  size_t in_pipe = (size_t)n;
+  while (in_pipe > 0) {
+    ssize_t w = splice(g_proxy_splice_pipe[0], NULL, client_fd, NULL, in_pipe, SPLICE_F_MOVE | SPLICE_F_NONBLOCK);
+    if (w > 0) {
+      in_pipe -= (size_t)w;
+      total_sent += w;
+      continue;
     }
-    left -= (size_t)w;
+    if (w < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+      g_splice_pipe_pending = in_pipe;
+      return total_sent > 0 ? total_sent : 0;
+    }
+    return total_sent > 0 ? total_sent : -1;
   }
-  return n;
+  return total_sent > 0 ? total_sent : n;
 }
 #endif
 
@@ -4268,7 +4293,19 @@ static int httpd_proxy_resp_force_connection_close(httpd_slot_t* s) {
   memmove(out + insert_at + llen, out + insert_at, (size_t)(w - insert_at));
   memcpy(out + insert_at, line, (size_t)llen);
   w += llen;
+  int body_tail = s->proxy_resp_hdr_len - hdr_end;
+  char tail_buf[8192];
+  if (body_tail > 0) {
+    if (body_tail > (int)sizeof(tail_buf) || w + body_tail > (int)sizeof(s->proxy_resp_hdr_acc)) {
+      return -1;
+    }
+    memcpy(tail_buf, s->proxy_resp_hdr_acc + hdr_end, (size_t)body_tail);
+  }
   memcpy(s->proxy_resp_hdr_acc, out, (size_t)w);
+  if (body_tail > 0) {
+    memcpy(s->proxy_resp_hdr_acc + w, tail_buf, (size_t)body_tail);
+    w += body_tail;
+  }
   s->proxy_resp_hdr_len = w;
   s->proxy_keep = 0;
   return 0;
@@ -6350,6 +6387,10 @@ int32_t httpd_proxy_splice_cl_i(int32_t up_fd, int32_t client_fd, int32_t max_by
   if (slot >= 0 && httpd_tls_slot_proto(slot) == 1) {
     return -1;
   }
+  /* Edge multi-pool: splice shares one pipe; use recv+relay (TLS-safe) only. */
+  if (g_pool_map_count > 0) {
+    return -1;
+  }
   httpd_proxy_splice_pipe_init();
   if (g_proxy_splice_pipe[0] < 0 || max_bytes <= 0) {
     return -1;
@@ -6624,6 +6665,24 @@ int32_t httpd_li_proxy_inject_conn_close_i(int32_t slot) {
     return -1;
   }
   return httpd_proxy_resp_force_connection_close(&g_slots[slot]);
+}
+
+int32_t httpd_li_proxy_relay_pending_i(int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return 0;
+  }
+  return httpd_proxy_relay_pending_client(&g_slots[slot]) ? 1 : 0;
+}
+
+int32_t httpd_li_proxy_forward_hdr_tail_i(int32_t epfd, int32_t slot, int32_t skip, int32_t n) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || skip < 0 || n <= 0) {
+    return -1;
+  }
+  httpd_slot_t* s = &g_slots[slot];
+  if (skip + n > s->proxy_resp_hdr_len) {
+    return -1;
+  }
+  return httpd_proxy_relay_to_client((int)epfd, slot, s->proxy_resp_hdr_acc + skip, (size_t)n);
 }
 
 int32_t httpd_li_proxy_init_req_i(int32_t slot, int32_t hdr_end) {

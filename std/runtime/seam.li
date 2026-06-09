@@ -352,6 +352,16 @@ extern proc httpd_li_proxy_inject_conn_close_i(slot: var int) -> int
   ensures true
   decreases 0
 
+extern proc httpd_li_proxy_relay_pending_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_forward_hdr_tail_i(epfd: var int, slot: var int, skip: int, n: int) -> int
+  requires epfd >= 0
+  ensures true
+  decreases 0
+
 extern proc httpd_li_proxy_finish_drain_i(epfd: var int, slot: var int) -> int
   requires epfd >= 0
   ensures true

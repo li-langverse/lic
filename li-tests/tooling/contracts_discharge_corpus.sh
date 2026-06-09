@@ -11,7 +11,10 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_caller_requires_local_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_refinement_lean.sh" \
+  "$ROOT/li-tests/tooling/discharge_par_parallel_lean.sh" \
+  "$ROOT/li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh" \
   "$ROOT/scripts/check-mir-parallel-decorator.sh" \
+  "$ROOT/scripts/check-mir-parallel-for-disjoint.sh" \
   "$ROOT/scripts/check-mir-gpu-decorator.sh" \
   "$ROOT/scripts/check-mir-vectorized-decorator.sh" \
   "$ROOT/li-tests/tooling/check_release_bounds_ir.sh"
@@ -21,7 +24,16 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
 "$ROOT/li-tests/tooling/discharge_caller_requires_local_lean.sh"
 "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh"
 "$ROOT/li-tests/tooling/discharge_refinement_lean.sh"
+"$ROOT/li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh"
+"$ROOT/scripts/check-mir-parallel-decorator.sh"
+"$ROOT/scripts/check-mir-parallel-for-disjoint.sh"
+"$ROOT/scripts/check-mir-vectorized-decorator.sh"
 "$ROOT/scripts/check-mir-gpu-decorator.sh"
+if command -v lake >/dev/null 2>&1; then
+  "$ROOT/li-tests/tooling/discharge_par_parallel_lean.sh"
+else
+  echo "contracts_discharge_corpus: skip discharge_par_parallel_lean (lake N/A)" >&2
+fi
 "$ROOT/li-tests/tooling/check_release_bounds_ir.sh"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 "$LIC" build "$ROOT/li-tests/contracts_verify/index_refinement.li" -o /dev/null

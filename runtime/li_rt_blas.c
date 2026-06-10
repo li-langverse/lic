@@ -106,3 +106,38 @@ int32_t li_rt_blas_sgemm_f32(int32_t m, int32_t n, int32_t k, int32_t ld, double
                 b, (int)ld, 0.0, c, (int)ld);
   return 0;
 }
+
+int32_t li_rt_gemm_tile_env(void) {
+  const char* v = getenv("LI_ARRAY_GEMM_TILE");
+  if (v == NULL || v[0] == '\0') {
+    return 8;
+  }
+  if (strcmp(v, "16") == 0) {
+    return 16;
+  }
+  return 8;
+}
+
+int32_t li_rt_blas_matmul_dense32_identity(double* out_c00) {
+  double a[32 * 32];
+  double b[32 * 32];
+  double c[32 * 32];
+  int32_t i;
+  if (out_c00 == NULL) {
+    return 1;
+  }
+  for (i = 0; i < 32 * 32; ++i) {
+    a[i] = 0.0;
+    b[i] = 0.0;
+    c[i] = 0.0;
+  }
+  for (i = 0; i < 32; ++i) {
+    a[i * 32 + i] = 1.0;
+    b[i * 32 + i] = 1.0;
+  }
+  if (li_rt_blas_sgemm_f32(32, 32, 32, 32, a, b, c) != 0) {
+    return 1;
+  }
+  *out_c00 = c[0];
+  return 0;
+}

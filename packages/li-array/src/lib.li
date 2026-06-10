@@ -438,7 +438,7 @@ def li_array_matmul_blas_f32(
   var n: int = b.shape1
   var k: int = a.shape1
   if m == 32 and n == 32 and k == 32:
-    return ml_blas_matmul_f32(8, 8, 8, 8, af, bf, c)
+    return ml_matmul_cpu_logical_32(af, bf, c)
   if array_matmul_small_ok(m, n, k) == 1:
     return ml_blas_matmul_f32(m, n, k, a.ld, af, bf, c)
   return 0

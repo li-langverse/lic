@@ -100,18 +100,25 @@ def physics_step(world: var PhysicsWorld, frame_dt: float) -> unit
     sc = sc + 1
     world.step_count = sc
     i = i + 1
-def physics_sync_from_scene(world: PhysicsWorld) -> unit
+def physics_sync_from_scene(world: PhysicsWorld, px: float, py: float, pz: float, vx: float, vy: float, vz: float) -> unit
   requires true
-  ensures true
+  ensures world.body.px == px
+  ensures world.body.vy == vy
   decreases 0
 =
-  return
-def physics_sync_to_scene(world: PhysicsWorld) -> unit
+  world.body.px = px
+  world.body.py = py
+  world.body.pz = pz
+  world.body.vx = vx
+  world.body.vy = vy
+  world.body.vz = vz
+
+def physics_sync_to_scene(world: PhysicsWorld) -> float
   requires true
-  ensures true
+  ensures result == world.body.px + world.body.py + world.body.pz
   decreases 0
 =
-  return
+  return world.body.px + world.body.py + world.body.pz
 
 # PH-GAME-01 — session-sized rigid state (studio persists on SimSessionStub; not ephemeral world).
 type GamePhysicsState = object

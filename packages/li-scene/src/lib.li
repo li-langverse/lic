@@ -75,18 +75,30 @@ def scene_attach_node(scene: Scene, node: SceneNode) -> unit
   decreases scene.node_count
 =
   scene.node_count = scene.node_count + 1
-def scene_sync_from_physics(scene: Scene) -> unit
+def scene_sync_from_physics(scene: Scene, px: float, py: float, pz: float) -> SceneNode
   requires true
-  ensures true
+  ensures result.transform.px == px
+  ensures result.transform.py == py
+  ensures result.transform.pz == pz
   decreases 0
 =
-  return
-def scene_sync_to_physics(scene: Scene) -> unit
+  var node: SceneNode
+  node.id = entity_id_new(scene.node_count + 1)
+  node.parent = scene.root_id
+  node.transform = transform_identity()
+  node.transform.px = px
+  node.transform.py = py
+  node.transform.pz = pz
+  node.physics_body = 0
+  scene_attach_node(scene, node)
+  return node
+
+def scene_sync_to_physics(node: SceneNode) -> SceneNode
   requires true
-  ensures true
+  ensures result.transform.px == node.transform.px
   decreases 0
 =
-  return
+  return node
 
 # MD particle display tiers (PH-UX: 1k/10k/100k @ 60/60/30 fps) — scene path, honest reporting.
 

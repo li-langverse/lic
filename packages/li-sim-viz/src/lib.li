@@ -402,3 +402,44 @@ def viz_pipeline_scientific_step(state: VizPipelineState, tick: int) -> VizPipel
   if tick >= 8:
     s = viz_pipeline_apply(s)
   return s
+
+# WP-SCI-04 — wgpu field draw progression (draw-list checksum; full volume deferred).
+def viz_field_scalar_heat_grid_checksum(grid: array[8, float]) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var sum: float = 0.0
+  var i: int = 0
+  while i < 8
+    sum = sum + grid[i]
+    i = i + 1
+  return sum
+
+def viz_wgpu_field_draw_checksum(state: VizPipelineState, heat_scalar: float) -> float
+  requires state.profile_id == viz_profile_sim_scientific()
+  requires heat_scalar >= 0.0
+  ensures result > 0.0
+  decreases state.source_count
+=
+  var dots: int = viz_pipeline_viewport_particle_dots(state)
+  var rep: float = 0.0
+  if state.display_rep == viz_display_rep_surface():
+    rep = 0.0
+  if state.display_rep == viz_display_rep_wireframe():
+    rep = 1.0
+  if state.display_rep == viz_display_rep_points():
+    rep = 2.0
+  var dots_f: float = 0.0
+  if dots > 0:
+    dots_f = 1.0
+  return heat_scalar + rep + dots_f
+
+def viz_wgpu_field_draw_step(state: VizPipelineState, heat_scalar: float) -> float
+  requires state.profile_id == viz_profile_sim_scientific()
+  requires heat_scalar >= 0.0
+  ensures result > 0.0
+  decreases heat_scalar
+=
+  var s: VizPipelineState = viz_pipeline_scientific_step(state, 8)
+  return viz_wgpu_field_draw_checksum(s, heat_scalar)

@@ -365,3 +365,70 @@ def run_drug_design_smoke() -> int
   if insp.conformer_count != 12:
     return 8
   return 0
+
+# WP-DRUG-04 — async chem.dft job queue (pending → running → done).
+def chem_dft_job_status_pending() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def chem_dft_job_status_running() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def chem_dft_job_status_done() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type ChemDftJobQueue = object
+  public job_id: int
+  public status: int
+  public energy_hartree: float
+
+def chem_dft_job_queue_new(job_id: int) -> ChemDftJobQueue
+  requires job_id >= 0
+  ensures result.job_id == job_id
+  ensures result.status == chem_dft_job_status_pending()
+  ensures result.energy_hartree == 0.0
+  decreases job_id
+=
+  var q: ChemDftJobQueue
+  q.job_id = job_id
+  q.status = chem_dft_job_status_pending()
+  q.energy_hartree = 0.0
+  return q
+
+def chem_dft_job_queue_advance(q: var ChemDftJobQueue) -> int
+  requires q.job_id >= 0
+  ensures result >= chem_dft_job_status_pending()
+  ensures result <= chem_dft_job_status_done()
+  decreases q.status
+=
+  if q.status == chem_dft_job_status_pending():
+    q.status = chem_dft_job_status_running()
+    return q.status
+  if q.status == chem_dft_job_status_running():
+    q.energy_hartree = chem_dft_energy_kernel_hartree()
+    q.status = chem_dft_job_status_done()
+    return q.status
+  return q.status
+
+def drug_litl_dft_queue_roundtrip(job_id: int) -> float
+  requires job_id >= 0
+  ensures result <= 0.0
+  decreases job_id
+=
+  var q: ChemDftJobQueue = chem_dft_job_queue_new(job_id)
+  chem_dft_job_queue_advance(q)
+  chem_dft_job_queue_advance(q)
+  if q.status != chem_dft_job_status_done():
+    return 0.0
+  return q.energy_hartree

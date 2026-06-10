@@ -1,0 +1,8 @@
+FROM python:3.12-alpine AS gen
+WORKDIR /src
+COPY test/integration/real-sites/gen-real-site.py /src/gen-real-site.py
+RUN python3 /src/gen-real-site.py --out-dir /srv/www
+
+FROM nginx:1.27-alpine
+COPY test/integration/real-sites/nginx.conf /etc/nginx/nginx.conf
+COPY --from=gen /srv/www /srv/www

@@ -1,5 +1,7 @@
 ﻿# Li
 
+> **CI:** Primary pipelines run on [GitLab CI](https://gitlab.lilangverse.xyz/li-langverse/lic/-/pipelines) (`.gitlab-ci.yml`). GitHub Actions is limited to Pages deploy (`pages.yml`). Container images: `ghcr.io/li-langverse/*`.
+
 **ç†** â€” *reason, principle.*
 
 Li is a language for people who want their programs to be **correct before they are fast**, and **clear before they are clever**.

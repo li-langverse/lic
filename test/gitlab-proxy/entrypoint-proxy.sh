@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+CONF=/run/httpd.runtime.conf
+BACKEND_IP=$(getent ahostsv4 backend | awk '{print $1; exit}')
+[ -n "$BACKEND_IP" ] || { echo "entrypoint: cannot resolve backend" >&2; exit 1; }
+socat "TCP-LISTEN:8080,bind=127.0.0.1,fork,reuseaddr" "TCP:${BACKEND_IP}:8080" &
+trap 'kill $(jobs -p) 2>/dev/null || true' EXIT
+python3 /opt/lic-scripts/validate-httpd-config.py /proxy/httpd.toml --allow-peer-host backend
+python3 /opt/lic-scripts/setup-tls-httpd.py /proxy/httpd.toml --cert-dir /certs
+python3 /opt/lic-scripts/flatten-httpd-config.py /proxy/httpd.toml -o "$CONF"
+sed -i "s|^tls_cert_dir=.*|tls_cert_dir=/certs|" "$CONF"
+exec env LI_HTTPD_WORKERS=1 LI_HTTPD_USE_NATIVE_PROXY_RELAY="${LI_HTTPD_USE_NATIVE_PROXY_RELAY:-1}" \
+  /usr/local/bin/li-httpd "$CONF"

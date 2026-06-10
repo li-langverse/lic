@@ -1,5 +1,6 @@
 set(LI_RT_SOURCES
   li_rt.c
+  li_rt_studio_aimd.c
   li_rt_httpd.c
   li_rt_log.c
   li_rt_net.c

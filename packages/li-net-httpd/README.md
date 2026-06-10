@@ -27,6 +27,41 @@ def main() -> int
 
 Other packages embed the same calls in their own `def main` — no copy-paste of server loop.
 
+## Upstream load balancing (`[upstreams.<id>]`)
+
+Each upstream pool may list multiple loopback peers and a balancing **policy** (alias: `balance`):
+
+| Policy | Behavior |
+|--------|----------|
+| `round_robin` | Rotate across healthy peers (default) |
+| `least_conn` | Peer with fewest active proxy connections |
+| `ip_hash` | Sticky by client IPv4 (use for GitLab/session apps) |
+| `cookie` | Sticky via `li_route` cookie set by the gateway |
+| `first_available` | First healthy peer in `peers` order |
+
+Example (GitLab behind two NodePorts):
+
+```toml
+[upstreams.gitlab]
+policy = "ip_hash"
+peers = ["http://127.0.0.1:30481", "http://127.0.0.1:30482"]
+```
+
+Flattened runtime lines: `upstream_peer=gitlab|127.0.0.1|30481`, `upstream_balance=gitlab|ip_hash`. Edge multi-pool configs pick only peers from the route’s pool (no cross-pool fallback).
+
+Isolated proof: `lic/test/proxy-repro/docker-compose.lb.yml` (two nginx backends, `ip_hash` stickiness). Host script: `./scripts/test-lb-sticky-sessions.sh`.
+
+## Runtime limits (`[limits]`)
+
+| TOML key | `runtime.conf` key | Default |
+|----------|-------------------|---------|
+| `max_body` | `max_request_body_bytes` | `1m` |
+| `max_header` | `max_header_bytes` | `16k` |
+| `proxy_max_response_body` | `max_proxy_response_body_bytes` | `64m` |
+| `max_routes` | `max_routes` | `0` (unlimited dynamic route table) |
+
+Set `max_routes` to a positive integer to pre-allocate and cap the route table; config load fails if the flattened config has more routes than the cap.
+
 ## Build
 
 ```bash

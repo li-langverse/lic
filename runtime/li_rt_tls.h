@@ -39,12 +39,21 @@ int32_t httpd_tls_handshake_spin(int32_t slot, int32_t fd, int32_t max_rounds);
 /* Non-blocking TLS accept after TCP accept; sets slot proto. Returns 0 ok, -1 fail. */
 int32_t httpd_tls_handshake_slot(int32_t slot, int32_t fd);
 
+size_t httpd_tls_write_pending(int32_t slot);
+int32_t httpd_tls_drain_writes(int32_t slot, int32_t fd);
+/* max_bytes==0 means unlimited (same as httpd_tls_drain_writes). */
+int32_t httpd_tls_drain_writes_budget(int32_t slot, int32_t fd, size_t max_bytes);
+void httpd_tls_shutdown_slot(int32_t slot);
 void httpd_tls_free_slot(int32_t slot);
 
 /* recv/send wrappers — use when httpd_tls_slot_proto(slot) != 0 */
 ssize_t httpd_tls_read_slot(int32_t slot, void* buf, size_t cap);
 ssize_t httpd_tls_write_slot(int32_t slot, const void* buf, size_t len);
 ssize_t httpd_tls_write_fd(int32_t fd, const void* buf, size_t len);
+long httpd_tls_wbio_pending(int32_t slot);
+int httpd_tls_ssl_pending(int32_t slot);
+/* 0 = drained, 1 = want POLLOUT, -1 = error */
+int32_t httpd_tls_flush_wbio(int32_t slot);
 
 #ifdef __cplusplus
 }

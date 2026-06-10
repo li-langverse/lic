@@ -138,6 +138,29 @@ TOOLS: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "aimd_configure_scenario",
+        "description": "Configure AIMD hero scenario (steps, temperature, potential, algo)",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "steps": {"type": "integer"},
+                "temperature_k": {"type": "integer"},
+                "potential_v": {"type": "number"},
+                "algo_id": {"type": "integer"},
+            },
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "aimd_get_scenario",
+        "description": "Read configured AIMD scenario steps",
+        "inputSchema": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+    {
         "name": "ui_snapshot",
         "description": "Accessibility-style element tree for session",
         "inputSchema": {
@@ -368,6 +391,10 @@ def dispatch_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         arg = max(-1, min(2, _int_arg(arguments, "tier_id", default=0)))
     elif name == "studio_set_biomol_style":
         arg = max(0, min(2, _int_arg(arguments, "style", default=0)))
+    elif name == "aimd_configure_scenario":
+        arg = max(64, min(10000, _int_arg(arguments, "steps", default=5000)))
+    elif name == "aimd_get_scenario":
+        arg = 0
 
     return {"ok": True, "status": STATUS_OK, "result_code": arg, "tool_id": tool_id}
 

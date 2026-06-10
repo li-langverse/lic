@@ -30,7 +30,9 @@ ROUTE_KEY_RE = re.compile(
 HEADER_EXTRA_RE = re.compile(r"^([a-zA-Z0-9_-]+)=([^\s]+)$")
 
 ROUTE_REQUIRE_ALLOW = frozenset({"traceparent", "websocket"})
-UPSTREAM_BALANCE_ALLOW = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})
+UPSTREAM_BALANCE_ALLOW = frozenset(
+    {"round_robin", "least_conn", "ip_hash", "cookie", "first_available"}
+)
 
 
 @dataclass
@@ -150,7 +152,7 @@ def validate_routes(routes: list[CanonicalRoute]) -> None:
 
 
 def _validate_upstream_balance(spec: dict[str, Any], pool_id: str) -> None:
-    bal = spec.get("balance")
+    bal = spec.get("balance") if spec.get("balance") is not None else spec.get("policy")
     if bal is None:
         return
     bal_s = str(bal).strip()
@@ -202,8 +204,12 @@ def _run_config_oracle_validators(data: dict[str, Any], path: Path) -> list[str]
     from httpd_rng import validate_rng_config_raise
     from httpd_tls import ConfigError as TlsError
     from httpd_tls import validate_tls_config
+    from httpd_toml_style import validate_toml_key_style
 
     warnings: list[str] = []
+    style_errs = validate_toml_key_style(data)
+    if style_errs:
+        raise ConfigError(style_errs[0])
     try:
         validate_m15_limits(data)
         validate_route_match(data)

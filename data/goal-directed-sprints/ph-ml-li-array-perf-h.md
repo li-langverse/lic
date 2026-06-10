@@ -26,13 +26,23 @@ Phase G removed LKIR from the 32×32 hot path but Li is still far from NumPy/Ope
 
 Close the remaining ~343× gap toward NumPy CPU matmul @ 32×32 using native Li only in the timing path (no Python in hot loop). Primary lever: OpenBLAS `cblas_sgemm` via runtime dlopen; secondary: blocked GEMM tile tuning.
 
+## Status
+
+| Phase | Status |
+|-------|--------|
+| **H** | **DONE** — OpenBLAS dlopen hook + pilot 8×8 dispatch |
+| **I** | **MOVED** → `data/goal-directed-sprints/ph-ml-li-array-perf-ij.md` |
+| **J** | **MOVED** → `data/goal-directed-sprints/ph-ml-li-array-perf-ij.md` |
+
 ## Phases
 
 | Phase | Scope | Done when |
 |-------|-------|-----------|
 | **H** | OpenBLAS/native BLAS hook for `li_array_matmul` 32×32 | `li_rt_blas_sgemm_*` in runtime; `ml_blas_matmul_f32` + `li_array_matmul_blas_f32`; `LI_ARRAY_BLAS=openblas` dispatch; smoke + gate symbols green |
-| **I** | Blocked GEMM tuning / tile size sweep | `ml_matmul_cpu_logical_32` tile params documented; sweep script or env `LI_ARRAY_GEMM_TILE`; measurable `li_over_numpy` delta vs Phase H baseline |
-| **J** | Competitive bench refresh + ratio gate | `bench-ph-ml-li-array-matmul-32.sh` records `blas_backend`, fair workload notes; `ratio_target_met` warn-not-fail until ≤2.0 honest |
+| **I** | *(continued in perf-ij sprint)* | — |
+| **J** | *(continued in perf-ij sprint)* | — |
+
+### Phase H
 
 ## Phase H exit criteria
 
@@ -43,17 +53,7 @@ Close the remaining ~343× gap toward NumPy CPU matmul @ 32×32 using native Li 
 - [x] `scripts/ph-ml-li-array-perf-h-gates.sh` green (warn if `li_over_numpy` still ≫2.0)
 - [ ] CI green on PR
 
-## Phase I exit criteria
-
-- [ ] Tile sweep for 8×8 / 16×16 micro-kernels documented in perf spec
-- [ ] `li_over_numpy` improved vs Phase H baseline (honest pilot buffer limits noted)
-- [ ] No regression on `ph-ml-li-array-gates.sh` smokes
-
-## Phase J exit criteria
-
-- [ ] `bench-ph-ml-li-array-matmul-32.json` includes `blas_backend` / `workload_class`
-- [ ] Gate prints `ratio_target_met`; **warn** not hard-fail when still >2.0
-- [ ] `ph-ml-competitive.json` row `li_array_matmul_32x32` refreshed
+Phase I/J continue in **`ph-ml-li-array-perf-ij.md`** (dense `array[1024]`, tile sweep, competitive refresh).
 
 ## Phase H perf investigation (post-#1320)
 

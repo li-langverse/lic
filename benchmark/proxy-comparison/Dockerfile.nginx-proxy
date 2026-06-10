@@ -1,0 +1,7 @@
+FROM nginx:1.27-alpine
+RUN apk add --no-cache gettext curl
+COPY benchmark/proxy-comparison/proxy/nginx.conf /etc/nginx/nginx.conf.template
+COPY benchmark/proxy-comparison/entrypoint-nginx.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+EXPOSE 8443
+ENTRYPOINT ["/entrypoint.sh"]

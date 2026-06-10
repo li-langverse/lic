@@ -1,0 +1,21 @@
+# Build li-httpd from lic source (same chain as homelab edge).
+FROM ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22 AS builder
+WORKDIR /src/lic
+COPY . .
+RUN apt-get update && apt-get install -y --no-install-recommends libssl3 openssl \
+  && rm -rf /var/lib/apt/lists/*
+ENV LI_CLOUD_SKIP_BENCHMARKS=1 LI_CLOUD_SKIP_PYTEST=1
+RUN rm -rf build && ./scripts/build.sh && ./scripts/build-li-httpd.sh
+
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y --no-install-recommends libssl3 openssl ca-certificates python3 curl socat \
+  && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /src/lic/build/li-httpd /usr/local/bin/li-httpd
+COPY --from=builder /src/lic/scripts /opt/lic-scripts
+WORKDIR /proxy
+COPY test/proxy-repro/proxy/httpd.toml /proxy/httpd.toml
+RUN mkdir -p /empty /certs
+COPY test/proxy-repro/entrypoint-proxy.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+EXPOSE 8443
+ENTRYPOINT ["/entrypoint.sh"]

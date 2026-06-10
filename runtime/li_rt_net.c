@@ -171,6 +171,7 @@ typedef struct {
   int proxy_cl_body_active; /* 1: CL body_left accounting (skip response header bytes) */
   int proxy_upstream_hold; /* 1: defer upstream recv until client TLS backlog drains */
   int proxy_pump_budget; /* per-slot relay fairness budget */
+  int proxy_parallel_load; /* 1: relay started under parallel load; keep generous pump budget */
 } httpd_slot_t;
 
 static httpd_slot_t g_slots[HTTPD_MAX_CONN];
@@ -457,9 +458,10 @@ static int httpd_proxy_pump_budget_take(int32_t slot, size_t nbytes) {
     return 1;
   }
   httpd_slot_t* s = &g_slots[slot];
-  /* LI_HTTPD_WORKERS=auto spreads load (~1-2 streams/worker); use a generous but
-   * finite budget so relays yield between epoll ticks (avoid ae8257b81 spin). */
-  if (g_active_proxy_streams > 1 && s->proxy_pump_budget <= 0) {
+  /* Sticky per relay: stream count drops as peers finish; do not shrink mid-body. */
+  if (s->proxy_parallel_load && s->proxy_pump_budget <= 0) {
+    s->proxy_pump_budget = HTTPD_PROXY_PARALLEL_PUMP_BUDGET_BYTES;
+  } else if (g_active_proxy_streams > 1 && s->proxy_pump_budget <= 0) {
     s->proxy_pump_budget = HTTPD_PROXY_PARALLEL_PUMP_BUDGET_BYTES;
   }
   if (s->proxy_pump_budget <= 0) {
@@ -3890,6 +3892,7 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
   g_slots[slot].proxy_cl_body_active = 0;
   g_slots[slot].proxy_upstream_hold = 0;
   g_slots[slot].proxy_pump_budget = 0;
+  g_slots[slot].proxy_parallel_load = 0;
   g_slots[slot].proxy_client_epoll_events = 0;
   g_slots[slot].proxy_up_epoll_events = 0;
   g_proxy_resp_cl_cached = -1;
@@ -4207,7 +4210,12 @@ static void httpd_proxy_enter_relay(int epfd, int32_t slot) {
   s->proxy_resp_chunk_line_len = 0;
   httpd_proxy_up_mod(epfd, slot, EPOLLIN | EPOLLET);
   httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
-  httpd_proxy_ensure_tick_budget(slot);
+  s->proxy_parallel_load = (g_active_proxy_streams > 1) ? 1 : 0;
+  if (s->proxy_parallel_load) {
+    s->proxy_pump_budget = HTTPD_PROXY_PARALLEL_PUMP_BUDGET_BYTES;
+  } else {
+    httpd_proxy_ensure_tick_budget(slot);
+  }
   httpd_proxy_pump_relay(epfd, slot);
 }
 
@@ -5374,7 +5382,7 @@ static void httpd_proxy_tick_starved_relays(int epfd) {
       }
       if (pass == 1 && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0 &&
           !httpd_proxy_upstream_recv_blocked((int32_t)i, s)) {
-        if (g_active_proxy_streams > 1) {
+        if (s->proxy_parallel_load || g_active_proxy_streams > 1) {
           if (g_slots[i].proxy_pump_budget <= 0) {
             g_slots[i].proxy_pump_budget = HTTPD_PROXY_PARALLEL_PUMP_BUDGET_BYTES;
           }
@@ -5853,7 +5861,11 @@ static void httpd_proxy_pump_tunnel(int epfd, int32_t slot) {
 
 static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
-  if (g_active_proxy_streams > 1) {
+  if (s->proxy_parallel_load) {
+    if (s->proxy_pump_budget <= 0) {
+      s->proxy_pump_budget = HTTPD_PROXY_PARALLEL_PUMP_BUDGET_BYTES;
+    }
+  } else if (g_active_proxy_streams > 1) {
     if (s->proxy_pump_budget <= 0) {
       s->proxy_pump_budget = HTTPD_PROXY_PARALLEL_PUMP_BUDGET_BYTES;
     }
@@ -6163,6 +6175,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_cl_body_active = 0;
   s->proxy_upstream_hold = 0;
   s->proxy_pump_budget = HTTPD_PROXY_PUMP_BUDGET_BYTES;
+  s->proxy_parallel_load = 0;
   s->proxy_is_sse = httpd_client_wants_sse(g_slots[slot].buf, hdr_end);
   s->proxy_is_ws =
       httpd_route_requires_websocket_for(req, req->path, req->path_len) &&
@@ -6171,6 +6184,9 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_last_chunk_ts = 0.0;
   s->proxy_stream_start_ts = s->proxy_is_sse ? httpd_monotonic_now() : 0.0;
   httpd_proxy_stream_acquire(slot);
+  if (g_active_proxy_streams > 1) {
+    s->proxy_parallel_load = 1;
+  }
   if (g_m2_queue_max_depth > 0 && !s->proxy_queue_reserved) {
     g_queue_depth++;
   }

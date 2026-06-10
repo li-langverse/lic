@@ -1,6 +1,6 @@
 {
-  "phase": "p3-linux-rt",
+  "phase": "p4-lirun",
   "started_at": "2026-06-10",
   "branch": "feat/extern-def-container-seam",
-  "notes": "P2 gate passed: li-container bundle/state/runerr/seam + backend select/linux/lios/windows/darwin"
+  "notes": "P3 gate passed: li_rt_container.c unshare/cgroup v2/pivot_root/seccomp + trusted.lean Container axioms"
 }

@@ -1,3 +1,6 @@
+#if !defined(_WIN32)
+#define _GNU_SOURCE
+#endif
 #include "li_rt.h"
 
 #include <stdio.h>
@@ -14,7 +17,46 @@
 #include <unistd.h>
 #endif
 
+#if defined(__linux__)
+#include <sched.h>
+#include <sys/mount.h>
+#include <sys/prctl.h>
+#include <linux/bpf.h>
+#include <linux/filter.h>
+#include <linux/seccomp.h>
+#include <linux/unistd.h>
+#endif
+
 #define CONTAINER_RT_TAG 1
+
+#if defined(__linux__)
+#ifndef CLONE_NEWPID
+#define CLONE_NEWPID 0x20000000
+#endif
+#ifndef CLONE_NEWNS
+#define CLONE_NEWNS 0x00020000
+#endif
+#ifndef CLONE_NEWNET
+#define CLONE_NEWNET 0x40000000
+#endif
+#ifndef CLONE_NEWUTS
+#define CLONE_NEWUTS 0x04000000
+#endif
+#ifndef CLONE_NEWIPC
+#define CLONE_NEWIPC 0x08000000
+#endif
+#ifndef CLONE_NEWUSER
+#define CLONE_NEWUSER 0x10000000
+#endif
+#ifndef CLONE_NEWCGROUP
+#define CLONE_NEWCGROUP 0x02000000
+#endif
+#endif
+
+static int container_dry_run(void) {
+  const char* env = getenv("LI_CONTAINER_DRY_RUN");
+  return (env != NULL && env[0] == '1') ? 1 : 0;
+}
 
 static int container_copy_cstr(char* out, int cap, const char* src) {
   if (out == NULL || cap <= 0) {
@@ -168,6 +210,51 @@ int container_env_is_i(char* name, char* value) {
   return (v != NULL && strcmp(v, value) == 0) ? 1 : 0;
 }
 
+static int container_json_has_token(const char* json, const char* token) {
+  return (json != NULL && token != NULL && strstr(json, token) != NULL) ? 1 : 0;
+}
+
+static int container_cgroup_write_i(const char* dir, const char* file, const char* value) {
+  if (dir == NULL || file == NULL || value == NULL) {
+    return -1;
+  }
+  char path[1024];
+  snprintf(path, sizeof(path), "%s/%s", dir, file);
+  return container_write_file_i(path, (char*)value);
+}
+
+static int container_cgroup_read_int_after_key(const char* json, const char* section, const char* key,
+                                               long long* out) {
+  if (json == NULL || section == NULL || key == NULL || out == NULL) {
+    return -1;
+  }
+  const char* sec = strstr(json, section);
+  if (sec == NULL) {
+    return -1;
+  }
+  char pattern[128];
+  snprintf(pattern, sizeof(pattern), "\"%s\"", key);
+  const char* hit = strstr(sec, pattern);
+  if (hit == NULL) {
+    return -1;
+  }
+  const char* colon = strchr(hit + strlen(pattern), ':');
+  if (colon == NULL) {
+    return -1;
+  }
+  const char* p = colon + 1;
+  while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') {
+    ++p;
+  }
+  char* end = NULL;
+  long long v = strtoll(p, &end, 10);
+  if (end == p) {
+    return -1;
+  }
+  *out = v;
+  return 0;
+}
+
 static const char* container_json_find_value(const char* json, const char* key) {
   if (json == NULL || key == NULL) {
     return NULL;
@@ -305,9 +392,28 @@ int container_cgroup_path_i(char* id, char* out, int cap) {
 }
 
 int container_cgroup_create_i(char* id) {
+  if (id == NULL) {
+    return -1;
+  }
+  char root[512];
+  container_cgroup_root_i(root, (int)sizeof(root));
+  char parent[1024];
+  snprintf(parent, sizeof(parent), "%s/li-container", root);
+  if (container_mkdir_p_i(parent) != 0) {
+    return -1;
+  }
   char path[1024];
   container_cgroup_path_i(id, path, (int)sizeof(path));
-  return container_mkdir_p_i(path);
+  if (container_mkdir_p_i(path) != 0) {
+    return -1;
+  }
+#if defined(__linux__)
+  if (!container_dry_run()) {
+    (void)container_cgroup_write_i(root, "cgroup.subtree_control", "+memory +cpu +pids");
+    (void)container_cgroup_write_i(parent, "cgroup.subtree_control", "+memory +cpu +pids");
+  }
+#endif
+  return 0;
 }
 
 int container_cgroup_remove_i(char* id) {
@@ -317,25 +423,89 @@ int container_cgroup_remove_i(char* id) {
 }
 
 int container_cgroup_join_i(char* id) {
-  (void)id;
 #if defined(__linux__)
-  return 0;
+  if (id == NULL) {
+    return -1;
+  }
+  if (container_dry_run()) {
+    return 0;
+  }
+  char path[1024];
+  container_cgroup_path_i(id, path, (int)sizeof(path));
+  char pidbuf[32];
+  snprintf(pidbuf, sizeof(pidbuf), "%d", (int)getpid());
+  return container_cgroup_write_i(path, "cgroup.procs", pidbuf);
 #else
+  (void)id;
   return -1;
 #endif
 }
 
 int container_cgroup_apply_limits_i(char* cgroup_path, char* config_json) {
-  (void)cgroup_path;
-  (void)config_json;
+  if (cgroup_path == NULL) {
+    return -1;
+  }
+#if defined(__linux__)
+  if (container_dry_run()) {
+    return 0;
+  }
+  long long memory_limit = 0;
+  if (container_cgroup_read_int_after_key(config_json, "\"memory\"", "limit", &memory_limit) == 0 &&
+      memory_limit > 0) {
+    char buf[64];
+    snprintf(buf, sizeof(buf), "%lld", memory_limit);
+    if (container_cgroup_write_i(cgroup_path, "memory.max", buf) != 0) {
+      return -1;
+    }
+  }
+  long long cpu_quota = 0;
+  long long cpu_period = 0;
+  int has_quota = container_cgroup_read_int_after_key(config_json, "\"cpu\"", "quota", &cpu_quota) == 0;
+  int has_period = container_cgroup_read_int_after_key(config_json, "\"cpu\"", "period", &cpu_period) == 0;
+  if (has_quota && has_period && cpu_period > 0) {
+    char buf[64];
+    snprintf(buf, sizeof(buf), "%lld %lld", cpu_quota, cpu_period);
+    if (container_cgroup_write_i(cgroup_path, "cpu.max", buf) != 0) {
+      return -1;
+    }
+  }
   return 0;
+#else
+  (void)config_json;
+  return -1;
+#endif
 }
 
 int container_namespace_flags_i(char* config_json) {
-  (void)config_json;
 #if defined(__linux__)
-  return 0x20000; /* CLONE_NEWPID placeholder flags */
+  int flags = 0;
+  if (config_json == NULL || config_json[0] == '\0') {
+    return CLONE_NEWPID | CLONE_NEWNS;
+  }
+  if (container_json_has_token(config_json, "\"pid\"")) {
+    flags |= CLONE_NEWPID;
+  }
+  if (container_json_has_token(config_json, "\"mount\"")) {
+    flags |= CLONE_NEWNS;
+  }
+  if (container_json_has_token(config_json, "\"network\"")) {
+    flags |= CLONE_NEWNET;
+  }
+  if (container_json_has_token(config_json, "\"uts\"")) {
+    flags |= CLONE_NEWUTS;
+  }
+  if (container_json_has_token(config_json, "\"ipc\"")) {
+    flags |= CLONE_NEWIPC;
+  }
+  if (container_json_has_token(config_json, "\"user\"")) {
+    flags |= CLONE_NEWUSER;
+  }
+  if (container_json_has_token(config_json, "\"cgroup\"")) {
+    flags |= CLONE_NEWCGROUP;
+  }
+  return flags != 0 ? flags : (CLONE_NEWPID | CLONE_NEWNS);
 #else
+  (void)config_json;
   return 0;
 #endif
 }
@@ -374,10 +544,13 @@ int container_stdout_i(char* msg) {
 }
 
 int container_unshare_i(int flags) {
-  (void)flags;
 #if defined(__linux__)
-  return 0;
+  if (container_dry_run()) {
+    return 0;
+  }
+  return unshare((int)flags) == 0 ? 0 : -1;
 #else
+  (void)flags;
   return -1;
 #endif
 }
@@ -395,20 +568,71 @@ int container_fork_child_i(void) {
 }
 
 int container_pivot_root_i(char* rootfs_path) {
+#if defined(__linux__)
+  if (rootfs_path == NULL || rootfs_path[0] == '\0') {
+    return -1;
+  }
+  if (container_dry_run()) {
+    return 0;
+  }
+  const char* put_old = ".li_pivot_old";
+  char put_old_path[4096];
+  snprintf(put_old_path, sizeof(put_old_path), "%s/%s", rootfs_path, put_old);
+  if (chdir(rootfs_path) != 0) {
+    return -1;
+  }
+  if (mount(".", ".", NULL, MS_BIND | MS_REC, NULL) != 0) {
+    return -1;
+  }
+  if (mkdir(put_old, 0755) != 0 && errno != EEXIST) {
+    return -1;
+  }
+  if (pivot_root(".", put_old) != 0) {
+    return -1;
+  }
+  if (chdir("/") != 0) {
+    return -1;
+  }
+  char detach_path[4096];
+  snprintf(detach_path, sizeof(detach_path), "/%s", put_old);
+  umount2(detach_path, MNT_DETACH);
+  rmdir(detach_path);
+  return 0;
+#else
   (void)rootfs_path;
   return -1;
+#endif
 }
 
 int container_setup_rootfs_i(char* bundle_path, char* config_json) {
-  (void)bundle_path;
-  (void)config_json;
-  return 0;
+  if (bundle_path == NULL) {
+    return -1;
+  }
+  char rootfs[1024];
+  snprintf(rootfs, sizeof(rootfs), "%s/rootfs", bundle_path);
+  if (!container_file_exists_i(rootfs)) {
+    return -1;
+  }
+  return container_pivot_root_i(rootfs);
 }
 
 int container_drop_privileges_i(int uid, int gid) {
+#if defined(__linux__)
+  if (container_dry_run()) {
+    return 0;
+  }
+  if (gid >= 0 && setgid((gid_t)gid) != 0) {
+    return -1;
+  }
+  if (uid >= 0 && setuid((uid_t)uid) != 0) {
+    return -1;
+  }
+  return 0;
+#else
   (void)uid;
   (void)gid;
-  return 0;
+  return -1;
+#endif
 }
 
 int container_exec_i(char* cwd, char* config_json) {
@@ -436,9 +660,60 @@ int container_pid_alive_i(int pid) {
 #endif
 }
 
+#if defined(__linux__)
+static int container_seccomp_install_default(void) {
+  struct sock_filter filter[] = {
+      BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(struct seccomp_data, nr)),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_read, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_write, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_close, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_fstat, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_mmap, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_mprotect, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_munmap, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_brk, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_rt_sigreturn, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_exit, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_exit_group, 0, 1),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+      BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_KILL_PROCESS),
+  };
+  struct sock_fprog prog = {
+      .len = (unsigned short)(sizeof(filter) / sizeof(filter[0])),
+      .filter = filter,
+  };
+  if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) != 0) {
+    return -1;
+  }
+  return seccomp(SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC, &prog) == 0 ? 0 : -1;
+}
+#endif
+
 int container_seccomp_apply_i(char* config_json) {
+#if defined(__linux__)
+  if (config_json == NULL || !container_json_has_token(config_json, "\"seccomp\"") ||
+      container_json_has_token(config_json, "\"seccomp\": null") ||
+      container_json_has_token(config_json, "\"seccomp\":null")) {
+    return 0;
+  }
+  if (container_dry_run()) {
+    return 0;
+  }
+  return container_seccomp_install_default();
+#else
   (void)config_json;
   return 0;
+#endif
 }
 
 int container_eprint_i(char* msg) {

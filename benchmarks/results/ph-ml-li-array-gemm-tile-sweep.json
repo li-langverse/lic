@@ -1,0 +1,21 @@
+{
+  "suite": "ph-ml-li-array-gemm-tile-sweep",
+  "tiles": [
+    {
+      "gemm_tile": 8,
+      "executed": true,
+      "cpu_sec": 0.001257,
+      "li_over_numpy": 628.5,
+      "ratio_vs_li": 0.001591,
+      "buffer_class": "dense_1024"
+    },
+    {
+      "gemm_tile": 16,
+      "executed": true,
+      "cpu_sec": 0.00125,
+      "li_over_numpy": 625.0,
+      "ratio_vs_li": 0.0016,
+      "buffer_class": "dense_1024"
+    }
+  ]
+}

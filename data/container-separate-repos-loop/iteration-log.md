@@ -10,3 +10,4 @@
 | 2026-06-10 | code_implementer | p4-lirun | phase4 OK | WP-CTN-040..042: li-container-run runtime.li + main.li, backend-aware create/start/delete/state, lirun bin |
 | 2026-06-10 | code_implementer | p5-cross-os | phase5 OK | WP-CTN-050..053: LiOS/Windows/macOS capability backends, host detect seam (is_lios/windows/darwin), container-multi-os-matrix.md |
 | 2026-06-10 | code_implementer | p6-orchestration | phase6 OK | WP-CTN-060..063: li-containerd/cli/cri scaffolds, licontainers retired to deprecated shim delegating to split packages |
+| 2026-06-10 | code_implementer | p7-publish | phase7 OK, completion OK | WP-CTN-070..074: GitLab repos li-oci/li-container/li-container-run, push-container-package-mirrors.sh, gap register + PUBLISH metadata |

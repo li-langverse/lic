@@ -5,7 +5,8 @@
 | **PKG id** | `PKG-li-oci` |
 | **Registry name** | `li-oci` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-oci |
+| **Primary repository** | https://gitlab.lilangverse.xyz/li-langverse/li-oci |
+| **GitHub mirror** | https://github.com/li-langverse/li-oci |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)

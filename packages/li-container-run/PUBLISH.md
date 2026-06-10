@@ -5,7 +5,8 @@
 | **PKG id** | `PKG-li-container-run` |
 | **Registry name** | `li-container-run` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-container-run |
+| **Primary repository** | https://gitlab.lilangverse.xyz/li-langverse/li-container-run |
+| **GitHub mirror** | https://github.com/li-langverse/li-container-run |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)

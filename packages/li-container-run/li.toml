@@ -15,6 +15,7 @@ name = "lirun"
 path = "src/main.li"
 
 [package.metadata.li]
+gitlab_repo = "li-langverse/li-container-run"
 github_repo = "li-container-run"
 import_name = "container.run"
 min_lic = "0.1.0"

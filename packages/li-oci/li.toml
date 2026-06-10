@@ -10,6 +10,7 @@ description = "OCI image spec, layout, manifest/config, pull/store (pure Li; no 
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]
+gitlab_repo = "li-langverse/li-oci"
 github_repo = "li-oci"
 import_name = "oci"
 min_lic = "0.1.0"

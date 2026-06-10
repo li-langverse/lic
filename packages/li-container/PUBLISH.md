@@ -5,7 +5,8 @@
 | **PKG id** | `PKG-li-container` |
 | **Registry name** | `li-container` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-container |
+| **Primary repository** | https://gitlab.lilangverse.xyz/li-langverse/li-container |
+| **GitHub mirror** | https://github.com/li-langverse/li-container |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)

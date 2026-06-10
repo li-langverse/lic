@@ -10,6 +10,7 @@ li-oci = { path = "../li-oci" }
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]
+gitlab_repo = "li-langverse/li-container"
 github_repo = "li-container"
 import_name = "container"
 min_lic = "0.1.0"

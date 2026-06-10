@@ -13,7 +13,7 @@
 | **Runtime** | `li-physics-runtime` | `import physics.runtime` | `physics_world_new`, `physics_step`, scene sync hooks |
 | **Scene** | `li-scene` | `import scene` | `EntityId`, `Transform3`, `Scene` graph hooks |
 | **UI** | `li-ui` | `import ui` | `Color`, `Rect`, `UiFrame`, `InputState`, `StudioShellLayout`, `PaintFrame` (layout + paint IR) |
-| Compiler std | `std/io`, `std/ui`, … | `import std.io` / facades | Prelude stubs for PH-IO-4 / UI tooling |
+| Compiler std | `std/io`, `std/csv`, `std/ui`, … | `import std.io` / facades | PH-IO-4 compile harness (`io_tag`, file/CSV stubs) + UI tooling |
 | Benches | `benchmarks/tier2_physics/` | — | 20 kernels (catalog on benchmarks `main`) |
 
 Workspace imports resolve via `import_name` in each package `li.toml` (see [import-style.md](../language/import-style.md)).
@@ -28,11 +28,10 @@ Fixed timestep: `physics_world_game_default()` → `physics_step(world, 1.0/60.0
 
 ## Next (priority)
 
-1. **PH-IO-4** — wire `std/io` + `std/csv` in compiler (CSV ingest without Python).
-2. **Import graph** — composable `import_physics_runtime.li` integrates `physics.rigid` (`var RigidBody`); extend with `physics.runtime` `physics_step` smoke; full composable object-field codegen tracked in release note `2026-05-19-rigid-var-param-composable`.
-3. **Pure-Li tier-2** — expand `three_body_pure` and `horner_pure_li` (PH-7e).
-4. **Render bridge** — `li-ui` → engine draw list; keep rendering out of physics (GAME_DEV.md).
-5. **Publish mirrors** — org repos for physics/UI packages (see lic #50).
+1. **Import graph** — composable `import_physics_runtime.li` integrates `physics.rigid` (`var RigidBody`); extend with `physics.runtime` `physics_step` smoke; full composable object-field codegen tracked in release note `2026-05-19-rigid-var-param-composable`.
+2. **Pure-Li tier-2** — expand `three_body_pure` and `horner_pure_li` (PH-7e).
+3. **Render bridge** — `li-ui` → engine draw list; keep rendering out of physics (GAME_DEV.md).
+4. **Publish mirrors** — org repos for physics/UI packages (see lic #50).
 
 ## Verification
 
@@ -41,7 +40,8 @@ cd lic
 lic check packages/li-ui/src/lib.li
 lic check packages/li-scene/src/lib.li
 lic check packages/li-physics-runtime/src/lib.li
-lic check std/io/io.li std/ui/ui.li
+lic check std/io/io.li std/csv/csv.li std/ui/ui.li
+bash scripts/ph-io-4-std-io-gate.sh
 ./scripts/check-li-def-syntax.sh packages
 ```
 

@@ -11,6 +11,8 @@
 **Depends on:** Phase 2  
 **Blocks:** Phase 4
 
+**Proof gaps (Doc-c):** [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-meta](../../verification/provability-gaps.md#g-meta)
+
 ---
 
 ## MIR instruction set (v1)
@@ -96,10 +98,8 @@ def main() -> int =
 
 ---
 
-**Proof gaps (Doc-c):** [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-meta](../../verification/provability-gaps.md#g-meta)
-
 ### Phase 3 exit gate
 
 - [x] Native binary from minimal proc
 - [x] `-O2` flag forwarded to clang in `--release` (C++: `-O3 -march=native` in `compile.cpp` when `--release`)
-- [x] Bounds check calls present in IR for dynamic index
+- [x] Bounds check calls present in IR for dynamic index — **G-bnd** partial ([refinement / release path](../../verification/provability-gaps.md#g-bnd))

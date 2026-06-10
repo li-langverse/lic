@@ -19,4 +19,4 @@
 | 2026-06-10T05:45:00Z | complete | pure-li-https-completion-gate.sh (code_implementer-1781066997188 re-verify) | OK | 2995eced |
 | 2026-06-10T06:40:00Z | complete | MR !137 reset to main — superseded by main; removed core.39241; check-httpd-tls-auto.sh OK | OK | 7d25dd2f |
 | 2026-06-10T06:50:00Z | complete | pure-li-https-completion-gate.sh (code_implementer-1781071370539) — portable port cleanup, dynamic listen ports, 5× gate green | OK | e268c36c |
-| 2026-06-10T07:00:00Z | complete | fix(ci): homelab-k8s pull_policy if-not-present — unblocks version:mr + build-and-test (code_implementer-1781073844567) | pending | — |
+| 2026-06-10T07:00:00Z | complete | fix(ci): homelab-k8s pull_policy if-not-present — unblocks version:mr + build-and-test (code_implementer-1781073844567) | OK | a85100a1 |

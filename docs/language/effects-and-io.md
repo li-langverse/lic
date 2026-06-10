@@ -29,10 +29,10 @@ A procedure that uses I/O without `raises IO` fails to compile.
 
 Low-level I/O is axiomatized in `docs/semantics/trusted.lean`. User code proves against those axioms; it does not redefine them.
 
-## `extern` procedures
+## `extern def` (trusted FFI)
 
 ```nim
-extern proc puts(s: str) -> int
+extern def puts(s: str) -> int
 
 def main() raises IO -> int
   ...
@@ -41,7 +41,7 @@ def main() raises IO -> int
   return 0
 ```
 
-Links to C symbols when building.
+Declared in `std/runtime/seam.li`; links to C symbols in the audited runtime.
 
 ## Command-line args (runtime)
 

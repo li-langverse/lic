@@ -171,6 +171,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_xfer_plan_path = resolve_runtime_c("li_xfer_plan.c");
   const std::filesystem::path rt_fl_path = resolve_runtime_c("li_fl.c");
   const std::filesystem::path rt_hetero_path = resolve_runtime_c("li_rt_hetero.c");
+  const std::filesystem::path rt_container_path = resolve_runtime_c("li_rt_container.c");
 
   MirModule rt_needs;
   mir_collect_runtime_link_needs(mir, rt_needs);
@@ -243,11 +244,6 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (std::filesystem::exists(rt_studio_demo_path)) {
     cmd << " -x c \"" << rt_studio_demo_path.string() << "\"";
   }
-  const std::filesystem::path rt_studio_aimd_path =
-      resolve_runtime_c("li_rt_studio_aimd.c");
-  if (std::filesystem::exists(rt_studio_aimd_path)) {
-    cmd << " -x c \"" << rt_studio_aimd_path.string() << "\"";
-  }
   if ((link_runtime_full || rt_needs.needs_rt_par_reduce || link_par_rt_env) &&
       std::filesystem::exists(rt_par_reduce_path)) {
     cmd << " -x c \"" << rt_par_reduce_path.string() << "\"";
@@ -280,6 +276,10 @@ bool compile_module(const Module& module, const std::string& output_path,
        rt_needs.needs_rt_exec_plan) &&
       std::filesystem::exists(rt_hetero_path)) {
     cmd << " -x c \"" << rt_hetero_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_container) &&
+      std::filesystem::exists(rt_container_path)) {
+    cmd << " -x c \"" << rt_container_path.string() << "\"";
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {

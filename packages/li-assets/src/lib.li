@@ -2,7 +2,7 @@ import scene
 
 # li-assets — WP-GD-04 glTF ingest stub (mesh stats contract; pairs with world.li asset_ref).
 
-extern proc li_rt_world_default_asset_ref_path() -> str
+extern def li_rt_world_default_asset_ref_path() -> str
   requires true
   ensures result != ""
   decreases 0

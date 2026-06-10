@@ -2,37 +2,37 @@
 
 import parallel.distributed
 
-extern proc li_fl_set_active_mask(mask: int) -> unit
+extern def li_fl_set_active_mask(mask: int) -> unit
   requires true
   ensures true
 
-extern proc li_fl_active_mask() -> int
+extern def li_fl_active_mask() -> int
   requires true
   ensures result >= 0
 
-extern proc li_fl_is_active(rank: int) -> int
+extern def li_fl_is_active(rank: int) -> int
   requires rank >= 0
   ensures result == 0 or result == 1
 
-extern proc li_fl_active_count(mask: int) -> int
+extern def li_fl_active_count(mask: int) -> int
   requires mask >= 0
   ensures result >= 0
 
-extern proc li_fl_set_device_kind(kind: int) -> unit
+extern def li_fl_set_device_kind(kind: int) -> unit
   requires kind >= 0
   requires kind <= 3
   ensures true
 
-extern proc li_fl_get_device_kind() -> int
+extern def li_fl_get_device_kind() -> int
   requires true
   ensures result >= 0
   ensures result <= 3
 
-extern proc li_fl_fedavg_masked_f64(local: float, active_mask: int) -> float
+extern def li_fl_fedavg_masked_f64(local: float, active_mask: int) -> float
   requires true
   ensures true
 
-extern proc li_fl_shrink_mask(active_mask: int, failed_mask: int) -> int
+extern def li_fl_shrink_mask(active_mask: int, failed_mask: int) -> int
   requires true
   ensures result >= 0
 

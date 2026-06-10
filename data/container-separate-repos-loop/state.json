@@ -1,0 +1,6 @@
+{
+  "phase": "p1-li-oci",
+  "started_at": "2026-06-10",
+  "branch": "feat/extern-def-container-seam",
+  "notes": "P0 gate passed: container_trusted tests, package scaffolds, li_rt_container link"
+}

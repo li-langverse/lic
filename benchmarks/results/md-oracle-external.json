@@ -1,0 +1,11 @@
+{
+  "vertical": "md_lennard_jones",
+  "algo_id": 104,
+  "algo_name": "md_oracle_external",
+  "li_checksum_drift": 0.0,
+  "lammps_energy": null,
+  "gromacs_energy": null,
+  "external_available": false,
+  "policy_ratio_max": 1.2,
+  "notes": "WP-PLAT-05 \u2014 external_binary optional; Li oracle is tier-2 spine"
+}

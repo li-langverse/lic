@@ -1012,36 +1012,19 @@ struct EmitCtx {
         return true;
       }
       case MirOp::HornerConstLoopF64: {
+        // Scalar FMA loop matching tier-1 horner_core.c (one fma per logical step).
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         llvm::Value* xv = llvm::ConstantFP::get(f64, ins.float_value);
         llvm::Value* one = llvm::ConstantFP::get(f64, 1.0);
-        constexpr std::int64_t chunk_steps = 64;
         const std::int64_t trip = ins.int_value > 0 ? ins.int_value : 0;
-        const std::int64_t chunks = trip / chunk_steps;
-        const std::int64_t rem = trip % chunk_steps;
-        double chunk_mul = 1.0;
-        double chunk_add = 0.0;
-        for (std::int64_t i = 0; i < chunk_steps; ++i) {
-          chunk_add += chunk_mul;
-          chunk_mul *= ins.float_value;
-        }
-        if (chunks > 0) {
+        if (trip > 0) {
           llvm::AllocaInst* iv = builder->CreateAlloca(i32_ty(context), nullptr, "horner_i");
-          llvm::Value* limit = llvm::ConstantInt::get(i32_ty(context), chunks);
-          llvm::Value* mulv = llvm::ConstantFP::get(f64, chunk_mul);
-          llvm::Value* addv = llvm::ConstantFP::get(f64, chunk_add);
+          llvm::Value* limit = llvm::ConstantInt::get(i32_ty(context), trip);
           emit_idx_for(iv, limit, [&](llvm::Value*) {
             llvm::Value* acc = load_float(ins.ident);
-            llvm::Value* next = emit_fma_f64(mulv, acc, addv);
+            llvm::Value* next = emit_fma_f64(xv, acc, one);
             builder->CreateStore(next, ensure_float_local(ins.ident));
           });
-        }
-        llvm::Value* acc = load_float(ins.ident);
-        for (std::int64_t i = 0; i < rem; ++i) {
-          acc = emit_fma_f64(xv, acc, one);
-        }
-        if (rem > 0) {
-          builder->CreateStore(acc, ensure_float_local(ins.ident));
         }
         return true;
       }

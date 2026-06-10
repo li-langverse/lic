@@ -34,9 +34,7 @@ def main() -> int raises IO, Alloc
     return 4
   if batch.checksum_ok != 1:
     return 5
-  var trace_checksum: float = 1.0e-6
-  var trace_drift: float = 1.0e-6
-  if li_rt_studio_aimd_batch_write_json("build/aimd-demo/out/batch-result.json", batch.steps, batch.ok, trace_checksum, trace_drift, batch.gpu_path) != 1:
+  if li_rt_studio_aimd_batch_write_json("build/aimd-demo/out/batch-result.json", batch.steps, batch.ok, batch.checksum, batch.energy_drift, batch.gpu_path) != 1:
     return 6
   if studio_aimd_final_viz_ok(batch, "build/aimd-demo/out/final-frame.ppm", 1280, 720) != 1:
     return 7

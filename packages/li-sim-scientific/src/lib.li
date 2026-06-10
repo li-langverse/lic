@@ -345,15 +345,40 @@ def sim_scientific_oracle_checksum_echem_aimd() -> float
   return diff / denom
 
 # W2 — headless batch AIMD (no 64-step interactive cap; toy kernel + DFT stub per step).
+# W7 pilot — real chem_dft_energy_kernel_hartree every N MD steps when gpu_path green.
 type AimdBatchResult = object
   public ok: int
   public checksum_ok: int
   public steps: int
   public gpu_path: int
+  public dft_stride: int
+  public dft_calls: int
   public checksum: float
   public energy_drift: float
   public final_x: float
   public final_vx: float
+
+def echem_aimd_batch_smoke_steps() -> int
+  requires true
+  ensures result == 128
+  decreases 0
+=
+  return 128
+
+def echem_aimd_batch_demo_steps() -> int
+  requires true
+  ensures result == 5000
+  decreases 0
+=
+  return 5000
+
+def echem_aimd_batch_dft_stride() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 1000
+  decreases 0
+=
+  return 50
 
 def echem_aimd_batch_steps_valid(steps: int) -> int
   requires true
@@ -371,9 +396,10 @@ def echem_aimd_batch_gpu_path_select() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
+  ensures result == chem_dft_gpu_path_available()
   decreases 0
 =
-  return 0
+  return chem_dft_gpu_path_available()
 
 def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   requires echem_aimd_batch_steps_valid(steps) == 1
@@ -381,6 +407,8 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   ensures result.ok == 1
   ensures result.checksum_ok == 1
   ensures result.gpu_path == echem_aimd_batch_gpu_path_select()
+  ensures result.dft_stride == echem_aimd_batch_dft_stride()
+  ensures result.dft_calls >= 1
   decreases steps
 =
   var out: AimdBatchResult
@@ -390,6 +418,8 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   out.checksum = 0.001
   out.energy_drift = 0.001
   out.gpu_path = echem_aimd_batch_gpu_path_select()
+  out.dft_stride = echem_aimd_batch_dft_stride()
+  out.dft_calls = 0
   out.final_x = 0.08
   out.final_vx = 0.03
   var x: float = out.final_x
@@ -399,8 +429,13 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   var target_ke: float = 0.5 * vx * vx
   var e0: float = echem_aimd_total_energy(x, vx)
   var md_step: int = 0
+  var stride: int = out.dft_stride
+  if stride < 1:
+    stride = 1
   while md_step < steps
-    echem_aimd_dft_energy_per_step()
+    if md_step % stride == 0:
+      echem_aimd_dft_energy_per_step()
+      out.dft_calls = out.dft_calls + 1
     var ax: float = -k * x
     vx = vx + 0.5 * dt * ax
     x = x + dt * vx
@@ -425,9 +460,13 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   if diff < 0.0:
     diff = -diff
   out.energy_drift = diff / denom
-  out.checksum = out.energy_drift + 1.0e-8
-  if out.checksum <= 0.0:
-    out.checksum = 0.001
+  out.checksum = out.energy_drift
+  if out.checksum < 1.0e-6:
+    out.checksum = 1.0e-6
+  if out.dft_calls > 0:
+    out.checksum = out.checksum + 1.0e-6
+  if out.gpu_path == 1:
+    out.checksum = out.checksum + 1.0e-4
   return out
 
 # WP-ECHEM-12 — grand-canonical SHE AIMD: constant-potential MD + charge neutrality feedback.

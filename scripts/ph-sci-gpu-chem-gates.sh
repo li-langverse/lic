@@ -16,6 +16,11 @@ echo "==> chem DFT lib compile (li-chem)"
 echo "==> science_gpu suite (includes PH-SCI-GPU-16/17/18/19 echem)"
 bash scripts/check-science-gpu-gate.sh
 
+if [[ "${PH_SCI_GPU_PILOT_SUBSET:-0}" == "1" ]]; then
+  echo "ph-sci-gpu-chem-gates OK (pilot subset — science_gpu only)"
+  exit 0
+fi
+
 echo "==> chem DFT competitive bench (PySCF oracle; ORCA external-only)"
 bash scripts/ph-sci-chem-dft-competitive-gates.sh
 

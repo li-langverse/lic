@@ -1,0 +1,27 @@
+[package]
+name = "li-container-cli"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Container CLI scaffold (thin wrapper over lirun / container.run)"
+
+[dependencies]
+li-container-run = { path = "../li-container-run" }
+li-container = { path = "../li-container" }
+# registry = "1.0.0"             # lip 8d+
+
+[[bin]]
+name = "licontainer"
+path = "src/main.li"
+
+[package.metadata.li]
+github_repo = "li-container-cli"
+import_name = "container.cli"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-container-cli"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-container-cli"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-container-cli/"
+changelog = "https://github.com/li-langverse/li-container-cli/blob/main/CHANGELOG.md"

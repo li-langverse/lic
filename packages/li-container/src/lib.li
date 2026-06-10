@@ -1,0 +1,47 @@
+# li-container public surface — bundle, state, runerr, backend selection (import container).
+
+import backend.select
+import bundle
+import runerr
+import seam
+import state
+
+def li_container_version() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def container_backend_detect() raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return container_backend_detect_host(
+    container_is_lios_i(),
+    container_is_linux_i(),
+    container_is_windows_i(),
+    container_is_darwin_i())
+
+def li_container_selftest() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: int = container_runerr_selftest()
+  if r != 0:
+    return r
+  r = container_bundle_selftest()
+  if r != 0:
+    return r + 10
+  r = container_state_selftest()
+  if r != 0:
+    return r + 20
+  r = container_backend_select_selftest()
+  if r != 0:
+    return r + 30
+  var detected: int = container_backend_detect()
+  if detected != container_backend_id_linux() and detected != container_backend_id_unknown():
+    return 40
+  return 0

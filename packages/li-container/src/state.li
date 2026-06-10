@@ -1,0 +1,81 @@
+# WP-CTN-021 — container state persistence (seam FFI).
+
+import seam
+
+def container_state_status_created_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_state_status_running_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def container_state_status_stopped_tag() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def container_state_oci_version_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_state_write(id: var ptr, oci_version: var ptr, status: var ptr, pid: int, has_pid: int, bundle: var ptr, exit_code: int, has_exit: int) raises IO -> int
+  requires true
+  ensures result >= -1
+  decreases 0
+=
+  return container_state_write_i(id, oci_version, status, pid, has_pid, bundle, exit_code, has_exit)
+
+def container_state_read(id: var ptr, json_out: var ptr, cap: int) raises IO -> int
+  requires 0 < cap
+  ensures result >= -1
+  decreases 0
+=
+  return container_state_read_i(id, json_out, cap)
+
+def container_state_delete(id: var ptr) raises IO -> int
+  requires true
+  ensures result >= -1
+  decreases 0
+=
+  return container_state_delete_i(id)
+
+def container_state_pid_from_json(state_json: var ptr) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return container_state_pid_value_i(state_json)
+
+def container_state_validate_tags() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if container_state_status_created_tag() != 1:
+    return 1
+  if container_state_status_running_tag() != 2:
+    return 2
+  if container_state_status_stopped_tag() != 3:
+    return 3
+  if container_state_oci_version_tag() != 1:
+    return 4
+  return 0
+
+def container_state_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return container_state_validate_tags()

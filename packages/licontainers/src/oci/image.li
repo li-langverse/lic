@@ -1,4 +1,5 @@
-# OCI image pull (Wave 2 stub).
+# Deprecated shim — use `oci.image` from li-oci.
+
 def oci_image_pull_tag() -> int
   requires true
   ensures result == 1

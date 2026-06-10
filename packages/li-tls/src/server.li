@@ -2,35 +2,35 @@
 
 import alpn
 
-extern proc httpd_pure_tls_slot_active_i(slot: var int) -> int
+extern def httpd_pure_tls_slot_active_i(slot: var int) -> int
   requires 0 <= slot
   ensures true
   decreases 0
 
-extern proc httpd_pure_tls_attach_i(slot: var int, conn: var int) -> int
+extern def httpd_pure_tls_attach_i(slot: var int, conn: var int) -> int
   requires 0 <= slot
   requires conn >= 0
   ensures true
   decreases 0
 
-extern proc httpd_pure_tls_poll_i(slot: var int) -> int
+extern def httpd_pure_tls_poll_i(slot: var int) -> int
   requires 0 <= slot
   ensures true
   decreases 0
 
-extern proc httpd_pure_tls_read_app_i(slot: var int, max_bytes: int) -> int
+extern def httpd_pure_tls_read_app_i(slot: var int, max_bytes: int) -> int
   requires 0 <= slot
   requires max_bytes > 0
   ensures true
   decreases 0
 
-extern proc httpd_pure_tls_write_app_i(slot: var int, len: int) -> int
+extern def httpd_pure_tls_write_app_i(slot: var int, len: int) -> int
   requires 0 <= slot
   requires len >= 0
   ensures true
   decreases 0
 
-extern proc httpd_pure_tls_alpn_i(slot: var int) -> int
+extern def httpd_pure_tls_alpn_i(slot: var int) -> int
   requires 0 <= slot
   ensures true
   decreases 0

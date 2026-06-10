@@ -1,0 +1,23 @@
+# Trusted Container seam: extern calls require raises IO in user signatures.
+import std.runtime.seam
+
+def ping_runtime_tag() raises IO -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return container_runtime_tag_i()
+
+def ping_mkdir(path: var ptr) raises IO -> int
+  requires true
+  ensures result >= -1
+  decreases 0
+=
+  return container_mkdir_p_i(path)
+
+def main() raises IO -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return ping_runtime_tag()

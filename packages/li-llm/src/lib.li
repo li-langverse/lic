@@ -3,97 +3,97 @@ import ml
 import array
 
 # li-llm (PH-LLM): native LLM inference - tokenizer, loader, forward, generate.
-extern proc li_rt_lig_matmul_ready() -> int
+extern def li_rt_lig_matmul_ready() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_path_exact(path: str, want: str) -> int raises IO
+extern def li_rt_path_exact(path: str, want: str) -> int raises IO
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_llm_weights_file_size(path: str) -> int raises IO
+extern def li_rt_llm_weights_file_size(path: str) -> int raises IO
   requires true
   ensures result >= -1
   decreases 0
 
-extern proc li_rt_llm_weights_file_byte_at(path: str, off: int) -> int raises IO
+extern def li_rt_llm_weights_file_byte_at(path: str, off: int) -> int raises IO
   requires off >= 0
   ensures result >= -1
   decreases off
 
-extern proc li_rt_llm_safetensors_probe_path(path: str) -> int raises IO
+extern def li_rt_llm_safetensors_probe_path(path: str) -> int raises IO
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_llm_last_safetensors_header_len() -> int
+extern def li_rt_llm_last_safetensors_header_len() -> int
   requires true
   ensures result >= 0
   decreases 0
 
-extern proc li_rt_llm_last_safetensors_tensor_count() -> int
+extern def li_rt_llm_last_safetensors_tensor_count() -> int
   requires true
   ensures result >= 0
   decreases 0
 
-extern proc li_rt_llm_last_safetensors_data_offset() -> int
+extern def li_rt_llm_last_safetensors_data_offset() -> int
   requires true
   ensures result >= 0
   decreases 0
 
-extern proc li_rt_llm_last_safetensors_first_dtype() -> int
+extern def li_rt_llm_last_safetensors_first_dtype() -> int
   requires true
   ensures result >= 0
   decreases 0
 
-extern proc li_rt_llm_last_safetensors_first_shape0() -> int
+extern def li_rt_llm_last_safetensors_first_shape0() -> int
   requires true
   ensures result >= 0
   decreases 0
 
-extern proc li_rt_llm_last_safetensors_first_shape1() -> int
+extern def li_rt_llm_last_safetensors_first_shape1() -> int
   requires true
   ensures result >= 0
   decreases 0
 
-extern proc li_rt_llm_gguf_probe_path(path: str) -> int raises IO
+extern def li_rt_llm_gguf_probe_path(path: str) -> int raises IO
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_llm_last_gguf_version() -> int
+extern def li_rt_llm_last_gguf_version() -> int
   requires true
   ensures result >= 0
   decreases 0
 
-extern proc li_rt_llm_last_gguf_tensor_count() -> int
+extern def li_rt_llm_last_gguf_tensor_count() -> int
   requires true
   ensures result >= 0
   decreases 0
 
-extern proc li_rt_llm_import_model_path_default() -> str raises IO, Alloc
+extern def li_rt_llm_import_model_path_default() -> str raises IO, Alloc
   requires true
   ensures result != ""
   decreases 0
 
-extern proc li_rt_llm_legacy_safetensors_fixture_path() -> str raises IO, Alloc
+extern def li_rt_llm_legacy_safetensors_fixture_path() -> str raises IO, Alloc
   requires true
   ensures result != ""
   decreases 0
 
-extern proc li_rt_llm_ph_ml_gguf_fixture_path() -> str raises IO, Alloc
+extern def li_rt_llm_ph_ml_gguf_fixture_path() -> str raises IO, Alloc
   requires true
   ensures result != ""
   decreases 0
 
 
-extern proc li_rt_int_as_float(v: int) -> float
+extern def li_rt_int_as_float(v: int) -> float
   requires true
   ensures result >= 0.0
   decreases 0
@@ -1243,13 +1243,13 @@ def llm_streaming_sse_prep_ok() -> int
     return 0
   return 1
 
-extern proc li_rt_inference_native_weights_ready() -> int
+extern def li_rt_inference_native_weights_ready() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_inference_native_decode_steps() -> int
+extern def li_rt_inference_native_decode_steps() -> int
   requires true
   ensures result >= 0
   decreases 0

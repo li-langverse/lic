@@ -2,13 +2,13 @@
 
 import sim
 
-extern proc li_rt_sin(x: float) raises IO -> float
+extern def li_rt_sin(x: float) raises IO -> float
   requires true
   ensures result >= -1.0
   ensures result <= 1.0
   decreases 0
 
-extern proc li_rt_cos(x: float) raises IO -> float
+extern def li_rt_cos(x: float) raises IO -> float
   requires true
   ensures result >= -1.0
   ensures result <= 1.0
@@ -123,38 +123,3 @@ def run_automotive_smoke() raises IO -> int
   if pose.heading_rad <= 0.0:
     return 3
   return 0
-
-# WP-AUTO-02 — lane map tile + odometry checksum witness.
-type AutomotiveMapTile = object
-  public tile_x: int
-  public tile_y: int
-  public lane_center_offset_m: float
-
-def automotive_map_tile_at(pose: AutomotivePose, tile_size_m: float) -> AutomotiveMapTile
-  requires tile_size_m > 0.0
-  ensures result.tile_x >= 0
-  decreases 0
-=
-  var tile: AutomotiveMapTile
-  tile.tile_x = 0
-  tile.tile_y = 0
-  tile.lane_center_offset_m = pose.y_m - tile_size_m * 0.5
-  if pose.x_m >= tile_size_m:
-    tile.tile_x = 1
-  if pose.y_m >= tile_size_m:
-    tile.tile_y = 1
-    tile.lane_center_offset_m = pose.y_m - tile_size_m * 1.5
-  return tile
-
-def sim_automotive_odom_checksum(pose: AutomotivePose, tile: AutomotiveMapTile) -> float
-  requires true
-  ensures result >= 0.0
-  decreases 0
-=
-  var tx: float = 0.0
-  if tile.tile_x == 1:
-    tx = 1.0
-  var ty: float = 0.0
-  if tile.tile_y == 1:
-    ty = 1.0
-  return pose.x_m + pose.y_m + pose.heading_rad + tile.lane_center_offset_m + tx + ty

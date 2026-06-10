@@ -1,21 +1,21 @@
-import oci.spec
-import oci.image
-import cri.v1
+# WP-CTN-063 — deprecated shim; delegates to split container packages.
+
+import container.backend.linux
+import container.run
+import cri
+import oci
 import cri.serve
-import runtime.linux_backend
-import runtime.create
-import runtime.start
 import runtime.cri_socket
 import runtime.remote
 
 def licontainers_version() -> int
   requires true
-  ensures result == 0
+  ensures result == 1
   decreases 0
 =
-  return 0
+  return 1
 
-def licontainers_cri_lifecycle_selftest() -> int
+def licontainers_cri_lifecycle_selftest() raises IO -> int
   requires true
   ensures result == 0
   decreases 0
@@ -26,13 +26,13 @@ def licontainers_cri_lifecycle_selftest() -> int
     return 2
   if oci_image_pull_tag() != 1:
     return 3
-  if runtime_create_container_tag() != 2:
+  if lirun_create_tag() != 2:
     return 4
-  if runtime_start_container_tag() != 3:
+  if lirun_start_tag() != 3:
     return 5
-  if linux_backend_namespaces_tag() != 1:
+  if container_linux_namespaces_tag() != 1:
     return 6
-  if linux_backend_cgroups_tag() != 2:
+  if container_linux_cgroups_tag() != 2:
     return 7
   return 0
 

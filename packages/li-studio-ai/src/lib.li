@@ -4,18 +4,18 @@ import studio
 # li-studio-ai — agent orchestration for Li Studio (PH-AGENT / WP-AG-02..05).
 # WP-AG-04 apply_patch loop wired to in-process lic_check MCP dispatch.
 
-extern proc li_rt_studio_ai_patch_kind(patch: str) raises IO, Alloc -> int
+extern def li_rt_studio_ai_patch_kind(patch: str) raises IO, Alloc -> int
   requires true
   ensures result >= -1
   ensures result <= 2
   decreases 0
 
-extern proc li_rt_str_len(s: str) raises IO, Alloc -> int
+extern def li_rt_str_len(s: str) raises IO, Alloc -> int
   requires true
   ensures result >= 0
   decreases 0
 
-extern proc li_rt_str_eq(a: str, b: str) -> int
+extern def li_rt_str_eq(a: str, b: str) -> int
   requires true
   ensures result >= 0
   ensures result <= 1

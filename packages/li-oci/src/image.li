@@ -1,0 +1,100 @@
+# WP-CTN-013 — OCI image pull/store (Net only; no Container effect).
+
+import layout
+import manifest
+import spec
+
+def oci_image_pull_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def oci_image_store_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def oci_image_pull_phase_resolve() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def oci_image_pull_phase_fetch() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def oci_image_pull_phase_unpack() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def oci_image_store_phase_pack() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def oci_image_store_phase_push() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+# Net-only lifecycle hooks (Wave 2 stubs; real I/O in later waves).
+def oci_image_pull_ref(ref_tag: int) raises Net -> int
+  requires ref_tag >= 0
+  ensures result == 0
+  decreases 0
+=
+  if ref_tag != oci_image_pull_tag():
+    return 1
+  if oci_image_pull_phase_resolve() != 1:
+    return 2
+  if oci_image_pull_phase_fetch() != 2:
+    return 3
+  if oci_image_pull_phase_unpack() != 3:
+    return 4
+  return 0
+
+def oci_image_store_digest(digest_tag: int) raises Net -> int
+  requires digest_tag >= 0
+  ensures result == 0
+  decreases 0
+=
+  if digest_tag != oci_image_store_tag():
+    return 1
+  if oci_image_store_phase_pack() != 1:
+    return 2
+  if oci_image_store_phase_push() != 2:
+    return 3
+  return 0
+
+def oci_image_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if oci_spec_version() != 1:
+    return 1
+  if oci_layout_version() != 1:
+    return 2
+  if oci_manifest_schema_version() != 2:
+    return 3
+  if oci_image_pull_tag() != 1:
+    return 4
+  if oci_image_store_tag() != 2:
+    return 5
+  return 0

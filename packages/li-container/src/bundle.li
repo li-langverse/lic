@@ -1,0 +1,49 @@
+# WP-CTN-020 — OCI bundle path helpers (seam FFI; no syscall code here).
+
+import seam
+
+def container_bundle_config_name_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_bundle_rootfs_name_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def container_bundle_read_config(bundle_path: var ptr, buf: var ptr, cap: int) raises IO -> int
+  requires 0 < cap
+  ensures result >= -1
+  decreases 0
+=
+  return container_bundle_read_config_i(bundle_path, buf, cap)
+
+def container_bundle_rootfs_exists(bundle_path: var ptr, config_json: var ptr) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return container_bundle_rootfs_exists_i(bundle_path, config_json)
+
+def container_bundle_validate_tags() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if container_bundle_config_name_tag() != 1:
+    return 1
+  if container_bundle_rootfs_name_tag() != 2:
+    return 2
+  return 0
+
+def container_bundle_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return container_bundle_validate_tags()

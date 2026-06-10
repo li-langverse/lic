@@ -52,6 +52,9 @@ void note_one(std::string_view callee, MirModule& mir) {
   if (starts_with(callee, "li_rt_hetero_")) {
     mir.needs_rt_hetero = true;
   }
+  if (starts_with(callee, "container_")) {
+    mir.needs_rt_container = true;
+  }
 }
 
 }  // namespace

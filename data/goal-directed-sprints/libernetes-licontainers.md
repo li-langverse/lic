@@ -22,8 +22,8 @@ Build **licontainers** OCI/CRI runtime. **Waves 0–3 DONE.** Active: **Wave 4**
 | **LB-C8** | `src/cri/serve.li` | **DONE** | `check-libernetes-licontainers-wave3-gate.sh` |
 | **LB-C9** | `src/runtime/cri_socket.li` | **DONE** | same wave3 gate |
 | **LB-C10** | `li-tests/integration/cri_socket_smoke.li` | **DONE** | same wave3 gate |
-| **LB-C11** | `src/runtime/remote.li` | pending | `check-libernetes-licontainers-wave4-gate.sh` |
-| **LB-C12** | `li-tests/integration/remote_cri.li` | pending | same wave4 gate |
+| **LB-C11** | `src/runtime/remote.li` | **DONE** | `check-libernetes-licontainers-wave4-gate.sh` |
+| **LB-C12** | `li-tests/integration/remote_cri.li` | **DONE** | same wave4 gate |
 
 ## Later waves (unwired until Wave 4 passes)
 

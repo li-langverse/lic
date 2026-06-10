@@ -6,6 +6,7 @@ import runtime.linux_backend
 import runtime.create
 import runtime.start
 import runtime.cri_socket
+import runtime.remote
 
 def licontainers_version() -> int
   requires true
@@ -44,4 +45,17 @@ def licontainers_cri_socket_selftest() -> int
     return 1
   if runtime_cri_socket_tag() != 4:
     return 2
+  return 0
+
+def licontainers_remote_cri_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if runtime_remote_cri_forward_stub() != 0:
+    return 1
+  if runtime_remote_cri_tag() != 5:
+    return 2
+  if runtime_cri_socket_tag() >= runtime_remote_cri_tag():
+    return 3
   return 0

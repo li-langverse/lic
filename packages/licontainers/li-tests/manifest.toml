@@ -17,3 +17,9 @@ suite = "integration"
 file = "integration/cri_socket_smoke.li"
 outcome = "verify_ok"
 note = "T-PKG-licontainers-cri-socket-smoke"
+
+[[tests]]
+suite = "integration"
+file = "integration/remote_cri.li"
+outcome = "verify_ok"
+note = "T-PKG-licontainers-remote-cri"

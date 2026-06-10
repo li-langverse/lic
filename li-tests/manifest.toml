@@ -1648,6 +1648,18 @@ note = "PH-SCI-GPU-02 @gpu MD/heat oracle"
 
 [[tests]]
 suite = "science_gpu"
+file = "packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li"
+outcome = "compile_open_ok"
+note = "WP-SCI-03 run_algo_registry MD/heat/CFD/FEA/QM tier-2 dispatch"
+
+[[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-scientific/li-tests/smoke/md_oracle_li_checksum.li"
+outcome = "compile_open_ok"
+note = "WP-PLAT-05 Li MD tier-2 oracle link gate (checksum via Python mirror in bench)"
+
+[[tests]]
+suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/physics_gpu_md_mini_step.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-03 @gpu MD mini step"

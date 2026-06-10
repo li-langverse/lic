@@ -118,3 +118,4 @@
 | 2026-06-05T12:00:00Z | code_implementer | wp-cq-01..08 | phase12-completion-gate exit 0 | Phase12 catalog quality: 27→≤5 divergent; domain axioms axiomatic; physics placeholders discrepancy; stdlib sorry honesty; library.json rebuild |
 | 2026-06-06T08:00:00Z | code_implementer | wp-t10-01..10 | phase13-completion-gate | Phase13 ten-of-ten: site sync lic main; stale PRs closed; proof-library rebuild; gap audit honest; axiom+Erdős+CI gates |
 | 2026-06-10T08:00:00Z | code_implementer | std_gap | MR !142 rebase | GitLab MR !142 dirty (stale head 7d25dd2); org-fix-dirty rebase to main; std.io PH-IO-4 present (`std/io/io.li`, prelude seal); branch push for clean merge |
+| 2026-06-10T08:15:00Z | code_implementer | std_gap | MR !142 CI fix | homelab-k8s `pull_policy: if-not-present` on default image; `check-version.sh --pr` exit 0; PH-IO-4 harness verified on main |

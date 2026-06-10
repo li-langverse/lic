@@ -731,6 +731,95 @@ extern proc httpd_tick_sse_stream_idle_i(epfd: var int) -> int
   ensures true
   decreases 0
 
+extern proc httpd_use_native_proxy_relay_i() -> int
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+
+extern proc httpd_max_conn_i() -> int
+  requires true
+  ensures result > 0
+  decreases 0
+
+extern proc httpd_native_proxy_get_rbuf_pending_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures 0 <= result
+  decreases 0
+
+extern proc httpd_native_proxy_get_tls_defer_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures 0 <= result
+  decreases 0
+
+extern proc httpd_native_proxy_get_tls_wbio_pending_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures 0 <= result
+  decreases 0
+
+extern proc httpd_native_proxy_get_tls_ssl_pending_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures 0 <= result
+  decreases 0
+
+extern proc httpd_native_proxy_get_cl_body_active_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures result == 0 or result == 1
+  decreases 0
+
+extern proc httpd_native_proxy_slot_needs_work_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures result == 0 or result == 1
+  decreases 0
+
+extern proc httpd_native_proxy_relay_complete_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures result == 0 or result == 1
+  decreases 0
+
+extern proc httpd_native_proxy_hdr_flush_resume_i(epfd: var int, slot: var int) -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_native_proxy_drain_client_i(epfd: var int, slot: var int) -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_native_proxy_tls_defer_flush_i(epfd: var int, slot: var int) -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_native_proxy_flush_client_out_i(epfd: var int, slot: var int) -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_native_proxy_pump_budget_reset_i(slot: var int) -> unit
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_native_proxy_fair_cursor_i() -> int
+  requires true
+  ensures 0 <= result
+  decreases 0
+
+extern proc httpd_native_proxy_fair_slot_i(start: int, n: int, pass_idx: int) -> int
+  requires 0 <= n
+  ensures true
+  decreases n
+
+extern proc httpd_native_proxy_reconcile_i(epfd: var int) -> unit
+  requires epfd >= 0
+  ensures true
+  decreases 0
+
 extern proc httpd_proxy_fair_relay_round_i(epfd: var int) -> int
   requires epfd >= 0
   ensures true

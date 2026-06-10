@@ -128,6 +128,10 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
         lines.append(f"stream_max_duration_sec={parse_duration(limits['stream_max_duration'], 'limits.stream_max_duration')}")
     if limits.get("concurrent_streams") is not None:
         lines.append(f"concurrent_streams={int(limits['concurrent_streams'])}")
+    if limits.get("use_native_proxy_relay") is not None:
+        v = limits["use_native_proxy_relay"]
+        on = v is True or (isinstance(v, str) and v.lower() in ("1", "true", "yes", "on"))
+        lines.append(f"use_native_proxy_relay={'1' if on else '0'}")
     if limits.get("max_routes") is not None:
         n = int(limits["max_routes"])
         if n < 0:

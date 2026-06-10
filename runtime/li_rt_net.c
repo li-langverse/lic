@@ -4714,9 +4714,6 @@ static void httpd_proxy_tls_cl_defer_flush(int epfd, int32_t slot);
 
 static void httpd_proxy_relay_cl_account(httpd_slot_t* s, int32_t slot, size_t consumed) {
   size_t dec;
-  if (httpd_use_native_proxy_relay_i()) {
-    return;
-  }
   if (s->proxy_resp_body_mode != PROXY_RESP_BODY_CL || consumed == 0 || !s->proxy_cl_body_active) {
     return;
   }
@@ -7446,6 +7443,22 @@ int32_t httpd_native_proxy_drain_client_i(int32_t epfd, int32_t slot) {
     return 0;
   }
   httpd_proxy_epoll_out_drain((int)epfd, slot);
+  return g_slots[slot].proxy_active ? 0 : -1;
+}
+
+int32_t httpd_native_proxy_tls_defer_flush_i(int32_t epfd, int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || !g_slots[slot].proxy_active) {
+    return 0;
+  }
+  httpd_proxy_tls_cl_defer_flush((int)epfd, slot);
+  return g_slots[slot].proxy_active ? 0 : -1;
+}
+
+int32_t httpd_native_proxy_flush_client_out_i(int32_t epfd, int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || !g_slots[slot].proxy_active) {
+    return 0;
+  }
+  httpd_proxy_flush_client_out((int)epfd, slot);
   return g_slots[slot].proxy_active ? 0 : -1;
 }
 

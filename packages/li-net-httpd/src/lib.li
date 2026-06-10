@@ -1,6 +1,7 @@
 import net
 import std.runtime.seam
 import tls
+import proxy_relay_native
 
 def hdr_end_at(buf: var ptr, start: var int, limit: var int) raises IO -> int
   requires 0 <= start
@@ -497,6 +498,129 @@ def proxy_parse_resp_cl(hdr: var ptr, hdr_len: int) raises IO -> int
     i = i + 1
   return -1
 
+
+import proxy_relay_native
+
+def proxy_relay_native_selftest() -> int
+  requires true
+  ensures -30 <= result
+  ensures result <= 0
+  decreases 0
+=
+  return relay_native_oracle_selftest()
+
+def proxy_li_native_pending(slot: var int) raises IO -> int
+  requires 0 <= slot
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  var rbuf: int = httpd_native_proxy_get_rbuf_pending_i(slot)
+  var defer: int = httpd_native_proxy_get_tls_defer_i(slot)
+  var wbio: int = httpd_native_proxy_get_tls_wbio_pending_i(slot)
+  var ssl: int = httpd_native_proxy_get_tls_ssl_pending_i(slot)
+  return relay_pending_client(rbuf, defer, wbio, ssl)
+
+def proxy_li_sync_body_left(slot: var int, consumed: int) raises IO -> unit
+  requires 0 <= slot
+  requires 0 <= consumed
+  ensures true
+  decreases consumed
+=
+  var left: int = httpd_li_proxy_get_resp_body_left_i(slot)
+  var cl_active: int = httpd_native_proxy_get_cl_body_active_i(slot)
+  left = relay_account_body(left, consumed, cl_active)
+  httpd_li_proxy_set_resp_body_left_i(slot, left)
+
+def proxy_li_upstream_blocked(slot: var int) raises IO -> int
+  requires 0 <= slot
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  var defer: int = httpd_native_proxy_get_tls_defer_i(slot)
+  var rbuf: int = httpd_native_proxy_get_rbuf_pending_i(slot)
+  var wbio: int = httpd_native_proxy_get_tls_wbio_pending_i(slot)
+  var ssl: int = httpd_native_proxy_get_tls_ssl_pending_i(slot)
+  var body_left: int = httpd_li_proxy_get_resp_body_left_i(slot)
+  return relay_upstream_blocked(defer, rbuf, wbio, ssl, body_left)
+
+def proxy_li_try_finish(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures -1 <= result
+  ensures result <= 1
+  decreases 0
+=
+  if httpd_li_proxy_active_i(slot) == 0:
+    return -1
+  var body_left: int = httpd_li_proxy_get_resp_body_left_i(slot)
+  var defer: int = httpd_native_proxy_get_tls_defer_i(slot)
+  var rbuf: int = httpd_native_proxy_get_rbuf_pending_i(slot)
+  var wbio: int = httpd_native_proxy_get_tls_wbio_pending_i(slot)
+  var ssl: int = httpd_native_proxy_get_tls_ssl_pending_i(slot)
+  var parsing: int = httpd_li_proxy_get_resp_parsing_i(slot)
+  var cl_active: int = httpd_native_proxy_get_cl_body_active_i(slot)
+  if relay_finish_ready(body_left, defer, rbuf, wbio, ssl, parsing, cl_active) != 1:
+    return 0
+  if httpd_native_proxy_relay_complete_i(slot) != 1:
+    return 0
+  httpd_li_proxy_finish_ok_i(epfd, slot)
+  return 1
+
+def proxy_li_service_slot(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+=
+  if httpd_native_proxy_slot_needs_work_i(slot) != 1:
+    return 0
+  httpd_native_proxy_pump_budget_reset_i(slot)
+  var tf: int = httpd_native_proxy_tls_defer_flush_i(epfd, slot)
+  if httpd_li_proxy_active_i(slot) == 0:
+    return tf
+  var fo: int = httpd_native_proxy_flush_client_out_i(epfd, slot)
+  if httpd_li_proxy_active_i(slot) == 0:
+    return fo
+  var dr: int = httpd_native_proxy_drain_client_i(epfd, slot)
+  if httpd_li_proxy_active_i(slot) == 0:
+    return dr
+  var hf: int = httpd_native_proxy_hdr_flush_resume_i(epfd, slot)
+  if hf < 0:
+    return proxy_li_finish_err(epfd, slot)
+  if httpd_li_proxy_active_i(slot) == 0:
+    return 0
+  if proxy_li_native_pending(slot) == 1:
+    return 0
+  if proxy_li_upstream_blocked(slot) == 1:
+    return 0
+  var fin: int = proxy_li_try_finish(epfd, slot)
+  if fin == 1:
+    return 0
+  return 0
+
+def proxy_native_fair_relay_round(epfd: var int) raises Net, Alloc, IO -> int
+  requires epfd >= 0
+  ensures true
+  decreases 0
+=
+  if httpd_use_native_proxy_relay_i() != 1:
+    return proxy_native_fair_relay_round(epfd)
+  httpd_native_proxy_reconcile_i(epfd)
+  var max_conn: int = httpd_max_conn_i()
+  var start: int = httpd_native_proxy_fair_cursor_i()
+  var pass_idx: int = 0
+  while pass_idx < 2:
+    var n: int = 0
+    while n < max_conn:
+      var slot: int = httpd_native_proxy_fair_slot_i(start, n, pass_idx)
+      if slot >= 0:
+        if httpd_native_proxy_slot_needs_work_i(slot) == 1:
+          proxy_li_service_slot(epfd, slot)
+      n = n + 1
+    pass_idx = pass_idx + 1
+  return 0
+
+
 def proxy_li_finish_err(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
   requires epfd >= 0
   ensures true
@@ -513,15 +637,25 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
   var up: int = httpd_li_proxy_up_fd_i(slot)
   var conn: int = httpd_slot_conn_i(slot)
   var left: int = httpd_li_proxy_get_resp_body_left_i(slot)
+  var native: int = httpd_use_native_proxy_relay_i()
   var chunk: ptr = net_buf_alloc(8192)
   while left > 0:
+    if native == 1:
+      if proxy_li_upstream_blocked(slot) == 1:
+        net_buf_free(chunk)
+        return 0
     var max_sp: int = left
     if max_sp > 8192:
       max_sp = 8192
+    if native == 1:
+      max_sp = relay_cl_take(max_sp, left)
     var sp: int = httpd_proxy_splice_cl_i(up, conn, max_sp)
     if sp > 0:
-      left = left - sp
-      httpd_li_proxy_set_resp_body_left_i(slot, left)
+      if native == 1:
+        proxy_li_sync_body_left(slot, sp)
+      if native != 1:
+        left = left - sp
+        httpd_li_proxy_set_resp_body_left_i(slot, left)
     if sp == 0:
       if httpd_li_proxy_relay_pending_i(slot) == 1:
         net_buf_free(chunk)
@@ -542,8 +676,11 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
         net_buf_free(chunk)
         return 0
       var take: int = r
-      if take > left:
-        take = left
+      if native == 1:
+        take = relay_cl_take(r, left)
+      if native != 1:
+        if take > left:
+          take = left
       var fwd: int = httpd_li_proxy_forward_bytes_i(epfd, slot, chunk, take)
       if fwd < 0:
         net_buf_free(chunk)
@@ -554,6 +691,11 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
       left = httpd_li_proxy_get_resp_body_left_i(slot)
   net_buf_free(chunk)
   if httpd_li_proxy_relay_pending_i(slot) == 1:
+    return 0
+  if native == 1:
+    var fin: int = proxy_li_try_finish(epfd, slot)
+    if fin == 1:
+      return 0
     return 0
   httpd_li_proxy_finish_ok_i(epfd, slot)
   return 0
@@ -1002,12 +1144,12 @@ def proxy_dispatch_one(epfd: var int, listen_tls: var int, listen_http: var int,
   if listen_http >= 0 and lo == listen_http:
     proxy_accept_batch(epfd, listen_http, 0)
     return 0
-  if net_epoll_hangup(net_events_loaded_revents_i()) == 1:
-    return proxy_dispatch_hangup_loaded(epfd)
   if proxy_epoll_tag_is_up(net_events_loaded_hi_i()) == 1:
     return proxy_dispatch_up_loaded(epfd, net_events_loaded_lo_i(), net_events_loaded_revents_i())
   if proxy_epoll_tag_is_client(net_events_loaded_hi_i()) == 1:
     return proxy_dispatch_client_loaded(epfd, net_events_loaded_lo_i(), net_events_loaded_revents_i())
+  if net_epoll_hangup(net_events_loaded_revents_i()) == 1:
+    return proxy_dispatch_hangup_loaded(epfd)
   return 0
 
 def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Alloc, IO -> int
@@ -1050,7 +1192,7 @@ def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Al
     var n: int = epoll_wait_tagged_timeout_ms_i(epfd, evbuf, 256, wait_ms)
     if n <= 0:
       running = 1
-    httpd_proxy_fair_relay_round_i(epfd)
+    proxy_native_fair_relay_round(epfd)
     if n > 0:
       var i: int = 0
       while i < n:
@@ -1062,7 +1204,7 @@ def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Al
           drain_guard = 0
         if drain_guard > 0:
           drain_guard = drain_guard - 1
-          httpd_proxy_fair_relay_round_i(epfd)
+          proxy_native_fair_relay_round(epfd)
           var n2: int = epoll_wait_tagged_spin_i(epfd, evbuf, 256)
           if n2 <= 0:
             drain_guard = 0

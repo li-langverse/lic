@@ -1,0 +1,29 @@
+[package]
+name = "li-containerd"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Container daemon scaffold for libernetes (depends li-container + li-container-run + li-oci)"
+
+[dependencies]
+li-container = { path = "../li-container" }
+li-container-run = { path = "../li-container-run" }
+li-oci = { path = "../li-oci" }
+li-container-cri = { path = "../li-container-cri" }
+# registry = "1.0.0"             # lip 8d+
+
+[[bin]]
+name = "li-containerd"
+path = "src/main.li"
+
+[package.metadata.li]
+github_repo = "li-containerd"
+import_name = "container.d"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-containerd"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-containerd"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-containerd/"
+changelog = "https://github.com/li-langverse/li-containerd/blob/main/CHANGELOG.md"

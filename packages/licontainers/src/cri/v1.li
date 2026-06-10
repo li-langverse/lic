@@ -1,3 +1,5 @@
+# Deprecated shim — use `cri.v1` from li-container-cri.
+
 def cri_v1_api_version() -> int
   requires true
   ensures result == 1

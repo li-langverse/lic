@@ -1,6 +1,6 @@
 {
-  "phase": "p6-orchestration",
+  "phase": "p7-publish",
   "started_at": "2026-06-10",
   "branch": "feat/extern-def-container-seam",
-  "notes": "P5 gate passed: LiOS/Windows/macOS backends hardened, host detection seam, container-multi-os-matrix.md (WP-CTN-050..053)"
+  "notes": "P6 gate passed: li-containerd/cli/cri scaffolds, licontainers retired to thin shim (WP-CTN-060..063)"
 }

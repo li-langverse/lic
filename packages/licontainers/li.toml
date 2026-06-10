@@ -1,9 +1,15 @@
 [package]
 name = "licontainers"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2026"
 license = "Apache-2.0 OR MIT"
-description = "OCI/CRI container runtime for libernetes"
+description = "DEPRECATED shim — use li-oci, li-container, li-container-run, li-container-cri"
+
+[dependencies]
+li-oci = { path = "../li-oci" }
+li-container = { path = "../li-container" }
+li-container-run = { path = "../li-container-run" }
+li-container-cri = { path = "../li-container-cri" }
 
 [package.metadata.li]
 github_repo = "licontainers"
@@ -11,6 +17,8 @@ import_name = "licontainers"
 min_lic = "0.1.0"
 maintainer = "li-langverse"
 pkg_id = "PKG-licontainers"
+deprecated = true
+successor = "li-containerd"
 
 [package.repository]
 url = "https://github.com/li-langverse/licontainers"

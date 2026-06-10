@@ -9,3 +9,4 @@
 | 2026-06-10 | code_implementer | p3-linux-rt | phase3 OK | WP-CTN-030..033: hardened li_rt_container.c (unshare, cgroup v2 join/limits, pivot_root, seccomp BPF), trusted.lean Container axioms |
 | 2026-06-10 | code_implementer | p4-lirun | phase4 OK | WP-CTN-040..042: li-container-run runtime.li + main.li, backend-aware create/start/delete/state, lirun bin |
 | 2026-06-10 | code_implementer | p5-cross-os | phase5 OK | WP-CTN-050..053: LiOS/Windows/macOS capability backends, host detect seam (is_lios/windows/darwin), container-multi-os-matrix.md |
+| 2026-06-10 | code_implementer | p6-orchestration | phase6 OK | WP-CTN-060..063: li-containerd/cli/cri scaffolds, licontainers retired to deprecated shim delegating to split packages |

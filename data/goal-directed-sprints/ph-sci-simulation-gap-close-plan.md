@@ -197,6 +197,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 - **Scope:** `li-sim-scientific/src/lib.li`, `benchmarks/competitive/algo_registry.json`, `verticals.toml`.
 - **Dependencies:** WP-PLAT-05 (external MD oracle), WP-SCI-05/06.
 - **Acceptance:** `run_algo_registry_tier2.li` extended; stub only for explicitly documented IDs.
+- **Status:** **partial** — QM (401–432), CFD (205–210), FEA (211–216) tier-2 Li oracles landed; heat narrowed to 201–204; stub retained for drug/bio/am/viz/robo/auto/mmo families.
 - **Priority / effort:** P1 / L
 
 #### WP-SCI-04 — `sim.viz` → wgpu field draw (extends existing ID)
@@ -275,6 +276,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 - **Scope:** benchmarks, `li-sim-scientific`.
 - **Dependencies:** compliance for `external_binary`.
 - **Acceptance:** tier-2 csv column + `md_oracle.toml` driver.
+- **Status:** **partial** — `benchmarks/competitive/md_oracle.toml` + stub driver + registry watch rows; real binary parity deferred to B1.
 - **Priority / effort:** P1 / L
 
 ---

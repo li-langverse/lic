@@ -52,6 +52,26 @@ last_reviewed = "2026-05-16"
 notes = "Label pure_li vs shared_c_kernel per benchmarks/results/README.md; parallel only with Lean proof."
 
 [[ecosystem]]
+id = "lammps_lj_micro"
+track = "watch"
+repo_url = "https://github.com/lammps/lammps"
+compare = ["md_lennard_jones"]
+csv_lang = "lammps"
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-10"
+notes = "WP-PLAT-05 external oracle column; driver benchmarks/competitive/md_oracle.toml; stub until B1."
+
+[[ecosystem]]
+id = "gromacs_lj_micro"
+track = "watch"
+repo_url = "https://github.com/gromacs/gromacs"
+compare = ["md_lennard_jones"]
+csv_lang = "gromacs"
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-10"
+notes = "WP-PLAT-05 external oracle column; driver benchmarks/competitive/md_oracle.toml; stub until B1."
+
+[[ecosystem]]
 id = "python_numpy"
 track = "watch"
 repo_url = "https://github.com/numpy/numpy"

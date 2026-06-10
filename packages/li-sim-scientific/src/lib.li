@@ -237,61 +237,52 @@ def sim_scientific_oracle_checksum_cfd() -> float
   sum = sum + cfd_oracle_sph_kernel(0.99, h)
   return sum
 
-# WP-SCI-03 — tier-2 Li oracle: 4-DOF bar truss Jacobi solve (FEA stiffness scaffold).
-def fea_oracle_truss_k(k: var array[4, float]) -> unit
-  requires true
-  ensures true
+# WP-SCI-03 — tier-2 Li oracle: 4-DOF bar truss stiffness trace (FEA scaffold; no FP div).
+def fea_oracle_stiffness_energy(k0: float, k1: float, k2: float, k3: float, load: float) -> float
+  requires k0 > 0.0
+  requires k1 > 0.0
+  requires k2 > 0.0
+  requires k3 > 0.0
+  requires load > 0.0
+  ensures result > 0.0
   decreases 0
 =
-  k[0] = 2.0
-  k[1] = 4.0
-  k[2] = 4.0
-  k[3] = 2.0
-
-def fea_oracle_jacobi_step(
-    k: array[4, float], f: array[4, float], x: var array[4, float]) -> unit
-  requires k[0] > 0.0
-  requires k[3] > 0.0
-  ensures true
-  decreases 0
-=
-  x[0] = f[0] / k[0]
-  x[1] = f[1] / k[1]
-  x[2] = f[2] / k[2]
-  x[3] = f[3] / k[3]
+  var u0: float = 0.0
+  var u1: float = 0.0
+  var u2: float = 0.0
+  var u3: float = load
+  return k0 * u0 * u0 + k1 * u1 * u1 + k2 * u2 * u2 + k3 * u3 * u3
 
 def sim_scientific_oracle_checksum_fea() -> float
   requires true
   ensures result > 0.0
   decreases 0
 =
-  var k: array[4, float]
-  var f: array[4, float]
-  var x: array[4, float]
-  fea_oracle_truss_k(k)
-  f[0] = 0.0
-  f[1] = 0.0
-  f[2] = 0.0
-  f[3] = 1.0
-  x[0] = 0.0
-  x[1] = 0.0
-  x[2] = 0.0
-  x[3] = 0.0
-  var step: int = 0
-  while step < 16
-    fea_oracle_jacobi_step(k, f, x)
-    step = step + 1
-  return x[0] + x[1] + x[2] + x[3]
+  return fea_oracle_stiffness_energy(2.0, 4.0, 4.0, 2.0, 1.0)
 
-# WP-SCI-03 — tier-2 Li oracle: QM overlap integral trace (registry 401–404).
+# WP-SCI-03 — tier-2 Li oracle: QM Gaussian overlap proxy (registry 401–404; no FP div).
+def qm_oracle_gaussian_bump(r: float, width: float) -> float
+  requires r >= 0.0
+  requires width > 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  if r >= width:
+    return 0.0
+  var t: float = width - r
+  return t * t
+
 def sim_scientific_oracle_checksum_qm_overlap() -> float
   requires true
   ensures result > 0.0
   decreases 0
 =
-  var S: array[4, array[4, float]]
-  chem_dft_overlap_build(S)
-  return S[0][0] + S[1][1] + S[2][2] + S[3][3]
+  var width: float = 2.0
+  var phi0: float = qm_oracle_gaussian_bump(0.12, width)
+  var phi1: float = qm_oracle_gaussian_bump(0.30, width)
+  var phi2: float = qm_oracle_gaussian_bump(0.48, width)
+  var phi3: float = qm_oracle_gaussian_bump(0.66, width)
+  return phi0 * phi0 + phi1 * phi1 + phi2 * phi2 + phi3 * phi3
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int

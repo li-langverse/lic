@@ -66,3 +66,10 @@ Use **`code_implementer`** with skills `agent-self-unblock`, `run-goal-directed-
 - **PR:** https://github.com/li-langverse/benchmarks/pull/300 (`chore/agent-code_implementer-94884058`)
 - **Matrix:** Arm A (3 models × 10 benches × Li) + Arm B (default × 10 benches × 4 langs) = 50 cells
 - **Pilot benches verified:** `wave_equation_1d`, `heat_equation_2d`, `schrodinger_1d_barrier` with `--require-native-lang`
+
+## Re-verification (2026-06-10, code_implementer-1781066570229)
+
+- **Gate:** `NODE_ENV=production BENCHMARKS_ROOT=/workspace/benchmarks bash /app/scripts/physics-codegen-completion-gate.sh` → exit 0
+- **Token tests:** `node --test dist/agent-run-trace.test.js` → 6/6 pass (token_usage aggregation)
+- **Pilot harness:** `harness/bench.py --tier 2 --verify-results --only wave_equation_1d,heat_equation_2d,schrodinger_1d_barrier --require-native-lang` → exit 0
+- **Pending:** merge benchmarks#300; push li-cursor-agents gate devdeps fix (`chore/agent-code_implementer-physics-gate-devdeps`) when GitHub token push access restores

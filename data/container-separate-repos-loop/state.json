@@ -1,6 +1,6 @@
 {
-  "phase": "p2-li-container",
+  "phase": "p3-linux-rt",
   "started_at": "2026-06-10",
   "branch": "feat/extern-def-container-seam",
-  "notes": "P1 gate passed: li-oci spec/layout/manifest/image modules (Net-only pull/store stubs)"
+  "notes": "P2 gate passed: li-container bundle/state/runerr/seam + backend select/linux/lios/windows/darwin"
 }

@@ -6,7 +6,7 @@ license = "Apache-2.0 OR MIT"
 description = "Container bundle, state, runerr, backend selection (seam dev copy; C in lic/runtime only)"
 
 [dependencies]
-# path = { path = "../other" }   # lip 8b+
+li-oci = { path = "../li-oci" }
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]

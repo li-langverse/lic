@@ -1,0 +1,35 @@
+# WP-CTN-024 — LiOS container backend stub (Wave 2).
+
+def container_lios_backend_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def container_lios_jail_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_lios_cgroup_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def container_lios_backend_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if container_lios_backend_tag() != 2:
+    return 1
+  if container_lios_jail_tag() != 1:
+    return 2
+  if container_lios_cgroup_tag() != 2:
+    return 3
+  return 0

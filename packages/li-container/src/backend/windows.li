@@ -1,0 +1,35 @@
+# WP-CTN-024 — Windows container backend stub (Wave 2).
+
+def container_windows_backend_tag() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def container_windows_job_object_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_windows_namespace_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def container_windows_backend_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if container_windows_backend_tag() != 3:
+    return 1
+  if container_windows_job_object_tag() != 1:
+    return 2
+  if container_windows_namespace_tag() != 2:
+    return 3
+  return 0

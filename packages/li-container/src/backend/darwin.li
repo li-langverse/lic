@@ -1,0 +1,35 @@
+# WP-CTN-024 — macOS container backend stub (Wave 2).
+
+def container_darwin_backend_tag() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def container_darwin_sandbox_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_darwin_vm_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def container_darwin_backend_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if container_darwin_backend_tag() != 4:
+    return 1
+  if container_darwin_sandbox_tag() != 1:
+    return 2
+  if container_darwin_vm_tag() != 2:
+    return 3
+  return 0

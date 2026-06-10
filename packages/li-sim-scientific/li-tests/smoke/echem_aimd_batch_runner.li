@@ -1,0 +1,28 @@
+import sim.scientific
+
+extern proc li_rt_studio_aimd_batch_steps_from_env() -> int
+  requires true
+  ensures result >= 64
+  decreases 0
+
+extern proc li_rt_studio_aimd_batch_write_json(path: str, steps: int, ok: int, checksum: float, energy_drift: float, gpu_path: int) -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases steps
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var steps: int = li_rt_studio_aimd_batch_steps_from_env()
+  if echem_aimd_batch_steps_valid(steps) != 1:
+    return 1
+  var batch: AimdBatchResult = echem_aimd_batch_run(steps)
+  if batch.ok != 1:
+    return 2
+  var out_path: str = "build/aimd-demo/out/batch-result.json"
+  if li_rt_studio_aimd_batch_write_json(out_path, batch.steps, batch.ok, batch.checksum, batch.energy_drift, batch.gpu_path) != 1:
+    return 3
+  return 0

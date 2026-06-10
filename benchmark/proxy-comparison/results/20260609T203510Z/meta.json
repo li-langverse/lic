@@ -1,0 +1,18 @@
+{
+  "timestamp_utc": "20260609T203510Z",
+  "lic_git_sha": "e25c8b815",
+  "lic_git_branch": "feat/dynamic-httpd-routes",
+  "proxies": [
+    "li-httpd",
+    "nginx-proxy",
+    "caddy-proxy",
+    "haproxy-proxy"
+  ],
+  "workloads": [
+    "sequential_1p3mb",
+    "parallel_18",
+    "parallel_6_same",
+    "mix_small_large"
+  ],
+  "vhost": "gitlab.lilangverse.xyz"
+}

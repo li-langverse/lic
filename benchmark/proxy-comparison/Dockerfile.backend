@@ -1,0 +1,12 @@
+# GitLab-like static backend + 84B utilities.css for mix workload.
+FROM python:3.12-alpine AS gen
+WORKDIR /src
+COPY test/proxy-repro/gen-asset.py /src/gen-asset.py
+RUN python3 /src/gen-asset.py --out-dir /srv/www \
+  && printf '/* li-httpd proxy-repro utilities filler */\n' > /srv/www/assets/utilities-deadbeef.css \
+  && python3 -c "from pathlib import Path; p=Path('/srv/www/assets/utilities-deadbeef.css'); d=p.read_bytes(); t=84; p.write_bytes(d+b' '*(t-len(d)) if len(d)<t else d[:t]); assert p.stat().st_size==84"
+
+FROM nginx:1.27-alpine
+COPY test/proxy-repro/backend/nginx-peer-a.conf /etc/nginx/nginx.conf
+COPY --from=gen /srv/www /srv/www
+RUN echo 'peer-a-body' >/srv/www/probe

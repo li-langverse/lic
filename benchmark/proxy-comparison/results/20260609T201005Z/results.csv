@@ -1,0 +1,5 @@
+proxy,workload,success_rate,requests,success,rps,bps,latency_p50,latency_p95,latency_p99,rss_mb_parallel18,cpu_pct_max_parallel18
+nginx-proxy,sequential_1p3mb,1.0,1,1,55.87,73819274.0,0.0097,0.0097,0.0097,0.0,0.0
+nginx-proxy,parallel_18,1.0,18,18,235.6,57181335.0,0.0162,0.0233,0.0256,0.0,0.0
+nginx-proxy,parallel_6_same,1.0,6,6,118.81,156993861.0,0.0104,0.0132,0.0132,0.0,0.0
+nginx-proxy,mix_small_large,1.0,2,2,48.78,20378561.0,0.0055,0.0069,0.0069,0.0,0.0

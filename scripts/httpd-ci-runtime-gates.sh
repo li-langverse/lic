@@ -56,4 +56,12 @@ for hook in \
   fi
 done
 
+if [[ -x "$ROOT/test/proxy/run-proxy-tests.sh" ]]; then
+  echo "==> test-proxy (C unit)"
+  chmod +x "$ROOT/test/proxy/run-proxy-tests.sh" \
+    "$ROOT/test/proxy-relay/run-unit-tests.sh" \
+    "$ROOT/test/proxy-relay/"*.sh 2>/dev/null || true
+  PROXY_SKIP_DOCKER=1 "$ROOT/test/proxy/run-proxy-tests.sh" --c-only || fail "test-proxy C unit failed"
+fi
+
 echo "httpd-ci-runtime-gates: OK"

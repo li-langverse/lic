@@ -3,6 +3,7 @@ import sim
 import chem
 import physics.particles
 import physics.rigid
+import physics.fluids
 
 def li_sim_scientific_version() -> int
   requires true
@@ -208,31 +209,55 @@ def sim_scientific_oracle_checksum_heat() -> float
     step = step + 1
   return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
 
-# WP-SCI-03 — tier-2 Li oracle: particle-in-box level sum (open-vc-safe addition chain).
-def sim_scientific_oracle_checksum_qm() -> float
+# WP-SCI-05 — 2×2 linear elasticity stiffness assembly + direct solve (tier-2 oracle).
+def fea_oracle_stiffness_solve() -> float
   requires true
-  ensures result == 30.0
+  ensures result > 0.0
   decreases 0
 =
-  return 1.0 + 4.0 + 9.0 + 16.0
+  var k00: float = 2.0
+  var k01: float = -1.0
+  var k11: float = 2.0
+  var f0: float = 1.0
+  var f1: float = 0.0
+  var det: float = k00 * k11 - k01 * k01
+  if det < 1.0e-12:
+    det = 1.0e-12
+  var u0: float = (f0 * k11 - f1 * k01) / det
+  var u1: float = (k00 * f1 - k01 * f0) / det
+  var strain: float = u0 + u1
+  if strain < 0.0:
+    strain = -strain
+  return strain + u0 * u0 + u1 * u1
 
-# WP-SCI-03 / WP-SCI-06 — tier-2 Li oracle: lid-cavity kinetic tag (open-vc-safe addition chain).
+def sim_scientific_oracle_checksum_fea() -> float
+  requires true
+  ensures result > 0.0
+  ensures result != 1.001
+  decreases 0
+=
+  return fea_oracle_stiffness_solve()
+
+# WP-SCI-06 — lid-driven cavity oracle (delegates to li-physics-fluids).
 def sim_scientific_oracle_checksum_cfd() -> float
   requires true
-  ensures result == 28.0
+  ensures result > 0.0
+  ensures result != 1.001
   decreases 0
 =
-  return 1.0 + 2.0 + 4.0 + 8.0 + 13.0
+  return cfd_lid_cavity_checksum()
 
-# WP-SCI-03 / WP-SCI-05 — tier-2 Li oracle: 3-spring series bar (fixed–load).
-def sim_scientific_oracle_checksum_fea_bar() -> float
+# WP-SCI-03 — QM tier-2: normalize chem DFT energy for registry rows 401–432.
+def sim_scientific_oracle_checksum_qm() -> float
   requires true
-  ensures result == 2.5
+  ensures result <= 0.0
+  ensures result != 1.001
   decreases 0
 =
-  var k_elem: float = 1.2
-  var f_load: float = 1.0
-  return 3.0 * f_load / k_elem
+  var e: float = chem_dft_energy_kernel_hartree()
+  if e > 0.0:
+    return -e
+  return e
 
 # WP-ECHEM-09 — AIMD coupling: each MD step calls chem_dft_energy_kernel_hartree.
 def echem_aimd_step_count() -> int
@@ -320,15 +345,40 @@ def sim_scientific_oracle_checksum_echem_aimd() -> float
   return diff / denom
 
 # W2 — headless batch AIMD (no 64-step interactive cap; toy kernel + DFT stub per step).
+# W7 pilot — real chem_dft_energy_kernel_hartree every N MD steps when gpu_path green.
 type AimdBatchResult = object
   public ok: int
   public checksum_ok: int
   public steps: int
   public gpu_path: int
+  public dft_stride: int
+  public dft_calls: int
   public checksum: float
   public energy_drift: float
   public final_x: float
   public final_vx: float
+
+def echem_aimd_batch_smoke_steps() -> int
+  requires true
+  ensures result == 128
+  decreases 0
+=
+  return 128
+
+def echem_aimd_batch_demo_steps() -> int
+  requires true
+  ensures result == 5000
+  decreases 0
+=
+  return 5000
+
+def echem_aimd_batch_dft_stride() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 1000
+  decreases 0
+=
+  return 50
 
 def echem_aimd_batch_steps_valid(steps: int) -> int
   requires true
@@ -346,9 +396,10 @@ def echem_aimd_batch_gpu_path_select() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
+  ensures result == chem_dft_gpu_path_available()
   decreases 0
 =
-  return 0
+  return chem_dft_gpu_path_available()
 
 def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   requires echem_aimd_batch_steps_valid(steps) == 1
@@ -356,6 +407,8 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   ensures result.ok == 1
   ensures result.checksum_ok == 1
   ensures result.gpu_path == echem_aimd_batch_gpu_path_select()
+  ensures result.dft_stride == echem_aimd_batch_dft_stride()
+  ensures result.dft_calls >= 1
   decreases steps
 =
   var out: AimdBatchResult
@@ -365,6 +418,8 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   out.checksum = 0.001
   out.energy_drift = 0.001
   out.gpu_path = echem_aimd_batch_gpu_path_select()
+  out.dft_stride = echem_aimd_batch_dft_stride()
+  out.dft_calls = 0
   out.final_x = 0.08
   out.final_vx = 0.03
   var x: float = out.final_x
@@ -374,8 +429,13 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   var target_ke: float = 0.5 * vx * vx
   var e0: float = echem_aimd_total_energy(x, vx)
   var md_step: int = 0
+  var stride: int = out.dft_stride
+  if stride < 1:
+    stride = 1
   while md_step < steps
-    echem_aimd_dft_energy_per_step()
+    if md_step % stride == 0:
+      echem_aimd_dft_energy_per_step()
+      out.dft_calls = out.dft_calls + 1
     var ax: float = -k * x
     vx = vx + 0.5 * dt * ax
     x = x + dt * vx
@@ -400,9 +460,13 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   if diff < 0.0:
     diff = -diff
   out.energy_drift = diff / denom
-  out.checksum = out.energy_drift + 1.0e-8
-  if out.checksum <= 0.0:
-    out.checksum = 0.001
+  out.checksum = out.energy_drift
+  if out.checksum < 1.0e-6:
+    out.checksum = 1.0e-6
+  if out.dft_calls > 0:
+    out.checksum = out.checksum + 1.0e-6
+  if out.gpu_path == 1:
+    out.checksum = out.checksum + 1.0e-4
   return out
 
 # WP-ECHEM-12 — grand-canonical SHE AIMD: constant-potential MD + charge neutrality feedback.
@@ -736,63 +800,6 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
-def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
-  requires detail >= 0
-  requires detail <= 3
-  requires algo_id >= 401
-  requires algo_id <= 432
-  ensures result.ok == 1
-  ensures result.algo_id == algo_id
-  ensures result.detail_emitted == detail
-  decreases 0
-=
-  var chk: float = sim_scientific_oracle_checksum_qm()
-  var r: SimRunResult
-  r.ok = 1
-  r.algo_id = algo_id
-  r.vertical_id = vertical_qm_dft()
-  r.checksum = chk
-  r.detail_emitted = detail
-  return r
-
-def run_cfd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
-  requires detail >= 0
-  requires detail <= 3
-  requires algo_id >= 205
-  requires algo_id <= 210
-  ensures result.ok == 1
-  ensures result.algo_id == algo_id
-  ensures result.detail_emitted == detail
-  decreases 0
-=
-  var chk: float = sim_scientific_oracle_checksum_cfd()
-  var r: SimRunResult
-  r.ok = 1
-  r.algo_id = algo_id
-  r.vertical_id = vertical_cfd_lid_driven_cavity()
-  r.checksum = chk
-  r.detail_emitted = detail
-  return r
-
-def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
-  requires detail >= 0
-  requires detail <= 3
-  requires algo_id >= 211
-  requires algo_id <= 216
-  ensures result.ok == 1
-  ensures result.algo_id == algo_id
-  ensures result.detail_emitted == detail
-  decreases 0
-=
-  var chk: float = sim_scientific_oracle_checksum_fea_bar()
-  var r: SimRunResult
-  r.ok = 1
-  r.algo_id = algo_id
-  r.vertical_id = vertical_fea_linear_elasticity()
-  r.checksum = chk
-  r.detail_emitted = detail
-  return r
-
 def run_md_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -881,6 +888,63 @@ def run_echem_sei_kmc_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   r.ok = 1
   r.algo_id = algo_id
   r.vertical_id = vertical_echem_sei_kmc()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_cfd_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 205
+  requires algo_id <= 210
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_cfd()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_cfd_lid_driven_cavity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_fea_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 211
+  requires algo_id <= 216
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_fea()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_fea_linear_elasticity()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_qm_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 401
+  requires algo_id <= 432
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_qm()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_qm_dft()
   r.checksum = chk
   r.detail_emitted = detail
   return r

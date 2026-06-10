@@ -60,3 +60,27 @@ build-and-test:
     - if: $CI_COMMIT_BRANCH == "main"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
+test-proxy:
+  stage: test
+  image: ubuntu:24.04
+  allow_failure: false
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq git curl ca-certificates sudo python3 lsb-release wget gnupg software-properties-common
+  script:
+    - chmod +x scripts/ci-install-llvm.sh scripts/build.sh
+      test/proxy/run-proxy-tests.sh test/proxy-relay/run-unit-tests.sh
+    - sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+    - ./scripts/build.sh
+    - make test-proxy-c
+  rules:
+    - if: $CI_COMMIT_BRANCH == "feat/dynamic-httpd-routes"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - runtime/li_rt_net.c
+        - runtime/li_rt_tls.c
+        - test/proxy/**/*
+        - test/proxy-relay/**/*
+        - test/proxy-repro/**/*
+        - packages/li-net-httpd/**/*
+

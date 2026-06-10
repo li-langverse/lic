@@ -131,6 +131,70 @@ def sensor_raycast_distance_stub(
     dist = 0.0
   return dist
 
+def sensor_scene_bounds_max_x() -> float
+  requires true
+  ensures result == 5.0
+  decreases 0
+=
+  return 5.0
+
+def sensor_scene_bounds_max_y() -> float
+  requires true
+  ensures result == 5.0
+  decreases 0
+=
+  return 5.0
+
+# WP-SIM-05 — axis-aligned scene bounds raycast (pose-dependent; not mesh intersection).
+def sensor_raycast_scene_bounds(
+    origin_x: float, origin_y: float, dir_x: float, dir_y: float,
+    max_range_m: float, bounds_max_x: float, bounds_max_y: float) -> float
+  requires max_range_m > 0.0
+  requires bounds_max_x > 0.0
+  requires bounds_max_y > 0.0
+  ensures result >= 0.0
+  ensures result <= max_range_m
+  decreases 0
+=
+  var t_x: float = max_range_m
+  var t_y: float = max_range_m
+  if dir_x > 1.0e-6:
+    t_x = (bounds_max_x - origin_x) / dir_x
+  if dir_x < -1.0e-6:
+    t_x = (0.0 - origin_x) / dir_x
+  if dir_y > 1.0e-6:
+    t_y = (bounds_max_y - origin_y) / dir_y
+  if dir_y < -1.0e-6:
+    t_y = (0.0 - origin_y) / dir_y
+  var t_hit: float = t_x
+  if t_y < t_hit:
+    t_hit = t_y
+  if t_hit < 0.0:
+    t_hit = 0.0
+  if t_hit > max_range_m:
+    t_hit = max_range_m
+  return t_hit
+
+def sensor_raycast_distance_scene(
+    origin_x: float, origin_y: float, max_range_m: float, sensor_id: int, tick: int) -> float
+  requires max_range_m > 0.0
+  requires tick >= 0
+  requires tick <= 64
+  requires sensor_raycast_id_valid(sensor_id) == 1
+  ensures result >= 0.0
+  ensures result <= max_range_m
+  decreases tick
+=
+  var dir_x: float = 1.0
+  var dir_y: float = 0.0
+  if sensor_id == sensor_raycast_id_depth():
+    dir_y = 1.0
+    dir_x = 0.0
+  var dist: float = sensor_raycast_scene_bounds(origin_x, origin_y, dir_x, dir_y, max_range_m, sensor_scene_bounds_max_x(), sensor_scene_bounds_max_y())
+  if dist <= 0.0:
+    return sensor_raycast_distance_stub(origin_x, origin_y, max_range_m, sensor_id, tick)
+  return dist
+
 def sensor_raycast_stub(
     origin_x: float, origin_y: float, heading_rad: float,
     max_range_m: float, sensor_id: int, tick: int) -> SensorRaycastHit
@@ -145,7 +209,7 @@ def sensor_raycast_stub(
   ensures result.did_hit <= 1
   decreases tick
 =
-  var dist: float = sensor_raycast_distance_stub(origin_x, origin_y, max_range_m, sensor_id, tick)
+  var dist: float = sensor_raycast_distance_scene(origin_x, origin_y, max_range_m, sensor_id, tick)
   var hit: SensorRaycastHit
   hit.sensor_id = sensor_id
   hit.hit_distance_m = dist

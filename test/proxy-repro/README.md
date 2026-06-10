@@ -40,11 +40,20 @@ PROXY_HOST=127.0.0.1 PROXY_PORT=18443 sh test/proxy-repro/run-test.sh
 - `run-test.sh`: **10/10** sequential runs (sign-in **200/302**, large CSS **835437** bytes).
 - `parallel-run-test.sh`: **6/6** parallel CSS+JS fetches (browser-like load).
 
-## Two-backend load balancer (`ip_hash`)
+## Two-backend load balancer e2e
 
 ```bash
-docker compose -f test/proxy-repro/docker-compose.lb.yml build
-docker compose -f test/proxy-repro/docker-compose.lb.yml up --abort-on-container-exit lb-tester
+# All three policies (via suite runner)
+sh test/proxy/run-proxy-tests.sh --lb
+
+# Single policy
+LB_POLICY=ip_hash docker compose -f test/proxy-repro/docker-compose.lb.yml up --abort-on-container-exit lb-tester
 ```
 
-`run-lb-test.sh` expects **one** distinct `X-Li-Backend` header across 24 requests (peer-a vs peer-b nginx).
+`test-lb-e2e.sh` runs **24** requests per policy:
+
+| Policy | Expected distinct `X-Li-Backend` |
+|--------|----------------------------------|
+| `round_robin` | ≥ 2 (both peer-a and peer-b) |
+| `least_conn` | ≥ 2 |
+| `ip_hash` | 1 (sticky per client IP) |

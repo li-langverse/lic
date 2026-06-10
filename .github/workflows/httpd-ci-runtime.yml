@@ -8,6 +8,8 @@ on:
       - "runtime/li_rt_httpd.c"
       - "runtime/li_rt_net.c"
       - "packages/li-net-httpd/**"
+      - "test/proxy/**"
+      - "test/proxy-relay/**"
       - "scripts/test-m2-*.sh"
       - "scripts/test-lb-sticky-sessions.sh"
       - "scripts/test-m15-leak-censor-runtime.sh"
@@ -20,6 +22,8 @@ on:
     paths:
       - "runtime/li_rt_net.c"
       - "packages/li-net-httpd/**"
+      - "test/proxy/**"
+      - "test/proxy-relay/**"
       - "scripts/httpd-ci-runtime-gates.sh"
   workflow_dispatch:
 

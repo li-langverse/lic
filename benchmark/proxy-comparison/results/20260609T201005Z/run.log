@@ -1,0 +1,13 @@
+[bench] lic feat/dynamic-httpd-routes @ def403132
+[bench] results -> /mnt/c/Users/Julian/Documents/Programming/li/lic/benchmark/proxy-comparison/results/20260609T201005Z
+[bench] building backend...
+[bench] starting backend...
+[bench] === proxy: nginx-proxy (port 18444) ===
+[bench] done: nginx-proxy
+[bench] === proxy: caddy-proxy (port 18445) ===
+[bench] WARN: caddy-proxy not healthy — skipping
+[bench] === proxy: haproxy-proxy (port 18446) ===
+[bench] WARN: haproxy-proxy not healthy — skipping
+[bench] === proxy: li-httpd (port 18443) ===
+[bench] done: li-httpd
+[bench] wrote /mnt/c/Users/Julian/Documents/Programming/li/lic/benchmark/proxy-comparison/results/20260609T201005Z/RESULTS.md

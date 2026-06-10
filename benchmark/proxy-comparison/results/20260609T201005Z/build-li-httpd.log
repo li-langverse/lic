@@ -1,0 +1,32 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.11kB done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile.li-httpd
+#2 transferring dockerfile: 1.01kB 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22
+#3 ERROR: error getting credentials - err: exit status 1, out: ``
+
+#4 [internal] load metadata for docker.io/library/ubuntu:24.04
+#4 CANCELED
+------
+ > [internal] load metadata for ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22:
+------
+Dockerfile.li-httpd:2
+
+--------------------
+
+   1 |     # li-httpd edge proxy — build from lic feat/dynamic-httpd-routes tip.
+
+   2 | >>> FROM ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22 AS builder
+
+   3 |     WORKDIR /src/lic
+
+   4 |     COPY . .
+
+--------------------
+
+failed to solve: error getting credentials - err: exit status 1, out: ``
+

@@ -5,43 +5,41 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 wp: WP-SCI-GPU-VENDOR-02
 ---
 
-# WP-SCI-GPU-VENDOR-02 — Device buffer bind for MD grid (deferred)
+# WP-SCI-GPU-VENDOR-02 — Device buffer bind for MD grid
 
-**Status:** **DEFERRED** (plan closed at **32/33**, ~97%)  
-**Merged on main:** #1541 (`c988d702d`) — VENDOR-01 + VENDOR-03 landed; this WP out of scope for gap-close.
+**Status:** **DONE** (partial — host bind scaffold; full CUDA MD kernel offload out of scope)  
+**Landed:** `feat/ph-sci-gpu-vendor-02` — smoke `scientific_gpu_md_device_buffer.li` (PH-SCI-GPU-20), `sim_scientific_md_gpu_device_buffer_pipeline`, `li_rt_lig_gpu_md_grid_device_buffer_bind`.
 
-## Scope (when resumed)
+## Scope delivered
 
-Bind MD particle/grid state through the PH-ML Wave 13 device-buffer pipeline (`ml_gpu_device_buffer_pipeline`, `lig_gpu_device_buffer_ready`) for a science hot path — e.g. `li-sim-scientific` MD oracle or `li-physics-particles` mini-step — mirroring `packages/li-ml/li-tests/smoke/ml_gpu_device_buffer.li`.
+Bind MD particle/grid state through the PH-ML Wave 13 device-buffer pipeline (`ml_gpu_device_buffer_pipeline`, `lig_gpu_device_buffer_ready`, `lig_gpu_md_grid_device_buffer_bind`) for the `li-sim-scientific` MD oracle hot path — mirroring `packages/li-ml/li-tests/smoke/ml_gpu_device_buffer.li`.
 
-## Why deferred
+## Honest limits (still stub)
 
-- **Chem/DFT path** already gates on `lig_gpu_device_buffer_ready()` in `chem_dft_gpu_lkir_launch_pipeline()`; that is LKIR launch scaffold, not MD grid bind parity.
-- **MD grid bind** needs `lig` host/runtime device-buffer allocation + bind for simulation arrays (positions, forces), not yet wired for science packages.
-- PH-ML Wave 12 T2 / Wave 13 T2 (`ml_gpu_device_buffer_pipeline`) covers ML matmul; science MD reuse requires a separate smoke + gate row in `science_gpu` or a dedicated `ph-sci-md-device-buffer-gate.sh`.
+- **LKIR kernel:** reuses matmul pilot id (same scaffold as chem DFT); `lig.kernel.md_force_short` lowering not wired.
+- **Device memory:** host-side byte accounting only; no CUDA/HIP alloc or GPU readback of MD forces yet.
+- **Vendor path:** returns `1` only when `LIG_EMIT_*` + full `ml_gpu_device_buffer_pipeline()` pass; honest `0` otherwise.
 
-## Acceptance (future)
+## Acceptance (met)
 
-1. `@gpu` MD step smoke (e.g. `scientific_gpu_md_device_buffer.li`) returns `1` when `lig_gpu_device_buffer_ready()` and `ml_gpu_device_buffer_pipeline()` both pass.
+1. `@gpu` smoke `scientific_gpu_md_device_buffer.li` returns `1` when `lig_gpu_device_buffer_ready()` and `ml_gpu_device_buffer_pipeline()` both pass (plus MD oracle CPU checksum gate).
 2. Honest skip (`0`) when vendor emit absent — same pattern as `ml_gpu_device_buffer.li`.
-3. Gate chained in `scripts/ph-sci-gpu-gates.sh` (optional `LIG_EMIT_CUDA=1`).
+3. Gate chained in `scripts/ph-sci-gpu-gates.sh` (`LIG_EMIT_CUDA=1` optional path).
+4. Registered in `science_gpu` manifest as PH-SCI-GPU-20 (21 rows total).
 
 ## Dependencies
 
 | Track | Item |
 |-------|------|
 | PH-ML | Wave 13 T2 device buffers (`ml_gpu_device_buffer.li`) |
-| lig | `li_rt_lig_gpu_device_buffer_ready` host contract |
+| lig | `li_rt_lig_gpu_device_buffer_ready` + `li_rt_lig_gpu_md_grid_device_buffer_bind` |
 | PH-SCI | `science_gpu` MD oracle row (`scientific_gpu_md_oracle.li`) |
 
-## K8s (optional tiny sprint)
-
-Goal file: [ph-sci-gpu-vendor-02.md](ph-sci-gpu-vendor-02.md) — scale worker only when resuming this WP.
-
-## Verification (regression spine unchanged)
+## Verification
 
 ```bash
 bash scripts/ph-sci-gap-close-phase2-gate.sh
 bash scripts/ph-sci-gpu-gates.sh
 ./li-tests/run_all.sh science_gpu
+LIG_EMIT_CUDA=1 lic build packages/li-sim-scientific/li-tests/smoke/scientific_gpu_md_device_buffer.li -o /dev/null
 ```

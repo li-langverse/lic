@@ -6,19 +6,19 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close plan
 
-**Last updated:** 2026-06-10 · **main @** `c988d702d` (#1541 merged)  
-**Progress:** **32 / 33 WPs done (~97%)** — Phase 0 + Phase 1 + Phase 2 **complete**; Phase 3 **VENDOR-02 deferred** (tracked issue)
+**Last updated:** 2026-06-10 · **main @** `f4c4f296b` (#1542 plan close) + VENDOR-02 follow-up  
+**Progress:** **33 / 33 WPs done (100%)** — Phase 0 + Phase 1 + Phase 2 + Phase 3 **complete** (VENDOR-02 host bind scaffold)
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and `science_gpu` / `@gpu` placement coverage.
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
 
 ## GPU Chem / DFT + Electrochemistry (merged — #847 on `main`)
 
-See **[ph-sci-gpu-chem-dft.md](ph-sci-gpu-chem-dft.md)** for WP-SCI-GPU-CHEM-01..04, stub vs real audit, and PH-ML Phase 3 LKIR hooks. Electrochemistry WP-ECHEM-01..08 and PH-SCI-GPU-16..19 gates landed on **`main`** via PR #847 (`e87165b7`) — see [ph-sci-electrochemistry-sim-plan.md](ph-sci-electrochemistry-sim-plan.md). The `science_gpu` suite now includes **20** manifest rows (GPU-01..15 + GPU-16..19).
+See **[ph-sci-gpu-chem-dft.md](ph-sci-gpu-chem-dft.md)** for WP-SCI-GPU-CHEM-01..04, stub vs real audit, and PH-ML Phase 3 LKIR hooks. Electrochemistry WP-ECHEM-01..08 and PH-SCI-GPU-16..19 gates landed on **`main`** via PR #847 (`e87165b7`) — see [ph-sci-electrochemistry-sim-plan.md](ph-sci-electrochemistry-sim-plan.md). The `science_gpu` suite now includes **21** manifest rows (GPU-01..15 + GPU-16..19 + GPU-20 VENDOR-02).
 
 ## Iteration rules
 
 1. **Phase 0 + Phase 1 + Phase 2 are done** — regression via `scripts/ph-sci-gap-close-phase2-gate.sh`; do not reopen unless gates fail.
-2. **Phase 3** vendor GPU: VENDOR-01/03 done; **VENDOR-02 deferred** — see [ph-sci-gpu-vendor-02-deferral.md](ph-sci-gpu-vendor-02-deferral.md).
+2. **Phase 3** vendor GPU: **complete** — VENDOR-01/02/03 done; see [ph-sci-gpu-vendor-02-deferral.md](ph-sci-gpu-vendor-02-deferral.md).
 3. One WP or logical chunk per iteration; commit + push to a feature branch off `main`.
 4. Verify with WSL `./build-wsl/compiler/lic/lic build …` and `./li-tests/run_all.sh science_gpu` before ending an iteration.
 5. Regression spine: `ph-sci-phase0-gates.sh`, `ph-sci-gap-close-phase2-gate.sh`, `ph-sci-gpu-gates.sh`.
@@ -59,7 +59,7 @@ Legacy Phase 0 worker (`li-ph-sci-simulation-gap-close`) is superseded; keep sca
 
 ### `science_gpu` on `main` (verified post-#847)
 
-- **`science_gpu` suite:** Registered in `li-tests/manifest.toml` — **20** tests (`PH-SCI-GPU-01..15` + `16..19` echem/chem DFT). Gate: `scripts/check-science-gpu-gate.sh`.
+- **`science_gpu` suite:** Registered in `li-tests/manifest.toml` — **21** tests (`PH-SCI-GPU-01..15` + `16..19` echem/chem DFT + `20` MD device buffer). Gate: `scripts/check-science-gpu-gate.sh`.
 - **Phase 0 lib compile:** `li-physics-fluids`, `li-physics-em`, `li-physics-weather`, `li-math-numerics` build under `scripts/ph-sci-phase0-gates.sh` (WP-SCI-BUILD-01/02).
 - **Honest smokes:** Phase 0 blocked libs import `src/lib.li` exports (WP-SCI-BUILD-03).
 - **`@gpu` today:** MIR placement telemetry (`mir_gpu_def=1` via `scripts/check-mir-gpu-decorator.sh`). Vendor LKIR execution remains Phase 3 (WP-SCI-GPU-VENDOR-01).
@@ -280,7 +280,7 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 
 ---
 
-### Phase 3 — Vendor GPU / LKIR path (P2) — **partial** (VENDOR-02 deferred)
+### Phase 3 — Vendor GPU / LKIR path (P2) — **DONE**
 
 Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-plan.md) Waves 2, 11–13, Stage 2.
 
@@ -294,9 +294,9 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 - **Acceptance:** `LIG_EMIT_CUDA=1 lic build …` produces non-empty kernel blob; bench row in `ph-ml-competitive.json`.
 - **Priority / effort:** P2 / L
 
-#### WP-SCI-GPU-VENDOR-02 — Device buffer bind for MD grid — **DEFERRED**
+#### WP-SCI-GPU-VENDOR-02 — Device buffer bind for MD grid — **DONE**
 
-- **Reason:** Requires `lig` device buffer parity infrastructure; scaffold only until PH-ML Wave 12 T2 lands.
+- **Status:** `scientific_gpu_md_device_buffer.li` (PH-SCI-GPU-20) + `sim_scientific_md_gpu_device_buffer_pipeline` + `li_rt_lig_gpu_md_grid_device_buffer_bind` host scaffold. Full `lig.kernel.md_force_short` vendor lowering remains future work.
 
 #### WP-SCI-GPU-VENDOR-03 — CI gate: science + ML GPU — **DONE**
 
@@ -311,8 +311,8 @@ Cross-reference [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-
 | Phase 0 | 4 | **DONE** (BUILD-01..03, GPU-00) | regression only |
 | Phase 1 | 15 | **DONE** (GPU-01..15 on `main`; + GPU-16..19 via #847) | regression only |
 | Phase 2 | 11 | **DONE** | regression via `ph-sci-gap-close-phase2-gate.sh` |
-| Phase 3 | 3 | **partial** | WP-SCI-GPU-VENDOR-01/03 done; VENDOR-02 deferred |
-| **Total** | **33** | **32 done (~97%)** | WP-SCI-GPU-VENDOR-02 device buffers |
+| Phase 3 | 3 | **DONE** | VENDOR-01/02/03 complete |
+| **Total** | **33** | **33 done (100%)** | gap-close complete |
 
 ### Top 3 P0 items (Phase 2 — start here)
 

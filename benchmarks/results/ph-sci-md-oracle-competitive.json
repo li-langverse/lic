@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-10T01:50:07Z",
+  "generated_at": "2026-06-10T01:53:33Z",
   "suite": "ph-sci-md-oracle-competitive",
   "registry_path": "benchmarks/competitive/md_oracle.toml",
   "registry_schema": "li_ph_sci_md_oracle_competitive_v1",
@@ -22,7 +22,7 @@
         "incumbent": "Li sim_scientific_oracle_checksum_md (4-particle LJ chain)",
         "workload_class": "v0_micro",
         "executed": true,
-        "cpu_sec": 4.4e-05,
+        "cpu_sec": 4.3e-05,
         "energy_drift": 6.9691228e-05,
         "energy_source": "li_md_oracle_python_mirror",
         "validity_gate_pass": true,

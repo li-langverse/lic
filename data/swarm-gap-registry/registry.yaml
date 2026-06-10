@@ -712,13 +712,14 @@ gaps:
 - id: gap-hpc-kokkos-execution-memory-spaces
   gap_kind: competitor_feature
   title: 'Kokkos-class execution model: parallel_for, Views, GPU memory spaces'
-  status: open
+  status: partial
   priority: 7
   discovered_by: gap_explorer
   evidence:
   - ecosystem-explorer.json hpc_libraries[kokkos] li_status=missing
   - https://github.com/kokkos/kokkos
   - lic issue
+  - std/execution/memory_spaces.li + docs/hpc/kokkos-memory-execution-spaces-rubric.md (lic#110)
   ph_id: PH-7e
   handoff_to:
   - numerics_researcher

@@ -6,7 +6,7 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close plan
 
-**Last updated:** 2026-06-10 · **main @** `f4c4f296b` (#1542 plan close) + VENDOR-02 follow-up  
+**Last updated:** 2026-06-10 · **main @** `f685bc71c` + VENDOR-02 follow-up  
 **Progress:** **33 / 33 WPs done (100%)** — Phase 0 + Phase 1 + Phase 2 + Phase 3 **complete** (VENDOR-02 host bind scaffold)
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and `science_gpu` / `@gpu` placement coverage.
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.

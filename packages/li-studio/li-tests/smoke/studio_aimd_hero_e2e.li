@@ -1,18 +1,7 @@
 import sim.scientific
 import studio
 
-extern proc li_rt_studio_aimd_scenario_reset() -> int
-  requires true
-  ensures result >= 0
-  decreases 0
-
-extern proc li_rt_studio_aimd_batch_write_json(path: str, steps: int, ok: int, checksum: float, energy_drift: float, gpu_path: int) -> int raises IO
-  requires true
-  ensures result >= 0
-  ensures result <= 1
-  decreases steps
-
-# W5 — E2E hero pipeline: configure → batch run → final viz (in-process; no UI step replay).
+# W5 — E2E hero pipeline: MCP configure → batch run → final viz (in-process; no UI step replay).
 def main() -> int raises IO, Alloc
   requires true
   ensures result == 0
@@ -37,10 +26,11 @@ def main() -> int raises IO, Alloc
   var expect_gpu: int = echem_aimd_batch_gpu_path_select()
   if batch.gpu_path != expect_gpu:
     return 8
-  var trace_checksum: float = batch.checksum
-  var trace_drift: float = batch.energy_drift
-  if li_rt_studio_aimd_batch_write_json("build/aimd-demo/out/batch-result.json", batch.steps, batch.ok, trace_checksum, trace_drift, batch.gpu_path) != 1:
+  if studio_aimd_sync_final_viewport(batch) != 1:
     return 9
-  if studio_aimd_final_viz_ok(batch, "build/aimd-demo/out/final-frame.ppm", 1280, 720) != 1:
+  var path: str = "/tmp/studio-aimd-hero-e2e.ppm"
+  if studio_aimd_final_viz_ok(batch, path, 1280, 720) != 1:
     return 10
+  if studio_aimd_final_viz_color_budget_ok(batch, 100, 1280, 720) != 1:
+    return 11
   return 0

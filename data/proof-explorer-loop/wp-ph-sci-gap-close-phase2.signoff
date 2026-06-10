@@ -1,0 +1,6 @@
+# PH-SCI gap-close Phase 2 — regression signoff
+
+Gate: `bash scripts/ph-sci-gap-close-phase2-gate.sh` exit 0
+Branch: main @ 7ee31ccb6 (rebased MR !158)
+Date: 2026-06-10 (code_implementer agent run 1781100051804)
+Evidence: science_gpu 20/20; ph-sci-gpu-gates exit 0; stdlib_seal 9/9 (PH-IO-4); all Phase 2 WPs documented in ph-sci-gap-close-phase2.md

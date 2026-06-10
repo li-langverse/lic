@@ -90,7 +90,9 @@ bash scripts/lig-emit-vendor-stub.sh
 export LIC CC CXX LIG_EMIT_CUDA
 bash scripts/ph-ml-wave11-gates.sh
 
-python3 -m pip install --user --break-system-packages   -r scripts/requirements-ph-ml-competitive.txt   -r scripts/requirements-ph-ml-wave12-rl.txt >/dev/null 2>&1 || true
+# shellcheck source=lib/ensure-ph-ml-python-deps.sh
+source "$ROOT/scripts/lib/ensure-ph-ml-python-deps.sh"
+ensure_ph_ml_python_deps "$ROOT"
 
 export PYTHONPATH="$ROOT/scripts${PYTHONPATH:+:$PYTHONPATH}"
 export PH_ML_RL_IPC_FORK_OUT="$BENCHMARKS_RESULTS/ph-ml-rl-env-ipc-fork.json"

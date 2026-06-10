@@ -66,8 +66,9 @@ grep -q 'Wave 8' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan m
 
 lic_check_smokes "$LIC" || exit 1
 
-python3 -m pip install --user --break-system-packages \
-  -r scripts/requirements-ph-ml-competitive.txt >/dev/null 2>&1 || true
+# shellcheck source=lib/ensure-ph-ml-python-deps.sh
+source "$ROOT/scripts/lib/ensure-ph-ml-python-deps.sh"
+ensure_ph_ml_python_deps "$ROOT" "$ROOT/scripts/requirements-ph-ml-competitive.txt"
 
 export LIC CC CXX
 bash scripts/bench-ph-ml-competitive.sh

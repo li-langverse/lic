@@ -1,0 +1,13 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var cfd: SimRunResult = run_cfd_tier2_registry(206, 1)
+  if cfd.checksum == 1.001:
+    return 1
+  if cfd.checksum != sim_scientific_oracle_checksum_cfd():
+    return 2
+  return 0

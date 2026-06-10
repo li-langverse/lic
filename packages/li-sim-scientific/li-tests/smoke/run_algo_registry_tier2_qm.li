@@ -1,0 +1,13 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var qm: SimRunResult = run_qm_tier2_registry(418, 0)
+  if qm.checksum == 1.001:
+    return 1
+  if qm.checksum != sim_scientific_oracle_checksum_qm_dft():
+    return 2
+  return 0

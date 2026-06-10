@@ -5,6 +5,26 @@ type CsvTable = object
   public row_count: int
   public col_count: int
 
+extern proc csv_parse(data: ptr, n: int) raises Alloc -> ptr
+  requires 0 <= n
+  ensures true
+  decreases n
+
+extern proc csv_row_count(doc: ptr) -> int
+  requires true
+  ensures 0 <= result
+  decreases 0
+
+extern proc csv_col_index(doc: ptr, name: str) -> int
+  requires true
+  ensures -1 <= result
+  decreases 0
+
+extern proc csv_free(doc: ptr) raises Alloc -> unit
+  requires true
+  ensures true
+  decreases 0
+
 def csv_tag() -> int
   requires true
   ensures result == 6

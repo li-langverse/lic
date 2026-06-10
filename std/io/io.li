@@ -5,6 +5,26 @@ type FileHandle = object
 type IoError = object
   public code: int
 
+extern proc io_read_file(path: str, max_bytes: int) raises IO, Alloc -> ptr
+  requires 0 <= max_bytes
+  ensures true
+  decreases max_bytes
+
+extern proc io_blob_data(blob: ptr) -> ptr
+  requires true
+  ensures true
+  decreases 0
+
+extern proc io_blob_len(blob: ptr) -> int
+  requires true
+  ensures 0 <= result
+  decreases 0
+
+extern proc io_free(blob: ptr) raises Alloc -> unit
+  requires true
+  ensures true
+  decreases 0
+
 def io_tag() -> int
   requires true
   ensures result == 4

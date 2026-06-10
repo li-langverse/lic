@@ -20,6 +20,8 @@ set(LI_RT_SOURCES
   li_fl.c
   li_rt_hetero.c
   li_rt_blas.c
+  li_rt_io.c
+  li_rt_csv.c
 )
 
 add_library(li_rt STATIC ${LI_RT_SOURCES})

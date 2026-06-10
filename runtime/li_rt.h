@@ -361,3 +361,13 @@ int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int
                                         int32_t entity_count, int32_t asset_ref_count);
 const char* li_rt_world_default_asset_ref_path(void);
 const char* li_rt_world_checkpoint_path_default(void);
+
+/* PH-IO-4: bounded file read + CSV parse (li_rt_io.c, li_rt_csv.c). */
+intptr_t io_read_file(const char* path, int32_t max_bytes);
+intptr_t io_blob_data(intptr_t blob);
+int32_t io_blob_len(intptr_t blob);
+void io_free(intptr_t blob);
+intptr_t csv_parse(intptr_t data, int32_t n);
+int32_t csv_row_count(intptr_t doc);
+int32_t csv_col_index(intptr_t doc, const char* name);
+void csv_free(intptr_t doc);

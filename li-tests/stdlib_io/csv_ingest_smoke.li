@@ -1,0 +1,30 @@
+import std.csv
+import std.io
+
+def main() raises IO, Alloc -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var blob: ptr = io_read_file("li-tests/fixtures/lic_sample.csv", 65536)
+  var n: int = io_blob_len(blob)
+  if n <= 0:
+    io_free(blob)
+    return 1
+  var data: ptr = io_blob_data(blob)
+  var doc: ptr = csv_parse(data, n)
+  if csv_row_count(doc) != 2:
+    csv_free(doc)
+    io_free(blob)
+    return 2
+  if csv_col_index(doc, "benchmark") < 0:
+    csv_free(doc)
+    io_free(blob)
+    return 3
+  if csv_col_index(doc, "lang") < 0:
+    csv_free(doc)
+    io_free(blob)
+    return 4
+  csv_free(doc)
+  io_free(blob)
+  return 0

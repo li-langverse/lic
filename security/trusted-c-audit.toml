@@ -126,3 +126,39 @@ name = "tcp_recv"
 cwe = "CWE-125"
 mitigation = "reject non-positive max_bytes; return empty buffer"
 cve_refs = []
+
+[[file]]
+path = "runtime/li_rt_io.c"
+status = "active"
+asan_in_ci = false
+notes = "PH-IO-4 bounded file read blob (io_read_file, io_blob_*, io_free)"
+
+[[file.functions]]
+name = "io_read_file"
+cwe = "CWE-22"
+mitigation = "reject empty, absolute, and .. paths; fread capped by max_bytes"
+cve_refs = []
+
+[[file.functions]]
+name = "io_blob_len"
+cwe = "CWE-125"
+mitigation = "null blob returns 0; length stored at allocation time"
+cve_refs = []
+
+[[file]]
+path = "runtime/li_rt_csv.c"
+status = "active"
+asan_in_ci = false
+notes = "PH-IO-4 CSV header parse + row count (csv_parse, csv_row_count, csv_col_index)"
+
+[[file.functions]]
+name = "csv_parse"
+cwe = "CWE-125"
+mitigation = "bounded cols/rows; copy input to owned buffer before line scan"
+cve_refs = []
+
+[[file.functions]]
+name = "csv_col_index"
+cwe = "CWE-125"
+mitigation = "header strcmp bounded by LI_CSV_MAX_FIELD"
+cve_refs = []

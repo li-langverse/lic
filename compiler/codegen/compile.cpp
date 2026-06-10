@@ -171,6 +171,8 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_xfer_plan_path = resolve_runtime_c("li_xfer_plan.c");
   const std::filesystem::path rt_fl_path = resolve_runtime_c("li_fl.c");
   const std::filesystem::path rt_hetero_path = resolve_runtime_c("li_rt_hetero.c");
+  const std::filesystem::path rt_io_path = resolve_runtime_c("li_rt_io.c");
+  const std::filesystem::path rt_csv_path = resolve_runtime_c("li_rt_csv.c");
 
   MirModule rt_needs;
   mir_collect_runtime_link_needs(mir, rt_needs);
@@ -280,6 +282,12 @@ bool compile_module(const Module& module, const std::string& output_path,
        rt_needs.needs_rt_exec_plan) &&
       std::filesystem::exists(rt_hetero_path)) {
     cmd << " -x c \"" << rt_hetero_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_io) && std::filesystem::exists(rt_io_path)) {
+    cmd << " -x c \"" << rt_io_path.string() << "\"";
+  }
+  if ((link_runtime_full || rt_needs.needs_rt_io) && std::filesystem::exists(rt_csv_path)) {
+    cmd << " -x c \"" << rt_csv_path.string() << "\"";
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {

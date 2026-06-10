@@ -273,6 +273,8 @@ struct MirModule {
   bool needs_rt_fl = false;
   /** runtime/li_rt_hetero.c — CPU/GPU/TPU/ASIC orchestration probes (**WP-PAR-80**). */
   bool needs_rt_hetero = false;
+  /** runtime/li_rt_io.c + li_rt_csv.c — PH-IO-4 file read + CSV parse. */
+  bool needs_rt_io = false;
   MirExecPlan exec_plan;
   MirCommPlan comm_plan;
   MirXferPlan xfer_plan;

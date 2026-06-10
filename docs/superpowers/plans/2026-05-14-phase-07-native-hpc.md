@@ -9,6 +9,8 @@
 
 ## 7a — SIMD vertical slice
 
+**Gap:** [G-math](../../verification/provability-gaps.md#g-math) (SIMD lowering; ties to **7e**)
+
 | Task | Exit |
 |------|------|
 | `simd[T,N]` in typechecker (`TyKind::Simd`) | `li-tests/simd/` pass |
@@ -16,6 +18,8 @@
 | `simd_dot` benchmark pure Li | `li_pure=True` in harness |
 
 ## 7b — `parallel for` + OpenMP
+
+**Gap:** [G-par](../../verification/provability-gaps.md#g-par) (structured `disjoint=`)
 
 | Task | Exit |
 |------|------|
@@ -26,12 +30,16 @@
 
 ## 7c — Benchmark truthfulness
 
+**Gap:** [G-math](../../verification/provability-gaps.md#g-math) (pure-Li tier-2 drivers)
+
 | Task | Exit |
 |------|------|
 | `md_lennard_jones` pure Li driver | No `LI_EXTRA_C` for li label |
 | Tier 2 verify checksum | `bench.py` smoke |
 
 ## 7d — Execution decorators (decorator-first HPC)
+
+**Gaps:** [G-dec](../../verification/provability-gaps.md#g-dec) · [G-par](../../verification/provability-gaps.md#g-par)
 
 > **Depends on:** **2g** (`def`), **7a** (SIMD), **7b** (`parallel for` + structured disjoint)  
 > **Plan:** [.cursor/plans/li_execution_decorators_7c6e3b42.plan.md](../../../.cursor/plans/li_execution_decorators_7c6e3b42.plan.md)  
@@ -65,17 +73,19 @@
 
 **7a–7c (Phase 7 core):**
 
-- [x] `./li-tests/run_all.sh simd race_shared_memory`
-- [x] `bench.py --tier 0` in CI; tier 1/2 perf runs advisory via `bench.py`
+- [x] `./li-tests/run_all.sh simd race_shared_memory` — **7a** [G-math](../../verification/provability-gaps.md#g-math) partial; **7b** [G-par](../../verification/provability-gaps.md#g-par) partial
+- [x] `bench.py --tier 0` in CI; tier 1/2 perf runs advisory via `bench.py` — **7c** [G-math](../../verification/provability-gaps.md#g-math) partial
 - [x] Fuzz workflow present (`.github/workflows/fuzz.yml`); `scripts/export-fuzz-status.sh`
 
 **7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):**
 
-- [x] `./li-tests/run_all.sh decorators decorator_exploits`
-- [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
+- [x] `./li-tests/run_all.sh decorators decorator_exploits` — [G-dec](../../verification/provability-gaps.md#g-dec) partial
+- [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords) — [G-dec](../../verification/provability-gaps.md#g-dec), [G-par](../../verification/provability-gaps.md#g-par) open
 - [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds (`compiler/fuzz/corpus/seed_decorators`)
 
 **7e (mathematical surface — user writes formulas, not `simd(...)`):**
+
+**Gap:** [G-math](../../verification/provability-gaps.md#g-math)
 
 > **Plan:** [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md)
 
@@ -87,6 +97,6 @@
 | **7e-d/e** | `ArrayDotF64` / `ArrayBinOpF64` gather SIMD | **partial** on `main` (#148) |
 | **2f / P-linalg** | Contract corpus for dot/sum/matmul entry | **partial:** #151 closed + loop open — **G-math**, **G-lean** |
 
-- [x] `./li-tests/run_all.sh math_linalg`
-- [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`)
-- [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard)
+- [x] `./li-tests/run_all.sh math_linalg` — [G-math](../../verification/provability-gaps.md#g-math) partial
+- [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`) — [G-math](../../verification/provability-gaps.md#g-math)
+- [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard) — [G-math](../../verification/provability-gaps.md#g-math) open

@@ -57,7 +57,8 @@ Priority order (from benchmark evidence + nginx model):
    - `LI_HTTPD_WORKERS=2` — lowest cross-worker relay contention; use for gate debugging
    - `LI_HTTPD_WORKERS=4` — compromise between isolation and accept throughput
    - `auto` — nginx-like spread; re-enable after parallel-18 ×3 loopback passes without post-burst CPU wedge
-   - Edge **must** set `limits.concurrent_streams` (e.g. 128) — `0` disables `g_active_proxy_streams` and parallel pump bypass never fires
+   - Edge **must** set `limits.concurrent_streams` (e.g. 128) — `0` disables `g_active_proxy_streams` and parallel pump bypass never fires. Multi-site flatten (li-httpd) omits stream keys; homelab `edge-inject-runtime-limits.py` patches `runtime.conf` after flatten.
+   - **Blackpearl 2026-06-10 (lic `8b7ba2ef`, concurrent_streams=128):** `auto` cold-start → 18/18 single burst and 18/18×3 with 10s cooldown; **back-to-back** ×3 without restart → run1 18/18, run2 14/18 (000/truncation cascade). `workers=4` → 89% CPU wedge + truncation. `workers=2` → hung probe / 0–6/18.
 3. **Fair write scheduling** — round-robin or deficit round-robin across active CL relays each epoll tick; never spend entire budget on one connection
 4. **Optional `proxy_buffering` mode** — config flag: buffered (copy upstream to pool, then drain to client) vs streaming (`off`); benchmark both for memory/latency tradeoff
 5. **Upstream keepalive pool per worker** — avoid thundering herd of upstream connects at parallel-18 (nginx `keepalive 32`)

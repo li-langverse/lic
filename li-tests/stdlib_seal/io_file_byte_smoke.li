@@ -1,0 +1,21 @@
+import std.io
+
+# PH-IO-4: std.io file_size + file_byte_at on bounded fixture read.
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var path: str = "li-tests/fixtures/io_smoke.txt"
+  var sz: int = file_size(path)
+  if sz != 2:
+    return 1
+  var b0: int = file_byte_at(path, 0)
+  if b0 != 76:
+    return 2
+  var b1: int = file_byte_at(path, 1)
+  if b1 != 105:
+    return 3
+  if io_tag() != 4:
+    return 4
+  return 0

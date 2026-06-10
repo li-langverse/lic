@@ -1762,3 +1762,55 @@ const char* li_rt_liasic_capability_json(void) {
            "{\"liasic_version\":1,\"device_kind\":%d}", (int)g_liasic_selected_backend);
   return li_rt_liasic_cap_json_buf;
 }
+
+#define LI_RT_IO_MAX_FILE (64 << 20)
+
+static int32_t li_rt_io_path_safe(const char* path) {
+  if (path == NULL || path[0] == '\0') {
+    return 0;
+  }
+  if (strstr(path, "..") != NULL) {
+    return 0;
+  }
+  return 1;
+}
+
+int32_t li_rt_io_file_size(const char* path) {
+  if (!li_rt_io_path_safe(path)) {
+    return -1;
+  }
+  FILE* f = fopen(path, "rb");
+  if (f == NULL) {
+    return -1;
+  }
+  if (fseek(f, 0, SEEK_END) != 0) {
+    fclose(f);
+    return -1;
+  }
+  long sz = ftell(f);
+  fclose(f);
+  if (sz < 0 || sz > LI_RT_IO_MAX_FILE) {
+    return -1;
+  }
+  return (int32_t)sz;
+}
+
+int32_t li_rt_io_file_byte_at(const char* path, int32_t off) {
+  if (off < 0 || !li_rt_io_path_safe(path)) {
+    return -1;
+  }
+  FILE* f = fopen(path, "rb");
+  if (f == NULL) {
+    return -1;
+  }
+  if (fseek(f, (long)off, SEEK_SET) != 0) {
+    fclose(f);
+    return -1;
+  }
+  int ch = fgetc(f);
+  fclose(f);
+  if (ch == EOF) {
+    return -1;
+  }
+  return ch & 0xff;
+}

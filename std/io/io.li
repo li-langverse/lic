@@ -1,3 +1,7 @@
+# std.io — PH-IO-4 file I/O facade (bounded read primitives for CSV/config ingest).
+#
+# Import: `import std.io`
+
 type Path = str
 type FileHandle = object
   public open: int
@@ -5,12 +9,38 @@ type FileHandle = object
 type IoError = object
   public code: int
 
+extern proc li_rt_io_file_size(path: str) -> int raises IO
+  requires true
+  ensures result >= -1
+  decreases 0
+
+extern proc li_rt_io_file_byte_at(path: str, off: int) -> int raises IO
+  requires off >= 0
+  ensures result >= -1
+  ensures result <= 255
+  decreases off
+
 def io_tag() -> int
   requires true
   ensures result == 4
   decreases 0
 =
   return 4
+
+def file_size(path: Path) raises IO -> int
+  requires true
+  ensures result >= -1
+  decreases 0
+=
+  return li_rt_io_file_size(path)
+
+def file_byte_at(path: Path, off: int) raises IO -> int
+  requires off >= 0
+  ensures result >= -1
+  ensures result <= 255
+  decreases off
+=
+  return li_rt_io_file_byte_at(path, off)
 
 def file_open_read(path: Path) -> FileHandle
   requires true

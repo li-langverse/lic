@@ -361,3 +361,7 @@ int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int
                                         int32_t entity_count, int32_t asset_ref_count);
 const char* li_rt_world_default_asset_ref_path(void);
 const char* li_rt_world_checkpoint_path_default(void);
+
+/* PH-IO-4: bounded file read primitives for std.io (reject .. traversal). */
+int32_t li_rt_io_file_size(const char* path);
+int32_t li_rt_io_file_byte_at(const char* path, int32_t off);

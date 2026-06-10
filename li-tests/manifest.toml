@@ -1262,6 +1262,12 @@ note = "PH-IO-4: std.io + std.csv resolve without shadow errors"
 
 [[tests]]
 suite = "stdlib_seal"
+file = "stdlib_seal/io_file_byte_smoke.li"
+outcome = "verify_ok"
+note = "PH-IO-4: std.io file_size + file_byte_at on fixture"
+
+[[tests]]
+suite = "stdlib_seal"
 file = "stdlib_seal/import_std_summary_plot_ok.li"
 outcome = "compile_ok"
 note = "PH-IO-7/5: std.summary + std.plot resolve without shadow errors"

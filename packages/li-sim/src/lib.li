@@ -147,6 +147,34 @@ def vertical_echem_sei_kmc() -> int
 =
   return 7
 
+def vertical_cfd_lid_driven_cavity() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def vertical_fea_linear_elasticity() -> int
+  requires true
+  ensures result == 9
+  decreases 0
+=
+  return 9
+
+def algo_cfd_fvm_face_flux() -> int
+  requires true
+  ensures result == 205
+  decreases 0
+=
+  return 205
+
+def algo_fea_linear_elasticity() -> int
+  requires true
+  ensures result == 215
+  decreases 0
+=
+  return 215
+
 def algo_registry_count() -> int
   requires true
   ensures result == 127
@@ -558,6 +586,12 @@ type SimSessionStub = object
   public replay_capacity: int
   public replay_count: int
   public replay_last_tick: int
+  public replay_entity_px: float
+  public replay_entity_py: float
+  public replay_entity_pz: float
+  public replay_entity_vx: float
+  public replay_entity_vy: float
+  public replay_entity_vz: float
   public game_px: float
   public game_py: float
   public game_pz: float
@@ -617,6 +651,12 @@ def sim_session_stub_default() -> SimSessionStub
   s.replay_capacity = sim_replay_capacity_default()
   s.replay_count = 0
   s.replay_last_tick = 0
+  s.replay_entity_px = 0.0
+  s.replay_entity_py = 0.0
+  s.replay_entity_pz = 0.0
+  s.replay_entity_vx = 0.0
+  s.replay_entity_vy = 0.0
+  s.replay_entity_vz = 0.0
   s.game_px = 0.0
   s.game_py = 0.0
   s.game_pz = 0.0
@@ -665,6 +705,41 @@ def sim_session_replay_last_tick(session: SimSessionStub) -> int
 =
   return session.replay_last_tick
 
+# WP-SIM-04 — entity pose snapshot ring (single-slot witness on session; not full SimWorld).
+def sim_world_snapshot_record(session: var SimSessionStub) -> unit
+  requires session.replay_capacity > 0
+  ensures session.replay_entity_px == session.game_px
+  ensures session.replay_entity_vy == session.game_vy
+  decreases 0
+=
+  session.replay_entity_px = session.game_px
+  session.replay_entity_py = session.game_py
+  session.replay_entity_pz = session.game_pz
+  session.replay_entity_vx = session.game_vx
+  session.replay_entity_vy = session.game_vy
+  session.replay_entity_vz = session.game_vz
+  sim_session_replay_record(session)
+
+def sim_world_snapshot_restore(session: var SimSessionStub) -> unit
+  requires true
+  ensures session.game_px == session.replay_entity_px
+  ensures session.game_vy == session.replay_entity_vy
+  decreases 0
+=
+  session.game_px = session.replay_entity_px
+  session.game_py = session.replay_entity_py
+  session.game_pz = session.replay_entity_pz
+  session.game_vx = session.replay_entity_vx
+  session.game_vy = session.replay_entity_vy
+  session.game_vz = session.replay_entity_vz
+
+def sim_world_snapshot_checksum(session: SimSessionStub) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return session.replay_entity_px + session.replay_entity_py + session.replay_entity_pz + session.replay_entity_vx + session.replay_entity_vy + session.replay_entity_vz
+
 # PH-SIM SIM-1 — deterministic tick counter (no physics kernel).
 def sim_reset(session: var SimSessionStub) -> int
   requires true
@@ -686,6 +761,12 @@ def sim_reset(session: var SimSessionStub) -> int
   session.last_dt = 0.0
   session.replay_count = 0
   session.replay_last_tick = 0
+  session.replay_entity_px = 0.0
+  session.replay_entity_py = 0.0
+  session.replay_entity_pz = 0.0
+  session.replay_entity_vx = 0.0
+  session.replay_entity_vy = 0.0
+  session.replay_entity_vz = 0.0
   session.game_px = 0.0
   session.game_py = 0.0
   session.game_pz = 0.0

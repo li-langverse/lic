@@ -114,6 +114,7 @@ flowchart LR
 | **7e-a** | Connect math expr lowering to existing 7a SIMD MIR | `simd_dot` Li source has **zero** `__li_simd_*` in user file |
 | **7e-b** | Matmul math + decorators in Tier 1 benches | `bench.py --tier 1` CSV: li vs cpp/rust/julia |
 | **7e-c** | Docs + gallery | See below |
+| **7e-d** | Pure-Li Horner / polynomial eval (`acc = acc * x + c`) without `__li_simd_*` / extra C kernels | `horner_pure_li` ≤1.2× C++; `HornerConstLoopF64` + FMA (`horner_const_loop_codegen_gap.sh`) |
 
 ---
 

@@ -1145,6 +1145,18 @@ file = "math_linalg/reductions/sum_non_array.li"
 outcome = "compile_fail"
 expected_substr = "sum expects a fixed array argument"
 
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/horner_fma_codegen_probe.li"
+outcome = "verify_ok"
+note = "PH-7e: HornerStepPow4 / HornerFmaUnroll at trip 65536"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/horner_const_loop_codegen_probe.li"
+outcome = "verify_ok"
+note = "PH-7e: HornerConstLoopF64 at horner_pure_li bench scale (5M, const x)"
+
 # --- physics (packages + profiles) ---
 
 [[tests]]

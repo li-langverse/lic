@@ -24,7 +24,7 @@ horner_pure_li,li,...,wall_time,0.0096,s,...
 
 ## Status vs ≤1.2× cpp gate
 
-Still **red** (~10.7×) before PH-7e follow-up. **2026-05-22:** needs-based runtime link (no `li_rt_net` in microbenches), `HornerFmaUnroll` / `HornerStepPow4` (const `x`), non-IO `volatile_sink` — devbox tier-1 ~**3×** cpp (honest, passes DCE guard). Lexer `Plus` fix: [autoresearch-horner-lexer-2026-05-18.md](./autoresearch-horner-lexer-2026-05-18.md).
+**Green (2026-06-10):** `HornerConstLoopF64` + FMA chunk lowering for const `x` at `horner_pure_li` scale (5M steps). Agent devbox advisory: Li **~0.92×** C++ wall time (`horner_const_loop_codegen_gap.sh`, `633be9191`). Prior red rows (88× lexer, 10.7× DCE) closed by lexer `Plus` fix and `li_rt_volatile_sink_f64`. Lexer: [autoresearch-horner-lexer-2026-05-18.md](./autoresearch-horner-lexer-2026-05-18.md).
 
 ## Near-limit tier-2 (deferred)
 

@@ -22,6 +22,19 @@ default:
     - homelab-k8s
   interruptible: true
 
+# homelab-k8s runner requires an explicit pull_policy in allowed_pull_policies.
+.image_ubuntu2404: &image_ubuntu2404
+  name: ubuntu:24.04
+  pull_policy: always
+
+.image_docker24: &image_docker24
+  name: docker:24
+  pull_policy: always
+
+.image_docker24_dind: &image_docker24_dind
+  name: docker:24-dind
+  pull_policy: always
+
 variables:
   LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
   CC: clang-22
@@ -48,7 +61,7 @@ variables:
 
 .version_template: &version_job
   stage: version
-  image: ubuntu:24.04
+  image: *image_ubuntu2404
   script:
     - apt-get update -qq && apt-get install -y -qq git bash
     - chmod +x scripts/check-version.sh
@@ -75,7 +88,7 @@ version:mr:
 
 build-and-test:
   stage: test
-  image: ubuntu:24.04
+  image: *image_ubuntu2404
   before_script: *apt_llvm_before
   script:
     - chmod +x scripts/checkout-ecosystem-siblings.sh scripts/ci.sh scripts/build.sh
@@ -89,7 +102,7 @@ build-and-test:
 
 test-proxy:
   stage: test
-  image: ubuntu:24.04
+  image: *image_ubuntu2404
   before_script: *apt_llvm_before
   script:
     - chmod +x scripts/build.sh test/proxy/run-proxy-tests.sh test/proxy-relay/run-unit-tests.sh
@@ -108,7 +121,7 @@ test-proxy:
 
 fuzz-parser:
   stage: fuzz
-  image: ubuntu:24.04
+  image: *image_ubuntu2404
   timeout: 2h
   variables:
     FUZZ_MAX_TOTAL_TIME: "600"
@@ -182,7 +195,7 @@ fuzz-parser:
 
 httpd-phase2-nightly:
   stage: httpd
-  image: ubuntu:24.04
+  image: *image_ubuntu2404
   timeout: 90m
   before_script:
     - apt-get update -qq
@@ -207,10 +220,11 @@ httpd-phase2-nightly:
 
 .publish_docker: &publish_docker
   stage: publish
-  image: docker:24
+  image: *image_docker24
   services:
     - name: docker:24-dind
       alias: docker
+      pull_policy: always
   variables:
     DOCKER_HOST: tcp://docker:2376
     DOCKER_TLS_CERTDIR: "/certs"

@@ -149,18 +149,20 @@ def sim_scientific_oracle_checksum_md() -> float
   if e1 > denom:
     denom = e1
   if denom < 0.0:
-    if -e0 > denom:
-      denom = -e0
-    if -e1 > denom:
-      denom = -e1
+    var neg_e0: float = 0.0 - e0
+    if neg_e0 > denom:
+      denom = neg_e0
+    var neg_e1: float = 0.0 - e1
+    if neg_e1 > denom:
+      denom = neg_e1
   if denom < 1.0e-12:
     denom = 1.0e-12
   var diff: float = e1 - e0
   if diff < 0.0:
-    diff = -diff
+    diff = 0.0 - diff
   var rel: float = diff / denom
   if rel < 0.0:
-    rel = -rel
+    rel = 0.0 - rel
   return rel
 
 # WP-SCI-03 — tier-2 Li oracle: explicit 1D heat stencil (8-point grid).
@@ -353,18 +355,20 @@ def sim_scientific_oracle_checksum_echem_aimd() -> float
   if e1 > denom:
     denom = e1
   if denom < 0.0:
-    if -e0 > denom:
-      denom = -e0
-    if -e1 > denom:
-      denom = -e1
+    var neg_e0: float = 0.0 - e0
+    if neg_e0 > denom:
+      denom = neg_e0
+    var neg_e1: float = 0.0 - e1
+    if neg_e1 > denom:
+      denom = neg_e1
   if denom < 1.0e-12:
     denom = 1.0e-12
   var diff: float = e1 - e0
   if diff < 0.0:
-    diff = -diff
+    diff = 0.0 - diff
   var rel: float = diff / denom
   if rel < 0.0:
-    rel = -rel
+    rel = 0.0 - rel
   return rel
 
 # W2 — headless batch AIMD (no 64-step interactive cap; toy kernel + DFT stub per step).
@@ -438,15 +442,17 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult
   if e1 > denom:
     denom = e1
   if denom < 0.0:
-    if -e0 > denom:
-      denom = -e0
-    if -e1 > denom:
-      denom = -e1
+    var neg_e0: float = 0.0 - e0
+    if neg_e0 > denom:
+      denom = neg_e0
+    var neg_e1: float = 0.0 - e1
+    if neg_e1 > denom:
+      denom = neg_e1
   if denom < 1.0e-12:
     denom = 1.0e-12
   var diff: float = e1 - e0
   if diff < 0.0:
-    diff = -diff
+    diff = 0.0 - diff
   out.energy_drift = diff / denom
   out.checksum = out.energy_drift + 1.0e-8
   if out.checksum <= 0.0:

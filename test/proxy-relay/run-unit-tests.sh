@@ -40,6 +40,11 @@ if [ "$INTEGRATION_ONLY" -eq 0 ]; then
   if [ -x "$LIC" ]; then
     echo "=== build proxy_relay_oracle ==="
     "$LIC" build li-tests/httpd/proxy_relay_oracle.li -o /tmp/proxy_relay_oracle 2>/dev/null || true
+    echo "=== build proxy_relay_native ==="
+    "$LIC" build --allow-open-vc packages/li-net-httpd/src/proxy_relay_native.li -o /tmp/proxy_relay_native 2>/dev/null || true
+  fi
+  if [ -x /tmp/proxy_relay_native ]; then
+    /tmp/proxy_relay_native || { echo "FAIL proxy_relay_native binary"; fail=$((fail + 1)); }
   fi
   if [ -x /tmp/proxy_relay_oracle ]; then
     /tmp/proxy_relay_oracle || { echo "FAIL proxy_relay_oracle binary"; fail=$((fail + 1)); }

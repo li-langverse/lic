@@ -9,4 +9,5 @@ python3 /opt/lic-scripts/validate-httpd-config.py /proxy/httpd.toml --allow-peer
 python3 /opt/lic-scripts/setup-tls-httpd.py /proxy/httpd.toml --cert-dir /certs
 python3 /opt/lic-scripts/flatten-httpd-config.py /proxy/httpd.toml -o "$CONF"
 sed -i "s|^tls_cert_dir=.*|tls_cert_dir=/certs|" "$CONF"
-exec env LI_HTTPD_WORKERS=2 /usr/local/bin/li-httpd "$CONF"
+exec env LI_HTTPD_WORKERS=1 LI_HTTPD_USE_NATIVE_PROXY_RELAY="${LI_HTTPD_USE_NATIVE_PROXY_RELAY:-1}" \
+  /usr/local/bin/li-httpd "$CONF"

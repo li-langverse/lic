@@ -756,7 +756,7 @@ def proxy_li_start(epfd: var int, slot: var int, hdr_end: int, keep: int) raises
   var ok: int = httpd_li_proxy_mark_active_i(epfd, slot, up, he, keep)
   if ok < 0:
     var reuse: int = 0
-    httpd_upstream_release_i(up, reuse)
+    httpd_upstream_release_slot_i(slot, up, reuse)
     return -1
   var init: int = httpd_li_proxy_init_req_i(slot, he)
   if init < 0:
@@ -913,9 +913,13 @@ def proxy_dispatch_hangup_loaded(epfd: var int) raises Net, Alloc, IO -> int
 =
   if proxy_epoll_tag_is_up(net_events_loaded_hi_i()) == 1:
     var slot_up: int = net_events_loaded_lo_i()
+    if httpd_li_proxy_active_i(slot_up) == 1:
+      return proxy_li_finish_err(epfd, slot_up)
     var up_fd: int = httpd_li_proxy_up_fd_i(slot_up)
-    httpd_epoll_unregister_fd_i(epfd, up_fd)
-    httpd_upstream_release_i(up_fd, 0)
+    if up_fd >= 0:
+      httpd_epoll_unregister_fd_i(epfd, up_fd)
+      var reuse_up: int = 0
+      httpd_upstream_release_slot_i(slot_up, up_fd, reuse_up)
     return 0
   if proxy_epoll_tag_is_client(net_events_loaded_hi_i()) == 1:
     var slot_c: int = net_events_loaded_lo_i()
@@ -1054,16 +1058,19 @@ def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Al
         i = i + 1
       var drain_guard: int = 8
       while drain_guard > 0:
-        drain_guard = drain_guard - 1
-        httpd_proxy_fair_relay_round_i(epfd)
-        var n2: int = epoll_wait_tagged_spin_i(epfd, evbuf, 256)
-        if n2 <= 0:
+        if httpd_proxy_epoll_idle_i() == 1:
           drain_guard = 0
-        if n2 > 0:
-          var j: int = 0
-          while j < n2:
-            proxy_dispatch_one(epfd, listen_tls, listen_http, evbuf, j)
-            j = j + 1
+        if drain_guard > 0:
+          drain_guard = drain_guard - 1
+          httpd_proxy_fair_relay_round_i(epfd)
+          var n2: int = epoll_wait_tagged_spin_i(epfd, evbuf, 256)
+          if n2 <= 0:
+            drain_guard = 0
+          if n2 > 0:
+            var j: int = 0
+            while j < n2:
+              proxy_dispatch_one(epfd, listen_tls, listen_http, evbuf, j)
+              j = j + 1
   net_buf_free(evbuf)
   return 0
 

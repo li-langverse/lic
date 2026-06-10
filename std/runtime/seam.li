@@ -521,6 +521,12 @@ extern proc httpd_upstream_release_i(fd: var int, keep: int) -> unit
   ensures true
   decreases 0
 
+extern proc httpd_upstream_release_slot_i(slot: var int, fd: var int, keep: int) -> unit
+  requires 0 <= slot
+  requires fd >= 0
+  ensures true
+  decreases 0
+
 extern proc httpd_epoll_unregister_fd_i(epfd: var int, fd: var int) -> unit
   requires epfd >= 0
   ensures true
@@ -727,6 +733,11 @@ extern proc httpd_tick_sse_stream_idle_i(epfd: var int) -> int
 
 extern proc httpd_proxy_fair_relay_round_i(epfd: var int) -> int
   requires epfd >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_proxy_epoll_idle_i() -> int
+  requires true
   ensures true
   decreases 0
 

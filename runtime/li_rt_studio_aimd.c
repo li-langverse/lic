@@ -16,9 +16,35 @@ typedef struct {
   int32_t temperature_k;
   int32_t potential_mv;
   int32_t algo_id;
+  int32_t dft_stride;
 } LiRtStudioAimdScenario;
 
-static LiRtStudioAimdScenario g_studio_aimd_scenario = {0, 5000, 300, 0, 433};
+static LiRtStudioAimdScenario g_studio_aimd_scenario = {0, 5000, 300, 0, 433, 50};
+
+static int32_t li_rt_studio_aimd_clamp_stride(int32_t stride) {
+  if (stride < 1) {
+    return 1;
+  }
+  if (stride > 1000) {
+    return 1000;
+  }
+  return stride;
+}
+
+static int32_t li_rt_studio_aimd_resolve_dft_stride(void) {
+  const char* real = getenv("REAL_AIMD");
+  if (real != NULL && real[0] == '1' && real[1] == '\0') {
+    return 1;
+  }
+  if (g_studio_aimd_scenario.dft_stride >= 1) {
+    return li_rt_studio_aimd_clamp_stride(g_studio_aimd_scenario.dft_stride);
+  }
+  const char* stride_env = getenv("STUDIO_AIMD_DFT_STRIDE");
+  if (stride_env != NULL && stride_env[0] != '\0') {
+    return li_rt_studio_aimd_clamp_stride((int32_t)atoi(stride_env));
+  }
+  return 50;
+}
 static char g_studio_aimd_last_ppm[1024] = "";
 
 static int32_t li_rt_studio_aimd_mkdir_parents(const char* path) {

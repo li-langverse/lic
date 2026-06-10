@@ -523,14 +523,42 @@ bool load_elf32(const std::vector<uint8_t>& image, Memory* mem, uint32_t* entry,
   return true;
 }
 
-bool run(Cpu* cpu, Memory* mem, std::string* error) {
+bool serial_marker_seen(const Cpu& cpu, const std::string& stub) {
+  if (stub == "virtio-mmio") {
+    return cpu.serial.find("virtio-mmio:blk-read-ok") != std::string::npos;
+  }
+  if (stub == "mm-bump") {
+    return cpu.serial.find("mm:bump:ok") != std::string::npos;
+  }
+  return cpu.serial.find("hello_kern") != std::string::npos;
+}
+
+void write_stub_u32(Memory* mem, uint32_t addr, uint32_t value) {
+  mem->write32(addr, value);
+}
+
+void seed_stub_regions(Memory* mem, const std::string& stub) {
+  if (stub == "virtio-mmio") {
+    // QEMU virt virtio-mmio block @ 0x0A000000; sector buffer @ 0x0B000000.
+    write_stub_u32(mem, 0x0A000000u, 0x74726976u);  // virtio magic
+    write_stub_u32(mem, 0x0A000008u, 2u);           // virtio device id (block)
+    write_stub_u32(mem, 0x0B000000u, 0xDEADBEEFu);
+    return;
+  }
+  if (stub == "mm-bump") {
+    // Bump heap region touch @ 0x01000000 (lik mm_bump_kern).
+    write_stub_u32(mem, 0x01000000u, 0u);
+  }
+}
+
+bool run(Cpu* cpu, Memory* mem, const std::string& stub, std::string* error) {
   Decoder dec{cpu, mem};
   while (true) {
-    if (cpu->serial.find("hello_kern") != std::string::npos) {
+    if (serial_marker_seen(*cpu, stub)) {
       return true;
     }
     if (!dec.step_once(error)) {
-      return cpu->serial.find("hello_kern") != std::string::npos;
+      return serial_marker_seen(*cpu, stub);
     }
   }
 }

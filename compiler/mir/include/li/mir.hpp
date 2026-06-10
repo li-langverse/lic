@@ -103,6 +103,8 @@ enum class MirOp {
   HwOutb,
   /** `@hw.hlt()` — halt until interrupt (freestanding kernel). */
   HwHlt,
+  /** `@hw.mmio_read32(phys)` — 32-bit MMIO load (freestanding kernel). */
+  HwMmioRead32,
 };
 
 struct MirArg {

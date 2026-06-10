@@ -120,7 +120,8 @@ int usage() {
             << "                       [--threads=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
-            << "  lic smoke-kernel <elf> [--timeout SEC]  execute freestanding kernel; trap @hw outb on COM1\n"
+            << "  lic smoke-kernel <elf> [--timeout SEC] [--stub virtio-mmio|mm-bump]\n"
+            << "                       execute freestanding kernel; trap @hw outb on COM1\n"
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
             << "  lic httpd validate-config <file.toml>  validate [routes] (E0501–E0504)\n"
             << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"
@@ -508,7 +509,7 @@ int main(int argc, char** argv) {
   }
   if (cmd == "smoke-kernel") {
     if (argc < 3) {
-      std::cerr << "usage: lic smoke-kernel <elf> [--timeout SEC]\n";
+      std::cerr << "usage: lic smoke-kernel <elf> [--timeout SEC] [--stub virtio-mmio|mm-bump]\n";
       return 1;
     }
     li::SmokeKernelOptions smoke_opts;
@@ -517,8 +518,14 @@ int main(int argc, char** argv) {
       const std::string_view arg = argv[i];
       if (arg == "--timeout" && i + 1 < argc) {
         smoke_opts.timeout_sec = std::max(1, std::atoi(argv[++i]));
+      } else if (arg == "--stub" && i + 1 < argc) {
+        smoke_opts.stub = argv[++i];
+        if (smoke_opts.stub != "virtio-mmio" && smoke_opts.stub != "mm-bump") {
+          std::cerr << "usage: lic smoke-kernel <elf> [--timeout SEC] [--stub virtio-mmio|mm-bump]\n";
+          return 1;
+        }
       } else {
-        std::cerr << "usage: lic smoke-kernel <elf> [--timeout SEC]\n";
+        std::cerr << "usage: lic smoke-kernel <elf> [--timeout SEC] [--stub virtio-mmio|mm-bump]\n";
         return 1;
       }
     }
@@ -527,7 +534,7 @@ int main(int argc, char** argv) {
       std::cerr << "smoke-kernel failed: " << err << '\n';
       return 1;
     }
-    std::cerr << "smoke-kernel: PASS (hello_kern on COM1)\n";
+    std::cerr << "smoke-kernel: PASS (" << err << ")\n";
     return 0;
   }
   if (cmd == "parse") {

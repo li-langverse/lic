@@ -1773,6 +1773,22 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
         out.push_back(std::move(ins));
         return fresh_temp();
       }
+      if (e.ident == "@hw.mmio_read32" && e.args.size() == 1) {
+        MirInsn ins;
+        ins.op = MirOp::HwMmioRead32;
+        if (e.args[0]->kind == Expr::Kind::IntLit) {
+          ins.index_is_literal = true;
+          ins.int_value = e.args[0]->int_value;
+        } else {
+          ins.index_is_literal = false;
+          ins.index_ident =
+              lower_expr_to(*e.args[0], module, out, float_names, simd_names, i64_locals);
+        }
+        const std::string dest = fresh_temp();
+        ins.ident = dest;
+        out.push_back(std::move(ins));
+        return dest;
+      }
       const ProcDecl* callee = find_proc(module, e.ident);
       if (callee && !callee->is_extern) {
         const std::string dest = lower_callproc_with_optional_inout(

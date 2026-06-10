@@ -1087,6 +1087,16 @@ struct EmitCtx {
         builder->CreateCall(asm_fn);
         return true;
       }
+      case MirOp::HwMmioRead32: {
+        llvm::Value* addr = ins.index_is_literal ? int32_val(*builder, context, ins.int_value)
+                                                 : load_int(ins.index_ident);
+        llvm::Type* i32 = llvm::Type::getInt32Ty(context);
+        llvm::Value* ptr = builder->CreateIntToPtr(addr, llvm::PointerType::getUnqual(i32));
+        llvm::LoadInst* load = builder->CreateLoad(i32, ptr);
+        load->setVolatile(true);
+        builder->CreateStore(load, ensure_int_local(ins.ident));
+        return true;
+      }
       case MirOp::CallExtern: {
         llvm::Function* callee = module->getFunction(ins.callee);
         if (!callee) {

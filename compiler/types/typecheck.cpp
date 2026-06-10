@@ -1013,6 +1013,14 @@ struct Ctx {
           }
           return make_int();
         }
+        if (e.ident == "@hw.mmio_read32") {
+          if (e.args.size() != 1) {
+            diags.error(loc(e.span), "@hw.mmio_read32 expects one int address argument");
+            return make_int();
+          }
+          (void)type_of(*e.args[0]);
+          return make_int();
+        }
         if (e.ident == "sum" || e.ident == "par_sum") {
           if (e.args.size() != 1) {
             diags.error(loc(e.span), e.ident + " expects one array argument");
@@ -1339,6 +1347,7 @@ struct Ctx {
       return;
     }
     if (call.ident == "echo" || call.ident == "@hw.outb" || call.ident == "@hw.hlt" ||
+        call.ident == "@hw.mmio_read32" ||
         call.ident == "sum" || call.ident == "par_sum" || call.ident == "dot" ||
         call.ident == "norm" || call.ident == "axpy" ||
         call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||

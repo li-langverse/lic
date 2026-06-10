@@ -36,8 +36,12 @@ M1 minimum surface:
 |-----------|----------|
 | `@hw.outb(port, value)` | x86 `outb` |
 | `@hw.hlt()` | x86 `hlt` |
+| `@hw.mmio_read32(phys)` | volatile 32-bit load at physical address |
 
-Additional intrinsics (MMIO, IRQ, fences) are added to the audited catalog as milestones land.
+`lic smoke-kernel` accepts `--stub virtio-mmio` or `--stub mm-bump` to map MMIO pages and
+check M2 serial markers (`virtio-mmio:blk-read-ok`, `mm:bump:ok`) without QEMU.
+
+Additional intrinsics (IRQ, fences) are added to the audited catalog as milestones land.
 
 ## What is not in lic
 

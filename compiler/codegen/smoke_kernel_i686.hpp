@@ -40,7 +40,8 @@ class Memory {
 };
 
 bool load_elf32(const std::vector<uint8_t>& image, Memory* mem, uint32_t* entry, std::string* error);
-bool run(Cpu* cpu, Memory* mem, std::string* error);
+void seed_stub_regions(Memory* mem, const std::string& stub);
+bool run(Cpu* cpu, Memory* mem, const std::string& stub, std::string* error);
 uint32_t choose_stack_top(const Memory& mem, uint32_t entry);
 
 }  // namespace smoke_i686

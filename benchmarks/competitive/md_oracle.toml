@@ -1,0 +1,14 @@
+# WP-PLAT-05 — external MD oracle column (LAMMPS/GROMACS policy).
+[meta]
+version = 1
+updated = "2026-06-10"
+
+[[oracle]]
+id = "md_oracle_external"
+algo_id = 104
+vertical = "md_lennard_jones"
+li_package = "sim.scientific"
+driver = "scripts/run-md-oracle-external.sh"
+external_binary = "optional"
+policy_ratio_max = 1.2
+notes = "Li tier-2 oracle sim_scientific_oracle_checksum_md(); LAMMPS/GROMACS column when binary on PATH"

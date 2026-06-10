@@ -1,7 +1,7 @@
 import std.csv
 import std.io
 
-def main() -> int
+def main() -> int raises Alloc
   requires true
   ensures result == 0
   decreases 0
@@ -9,4 +9,8 @@ def main() -> int
   var tag: int = csv_tag() + io_tag()
   if tag != 10:
     return 1
+  var csv_path: Path = "bench.csv"
+  var body: str = file_read_all(csv_path)
+  if body != "":
+    return 2
   return 0

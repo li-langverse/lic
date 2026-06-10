@@ -1,0 +1,23 @@
+import std.io
+
+def main() -> int raises Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var input_path: Path = "input.txt"
+  var h: FileHandle = file_open_read(input_path)
+  if h.open != 0:
+    return 1
+  file_close(h)
+  var body: str = file_read_all(input_path)
+  if body != "":
+    return 2
+  var left: Path = "a"
+  var right: Path = "b"
+  var joined: Path = path_join(left, right)
+  if joined != "a":
+    return 3
+  if io_tag() != 4:
+    return 4
+  return 0

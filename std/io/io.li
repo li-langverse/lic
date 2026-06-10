@@ -28,6 +28,13 @@ def file_close(handle: FileHandle) -> unit
 =
   return
 
+def file_read_all(path: Path) raises Alloc -> str
+  requires true
+  ensures result == ""
+  decreases 0
+=
+  return ""
+
 def file_read_all_stub() -> int
   requires true
   ensures result == 0

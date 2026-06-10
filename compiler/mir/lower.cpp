@@ -183,6 +183,22 @@ bool stmt_has_vectorized(const std::vector<Decorator>& decos) {
   return false;
 }
 
+bool fn_has_vectorized_decorator(const MirFn& fn) {
+  for (const auto& d : fn.decorators) {
+    if (d.vectorized) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void push_array_simd_scope_on(std::vector<MirInsn>& out) {
+  MirInsn simd_on;
+  simd_on.op = MirOp::ArraySimdScope;
+  simd_on.int_value = 1;
+  out.push_back(std::move(simd_on));
+}
+
 bool is_float_type_name(const std::string& n) {
   if (const auto scalar = li::lookup_numeric_scalar(n)) {
     return scalar->kind == li::NumericScalarKind::Float;
@@ -2845,6 +2861,17 @@ bool insn_terminates(MirOp op) {
          op == MirOp::ReturnIdent || op == MirOp::ReturnObject;
 }
 
+void insert_array_simd_scope_off_before_return(std::vector<MirInsn>& body) {
+  MirInsn simd_off;
+  simd_off.op = MirOp::ArraySimdScope;
+  simd_off.int_value = 0;
+  if (!body.empty() && insn_terminates(body.back().op)) {
+    body.insert(body.end() - 1, std::move(simd_off));
+  } else {
+    body.push_back(std::move(simd_off));
+  }
+}
+
 void append_implicit_return(std::vector<MirInsn>& body) {
   if (body.empty() || !insn_terminates(body.back().op)) {
     MirInsn ins;
@@ -3020,8 +3047,16 @@ MirModule lower_to_mir(const Module& module) {
         }
       }
       if (!lowered_body) {
+        const bool vectorized_def = fn_has_vectorized_decorator(fn) && !fn.no_vectorize;
+        if (vectorized_def) {
+          push_array_simd_scope_on(fn.body);
+        }
         lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
                     float_array_names, i64_locals);
+        if (vectorized_def) {
+          insert_array_simd_scope_off_before_return(fn.body);
+          fn.vectorized_def_scope = true;
+        }
       }
       if (proc.name == "main") {
         std::vector<MirInsn> plan_prefix;

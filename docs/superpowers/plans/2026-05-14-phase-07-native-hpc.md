@@ -7,21 +7,21 @@
 
 **Goal:** Built-in `simd[T, N]` and proved `parallel for` without user-level parallel/math libraries. Toolchain links LLVM + libomp only.
 
-## 7a — SIMD vertical slice
+## 7a — SIMD vertical slice (**G-math**)
 
 | Task | Exit |
 |------|------|
 | `simd[T,N]` in typechecker (`TyKind::Simd`) | `li-tests/simd/` pass |
-| MIR: splat, binop, horizontal sum | LLVM `<N x double>` |
+| MIR: splat, binop, horizontal sum | LLVM `<N x double>` (**G-math** partial) |
 | `simd_dot` benchmark pure Li | `li_pure=True` in harness |
 
-## 7b — `parallel for` + OpenMP
+## 7b — `parallel for` + OpenMP (**G-par**)
 
 | Task | Exit |
 |------|------|
 | `Stmt::ParallelFor` AST + parser | Parses exploit fixtures |
 | Outlined par body + `li_omp_parallel_for` in `runtime/li_rt.c` | `-fopenmp` link |
-| Replace `policy.cpp` string hacks with structured overlap check (keep fixtures) | `race_shared_memory` green |
+| Replace `policy.cpp` string hacks with structured overlap check (keep fixtures) | `race_shared_memory` green (**G-par** partial — structured `disjoint=` still open) |
 | `lic build --threads=N` / `LI_OMP_THREADS` | CSV threads column |
 
 ## 7c — Benchmark truthfulness
@@ -31,7 +31,7 @@
 | `md_lennard_jones` pure Li driver | No `LI_EXTRA_C` for li label |
 | Tier 2 verify checksum | `bench.py` smoke |
 
-## 7d — Execution decorators (decorator-first HPC)
+## 7d — Execution decorators (decorator-first HPC) (**G-dec**)
 
 > **Depends on:** **2g** (`def`), **7a** (SIMD), **7b** (`parallel for` + structured disjoint)  
 > **Plan:** [.cursor/plans/li_execution_decorators_7c6e3b42.plan.md](../../../.cursor/plans/li_execution_decorators_7c6e3b42.plan.md)  
@@ -63,19 +63,19 @@
 
 ## Exit gate (phase complete)
 
-**7a–7c (Phase 7 core):**
+**7a–7c (Phase 7 core):** **G-math** (7a), **G-par** (7b)
 
 - [x] `./li-tests/run_all.sh simd race_shared_memory`
 - [x] `bench.py --tier 0` in CI; tier 1/2 perf runs advisory via `bench.py`
 - [x] Fuzz workflow present (`.github/workflows/fuzz.yml`); `scripts/export-fuzz-status.sh`
 
-**7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):**
+**7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):** **G-dec**
 
 - [x] `./li-tests/run_all.sh decorators decorator_exploits`
 - [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
 - [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds (`compiler/fuzz/corpus/seed_decorators`)
 
-**7e (mathematical surface — user writes formulas, not `simd(...)`):**
+**7e (mathematical surface — user writes formulas, not `simd(...)`):** **G-math**
 
 > **Plan:** [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md)
 

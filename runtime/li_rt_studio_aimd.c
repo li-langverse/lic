@@ -105,6 +105,17 @@ int32_t li_rt_studio_aimd_batch_steps_from_env(void) {
   return (int32_t)n;
 }
 
+static const char* li_rt_studio_aimd_batch_tier_label(int32_t gpu_path) {
+  const char* pilot = getenv("STUDIO_AIMD_PILOT");
+  if (pilot != NULL && pilot[0] == '1' && pilot[1] == '\0') {
+    return gpu_path == 1 ? "pilot" : "mvp_stub";
+  }
+  if (gpu_path == 1) {
+    return "mvp_gpu_stub";
+  }
+  return "mvp_stub";
+}
+
 int32_t li_rt_studio_aimd_batch_write_json(const char* path, int32_t steps, int32_t ok,
                                            double checksum, double energy_drift, int32_t gpu_path) {
   if (path == NULL || path[0] == '\0') {
@@ -115,19 +126,29 @@ int32_t li_rt_studio_aimd_batch_write_json(const char* path, int32_t steps, int3
   if (f == NULL) {
     return 0;
   }
+  const char* tier = li_rt_studio_aimd_batch_tier_label(gpu_path);
+  const char* stride_env = getenv("STUDIO_AIMD_DFT_STRIDE");
+  int dft_stride = (stride_env != NULL && stride_env[0] != '\0') ? atoi(stride_env) : 50;
+  if (dft_stride < 1) {
+    dft_stride = 1;
+  }
+  int dft_calls = steps / dft_stride + 1;
   fprintf(f,
           "{\n"
           "  \"native_only\": true,\n"
-          "  \"tier\": \"stub\",\n"
+          "  \"tier\": \"%s\",\n"
           "  \"steps\": %d,\n"
           "  \"ok\": %d,\n"
           "  \"checksum\": %.12f,\n"
           "  \"energy_drift\": %.12f,\n"
-          "  \"gpu_path\": %d\n"
+          "  \"gpu_path\": %d,\n"
+          "  \"dft_stride\": %d,\n"
+          "  \"dft_calls\": %d\n"
           "}\n",
-          (int)steps, (int)ok,
+          tier, (int)steps, (int)ok,
           (isfinite(checksum) ? checksum : 1.0e-6),
-          (isfinite(energy_drift) ? energy_drift : 1.0e-6), (int)gpu_path);
+          (isfinite(energy_drift) ? energy_drift : 1.0e-6), (int)gpu_path, dft_stride,
+          dft_calls);
   fclose(f);
   return 1;
 }
@@ -187,7 +208,7 @@ int32_t li_rt_studio_aimd_last_ppm_set(const char* path) {
 
 const char* li_rt_studio_aimd_last_ppm_get(void) { return g_studio_aimd_last_ppm; }
 
-/* Stub for headless studio smokes linking ui_snapshot without full gui runtime. */
+/* Headless studio smokes: ui_snapshot tag lookup without full gui runtime. */
 int32_t li_rt_ui_snapshot_tag_from_id(const char* id) {
   (void)id;
   return 0;

@@ -20,4 +20,10 @@ def main() -> int
     return 6
   if batch.gpu_path != echem_aimd_batch_gpu_path_select():
     return 7
+  if batch.dft_stride != echem_aimd_batch_dft_stride():
+    return 8
+  if batch.dft_calls < 1:
+    return 9
+  if batch.checksum_ok != 1:
+    return 10
   return 0

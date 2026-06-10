@@ -70,8 +70,9 @@ grep -q 'stable-baselines3' scripts/requirements-ph-ml-wave12-rl.txt \
   || { echo "T5: SB3 must be a declared dependency"; exit 1; }
 grep -q 'ray' scripts/requirements-ph-ml-wave12-rl.txt \
   || { echo "T5: Ray must be a declared dependency"; exit 1; }
-python3 -m pip install --user --break-system-packages \
-  -r scripts/requirements-ph-ml-wave12-rl.txt >/dev/null 2>&1 || true
+# shellcheck source=lib/ensure-ph-ml-python-deps.sh
+source "$ROOT/scripts/lib/ensure-ph-ml-python-deps.sh"
+ensure_ph_ml_python_deps "$ROOT" "$ROOT/scripts/requirements-ph-ml-wave12-rl.txt"
 export PYTHONPATH="$ROOT/scripts${PYTHONPATH:+:$PYTHONPATH}"
 export PH_ML_SB3_VECENV_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-sb3-vecenv.json"
 export PH_ML_RAY_RLLIB_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-ray-rllib.json"

@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Tier-2 harness** — `run_algo_registry_tier2.li` registry-dispatch checks (non-stub checksums for MD/heat/CFD/FEA/QM/echem); smoke version pins → 7; energy-drift rel guard for float runtime.
+- **MD oracle smokes** — `md_oracle_li_checksum.li` / `scientific_oracle_bench.li` avoid host-float drift sign checks; competitive checksum via `md_oracle_li_mirror.py`.
 
 ### Changed
 

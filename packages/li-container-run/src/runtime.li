@@ -212,9 +212,24 @@ def lirun_backend_lifecycle_selftest() raises IO -> int
   if bid == container_backend_id_linux():
     if tag != container_linux_backend_tag():
       return 2
+  if bid == container_backend_id_lios():
+    if tag != container_lios_backend_tag():
+      return 3
+  if bid == container_backend_id_windows():
+    if tag != container_windows_backend_tag():
+      return 4
+  if bid == container_backend_id_darwin():
+    if tag != container_darwin_backend_tag():
+      return 5
   if bid == container_backend_id_unknown():
     if tag != container_backend_id_unknown():
-      return 3
+      return 6
+  if container_lios_isolation_score() != 3:
+    return 7
+  if container_windows_isolation_score() != 2:
+    return 8
+  if container_darwin_isolation_score() != 2:
+    return 9
   return 0
 
 def lirun_selftest() raises IO -> int

@@ -1,6 +1,6 @@
 {
-  "phase": "p5-cross-os",
+  "phase": "p6-orchestration",
   "started_at": "2026-06-10",
   "branch": "feat/extern-def-container-seam",
-  "notes": "P4 gate passed: li-container-run runtime.li + main.li, backend-aware lirun lifecycle (WP-CTN-040..042)"
+  "notes": "P5 gate passed: LiOS/Windows/macOS backends hardened, host detection seam, container-multi-os-matrix.md (WP-CTN-050..053)"
 }

@@ -1,4 +1,4 @@
-# WP-CTN-024 — Windows container backend stub (Wave 2).
+# WP-CTN-051 — Windows container backend (job objects + namespace isolation tags).
 
 def container_windows_backend_tag() -> int
   requires true
@@ -21,6 +21,41 @@ def container_windows_namespace_tag() -> int
 =
   return 2
 
+def container_windows_capability_job_object() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_windows_capability_silo() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_windows_capability_hcn() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def container_windows_scheduling_label_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_windows_isolation_score() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return container_windows_capability_job_object() + container_windows_capability_silo()
+
 def container_windows_backend_selftest() -> int
   requires true
   ensures result == 0
@@ -32,4 +67,14 @@ def container_windows_backend_selftest() -> int
     return 2
   if container_windows_namespace_tag() != 2:
     return 3
+  if container_windows_capability_job_object() != 1:
+    return 4
+  if container_windows_capability_silo() != 1:
+    return 5
+  if container_windows_capability_hcn() != 0:
+    return 6
+  if container_windows_scheduling_label_tag() != 1:
+    return 7
+  if container_windows_isolation_score() != 2:
+    return 8
   return 0

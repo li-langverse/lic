@@ -82,10 +82,59 @@ static const char* container_state_root(void) {
 
 int container_runtime_tag_i(void) { return CONTAINER_RT_TAG; }
 
+static int container_env_os_value_is(const char* name, const char* value) {
+  const char* env = getenv(name);
+  return (env != NULL && value != NULL && strcmp(env, value) == 0) ? 1 : 0;
+}
+
 int container_is_linux_i(void) {
 #if defined(__linux__)
+  if (container_env_os_value_is("LI_CONTAINER_OS", "lios")) {
+    return 0;
+  }
+  if (container_env_os_value_is("LIBERNETES_OS", "lios")) {
+    return 0;
+  }
   return 1;
 #else
+  return 0;
+#endif
+}
+
+int container_is_lios_i(void) {
+  if (container_env_os_value_is("LI_CONTAINER_OS", "lios")) {
+    return 1;
+  }
+  if (container_env_os_value_is("LIBERNETES_OS", "lios")) {
+    return 1;
+  }
+  return 0;
+}
+
+int container_is_windows_i(void) {
+#if defined(_WIN32)
+  return 1;
+#else
+  if (container_env_os_value_is("LI_CONTAINER_OS", "windows")) {
+    return 1;
+  }
+  if (container_env_os_value_is("LIBERNETES_OS", "windows")) {
+    return 1;
+  }
+  return 0;
+#endif
+}
+
+int container_is_darwin_i(void) {
+#if defined(__APPLE__)
+  return 1;
+#else
+  if (container_env_os_value_is("LI_CONTAINER_OS", "darwin")) {
+    return 1;
+  }
+  if (container_env_os_value_is("LIBERNETES_OS", "darwin")) {
+    return 1;
+  }
   return 0;
 #endif
 }

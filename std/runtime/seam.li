@@ -799,6 +799,21 @@ extern def container_is_linux_i() -> int
   ensures true
   decreases 0
 
+extern def container_is_lios_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern def container_is_windows_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern def container_is_darwin_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
 extern def container_mkdir_p_i(path: var ptr) raises IO -> int
   requires true
   ensures true

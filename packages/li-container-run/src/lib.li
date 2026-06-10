@@ -4,10 +4,10 @@ import runtime
 
 def li_container_run_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def li_container_run_selftest() raises IO -> int
   requires true

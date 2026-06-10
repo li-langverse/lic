@@ -114,7 +114,7 @@ out.write_text(
         {
             "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "suite": "ph-sci-md-oracle-competitive",
-            "registry_path": registry,
+            "registry_path": "benchmarks/competitive/md_oracle.toml",
             "registry_schema": "li_ph_sci_md_oracle_competitive_v1",
             "rows": rows,
         },

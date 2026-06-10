@@ -1170,6 +1170,24 @@ outcome = "compile_ok"
 note = "tier-1 dot spec N=8; runtime via verify-math-physics-goldens.sh"
 
 [[tests]]
+suite = "math_linalg"
+file = "math_linalg/horner_fma_codegen_probe.li"
+outcome = "compile_ok"
+note = "PH-7e Horner FMA MIR smoke (trip 65536, const x)"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/horner_pure_li_mirror.li"
+outcome = "compile_ok"
+note = "PH-7e mirror horner_pure_li shape (x=0.999999, trip 65536)"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/horner_trip_edges.li"
+outcome = "compile_ok"
+note = "PH-7e Horner trip edge 64 (pow4/fma-unroll path)"
+
+[[tests]]
 suite = "physics"
 file = "physics/golden_positions_sum.li"
 outcome = "compile_ok"

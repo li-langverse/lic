@@ -63,16 +63,18 @@
 
 ## Exit gate (phase complete)
 
+**Proof gaps by slice:** **7b** → [G-par](../../verification/provability-gaps.md#g-par) · **7d** → [G-dec](../../verification/provability-gaps.md#g-dec) · **7e** → [G-math](../../verification/provability-gaps.md#g-math)
+
 **7a–7c (Phase 7 core):**
 
-- [x] `./li-tests/run_all.sh simd race_shared_memory`
+- [x] `./li-tests/run_all.sh simd race_shared_memory` — **7b** [G-par](../../verification/provability-gaps.md#g-par) **partial** (structured `disjoint=` still open)
 - [x] `bench.py --tier 0` in CI; tier 1/2 perf runs advisory via `bench.py`
 - [x] Fuzz workflow present (`.github/workflows/fuzz.yml`); `scripts/export-fuzz-status.sh`
 
 **7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):**
 
-- [x] `./li-tests/run_all.sh decorators decorator_exploits`
-- [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
+- [x] `./li-tests/run_all.sh decorators decorator_exploits` — [G-dec](../../verification/provability-gaps.md#g-dec) **partial** (parse + partial elaboration)
+- [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords) — **G-par**, **G-dec** open
 - [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds (`compiler/fuzz/corpus/seed_decorators`)
 
 **7e (mathematical surface — user writes formulas, not `simd(...)`):**
@@ -81,12 +83,12 @@
 
 | Sub | Task | Exit |
 |-----|------|------|
-| **7e-a** | Lower `*`, `+`, `dot`, `sum` to 7a SIMD MIR | **partial:** `simd_dot` pure-Li `a @ b` (#148) |
-| **7e-b** | Lower `A @ B` for Tier 1 matmul benches | **partial:** `matmul_naive` / `matmul_blocked` pure-Li; **≤1.2× C++** advisory |
+| **7e-a** | Lower `*`, `+`, `dot`, `sum` to 7a SIMD MIR | **partial:** `simd_dot` pure-Li `a @ b` (#148) — [G-math](../../verification/provability-gaps.md#g-math) |
+| **7e-b** | Lower `A @ B` for Tier 1 matmul benches | **partial:** `matmul_naive` / `matmul_blocked` pure-Li; **≤1.2× C++** advisory — [G-math](../../verification/provability-gaps.md#g-math) |
 | **7e-c** | `docs/language/linear-algebra.md`, `docs/guide/math-hpc-examples.md` | **done** on `main` |
-| **7e-d/e** | `ArrayDotF64` / `ArrayBinOpF64` gather SIMD | **partial** on `main` (#148) |
-| **2f / P-linalg** | Contract corpus for dot/sum/matmul entry | **partial:** #151 closed + loop open — **G-math**, **G-lean** |
+| **7e-d/e** | `ArrayDotF64` / `ArrayBinOpF64` gather SIMD | **partial** on `main` (#148) — [G-math](../../verification/provability-gaps.md#g-math) |
+| **2f / P-linalg** | Contract corpus for dot/sum/matmul entry | **partial:** #151 closed + loop open — [G-math](../../verification/provability-gaps.md#g-math), **G-lean** |
 
-- [x] `./li-tests/run_all.sh math_linalg`
+- [x] `./li-tests/run_all.sh math_linalg` — [G-math](../../verification/provability-gaps.md#g-math) **partial**
 - [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`)
 - [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard)

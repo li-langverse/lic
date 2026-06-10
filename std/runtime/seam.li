@@ -836,6 +836,27 @@ extern proc httpd_native_proxy_reconcile_i(epfd: var int) -> unit
   ensures true
   decreases 0
 
+extern proc httpd_native_proxy_run_deferred_i(epfd: var int) -> unit
+  requires epfd >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_native_proxy_tick_starved_i(epfd: var int) -> unit
+  requires epfd >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_native_proxy_advance_fair_cursor_i() -> unit
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_native_proxy_schedule_pump_i(epfd: var int, slot: var int) -> unit
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
 extern proc httpd_proxy_fair_relay_round_i(epfd: var int) -> int
   requires epfd >= 0
   ensures true

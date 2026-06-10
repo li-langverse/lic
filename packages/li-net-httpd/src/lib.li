@@ -621,7 +621,12 @@ def proxy_native_fair_relay_round(epfd: var int) raises Net, Alloc, IO -> int
       var slot: int = httpd_native_proxy_fair_slot_i(start, n, pass_idx)
       if slot >= 0:
         if httpd_native_proxy_slot_needs_work_i(slot) == 1:
-          proxy_li_service_slot(epfd, slot)
+          var rounds: int = 0
+          while rounds < 4:
+            if httpd_native_proxy_slot_needs_work_i(slot) != 1:
+              break
+            proxy_li_service_slot(epfd, slot)
+            rounds = rounds + 1
           serviced = serviced + 1
       n = n + 1
     pass_idx = pass_idx + 1
@@ -648,10 +653,19 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
   var left: int = httpd_li_proxy_get_resp_body_left_i(slot)
   var native: int = httpd_use_native_proxy_relay_i()
   var chunk: ptr = net_buf_alloc(8192)
+  var guard: int = 512
   while left > 0:
+    if guard <= 0:
+      net_buf_free(chunk)
+      if native == 1 and left > 0:
+        httpd_native_proxy_schedule_pump_i(epfd, slot)
+      return 0
+    guard = guard - 1
     if native == 1:
       if proxy_li_upstream_blocked(slot) == 1:
         net_buf_free(chunk)
+        if left > 0:
+          httpd_native_proxy_schedule_pump_i(epfd, slot)
         return 0
     var max_sp: int = left
     if max_sp > 8192:
@@ -665,6 +679,7 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
         left = httpd_li_proxy_get_resp_body_left_i(slot)
         if httpd_native_proxy_pump_budget_take_i(slot, sp) == 1:
           net_buf_free(chunk)
+          httpd_native_proxy_schedule_pump_i(epfd, slot)
           return 0
       if native != 1:
         left = left - sp
@@ -699,11 +714,22 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
         net_buf_free(chunk)
         return proxy_li_finish_err(epfd, slot)
       if fwd == 0:
+        if httpd_li_proxy_relay_pending_i(slot) == 1:
+          net_buf_free(chunk)
+          return 0
+        if native == 1:
+          if httpd_native_proxy_get_tls_defer_i(slot) > 0:
+            left = httpd_li_proxy_get_resp_body_left_i(slot)
+            continue
+          if httpd_native_proxy_get_rbuf_pending_i(slot) > 0:
+            left = httpd_li_proxy_get_resp_body_left_i(slot)
+            continue
         net_buf_free(chunk)
         return 0
       if native == 1:
         if httpd_native_proxy_pump_budget_take_i(slot, fwd) == 1:
           net_buf_free(chunk)
+          httpd_native_proxy_schedule_pump_i(epfd, slot)
           return 0
       left = httpd_li_proxy_get_resp_body_left_i(slot)
   net_buf_free(chunk)

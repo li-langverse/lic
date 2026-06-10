@@ -10,6 +10,8 @@ services:
     build:
       context: ../..
       dockerfile: test/gitlab-proxy/Dockerfile.proxy
+    environment:
+      LI_HTTPD_USE_NATIVE_PROXY_RELAY: "1"
     depends_on:
       backend:
         condition: service_started

@@ -32,6 +32,9 @@ compile_commands.json
 *.a
 *.so
 *.dylib
+core
+core.*
+vgcore.*
 examples/tetris/tetris
 build/lic-from-li
 benchmarks/tier2_physics/**/target/

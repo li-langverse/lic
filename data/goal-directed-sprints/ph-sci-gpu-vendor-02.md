@@ -15,10 +15,10 @@ Add MD grid device-buffer bind smoke + gate for `li-sim-scientific` / `li-physic
 
 ## Done when
 
-- [ ] Smoke compiles under `--allow-open-vc --no-lean-verify`
-- [ ] Returns `1` when `lig_gpu_device_buffer_ready()` + pipeline pass; honest `0` otherwise
-- [ ] `ph-sci-gpu-gates.sh` includes optional CUDA path
-- [ ] Deferral doc updated to **done**; parent plan → 33/33
+- [x] Smoke compiles under `--allow-open-vc --no-lean-verify`
+- [x] Returns `1` when `lig_gpu_device_buffer_ready()` + pipeline pass; honest `0` otherwise
+- [x] `ph-sci-gpu-gates.sh` includes optional CUDA path
+- [x] Deferral doc updated to **done**; parent plan → 33/33
 
 ## Commands
 

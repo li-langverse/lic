@@ -24,6 +24,11 @@ if [[ "${LIG_EMIT_CUDA:-0}" == "1" ]]; then
     packages/li-chem/li-tests/smoke/chem_gpu_dft_lkir.li -o /dev/null || {
     echo "WARN: LIG_EMIT_CUDA=1 build failed — vendor path deferred (MIR placement still gated)"
   }
+  echo "==> WP-SCI-GPU-VENDOR-02: MD grid device-buffer bind smoke (CUDA emit requested)"
+  "$LIC" build --allow-open-vc --no-lean-verify \
+    packages/li-sim-scientific/li-tests/smoke/scientific_gpu_md_device_buffer.li -o /dev/null || {
+    echo "WARN: LIG_EMIT_CUDA=1 MD device-buffer build failed — vendor path deferred (MIR placement still gated)"
+  }
 fi
 
 echo "ph-sci-gpu-gates OK"

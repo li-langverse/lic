@@ -1648,6 +1648,12 @@ note = "PH-SCI-GPU-02 @gpu MD/heat oracle"
 
 [[tests]]
 suite = "science_gpu"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_gpu_md_device_buffer.li"
+outcome = "compile_open_ok"
+note = "WP-SCI-GPU-VENDOR-02 @gpu MD grid device-buffer bind"
+
+[[tests]]
+suite = "science_gpu"
 file = "packages/li-physics-particles/li-tests/smoke/physics_gpu_md_mini_step.li"
 outcome = "compile_open_ok"
 note = "PH-SCI-GPU-03 @gpu MD mini step"

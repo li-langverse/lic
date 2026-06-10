@@ -1,0 +1,20 @@
+# WP-SCI-GPU-VENDOR-02: @gpu MD grid device-buffer bind (mirrors ml_gpu_device_buffer.li).
+import sim.scientific
+
+@gpu
+def scientific_gpu_md_device_buffer_smoke() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return sim_scientific_gpu_md_device_buffer_pipeline()
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if scientific_gpu_md_device_buffer_smoke() != 1:
+    return 1
+  return 0

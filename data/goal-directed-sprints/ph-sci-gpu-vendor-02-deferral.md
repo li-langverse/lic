@@ -7,8 +7,8 @@ wp: WP-SCI-GPU-VENDOR-02
 
 # WP-SCI-GPU-VENDOR-02 — Device buffer bind for MD grid (deferred)
 
-**Status:** **DEFERRED** (plan closed at **32/33**, ~97%)  
-**Merged on main:** #1541 (`c988d702d`) — VENDOR-01 + VENDOR-03 landed; this WP out of scope for gap-close.
+**Status:** **DONE** (plan closed at **33/33**, 100%)  
+**Merged on main:** pending PR — VENDOR-02 MD grid device-buffer bind smoke + gate.
 
 ## Scope (when resumed)
 

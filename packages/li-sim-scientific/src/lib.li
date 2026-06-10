@@ -1,5 +1,6 @@
 
 import sim
+import ml
 import chem
 import physics.particles
 import physics.rigid
@@ -160,6 +161,30 @@ def sim_scientific_oracle_checksum_md() -> float
   if diff < 0.0:
     diff = -diff
   return diff / denom
+
+# WP-SCI-GPU-VENDOR-02 — MD grid device-buffer bind (mirrors ml_gpu_device_buffer.li).
+def sim_scientific_gpu_md_lkir_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var md: float = sim_scientific_oracle_checksum_md()
+  if md <= 0.0:
+    return 0
+  if md >= 1.0e-3:
+    return 0
+  return 1
+
+def sim_scientific_gpu_md_device_buffer_pipeline() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_scientific_gpu_md_lkir_progress() != 1:
+    return 0
+  return ml_gpu_device_buffer_pipeline()
 
 # WP-SCI-03 — tier-2 Li oracle: explicit 1D heat stencil (8-point grid).
 def heat_oracle_stencil_step(u: var array[8, float], v: var array[8, float], r: float) -> unit

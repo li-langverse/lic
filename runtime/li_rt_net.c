@@ -636,11 +636,6 @@ static void httpd_proxy_run_deferred(int epfd) {
       continue;
     }
     httpd_proxy_pump_budget_reset(slot);
-    if (httpd_use_native_proxy_relay_i()) {
-      /* Li fair round pumps CL; drain TLS/rbuf only (pump_relay is a no-op in native). */
-      httpd_proxy_tick_service_slot(epfd, slot, HTTPD_PROXY_TICK_BUDGET_BYTES);
-      continue;
-    }
     httpd_proxy_pump_relay(epfd, slot);
   }
 }
@@ -658,7 +653,7 @@ static void httpd_proxy_sweep_stuck_relays(int epfd) {
     }
     if (httpd_proxy_tick_slot_needs_work((int32_t)i, s)) {
       httpd_proxy_tick_service_slot(epfd, (int32_t)i, HTTPD_PROXY_TICK_BUDGET_BYTES);
-    } else if (!httpd_use_native_proxy_relay_i() && !httpd_proxy_upstream_recv_blocked((int32_t)i, s) &&
+    } else if (!httpd_proxy_upstream_recv_blocked((int32_t)i, s) &&
                s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0) {
       httpd_proxy_pump_budget_reset((int32_t)i);
       httpd_proxy_pump_relay(epfd, (int32_t)i);
@@ -5351,9 +5346,6 @@ static int httpd_proxy_tick_slot_needs_work(int32_t slot, httpd_slot_t* s) {
     return 1;
   }
   if (s->proxy_cl_body_active && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0) {
-    if (httpd_use_native_proxy_relay_i()) {
-      return 1;
-    }
     if (s->proxy_pump_budget <= 0 && !httpd_proxy_upstream_recv_blocked(slot, s)) {
       return 1;
     }
@@ -5409,8 +5401,8 @@ static void httpd_proxy_tick_service_slot(int epfd, int32_t slot, size_t tick_bu
     httpd_proxy_upstream_hold_sync(epfd, slot);
     httpd_proxy_client_epoll_arm_out(epfd, slot);
   }
-  if (!httpd_use_native_proxy_relay_i() && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL &&
-      s->proxy_resp_body_left > 0 && !httpd_proxy_upstream_recv_blocked(slot, s)) {
+  if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0 &&
+      !httpd_proxy_upstream_recv_blocked(slot, s)) {
     httpd_proxy_pump_relay(epfd, slot);
   } else if (httpd_proxy_cl_relay_complete(s)) {
     httpd_proxy_relay_maybe_done(epfd, slot);
@@ -5508,9 +5500,6 @@ static void httpd_proxy_relay_maybe_done(int epfd, int32_t slot) {
 }
 
 static void httpd_proxy_pump_cl_relay(int epfd, int32_t slot) {
-  if (httpd_use_native_proxy_relay_i()) {
-    return;
-  }
   httpd_slot_t* s = &g_slots[slot];
   if (!(httpd_tls_slot_proto(slot) == 1 && s->proxy_resp_body_mode == PROXY_RESP_BODY_CL &&
         s->proxy_resp_body_left > 0)) {

@@ -2,7 +2,7 @@
 [server]
 listen = ":8443"
 document_root = "/empty"
-workers = 2
+workers = 1
 
 [server.tls]
 mode = "self_signed"
@@ -18,7 +18,7 @@ valid_days = 30
 max_body = "1m"
 max_header = "32k"
 proxy_max_response_body = "64m"
-concurrent_streams = 32
+concurrent_streams = 64
 use_native_proxy_relay = true
 stream_idle_timeout = "300s"
 stream_max_duration = "3600s"

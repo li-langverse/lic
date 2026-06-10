@@ -155,10 +155,11 @@ RUNNERS: list[dict] = [
         "name": "PH-DB / native Li platform",
         "repo": LANGVERSE / "lic",
         "branch": "main",
-        "plan": "docs/superpowers/plans/ph-db-swarm-plan.md",
+        "plan": "docs/superpowers/plans/2026-06-03-ph-db-plan-loop.md",
         "state": "data/ph-db-plan-loop/state.json",
         "log": "data/ph-db-plan-loop/runner.log",
         "pgrep_patterns": [
+            "ph-db-plan-loop.py",
             "verify-ph-db-wsl",
             "goal-directed-loop",
             "registry_oltp_compare",

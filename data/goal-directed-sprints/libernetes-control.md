@@ -24,9 +24,9 @@ Control plane UX and distributed orchestration. **Waves 0–3 DONE.** Active: **
 | **LB-K11** | `libernetes init` invokes run-local | **DONE** | same wave3 gate |
 | **LB-K12** | `docs/libernetes/distributed-workloads.md` | **DONE** | same wave3 gate |
 | **LB-K13** | `apiserver/src/informer_sync.li` + serve wiring | **DONE** | same wave3 gate |
-| **LB-K14** | `packages/li-libernetes-core/src/cluster_state.li` | pending | `check-libernetes-control-wave4-gate.sh` |
-| **LB-K15** | Worker join writes `kubelet.conf` persistence | pending | same wave4 gate |
-| **LB-K16** | `li-tests/integration/multi_node_join.li` | pending | same wave4 gate |
+| **LB-K14** | `packages/li-libernetes-core/src/cluster_state.li` | **DONE** | `check-libernetes-control-wave4-gate.sh` |
+| **LB-K15** | Worker join writes `kubelet.conf` persistence | **DONE** | same wave4 gate |
+| **LB-K16** | `li-tests/integration/multi_node_join.li` | **DONE** | same wave4 gate |
 
 ## Later waves (unwired until Wave 4 passes)
 

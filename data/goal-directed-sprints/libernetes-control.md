@@ -19,11 +19,11 @@ Control plane UX and distributed orchestration. **Wave 0–2 DONE on `main`.** A
 |-------|-------------|--------|------|
 | **LB-K0–K5** | docs, CRDs, init/join, join-flow | **DONE** | wave0–1 gates |
 | **LB-K6–K8** | scheduler scaffold, apiserver serve, doctor | **DONE** | `check-libernetes-control-wave2-gate.sh` |
-| **LB-K9** | `scripts/libernetes-run-local.sh` | pending | `check-libernetes-control-wave3-gate.sh` |
-| **LB-K10** | `packages/li-libernetes-kubelet/src/sync.li` | pending | same wave3 gate |
-| **LB-K11** | `libernetes init` invokes run-local | pending | same wave3 gate |
-| **LB-K12** | `docs/libernetes/distributed-workloads.md` | pending | same wave3 gate |
-| **LB-K13** | `apiserver/src/informer_sync.li` + serve wiring | pending | same wave3 gate |
+| **LB-K9** | `scripts/libernetes-run-local.sh` | **DONE** | `check-libernetes-control-wave3-gate.sh` |
+| **LB-K10** | `packages/li-libernetes-kubelet/src/sync.li` | **DONE** | same wave3 gate |
+| **LB-K11** | `libernetes init` invokes run-local | **DONE** | same wave3 gate |
+| **LB-K12** | `docs/libernetes/distributed-workloads.md` | **DONE** | same wave3 gate |
+| **LB-K13** | `apiserver/src/informer_sync.li` + serve wiring | **DONE** | same wave3 gate |
 
 ## Later waves
 

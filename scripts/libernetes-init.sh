@@ -81,4 +81,7 @@ if [[ "$PROFILE" == "ha" ]]; then
 fi
 
 bash "$ROOT/scripts/libernetes-doctor.sh"
-echo "libernetes init: OK (scaffold complete — packages not started in Wave 1)"
+
+echo "libernetes init: starting local stack (Wave 3 — dry-run by default)"
+bash "$ROOT/scripts/libernetes-run-local.sh" --bind-address "$BIND_ADDRESS"
+echo "libernetes init: OK (scaffold complete — use libernetes-run-local.sh --start when daemons land)"

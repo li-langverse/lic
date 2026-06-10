@@ -93,8 +93,25 @@
 
 ---
 
+### Exit gate — G-* register
+
+Register: [provability-gaps.md](../../verification/provability-gaps.md). Rows below cite applicable **G-*** IDs at phase exit (or **N/A**).
+
+| G-* ID | Applicability | Exit-gate evidence (today) | Notes |
+|--------|---------------|------------------------------|-------|
+| **G-vc** | **Yes** | `li-tests/contracts_verify/`, `vc_emit_contracts.sh` | Partial — typecheck emits contract hooks (**2e**) |
+| **G-bnd** | **Yes** | Literal index bounds at typecheck | Release MIR path open — see phase 3 |
+| **G-def** | **Yes** | `li-tests/encapsulation/`, method/`self` surface | **PH-2j** overlap |
+| **G-math-syn** | **Yes** | `li-tests/math_syntax/` | **PH-2h** |
+| **G-narrow** | **Yes** | `historic_ariane5_narrowing.li` reject | **2e** policy |
+| **G-oop** | **Yes** | trait/method tests partial | **PH-2j** |
+| **G-lean** | **N/A** | — | Lean gate is **2f**, not phase-02 exit |
+| **G-ann** | **N/A** | — | Phase 4 deferred annotations |
+| **G-par** | **N/A** | — | Phase 7b parallel surface |
+| **G-meta** | **N/A** | — | Research limit per master plan |
+
 ### Phase 2 exit gate
 
-- [x] `fib.li` typechecks (`li-tests/typecheck/fib.li`)
-- [x] All `bad_*.li` fail with expected errors
-- [x] Borrow double-mut test fails cleanly (`li-tests/borrow/double_mut.li`)
+- [x] `fib.li` typechecks (`li-tests/typecheck/fib.li`) — **G-vc** partial
+- [x] All `bad_*.li` fail with expected errors — **G-bnd** literal bounds
+- [x] Borrow double-mut test fails cleanly (`li-tests/borrow/double_mut.li`) — **G-def** / **G-oop** partial

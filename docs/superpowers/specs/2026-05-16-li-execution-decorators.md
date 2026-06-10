@@ -1,8 +1,10 @@
 # Execution decorators (spec stub)
 
 **Status:** Phase 7d in progress (`@gpu` / `@gpu(devices=N)` MIR telemetry landed; LKIR/codegen open)
-**Plan:** `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md`  
-**Gaps:** [Provability gaps](../../verification/provability-gaps.md) **G-dec**
+**Plan:** `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md`
+
+**Proof gaps (Doc-c):** [G-dec](../../verification/provability-gaps.md#g-dec) · [G-par](../../verification/provability-gaps.md#g-par) · [G-gpu](../../verification/provability-gaps.md#g-gpu) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](../plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
 
 ## No runtime semantics
 

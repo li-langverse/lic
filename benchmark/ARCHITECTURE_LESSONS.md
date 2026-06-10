@@ -53,7 +53,11 @@ Recent fix (`tick budget-exhausted CL relays`) addresses (3) partially; benchmar
 Priority order (from benchmark evidence + nginx model):
 
 1. **Per-connection buffer pools** — fixed-size upstream read buffer + client write buffer per active relay (nginx `proxy_buffers` analogue). Implemented in `li_rt_net.c`: **32 KiB** `proxy_up_rbuf` (upstream read) + **32 KiB** `proxy_wbuf` (client write staging) per slot — no shared relay buffer between read and write chains.
-2. **Worker processes ≥ 2** — match `[server] workers = 2` in config; ensure each worker has independent epoll loop and accept (already configured; verify `LI_HTTPD_WORKERS` not forced to 1 in prod entrypoints)
+2. **Worker processes** — homelab edge uses `LI_HTTPD_WORKERS=auto` (12 on blackpearl). Until the Li epoll spin wedge is fixed, **fewer workers are more stable** under parallel-18 burst:
+   - `LI_HTTPD_WORKERS=2` — lowest cross-worker relay contention; use for gate debugging
+   - `LI_HTTPD_WORKERS=4` — compromise between isolation and accept throughput
+   - `auto` — nginx-like spread; re-enable after parallel-18 ×3 loopback passes without post-burst CPU wedge
+   - Edge **must** set `limits.concurrent_streams` (e.g. 128) — `0` disables `g_active_proxy_streams` and parallel pump bypass never fires
 3. **Fair write scheduling** — round-robin or deficit round-robin across active CL relays each epoll tick; never spend entire budget on one connection
 4. **Optional `proxy_buffering` mode** — config flag: buffered (copy upstream to pool, then drain to client) vs streaming (`off`); benchmark both for memory/latency tradeoff
 5. **Upstream keepalive pool per worker** — avoid thundering herd of upstream connects at parallel-18 (nginx `keepalive 32`)

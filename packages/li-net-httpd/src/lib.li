@@ -1052,11 +1052,13 @@ def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Al
       while i < n:
         proxy_dispatch_one(epfd, listen_tls, listen_http, evbuf, i)
         i = i + 1
-      var spin: int = 1
-      while spin == 1:
+      var drain_guard: int = 8
+      while drain_guard > 0:
+        drain_guard = drain_guard - 1
+        httpd_proxy_fair_relay_round_i(epfd)
         var n2: int = epoll_wait_tagged_spin_i(epfd, evbuf, 256)
         if n2 <= 0:
-          spin = 0
+          drain_guard = 0
         if n2 > 0:
           var j: int = 0
           while j < n2:

@@ -38,4 +38,10 @@ def main() -> int
     return 11
   if sess.tick != 2:
     return 12
+  sess.game_px = 2.5
+  if sim_sensor_session_bus_step(sess, 0.01) != sim_status_ok():
+    return 13
+  var snap2: SensorHitSnapshot = sensor_hit_from_session(sess)
+  if snap2.hit0 == snap.hit0:
+    return 14
   return 0

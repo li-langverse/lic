@@ -589,11 +589,12 @@ def proxy_li_finish_resp_headers(epfd: var int, slot: var int) raises Net, Alloc
   if httpd_li_proxy_forward_bytes_i(epfd, slot, hdr_ptr, hdr_bytes) < 0:
     return proxy_li_finish_err(epfd, slot)
   httpd_li_proxy_set_resp_parsing_i(slot, 0)
-  httpd_li_proxy_set_resp_body_mode_i(slot, proxy_body_cl())
-  var body_left: int = httpd_li_proxy_cached_cl_i()
   if httpd_proxy_snap_disabled_i() == 1:
-    body_left = cl
-  httpd_li_proxy_set_resp_body_left_i(slot, body_left)
+    httpd_li_proxy_arm_cl_cap_i(slot, cl)
+  if httpd_proxy_snap_disabled_i() == 0:
+    httpd_li_proxy_set_resp_body_mode_i(slot, proxy_body_cl())
+    var body_left: int = httpd_li_proxy_cached_cl_i()
+    httpd_li_proxy_set_resp_body_left_i(slot, body_left)
   var tail: int = hlen2 - hdr_bytes
   if tail > 0:
     var fwd_tail: int = httpd_li_proxy_forward_hdr_tail_i(epfd, slot, hdr_bytes, tail)
@@ -627,9 +628,18 @@ def proxy_li_feed_cached_hdr(epfd: var int, slot: var int, data: var ptr, n: var
     if fwd < 0:
       return proxy_li_finish_err(epfd, slot)
     httpd_li_proxy_set_resp_parsing_i(slot, 0)
-    httpd_li_proxy_set_resp_body_mode_i(slot, proxy_body_cl())
     var cl: int = httpd_li_proxy_cached_cl_i()
-    httpd_li_proxy_set_resp_body_left_i(slot, cl - extra)
+    if httpd_proxy_snap_disabled_i() == 1:
+      httpd_li_proxy_arm_cl_cap_i(slot, cl)
+      if extra > 0:
+        var fwd_extra: int = httpd_li_proxy_forward_ptr_off_i(epfd, slot, data, take, extra)
+        if fwd_extra < 0:
+          return proxy_li_finish_err(epfd, slot)
+        if fwd_extra == 0:
+          return 0
+    if httpd_proxy_snap_disabled_i() == 0:
+      httpd_li_proxy_set_resp_body_mode_i(slot, proxy_body_cl())
+      httpd_li_proxy_set_resp_body_left_i(slot, cl - extra)
     return proxy_li_pump_cl(epfd, slot)
   return 0
 
@@ -746,7 +756,7 @@ def proxy_li_start(epfd: var int, slot: var int, hdr_end: int, keep: int) raises
   var ok: int = httpd_li_proxy_mark_active_i(epfd, slot, up, he, keep)
   if ok < 0:
     var reuse: int = 0
-    httpd_upstream_release_i(up, reuse)
+    httpd_upstream_release_slot_i(slot, up, reuse)
     return -1
   var init: int = httpd_li_proxy_init_req_i(slot, he)
   if init < 0:
@@ -903,9 +913,13 @@ def proxy_dispatch_hangup_loaded(epfd: var int) raises Net, Alloc, IO -> int
 =
   if proxy_epoll_tag_is_up(net_events_loaded_hi_i()) == 1:
     var slot_up: int = net_events_loaded_lo_i()
+    if httpd_li_proxy_active_i(slot_up) == 1:
+      return proxy_li_finish_err(epfd, slot_up)
     var up_fd: int = httpd_li_proxy_up_fd_i(slot_up)
-    httpd_epoll_unregister_fd_i(epfd, up_fd)
-    httpd_upstream_release_i(up_fd, 0)
+    if up_fd >= 0:
+      httpd_epoll_unregister_fd_i(epfd, up_fd)
+      var reuse_up: int = 0
+      httpd_upstream_release_slot_i(slot_up, up_fd, reuse_up)
     return 0
   if proxy_epoll_tag_is_client(net_events_loaded_hi_i()) == 1:
     var slot_c: int = net_events_loaded_lo_i()
@@ -964,6 +978,10 @@ def proxy_dispatch_client_loaded(epfd: var int, slot_c: int, rev: int) raises Ne
   if net_epoll_readable(rev) == 1:
     var rc2: int = proxy_handle_client_in(epfd, slot_c)
     if rc2 < 0:
+      if httpd_li_proxy_active_i(slot_c) == 1:
+        var ec3: int = epfd
+        httpd_li_proxy_finish_err_i(ec3, slot_c)
+        return 0
       var conn2: int = httpd_slot_conn_i(slot_c)
       epoll_ctl_del_i(epfd, conn2)
       tcp_close(conn2)
@@ -1032,21 +1050,27 @@ def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Al
     var n: int = epoll_wait_tagged_timeout_ms_i(epfd, evbuf, 256, wait_ms)
     if n <= 0:
       running = 1
+    httpd_proxy_fair_relay_round_i(epfd)
     if n > 0:
       var i: int = 0
       while i < n:
         proxy_dispatch_one(epfd, listen_tls, listen_http, evbuf, i)
         i = i + 1
-      var spin: int = 1
-      while spin == 1:
-        var n2: int = epoll_wait_tagged_spin_i(epfd, evbuf, 256)
-        if n2 <= 0:
-          spin = 0
-        if n2 > 0:
-          var j: int = 0
-          while j < n2:
-            proxy_dispatch_one(epfd, listen_tls, listen_http, evbuf, j)
-            j = j + 1
+      var drain_guard: int = 8
+      while drain_guard > 0:
+        if httpd_proxy_epoll_idle_i() == 1:
+          drain_guard = 0
+        if drain_guard > 0:
+          drain_guard = drain_guard - 1
+          httpd_proxy_fair_relay_round_i(epfd)
+          var n2: int = epoll_wait_tagged_spin_i(epfd, evbuf, 256)
+          if n2 <= 0:
+            drain_guard = 0
+          if n2 > 0:
+            var j: int = 0
+            while j < n2:
+              proxy_dispatch_one(epfd, listen_tls, listen_http, evbuf, j)
+              j = j + 1
   net_buf_free(evbuf)
   return 0
 
@@ -1117,9 +1141,15 @@ def httpd_run_from_runtime_config(path: var ptr) raises Net, Alloc, IO -> int
   if httpd_begin_worker_pool() != 0:
     return 1
   if httpd_tls_enabled_i() == 1:
-    return httpd_upstream_proxy_epoll_loop(p, r)
+    if httpd_env_li_proxy_loop_i() == 1:
+      return httpd_upstream_proxy_epoll_loop(p, r)
+    var bp: int = 8080
+    return httpd_epoll_serve_proxy_i(p, r, bp)
   if httpd_proxy_configured_i() == 1:
-    return httpd_upstream_proxy_epoll_loop(p, r)
+    if httpd_env_li_proxy_loop_i() == 1:
+      return httpd_upstream_proxy_epoll_loop(p, r)
+    var bp2: int = 8080
+    return httpd_epoll_serve_proxy_i(p, r, bp2)
   return httpd_serve_port_root(p, r)
 
 def httpd_run_from_argv() raises Net, Alloc, IO -> int

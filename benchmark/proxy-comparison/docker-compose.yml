@@ -1,0 +1,98 @@
+# Proxy comparison bench: same nginx backend, one TLS edge proxy at a time.
+# Run: benchmark/proxy-comparison/run-benchmark.sh
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: benchmark/proxy-comparison/Dockerfile.backend
+    networks: [bench]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/users/sign_in"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  li-httpd:
+    profiles: [li-httpd]
+    image: proxy-repro-proxy:latest
+    build:
+      context: ../..
+      dockerfile: benchmark/proxy-comparison/Dockerfile.li-httpd
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "18443:8443"
+    networks: [bench]
+    healthcheck:
+      test: ["CMD", "curl", "-sk", "--http1.1", "--resolve", "gitlab.lilangverse.xyz:8443:127.0.0.1", "-o", "/dev/null", "https://gitlab.lilangverse.xyz:8443/users/sign_in"]
+      interval: 5s
+      timeout: 10s
+      retries: 24
+      start_period: 30s
+    environment:
+      LI_HTTPD_WORKERS: "2"
+
+  nginx-proxy:
+    profiles: [nginx-proxy]
+    build:
+      context: ../..
+      dockerfile: benchmark/proxy-comparison/Dockerfile.nginx-proxy
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./certs:/certs:ro
+    ports:
+      - "18444:8443"
+    networks: [bench]
+    environment:
+      NGINX_PROXY_BUFFERING: "on"
+    healthcheck:
+      test: ["CMD", "curl", "-sk", "--http1.1", "-o", "/dev/null", "https://127.0.0.1:8443/users/sign_in"]
+      interval: 3s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+
+  caddy-proxy:
+    profiles: [caddy-proxy]
+    image: caddy:2.9.1-alpine
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./certs:/certs:ro
+      - ./proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+    ports:
+      - "18445:8443"
+    networks: [bench]
+
+  tester:
+    image: alpine:3.21
+    profiles: [bench]
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks: [bench]
+    volumes:
+      - ./workloads.sh:/workloads.sh:ro
+      - ./sample-resources.sh:/sample-resources.sh:ro
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
+
+  haproxy-proxy:
+    profiles: [haproxy-proxy]
+    image: haproxy:2.9-alpine
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./certs:/certs:ro
+      - ./proxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "18446:8443"
+    networks: [bench]
+
+networks:
+  bench:

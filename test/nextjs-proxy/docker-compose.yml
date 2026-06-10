@@ -1,0 +1,31 @@
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: test/nextjs-proxy/Dockerfile.backend
+    networks: [nextjs]
+
+  proxy:
+    build:
+      context: ../..
+      dockerfile: test/nextjs-proxy/Dockerfile.proxy
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "19443:8443"
+    networks: [nextjs]
+
+  tester:
+    image: curlimages/curl:8.12.1
+    depends_on:
+      proxy:
+        condition: service_started
+    networks: [nextjs]
+    volumes:
+      - ./parallel-chunks-test.sh:/test.sh:ro
+      - ../proxy/proxy-curl-env.sh:/proxy-curl-env.sh:ro
+    entrypoint: ["/bin/sh", "-c", "sleep 3 && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=nextjs.test sh /test.sh"]
+
+networks:
+  nextjs:

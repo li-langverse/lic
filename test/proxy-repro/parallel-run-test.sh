@@ -2,13 +2,17 @@
 # Parallel fetch of all sign_in CSS/JS through li-httpd — models browser load.
 set -eu
 
-HOST="${PROXY_VHOST:-gitlab.lilangverse.xyz}"
-PORT="${PROXY_PORT:-18443}"
-PHOST="${PROXY_HOST:-127.0.0.1}"
-RESOLVE="${CURL_RESOLVE:-${HOST}:${PORT}:${PHOST}}"
+ENV_SH="/proxy-curl-env.sh"
+[ -f "$ENV_SH" ] || ENV_SH="$(dirname "$0")/../proxy/proxy-curl-env.sh"
+eval "$(sh "$ENV_SH")"
+if [ "${PROXY_USE_CONNECT:-0}" = 1 ]; then
+  PROXY_CURL="--connect-to ${PROXY_VHOST}:${PROXY_PORT}:${PROXY_CONNECT_HOST}:${PROXY_PORT}"
+else
+  PROXY_CURL="--resolve ${PROXY_RESOLVE}"
+fi
 HTML=/tmp/proxy_repro_sign_in.html
 
-curl -sk --http1.1 --resolve "$RESOLVE" -o "$HTML" --max-time 30 "https://${HOST}:${PORT}/users/sign_in"
+curl -sk --http1.1 $PROXY_CURL -o "$HTML" --max-time 30 "https://${PROXY_VHOST}:${PROXY_PORT}/users/sign_in"
 grep -oE '(href|src)="(/assets/[^"]+)"' "$HTML" | sed -E 's/.*="([^"]+)".*/\1/' | sort -u > /tmp/proxy_repro_assets.txt
 n=$(wc -l < /tmp/proxy_repro_assets.txt)
 tmpdir=$(mktemp -d)
@@ -20,8 +24,8 @@ while IFS= read -r path; do
     safe=$(echo "$path" | tr '/.' '__')
     out="$tmpdir/${safe}.body"
     hdr="$tmpdir/${safe}.hdr"
-    meta=$(curl -sk --http1.1 --resolve "$RESOLVE" -D "$hdr" -o "$out" \
-      -w '%{http_code} %{size_download}' --max-time 180 "https://${HOST}:${PORT}${path}" 2>/dev/null || echo '000 0')
+    meta=$(curl -sk --http1.1 $PROXY_CURL -D "$hdr" -o "$out" \
+      -w '%{http_code} %{size_download}' --max-time 180 "https://${PROXY_VHOST}:${PROXY_PORT}${path}" 2>/dev/null || echo '000 0')
     code=$(echo "$meta" | awk '{print $1}')
     dl=$(echo "$meta" | awk '{print $2}')
     clen=$(grep -i '^content-length:' "$hdr" 2>/dev/null | tail -1 | awk '{print $2}' | tr -d '\r')

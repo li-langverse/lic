@@ -5,14 +5,26 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-# GitLab sign_in representative sizes (bytes)
+# GitLab sign_in representative sizes (bytes) — 18 assets for parallel-multi probe
 ASSETS = [
     ("assets/application-deadbeef.css", 835437, "text/css"),
     ("assets/page_bundles/login-deadbeef.css", 460, "text/css"),
     ("assets/tailwind-deadbeef.css", 86772, "text/css"),
+    ("assets/page_bundles/commons-deadbeef.css", 12480, "text/css"),
+    ("assets/page_bundles/work_items-deadbeef.css", 98234, "text/css"),
+    ("assets/page_bundles/notes-deadbeef.css", 44102, "text/css"),
     ("assets/webpack/runtime.deadbeef.bundle.js", 15561, "application/javascript"),
     ("assets/webpack/main.deadbeef.chunk.js", 1321365, "application/javascript"),
     ("assets/webpack/super_sidebar.deadbeef.chunk.js", 319851, "application/javascript"),
+    ("assets/webpack/commons.deadbeef.chunk.js", 245600, "application/javascript"),
+    ("assets/webpack/vendors.deadbeef.chunk.js", 512000, "application/javascript"),
+    ("assets/webpack/gitlab_ui.deadbeef.chunk.js", 178432, "application/javascript"),
+    ("assets/webpack/notes.deadbeef.chunk.js", 88421, "application/javascript"),
+    ("assets/webpack/work_items.deadbeef.chunk.js", 156789, "application/javascript"),
+    ("assets/webpack/analytics.deadbeef.chunk.js", 92341, "application/javascript"),
+    ("assets/webpack/emoji.deadbeef.chunk.js", 45120, "application/javascript"),
+    ("assets/webpack/performance.deadbeef.chunk.js", 203456, "application/javascript"),
+    ("assets/webpack/security.deadbeef.chunk.js", 112233, "application/javascript"),
 ]
 CSS_NAME = ASSETS[0][0].split("/")[-1]
 

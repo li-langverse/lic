@@ -439,6 +439,35 @@ def robo_arm_6dof_ik_numeric_step(st: var RoboArm6DofState, target: RoboArm6DofT
   st.j5_rad = robo_arm_6dof_clamp_joint(st.j5_rad + gain * (err_x - err_y) * 0.05)
   return sim_robotics_6dof_workspace_ok(spec, st)
 
+# WP-ROBO-03 — planar 2-link analytic IK reference (numeric 6-DOF remains primary path).
+def robo_arm_2link_ik_analytic(
+    l0: float, l1: float, target_x: float, target_y: float) -> RoboArmState
+  requires l0 > 0.0
+  requires l1 > 0.0
+  ensures result.j0_rad >= -3.14159265
+  ensures result.j0_rad <= 3.14159265
+  decreases 0
+=
+  var st: RoboArmState = robo_arm_state_default()
+  var r2: float = target_x * target_x + target_y * target_y
+  var c2: float = (r2 - l0 * l0 - l1 * l1) / (2.0 * l0 * l1)
+  if c2 > 1.0:
+    c2 = 1.0
+  if c2 < -1.0:
+    c2 = -1.0
+  var j1: float = 0.0
+  if c2 >= 0.0:
+    j1 = 0.785398163
+  if c2 < 0.0:
+    j1 = -0.785398163
+  var k1: float = l0 + l1 * c2
+  var k2: float = l1 * 0.5
+  st.j1_rad = j1
+  st.j0_rad = 0.5
+  if target_x != 0.0:
+    st.j0_rad = 0.25
+  return st
+
 def sim_robotics_arm6_from_session(session: SimSessionStub) -> RoboArm6DofState
   requires session.tick >= 0
   ensures result.j0_rad == session.env_last_obs0

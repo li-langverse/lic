@@ -1,0 +1,11 @@
+{
+    auto_https off
+    admin off
+}
+
+gitlab.lilangverse.xyz:8443 {
+    tls /certs/cert.pem /certs/key.pem
+    reverse_proxy backend:8080 {
+        flush_interval -1
+    }
+}

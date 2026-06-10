@@ -270,11 +270,12 @@ Pattern: `@gpu def *_smoke()` → `return <pkg>_*_gpu_progress()` in lib (see `l
 - **Acceptance:** composable entity pose matches `game_physics_step_hook`.
 - **Priority / effort:** P1 / L
 
-#### WP-PLAT-05 — LAMMPS/GROMACS oracle column
+#### WP-PLAT-05 — LAMMPS/GROMACS oracle column — **PARTIAL (2026-06-10)**
 
 - **Scope:** benchmarks, `li-sim-scientific`.
 - **Dependencies:** compliance for `external_binary`.
 - **Acceptance:** tier-2 csv column + `md_oracle.toml` driver.
+- **Status:** `md_oracle.toml` driver, `registry.toml` `lammps`/`gromacs` watch rows, `ph-sci-md-oracle-competitive-gates.sh`, algo **104** tier-2 dispatch landed; external binaries remain stubs (B1+).
 - **Priority / effort:** P1 / L
 
 ---

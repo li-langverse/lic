@@ -5732,6 +5732,15 @@ int32_t httpd_tick_sse_stream_idle_i(int32_t epfd) {
   return 0;
 }
 
+int32_t httpd_proxy_fair_relay_round_i(int32_t epfd) {
+  if (epfd < 0) {
+    return -1;
+  }
+  httpd_proxy_tick_starved_relays((int)epfd);
+  httpd_proxy_run_deferred((int)epfd);
+  return 0;
+}
+
 int32_t httpd_sse_idle_epoll_timeout_ms_i(void) {
   return httpd_sse_idle_watch_active() ? 250 : -1;
 }

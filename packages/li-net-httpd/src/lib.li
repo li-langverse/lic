@@ -531,6 +531,15 @@ def proxy_li_sync_body_left(slot: var int, consumed: int) raises IO -> unit
   left = relay_account_body(left, consumed, cl_active)
   httpd_li_proxy_set_resp_body_left_i(slot, left)
 
+def proxy_li_drain_native_accounted(slot: var int) raises IO -> unit
+  requires 0 <= slot
+  ensures true
+  decreases 0
+=
+  var consumed: int = httpd_native_proxy_take_cl_accounted_i(slot)
+  if consumed > 0:
+    proxy_li_sync_body_left(slot, consumed)
+
 def proxy_li_upstream_blocked(slot: var int) raises IO -> int
   requires 0 <= slot
   ensures result == 0 or result == 1
@@ -576,12 +585,15 @@ def proxy_li_service_slot(epfd: var int, slot: var int) raises Net, Alloc, IO ->
     return 0
   httpd_native_proxy_pump_budget_reset_i(slot)
   var tf: int = httpd_native_proxy_tls_defer_flush_i(epfd, slot)
+  proxy_li_drain_native_accounted(slot)
   if httpd_li_proxy_active_i(slot) == 0:
     return tf
   var fo: int = httpd_native_proxy_flush_client_out_i(epfd, slot)
+  proxy_li_drain_native_accounted(slot)
   if httpd_li_proxy_active_i(slot) == 0:
     return fo
   var dr: int = httpd_native_proxy_drain_client_i(epfd, slot)
+  proxy_li_drain_native_accounted(slot)
   if httpd_li_proxy_active_i(slot) == 0:
     return dr
   var hf: int = httpd_native_proxy_hdr_flush_resume_i(epfd, slot)
@@ -593,6 +605,10 @@ def proxy_li_service_slot(epfd: var int, slot: var int) raises Net, Alloc, IO ->
     return 0
   if proxy_li_upstream_blocked(slot) == 1:
     return 0
+  var parsing: int = httpd_li_proxy_get_resp_parsing_i(slot)
+  if parsing == 0:
+    if httpd_li_proxy_get_resp_body_mode_i(slot) == proxy_body_cl():
+      return proxy_li_pump_cl(epfd, slot)
   var fin: int = proxy_li_try_finish(epfd, slot)
   if fin == 1:
     return 0
@@ -604,20 +620,16 @@ def proxy_native_fair_relay_round(epfd: var int) raises Net, Alloc, IO -> int
   decreases 0
 =
   if httpd_use_native_proxy_relay_i() != 1:
-    return proxy_native_fair_relay_round(epfd)
+    return httpd_proxy_fair_relay_round_i(epfd)
   httpd_native_proxy_reconcile_i(epfd)
   var max_conn: int = httpd_max_conn_i()
   var start: int = httpd_native_proxy_fair_cursor_i()
-  var pass_idx: int = 0
-  while pass_idx < 2:
-    var n: int = 0
-    while n < max_conn:
-      var slot: int = httpd_native_proxy_fair_slot_i(start, n, pass_idx)
-      if slot >= 0:
-        if httpd_native_proxy_slot_needs_work_i(slot) == 1:
-          proxy_li_service_slot(epfd, slot)
-      n = n + 1
-    pass_idx = pass_idx + 1
+  var n: int = 0
+  while n < max_conn:
+    var slot: int = (start + n) % max_conn
+    if httpd_native_proxy_slot_needs_work_i(slot) == 1:
+      proxy_li_service_slot(epfd, slot)
+    n = n + 1
   return 0
 
 
@@ -653,6 +665,10 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
     if sp > 0:
       if native == 1:
         proxy_li_sync_body_left(slot, sp)
+        left = httpd_li_proxy_get_resp_body_left_i(slot)
+        if httpd_native_proxy_pump_budget_take_i(slot, sp) == 1:
+          net_buf_free(chunk)
+          return 0
       if native != 1:
         left = left - sp
         httpd_li_proxy_set_resp_body_left_i(slot, left)
@@ -688,6 +704,11 @@ def proxy_li_pump_cl(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
       if fwd == 0:
         net_buf_free(chunk)
         return 0
+      if native == 1:
+        proxy_li_sync_body_left(slot, fwd)
+        if httpd_native_proxy_pump_budget_take_i(slot, fwd) == 1:
+          net_buf_free(chunk)
+          return 0
       left = httpd_li_proxy_get_resp_body_left_i(slot)
   net_buf_free(chunk)
   if httpd_li_proxy_relay_pending_i(slot) == 1:
@@ -1080,6 +1101,15 @@ def proxy_dispatch_up_loaded(epfd: var int, slot_u: int, rev: int) raises Net, A
   ensures true
   decreases 0
 =
+  if httpd_use_native_proxy_relay_i() == 1:
+    if httpd_li_proxy_active_i(slot_u) == 1:
+      if httpd_li_proxy_phase_i(slot_u) == proxy_phase_relay():
+        if httpd_li_proxy_get_resp_parsing_i(slot_u) == 0:
+          if httpd_li_proxy_get_resp_body_mode_i(slot_u) == proxy_body_cl():
+            proxy_li_on_up(epfd, slot_u, rev)
+            if httpd_li_proxy_active_i(slot_u) == 0:
+              httpd_li_proxy_finish_drain_i(epfd, slot_u)
+            return 0
   var eu1: int = epfd
   var su1: int = slot_u
   var ru1: int = rev
@@ -1097,6 +1127,12 @@ def proxy_dispatch_client_loaded(epfd: var int, slot_c: int, rev: int) raises Ne
   decreases 0
 =
   if httpd_li_proxy_active_i(slot_c) == 1:
+    if httpd_use_native_proxy_relay_i() == 1:
+      if net_epoll_writable(rev) == 1:
+        proxy_li_service_slot(epfd, slot_c)
+      if httpd_li_proxy_active_i(slot_c) == 0:
+        httpd_li_proxy_finish_drain_i(epfd, slot_c)
+      return 0
     var ec1: int = epfd
     var sc1: int = slot_c
     var rc1: int = rev

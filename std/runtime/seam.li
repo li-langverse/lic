@@ -209,6 +209,11 @@ extern proc net_epoll_readable(revents: int) -> int
   ensures true
   decreases 0
 
+extern proc net_epoll_writable(revents: int) -> int
+  requires true
+  ensures true
+  decreases 0
+
 extern proc net_epoll_hangup(revents: int) -> int
   requires true
   ensures true
@@ -803,6 +808,17 @@ extern proc httpd_native_proxy_flush_client_out_i(epfd: var int, slot: var int) 
 extern proc httpd_native_proxy_pump_budget_reset_i(slot: var int) -> unit
   requires 0 <= slot
   ensures true
+  decreases 0
+
+extern proc httpd_native_proxy_pump_budget_take_i(slot: var int, nbytes: int) -> int
+  requires 0 <= slot
+  requires 0 <= nbytes
+  ensures result == 0 or result == 1
+  decreases 0
+
+extern proc httpd_native_proxy_take_cl_accounted_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures 0 <= result
   decreases 0
 
 extern proc httpd_native_proxy_fair_cursor_i() -> int

@@ -65,14 +65,14 @@
 
 **7a–7c (Phase 7 core):**
 
-- [x] `./li-tests/run_all.sh simd race_shared_memory`
+- [x] `./li-tests/run_all.sh simd race_shared_memory` — **7a** SIMD slice; **7b** **G-par** partial (structured `disjoint=` still open; see [provability-gaps](../../verification/provability-gaps.md#g-par))
 - [x] `bench.py --tier 0` in CI; tier 1/2 perf runs advisory via `bench.py`
 - [x] Fuzz workflow present (`.github/workflows/fuzz.yml`); `scripts/export-fuzz-status.sh`
 
 **7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):**
 
-- [x] `./li-tests/run_all.sh decorators decorator_exploits`
-- [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
+- [x] `./li-tests/run_all.sh decorators decorator_exploits` — **G-dec** partial (parse + policy CI; full elaboration/MIR proc tags open; see [provability-gaps](../../verification/provability-gaps.md#g-dec))
+- [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords) — **G-dec** + **G-par**
 - [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds (`compiler/fuzz/corpus/seed_decorators`)
 
 **7e (mathematical surface — user writes formulas, not `simd(...)`):**
@@ -87,6 +87,6 @@
 | **7e-d/e** | `ArrayDotF64` / `ArrayBinOpF64` gather SIMD | **partial** on `main` (#148) |
 | **2f / P-linalg** | Contract corpus for dot/sum/matmul entry | **partial:** #151 closed + loop open — **G-math**, **G-lean** |
 
-- [x] `./li-tests/run_all.sh math_linalg`
-- [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`)
-- [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard)
+- [x] `./li-tests/run_all.sh math_linalg` — **G-math** partial (loop-dot / broadcast proofs open; see [provability-gaps](../../verification/provability-gaps.md#g-math))
+- [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`) — **G-math**
+- [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard) — **G-math** advisory gate

@@ -63,7 +63,7 @@ echo "== live curl smoke (self_signed Ed25519, legacy OpenSSL terminate) =="
 if [[ "$(uname -s)" == "Linux" ]]; then
   [[ -x "$ROOT/build/li-httpd" ]] || "$ROOT/scripts/build-li-httpd.sh"
   if [[ -x "$ROOT/build/li-httpd" ]]; then
-  curl_port=18445
+  curl_port="$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1",0)); print(s.getsockname()[1]); s.close()')"
   curl_work="$(mktemp -d)"
   curl_cert="$curl_work/certs"
   curl_pub="$curl_work/public"
@@ -78,23 +78,28 @@ if [[ "$(uname -s)" == "Linux" ]]; then
   sed -i "s|^tls_cert_dir=.*|tls_cert_dir=${curl_cert}|" "$curl_conf"
   sed -i "s|^document_root=.*|document_root=${curl_pub}|" "$curl_conf"
   sed -i "s|^listen_port=.*|listen_port=${curl_port}|" "$curl_conf"
-  fuser -k "${curl_port}/tcp" 2>/dev/null || true
-  sleep 0.3
+  bash "$ROOT/scripts/httpd-kill-listeners.sh" "${curl_port}"
   LI_HTTPD_WORKERS=1 LI_HTTPD_TLS_LEGACY_OPENSSL=1 "$ROOT/build/li-httpd" "$curl_conf" >/dev/null 2>&1 &
   curl_pid=$!
-  sleep 2.0
-  for i in 1 2 3 4 5; do
-    if curl -kfsS --http2 --max-time 5 "https://127.0.0.1:${curl_port}/health" | grep -q ok; then
-      break
-    fi
-    if [[ "$i" -eq 5 ]]; then
+  curl_ok=0
+  for i in 1 2 3 4 5 6 7 8 9 10; do
+    if ! kill -0 "$curl_pid" 2>/dev/null; then
+      echo "check-httpd-tls-auto: li-httpd exited before curl (pid=$curl_pid)" >&2
       exit 1
+    fi
+    if curl -kfsS --http2 --max-time 5 "https://127.0.0.1:${curl_port}/health" 2>/dev/null | grep -q ok; then
+      curl_ok=1
+      break
     fi
     sleep 0.5
   done
   kill "$curl_pid" 2>/dev/null || true
   wait "$curl_pid" 2>/dev/null || true
   rm -rf "$curl_work"
+  if [[ "$curl_ok" -ne 1 ]]; then
+    echo "check-httpd-tls-auto: curl smoke failed on port ${curl_port}" >&2
+    exit 1
+  fi
   fi
 fi
 

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Initial scaffold via `scripts/li-new-package` (PKG-li-oci).
+- WP-CTN-010..013: `spec`, `layout`, `manifest`, `image` modules; `li_oci_selftest` smoke.
 
 ## [0.1.0] - 2026-06-10
 

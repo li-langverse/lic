@@ -4,3 +4,4 @@
 |------|-------|-------|------|-------|
 | 2026-06-10 | orchestrator | p0-seam | — | Sprint + K8s worker manifests created |
 | 2026-06-10 | code_implementer | p0-seam | phase0 OK | WP-CTN-001..005: container_trusted tests, li-oci/li-container/li-container-run scaffolds, compiler links li_rt_container.c |
+| 2026-06-10 | code_implementer | p1-li-oci | phase1 OK | WP-CTN-010..013: li-oci spec/layout/manifest/image modules, Net-only pull/store stubs, li_oci_selftest smoke |

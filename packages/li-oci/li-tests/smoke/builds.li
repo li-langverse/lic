@@ -1,6 +1,8 @@
+import oci
+
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  return 0
+  return li_oci_selftest()

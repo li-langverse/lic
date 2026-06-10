@@ -1,6 +1,32 @@
+# li-oci public surface — OCI spec, layout, manifest, pull/store (import oci).
+
+import image
+import layout
+import manifest
+import spec
+
 def li_oci_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
+
+def li_oci_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: int = oci_spec_selftest()
+  if r != 0:
+    return r
+  r = oci_layout_selftest()
+  if r != 0:
+    return r + 10
+  r = oci_manifest_selftest()
+  if r != 0:
+    return r + 20
+  r = oci_image_selftest()
+  if r != 0:
+    return r + 30
+  return 0

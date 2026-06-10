@@ -1,6 +1,15 @@
 # li-oci
 
-Li package li-oci
+OCI image spec, layout, manifest/config, and pull/store (pure Li; `raises Net` only — no Container effect).
+
+## Modules
+
+| Module | Import | Role |
+|--------|--------|------|
+| `spec` | `oci.spec` | OCI spec version and media-type tags |
+| `layout` | `oci.layout` | Image layout (`blobs/`, `index.json`) |
+| `manifest` | `oci.manifest` | Manifest and config schema tags |
+| `image` | `oci.image` | Pull/store lifecycle (`raises Net`) |
 
 ## Build
 

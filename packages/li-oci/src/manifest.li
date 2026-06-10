@@ -1,0 +1,57 @@
+# WP-CTN-012 — OCI image manifest and config schema tags.
+
+import spec
+
+def oci_manifest_schema_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def oci_manifest_config_required() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def oci_manifest_layers_min() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def oci_manifest_digest_algo_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def oci_config_schema_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def oci_manifest_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if oci_spec_image_manifest_version() != 2:
+    return 1
+  if oci_manifest_schema_version() != 2:
+    return 2
+  if oci_manifest_config_required() != 1:
+    return 3
+  if oci_manifest_layers_min() != 0:
+    return 4
+  if oci_manifest_digest_algo_tag() != 1:
+    return 5
+  if oci_config_schema_version() != 1:
+    return 6
+  return 0

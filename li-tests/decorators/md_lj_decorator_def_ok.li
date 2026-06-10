@@ -1,0 +1,67 @@
+# PH-7d: MD-shaped miniature — full @cpu @parallel @vectorized stack on def.
+# Keyword-equivalent: parallel for + disjoint_elem (see parallel_def_disjoint_inherit.li).
+
+@cpu
+@parallel(disjoint=disjoint_elem)
+@vectorized(lanes=4)
+def lj_force_step(
+  px: array[8, f64],
+  py: array[8, f64],
+  pz: array[8, f64],
+  fx: var array[8, f64],
+  fy: var array[8, f64],
+  fz: var array[8, f64]
+) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  parallel for i in 0..<8
+    requires disjoint_elem(i, fx)
+    decreases 8 - i
+  =
+    var fxi: float = 0.0
+    var fyi: float = 0.0
+    var fzi: float = 0.0
+    var j: int = 0
+    while j < 8
+      if i != j:
+        var dx: float = px[i] - px[j]
+        var dy: float = py[i] - py[j]
+        var dz: float = pz[i] - pz[j]
+        var r2: float = dx * dx + dy * dy + dz * dz
+        if r2 < 6.25 and r2 > 1.0e-12:
+          var inv_r2: float = 1.0 / r2
+          var inv_r6: float = inv_r2 * inv_r2 * inv_r2
+          var inv_r12: float = inv_r6 * inv_r6
+          var fmag: float = 24.0 * inv_r2 * (2.0 * inv_r12 - inv_r6)
+          fxi = fxi + fmag * dx
+          fyi = fyi + fmag * dy
+          fzi = fzi + fmag * dz
+      j = j + 1
+    fx[i] = fxi
+    fy[i] = fyi
+    fz[i] = fzi
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var px: array[8, f64]
+  var py: array[8, f64]
+  var pz: array[8, f64]
+  var fx: array[8, f64]
+  var fy: array[8, f64]
+  var fz: array[8, f64]
+  var i: int = 0
+  while i < 8
+    px[i] = 1.0
+    py[i] = 0.0
+    pz[i] = 0.0
+    fx[i] = 0.0
+    fy[i] = 0.0
+    fz[i] = 0.0
+    i = i + 1
+  lj_force_step(px, py, pz, fx, fy, fz)
+  return 0

@@ -2238,12 +2238,33 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                               llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction("li_rt_studio_aimd_batch_steps_from_env",
                               llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_dft_stride_from_env",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_scenario_set_dft_stride",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_scenario_get_dft_stride",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_aimd_scenario_configure",
+      llvm::FunctionType::get(i32_ty(context),
+                             {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                             false));
+  module->getOrInsertFunction("li_rt_studio_aimd_scenario_configured",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_scenario_steps",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_scenario_temperature_k",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_scenario_potential_mv",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_aimd_scenario_algo_id",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_studio_aimd_batch_write_json",
       llvm::FunctionType::get(i32_ty(context),
                              {i8_ptr(context), i32_ty(context), i32_ty(context),
                               llvm::Type::getDoubleTy(context), llvm::Type::getDoubleTy(context),
-                              i32_ty(context)},
+                              i32_ty(context), i32_ty(context), i32_ty(context)},
                              false));
   module->getOrInsertFunction("li_rt_studio_ppm_unique_colors",
                               llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));

@@ -372,13 +372,20 @@ def echem_aimd_batch_demo_steps() -> int
 =
   return 5000
 
-def echem_aimd_batch_dft_stride() -> int
+extern proc li_rt_studio_aimd_dft_stride_from_env() raises IO -> int
   requires true
   ensures result >= 1
   ensures result <= 1000
   decreases 0
+
+def echem_aimd_batch_dft_stride() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 1000
+  ensures result == li_rt_studio_aimd_dft_stride_from_env()
+  decreases 0
 =
-  return 50
+  return li_rt_studio_aimd_dft_stride_from_env()
 
 def echem_aimd_batch_steps_valid(steps: int) -> int
   requires true
@@ -401,7 +408,7 @@ def echem_aimd_batch_gpu_path_select() -> int
 =
   return chem_dft_gpu_path_available()
 
-def echem_aimd_batch_run(steps: int) -> AimdBatchResult
+def echem_aimd_batch_run(steps: int) -> AimdBatchResult raises IO
   requires echem_aimd_batch_steps_valid(steps) == 1
   ensures result.steps == steps
   ensures result.ok == 1

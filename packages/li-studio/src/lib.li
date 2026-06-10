@@ -274,6 +274,66 @@ extern def li_rt_studio_mcp_tool_name(tool_id: int) raises IO, Alloc -> str
   ensures result != ""
   decreases tool_id
 
+extern def li_rt_studio_aimd_scenario_reset() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+
+extern def li_rt_studio_aimd_scenario_set(steps: int, temperature_k: int, potential_mv: int, algo_id: int) -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases steps
+
+extern def li_rt_studio_aimd_scenario_get_steps() -> int raises IO
+  requires true
+  ensures result >= 64
+  decreases 0
+
+extern def li_rt_studio_aimd_batch_steps_from_env() -> int raises IO
+  requires true
+  ensures result >= 64
+  decreases 0
+
+extern def li_rt_studio_aimd_scenario_set_dft_stride(dft_stride: int) -> int raises IO
+  requires dft_stride >= 1
+  ensures result == 1
+  decreases dft_stride
+
+extern def li_rt_studio_aimd_scenario_get_dft_stride() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 1000
+  decreases 0
+
+extern def li_rt_studio_aimd_dft_stride_from_env() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 1000
+  decreases 0
+
+extern def li_rt_studio_aimd_batch_write_json(path: str, steps: int, ok: int, checksum: float, energy_drift: float, gpu_path: int, dft_stride: int, dft_calls: int) -> int raises IO
+  requires path != ""
+  ensures result >= 0
+  ensures result <= 1
+  decreases steps
+
+extern def li_rt_studio_ppm_unique_colors(path: str) -> int raises IO
+  requires path != ""
+  ensures result >= 0
+  decreases 0
+
+extern def li_rt_studio_aimd_last_ppm_set(path: str) -> int raises IO
+  requires path != ""
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern def li_rt_studio_aimd_last_ppm_get() -> str raises IO
+  requires true
+  ensures result != ""
+  decreases 0
+
 # wsv-w0/w5 — Li CPU raster PPM writer (no C paint_fb mirror as product truth).
 extern def li_rt_studio_headless_raster_ppm(path: str, width: int, height: int, profile_id: int, cmd_count: int, cpu_pixels: int, digest: int) -> int raises IO, Alloc
   requires width >= 8
@@ -2650,6 +2710,28 @@ def studio_mcp_tool_dispatch_mode_arg(mode: int, tool_id: int, arg: int) -> Stud
       style = studio_biomol_style_sticks()
     out.result_code = li_rt_studio_viewport_display_set_biomol_style(style)
     out.status = studio_mcp_tool_status_ok()
+    return out
+  if tool_id == studio_mcp_aimd_configure_scenario():
+    var steps: int = arg
+    if steps < 64:
+      steps = 64
+    if steps > 10000:
+      steps = 10000
+    var stride: int = li_rt_studio_aimd_dft_stride_from_env()
+    if li_rt_studio_aimd_scenario_set_dft_stride(stride) != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    if li_rt_studio_aimd_scenario_set(steps, 300, 0, algo_echem_aimd_interface()) != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = steps
+    return out
+  if tool_id == studio_mcp_aimd_get_scenario():
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = li_rt_studio_aimd_scenario_get_steps()
     return out
   out.status = studio_mcp_tool_status_failed()
   out.result_code = studio_mcp_tool_result_err_io()

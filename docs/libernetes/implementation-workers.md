@@ -1,4 +1,4 @@
-# libernetes goal-directed K8s workers
+﻿# libernetes goal-directed K8s workers
 
 Homelab **engine** cluster runs four parallel Cursor agents until each track's completion gate passes.
 
@@ -13,15 +13,29 @@ Homelab **engine** cluster runs four parallel Cursor agents until each track's c
 
 Manifests: `li-cursor-agents-clone/deploy/k8s/engine/`. Setup: `scripts/setup-engine-k8s-libernetes-all.sh`.
 
+## Wave wiring rule
+
+Each track's **completion gate** (`check-libernetes-{track}-gate.sh`) chains every merged wave gate through the **active** wave:
+
+1. Earlier waves (0ÔÇôNÔêÆ1) must pass ÔÇö workers never idle on a completed wave.
+2. The **active** wave gate (`check-libernetes-{track}-waveN-gate.sh`) is the last script in the chain.
+3. Later wave scripts (N+1ÔÇô9) ship in-repo but stay **unwired** until wave N passes on the branch.
+4. Goal sprint markdown lists **every LB-* phase** for the active wave with checkbox status; workers iterate until all pending phases pass.
+5. Runners report `GOAL_INCOMPLETE` while any wired gate fails; `GOAL_COMPLETE` only when the full chain passes.
+
+To advance wave N ÔåÆ N+1: mark wave N phases **DONE** in the sprint file, append `waveN+1-gate.sh` to the completion gate, push the cursor branch, restart the Deployment.
+
 ## Wave progression
 
-| Wave | Status on main | Active gate |
-|------|----------------|-------------|
-| 0–2 | **Merged** | wave0–2 gates in completion script |
-| 3 | **In progress** (K8s runners) | `check-libernetes-*-wave3-gate.sh` |
-| 4–6 | Scripts present; unwired | Enable after prior wave merges |
+| Wave | Status | Active gate |
+|------|--------|-------------|
+| 0ÔÇô2 | **Merged to main** | wave0ÔÇô2 gates in completion script |
+| 3 | **DONE** (cursor branches) | `check-libernetes-*-wave3-gate.sh` |
+| 4 | **ACTIVE** (K8s runners) | `check-libernetes-*-wave4-gate.sh` |
+| 5ÔÇô6 | Scripts present; unwired | Enable after Wave 4 passes |
+| 7ÔÇô9 | Self-heal, persistence, dashboard stubs | Enable after Wave 6 passes |
 
-To advance: merge track PR → add `waveN+1-gate.sh` to `check-libernetes-*-gate.sh` → restart worker Deployment.
+See [cluster-operations.md](cluster-operations.md) for Waves 7ÔÇô9 deliverables.
 
 ## ConfigMap essentials
 
@@ -39,4 +53,14 @@ LI_SWARM_EXTERNAL: "1"
 
 ## Distributed workloads
 
-See [distributed-workloads.md](distributed-workloads.md). Waves 3–6 implement single-node stack → multi-node join → scheduler dispatch → benchmarks.
+See [distributed-workloads.md](distributed-workloads.md). Waves 3ÔÇô6 implement single-node stack ÔåÆ multi-node join ÔåÆ scheduler dispatch ÔåÆ benchmarks.
+
+## Restart after wiring
+
+```bash
+export KUBECONFIG=~/.kube/config-homelab
+kubectl -n li-swarm rollout restart deploy/li-libernetes-platform deploy/li-libernetes-licontainers deploy/li-libernetes-livm deploy/li-libernetes-control
+kubectl -n li-swarm logs -f deploy/li-libernetes-control --tail=50
+```
+
+Workers should report `GOAL_INCOMPLETE` until the active wave gate passes, then `GOAL_COMPLETE`.

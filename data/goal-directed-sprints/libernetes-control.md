@@ -11,7 +11,7 @@ plan: docs/libernetes/master-plan.md
 
 ## Mission
 
-Control plane UX and distributed orchestration. **Wave 0–2 DONE on `main`.** Active: **Wave 3** (local runnable stack + kubelet sync stub).
+Control plane UX and distributed orchestration. **Waves 0–3 DONE.** Active: **Wave 4** (multi-node join + cluster state).
 
 ## Phase checklist
 
@@ -24,14 +24,24 @@ Control plane UX and distributed orchestration. **Wave 0–2 DONE on `main`.** A
 | **LB-K11** | `libernetes init` invokes run-local | **DONE** | same wave3 gate |
 | **LB-K12** | `docs/libernetes/distributed-workloads.md` | **DONE** | same wave3 gate |
 | **LB-K13** | `apiserver/src/informer_sync.li` + serve wiring | **DONE** | same wave3 gate |
+| **LB-K14** | `packages/li-libernetes-core/src/cluster_state.li` | pending | `check-libernetes-control-wave4-gate.sh` |
+| **LB-K15** | Worker join writes `kubelet.conf` persistence | pending | same wave4 gate |
+| **LB-K16** | `li-tests/integration/multi_node_join.li` | pending | same wave4 gate |
 
-## Later waves
+## Later waves (unwired until Wave 4 passes)
 
 | Wave | Focus | Gate |
 |------|-------|------|
-| 4 | Multi-node join + `cluster_state.li` | `check-libernetes-control-wave4-gate.sh` |
 | 5 | Scheduler dispatch + pod sync | `check-libernetes-control-wave5-gate.sh` |
 | 6 | Pod churn bench + distributed e2e | `check-libernetes-control-wave6-gate.sh` |
+| 7 | Node controller + self-heal integration | `check-libernetes-control-wave7-gate.sh` |
+| 8 | etcd backup + reboot recovery e2e | `check-libernetes-control-wave8-gate.sh` |
+| 9 | cluster-operations docs + dashboard wiring | `check-libernetes-control-wave9-gate.sh` |
+
+## Iteration rules
+
+1. Implement **LB-K14/K15/K16** until completion gate passes.
+2. Commit + push every iteration.
 
 ## Completion gate
 

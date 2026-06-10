@@ -6,8 +6,8 @@ plan: data/goal-directed-sprints/ph-sci-simulation-gap-close-plan.md
 
 # PH-SCI simulation gap-close plan
 
-**Last updated:** 2026-06-10 · **main @** Phase 2 finish branch  
-**Progress:** **32 / 33 WPs done (~97%)** — Phase 0 + Phase 1 + Phase 2 **complete**; Phase 3 vendor-02 deferred
+**Last updated:** 2026-06-10 · **main @** `c988d702d` (#1541 merged)  
+**Progress:** **32 / 33 WPs done (~97%)** — Phase 0 + Phase 1 + Phase 2 **complete**; Phase 3 **VENDOR-02 deferred** (tracked issue)
 **Scope:** All `li-sim-*` packages, simulation-coupled `li-physics-*`, `li-scene`, `li-math-numerics`, `li-sim-scientific`, and `science_gpu` / `@gpu` placement coverage.
 **Honesty:** `lic check` / empty `builds.li` smokes ≠ product parity. See [studio-full-implementation-plan.md](../../docs/game-dev/studio-full-implementation-plan.md) §1 honesty rule.
 
@@ -17,11 +17,11 @@ See **[ph-sci-gpu-chem-dft.md](ph-sci-gpu-chem-dft.md)** for WP-SCI-GPU-CHEM-01.
 
 ## Iteration rules
 
-1. **Phase 0 + Phase 1 are done** — do not reopen unless a regression fails `scripts/ph-sci-phase0-gates.sh`.
-2. Work **Phase 2 next** ([ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md)), then Phase 3 vendor GPU.
+1. **Phase 0 + Phase 1 + Phase 2 are done** — regression via `scripts/ph-sci-gap-close-phase2-gate.sh`; do not reopen unless gates fail.
+2. **Phase 3** vendor GPU: VENDOR-01/03 done; **VENDOR-02 deferred** — see [ph-sci-gpu-vendor-02-deferral.md](ph-sci-gpu-vendor-02-deferral.md).
 3. One WP or logical chunk per iteration; commit + push to a feature branch off `main`.
 4. Verify with WSL `./build-wsl/compiler/lic/lic build …` and `./li-tests/run_all.sh science_gpu` before ending an iteration.
-5. Phase 2+ gates TBD; Phase 0 gate remains the regression spine.
+5. Regression spine: `ph-sci-phase0-gates.sh`, `ph-sci-gap-close-phase2-gate.sh`, `ph-sci-gpu-gates.sh`.
 
 ## Completion gate
 
@@ -369,4 +369,4 @@ bash scripts/ph-sci-gap-close-phase2-gate.sh
 | WP-SIM-04/05 | PH-SIM SIM-2/5/6 |
 | WP-SCI-GPU-VENDOR-* | PH-ML-GPU battle plan Waves 11–13, Stage 2 |
 
-*Tracking document — Phase 0/1 landed on `main`; Phase 2 kickoff: [ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md).*
+*Tracking document — Phase 0/1/2 landed on `main` (#1541); Phase 2 detail: [ph-sci-gap-close-phase2.md](ph-sci-gap-close-phase2.md). Remaining: [ph-sci-gpu-vendor-02-deferral.md](ph-sci-gpu-vendor-02-deferral.md).*

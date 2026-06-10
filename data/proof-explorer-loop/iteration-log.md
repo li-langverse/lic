@@ -117,3 +117,8 @@
 | 2026-06-03T21:15:00Z | code_implementer | BUG-C-13 partial | phase10-completion-gate exit 0 | Merged lic #747 + proof-library #7; proof_db_* axiom VC discharge (peano_succ_injective cite); axiom_decl_vc_skip_gap.sh PASS; gate exit 0 |
 | 2026-06-05T12:00:00Z | code_implementer | wp-cq-01..08 | phase12-completion-gate exit 0 | Phase12 catalog quality: 27→≤5 divergent; domain axioms axiomatic; physics placeholders discrepancy; stdlib sorry honesty; library.json rebuild |
 | 2026-06-06T08:00:00Z | code_implementer | wp-t10-01..10 | phase13-completion-gate | Phase13 ten-of-ten: site sync lic main; stale PRs closed; proof-library rebuild; gap audit honest; axiom+Erdős+CI gates |
+| 2026-06-10T09:40:00Z | code_implementer | std_gap present | ph-sci-gap-close-phase2-gate exit 0 | Agent run 1781083919048: std.io PH-IO-4 present; stdlib_seal 9/9; ph-sci-gpu-gates exit 0; Phase 2 complete; PR pending |
+| 2026-06-10T14:15:00Z | code_implementer | MR !158 dirty fix | check-version.sh --pr exit 0 | Agent run 1781100051804: rebased onto main; resolved benchmark conflicts; homelab-k8s pull_policy CI fix; MR !158 mergeable |
+| 2026-06-10T14:30:00Z | code_implementer | MR !158 CI verify | check-version.sh --pr exit 0 | Agent run 1781100952064: confirmed pull_policy fix on all image jobs; pipeline #439 queued (homelab-k8s runner pending) |
+| 2026-06-10T15:05:00Z | code_implementer | MR !158 CI fix | check-traceability exit 0 | Agent run 1781100952064: ensure-package-ci.sh added 64 package ci.yml; version:mr green on pipeline #440 |
+| 2026-06-10T15:55:00Z | code_implementer | MR !158 CI fix | check-mir-parallel-decorator | Agent run 1781100952064: accept li_parallel_for_i64 symbol (deprecated li_omp alias) in master-plan gate |

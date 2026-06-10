@@ -1,0 +1,73 @@
+{
+  "generated_at": "2026-06-10T00:39:33Z",
+  "suite": "ph-sci-md-oracle-competitive",
+  "registry_path": "/workspace/lic/benchmarks/competitive/md_oracle.toml",
+  "registry_schema": "li_ph_sci_md_oracle_competitive_v1",
+  "rows": [
+    {
+      "id": "md_lj_micro",
+      "kernel": "sim_scientific_oracle_checksum_md",
+      "workload_class": "v0_micro",
+      "workload_note": "4-particle LJ chain spacing=1.12, 8 velocity-Verlet steps; normalized energy drift checksum",
+      "particles": 4,
+      "steps": 8,
+      "spacing": 1.12,
+      "drift_tolerance": 0.001,
+      "drift_delta": null,
+      "parity_gate_pass": null,
+      "parity_note": "LAMMPS/GROMACS columns stub until WP-PLAT-05 B1 drivers ship",
+      "executed": true,
+      "li": {
+        "id": "li",
+        "incumbent": "Li sim_scientific_oracle_checksum_md (4-particle LJ chain)",
+        "workload_class": "v0_micro",
+        "executed": true,
+        "cpu_sec": 4.4e-05,
+        "energy_drift": 6.9691228e-05,
+        "energy_source": "li_md_oracle_python_mirror",
+        "validity_gate_pass": true,
+        "validity_ratio": 1.0,
+        "ratio_vs_li": 1.0,
+        "device": "cpu",
+        "workload": "md_lj_micro",
+        "note": null
+      },
+      "competitors": [
+        {
+          "id": "lammps",
+          "incumbent": "LAMMPS pair/lj/cut",
+          "workload_class": "external_binary_stub",
+          "executed": false,
+          "cpu_sec": null,
+          "energy_drift": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "license": "GPL-2.0-only",
+          "pinned_version": "2024.06.27",
+          "csv_lang": "lammps",
+          "note": "NOT bundled in CI \u2014 external domain oracle; enable with LI_MD_ORACLE_LAMMPS=1 when binary on PATH; see README-md-oracle.md",
+          "device": "cpu",
+          "workload": "md_lj_micro"
+        },
+        {
+          "id": "gromacs",
+          "incumbent": "GROMACS velocity-Verlet",
+          "workload_class": "external_binary_stub",
+          "executed": false,
+          "cpu_sec": null,
+          "energy_drift": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "license": "LGPL-2.1-or-later",
+          "pinned_version": "2024.2",
+          "csv_lang": "gromacs",
+          "note": "NOT bundled in CI \u2014 external domain oracle; enable with LI_MD_ORACLE_GROMACS=1 when binary on PATH; see README-md-oracle.md",
+          "device": "cpu",
+          "workload": "md_lj_micro"
+        }
+      ]
+    }
+  ]
+}

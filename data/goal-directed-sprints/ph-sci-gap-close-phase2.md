@@ -18,7 +18,7 @@ Phase 2 is complete when the WPs below are landed and documented; no single gate
 ## P0 order (start here)
 
 1. ~~**WP-SCI-03**~~ — **partial landed** — `run_algo_registry` CFD/FEA/QM tier-2 dispatch (401–432, 205–216); stub reserved for documented IDs (701+); `run_algo_registry_tier2.li` extended.
-2. **WP-PLAT-05** — LAMMPS/GROMACS external oracle column (unblocks SCI-03 MD rows).
+2. ~~**WP-PLAT-05**~~ — **partial landed** — `md_oracle.toml` competitive driver, LAMMPS/GROMACS watch rows in `registry.toml`, `ph-sci-md-oracle-competitive-gates.sh` (external_binary stubs; algo 104 covered by MD tier-2 range 101–117).
 3. **WP-SCI-04** — `sim.viz` → wgpu field draw (depends WP-GD-05 / PH-HW-2).
 
 ## P1 queue

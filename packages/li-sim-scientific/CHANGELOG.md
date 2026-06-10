@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **WP-ECHEM-09 AIMD coupling** — `sim_scientific_oracle_checksum_echem_aimd`, `run_echem_aimd_tier2_registry`, `algo_echem_aimd_interface()` (433) dispatch; 8-step velocity-Verlet + Berendsen toy thermostat calling `chem_dft_energy_kernel_hartree` each step; smoke `echem_aimd_interface_smoke.li`.
 - **WP-SCI-03 tier-2 kernels** — `sim_scientific_oracle_checksum_md`, `sim_scientific_oracle_checksum_heat`, `run_algo_registry` MD/heat/rigid dispatch; smokes `scientific_oracle_bench.li`, `run_algo_registry_tier2.li`.
 - **WP-SCI-03 Phase 2 CFD/FEA/QM tier-2** — `sim_scientific_oracle_checksum_qm`, `sim_scientific_oracle_checksum_cfd`, `sim_scientific_oracle_checksum_fea_bar`, `run_qm_tier2_registry` (401–432), `run_cfd_tier2_registry` (205–210), `run_fea_tier2_registry` (211–216); heat dispatch narrowed to 201–204; `vertical_cfd_lid_driven_cavity`, `vertical_fea_linear_elasticity`; extended `run_algo_registry_tier2.li`.
+- **WP-PLAT-05 MD external oracle column (partial)** — `benchmarks/competitive/md_oracle.toml` driver, LAMMPS/GROMACS watch rows, `ph-sci-md-oracle-competitive-gates.sh`; algo 104 (`md_oracle_external`) served by MD tier-2 range 101–117.
 
 ### Changed
 

@@ -6,7 +6,7 @@ The Li **prelude** is the set of builtin types and functions the compiler knows 
 
 You **cannot** define your own `def` or `type` with a name reserved for the prelude or for symbols exported from `std/`. Attempting to do so fails at compile time with `stdlib_symbol_shadow`.
 
-Execution decorator names (`@parallel`, `@cpu`, …) are also reserved; see [Decorators](decorators.md).
+Execution decorator names (`@parallel`, `@cpu`, …) are also reserved; see [Decorators](../language/decorators.md).
 
 ## Shipped std/
 

@@ -1,0 +1,69 @@
+# Strict MkDocs build + GitHub Pages deploy (lic#403).
+# Sources: lic/docs/ content via lic-docs mkdocs.yml (sibling checkout in CI).
+name: Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "scripts/build-docs.sh"
+      - "scripts/check-docs-site-links.sh"
+      - "scripts/fix-docs-mkdocs-links.py"
+      - "scripts/patch-mkdocs-validation.py"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - "docs/**"
+      - "scripts/build-docs.sh"
+      - "scripts/check-docs-site-links.sh"
+      - "scripts/fix-docs-mkdocs-links.py"
+      - "scripts/patch-mkdocs-validation.py"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout lic-docs (MkDocs site config)
+        run: git clone --depth 1 https://github.com/li-langverse/lic-docs.git ../lic-docs
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Strict MkDocs build + link gates
+        env:
+          LI_DOCS_ROOT: ${{ github.workspace }}/../lic-docs
+        run: |
+          chmod +x scripts/check-docs-site-links.sh scripts/build-docs.sh
+          ./scripts/check-docs-site-links.sh
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: ../lic-docs/site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

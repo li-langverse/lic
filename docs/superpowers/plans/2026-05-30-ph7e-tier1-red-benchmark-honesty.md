@@ -2,7 +2,7 @@
 
 > **Issue:** [#463](https://github.com/li-langverse/lic/issues/463) · **Repo:** li-langverse/lic  
 > **Vision:** **Provable** (honest G-math claims), **Fast** (tier-1 ≤1.2× C++ advisory)  
-> **Learned from:** [master plan §7e](2026-05-14-li-master-plan.md), [math-linalg surface](2026-05-16-li-math-linalg-surface.md), [provability-gaps.md](../../verification/provability-gaps.md), [proof_gap cycle 18 Horner FMA](https://github.com/li-langverse/benchmarks/blob/main/data/digest/proof_gap_researcher-2026-05-30-horner-fma-literal-drift.md)
+> **Learned from:** [master plan §7e](../../superpowers/plans/2026-05-14-li-master-plan.md), [math-linalg surface](../../superpowers/plans/2026-05-16-li-math-linalg-surface.md), [provability-gaps.md](../../verification/provability-gaps.md), [proof_gap cycle 18 Horner FMA](https://github.com/li-langverse/benchmarks/blob/main/data/digest/proof_gap_researcher-2026-05-30-horner-fma-literal-drift.md)
 
 ## Goal
 

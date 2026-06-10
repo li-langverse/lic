@@ -18,9 +18,9 @@
 | `coding-projects/.env.github` | Agent PAT |
 | `coding-projects/.env.github.backup` | `BACKUP_GH_TOKEN`, `BACKUP_OWNER=li-langverse-backup` |
 
-Copy [`scripts/env.github.backup.example`](../../scripts/env.github.backup.example), `chmod 600`.
+Copy [`scripts/env.github.backup.example`](https://github.com/li-langverse/lic/blob/main/scripts/env.github.backup.example), `chmod 600`.
 
-**Agents must not:** run `backup-*`, `export-li-langverse-metadata`, `recovery-drill-*`, or `with-github-backup-env`; read `.env.github.backup`. Cursor hook [`guard-backup.sh`](../../.cursor/hooks/guard-backup.sh) blocks these unless `LI_HOOK_ALLOW=1`.
+**Agents must not:** run `backup-*`, `export-li-langverse-metadata`, `recovery-drill-*`, or `with-github-backup-env`; read `.env.github.backup`. Cursor hook [`guard-backup.sh`](https://github.com/li-langverse/lic/blob/main/.cursor/hooks/guard-backup.sh) blocks these unless `LI_HOOK_ALLOW=1`.
 
 ### After the experiment (narrow agent PAT)
 
@@ -71,19 +71,19 @@ Creates `li-langverse-backup/lic-recovery-drill` from the local `lic` mirror, ve
    ```
    Or push from **`li-langverse-backup/<name>`** if local disk is lost.
 4. Re-apply rulesets from `metadata/*/repo-*-rulesets.json`.
-5. Re-wire remotes and downstream workflows per [upstream-notifications.md](upstream-notifications.md).
+5. Re-wire remotes and downstream workflows per [upstream-notifications.md](../ecosystem/upstream-notifications.md).
 
 ## Scripts
 
 | Script | Role |
 |--------|------|
-| [`backup-li-langverse-org.sh`](../../scripts/backup-li-langverse-org.sh) | Mirror + auto-create backup org repos |
-| [`export-li-langverse-metadata.sh`](../../scripts/export-li-langverse-metadata.sh) | JSON under `metadata/<timestamp>/` |
-| [`recovery-drill-li-langverse-backup.sh`](../../scripts/recovery-drill-li-langverse-backup.sh) | Throwaway restore test |
-| [`with-github-backup-env.sh`](../../scripts/with-github-backup-env.sh) | Loads `.env.github.backup` only |
+| [`backup-li-langverse-org.sh`](https://github.com/li-langverse/lic/blob/main/scripts/backup-li-langverse-org.sh) | Mirror + auto-create backup org repos |
+| [`export-li-langverse-metadata.sh`](https://github.com/li-langverse/lic/blob/main/scripts/export-li-langverse-metadata.sh) | JSON under `metadata/<timestamp>/` |
+| [`recovery-drill-li-langverse-backup.sh`](https://github.com/li-langverse/lic/blob/main/scripts/recovery-drill-li-langverse-backup.sh) | Throwaway restore test |
+| [`with-github-backup-env.sh`](https://github.com/li-langverse/lic/blob/main/scripts/with-github-backup-env.sh) | Loads `.env.github.backup` only |
 
 ## Related
 
-- [org-push.md](org-push.md) — push lic/lip/lit to live org
-- [governance.md](governance.md) — org policy (canonical in roadmap repo)
-- [agent-coordination.md](agent-coordination.md) — multi-agent rules
+- [org-push.md](../ecosystem/org-push.md) — push lic/lip/lit to live org
+- [governance.md](../ecosystem/governance.md) — org policy (canonical in roadmap repo)
+- [agent-coordination.md](../ecosystem/agent-coordination.md) — multi-agent rules

@@ -3,8 +3,8 @@
 **Status:** Active (rev. 1 — 2026-05-26)  
 **Branch baseline:** `cursor/wp-lic-01-verticals-toml` @ `e1fa5826` (includes `efb3739f`…`fddb41ca` vertical increment series)  
 **Audience:** Architects, parallel agents, package owners  
-**Navigation hub:** [WORLD-STUDIO-MASTER-PLAN.md](WORLD-STUDIO-MASTER-PLAN.md)
-**Canonical vision:** [world-studio-vision.md](world-studio-vision.md) · [PH-world-studio-program.md](PH-world-studio-program.md) · [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md)
+**Navigation hub:** [WORLD-STUDIO-MASTER-PLAN.md](../game-dev/WORLD-STUDIO-MASTER-PLAN.md)
+**Canonical vision:** [world-studio-vision.md](../game-dev/world-studio-vision.md) · [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md) · [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md)
 
 **Honesty rule:** `lic check` composable green = **interface landed**, not product parity. Wave A compiler gates ([provability-gaps.md](../verification/provability-gaps.md) G-VERIFY-01) block “production” domain kernels.
 
@@ -418,4 +418,4 @@ LIG_HOST_PRESENT=1 ./scripts/studio-verticals-capture-native.sh
 
 ---
 
-**Maintainers:** Bump `updated` in `benchmarks/competitive/verticals.toml` when a WP changes `workload_class`. Keep [PH-world-studio-program.md](PH-world-studio-program.md) landed-milestone list in sync with §1.3.
+**Maintainers:** Bump `updated` in `benchmarks/competitive/verticals.toml` when a WP changes `workload_class`. Keep [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md) landed-milestone list in sync with §1.3.

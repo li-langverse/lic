@@ -25,9 +25,9 @@
 
 | Step | Artifact |
 |------|----------|
-| `inventory_std_tree-1` | [cycle-1-inventory-std-tree.md](../stdlib-research/cycle-1-inventory-std-tree.md) |
-| `gap_vs_sota-linalg-1` | [cycle-1-gap-vs-sota-linalg.md](../stdlib-research/cycle-1-gap-vs-sota-linalg.md) |
-| `synthesize_step` | [cycle-1-summary.md](../stdlib-research/cycle-1-summary.md) |
+| `inventory_std_tree-1` | [cycle-1-inventory-std-tree.md](../../ecosystem/stdlib-research/cycle-1-inventory-std-tree.md) |
+| `gap_vs_sota-linalg-1` | [cycle-1-gap-vs-sota-linalg.md](../../ecosystem/stdlib-research/cycle-1-gap-vs-sota-linalg.md) |
+| `synthesize_step` | [cycle-1-summary.md](../../ecosystem/stdlib-research/cycle-1-summary.md) |
 
 ---
 

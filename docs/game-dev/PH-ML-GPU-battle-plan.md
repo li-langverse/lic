@@ -1,9 +1,9 @@
 # PH-ML-GPU battle plan ? native ML/DL/RL on Li
 
 **Status:** Wave 13 program complete (partial ? T1/T6 landed 2026-05-31); Wave 12 final deferred (2026-05-31); Wave 11 carryover (2026-05-31); Wave 10 LLM depth + RL IPC + MLP competitors (2026-05-31); Wave 9 LLM recovery + C++/Rust competitors (2026-05-31); Wave 8 SOTA competitive drivers (2026-05-31); Wave 6 flat matmul + process env scaffold + competitive benches (2026-05-31); Wave 5 thread-pool RL + JobGraph queue (2026-05-31); Wave 4 merged (2026-05-30); Wave 3 JobGraph landed (2026-05-30); Wave 1 spine on branch  
-**Vision:** [world-studio-vision.md](world-studio-vision.md)  
-**RFC:** [specs/ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md)  
-**Tracker:** [PH-ML-GPU-execution-tracker.md](PH-ML-GPU-execution-tracker.md)
+**Vision:** [world-studio-vision.md](../game-dev/world-studio-vision.md)  
+**RFC:** [specs/ml-async-parallel-rfc.md](../game-dev/specs/ml-async-parallel-rfc.md)  
+**Tracker:** [PH-ML-GPU-execution-tracker.md](../game-dev/PH-ML-GPU-execution-tracker.md)
 
 ## Overview
 

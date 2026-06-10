@@ -3,7 +3,7 @@
 **Status:** Active (WP0-A — 2026-05-26)  
 **Audience:** `lic` / `benchmarks` maintainers, agents  
 **Canonical types:** [Data structures roadmap](../superpowers/specs/2026-05-14-li-language-design.md#data-structures-roadmap) · [Collections and generics](../language/collections-generics.md)  
-**Ecosystem scheduling:** [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md) · **AL-14…AL-18**  
+**Ecosystem scheduling:** [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md) · **AL-14…AL-18**  
 **Proof honesty:** [provability-gaps.md](../verification/provability-gaps.md)
 
 This document is the **stdlib ADT program** companion to the language design spec: Python-parity containers and algorithms in `std/`, built on prelude heap types, with competitive benchmarks and security gates. **WP0** lands spec + harness design only; **WP1+** ships runtime code.
@@ -23,7 +23,7 @@ This document is the **stdlib ADT program** companion to the language design spe
 | Parallel disjointness (AST-based) | **G-par** | **7b** |
 | Math / tier-1 ≤1.2× C++ | **G-math** | **2i**, **7e** |
 
-Also: **8a** workspace import path green; [algorithms-and-libraries-plan §5](algorithms-and-libraries-plan.md) snapshot updated; release note authorizing WP1.
+Also: **8a** workspace import path green; [algorithms-and-libraries-plan §5](../ecosystem/algorithms-and-libraries-plan.md) snapshot updated; release note authorizing WP1.
 
 **Current status (2026-05-26):** **Not met** — provability-gaps states no **G-*** row is **Done**. Compiler-studio loop green slices are **progress toward WP-WA**, not substitutes.
 
@@ -58,7 +58,7 @@ Prelude (compiler + runtime)     std/ (Li source on prelude)
 
 - **Prelude** names are sealed ([stdlib seal spec](../superpowers/specs/2026-05-16-li-stdlib-seal.md)); users cannot shadow them.
 - **`std/`** modules are ordinary Li source importing prelude types (e.g. `deque` = ring buffer on heap; `heapq` = binary heap on `list`).
-- **`packages/*`** numerics (`math`, `linalg`, …) stay separate — see [algorithms-and-libraries-plan §7](algorithms-and-libraries-plan.md).
+- **`packages/*`** numerics (`math`, `linalg`, …) stay separate — see [algorithms-and-libraries-plan §7](../ecosystem/algorithms-and-libraries-plan.md).
 
 ---
 
@@ -118,7 +118,7 @@ Deliverable: **AL-18** — btree/graph (and peers) only when a benchmark row dem
 
 ## Benchmark & security model (summary)
 
-- **Perf:** tier-1 stdlib rows ≤ **1.2× C++** (same policy as [competitive-engines-plan](../benchmarks/competitive-engines-plan.md)).
+- **Perf:** tier-1 stdlib rows ≤ **1.2× C++** (same policy as [competitive-engines-plan](https://github.com/li-langverse/lic/blob/main/docs/benchmarks/competitive-engines-plan.md)).
 - **Correctness:** Python `reference.py` scripts — `reference_only` in `kernel_honesty`; not perf oracle.
 - **Security:** hash-flood, OOB index (compile fail where possible), `stdlib_symbol_shadow` — see WP0-E / `bench_ecosystem.py` hooks.
 
@@ -130,7 +130,7 @@ Initial catalog ids (stubs until WP1): `stdlib_list_push_pop`, `stdlib_dict_inse
 
 - [stdlib.md](../language/stdlib.md) — module tree preview  
 - [Data structures roadmap](../superpowers/specs/2026-05-14-li-language-design.md#data-structures-roadmap) — phase gates 1→4  
-- [algorithms-and-libraries-plan §5](algorithms-and-libraries-plan.md) — Wave A (ecosystem wording)  
+- [algorithms-and-libraries-plan §5](../ecosystem/algorithms-and-libraries-plan.md) — Wave A (ecosystem wording)  
 - [Master plan](../superpowers/plans/2026-05-14-li-master-plan.md) — phases 2e/2f/8a  
 
 **Maintainers:** Update **WP-WA** status in this file when moving **G-lean**, **G-vc**, **G-par**, or **G-math** to **Done**. Bump `updated` on quarterly review with AL-7 SOTA ritual.

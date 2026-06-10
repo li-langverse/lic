@@ -18,4 +18,4 @@
 | `PKG-li-demo` | [`li-langverse/li-demo`](https://github.com/li-langverse/li-demo) | Package scaffold example |
 | `PKG-li-httpd` | [`li-langverse/li-httpd`](https://github.com/li-langverse/li-httpd) | HTTP gateway (Phase H — stub) |
 
-Add rows via PR to the **roadmap** repo (human merge). **Active claims:** [active-agent-claims.md](active-agent-claims.md).
+Add rows via PR to the **roadmap** repo (human merge). **Active claims:** [active-agent-claims.md](../ecosystem/active-agent-claims.md).

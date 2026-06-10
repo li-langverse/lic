@@ -8,7 +8,7 @@ Do not edit ecosystem policy here — open a PR to the roadmap repo (human merge
 
 ## Strict by default
 
-Li is **strict by default**: proof, security, and performance gates are always on at maximum. There is **no optional provability** — only explicit project downgrades. **Canonical (lic workspace):** [strict-by-default.md](strict-by-default.md).
+Li is **strict by default**: proof, security, and performance gates are always on at maximum. There is **no optional provability** — only explicit project downgrades. **Canonical (lic workspace):** [strict-by-default.md](../ecosystem/strict-by-default.md).
 
 ## Related
 

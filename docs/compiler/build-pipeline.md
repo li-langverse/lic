@@ -74,4 +74,4 @@ Module layout: [Architecture overview](../architecture/overview.md).
 
 ## LLVM types and C ABI
 
-Which LLVM types correspond to `int`, `str`, `bytes`, and `extern` calls — and how that must match `runtime/li_rt.c` — is documented in **[LLVM codegen and native ABI](llvm-abi.md)**. Read that before adding new `extern proc` or changing pointer parameter types.
+Which LLVM types correspond to `int`, `str`, `bytes`, and `extern` calls — and how that must match `runtime/li_rt.c` — is documented in **[LLVM codegen and native ABI](../compiler/llvm-abi.md)**. Read that before adding new `extern proc` or changing pointer parameter types.

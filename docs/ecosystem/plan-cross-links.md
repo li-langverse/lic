@@ -8,7 +8,7 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 |-------|------------|------|
 | **Master plan** (PH order, repo policy) | `lic` | [2026-05-14-li-master-plan.md](../superpowers/plans/2026-05-14-li-master-plan.md) |
 | **Provability gaps (G-*)** | `lic` | [provability-gaps.md](../verification/provability-gaps.md) |
-| **Phase plans** | `lic` | [docs/superpowers/plans/](../superpowers/plans/) (`2026-05-14-phase-*.md`, lip/httpd/math plans) |
+| **Phase plans** | `lic` | [docs/superpowers/plans/](https://github.com/li-langverse/lic/blob/main/docs/superpowers/plans) (`2026-05-14-phase-*.md`, lip/httpd/math plans) |
 | **Handbook index** | `lic` | [docs/handbook/README.md](../handbook/README.md) |
 | **Ecosystem governance** | `roadmap` | [vision-and-roadmap.md](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/vision-and-roadmap.md) |
 | **Milestones (themes)** | `roadmap` | [milestones.md](https://github.com/li-langverse/roadmap/blob/main/docs/roadmap/milestones.md) |
@@ -71,8 +71,8 @@ Surface quality is **not** proof — keep separate from **G-*** rows. Supports *
 
 | Layer | Path |
 |-------|------|
-| **Handoff (this repo)** | [gui-ux-quality-handoff.md](gui-ux-quality-handoff.md) |
-| **Orchestrator ingest** | [orch-r4-ui-ux-signals](orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md) |
+| **Handoff (this repo)** | [gui-ux-quality-handoff.md](../ecosystem/gui-ux-quality-handoff.md) |
+| **Orchestrator ingest** | [orch-r4-ui-ux-signals](https://github.com/li-langverse/lic/blob/main/docs/ecosystem/orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md) |
 | **Remediation manifest** | `benchmarks/data/latest/remediation_manifest.json` |
 | **Targets** | `li-cursor-agents/config/ux-targets.json` |
 

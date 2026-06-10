@@ -2,7 +2,7 @@
 
 **What this page is for:** Compare how coding agents discover repo context, tools, and errors — and what Li standardizes on.
 
-**Prerequisites:** [agent-coordination.md](agent-coordination.md), [li-agent-manifest.toml](li-agent-manifest.toml).
+**Prerequisites:** [agent-coordination.md](../ecosystem/agent-coordination.md), [li-agent-manifest.toml](https://github.com/li-langverse/lic/blob/main/docs/ecosystem/li-agent-manifest.toml).
 
 ## Comparison
 

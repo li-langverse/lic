@@ -2,7 +2,7 @@
 
 **Status:** draft — config + oracle shipped; on-wire L4 splice deferred.  
 **Milestone:** M3 optional (`m3-optional`).  
-**Plan:** [2026-05-16-li-httpd-plan.md](../plans/2026-05-16-li-httpd-plan.md).
+**Plan:** [2026-05-16-li-httpd-plan.md](../../superpowers/plans/2026-05-16-li-httpd-plan.md).
 
 ## Goal
 

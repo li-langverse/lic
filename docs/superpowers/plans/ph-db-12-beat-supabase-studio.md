@@ -54,8 +54,8 @@ status: in_progress
 
 ## Plan loop
 
-- State: [data/ph-studio-beat/state.json](../../../data/ph-studio-beat/state.json)
-- Predecessor loop: [data/ph-studio-plan-loop/state.json](../../../data/ph-studio-plan-loop/state.json)
+- State: [data/ph-studio-beat/state.json](https://github.com/li-langverse/lic/blob/main/data/ph-studio-beat/state.json)
+- Predecessor loop: [data/ph-studio-plan-loop/state.json](https://github.com/li-langverse/lic/blob/main/data/ph-studio-plan-loop/state.json)
 
 todos:
 - id: wp-b1-command-palette

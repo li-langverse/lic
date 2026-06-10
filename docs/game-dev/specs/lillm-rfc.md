@@ -2,7 +2,7 @@
 
 **Status:** Draft (Wave 0 scaffold)  
 **Date:** 2026-05-29  
-**Program:** [PH-LLM-program.md](../PH-LLM-program.md)  
+**Program:** [PH-LLM-program.md](../../game-dev/PH-LLM-program.md)  
 **Package:** `packages/li-llm` (`import llm`)
 
 ## Problem

@@ -67,7 +67,7 @@ def main() -> int
   return 0
 ```
 
-**Import:** `net.httpd` (`import_name` in `packages/li-net-httpd/li.toml`). Network I/O remains behind `raises Net` / `raises Async` until P0 gates in [httpd-prerequisites.md](httpd-prerequisites.md) land.
+**Import:** `net.httpd` (`import_name` in `packages/li-net-httpd/li.toml`). Network I/O remains behind `raises Net` / `raises Async` until P0 gates in [httpd-prerequisites.md](../ecosystem/httpd-prerequisites.md) land.
 
 **Smoke test:** `li-tests/composable/import_httpd_lib.li` (`verify_ok`).
 
@@ -82,7 +82,7 @@ In the monorepo these resolve to `packages/li-physics-relativity` and `packages/
 
 ## Gates for new packages
 
-See [engineering-standards.md](engineering-standards.md) (composability row) and skill `.cursor/skills/composable-li-library/SKILL.md`.
+See [engineering-standards.md](../ecosystem/engineering-standards.md) (composability row) and skill `.cursor/skills/composable-li-library/SKILL.md`.
 
 **Checklist before merge:**
 
@@ -94,8 +94,8 @@ See [engineering-standards.md](engineering-standards.md) (composability row) and
 
 ## Related
 
-- [httpd-prerequisites.md](httpd-prerequisites.md) — compiler P0 before real `serve`
-- [strict-by-default.md](strict-by-default.md) — contracts on composable APIs
+- [httpd-prerequisites.md](../ecosystem/httpd-prerequisites.md) — compiler P0 before real `serve`
+- [strict-by-default.md](../ecosystem/strict-by-default.md) — contracts on composable APIs
 - [import-style.md](../language/import-style.md) — ergonomic import paths
 - [Language design — Composability](../superpowers/specs/2026-05-14-li-language-design.md#composability-ecosystem-principle)
-- Roadmap voice: [contributing-to-roadmap-philosophy.md](contributing-to-roadmap-philosophy.md)
+- Roadmap voice: [contributing-to-roadmap-philosophy.md](../ecosystem/contributing-to-roadmap-philosophy.md)

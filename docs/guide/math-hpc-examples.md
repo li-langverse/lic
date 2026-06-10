@@ -4,16 +4,16 @@ Write numerical kernels as **ordinary math** on fixed-size `array` tiles. The co
 
 | Surface (you write) | Status in `lic` today | Tier 1 bench |
 |---------------------|----------------------|--------------|
-| `dot(a, b)` / `a @ b` on `array[N, float]` | Implemented | [`simd_dot`](../../benchmarks/tier1_micro/simd_dot/li/main.li) |
-| `C = A @ B` on `array[M, array[K, float]]` | Implemented (fixed shapes) | [`matmul_naive`](../../benchmarks/tier1_micro/matmul_naive/li/main.li) |
-| Blocked IKJ `C[i][j] += …` on tiles | Implemented (manual loops) | [`matmul_blocked`](../../benchmarks/tier1_micro/matmul_blocked/li/main.li) |
+| `dot(a, b)` / `a @ b` on `array[N, float]` | Implemented | [`simd_dot`](https://github.com/li-langverse/lic/blob/main/benchmarks/tier1_micro/simd_dot/li/main.li) |
+| `C = A @ B` on `array[M, array[K, float]]` | Implemented (fixed shapes) | [`matmul_naive`](https://github.com/li-langverse/lic/blob/main/benchmarks/tier1_micro/matmul_naive/li/main.li) |
+| Blocked IKJ `C[i][j] += …` on tiles | Implemented (manual loops) | [`matmul_blocked`](https://github.com/li-langverse/lic/blob/main/benchmarks/tier1_micro/matmul_blocked/li/main.li) |
 | `sum(a)` on `array[N, int\|float]` | Implemented | — |
 | Element-wise `a * b` on arrays | Implemented (**2i-a**) | — |
 | `@vectorized(lanes=4)` / `@no_vectorize` on `def` | Policy + array SIMD gate (**7d-b**) | — |
 | `@vectorized` on `for` | Parse only | — |
 | `@parallel` on `def` / loops | Policy + OpenMP when proved | — |
 
-See also: [Linear algebra](../language/linear-algebra.md), [Fast math & parallelism](fast-math-and-parallelism.md), [math/linalg plan](../superpowers/plans/2026-05-16-li-math-linalg-surface.md).
+See also: [Linear algebra](../language/linear-algebra.md), [Fast math & parallelism](../guide/fast-math-and-parallelism.md), [math/linalg plan](../superpowers/plans/2026-05-16-li-math-linalg-surface.md).
 
 ---
 
@@ -132,7 +132,7 @@ def main() -> int
 
 ## MD-style force loop (scalar math today)
 
-Molecular dynamics kernels are still written as **scalar** loops over particles; Tier 2 `md_lennard_jones` is pure Li without manual SIMD intrinsics in the driver. Parallel safety uses `parallel for` + `disjoint_elem` (see [Fast math & parallelism](fast-math-and-parallelism.md)).
+Molecular dynamics kernels are still written as **scalar** loops over particles; Tier 2 `md_lennard_jones` is pure Li without manual SIMD intrinsics in the driver. Parallel safety uses `parallel for` + `disjoint_elem` (see [Fast math & parallelism](../guide/fast-math-and-parallelism.md)).
 
 ```li
 # Sketch — full source: benchmarks/tier2_physics/md_lennard_jones/li/main.li
@@ -153,7 +153,7 @@ parallel for i in 0..<N
 | `C = A @ B` (2d) | `ArrayMatMul2DF64` triple loop |
 | `sum(a)` | `ArraySumF64` / `ArraySumI64` |
 
-**Do not** paste `__li_simd_splat_f64` / `__li_simd_mul_f64` into new examples — use [Compiler intrinsics appendix](fast-math-and-parallelism.md#compiler-intrinsics-appendix) only when debugging codegen.
+**Do not** paste `__li_simd_splat_f64` / `__li_simd_mul_f64` into new examples — use [Compiler intrinsics appendix](../guide/fast-math-and-parallelism.md#compiler-intrinsics-appendix) only when debugging codegen.
 
 ---
 

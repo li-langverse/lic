@@ -1,7 +1,7 @@
 # PH-DB CI, hosting, containers, and ORM integration plan
 
 **Status:** Active planning (2026-05-26)  
-**Companion:** [ph-db-battle-plan.md](ph-db-battle-plan.md) (engine + WPs A–F) · [ph-db-lidb-platform.md](ph-db-lidb-platform.md) (phase index) · **[ph-db-execution-tracker.md](ph-db-execution-tracker.md)** (phases 0–3 + WP-A…K status)  
+**Companion:** [ph-db-battle-plan.md](../../superpowers/plans/ph-db-battle-plan.md) (engine + WPs A–F) · [ph-db-lidb-platform.md](../../superpowers/plans/ph-db-lidb-platform.md) (phase index) · **[ph-db-execution-tracker.md](../../superpowers/plans/ph-db-execution-tracker.md)** (phases 0–3 + WP-A…K status)  
 **Control plane:** [lidb-migration-control-plane.md](https://github.com/li-langverse/li-cursor-agents/blob/main/docs/plans/lidb-migration-control-plane.md)
 
 ---
@@ -235,7 +235,7 @@ CI jobs mount no persistent volume; use `mktemp` data dir per job.
 
 ## 7. Workpackages
 
-Parallel where noted. Builds on [ph-db-battle-plan.md](ph-db-battle-plan.md) WP-A…F.
+Parallel where noted. Builds on [ph-db-battle-plan.md](../../superpowers/plans/ph-db-battle-plan.md) WP-A…F.
 
 ### WP-G — CI cross-repo gate
 
@@ -293,7 +293,7 @@ Parallel where noted. Builds on [ph-db-battle-plan.md](ph-db-battle-plan.md) WP-
 
 ## 8. Dependencies and merge order
 
-Reference [ph-db-battle-plan.md §4–6](ph-db-battle-plan.md):
+Reference [ph-db-battle-plan.md §4–6](../../superpowers/plans/ph-db-battle-plan.md):
 
 | Order | Branch / WP | Unblocks |
 |-------|-------------|----------|
@@ -360,8 +360,8 @@ All must be true:
 
 | Doc | Path |
 |-----|------|
-| Battle plan (WP-A–F) | [ph-db-battle-plan.md](ph-db-battle-plan.md) |
-| Phase index | [ph-db-lidb-platform.md](ph-db-lidb-platform.md) |
+| Battle plan (WP-A–F) | [ph-db-battle-plan.md](../../superpowers/plans/ph-db-battle-plan.md) |
+| Phase index | [ph-db-lidb-platform.md](../../superpowers/plans/ph-db-lidb-platform.md) |
 | lis db | [lis/docs/db.md](https://github.com/li-langverse/lis/blob/main/docs/db.md) |
 | liorm | [lidb/liorm/README.md](https://github.com/li-langverse/lidb/blob/main/liorm/README.md) |
 | Tier registry bench | [tier-db-registry-benchmark.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/tier-db-registry-benchmark.md) |

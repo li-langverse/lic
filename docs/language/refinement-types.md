@@ -65,4 +65,4 @@ return sqrt_int(-1)   # E0305: value outside NonNeg
 |------|---------|
 | **E0305** | `type.refinement_not_met` — value provably violates a refinement type |
 
-See also [Contracts and proofs](contracts-and-proofs.md) and [Types and data](types-and-data.md).
+See also [Contracts and proofs](../language/contracts-and-proofs.md) and [Types and data](../language/types-and-data.md).

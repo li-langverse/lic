@@ -1,8 +1,8 @@
 # `lig` kernel catalog (PH-HW WP1)
 
 **Status:** Governance (IDs + contracts; implementation WP2+)  
-**RFC:** [specs/lig-rfc.md](specs/lig-rfc.md)  
-**Bench registry:** [lig-kernels.toml](../../benchmarks/competitive/lig-kernels.toml)
+**RFC:** [specs/lig-rfc.md](../game-dev/specs/lig-rfc.md)  
+**Bench registry:** [lig-kernels.toml](https://github.com/li-langverse/lic/blob/main/benchmarks/competitive/lig-kernels.toml)
 
 Stable kernel IDs use the prefix **`lig.kernel.`**. Agents add rows here **and** in `lig-kernels.toml` before claiming perf parity.
 **Vendor columns (honest stubs):** `cuda`, `hip`, and `metal` are **`N/A`** until emit env (`LIG_EMIT_CUDA=1`, `LIG_EMIT_HIP=1`, `LIG_EMIT_METAL=1`). `./scripts/bench-lig-kernel-parity.sh` emits all catalog `kernel_ids` in JSON.

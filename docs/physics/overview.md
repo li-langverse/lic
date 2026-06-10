@@ -2,7 +2,7 @@
 
 Physics for the Li game engine ships as **`li-physics-*`** workspace packages on **`li-math`** and **`li-math-numerics`**, with ergonomic imports (`import physics.runtime`, `import math`).
 
-**Quick start:** [GAME_DEV.md](./GAME_DEV.md) (packages, tier-2 benches, engine checklist).
+**Quick start:** [GAME_DEV.md](../physics/GAME_DEV.md) (packages, tier-2 benches, engine checklist).
 
 > **Org mirrors:** some published repos still use legacy names (`li-std-math`, `li-httpd`). Monorepo folders and `import_name` values use `li-math`, `li-physics-*`, etc. See [repo-naming.md](../ecosystem/repo-naming.md).
 
@@ -42,4 +42,4 @@ Tier-2 kernels live under `lic/benchmarks/tier2_physics/`. Status is tracked on 
 
 ## Numerical policy
 
-See [numerical-policy.md](numerical-policy.md) for compile-time method selection (planned language phase **PHY-n**).
+See [numerical-policy.md](../physics/numerical-policy.md) for compile-time method selection (planned language phase **PHY-n**).

@@ -2,9 +2,9 @@
 
 How to write **one API** that applies at **every** scalar width (`float32`, `float16`, `float8`, …) without the org forcing a single accuracy.
 
-**Prerequisites:** [Scalar precision](scalar-precision.md) (type names, suffixes, `binary`, physics metadata).
+**Prerequisites:** [Scalar precision](../language/scalar-precision.md) (type names, suffixes, `binary`, physics metadata).
 
-**Who picks the width?** **You do** — via `type Real = float32`, generics `[S]`, literal suffixes, `li.toml` notes, or `PhysicsProfile.float_bits`. Li does not pick a single org-wide accuracy; see [You set precision yourself](scalar-precision.md#you-set-precision-yourself).
+**Who picks the width?** **You do** — via `type Real = float32`, generics `[S]`, literal suffixes, `li.toml` notes, or `PhysicsProfile.float_bits`. Li does not pick a single org-wide accuracy; see [You set precision yourself](../language/scalar-precision.md#you-set-precision-yourself).
 
 ---
 
@@ -64,14 +64,14 @@ Duplicate the module with `type Real = float64` for an FP64 variant, **or** use 
 One function, many widths — **if every use of `S` is consistent** and contracts only relate parameters (not mixed literals).
 
 ```nim
-def dot3[S](ax: S, ay: S, az: S, bx: S, by: S, bz: S) -> S
+def dot3[S](https://github.com/li-langverse/lic/blob/main/docs/language/ax%3A%20S%2C%20ay%3A%20S%2C%20az%3A%20S%2C%20bx%3A%20S%2C%20by%3A%20S%2C%20bz%3A%20S) -> S
   requires true
   ensures result == ax * bx + ay * by + az * bz
   decreases 0
 =
   return ax * bx + ay * by + az * bz
 
-def scale[S](x: S, k: S) -> S
+def scale[S](https://github.com/li-langverse/lic/blob/main/docs/language/x%3A%20S%2C%20k%3A%20S) -> S
   requires true
   ensures result == x * k
   decreases 0
@@ -101,7 +101,7 @@ Prefer `array[64, Real]` with `type Real = float32` for production packages toda
 | Feature | Status |
 |---------|--------|
 | Pattern A `type Real = float32` | Typecheck + build ✓ — `li-tests/generics/precision_real_alias.li` |
-| Pattern B `def f[S](x: S) -> S` | Definition ✓ — `precision_generic_fn.li`, `identity.li` |
+| Pattern B `def f[S](https://github.com/li-langverse/lic/blob/main/docs/language/x%3A%20S) -> S` | Definition ✓ — `precision_generic_fn.li`, `identity.li` |
 | Pattern B calls `f(1.0f32, …)` from `main` | Call-site monomorph — **in progress** |
 | `ensures` with `*` on generic `S` | Prefer `ensures true` or Pattern A until contract typing catches up |
 | `return 1.0f32` from `-> float32` | Prefer `return x` (variable) until LLVM width lowering is complete |
@@ -110,7 +110,7 @@ Prefer `array[64, Real]` with `type Real = float32` for production packages toda
 
 | Bad | Why |
 |-----|-----|
-| `requires c > 0.0` inside `def f[S](c: S)` | `0.0` is `float64`; `S = float32` → width error |
+| `requires c > 0.0` inside `def f[S](https://github.com/li-langverse/lic/blob/main/docs/language/c%3A%20S)` | `0.0` is `float64`; `S = float32` → width error |
 | `ensures result >= 1.0` | Same — use `1.0f32` only in f32 monomorph, or prove from parameters |
 | `ensures result >= 1.0f32` when `S` may be `float64` | Too strong / wrong width |
 
@@ -196,7 +196,7 @@ def integrate_step(profile: PhysicsProfile, dt: float) -> float
 | Pattern | Syntax | All precisions? | Best for |
 |---------|--------|-----------------|----------|
 | A `type Real = float32` | Today | One per file | Package release (fp32 build) |
-| B `def f[S](x: S) -> S` | Today | Yes, per call | Shared formulas in `li-math` |
+| B `def f[S](https://github.com/li-langverse/lic/blob/main/docs/language/x%3A%20S) -> S` | Today | Yes, per call | Shared formulas in `li-math` |
 | C `precision float32:` | Proposed | One per block | Ergonomics / less boilerplate |
 | D `PhysicsProfile.float_bits` | Today (metadata) | Runtime choice | Games, A/B accuracy |
 
@@ -204,6 +204,6 @@ def integrate_step(profile: PhysicsProfile, dt: float) -> float
 
 ## Related
 
-- [Scalar precision](scalar-precision.md)
-- [Collections and generics](collections-generics.md)
-- [packages/li-physics-core/docs/scalar-precision.md](../../packages/li-physics-core/docs/scalar-precision.md)
+- [Scalar precision](../language/scalar-precision.md)
+- [Collections and generics](../language/collections-generics.md)
+- [packages/li-physics-core/docs/scalar-precision.md](https://github.com/li-langverse/lic/blob/main/packages/li-physics-core/docs/scalar-precision.md)

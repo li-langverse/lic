@@ -43,7 +43,7 @@ lic build packages/my-math/src/lib.li -o my-math
 
 ## `li.toml` essentials
 
-See [package layout reference](package-layout-reference.md) and the [package manager plan](../superpowers/plans/2026-05-16-li-package-manager-lip.md).
+See [package layout reference](../guide/package-layout-reference.md) and the [package manager plan](../superpowers/plans/2026-05-16-li-package-manager-lip.md).
 
 Official packages set:
 

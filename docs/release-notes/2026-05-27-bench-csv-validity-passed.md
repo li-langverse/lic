@@ -56,5 +56,5 @@ N/A — no kernel timing change; expect dashboard reds cleared after re-ingest (
 
 ```markdown
 ### Fixed
-- **Tier-1 CSV validity:** `passed` column uses spec rtol/atol; `horner_pure_li` oracle matches `horner_core.c` `x=1.1` — PH-7e ([#NNN](URL)).
+- **Tier-1 CSV validity:** `passed` column uses spec rtol/atol; `horner_pure_li` oracle matches `horner_core.c` `x=1.1` — PH-7e ([#NNN](https://github.com/li-langverse/lic/blob/main/docs/release-notes/URL)).
 ```

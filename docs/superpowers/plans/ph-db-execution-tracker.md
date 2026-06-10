@@ -2,23 +2,23 @@
 
 **Status:** Active (2026-05-26)  
 **Sprint:** Wave 3 = **WP-G … WP-K** (CI, containers, hosting, production gates)  
-**Plans:** [ph-db-battle-plan.md](ph-db-battle-plan.md) (engine WPs A–F) · [ph-db-ci-hosting-plan.md](ph-db-ci-hosting-plan.md) (CI/hosting WPs G–K) · [ph-db-lidb-platform.md](ph-db-lidb-platform.md) (phase index)
+**Plans:** [ph-db-battle-plan.md](../../superpowers/plans/ph-db-battle-plan.md) (engine WPs A–F) · [ph-db-ci-hosting-plan.md](../../superpowers/plans/ph-db-ci-hosting-plan.md) (CI/hosting WPs G–K) · [ph-db-lidb-platform.md](../../superpowers/plans/ph-db-lidb-platform.md) (phase index)
 
 ---
 
-**Swarm todos (canvas):** [ph-db-swarm-plan.md](./ph-db-swarm-plan.md)
+**Swarm todos (canvas):** [ph-db-swarm-plan.md](../../superpowers/plans/ph-db-swarm-plan.md)
 
 
 ## 1. Execution phases (Wave 3 ladder)
 
-Cross-repo **CI + hosting MVP** phases from [ph-db-ci-hosting-plan.md §6–9](ph-db-ci-hosting-plan.md). Status reflects verified state **2026-05-26**; update this table when a phase exit gate closes.
+Cross-repo **CI + hosting MVP** phases from [ph-db-ci-hosting-plan.md §6–9](../../superpowers/plans/ph-db-ci-hosting-plan.md). Status reflects verified state **2026-05-26**; update this table when a phase exit gate closes.
 
 | Phase | Theme | Primary WPs | Exit gate (summary) | CI | Containers | Hosting | Prod gates | Owner / notes |
 |:-----:|-------|-------------|---------------------|:--:|:----------:|:-------:|:----------:|---------------|
 | **0** | **CI foundation** | WP-G (+ WP-A, WP-E prereqs) | Cross-repo PR signal: lidb smoke + lis db-smoke + agents mock e2e; engine e2e tracked (`continue-on-error` until green) | **Partial** | — | — | — | `lidb`, `lis`, `li-cursor-agents`; optional `lic` aggregator |
 | **1** | **Containers** | WP-H | `docker compose -f docker-compose.ph-db.yml up` → `lis db status` exit 0; optional `ghcr.io/li-langverse/lidb-ci` | Partial (per-repo only) | **Not started** | — | — | `lidb`, `lis`; docs mirror in `lic` |
 | **2** | **Hosting** | WP-I (+ WP-B) | `lis db start\|status` is agent health gate; CI runs `db-smoke.sh` on Linux + macOS; systemd/foreground sample | Partial | — | **Dev-ready** | — | `lis` (embeds `lidb`) |
-| **3** | **Production gates** | WP-J, WP-K (+ WP-C) | ORM contract semver; nightly Postgres compare → honest P95 ratio; [§9 DoD](ph-db-ci-hosting-plan.md) complete before default `LI_CONTROL_PLANE_STORE=lidb` | **No Postgres nightly** | — | Staging = Supabase default | **Blocked** | `benchmarks`, `lidb`, agents; **human flip** required |
+| **3** | **Production gates** | WP-J, WP-K (+ WP-C) | ORM contract semver; nightly Postgres compare → honest P95 ratio; [§9 DoD](../../superpowers/plans/ph-db-ci-hosting-plan.md) complete before default `LI_CONTROL_PLANE_STORE=lidb` | **No Postgres nightly** | — | Staging = Supabase default | **Blocked** | `benchmarks`, `lidb`, agents; **human flip** required |
 
 **Phase dependency sketch**
 
@@ -78,10 +78,10 @@ flowchart LR
 
 | Wave | WPs | Sprint |
 |:----:|-----|--------|
-| 0 | merge stubs | `fix-swarm-health-9031`, `stdlib-adt-wp0`, `wp-lic-01-verticals-toml` — see [battle plan §6](ph-db-battle-plan.md) |
+| 0 | merge stubs | `fix-swarm-health-9031`, `stdlib-adt-wp0`, `wp-lic-01-verticals-toml` — see [battle plan §6](../../superpowers/plans/ph-db-battle-plan.md) |
 | 1 | A, B, D, F | Prior sprint (engine + supervisor + schema prep) |
 | 2 | C, E | Integration (bench harness + control-plane persist) |
-| **3** | **G, H, I, J, K** | **This sprint** — [ci-hosting plan](ph-db-ci-hosting-plan.md) |
+| **3** | **G, H, I, J, K** | **This sprint** — [ci-hosting plan](../../superpowers/plans/ph-db-ci-hosting-plan.md) |
 
 **Tracker branch (lic):** [`cursor/ph-db-execution-tracker`](https://github.com/li-langverse/lic/compare/main...cursor/ph-db-execution-tracker?expand=1) · [open PR](https://github.com/li-langverse/lic/pull/new/cursor/ph-db-execution-tracker)
 
@@ -89,7 +89,7 @@ flowchart LR
 
 ## 3. Merge order and parallelism
 
-From [ph-db-ci-hosting-plan.md §8](ph-db-ci-hosting-plan.md) and [ph-db-battle-plan.md §4–6](ph-db-battle-plan.md).
+From [ph-db-ci-hosting-plan.md §8](../../superpowers/plans/ph-db-ci-hosting-plan.md) and [ph-db-battle-plan.md §4–6](../../superpowers/plans/ph-db-battle-plan.md).
 
 | Order | WP / branch | Unblocks |
 |:-----:|-------------|----------|
@@ -129,11 +129,11 @@ flowchart LR
 
 | Topic | Document | Section |
 |-------|----------|---------|
-| Engine WPs A–F, Wave 0–2 | [ph-db-battle-plan.md](ph-db-battle-plan.md) | §3 WPs, §4 waves, §10 verification |
-| CI matrix, ORM layers, hosting | [ph-db-ci-hosting-plan.md](ph-db-ci-hosting-plan.md) | §3 CI, §4 ORM, §5 hosting, §6 containers |
-| Wave 3 WPs G–K | [ph-db-ci-hosting-plan.md](ph-db-ci-hosting-plan.md) | §7 workpackages |
-| Phase 0–3 exit / anti-goals | [ph-db-ci-hosting-plan.md](ph-db-ci-hosting-plan.md) | §9 DoD, §10 anti-goals |
-| PH-DB-0…10 phase IDs | [ph-db-lidb-platform.md](ph-db-lidb-platform.md) | phase table |
+| Engine WPs A–F, Wave 0–2 | [ph-db-battle-plan.md](../../superpowers/plans/ph-db-battle-plan.md) | §3 WPs, §4 waves, §10 verification |
+| CI matrix, ORM layers, hosting | [ph-db-ci-hosting-plan.md](../../superpowers/plans/ph-db-ci-hosting-plan.md) | §3 CI, §4 ORM, §5 hosting, §6 containers |
+| Wave 3 WPs G–K | [ph-db-ci-hosting-plan.md](../../superpowers/plans/ph-db-ci-hosting-plan.md) | §7 workpackages |
+| Phase 0–3 exit / anti-goals | [ph-db-ci-hosting-plan.md](../../superpowers/plans/ph-db-ci-hosting-plan.md) | §9 DoD, §10 anti-goals |
+| PH-DB-0…10 phase IDs | [ph-db-lidb-platform.md](../../superpowers/plans/ph-db-lidb-platform.md) | phase table |
 | Control plane migration | [lidb-migration-control-plane.md](https://github.com/li-langverse/li-cursor-agents/blob/main/docs/plans/lidb-migration-control-plane.md) | agents |
 | lis db handoff | [handoff-wp5-lis.md](https://github.com/li-langverse/lidb/blob/main/docs/handoff-wp5-lis.md) | WP-B |
 | Tier registry bench | [tier-db-registry-benchmark.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/tier-db-registry-benchmark.md) | WP-C, WP-K |
@@ -143,7 +143,7 @@ flowchart LR
 
 ## 5. Phase 3 production gate checklist
 
-All required before default **`LI_CONTROL_PLANE_STORE=lidb`** ([ci-hosting §9](ph-db-ci-hosting-plan.md)):
+All required before default **`LI_CONTROL_PLANE_STORE=lidb`** ([ci-hosting §9](../../superpowers/plans/ph-db-ci-hosting-plan.md)):
 
 - [ ] **Phase 0:** lidb + lis + agents PR CI as specified in WP-G
 - [ ] **Phase 1:** compose or published dev image (WP-H)
@@ -157,7 +157,7 @@ All required before default **`LI_CONTROL_PLANE_STORE=lidb`** ([ci-hosting §9](
 
 ## 10. Prior-sprint WP-A…F verification (inherited)
 
-Copied from [ph-db-battle-plan.md §10](ph-db-battle-plan.md) (2026-05-26). **Wave 3 WPs G–K not yet verified.**
+Copied from [ph-db-battle-plan.md §10](../../superpowers/plans/ph-db-battle-plan.md) (2026-05-26). **Wave 3 WPs G–K not yet verified.**
 
 ### 10.1 Prior-sprint WP-A…F verification matrix
 

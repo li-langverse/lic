@@ -1,7 +1,7 @@
 # Active agent claims (lic / httpd P0)
 
 **Purpose:** Tell humans and other agents what is in flight so work does not collide.  
-**Canonical policy:** [agent-coordination.md](agent-coordination.md) (roadmap repo).  
+**Canonical policy:** [agent-coordination.md](../ecosystem/agent-coordination.md) (roadmap repo).  
 **Local claims file:** `coding-projects/.li-agent-coord.json` (gitignored — update when you start or finish a task).
 
 **Last updated:** 2026-05-16 (Cursor agent — httpd P0 async codegen)

@@ -163,7 +163,7 @@ Reference: [Python 3.14 typing](https://docs.python.org/3.14/library/typing.html
 | `Final[T]` | `Final[T]` | |
 | `Required` / `NotRequired` / `ReadOnly` | Same | TypedDict fields |
 | `TypeGuard[T]` / `TypeIs[T]` | Same | Narrowing after `if` |
-| `cast` | `cast[T](e, pf)` | **Requires proof term** `pf : SubType(e, T)`; no bare cast |
+| `cast` | `cast[T](https://github.com/li-langverse/lic/blob/main/docs/superpowers/specs/e%2C%20pf)` | **Requires proof term** `pf : SubType(e, T)`; no bare cast |
 | `assert_type` / `assert_never` | Same | Compile-time |
 | `overload` | `overload` | Desugar to single impl + dispatch |
 | `override` | `override` | Annotation on methods |
@@ -176,7 +176,7 @@ type Vec[T] = object
   data: ptr T
   len: int
 
-def map[T, U](xs: list[T], f: proc(x: T) -> U) -> list[U] = ...
+def map[T, U](https://github.com/li-langverse/lic/blob/main/docs/superpowers/specs/xs%3A%20list%5BT%5D%2C%20f%3A%20proc%28x%3A%20T) -> U) -> list[U] = ...
 ```
 
 - `TypeVar`, `TypeVarTuple`, `ParamSpec`, `Concatenate`, `Unpack` — all supported in checker
@@ -326,7 +326,7 @@ def dot(a, b: Vec4f) -> f32 =
 |---------|-------|
 | `simd[T, N]` | `T` ∈ `{ i8…i64, u8…u64, f32, f64 }`; `N` ∈ `{ 2, 4, 8, 16, 32, 64 }` (subset per target) |
 | Lane count | Must match target capability at codegen or compile error (no silent scalar fallback) |
-| Conversions | `simd[f32, N](scalar)` splats; `simd[f32, N](array[N, f32])` loads from contiguous memory |
+| Conversions | `simd[f32, N](https://github.com/li-langverse/lic/blob/main/docs/superpowers/specs/scalar)` splats; `simd[f32, N](https://github.com/li-langverse/lic/blob/main/docs/superpowers/specs/array%5BN%2C%20f32%5D)` loads from contiguous memory |
 | Memory | `load`/`store` require aligned pointer or `raises Align`; unaligned load is explicit intrinsic |
 | Interop | `array[N, T]` and `tensor` slices may convert to `simd[T, N]` when contiguous and aligned |
 | Target flags | `lic build --target-cpu=native` enables AVX2/AVX-512/NEON per LLVM |
@@ -713,7 +713,7 @@ Li combines **Python 3.14 types (minus `Any`)**, **mandatory Hoare contracts**, 
 | `Any` | **Syntax error** |
 | `unsafe`, `safe`, `verified` modifiers | **Removed** — everything is provable or rejected |
 | `sorry`, `admit`, `assume` in user code | **Rejected** |
-| Bare `cast[T](e)` | **Rejected** — use `cast[T](e, proof)` |
+| Bare `cast[T](https://github.com/li-langverse/lic/blob/main/docs/superpowers/specs/e)` | **Rejected** — use `cast[T](https://github.com/li-langverse/lic/blob/main/docs/superpowers/specs/e%2C%20proof)` |
 | `while` without `decreases` | **Rejected** |
 | `def` without specs | **Rejected** |
 | Unchecked overflow | **Rejected** |

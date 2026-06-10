@@ -5,7 +5,7 @@
 > **Design spec addendum:** `docs/superpowers/specs/2026-05-16-li-math-linalg-surface.md` (to land with phase)
 
 **Proof gaps (Doc-c):** [G-math](../../verification/provability-gaps.md#g-math) · [G-math-syn](../../verification/provability-gaps.md#g-math-syn) · [G-dec](../../verification/provability-gaps.md#g-dec) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)  
-**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](../../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
 
 ## Principle (binding)
 
@@ -142,7 +142,7 @@ flowchart LR
 
 ## Benchmarks vs reference HPC (mandatory)
 
-Use existing [benchmarks plan](2026-05-14-benchmarks-and-simulations.md) harness (`bench.py`, cross-lang CSV, plots).
+Use existing [benchmarks plan](../../superpowers/plans/2026-05-14-benchmarks-and-simulations.md) harness (`bench.py`, cross-lang CSV, plots).
 
 | Benchmark | Li source style | Compare |
 |-----------|-----------------|---------|

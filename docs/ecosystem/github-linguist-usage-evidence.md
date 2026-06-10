@@ -43,7 +43,7 @@ For each mirror or package repo you want counted:
 
 1. **Public** GitHub repo under `li-langverse` (or trusted community orgs).
 2. Include **multiple** `.li` files per repo (tests + src), not a single stub file.
-3. Use normal Li idioms (contracts, imports) so heuristic/classifier training matches [WP2 samples](../../contrib/linguist-samples/Li/).
+3. Use normal Li idioms (contracts, imports) so heuristic/classifier training matches [WP2 samples](https://github.com/li-langverse/lic/blob/main/contrib/linguist-samples/Li).
 4. Prefer **unique** `user/repo` pairs over one mega-repo with all bytes.
 
 Suggested seed order:
@@ -75,7 +75,7 @@ Record in a table:
 |------------|-------------|--------------------------|------------------|-------|
 | 2026-W21 | ~1220 | 0 | (fill) | Baseline audit |
 
-When **global ≥2000** *and* **org slice shows hundreds+** with diverse repos, attach the same URLs to the Linguist PR body (G2 in [playbook](./github-linguist.md)).
+When **global ≥2000** *and* **org slice shows hundreds+** with diverse repos, attach the same URLs to the Linguist PR body (G2 in [playbook](../ecosystem/github-linguist.md)).
 
 ### 4. PR body evidence (after bar met)
 
@@ -84,7 +84,7 @@ Paste into upstream PR (template bullets):
 - Primary: `extension:li NOT is:fork` — state count and confirm manual spot-check of random repos.
 - Li-specific: `extension:li "requires" NOT is:fork` (and/or `ensures`, `proc`).
 - If needed: `-user:<your-account>` to show distribution beyond language owners.
-- Link [SAMPLES_LICENSES.md](../../contrib/linguist-samples/SAMPLES_LICENSES.md) commit and grammar MIT license.
+- Link [SAMPLES_LICENSES.md](https://github.com/li-langverse/lic/blob/main/contrib/linguist-samples/SAMPLES_LICENSES.md) commit and grammar MIT license.
 
 ## What agents may do
 
@@ -105,9 +105,9 @@ Paste into upstream PR (template bullets):
 | WP1 grammar URL placeholder | WP1 + Julian | Publish `li-grammar`; merge WP1 |
 | WP2 samples not on `main` | WP2 PR | Merge `feat/linguist-wp2-samples` |
 | Usage &lt; 2000 / thin distribution | Julian (WP3) | Seed repos + weekly log |
-| Heuristic for `.li` ambiguity | WP6 + Julian | Apply [`heuristics-li.fragment.yml`](../../contrib/linguist-upstream/heuristics-li.fragment.yml) if maintainers request |
+| Heuristic for `.li` ambiguity | WP6 + Julian | Apply [`heuristics-li.fragment.yml`](https://github.com/li-langverse/lic/blob/main/contrib/linguist-upstream/heuristics-li.fragment.yml) if maintainers request |
 
 ## Related
 
-- [Playbook G0–G8](./github-linguist.md)
-- [PATCH_INSTRUCTIONS.md](../../contrib/linguist-upstream/PATCH_INSTRUCTIONS.md)
+- [Playbook G0–G8](../ecosystem/github-linguist.md)
+- [PATCH_INSTRUCTIONS.md](https://github.com/li-langverse/lic/blob/main/contrib/linguist-upstream/PATCH_INSTRUCTIONS.md)

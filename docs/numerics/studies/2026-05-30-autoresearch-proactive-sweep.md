@@ -66,7 +66,7 @@ CSV: `lic/benchmarks/results/latest.csv` @ `83408639`.
 1. **Goto & van de Geijn (2008)** — blocked GEMM; C oracle mirrors IKJ+BK=64.
 2. **Saad (2003) GMRES** — `num_gmres_core.c` oracle; Li wrapper only.
 3. **Chetlur et al. (2014) cuDNN** — im2col+GEMM for conv; ML smokes need scaffold.
-4. **Prior autoresearch** — [autoresearch-horner-lexer-2026-05-18.md](../autoresearch-horner-lexer-2026-05-18.md): codegen defect, not algorithm.
+4. **Prior autoresearch** — [autoresearch-horner-lexer-2026-05-18.md](../../numerics/autoresearch-horner-lexer-2026-05-18.md): codegen defect, not algorithm.
 
 ---
 
@@ -74,9 +74,9 @@ CSV: `lic/benchmarks/results/latest.csv` @ `83408639`.
 
 | Topic | Prerequisite | PH ids |
 |-------|--------------|--------|
-| `md_neighbor_cell_list` (algo 105) | [2026-05-27-md-r0-sota-survey.md](./2026-05-27-md-r0-sota-survey.md) F-parity | PH-5b, PH-7e |
+| `md_neighbor_cell_list` (algo 105) | [2026-05-27-md-r0-sota-survey.md](../../numerics/studies/2026-05-27-md-r0-sota-survey.md) F-parity | PH-5b, PH-7e |
 | Li multi-kernel fusion (Horner+FMA, MD force+integrator) | Tier-1 pure-Li ≤1.2× on locked rows | PH-7e |
-| Chem/QM integral shortcuts | [2026-05-27-chem-r0-qm-sota-survey.md](./2026-05-27-chem-r0-qm-sota-survey.md) | PH-5b |
+| Chem/QM integral shortcuts | [2026-05-27-chem-r0-qm-sota-survey.md](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) | PH-5b |
 
 ---
 

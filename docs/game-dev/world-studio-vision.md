@@ -4,7 +4,7 @@
 **Audience:** Architects, agents, contributors  
 **Syntax:** Li uses Python-style **`def`** for functions (not `proc`). Contracts: `requires` / `ensures` / `decreases` unchanged.
 
-**Related:** [WORLD-STUDIO-MASTER-PLAN.md](WORLD-STUDIO-MASTER-PLAN.md) (production hub � modes, agents, canvas, exports), [GAME_DEV.md](../physics/GAME_DEV.md), [PH-world-studio-program.md](PH-world-studio-program.md), [competitive-landscape.md](competitive-landscape.md), [specs/](specs/), [philosophy.md](../language/philosophy.md), [master plan](../superpowers/plans/2026-05-14-li-master-plan.md)
+**Related:** [WORLD-STUDIO-MASTER-PLAN.md](../game-dev/WORLD-STUDIO-MASTER-PLAN.md) (production hub — modes, agents, canvas, exports), [GAME_DEV.md](../physics/GAME_DEV.md), [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md), [competitive-landscape.md](../game-dev/competitive-landscape.md), [specs/](https://github.com/li-langverse/lic/blob/main/docs/game-dev/specs), [philosophy.md](../language/philosophy.md), [master plan](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 ---
 
@@ -100,7 +100,7 @@ printer_profile = "profiles/bambu_x1c.toml"
 require_sim_pass = true
 ```
 
-RFC: [li-engine-unified-sim-rfc.md](specs/li-engine-unified-sim-rfc.md)
+RFC: [li-engine-unified-sim-rfc.md](../game-dev/specs/li-engine-unified-sim-rfc.md)
 
 ---
 
@@ -164,7 +164,7 @@ User prompt → studio.ai / Cursor SDK → world.apply_patch
   → lic check (JSON diagnostics) → lic build → viewport / sim / export
 ```
 
-**Cursor SDK:** `@cursor/sdk` local + cloud; MCP server `lis mcp li-engine`. RFC: [studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md)
+**Cursor SDK:** `@cursor/sdk` local + cloud; MCP server `lis mcp li-engine`. RFC: [studio-cursor-sdk-rfc.md](../game-dev/specs/studio-cursor-sdk-rfc.md)
 
 **Spin-up templates:** game, sim_rl, sim_automotive, sim_robotics, sim_additive, sim_scientific, sim_drug_design.
 
@@ -180,7 +180,7 @@ Simulate **and** manufacture:
 4. **Export** STL / 3MF / G-code  
 5. Send to printer (OctoPrint-class, trusted)
 
-RFC: [li-sim-additive-rfc.md](specs/li-sim-additive-rfc.md)
+RFC: [li-sim-additive-rfc.md](../game-dev/specs/li-sim-additive-rfc.md)
 
 ---
 
@@ -188,7 +188,7 @@ RFC: [li-sim-additive-rfc.md](specs/li-sim-additive-rfc.md)
 
 Manipulators, mobile bases, digital twins on **same** rigid-body stack as games. Optional ROS2 bridge (trusted). RL via `sim_rl` + `sim.step`.
 
-RFC: [li-sim-robotics-rfc.md](specs/li-sim-robotics-rfc.md)
+RFC: [li-sim-robotics-rfc.md](../game-dev/specs/li-sim-robotics-rfc.md)
 
 ---
 
@@ -196,7 +196,7 @@ RFC: [li-sim-robotics-rfc.md](specs/li-sim-robotics-rfc.md)
 
 Graphical CFD, MD (`md_lennard_jones`), heat, fluids, orbital — `li-physics-*` + `sim.viz`. Tier-2 benches run **in** the engine viewport.
 
-RFC: [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md)
+RFC: [sim-viz-scientific-rfc.md](../game-dev/specs/sim-viz-scientific-rfc.md)
 
 ---
 
@@ -204,7 +204,7 @@ RFC: [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md)
 
 Roche **Lab-in-the-Loop**–class workflow: hypothesis → generate → **DFT/TDDFT** (`li-chem`) → lab ingest → retrain. **`studio.adaptive`** panels by stage/role.
 
-RFC: [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md)
+RFC: [drug-design-lab-loop-rfc.md](../game-dev/specs/drug-design-lab-loop-rfc.md)
 
 ---
 
@@ -228,7 +228,7 @@ def benzene_energy() -> float
 | `chem.tddft` | Excited states |
 | `chem.ml` | AI surrogates (PH-ML) |
 
-Backends: native Li → GPU/LKIR → trusted ORCA/Psi4. RFC: [li-chem-qm-rfc.md](specs/li-chem-qm-rfc.md)
+Backends: native Li → GPU/LKIR → trusted ORCA/Psi4. RFC: [li-chem-qm-rfc.md](../game-dev/specs/li-chem-qm-rfc.md)
 
 ---
 
@@ -236,7 +236,7 @@ Backends: native Li → GPU/LKIR → trusted ORCA/Psi4. RFC: [li-chem-qm-rfc.md]
 
 Unified **`VoxelGrid`** for games (blocks), AM (powder bed), engineering grids, scientific fields, QM density.
 
-RFC: [voxel-engine-rfc.md](specs/voxel-engine-rfc.md)
+RFC: [voxel-engine-rfc.md](../game-dev/specs/voxel-engine-rfc.md)
 
 ---
 
@@ -250,7 +250,7 @@ Paper-ready **figures** (SVG, PDF, 300+ dpi PNG) and **data** (HDF5, CSV, VTK) +
 # studio.publish.bundle(path = "publish.zip")
 ```
 
-RFC: [publication-export-rfc.md](specs/publication-export-rfc.md)
+RFC: [publication-export-rfc.md](../game-dev/specs/publication-export-rfc.md)
 
 ---
 
@@ -258,7 +258,7 @@ RFC: [publication-export-rfc.md](specs/publication-export-rfc.md)
 
 Four parallelism axes: sample (env pools), host prefetch, GPU streams, cluster (Triton-distributed–class). Default `ml.runtime.mode = "async_parallel"`.
 
-RFC: [ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md)
+RFC: [ml-async-parallel-rfc.md](../game-dev/specs/ml-async-parallel-rfc.md)
 
 ---
 
@@ -272,7 +272,7 @@ RFC: [ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md)
 | a11y | WCAG 2.2 AA chrome |
 | Design system | `studio.design` tokens |
 
-RFC: [studio-ux-design-system-rfc.md](specs/studio-ux-design-system-rfc.md)
+RFC: [studio-ux-design-system-rfc.md](../game-dev/specs/studio-ux-design-system-rfc.md)
 
 ---
 
@@ -302,7 +302,7 @@ RFC: [studio-ux-design-system-rfc.md](specs/studio-ux-design-system-rfc.md)
 
 **Import:** `import lig` (replaces `import gpu` / package `li-gpu`).
 
-**Portability:** `lic build --target <triple>` — RFC: [portable-targets-rfc.md](specs/portable-targets-rfc.md), [lig-rfc.md](specs/lig-rfc.md)
+**Portability:** `lic build --target <triple>` — RFC: [portable-targets-rfc.md](../game-dev/specs/portable-targets-rfc.md), [lig-rfc.md](../game-dev/specs/lig-rfc.md)
 
 ---
 
@@ -313,7 +313,7 @@ RFC: [studio-ux-design-system-rfc.md](specs/studio-ux-design-system-rfc.md)
 | **CRITICAL** | `lic`, `li-chem`, `li-sim-drug-design`, `li-sim-additive`, `studio.publish` |
 | **IMPORTANT** | `li-ml`, `li-sim`, `lig` |
 
-CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-compliance-rfc.md](specs/critical-package-compliance-rfc.md)
+CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-compliance-rfc.md](../game-dev/specs/critical-package-compliance-rfc.md)
 
 ---
 
@@ -348,9 +348,9 @@ CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-c
 
 ## 23. Immediate actions
 
-1. Land RFC stubs under [specs/](specs/) (this execution).  
-2. Tracker: [PH-world-studio-program.md](PH-world-studio-program.md).  
-3. Update [li-world-studio-vision.mdc](../../.cursor/rules/li-world-studio-vision.mdc).  
+1. Land RFC stubs under [specs/](https://github.com/li-langverse/lic/blob/main/docs/game-dev/specs) (this execution).  
+2. Tracker: [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md).  
+3. Update [li-world-studio-vision.mdc](https://github.com/li-langverse/lic/blob/main/.cursor/rules/li-world-studio-vision.mdc).  
 4. Scaffold `li-studio` after GD-1 approval (separate PR).  
 5. **Do not** use `li-demo` for studio features.
 
@@ -360,19 +360,19 @@ CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-c
 
 | RFC | Track |
 |-----|-------|
-| [li-engine-unified-sim-rfc.md](specs/li-engine-unified-sim-rfc.md) | PH-SIM |
-| [studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md) | PH-AGENT |
-| [studio-ux-design-system-rfc.md](specs/studio-ux-design-system-rfc.md) | PH-UX |
-| [li-sim-additive-rfc.md](specs/li-sim-additive-rfc.md) | PH-AM |
-| [li-sim-robotics-rfc.md](specs/li-sim-robotics-rfc.md) | PH-ROBO |
-| [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md) | PH-SCI |
-| [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md) | PH-DRUG |
-| [li-chem-qm-rfc.md](specs/li-chem-qm-rfc.md) | PH-QM |
-| [voxel-engine-rfc.md](specs/voxel-engine-rfc.md) | PH-VOXEL |
-| [publication-export-rfc.md](specs/publication-export-rfc.md) | PH-PUB |
-| [ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md) | PH-ML |
-| [portable-targets-rfc.md](specs/portable-targets-rfc.md) | PH-PORT |
-| [lig-rfc.md](specs/lig-rfc.md) | PH-HW |
-| [critical-package-compliance-rfc.md](specs/critical-package-compliance-rfc.md) | PH-COMPLY |
+| [li-engine-unified-sim-rfc.md](../game-dev/specs/li-engine-unified-sim-rfc.md) | PH-SIM |
+| [studio-cursor-sdk-rfc.md](../game-dev/specs/studio-cursor-sdk-rfc.md) | PH-AGENT |
+| [studio-ux-design-system-rfc.md](../game-dev/specs/studio-ux-design-system-rfc.md) | PH-UX |
+| [li-sim-additive-rfc.md](../game-dev/specs/li-sim-additive-rfc.md) | PH-AM |
+| [li-sim-robotics-rfc.md](../game-dev/specs/li-sim-robotics-rfc.md) | PH-ROBO |
+| [sim-viz-scientific-rfc.md](../game-dev/specs/sim-viz-scientific-rfc.md) | PH-SCI |
+| [drug-design-lab-loop-rfc.md](../game-dev/specs/drug-design-lab-loop-rfc.md) | PH-DRUG |
+| [li-chem-qm-rfc.md](../game-dev/specs/li-chem-qm-rfc.md) | PH-QM |
+| [voxel-engine-rfc.md](../game-dev/specs/voxel-engine-rfc.md) | PH-VOXEL |
+| [publication-export-rfc.md](../game-dev/specs/publication-export-rfc.md) | PH-PUB |
+| [ml-async-parallel-rfc.md](../game-dev/specs/ml-async-parallel-rfc.md) | PH-ML |
+| [portable-targets-rfc.md](../game-dev/specs/portable-targets-rfc.md) | PH-PORT |
+| [lig-rfc.md](../game-dev/specs/lig-rfc.md) | PH-HW |
+| [critical-package-compliance-rfc.md](../game-dev/specs/critical-package-compliance-rfc.md) | PH-COMPLY |
 
 **Maintainers:** Quarterly SOTA review; keep in sync with Cursor plan artifact `world_studio_amd_port_be6fdf4f.plan.md`.

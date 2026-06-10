@@ -114,7 +114,7 @@ Separate from manifest — **`li-tests/run_security.sh`**:
 
 Runs on **every** `scripts/ci.sh` and in the Windows CI job.
 
-Details: [Security audits](security.md).
+Details: [Security audits](../testing/security.md).
 
 ## Fuzz testing (parser)
 

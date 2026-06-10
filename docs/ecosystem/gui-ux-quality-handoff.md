@@ -21,7 +21,7 @@ This page is the **lic-side routing doc** for UX journeys on GUI targets. Produc
 | UX digests | `benchmarks` | [`docs/ecosystem/ux-digests/`](https://github.com/li-langverse/benchmarks/tree/main/docs/ecosystem/ux-digests) |
 | Studio UX rubric | `lic` | [ui-ux-by-dimension.md](../game-dev/competitive-intel/ui-ux-by-dimension.md) |
 | Studio plan loop | `lic` | [2026-05-24-studio-ui-ux-plan-loop.md](../superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md) |
-| Swarm registry ingest | `lic` | [orch-r4-ui-ux-signals](orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md) |
+| Swarm registry ingest | `lic` | [orch-r4-ui-ux-signals](https://github.com/li-langverse/lic/blob/main/docs/ecosystem/orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md) |
 
 ---
 
@@ -43,7 +43,7 @@ From `ux-targets.json` — **surface_class** `gui_app` / `gui_gen`:
 
 ## Open `ui_ux` swarm gaps (registry)
 
-Ingested by `swarm_observer` (`orch-r4-ui-ux-signals`); see [orchestrator note](orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md):
+Ingested by `swarm_observer` (`orch-r4-ui-ux-signals`); see [orchestrator note](https://github.com/li-langverse/lic/blob/main/docs/ecosystem/orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md):
 
 | Gap id | Owner agents |
 |--------|----------------|
@@ -110,4 +110,4 @@ python3 ../li-cursor-agents/ux-harness/run_audit.py --target world-studio-demo -
 
 ## Related plan map
 
-[Plan cross-links](plan-cross-links.md) · [Master plan — Documentation & provability honesty](../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
+[Plan cross-links](../ecosystem/plan-cross-links.md) · [Master plan — Documentation & provability honesty](../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)

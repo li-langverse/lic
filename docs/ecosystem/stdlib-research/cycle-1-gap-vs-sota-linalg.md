@@ -10,12 +10,12 @@
 
 - **Li dense linalg lives in the compiler prelude**, not `lic/std/math` — `std/math/*.li` are policy/tag facades only (`math_std_tag` at `math.li:1-6`; no `dot`/`@`).
 - **Shipped surface (2i/7e partial):** 1d/2d `@`, `dot`, `sum`, `norm`, `axpy`, element-wise ops + length-1 broadcast; **26** `li-tests/math_linalg/` cases (e.g. `dot_float_arrays.li:13-14`, `matmul_2x3_ok.li:21`).
-- **SOTA gap (function):** no `packages/linalg`, no LAPACK-class solve/QR/eigen, no `std.tensor` / sparse, no full NumPy broadcast — planned AL-10 / Phase 3 ([algorithms-and-libraries-plan.md](../algorithms-and-libraries-plan.md) L213, L302).
-- **SOTA gap (perf):** tier-1 `matmul_naive` ~0.90× C++ (green); **`matmul_blocked` / `horner_pure_li` fail strict ≤1.2×** per [wave-a-stdlib-unblock-checklist.md](../wave-a-stdlib-unblock-checklist.md) L30-31; briefing red rows `horner_pure_li`, `reduce_sum`.
-- **`simd_dot` tier-1 Li driver is not math-first:** calls `extern proc li_simd_dot_kernel()` (`benchmarks/tier1_micro/simd_dot/li/main.li:4-22`) — contradicts [math-linalg-surface spec](../superpowers/specs/2026-05-16-li-math-linalg-surface.md) “zero `__li_simd_*` in user file”.
+- **SOTA gap (function):** no `packages/linalg`, no LAPACK-class solve/QR/eigen, no `std.tensor` / sparse, no full NumPy broadcast — planned AL-10 / Phase 3 ([algorithms-and-libraries-plan.md](../../ecosystem/algorithms-and-libraries-plan.md) L213, L302).
+- **SOTA gap (perf):** tier-1 `matmul_naive` ~0.90× C++ (green); **`matmul_blocked` / `horner_pure_li` fail strict ≤1.2×** per [wave-a-stdlib-unblock-checklist.md](../../ecosystem/wave-a-stdlib-unblock-checklist.md) L30-31; briefing red rows `horner_pure_li`, `reduce_sum`.
+- **`simd_dot` tier-1 Li driver is not math-first:** calls `extern proc li_simd_dot_kernel()` (`benchmarks/tier1_micro/simd_dot/li/main.li:4-22`) — contradicts [math-linalg-surface spec](../../superpowers/specs/2026-05-16-li-math-linalg-surface.md) “zero `__li_simd_*` in user file”.
 - **`li-std-math` / `packages/li-math`:** small **structural** LA (Vec3/4, Quat, Mat4, `vec3_dot`); bridge `array_dot_f64` → prelude `@` (`li-math/src/lib.li:246-251`). Weaker contracts in mirror (`li-std-math/src/lib.li:142-145` `ensures true` on `vec3_dot`).
 - **`li-std-core`:** version stub only (`li-std-core/src/lib.li:2-8`) — no linalg.
-- **Proof-before-perf:** closed int P-linalg + partial float slices (**G-math** Partial); float `vec3_dot` Props and general `@` Lean backlog open ([provability-gaps.md](../verification/provability-gaps.md) L40, L60).
+- **Proof-before-perf:** closed int P-linalg + partial float slices (**G-math** Partial); float `vec3_dot` Props and general `@` Lean backlog open ([provability-gaps.md](../../verification/provability-gaps.md) L40, L60).
 
 ---
 

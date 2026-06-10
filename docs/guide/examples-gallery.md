@@ -65,7 +65,7 @@ def main() -> int
   return 0
 ```
 
-Full walkthrough: [Math-first HPC examples](math-hpc-examples.md).
+Full walkthrough: [Math-first HPC examples](../guide/math-hpc-examples.md).
 
 **Legacy / audit only:** manual SIMD intrinsics (do not use in new benchmarks):
 
@@ -75,7 +75,7 @@ var p: simd[f64, 4] = __li_simd_mul_f64(v, v)
 acc = acc + __li_horiz_sum_f64(p)
 ```
 
-See [Fast math — intrinsics appendix](fast-math-and-parallelism.md#compiler-intrinsics-appendix).
+See [Fast math — intrinsics appendix](../guide/fast-math-and-parallelism.md#compiler-intrinsics-appendix).
 
 ## Parallel zeroing
 

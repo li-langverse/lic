@@ -34,7 +34,7 @@
 ## 7d — Execution decorators (decorator-first HPC)
 
 > **Depends on:** **2g** (`def`), **7a** (SIMD), **7b** (`parallel for` + structured disjoint)  
-> **Plan:** [.cursor/plans/li_execution_decorators_7c6e3b42.plan.md](../../../.cursor/plans/li_execution_decorators_7c6e3b42.plan.md)  
+> **Plan:** [.cursor/plans/li_execution_decorators_7c6e3b42.plan.md](https://github.com/li-langverse/lic/blob/main/.cursor/plans/li_execution_decorators_7c6e3b42.plan.md)  
 > **Spec (to land):** `docs/superpowers/specs/2026-05-16-li-execution-decorators.md`
 
 **Goal:** Primary surface for parallelism, vectorization, and device placement is **stackable `@` decorators** on `def` and on `for`/`while` — elaborating to the same proved cores as keywords (`parallel for`, `simd`, future `gpu proc`).
@@ -77,7 +77,7 @@
 
 **7e (mathematical surface — user writes formulas, not `simd(...)`):**
 
-> **Plan:** [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md)
+> **Plan:** [2026-05-16-li-math-linalg-surface.md](../../superpowers/plans/2026-05-16-li-math-linalg-surface.md)
 
 | Sub | Task | Exit |
 |-----|------|------|

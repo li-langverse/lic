@@ -1,10 +1,10 @@
 # Li ecosystem governance — GitHub org, standards, traceability
 
-> **Applies to:** [package-scaffold](2026-05-16-li-package-scaffold.md), [package-manager-lip](2026-05-16-li-package-manager-lip.md), [li-httpd](2026-05-16-li-httpd-plan.md), and all **first-party** / **standard** libraries.
+> **Applies to:** [package-scaffold](../../superpowers/plans/2026-05-16-li-package-scaffold.md), [package-manager-lip](../../superpowers/plans/2026-05-16-li-package-manager-lip.md), [li-httpd](../../superpowers/plans/2026-05-16-li-httpd-plan.md), and all **first-party** / **standard** libraries.
 
 **Goal:** Official Li software and standard packages live under a **defined GitHub organization**, with documentation and metadata that meet **international conventions** and a **traceability chain** from requirements → design → tests → releases.
 
-**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability gaps](../../verification/provability-gaps.md) (honesty for `proof_digest` / release claims — **G-*** updated only with compiler evidence)
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](../../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability gaps](../../verification/provability-gaps.md) (honesty for `proof_digest` / release claims — **G-*** updated only with compiler evidence)
 
 ---
 
@@ -16,14 +16,14 @@
 | **Package manager** | [`li-langverse/lip`](https://github.com/li-langverse/lip) | `lip`, registry |
 | **Test + coverage** | [`li-langverse/lit`](https://github.com/li-langverse/lit) | `lit`, ≥80% gate |
 | **Standard library slices** | `li-langverse/li-std-<area>` e.g. `li-std-math`, `li-std-io` | when `std/` outgrows monorepo |
-| **Infrastructure packages** | `li-langverse/li-net`, `li-tls`, `li-crypto`, … | per [li-httpd](2026-05-16-li-httpd-plan.md) |
+| **Infrastructure packages** | `li-langverse/li-net`, `li-tls`, `li-crypto`, … | per [li-httpd](../../superpowers/plans/2026-05-16-li-httpd-plan.md) |
 | **User / third-party** | Author’s org or user account | `lip publish` + registry; not `li-langverse` unless adopted |
 
 **Canonical org:** **[`li-langverse`](https://github.com/li-langverse)** — all official Li software and standard packages MUST live here.
 
-**Canonical remote:** `https://github.com/li-langverse/lic.git` — docs and `mkdocs.yml` use `li-langverse`. See [master plan § Repository separation](2026-05-14-li-master-plan.md#repository-separation--when-to-create-repos).
+**Canonical remote:** `https://github.com/li-langverse/lic.git` — docs and `mkdocs.yml` use `li-langverse`. See [master plan § Repository separation](../../superpowers/plans/2026-05-14-li-master-plan.md#repository-separation--when-to-create-repos).
 
-**Agents:** For **any human-only action** (new repo, GitHub settings, org apps, secrets, notifications setup) — post **“Action needed from you”**, list exact steps, **wait for confirmation**. See [master plan — human-only actions](2026-05-14-li-master-plan.md). Do not proceed without confirmation.
+**Agents:** For **any human-only action** (new repo, GitHub settings, org apps, secrets, notifications setup) — post **“Action needed from you”**, list exact steps, **wait for confirmation**. See [master plan — human-only actions](../../superpowers/plans/2026-05-14-li-master-plan.md). Do not proceed without confirmation.
 
 ### When to create an org repo (mandatory)
 
@@ -52,7 +52,7 @@ git remote add origin git@github.com:li-langverse/li-foo.git
 
 **Templates:** `scripts/templates/github-repo/` — `README.md`, `SECURITY.md`, `CHANGELOG.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `PUBLISH.md`.
 
-**Agent skill:** extend [create-li-package](../../../.cursor/skills/create-li-package/SKILL.md) — if `official` or `std`, run org checklist and link traceability IDs.
+**Agent skill:** extend [create-li-package](https://github.com/li-langverse/li-cursor-agents/blob/main/.cursor/skills/create-li-package/SKILL.md) — if `official` or `std`, run org checklist and link traceability IDs.
 
 ---
 
@@ -83,7 +83,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any official **`li-*`** package release
 - Org team **Watching** releases on **`lic`**, **`lit`**, **`lip`**
 - Phase **8d** registry: webhook when a depended package publishes (complements GitHub)
 
-**Master plan phase:** **8-sync** — see [master plan](2026-05-14-li-master-plan.md#cross-repo-dependency-notifications-every-official-package).
+**Master plan phase:** **8-sync** — see [master plan](../../superpowers/plans/2026-05-14-li-master-plan.md#cross-repo-dependency-notifications-every-official-package).
 
 ---
 
@@ -129,8 +129,8 @@ flowchart LR
 
 | Prefix | Example | Where recorded |
 |--------|---------|----------------|
-| `REQ-` | `REQ-PROOF-01` | [language design spec](../specs/2026-05-14-li-language-design.md) |
-| `PH-` | `PH-Pkg`, `PH-8b` | [master plan](2026-05-14-li-master-plan.md) |
+| `REQ-` | `REQ-PROOF-01` | [language design spec](../../superpowers/specs/2026-05-14-li-language-design.md) |
+| `PH-` | `PH-Pkg`, `PH-8b` | [master plan](../../superpowers/plans/2026-05-14-li-master-plan.md) |
 | `T-` | `T-modules-import-ok` | `li-tests/manifest.toml` `note = "T-..."` |
 | `PKG-` | `PKG-li-std-math` | `docs/ecosystem/official-packages.md` + package `PUBLISH.md` |
 | `DOC-` | `DOC-lip-user-guide` | `docs/ecosystem/lip.md` front matter |
@@ -144,7 +144,7 @@ flowchart LR
 | `LICENSE` | SPDX identifier matching `li.toml` |
 | `SECURITY.md` | Reporting; supported versions |
 | `PUBLISH.md` | Exports, `PKG-` id, registry name, proof/coverage tier |
-| `li.toml` | [lip § A3](2026-05-16-li-package-manager-lip.md) |
+| `li.toml` | [lip § A3](../../superpowers/plans/2026-05-16-li-package-manager-lip.md) |
 | `docs/traceability.md` | RTM: REQ/PH ↔ tests ↔ this package version |
 
 ### Monorepo `packages/` traceability

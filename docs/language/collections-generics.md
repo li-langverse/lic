@@ -44,7 +44,7 @@ type Mode = enum
 ## Generics (PEP 695)
 
 ```nim
-def box[T](x: T) -> T
+def box[T](https://github.com/li-langverse/lic/blob/main/docs/language/x%3A%20T) -> T
   requires true
   ensures result == x
   decreases 0

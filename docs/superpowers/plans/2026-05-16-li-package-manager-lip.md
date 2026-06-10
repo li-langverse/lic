@@ -1,6 +1,6 @@
 # Li package manager (`lip`) + `lit` test/coverage
 
-> **Canonical ecosystem plan.** Package **layout/scaffold** is [2026-05-16-li-package-scaffold.md](2026-05-16-li-package-scaffold.md) — same `li.toml` schema, same directory tree; `lip init` eventually wraps `scripts/li-new-package`.
+> **Canonical ecosystem plan.** Package **layout/scaffold** is [2026-05-16-li-package-scaffold.md](../../superpowers/plans/2026-05-16-li-package-scaffold.md) — same `li.toml` schema, same directory tree; `lip init` eventually wraps `scripts/li-new-package`.
 
 **Goal:** `lip` resolves and installs dependencies with **proof + signature + coverage** gates; `lit` enforces **≥ 80% line coverage** on publish/install.
 
@@ -14,19 +14,19 @@
 | Package manager | https://github.com/li-langverse/lip |
 | Test + coverage | https://github.com/li-langverse/lit |
 
-**8-repo:** org repos created; push split trees, `li-toolchain.toml` in **lip**/**lit**, CI clones **lic**. See [master plan](2026-05-14-li-master-plan.md) tracker.
+**8-repo:** org repos created; push split trees, `li-toolchain.toml` in **lip**/**lit**, CI clones **lic**. See [master plan](../../superpowers/plans/2026-05-14-li-master-plan.md) tracker.
 
 ---
 
 ## Context and constraints
 
-Li’s **proof gate** is the primary security differentiator: unproved user code does not compile ([language design spec](../specs/2026-05-14-li-language-design.md)). A package manager must **compose** that gate with supply-chain basics (checksums, signatures, lockfiles), not replace it.
+Li’s **proof gate** is the primary security differentiator: unproved user code does not compile ([language design spec](../../superpowers/specs/2026-05-14-li-language-design.md)). A package manager must **compose** that gate with supply-chain basics (checksums, signatures, lockfiles), not replace it.
 
 **Current gaps:**
 
-- No `import` / multi-module support in the compiler ([compiler/ast/include/li/ast.hpp](../../compiler/ast/include/li/ast.hpp)).
+- No `import` / multi-module support in the compiler ([compiler/ast/include/li/ast.hpp](https://github.com/li-langverse/lic/blob/main/docs/compiler/ast/include/li/ast.hpp)).
 - No `std/` tree in-repo yet (Phase 4); packages depend on path/git/registry deps.
-- Bootstrap Li CLI ([bootstrap/lic/main.li](../../bootstrap/lic/main.li)) — pattern for Li tools until self-host.
+- Bootstrap Li CLI ([bootstrap/lic/main.li](https://github.com/li-langverse/lic/blob/main/docs/bootstrap/lic/main.li)) — pattern for Li tools until self-host.
 
 **Locked decisions:**
 
@@ -111,7 +111,7 @@ parse → name resolve (imports) → per-module typecheck → workspace proof �
 
 ### A3. Canonical `li.toml` schema (shared with scaffold)
 
-**This section is the single source of truth** for [package-scaffold](2026-05-16-li-package-scaffold.md) templates and `lip`:
+**This section is the single source of truth** for [package-scaffold](../../superpowers/plans/2026-05-16-li-package-scaffold.md) templates and `lip`:
 
 ```toml
 [package]
@@ -159,7 +159,7 @@ Pinned closure: version/git SHA, tree digest SHA-256, manifest signature, `proof
 
 ### A5. Tests
 
-`li-tests/modules/` in [manifest.toml](../../li-tests/manifest.toml).
+`li-tests/modules/` in [manifest.toml](https://github.com/li-langverse/lic/blob/main/docs/li-tests/manifest.toml).
 
 **Exit gate:** `lic build` on 2–3 module workspace without `lip`.
 
@@ -217,12 +217,12 @@ REST index, `lip publish` (local `lic build` + `lit test --coverage`), registry 
 | [docs/ecosystem/overview.md](../../ecosystem/overview.md) | How Pkg + lip + lit fit together |
 | [docs/ecosystem/governance.md](../../ecosystem/governance.md) | GitHub org, SemVer/SPDX/Changelog, traceability IDs |
 | [docs/ecosystem/official-packages.md](../../ecosystem/official-packages.md) | `PKG-*` ↔ [`li-langverse/*`](https://github.com/li-langverse) repos |
-| [2026-05-16-li-ecosystem-governance.md](2026-05-16-li-ecosystem-governance.md) | Normative governance plan |
-| [docs/ecosystem/lip.md](../../ecosystem/lip.md) | `init`, `add`, `publish`, trust flags |
-| [docs/ecosystem/lit.md](../../ecosystem/lit.md) | Coverage gate, CLI |
-| [docs/ecosystem/registry.md](../../ecosystem/registry.md) | API, signing, attestation; index includes `PKG-` + `proof_digest` |
+| [2026-05-16-li-ecosystem-governance.md](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md) | Normative governance plan |
+| [docs/ecosystem/lip.md](https://github.com/li-langverse/lip/blob/main/docs/lip.md) | `init`, `add`, `publish`, trust flags |
+| [docs/ecosystem/lit.md](https://github.com/li-langverse/lit/blob/main/docs/lit.md) | Coverage gate, CLI |
+| [docs/ecosystem/registry.md](https://github.com/li-langverse/lip/blob/main/docs/registry.md) | API, signing, attestation; index includes `PKG-` + `proof_digest` |
 | [docs/guide/creating-packages.md](../../guide/creating-packages.md) | User tutorial (starts with `li-new-package`) |
-| [docs/verification/packages.md](../../verification/packages.md) | Threat model |
+| [docs/verification/packages.md](https://github.com/li-langverse/lic/blob/main/docs/verification/packages.md) | Threat model |
 
 **Publish metadata (8d):** registry entries MUST include `pkg_id` (`PKG-`), `spdx_license`, `changelog_url`, `repository` (GitHub org URL), `proof_digest`, `coverage_pct`.
 
@@ -257,7 +257,7 @@ REST index, `lip publish` (local `lic build` + `lit test --coverage`), registry 
 
 ## Implementation order (after plan approval)
 
-1. **Pkg** — [package-scaffold](2026-05-16-li-package-scaffold.md)
+1. **Pkg** — [package-scaffold](../../superpowers/plans/2026-05-16-li-package-scaffold.md)
 2. **8-repo** — push **lic**, **lip**, **lit**; CI smoke
 3. **8a** — `import` + `li-tests/modules/` (**lic**)
 4. **8e-li** — `lic --coverage-instrument` (**lic**)
@@ -265,4 +265,4 @@ REST index, `lip publish` (local `lic build` + `lit test --coverage`), registry 
 6. **8b** — **lip** path deps; `lip init` → scaffold
 7. **8c** — signatures + `proof_digest`
 8. **8d** — registry client + publish
-9. **8-sync** — Dependabot + `lic` release → downstream dispatch (see [governance](2026-05-16-li-ecosystem-governance.md#cross-repo-dependency-notifications))
+9. **8-sync** — Dependabot + `lic` release → downstream dispatch (see [governance](../../superpowers/plans/2026-05-16-li-ecosystem-governance.md#cross-repo-dependency-notifications))

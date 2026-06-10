@@ -17,7 +17,7 @@ Python’s [Zen of Python (PEP 20)](https://peps.python.org/pep-0020/) is not a 
 | **Explicit is better than implicit** | Effects (`raises IO`), contracts (`requires` / `ensures`), and types are written out — no hidden globals, no `Any`. |
 | **There should be one obvious way** | One idiomatic import (`import physics.runtime`), one obvious loop shape with `decreases`, one obvious parallel form with `disjoint`. |
 | **If the implementation is hard to explain, it’s a bad idea** | Applies to **language design** and **your** code: if you cannot say what a `proc` does in one English sentence, refactor. |
-| **Namespaces are a great idea** | Dotted modules (`math.numerics`, `physics.fluids`) and small packages — see [import style](import-style.md). |
+| **Namespaces are a great idea** | Dotted modules (`math.numerics`, `physics.fluids`) and small packages — see [import style](../language/import-style.md). |
 
 Python also teaches **practicality beats purity** — Li allows that *after* proof: e.g. `--release` for speed, optional `--numerically-stable` for FP — never by skipping the proof gate.
 
@@ -56,7 +56,7 @@ Contracts are **promises in English-shaped logic**, not magic comments:
 
 ## Naming (packages, types, functions, variables)
 
-**Canonical table:** [Naming conventions](naming-conventions.md) — PascalCase **`ClassName`** for types/objects; snake_case for `def`, variables, and fields.
+**Canonical table:** [Naming conventions](../language/naming-conventions.md) — PascalCase **`ClassName`** for types/objects; snake_case for `def`, variables, and fields.
 
 ### Packages and imports
 
@@ -65,7 +65,7 @@ Contracts are **promises in English-shaped logic**, not magic comments:
 | `import physics.relativity` | `import li_std_physics_relativity` |
 | GitHub repo `li-physics-relativity` | `li-std-physics-relativity` (legacy) |
 
-Rule: **import path = how you talk about the domain.** See [import-style.md](import-style.md) and [repo naming](../ecosystem/repo-naming.md).
+Rule: **import path = how you talk about the domain.** See [import-style.md](../language/import-style.md) and [repo naming](../ecosystem/repo-naming.md).
 
 ### Functions (`def`)
 
@@ -122,13 +122,13 @@ If pseudocode needs a footnote to map to Li, the **surface syntax** should be im
 When changing Li code or docs:
 
 1. Read the `proc` names aloud — do they sound like steps in a story?
-2. Prefer extending [easy imports](../../.cursor/rules/li-easy-imports.mdc) over new opaque module prefixes.
+2. Prefer extending [easy imports](https://github.com/li-langverse/lic/blob/main/.cursor/rules/li-easy-imports.mdc) over new opaque module prefixes.
 3. Do not trade readability for “fewer lines” in examples users copy.
 
 ## Related
 
-- [Language handbook overview](overview.md)
-- [Control flow and functions](control-flow-and-functions.md)
+- [Language handbook overview](../language/overview.md)
+- [Control flow and functions](../language/control-flow-and-functions.md)
 - [Language design spec](../superpowers/specs/2026-05-14-li-language-design.md) — normative pillars
-- [Import style](import-style.md)
+- [Import style](../language/import-style.md)
 - Python: [PEP 20](https://peps.python.org/pep-0020/), [PEP 8](https://peps.python.org/pep-0008/) (style guide for names and layout)

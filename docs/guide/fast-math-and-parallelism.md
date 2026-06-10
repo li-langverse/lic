@@ -10,7 +10,7 @@ Li is built for **scientific and high-performance** work. Prefer:
 
 You do **not** install NumPy, OpenMP bindings, or a thread library yourself — Li’s compiler wires native vector instructions and (on Linux) OpenMP when your program passes the proof gate.
 
-**Start here:** [Math-first HPC examples](math-hpc-examples.md) · [Linear algebra](../language/linear-algebra.md)
+**Start here:** [Math-first HPC examples](../guide/math-hpc-examples.md) · [Linear algebra](../language/linear-algebra.md)
 
 ---
 
@@ -85,7 +85,7 @@ var v: simd[f64, 4] = __li_simd_splat_f64(1.5)
 
 Lane counts **4 and 8** are supported; other sizes are rejected at compile time.
 
-**Migration:** replace manual intrinsic loops with `dot` / `@` on `array` tiles; see [Examples gallery](examples-gallery.md#math-vs-intrinsics).
+**Migration:** replace manual intrinsic loops with `dot` / `@` on `array` tiles; see [Examples gallery](../guide/examples-gallery.md#math-vs-intrinsics).
 
 More detail: [SIMD & parallel reference](../language/simd-parallel.md).
 

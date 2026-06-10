@@ -2,7 +2,7 @@
 
 This page maps **common nginx/Apache/httpd CVE classes** to what Li **already rejects in user `.li` code** and what **li-httpd** will prove later. Review is **automated** via `scripts/check-webserver-bugs.sh` on Linux, macOS, and Windows; humans adjust the registry when nginx publishes new classes.
 
-**Registry:** [`security/webserver-bugs.toml`](../../security/webserver-bugs.toml)  
+**Registry:** [`security/webserver-bugs.toml`](https://github.com/li-langverse/lic/blob/main/security/webserver-bugs.toml)  
 **Future runtime oracles:** [`li-httpd plan`](../superpowers/plans/2026-05-16-li-httpd-plan.md) (exploit TOML vs stock nginx)
 
 ---
@@ -33,13 +33,13 @@ This page maps **common nginx/Apache/httpd CVE classes** to what Li **already re
 
 These properties help **any** server written in Li (including a future OS network stack), not only li-httpd:
 
-1. **No memory-smuggling via array bugs** — constant or refinement indices; dynamic `buf[i]` without proof fails compile ([`cwe787_dyn_index.li`](../../li-tests/cve_patterns/cwe787_dyn_index.li)).
-2. **No silent proof bypass** — `Any`, `sorry`, bare `cast[`, `unsafe`, `goto` rejected ([`prove_reject/`](../../li-tests/prove_reject/), policy).
-3. **No unbounded loops without measure** — Slowloris-style “read forever” loops fail without `decreases` ([`missing_decreases.li`](../../li-tests/prove_reject/missing_decreases.li)).
-4. **No undeclared side effects** — networking/logging must declare `raises IO` ([`effects/io_fail.li`](../../li-tests/effects/io_fail.li)).
-5. **No data races in parallel workers** — shared mutable slots in `parallel for` fail ([`race_shared_memory/`](../../li-tests/race_shared_memory/)).
-6. **No shell injection in the toolchain** — `lic build` rejects dangerous `-o` / `LI_EXTRA_C` paths ([`codegen_path_injection.sh`](../../li-tests/security/codegen_path_injection.sh)).
-7. **Extern is explicit** — C seams need contracts ([`cwe676_extern_no_contract.li`](../../li-tests/cve_patterns/cwe676_extern_no_contract.li)).
+1. **No memory-smuggling via array bugs** — constant or refinement indices; dynamic `buf[i]` without proof fails compile ([`cwe787_dyn_index.li`](https://github.com/li-langverse/lic/blob/main/li-tests/cve_patterns/cwe787_dyn_index.li)).
+2. **No silent proof bypass** — `Any`, `sorry`, bare `cast[`, `unsafe`, `goto` rejected ([`prove_reject/`](https://github.com/li-langverse/lic/blob/main/li-tests/prove_reject), policy).
+3. **No unbounded loops without measure** — Slowloris-style “read forever” loops fail without `decreases` ([`missing_decreases.li`](https://github.com/li-langverse/lic/blob/main/li-tests/prove_reject/missing_decreases.li)).
+4. **No undeclared side effects** — networking/logging must declare `raises IO` ([`effects/io_fail.li`](https://github.com/li-langverse/lic/blob/main/li-tests/effects/io_fail.li)).
+5. **No data races in parallel workers** — shared mutable slots in `parallel for` fail ([`race_shared_memory/`](https://github.com/li-langverse/lic/blob/main/li-tests/race_shared_memory)).
+6. **No shell injection in the toolchain** — `lic build` rejects dangerous `-o` / `LI_EXTRA_C` paths ([`codegen_path_injection.sh`](https://github.com/li-langverse/lic/blob/main/li-tests/security/codegen_path_injection.sh)).
+7. **Extern is explicit** — C seams need contracts ([`cwe676_extern_no_contract.li`](https://github.com/li-langverse/lic/blob/main/li-tests/cve_patterns/cwe676_extern_no_contract.li)).
 
 ---
 
@@ -72,6 +72,6 @@ Exploit rows (e.g. `request_smuggling_cl_te.toml`) are **integration tests** aft
 
 ## Related
 
-- [Security audits](security.md)
-- [Historic bug classes](security.md#historic-failures-os-ready)
+- [Security audits](../testing/security.md)
+- [Historic bug classes](../testing/security.md#historic-failures-os-ready)
 - [Provability gaps](../verification/provability-gaps.md) — honest limits until Lean/httpd land

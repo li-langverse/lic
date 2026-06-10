@@ -6,7 +6,7 @@
 
 | | |
 |--|--|
-| **Script** | [`scripts/backup-swarm-state.sh`](../../scripts/backup-swarm-state.sh) |
+| **Script** | [`scripts/backup-swarm-state.sh`](https://github.com/li-langverse/lic/blob/main/scripts/backup-swarm-state.sh) |
 | **Default output** | `~/Documents/Cursor/backups/swarm-YYYYMMDD/` |
 | **Manifest** | `manifest.json` (timestamp, git SHAs, tar paths, systemd unit list) |
 
@@ -26,7 +26,7 @@ Run **before** disabling plan loops or merging control-plane branches (WP-M4 / W
 |------|--------|
 | `.env` / `*.env` | Secrets — **copy manually** after restore |
 | Git objects / full repos | Use normal `git checkout` at recorded SHAs |
-| GitHub org mirrors | See [org-backup.md](org-backup.md) |
+| GitHub org mirrors | See [org-backup.md](../ecosystem/org-backup.md) |
 
 ### Manual credential copy
 
@@ -89,10 +89,10 @@ tar -tzf "$BACKUP/tar/swarm-runtime-data.tar.gz" | head
 
 4. **Copy `.env` manually** (see above).
 
-5. **Re-enable loops only if rolling back migration** — otherwise prefer [`install-agents-swarm-systemd.sh`](../../../li-cursor-agents/scripts/install-agents-swarm-systemd.sh) in WP-M5.
+5. **Re-enable loops only if rolling back migration** — otherwise prefer [`install-agents-swarm-systemd.sh`](https://github.com/li-langverse/li-cursor-agents/blob/main/scripts/install-agents-swarm-systemd.sh) in WP-M5.
 
 ## Related
 
-- [swarm-ops-status.md](swarm-ops-status.md) — live loop status
-- [org-backup.md](org-backup.md) — GitHub org mirrors (separate from this snapshot)
+- [swarm-ops-status.md](../ecosystem/swarm-ops-status.md) — live loop status
+- [org-backup.md](../ecosystem/org-backup.md) — GitHub org mirrors (separate from this snapshot)
 - Goal-directed migration plan: `goal_directed_swarm_unified` (Cursor plans)

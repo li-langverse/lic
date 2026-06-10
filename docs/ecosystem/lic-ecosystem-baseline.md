@@ -2,7 +2,7 @@
 
 **Purpose:** Clean starting point for the **lic ecosystem gap loop** (scientific / engineering / gaming packages). **Out of scope:** li-httpd / webserver work (separate agent on `cursor/httpd-plan-loop-54aa`).
 
-**Plan:** [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md) §7–§12 · **Proof honesty:** [provability-gaps.md](../verification/provability-gaps.md)
+**Plan:** [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md) §7–§12 · **Proof honesty:** [provability-gaps.md](../verification/provability-gaps.md)
 
 ## Branch / PR target
 
@@ -61,7 +61,7 @@ Per §7.7 — first implementation slices after gates green:
 
 ## Agent continuation
 
-1. Read §12 handoff in [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md).
+1. Read §12 handoff in [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md).
 2. Skill **`run-local-ci-gha-quota`** — run local CI before claiming done.
 3. Work only on **`cursor/lic-ecosystem-plan-loop-54aa`**; PR-only; no self-merge.
 4. Skip httpd todos and httpd-only files.

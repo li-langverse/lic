@@ -1,0 +1,44 @@
+# Fail PRs when built MkDocs HTML still contains raw .md hrefs (lic#404).
+name: Docs link hygiene
+
+on:
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - "docs/**"
+      - "scripts/check-docs-site-links.sh"
+      - "scripts/check-docs-md-hrefs.py"
+      - "scripts/fix-docs-mkdocs-links.py"
+      - ".github/workflows/docs-links.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "scripts/check-docs-site-links.sh"
+      - "scripts/check-docs-md-hrefs.py"
+
+concurrency:
+  group: docs-links-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  md-hrefs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout lic-docs (MkDocs config)
+        run: |
+          git clone --depth 1 https://github.com/li-langverse/lic-docs.git ../lic-docs
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: MkDocs build + zero .md href gate
+        env:
+          LI_DOCS_ROOT: ${{ github.workspace }}/../lic-docs
+          DOCS_STRICT: "1"
+        run: |
+          chmod +x scripts/check-docs-site-links.sh scripts/build-docs.sh
+          ./scripts/check-docs-site-links.sh

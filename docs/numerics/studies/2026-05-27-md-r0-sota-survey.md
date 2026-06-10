@@ -16,7 +16,7 @@ Li’s MD vertical must reach **LAMMPS/GROMACS-class** neighbor lists, symplecti
 - Registry **101–120** — composable smokes; most tier-2 rows are catalog honesty / shared oracle stubs.
 - **Dashboard:** all 16 `md_*` catalog ids are **unknown** (stale ingest @ 2026-05-26); org **red** is tier-1 `horner_pure_li` (0.67×) and `reduce_sum` (0.93×), not MD physics.
 
-Deep implement contract for algo **105**: [2026-05-25-md-r2-neighbor-list-gap.md](./2026-05-25-md-r2-neighbor-list-gap.md).
+Deep implement contract for algo **105**: [2026-05-25-md-r2-neighbor-list-gap.md](https://github.com/li-langverse/lic/blob/main/docs/numerics/2026-05-25-md-r2-neighbor-list-gap.md).
 
 ---
 

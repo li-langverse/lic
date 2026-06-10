@@ -24,8 +24,8 @@ User modules cannot redefine or hijack names owned by the language prelude or sh
 
 ## Implementation
 
-- `li::check_stdlib_seal` in [compiler/types/prelude.cpp](../../../compiler/types/prelude.cpp), called from [compiler/lic/main.cpp](../../../compiler/lic/main.cpp) on the entry module and from [compiler/types/import_resolve.cpp](../../../compiler/types/import_resolve.cpp) for each resolved import.
-- Manifest sync: [scripts/gen-stdlib-manifest.sh](../../../scripts/gen-stdlib-manifest.sh).
+- `li::check_stdlib_seal` in [compiler/types/prelude.cpp](https://github.com/li-langverse/lic/blob/main/compiler/types/prelude.cpp), called from [compiler/lic/main.cpp](https://github.com/li-langverse/lic/blob/main/compiler/lic/main.cpp) on the entry module and from [compiler/types/import_resolve.cpp](https://github.com/li-langverse/lic/blob/main/compiler/types/import_resolve.cpp) for each resolved import.
+- Manifest sync: [scripts/gen-stdlib-manifest.sh](https://github.com/li-langverse/lic/blob/main/scripts/gen-stdlib-manifest.sh).
 
 ## Tests
 

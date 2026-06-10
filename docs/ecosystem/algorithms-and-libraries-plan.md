@@ -4,7 +4,7 @@
 **Audience:** Architects, package owners, agents  
 **Canonical product vision:** [world-studio-vision.md](../game-dev/world-studio-vision.md)  
 **Compiler truth:** [master plan](../superpowers/plans/2026-05-14-li-master-plan.md) · [provability-gaps.md](../verification/provability-gaps.md)  
-**Perf / validity:** [competitive-engines-plan.md](../benchmarks/competitive-engines-plan.md) · `benchmarks/competitive/registry.toml`
+**Perf / validity:** [competitive-engines-plan.md](https://github.com/li-langverse/lic/blob/main/docs/benchmarks/competitive-engines-plan.md) · `benchmarks/competitive/registry.toml`
 
 This page is the **algorithms-and-libraries** layer under World Studio — not the studio shell, not `lic` internals alone.
 
@@ -70,7 +70,7 @@ This page is the **algorithms-and-libraries** layer under World Studio — not t
 
 ### Layer A — HPC / language runtimes (mature)
 
-**Source:** `benchmarks/competitive/registry.toml`, [competitive-engines-plan.md](../benchmarks/competitive-engines-plan.md).
+**Source:** `benchmarks/competitive/registry.toml`, [competitive-engines-plan.md](https://github.com/li-langverse/lic/blob/main/docs/benchmarks/competitive-engines-plan.md).
 
 | Competitor | Compared today | Gap to close |
 |------------|----------------|--------------|
@@ -104,7 +104,7 @@ Each vertical needs a maintained row in **`benchmarks/competitive/verticals.toml
 - Cinematic (encode pipeline, color, audio sync)
 - DCC mesh ops (subdiv, UV, rig skinning)
 
-**Template:** copy structure from [competitive-bioengineering-plan.md](../game-dev/competitive-bioengineering-plan.md) §5 (benchmark registry slice).
+**Template:** copy structure from [competitive-bioengineering-plan.md](https://github.com/li-langverse/lic/blob/main/docs/game-dev/competitive-bioengineering-plan.md) §5 (benchmark registry slice).
 
 ---
 
@@ -139,7 +139,7 @@ Each vertical needs a maintained row in **`benchmarks/competitive/verticals.toml
 |------|-------|---------------|
 | `lip install` + lock | **8b–8c** | Reproducible deps |
 | `lit` ≥80% on publish | **8e** | Registry quality |
-| Official PKG registry | **8d** | [official-packages.md](official-packages.md) rows live |
+| Official PKG registry | **8d** | [official-packages.md](../ecosystem/official-packages.md) rows live |
 
 ### Current snapshot (`li-language` / `lic` workspace)
 
@@ -227,7 +227,7 @@ flowchart TB
 | `scene` | `packages/scene` | exists-stub | **extend** — hierarchy, picks, transforms via `math` | D | `math` |
 | `assets` | `packages/assets` | exists-stub | **implement** — glTF + image ingest (trusted decode at edge) | D | `render` |
 | `ui` | `packages/ui` | exists-stub | **extend** — Studio chrome, ⌘K, agent cmds (no pixels) | D | — |
-| `gui` | — | **missing** | **new package** `packages/gui` — `UiDocument`, layout, hit-test, paint IR | D→E | [li-native-gui plan](../game-dev/plans/li-native-gui-plan.md) |
+| `gui` | — | **missing** | **new package** `packages/gui` — `UiDocument`, layout, hit-test, paint IR | D→E | [li-native-gui plan](https://github.com/li-langverse/lic/blob/main/docs/game-dev/plans/li-native-gui-plan.md) |
 | `studio` | `packages/studio` | exists-stub | **wire** — compose `ui` + `gui` + `render` + `world` | E | `gui`, `render` |
 | `player` | `packages/player` | exists-stub | **wire** — load `gui/*.li` HUD | E | `gui`, `render` |
 
@@ -303,7 +303,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 | AL-11 | **`math` quaternion + Mat4** completion + `scene` wire-up | `lic` | Games/robotics/camera |
 | AL-12 | **`packages/anim`**, **`packages/seq`** scaffolds | `lic` | Cinematic vertical |
 | AL-13 | **`packages/geometry`** scaffold | `lic` | CAD/AM |
-| AL-14 | **[stdlib-collections-algorithms-plan.md](stdlib-collections-algorithms-plan.md)** — Python parity map, WP0/WP-WA gates | `lic` | WP1+ stdlib ADT |
+| AL-14 | **[stdlib-collections-algorithms-plan.md](../ecosystem/stdlib-collections-algorithms-plan.md)** — Python parity map, WP0/WP-WA gates | `lic` | WP1+ stdlib ADT |
 | AL-15 | **`tier1_stdlib` bench harness** — `catalog.toml` `pillar = "stdlib"`, cpp/rust/python oracles, `stdlib_registry.toml` | `lic` + `benchmarks` | Honest stdlib perf claims |
 | AL-16 | **Phase 2 collections port** — `std/collections`, `std/heap`, parity vs Python reference | `lic` | Python `collections`/`heapq` parity |
 | AL-17 | **Phase 3 tensor/arena** — `tensor`, `sparse`, `arena`/`ringbuffer` + HPC bench rows | `lic` | Stencil / sim alloc paths |
@@ -328,20 +328,20 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 
 ## 10. Agent routing (read order)
 
-1. [vision-and-roadmap.md](vision-and-roadmap.md) — north star  
+1. [vision-and-roadmap.md](../ecosystem/vision-and-roadmap.md) — north star  
 2. **This file** — algorithms/libraries scheduling  
 3. [world-studio-vision.md](../game-dev/world-studio-vision.md) — product architecture  
 4. [provability-gaps.md](../verification/provability-gaps.md) — what is not proved today  
-5. [competitive-engines-plan.md](../benchmarks/competitive-engines-plan.md) — how to run benches  
+5. [competitive-engines-plan.md](https://github.com/li-langverse/lic/blob/main/docs/benchmarks/competitive-engines-plan.md) — how to run benches  
 6. Vertical RFC under `docs/game-dev/specs/` when implementing one domain  
 
 ---
 
 ## 11. Related links
 
-- [Engineering standards](engineering-standards.md)  
-- [Official packages](official-packages.md)  
-- [CAD fundamentals](./cad-fundamentals.md) (canonical; [li-language source](https://github.com/li-langverse/li-language/blob/dev/docs/ecosystem/cad-fundamentals.md))  
+- [Engineering standards](../ecosystem/engineering-standards.md)  
+- [Official packages](../ecosystem/official-packages.md)  
+- [CAD fundamentals](../ecosystem/cad-fundamentals.md) (canonical; [li-language source](https://github.com/li-langverse/li-language/blob/dev/docs/ecosystem/cad-fundamentals.md))  
 - [Master plan phase map](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 **Maintainers:** Update §7 when adding/removing `packages/*` members. Bump `updated` in `verticals.toml` / `registry.toml` on quarterly SOTA review.

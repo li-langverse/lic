@@ -16,7 +16,7 @@ Li’s type system follows **Python 3.14 typing** habits, but programs compile t
 
 ## Fixed-width integers and floats
 
-Full tables (including `float4` … `float512`, `int4` … `int512`): **[Scalar precision](scalar-precision.md)**.
+Full tables (including `float4` … `float512`, `int4` … `int512`): **[Scalar precision](../language/scalar-precision.md)**.
 
 | Signed | Unsigned | Float (examples) |
 |--------|----------|-------------------|
@@ -39,7 +39,7 @@ var v: simd[f64, 4]
 var w: simd[f32, 8]
 ```
 
-Packed lanes for HPC. See [SIMD and parallel](simd-parallel.md).
+Packed lanes for HPC. See [SIMD and parallel](../language/simd-parallel.md).
 
 ## Arrays (fixed size)
 
@@ -65,7 +65,7 @@ Allocation may carry `raises Alloc`.
 
 ## Named shapes
 
-Type and object names use **PascalCase** (`ClassName`) — see [Naming conventions](naming-conventions.md). Fields use **snake_case**.
+Type and object names use **PascalCase** (`ClassName`) — see [Naming conventions](../language/naming-conventions.md). Fields use **snake_case**.
 
 ```nim
 type Point = object
@@ -86,7 +86,7 @@ type Index = {i: int | 0 <= i and i < N}
 A refinement declares **which values** a name may take. Parameters and `var` bindings of that type are checked at **calls** and **initializers**:
 
 - Provably **outside** the predicate → **E0305** (compile error).
-- **Inside** but not yet provable → proof obligation (see [Refinement types](refinement-types.md)).
+- **Inside** but not yet provable → proof obligation (see [Refinement types](../language/refinement-types.md)).
 
 Index refinements (`Index`, `Index10`, …) use the same syntax for array safety; see `li-tests/contracts_verify/index_refinement.li`.
 
@@ -100,7 +100,7 @@ type Sized = Protocol["__len__", int]
 Generics use PEP 695 style:
 
 ```nim
-def identity[T](x: T) -> T
+def identity[T](https://github.com/li-langverse/lic/blob/main/docs/language/x%3A%20T) -> T
 ```
 
 ## What is forbidden
@@ -109,15 +109,15 @@ def identity[T](x: T) -> T
 |-----------|-----|
 | `Any` | No static guarantee |
 | `unsafe` | Bypasses proof |
-| Bare `cast[T](e)` | Need proof-carrying cast |
+| Bare `cast[T](https://github.com/li-langverse/lic/blob/main/docs/language/e)` | Need proof-carrying cast |
 | `sorry` / `assume` | Fake proofs |
 
 ## Cast with proof
 
 ```nim
-cast[T](value, proof)
+cast[T](https://github.com/li-langverse/lic/blob/main/docs/language/value%2C%20proof)
 ```
 
 Only when a proof term shows the cast is valid.
 
-More numbers detail: [Numerics](numerics.md).
+More numbers detail: [Numerics](../language/numerics.md).

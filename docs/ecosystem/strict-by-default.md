@@ -38,7 +38,7 @@ Forbidden as ways to lower gates:
 
 ## Agent rules
 
-1. Read this page at session start with [engineering standards](engineering-standards.md) and the master plan.
+1. Read this page at session start with [engineering standards](../ecosystem/engineering-standards.md) and the master plan.
 2. **Do not** suggest `--no-verify`, `git commit --no-verify`, or skipping contract/Lean/CVE/bench gates unless the user **explicitly** asks for a documented downgrade.
 3. New `proc` / public API: add contracts in the same change.
 4. Before claiming done: run the gates relevant to the diff (`./li-tests/run_all.sh`, `scripts/ci.sh`, stdlib coverage when touching `std/`).
@@ -46,7 +46,7 @@ Forbidden as ways to lower gates:
 
 ## Related
 
-- [Engineering standards](engineering-standards.md) — functionality, security, performance
+- [Engineering standards](../ecosystem/engineering-standards.md) — functionality, security, performance
 - [Provability gaps](../verification/provability-gaps.md) — honest compiler maturity
 - [`li.toml` gates](../language/li-toml.md) — explicit downgrade schema (stub)
 - `.cursor/rules/li-strict-by-default.mdc` — agent enforcement

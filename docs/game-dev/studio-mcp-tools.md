@@ -1,8 +1,8 @@
 # Studio MCP tools (PH-AGENT contract)
 
 **Status:** AGENT-1 in-process dispatch **done**; WP-AG-03 stdio server wired (transport + native handlers)  
-**Vision:** [world-studio-vision.md](world-studio-vision.md) §18  
-**RFC:** [specs/studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md)
+**Vision:** [world-studio-vision.md](../game-dev/world-studio-vision.md) §18  
+**RFC:** [specs/studio-cursor-sdk-rfc.md](../game-dev/specs/studio-cursor-sdk-rfc.md)
 
 Li World Studio agents call these tools via MCP (`lis mcp li-engine`) — stdio transport in `scripts/lis-mcp-li-engine.py` (Cursor config) delegates to native `studio_mcp_server_*` handlers and `studio_mcp_tool_dispatch_arg`.
 

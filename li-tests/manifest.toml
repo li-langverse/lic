@@ -778,6 +778,18 @@ outcome = "compile_fail"
 expected_substr = "raises Net"
 
 [[tests]]
+suite = "container_trusted"
+file = "container_trusted/seam_policy_ok.li"
+outcome = "compile_open_ok"
+note = "container-separate-repos P0: trusted Container seam — IO-raising externs require raises IO"
+
+[[tests]]
+suite = "container_trusted"
+file = "container_trusted/seam_missing_io.li"
+outcome = "compile_fail"
+expected_substr = "raises IO"
+
+[[tests]]
 suite = "effects"
 file = "effects/async_missing_raises.li"
 outcome = "compile_fail"
@@ -1283,6 +1295,12 @@ suite = "encapsulation"
 file = "encapsulation/proc_syntax_rejected.li"
 outcome = "compile_fail"
 expected_substr = "use 'def' for Li procedures"
+
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/extern_proc_syntax_rejected.li"
+outcome = "compile_fail"
+expected_substr = "use 'extern def' for trusted FFI"
 
 [[tests]]
 suite = "encapsulation"

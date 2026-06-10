@@ -1,0 +1,22 @@
+# WP-CTN-062 — CRI v1 API scaffold (pure Li; lifecycle via container.run).
+
+def cri_v1_api_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def cri_v1_runtime_service_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def cri_v1_image_service_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2

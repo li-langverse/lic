@@ -23,7 +23,7 @@ def name(arg: T) -> R
   <statements>
 ```
 
-- **Top level:** `proc`, `type`, `object`, `enum`, `extern proc`.
+- **Top level:** `def`, `type`, `object`, `enum`, `extern def` (trusted seam only).
 - **No `Any`**, no `unsafe`, no `sorry` in user code.
 
 ## Handbook map

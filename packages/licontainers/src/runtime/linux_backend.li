@@ -1,4 +1,5 @@
-# Linux OCI/CRI runtime backend (Wave 1 stub).
+# Deprecated shim — use `container.backend.linux` from li-container.
+
 def linux_backend_namespaces_tag() -> int
   requires true
   ensures result == 1

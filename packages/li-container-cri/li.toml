@@ -1,0 +1,28 @@
+[package]
+name = "li-container-cri"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "CRI v1 API scaffold for libernetes (depends li-container + li-container-run)"
+
+[dependencies]
+li-container = { path = "../li-container" }
+li-container-run = { path = "../li-container-run" }
+li-oci = { path = "../li-oci" }
+# registry = "1.0.0"             # lip 8d+
+
+[[bin]]
+name = "li-container-cri"
+path = "src/main.li"
+
+[package.metadata.li]
+github_repo = "li-container-cri"
+import_name = "cri"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-container-cri"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-container-cri"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-container-cri/"
+changelog = "https://github.com/li-langverse/li-container-cri/blob/main/CHANGELOG.md"

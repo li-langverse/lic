@@ -1,0 +1,8 @@
+import std.runtime.seam
+
+def mkdir_without_io(path: var ptr) -> int
+  requires true
+  ensures result == container_mkdir_p_i(path)
+  decreases 0
+=
+  return container_mkdir_p_i(path)

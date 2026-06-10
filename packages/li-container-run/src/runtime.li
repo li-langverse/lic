@@ -1,0 +1,273 @@
+# WP-CTN-040..042 — lirun OCI lifecycle (backend-aware; depends li-container + li-oci).
+
+import container
+import container.backend.darwin
+import container.backend.lios
+import container.backend.select
+import container.backend.windows
+import container.bundle
+import container.runerr
+import container.state
+import oci.spec
+import std.runtime.seam
+
+def lirun_create_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def lirun_start_tag() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def lirun_stop_tag() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def lirun_delete_tag() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def lirun_state_tag() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def lirun_runtime_backend_id() raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return container_backend_detect()
+
+def lirun_runtime_backend_tag() raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var bid: int = lirun_runtime_backend_id()
+  return container_backend_tag_for_id(bid)
+
+def lirun_lifecycle_tag_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if lirun_create_tag() != 2:
+    return 1
+  if lirun_start_tag() != 3:
+    return 2
+  if lirun_stop_tag() != 4:
+    return 3
+  if lirun_delete_tag() != 5:
+    return 4
+  if lirun_state_tag() != 6:
+    return 5
+  return 0
+
+def lirun_create_linux(container_id: var ptr, bundle_path: var ptr) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var cap: int = 4096
+  var buf: ptr = container_buf_alloc_i(cap)
+  var n: int = container_bundle_read_config(bundle_path, buf, cap)
+  if n < 0:
+    container_buf_free_i(buf)
+    return container_err_bundle_missing()
+  var ok: int = container_bundle_rootfs_exists(bundle_path, buf)
+  container_buf_free_i(buf)
+  if ok != 1:
+    return container_err_bundle_invalid()
+  var w: int = container_state_write(container_id, "1.0.2", "created", 0, 0, bundle_path, 0, 0)
+  if w < 0:
+    return container_runerr_from_seam(w)
+  return container_err_ok()
+
+def lirun_create_lios(container_id: var ptr, bundle_path: var ptr) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if container_lios_backend_tag() != 2:
+    return container_err_backend_unsupported()
+  return container_err_ok()
+
+def lirun_create_windows(container_id: var ptr, bundle_path: var ptr) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if container_windows_backend_tag() != 3:
+    return container_err_backend_unsupported()
+  return container_err_ok()
+
+def lirun_create_darwin(container_id: var ptr, bundle_path: var ptr) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if container_darwin_backend_tag() != 4:
+    return container_err_backend_unsupported()
+  return container_err_ok()
+
+def lirun_create(container_id: var ptr, bundle_path: var ptr) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var bid: int = lirun_runtime_backend_id()
+  if bid == container_backend_id_linux():
+    return lirun_create_linux(container_id, bundle_path)
+  if bid == container_backend_id_lios():
+    return lirun_create_lios(container_id, bundle_path)
+  if bid == container_backend_id_windows():
+    return lirun_create_windows(container_id, bundle_path)
+  if bid == container_backend_id_darwin():
+    return lirun_create_darwin(container_id, bundle_path)
+  return container_err_backend_unsupported()
+
+def lirun_start_linux(container_id: var ptr) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var cap: int = 4096
+  var buf: ptr = container_buf_alloc_i(cap)
+  var n: int = container_state_read(container_id, buf, cap)
+  container_buf_free_i(buf)
+  if n < 0:
+    return container_err_state_missing()
+  return container_err_ok()
+
+def lirun_start_stub(container_id: var ptr) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return container_err_ok()
+
+def lirun_start(container_id: var ptr) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var bid: int = lirun_runtime_backend_id()
+  if bid == container_backend_id_linux():
+    return lirun_start_linux(container_id)
+  if bid == container_backend_id_lios():
+    return lirun_start_stub(container_id)
+  if bid == container_backend_id_windows():
+    return lirun_start_stub(container_id)
+  if bid == container_backend_id_darwin():
+    return lirun_start_stub(container_id)
+  return container_err_backend_unsupported()
+
+def lirun_delete(container_id: var ptr) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var rc: int = container_state_delete(container_id)
+  if rc < 0:
+    return container_err_state_missing()
+  return container_err_ok()
+
+def lirun_state_query(container_id: var ptr) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var cap: int = 4096
+  var buf: ptr = container_buf_alloc_i(cap)
+  var n: int = container_state_read(container_id, buf, cap)
+  container_buf_free_i(buf)
+  if n < 0:
+    return container_err_state_missing()
+  return container_err_ok()
+
+def lirun_backend_lifecycle_selftest() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var bid: int = lirun_runtime_backend_id()
+  var tag: int = container_backend_tag_for_id(bid)
+  if tag < 0:
+    return 1
+  if bid == container_backend_id_linux():
+    if tag != container_linux_backend_tag():
+      return 2
+  if bid == container_backend_id_lios():
+    if tag != container_lios_backend_tag():
+      return 3
+  if bid == container_backend_id_windows():
+    if tag != container_windows_backend_tag():
+      return 4
+  if bid == container_backend_id_darwin():
+    if tag != container_darwin_backend_tag():
+      return 5
+  if bid == container_backend_id_unknown():
+    if tag != container_backend_id_unknown():
+      return 6
+  if container_lios_isolation_score() != 3:
+    return 7
+  if container_windows_isolation_score() != 2:
+    return 8
+  if container_darwin_isolation_score() != 2:
+    return 9
+  return 0
+
+def lirun_selftest() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: int = lirun_lifecycle_tag_selftest()
+  if r != 0:
+    return r
+  r = lirun_backend_lifecycle_selftest()
+  if r != 0:
+    return r + 10
+  if oci_spec_version() != 1:
+    return 20
+  r = li_container_selftest()
+  if r != 0:
+    return r + 30
+  if lirun_runtime_backend_tag() < 0:
+    return 40
+  return 0
+
+def lirun_run_from_argv() raises IO, Alloc -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  if li_rt_argc() < 3:
+    return 1
+  var cmd: ptr = li_rt_argv_i(1)
+  if container_str_cmp_i(cmd, "create") == 0:
+    if li_rt_argc() < 4:
+      return 1
+    return lirun_create(li_rt_argv_i(2), li_rt_argv_i(3))
+  if container_str_cmp_i(cmd, "start") == 0:
+    return lirun_start(li_rt_argv_i(2))
+  if container_str_cmp_i(cmd, "delete") == 0:
+    return lirun_delete(li_rt_argv_i(2))
+  if container_str_cmp_i(cmd, "state") == 0:
+    return lirun_state_query(li_rt_argv_i(2))
+  return 1

@@ -1,0 +1,10 @@
+# WP-CTN-041 — lirun CLI entry (thin wrapper over container.run.runtime).
+
+import container.run.runtime
+
+def main() raises IO, Alloc -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return lirun_run_from_argv()

@@ -6,8 +6,13 @@ license = "Apache-2.0 OR MIT"
 description = "lirun OCI lifecycle (depends li-container + li-oci)"
 
 [dependencies]
-# path = { path = "../other" }   # lip 8b+
+li-container = { path = "../li-container" }
+li-oci = { path = "../li-oci" }
 # registry = "1.0.0"             # lip 8d+
+
+[[bin]]
+name = "lirun"
+path = "src/main.li"
 
 [package.metadata.li]
 github_repo = "li-container-run"

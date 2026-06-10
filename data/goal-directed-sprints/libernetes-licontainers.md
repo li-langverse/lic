@@ -19,9 +19,9 @@ Build **licontainers** OCI/CRI runtime. **Wave 0–2 DONE on `main`.** Active: *
 |-------|-------------|--------|------|
 | **LB-C0–C4** | scaffold, OCI, CRI, linux backend, smoke | **DONE** | wave0–1 gates |
 | **LB-C5–C7** | image pull, create/start, cri lifecycle test | **DONE** | `check-libernetes-licontainers-wave2-gate.sh` |
-| **LB-C8** | `src/cri/serve.li` | pending | `check-libernetes-licontainers-wave3-gate.sh` |
-| **LB-C9** | `src/runtime/cri_socket.li` | pending | same wave3 gate |
-| **LB-C10** | `li-tests/integration/cri_socket_smoke.li` | pending | same wave3 gate |
+| **LB-C8** | `src/cri/serve.li` | **DONE** | `check-libernetes-licontainers-wave3-gate.sh` |
+| **LB-C9** | `src/runtime/cri_socket.li` | **DONE** | same wave3 gate |
+| **LB-C10** | `li-tests/integration/cri_socket_smoke.li` | **DONE** | same wave3 gate |
 
 ## Later waves
 

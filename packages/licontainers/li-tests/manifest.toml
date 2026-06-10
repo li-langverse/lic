@@ -11,3 +11,9 @@ suite = "integration"
 file = "integration/cri_lifecycle.li"
 outcome = "verify_ok"
 note = "T-PKG-licontainers-cri-lifecycle"
+
+[[tests]]
+suite = "integration"
+file = "integration/cri_socket_smoke.li"
+outcome = "verify_ok"
+note = "T-PKG-licontainers-cri-socket-smoke"

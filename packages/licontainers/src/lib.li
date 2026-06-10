@@ -1,9 +1,11 @@
 import oci.spec
 import oci.image
 import cri.v1
+import cri.serve
 import runtime.linux_backend
 import runtime.create
 import runtime.start
+import runtime.cri_socket
 
 def licontainers_version() -> int
   requires true
@@ -31,4 +33,15 @@ def licontainers_cri_lifecycle_selftest() -> int
     return 6
   if linux_backend_cgroups_tag() != 2:
     return 7
+  return 0
+
+def licontainers_cri_socket_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if cri_serve_stub() != 0:
+    return 1
+  if runtime_cri_socket_tag() != 4:
+    return 2
   return 0

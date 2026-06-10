@@ -38,4 +38,8 @@ if [[ -f benchmarks/competitive/md_oracle.toml ]]; then
   bash scripts/ph-sci-md-oracle-gates.sh
 fi
 
+echo "==> WP-SCI-03: tier-2 registry dispatch smokes"
+"$LIC" check packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li
+"$LIC" check packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li
+
 echo "ph-sci-simulation-gap-close: Phase 0 gate OK"

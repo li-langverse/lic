@@ -82,7 +82,7 @@
 | Sub | Task | Exit |
 |-----|------|------|
 | **7e-a** | Lower `*`, `+`, `dot`, `sum` to 7a SIMD MIR | **partial:** `simd_dot` pure-Li `a @ b` (#148) |
-| **7e-b** | Lower `A @ B` for Tier 1 matmul benches | **partial:** `matmul_naive` / `matmul_blocked` pure-Li; **≤1.2× C++** advisory |
+| **7e-b** | Lower `A @ B` for Tier 1 matmul benches | **partial:** `matmul_naive` / `matmul_blocked` pure-Li codegen on `main`; tier-1 ≤1.2× **open** on dashboard ([PH-7e honesty plan](2026-05-30-ph7e-tier1-red-benchmark-honesty.md)) |
 | **7e-c** | `docs/language/linear-algebra.md`, `docs/guide/math-hpc-examples.md` | **done** on `main` |
 | **7e-d/e** | `ArrayDotF64` / `ArrayBinOpF64` gather SIMD | **partial** on `main` (#148) |
 | **2f / P-linalg** | Contract corpus for dot/sum/matmul entry | **partial:** #151 closed + loop open — **G-math**, **G-lean** |

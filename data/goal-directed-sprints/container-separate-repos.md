@@ -43,6 +43,7 @@ plan: docs/libernetes/master-plan.md
 | **P6** | `p6-orchestration` | WP-CTN-060..063 | `li-containerd`/`cli`/`cri` scaffolds; retire `licontainers` monolith | `bash scripts/container-separate-repos-phase6-gate.sh` |
 | **P7** | `p7-publish` | WP-CTN-070..074 | GitLab repos + mirror push; update `package-gap-register.md` | `bash scripts/container-separate-repos-phase7-gate.sh` |
 | **P8** | `p8-product` | WP-CTN-080..083 | Port librebase runtime + `emit_error_json`; **lictl** CLI (`run`, `ps`, `stop`, `version`) | `bash scripts/container-separate-repos-phase8-gate.sh` |
+| **P9** | `p9-integration` | WP-CTN-090..092 | Busybox integration script, `lictl ps` state listing, `--id` argv fixes | `bash scripts/container-separate-repos-phase9-gate.sh` |
 
 Advance `state.json` → next phase only when the current phase gate passes.
 

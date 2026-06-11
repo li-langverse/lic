@@ -1,7 +1,7 @@
 {
   "phase": "done",
   "started_at": "2026-06-10",
-  "completed_at": "2026-06-10",
-  "branch": "feat/container-product-complete",
-  "notes": "P8 gate passed: librebase runtime lifecycle, emit_error_json, lictl CLI. Product completion sprint done."
+  "completed_at": "2026-06-11",
+  "branch": "feat/container-p9-integration",
+  "notes": "P9 gate passed: busybox integration script, container_state_list_stdout_i, lictl ps, --id argv fixes."
 }

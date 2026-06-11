@@ -432,6 +432,30 @@ def lirun_parse_signal(name: var ptr) -> int
     return 9
   return 9
 
+def lirun_argv_container_id(arg_idx: int) -> ptr
+  requires 0 <= arg_idx
+  ensures true
+  decreases 0
+=
+  var id_flag: ptr = "--id"
+  if container_str_cmp_i(li_rt_argv_i(arg_idx), id_flag) == 0:
+    return li_rt_argv_i(arg_idx + 1)
+  return li_rt_argv_i(arg_idx)
+
+def lirun_argv_delete_force(n: int, id_arg_idx: int) -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var force_flag: ptr = "--force"
+  if n >= id_arg_idx + 2:
+    if container_str_cmp_i(li_rt_argv_i(id_arg_idx + 1), force_flag) == 0:
+      return 1
+  if n >= id_arg_idx + 3:
+    if container_str_cmp_i(li_rt_argv_i(id_arg_idx + 2), force_flag) == 0:
+      return 1
+  return 0
+
 def lirun_cmd_version() raises IO -> int
   requires true
   ensures result == 0
@@ -544,23 +568,26 @@ def lirun_run_from_argv() raises IO, Alloc -> int
   if container_str_cmp_i(cmd, delete_cmd) == 0:
     if n < 4:
       return 1
-    var force: int = 0
-    if n >= 5:
-      var force_flag: ptr = "--force"
-      if container_str_cmp_i(li_rt_argv_i(4), force_flag) == 0:
-        force = 1
-    return lirun_cmd_delete(li_rt_argv_i(3), force)
+    var del_id: ptr = lirun_argv_container_id(2)
+    var force: int = lirun_argv_delete_force(n, 2)
+    return lirun_cmd_delete(del_id, force)
   var kill_cmd: ptr = "kill"
   if container_str_cmp_i(cmd, kill_cmd) == 0:
     if n < 4:
       return 1
+    var kill_id: ptr = lirun_argv_container_id(2)
     var sig: ptr = "SIGKILL"
     if n >= 5:
-      sig = li_rt_argv_i(4)
-    return lirun_cmd_kill(li_rt_argv_i(3), sig)
+      var id_flag_k: ptr = "--id"
+      if container_str_cmp_i(li_rt_argv_i(2), id_flag_k) == 0:
+        if n >= 6:
+          sig = li_rt_argv_i(5)
+      else:
+        sig = li_rt_argv_i(4)
+    return lirun_cmd_kill(kill_id, sig)
   var state_cmd: ptr = "state"
   if container_str_cmp_i(cmd, state_cmd) == 0:
     if n < 4:
       return 1
-    return lirun_cmd_state(li_rt_argv_i(3))
+    return lirun_cmd_state(lirun_argv_container_id(2))
   return 1

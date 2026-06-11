@@ -5,3 +5,9 @@ suite = "smoke"
 file = "smoke/builds.li"
 outcome = "verify_ok"
 note = "T-PKG-li-container-run-smoke"
+
+[[tests]]
+suite = "integration"
+file = "integration/busybox.li"
+outcome = "verify_ok"
+note = "T-PKG-li-container-run-busybox"

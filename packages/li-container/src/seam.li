@@ -108,6 +108,11 @@ extern def container_state_delete_i(id: var ptr) raises IO -> int
   ensures true
   decreases 0
 
+extern def container_state_list_stdout_i() raises IO -> int
+  requires true
+  ensures true
+  decreases 0
+
 extern def container_cgroup_root_i(out: var ptr, cap: int) -> int
   requires true
   ensures true

@@ -40,16 +40,10 @@ def lictl_cmd_stop(container_id: var ptr) raises IO, Alloc -> int
 
 def lictl_cmd_ps() raises IO, Alloc -> int
   requires true
-  ensures result == 0
+  ensures result >= 0
   decreases 0
 =
-  var dir: ptr = container_buf_alloc_i(4096)
-  container_state_dir_i(dir, 4096)
-  container_stdout_i("lictl ps: state dir ")
-  container_stdout_i(dir)
-  container_stdout_i(" (use lictl state <id> or lirun state <id>)\n")
-  container_buf_free_i(dir)
-  return 0
+  return container_state_list_stdout_i()
 
 def container_cli_dispatch() raises IO, Alloc -> int
   requires true

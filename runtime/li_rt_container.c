@@ -8,6 +8,7 @@
 #include <string.h>
 
 #if !defined(_WIN32)
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -424,6 +425,34 @@ int container_state_delete_i(char* id) {
   char path[1024];
   container_state_path_i(id, path, (int)sizeof(path));
   return container_remove_file_i(path);
+}
+
+int container_state_list_stdout_i(void) {
+#if !defined(_WIN32)
+  char dir[512];
+  container_state_dir_i(dir, (int)sizeof(dir));
+  DIR* dp = opendir(dir);
+  if (dp == NULL) {
+    return -1;
+  }
+  struct dirent* ent;
+  while ((ent = readdir(dp)) != NULL) {
+    if (ent->d_name[0] == '.') {
+      continue;
+    }
+    char state_path[1024];
+    snprintf(state_path, sizeof(state_path), "%s/%s/state.json", dir, ent->d_name);
+    if (container_file_exists_i(state_path) != 1) {
+      continue;
+    }
+    fputs(ent->d_name, stdout);
+    fputc('\n', stdout);
+  }
+  closedir(dp);
+  return 0;
+#else
+  return -1;
+#endif
 }
 
 int container_cgroup_root_i(char* out, int cap) {

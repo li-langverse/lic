@@ -2,6 +2,7 @@
 
 import backend.select
 import bundle
+import registry
 import runerr
 import seam
 import state
@@ -48,6 +49,9 @@ def li_container_selftest() raises IO -> int
   r = container_backend_select_selftest()
   if r != 0:
     return r + 30
+  r = container_registry_selftest()
+  if r != 0:
+    return r + 35
   var detected: int = container_backend_detect()
   if detected != container_backend_id_linux() and detected != container_backend_id_unknown():
     return 40

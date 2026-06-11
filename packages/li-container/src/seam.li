@@ -113,6 +113,16 @@ extern def container_state_list_stdout_i() raises IO -> int
   ensures true
   decreases 0
 
+extern def container_registry_pull_i(ref: var ptr, bundle_path: var ptr) raises IO -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern def container_registry_pull_to_store_i(ref: var ptr, container_id: var ptr) raises IO -> int
+  requires true
+  ensures true
+  decreases 0
+
 extern def container_cgroup_root_i(out: var ptr, cap: int) -> int
   requires true
   ensures true

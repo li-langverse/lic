@@ -3,5 +3,5 @@
   "started_at": "2026-06-10",
   "completed_at": "2026-06-11",
   "branch": "feat/container-p9-integration",
-  "notes": "P9 gate passed: busybox integration script, container_state_list_stdout_i, lictl ps, --id argv fixes."
+  "notes": "P10 gate passed: lictl pull from OCI v2 registries (skopeo/umoci backend), run --image, registry auth env."
 }

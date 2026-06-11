@@ -471,6 +471,67 @@ int container_state_list_stdout_i(void) {
 #endif
 }
 
+static const char* container_image_store_root(void) {
+  const char* env = getenv("LI_CONTAINER_IMAGE_STORE");
+  return (env != NULL && env[0] != '\0') ? env : "/var/lib/li-container/bundles";
+}
+
+static const char* container_oci_pull_script(void) {
+  const char* script = getenv("LI_OCI_PULL_SCRIPT");
+  if (script != NULL && script[0] != '\0') {
+    return script;
+  }
+  const char* lic_root = getenv("LIC_ROOT");
+  static char path[2048];
+  if (lic_root != NULL && lic_root[0] != '\0') {
+    snprintf(path, sizeof(path), "%s/scripts/oci-pull-to-bundle.sh", lic_root);
+    return path;
+  }
+  return "scripts/oci-pull-to-bundle.sh";
+}
+
+int container_registry_pull_i(char* ref, char* bundle_path) {
+#if defined(_WIN32)
+  (void)ref;
+  (void)bundle_path;
+  return -1;
+#else
+  if (ref == NULL || ref[0] == '\0' || bundle_path == NULL || bundle_path[0] == '\0') {
+    return -1;
+  }
+  container_mkdir_p_i(bundle_path);
+  setenv("LI_OCI_PULL_REF", ref, 1);
+  setenv("LI_OCI_PULL_OUT", bundle_path, 1);
+  char cmd[4096];
+  snprintf(cmd, sizeof(cmd), "bash '%s'", container_oci_pull_script());
+  int status = system(cmd);
+  if (status != 0) {
+    return status > 0 ? status : -1;
+  }
+  char config_path[2048];
+  snprintf(config_path, sizeof(config_path), "%s/config.json", bundle_path);
+  if (container_file_exists_i(config_path) != 1) {
+    return -2;
+  }
+  return 0;
+#endif
+}
+
+int container_registry_pull_to_store_i(char* ref, char* container_id) {
+#if defined(_WIN32)
+  (void)ref;
+  (void)container_id;
+  return -1;
+#else
+  if (ref == NULL || ref[0] == '\0' || container_id == NULL || container_id[0] == '\0') {
+    return -1;
+  }
+  char bundle[1024];
+  snprintf(bundle, sizeof(bundle), "%s/%s", container_image_store_root(), container_id);
+  return container_registry_pull_i(ref, bundle);
+#endif
+}
+
 int container_cgroup_root_i(char* out, int cap) {
   return container_copy_cstr(out, cap, "/sys/fs/cgroup");
 }

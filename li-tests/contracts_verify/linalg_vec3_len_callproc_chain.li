@@ -1,5 +1,5 @@
 # P-linalg / P-float / G-vc: vec3_len ensures chains li_rt_sqrt(vec3_len_sq(a));
-# CallProc in ensures opaque in AutoVC; no Discharge spec (contrast sqrt_open_bound intentional open).
+# CallProc in ensures opaque in AutoVC; no Discharge spec (contrast sqrt_open_bound which discharges via Li.Discharge).
 type Vec3 = object
   public x: float
   public y: float

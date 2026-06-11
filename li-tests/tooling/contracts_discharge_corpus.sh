@@ -30,11 +30,7 @@ LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"
 "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean"
 rm -f "$ROOT/build/generated/AutoVC.lean"
-# Open-goal probe: optional when static discharge lands (feat/bench-analytical-oracle).
-"$LIC" build --allow-open-vc "$ROOT/li-tests/contracts_verify/sqrt_open_bound.li" -o /dev/null
-if "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean"; then
-  echo "contracts_discharge_corpus: note — sqrt_open_bound discharged (no open Prop probe)"
-else
-  echo "contracts_discharge_corpus: open VC probe ok"
-fi
+"$LIC" build "$ROOT/li-tests/contracts_verify/sqrt_open_bound.li" -o /dev/null
+"$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean"
+echo "contracts_discharge_corpus: sqrt_open_bound closed (zero open Prop goals)"
 echo "contracts_discharge_corpus: ok"

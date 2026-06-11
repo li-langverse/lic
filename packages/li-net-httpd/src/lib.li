@@ -1343,7 +1343,7 @@ def httpd_run_from_argv() raises Net, Alloc, IO -> int
   return httpd_serve_port_root(p, r)
 
 # M1 composable surface (no second `main` — use packages/li-net-httpd/src/main.li for CLI).
-extern proc li_rt_httpd_serve_once(port: int) -> int
+extern def li_rt_httpd_serve_once(port: int) -> int
   requires 1024 <= port
   requires port <= 65535
   ensures true

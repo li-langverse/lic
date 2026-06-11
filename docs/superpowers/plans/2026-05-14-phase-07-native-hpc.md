@@ -39,14 +39,13 @@
 
 **Goal:** Primary surface for parallelism, vectorization, and device placement is **stackable `@` decorators** on `def` and on `for`/`while` — elaborating to the same proved cores as keywords (`parallel for`, `simd`, future `gpu proc`).
 
-| Sub | Task | Exit |
-|-----|------|------|
+| Sub | Task | Exit gate |
+|-----|------|-----------|
 | **7d-a** | Lexer `@`, decorator lists on `def`/`for`/`while`, AST attrs | Parse tests — **done** |
-| **7d-e (partial)** | Policy: `reserved_name`, typosquat, `parallel_requires_disjoint` | `decorator_exploits/` CI |
-| **7d-b** | Elaboration → `ParallelFor` / `simd` / host placement MIR tags | `li-tests/decorators/` positive — **partial:** `@vectorized(lanes=4)`, `@no_vectorize` |
-| **7d-c** | Structured `disjoint=`; scoped `@vectorized` on `for` (`ArraySimdScope`) | `vectorized_for_scope_ok.li` — **partial:** disjoint= still **G-par** open |
-| **7d-d** | `std/execution/decorators.li` + `docs/language/decorators.md` | Handbook + gallery |
-| **7d-e** | `decorator def` with **strict naming** (package prefix, typosquat ban), expansion whitelist | `li-tests/decorator_exploits/` all **fail** except control; CI on every PR |
+| **7d-b** | Elaboration → `MirDecorator` proc tags (`@vectorized`, `@cpu`, `@gpu`, `@parallel`) + verify telemetry | `./scripts/check-mir-decorator-lowering.sh` (vectorized/gpu/cpu slices) — **closed slice** |
+| **7d-c** | Structured `disjoint=`; scoped `@vectorized` on `for` (`ArraySimdScope`); Host `@cpu`+`@parallel` → `li_parallel_for_i64` | `vectorized_for_scope_ok.li` + `check-mir-parallel-portable-lowering.sh` — **closed slice**; Lean **G-par** index-bound proofs open |
+| **7d-d** | `std/execution/decorators.li` + `docs/language/decorators.md` | `stdlib_coverage` + `modules/import_std_decorators.li` — **done** |
+| **7d-e** | Policy: `reserved_name`, typosquat, `parallel_requires_disjoint`, `decorator def` naming | `./li-tests/run_all.sh decorator_exploits` (4× `compile_fail`) — **closed slice** |
 
 **Policy (binding):**
 
@@ -74,6 +73,7 @@
 **7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):**
 
 - [x] `./li-tests/run_all.sh decorators decorator_exploits`
+- [x] **7d-b–e MIR lowering gate:** `./scripts/check-mir-decorator-lowering.sh` (**G-dec** closed slice; **G-par** Host `disjoint=` lowering cross-linked)
 - [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
 - [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds (`compiler/fuzz/corpus/seed_decorators`)
 

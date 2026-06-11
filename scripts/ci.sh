@@ -103,6 +103,8 @@ li_phase "encapsulation (2g)"
 
 li_phase "decorators (7d)"
 "$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" decorator_exploits decorators
+chmod +x "$ROOT/scripts/check-mir-decorator-lowering.sh"
+"$ROOT/scripts/check-mir-decorator-lowering.sh"
 
 li_phase "stdlib coverage (8e)"
 chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"

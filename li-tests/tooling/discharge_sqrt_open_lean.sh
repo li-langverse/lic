@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# P-float: sqrt_open_bound discharges via Li.Discharge.sqrt_open_bound_spec (Phase 2f / G-lean).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
@@ -20,5 +21,5 @@ if ! grep -q 'Li.Discharge.sqrt_open_bound_spec' "$AUTOVC"; then
   echo "discharge_sqrt_open_lean: FAIL — expected Li.Discharge.sqrt_open_bound_spec" >&2
   exit 1
 fi
-if command -v lake >/dev/null 2>&1; then (cd "$ROOT/docs/semantics" && lake build); fi
+if command -v lake >/dev/null 2>&1; then (cd "$ROOT/docs/semantics" && lake build AutoVC); fi
 echo discharge_sqrt_open_lean: ok

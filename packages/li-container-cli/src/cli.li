@@ -55,7 +55,8 @@ def lictl_cmd_pull_store(ref: var ptr, container_id: var ptr) raises IO -> int
 =
   var rc: int = container_registry_pull_store(ref, container_id)
   if rc != 0:
-    emit_error_json(error_runtime(), "pull failed")
+    var msg_fail: ptr = "pull failed"
+    emit_error_json(error_runtime(), msg_fail)
     return 1
   return 0
 

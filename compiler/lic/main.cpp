@@ -395,7 +395,10 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   vc.ensures_witnessed = witness.ensures_witnessed;
   vc.mir_return_linked = witness.mir_return_linked;
   const std::size_t mir_parallel_disjoint = li::count_mir_parallel_disjoint_proven(mir);
+  const std::size_t mir_parallel_proc = li::count_mir_parallel_proc(mir);
   const std::size_t mir_vectorized_proc = li::count_mir_vectorized_proc(mir);
+  const std::size_t mir_cpu_def = li::count_mir_cpu_def(mir);
+  const std::size_t mir_parallel_host_lowering = li::count_mir_parallel_host_lowering(mir);
   const std::size_t mir_gpu_def = li::count_mir_gpu_def(mir);
   const std::size_t mir_gpu_multi_device_def = li::count_mir_gpu_multi_device_def(mir);
   std::cout << "verify: procs=" << vc.proc_count << " mir_fns=" << vc.mir_fn_count
@@ -405,7 +408,10 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
             << " witnessed_ensures=" << vc.ensures_witnessed
             << " mir_return_linked=" << vc.mir_return_linked
             << " mir_parallel_disjoint=" << mir_parallel_disjoint
+            << " mir_parallel_proc=" << mir_parallel_proc
+            << " mir_parallel_host_lowering=" << mir_parallel_host_lowering
             << " mir_vectorized_proc=" << mir_vectorized_proc
+            << " mir_cpu_def=" << mir_cpu_def
             << " mir_gpu_def=" << mir_gpu_def
             << " mir_gpu_multi_device_def=" << mir_gpu_multi_device_def << '\n';
   if (li::terminal_color_enabled()) {
@@ -419,8 +425,14 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
                                std::to_string(vc.ensures_witnessed));
     li::print_verify_telemetry(std::cout, "mir_return_linked",
                                std::to_string(vc.mir_return_linked));
+    li::print_verify_telemetry(std::cout, "mir_parallel_proc",
+                               std::to_string(mir_parallel_proc));
+    li::print_verify_telemetry(std::cout, "mir_parallel_host_lowering",
+                               std::to_string(mir_parallel_host_lowering));
     li::print_verify_telemetry(std::cout, "mir_vectorized_proc",
                                std::to_string(mir_vectorized_proc));
+    li::print_verify_telemetry(std::cout, "mir_cpu_def",
+                               std::to_string(mir_cpu_def));
     li::print_verify_telemetry(std::cout, "mir_gpu_def",
                                std::to_string(mir_gpu_def));
     li::print_verify_telemetry(std::cout, "mir_gpu_multi_device_def",

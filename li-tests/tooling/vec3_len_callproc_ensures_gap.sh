@@ -61,17 +61,17 @@ chmod +x "$OPEN_GOALS"
 "$OPEN_GOALS" "$AUTOVC" >/dev/null
 
 rm -f "$AUTOVC"
-"$LIC" build --no-lean-verify --allow-open-vc "$SQRT_OPEN" -o /dev/null 2>/dev/null
-if ! grep -q 'Float.abs' "$AUTOVC"; then
-  echo "FAIL: sqrt_open_bound control should emit real Float.abs ensures Prop" >&2
+"$LIC" build --no-lean-verify "$SQRT_OPEN" -o /dev/null 2>/dev/null
+if ! grep -q 'Li.Discharge.sqrt_open_bound_spec' "$AUTOVC"; then
+  echo "FAIL: sqrt_open_bound should wire Li.Discharge.sqrt_open_bound_spec" >&2
   exit 1
 fi
-if grep -q 'vc_sqrt_open_ensures_0_proved' "$AUTOVC"; then
-  echo "FAIL: sqrt_open_bound ensures should stay open (no _proved theorem)" >&2
+if ! grep -q 'vc_sqrt_open_ensures_0_proved' "$AUTOVC"; then
+  echo "FAIL: sqrt_open_bound ensures should discharge via _proved theorem" >&2
   exit 1
 fi
-if "$OPEN_GOALS" "$AUTOVC" >/dev/null 2>&1; then
-  echo "FAIL: sqrt_open_bound should have open VC goals (contrast control)" >&2
+if ! "$OPEN_GOALS" "$AUTOVC" >/dev/null 2>&1; then
+  echo "FAIL: sqrt_open_bound should have zero open VC goals" >&2
   exit 1
 fi
 
@@ -80,4 +80,4 @@ if ! grep -A2 'math_linalg/vec3_ops.li' "$MANIFEST" | grep -q 'verify_ok'; then
   exit 1
 fi
 
-echo "PASS vec3_len_callproc_ensures_gap: vec3_len chain → Li.Discharge; sqrt_open_bound stays open"
+echo "PASS vec3_len_callproc_ensures_gap: vec3_len chain + sqrt_open_bound → Li.Discharge"

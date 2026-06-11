@@ -35,7 +35,7 @@ static int li_rt_blas_env_wanted(void) {
   return 1;
 }
 
-static void li_rt_blas_init_once(void) {
+static void li_rt_blas_dlopen_try(void) {
   static const char* lib_names[] = {
 #if defined(_WIN32)
       "libopenblas.dll",
@@ -48,11 +48,7 @@ static void li_rt_blas_init_once(void) {
   };
   int i;
 
-  if (g_blas_init_done) {
-    return;
-  }
-  g_blas_init_done = 1;
-  if (!li_rt_blas_env_wanted()) {
+  if (g_blas_ready) {
     return;
   }
   for (i = 0; lib_names[i] != NULL; ++i) {
@@ -67,9 +63,26 @@ static void li_rt_blas_init_once(void) {
   p_cblas_dgemm = (cblas_dgemm_fn)li_rt_dlsym(g_openblas_lib, "cblas_dgemm");
   if (p_cblas_dgemm != NULL) {
     g_blas_ready = 1;
-    /* Tiny GEMMs pay OpenBLAS thread/dispatch overhead; keep user override if set. */
     (void)setenv("OPENBLAS_NUM_THREADS", "1", 0);
   }
+}
+
+static void li_rt_blas_init_once(void) {
+  if (g_blas_init_done) {
+    return;
+  }
+  g_blas_init_done = 1;
+  if (!li_rt_blas_env_wanted()) {
+    return;
+  }
+  li_rt_blas_dlopen_try();
+}
+
+static void li_rt_blas_init_dense32(void) {
+  if (!g_blas_init_done) {
+    g_blas_init_done = 1;
+  }
+  li_rt_blas_dlopen_try();
 }
 
 /** Li codegen stores `float` as f64; skip BLAS below 16³ — 8×8 pilot is faster on @vectorized CPU. */
@@ -135,9 +148,12 @@ int32_t li_rt_blas_matmul_dense32_identity(double* out_c00) {
     a[i * 32 + i] = 1.0;
     b[i * 32 + i] = 1.0;
   }
-  if (li_rt_blas_sgemm_f32(32, 32, 32, 32, a, b, c) != 0) {
+  li_rt_blas_init_dense32();
+  if (!g_blas_ready || p_cblas_dgemm == NULL) {
     return 1;
   }
+  p_cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 32, 32, 32, 1.0, a, 32, b, 32, 0.0, c,
+                32);
   *out_c00 = c[0];
   return 0;
 }

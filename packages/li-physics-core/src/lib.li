@@ -180,3 +180,189 @@ def simulation_fixed_dt_steps(params: SimulationParams) -> int
   decreases params.steps
 =
   return params.steps
+
+# --- REQ-PHYS-UNITS-01 / REQ-PHYS-FIELD-01: SI tags, constants, field skeletons ---
+
+type SiUnit = object
+  public kind: int
+  public scale: float
+
+type PhysicalConstant = object
+  public tag: int
+  public value: float
+  public unit_kind: int
+
+type ScalarField2D = object
+  public nx: int
+  public ny: int
+  public dx: float
+  public dy: float
+
+type VectorField2D = object
+  public nx: int
+  public ny: int
+  public dx: float
+  public dy: float
+
+def unit_kind_seconds() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def unit_kind_meters() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def unit_kind_kilograms() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def unit_seconds() -> SiUnit
+  requires true
+  ensures result.kind == unit_kind_seconds()
+  ensures result.scale == 1.0
+  decreases 0
+=
+  var u: SiUnit
+  u.kind = unit_kind_seconds()
+  u.scale = 1.0
+  return u
+
+def unit_meters() -> SiUnit
+  requires true
+  ensures result.kind == unit_kind_meters()
+  ensures result.scale == 1.0
+  decreases 0
+=
+  var u: SiUnit
+  u.kind = unit_kind_meters()
+  u.scale = 1.0
+  return u
+
+def unit_kilograms() -> SiUnit
+  requires true
+  ensures result.kind == unit_kind_kilograms()
+  ensures result.scale == 1.0
+  decreases 0
+=
+  var u: SiUnit
+  u.kind = unit_kind_kilograms()
+  u.scale = 1.0
+  return u
+
+def c_light() -> float
+  requires true
+  ensures result == 299792458.0
+  decreases 0
+=
+  return 299792458.0
+
+def k_boltzmann() -> float
+  requires true
+  ensures result == 1.380649e-23
+  decreases 0
+=
+  return 1.380649e-23
+
+def physical_constant_speed_of_light() -> PhysicalConstant
+  requires true
+  ensures result.value == c_light()
+  ensures result.unit_kind == unit_kind_meters()
+  decreases 0
+=
+  var c: PhysicalConstant
+  c.tag = 0
+  c.value = c_light()
+  c.unit_kind = unit_kind_meters()
+  return c
+
+def physical_constant_boltzmann() -> PhysicalConstant
+  requires true
+  ensures result.value == k_boltzmann()
+  decreases 0
+=
+  var c: PhysicalConstant
+  c.tag = 1
+  c.value = k_boltzmann()
+  c.unit_kind = unit_kind_kilograms()
+  return c
+
+def scalar_field2d_new(nx: int, ny: int, dx: float, dy: float) -> ScalarField2D
+  requires nx > 0
+  requires ny > 0
+  requires dx > 0.0
+  requires dy > 0.0
+  ensures result.nx == nx
+  ensures result.ny == ny
+  ensures result.dx == dx
+  ensures result.dy == dy
+  decreases nx
+=
+  var f: ScalarField2D
+  f.nx = nx
+  f.ny = ny
+  f.dx = dx
+  f.dy = dy
+  return f
+
+def vector_field2d_new(nx: int, ny: int, dx: float, dy: float) -> VectorField2D
+  requires nx > 0
+  requires ny > 0
+  requires dx > 0.0
+  requires dy > 0.0
+  ensures result.nx == nx
+  ensures result.ny == ny
+  ensures result.dx == dx
+  ensures result.dy == dy
+  decreases nx
+=
+  var f: VectorField2D
+  f.nx = nx
+  f.ny = ny
+  f.dx = dx
+  f.dy = dy
+  return f
+
+def scalar_field_cell_count(field: ScalarField2D) -> int
+  requires field.nx > 0
+  requires field.ny > 0
+  ensures result == field.nx * field.ny
+  decreases field.nx
+=
+  return field.nx * field.ny
+
+def scalar_field_zero(data: var array[8, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < 8
+    data[i] = 0.0
+    i = i + 1
+
+def physics_core_units_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var u: SiUnit = unit_meters()
+  if u.kind != unit_kind_meters():
+    return 0
+  if c_light() <= 0.0:
+    return 0
+  if k_boltzmann() <= 0.0:
+    return 0
+  var grid: ScalarField2D = scalar_field2d_new(4, 2, 0.1, 0.1)
+  if scalar_field_cell_count(grid) != 8:
+    return 0
+  return 1

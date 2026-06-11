@@ -41,8 +41,8 @@
       "file": "docs/semantics/Discharge.lean"
     },
     {
-      "id": "Li.Discharge.sqrt_open_bound_placeholder",
-      "status": "placeholder",
+      "id": "Li.Discharge.sqrt_open_bound_spec_proved",
+      "status": "proved",
       "source": "discharge",
       "file": "docs/semantics/Discharge.lean"
     },

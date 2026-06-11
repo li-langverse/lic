@@ -78,7 +78,7 @@ See [proof-db/reporter.md](../../proof-db/reporter.md).
 | Suite | Result | Notes |
 |-------|--------|-------|
 | `run_all.sh contracts_verify` | **26 pass / 0 fail** (14 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
-| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
+| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` closed; loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
 | `lake build` | **default on `lic build`** | `--no-lean-verify` to skip; CI runs lake directly + tooling scripts |
@@ -95,7 +95,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |
 | **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + loop witness. **Open:** float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
 | **P-par** | `parallel for` disjointness | **Partial** — `_par*` → `disjoint_*_spec` + policy witnesses + MIR tag + `iteration_independent_tile_spec` + `memory_disjoint_rows_spec` + `memory_disjoint_elems_spec` + `memory_disjoint_grid_rows_spec` + `memory_disjoint_grid_elems_spec` + `array_elem_indices_disjoint` + `array_row_indices_disjoint` + `array_grid_cell_indices_disjoint` + `dependent_flat/grid_row/grid_cell_aliasing` compositional slices | Full index-bound refinement of `disjoint_*_spec` (7d-c) |
-| **P-dec** | Decorators never run at runtime | **G-dec** no MIR lowering | `decorator_exploits/` + elaboration proofs |
+| **P-dec** | Decorators never run at runtime | **G-dec** partial — **7d-b–e closed slice:** `check-mir-decorator-lowering.sh`; Lean elaboration proofs open | `decorator_exploits/` + `check-mir-decorator-lowering.sh` |
 | **P-bnd** | Release builds omit `li_bounds_fail` | **Partial** — `check_release_bounds_ir.sh` | [bounds-release-path](bounds-release-path.md) |
 | **P-http** | Parser/route config safety | Phase **H** | `httpd/*`, TOML desugar invariants |
 | **P-narrow** | Width-narrowing / casts | **G-narrow** partial | Ariane-style `prove_reject` + proved narrowing |
@@ -117,7 +117,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 
 | Today | Target |
 |-------|--------|
-| **`prove_lean_ok`** in `run_all.sh` + 14 closed `contracts_verify` rows | **Done** for split; lake step skips when elan absent |
+| **`prove_lean_ok`** in `run_all.sh` + 15 closed `contracts_verify` rows | **Done** for split; lake step skips when elan absent |
 | **`verify_ok`** = strict `lic build` (default open-VC gate) | Same as planned `prove_compile_ok` name |
 | Remaining corpus on `verify_ok` | Retag when `discharge_*_lean.sh` covers them |
 | CI without Lean | `prove_lean_ok` → skip (not fail) — install elan in semantics job for full gate |

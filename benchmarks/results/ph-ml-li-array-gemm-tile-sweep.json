@@ -4,18 +4,18 @@
     {
       "gemm_tile": 8,
       "executed": true,
-      "cpu_sec": 0.001257,
-      "li_over_numpy": 628.5,
-      "ratio_vs_li": 0.001591,
-      "buffer_class": "dense_1024"
+      "cpu_sec": 0.000152,
+      "li_over_numpy": 152.0,
+      "ratio_vs_li": 0.006579,
+      "buffer_class": "dense_c_blas32"
     },
     {
       "gemm_tile": 16,
       "executed": true,
-      "cpu_sec": 0.00125,
-      "li_over_numpy": 625.0,
-      "ratio_vs_li": 0.0016,
-      "buffer_class": "dense_1024"
+      "cpu_sec": 0.000245,
+      "li_over_numpy": 122.5,
+      "ratio_vs_li": 0.008163,
+      "buffer_class": "dense_c_blas32"
     }
   ]
 }

@@ -17,7 +17,9 @@ struct Parser {
                   DiagnosticBag& bag)
       : tokens(toks), file(std::move(file_name)), diags(bag) {}
 
-  const Token& cur() const { return tokens[i]; }
+  const Token& cur() const {
+    return i < tokens.size() ? tokens[i] : tokens.back();
+  }
   const Token& peek(std::size_t off = 0) const {
     const std::size_t j = i + off;
     return j < tokens.size() ? tokens[j] : tokens.back();

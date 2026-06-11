@@ -2,6 +2,7 @@
 
 import backend.select
 import bundle
+import registry
 import runerr
 import seam
 import state
@@ -13,7 +14,7 @@ def li_container_version() -> int
 =
   return 3
 
-def container_linux_available() -> int
+def container_linux_available() raises IO -> int
   requires true
   ensures result >= 0
   decreases 0
@@ -25,11 +26,7 @@ def container_backend_detect() raises IO -> int
   ensures result >= 0
   decreases 0
 =
-  return container_backend_detect_host(
-    container_is_lios_i(),
-    container_is_linux_i(),
-    container_is_windows_i(),
-    container_is_darwin_i())
+  return container_backend_detect_host(container_is_lios_i(), container_is_linux_i(), container_is_windows_i(), container_is_darwin_i())
 
 def li_container_selftest() raises IO -> int
   requires true
@@ -48,6 +45,9 @@ def li_container_selftest() raises IO -> int
   r = container_backend_select_selftest()
   if r != 0:
     return r + 30
+  r = container_registry_selftest()
+  if r != 0:
+    return r + 35
   var detected: int = container_backend_detect()
   if detected != container_backend_id_linux() and detected != container_backend_id_unknown():
     return 40

@@ -1,14 +1,7 @@
 # WP-CTN-040..042 — lirun OCI lifecycle (backend-aware; depends li-container + li-oci).
 
 import container
-import container.backend.darwin
-import container.backend.lios
-import container.backend.select
-import container.backend.windows
-import container.bundle
-import container.runerr
-import container.state
-import oci.spec
+import oci
 import std.runtime.seam
 
 def lirun_create_tag() -> int
@@ -92,7 +85,7 @@ def runtime_create(container_id: var ptr, bundle_path: var ptr) raises IO, Alloc
   container_buf_free_i(config)
   return 0
 
-def runtime_child_setup(container_id: var ptr, bundle_path: var ptr, config: var ptr) -> int
+def runtime_child_setup(container_id: var ptr, bundle_path: var ptr, config: var ptr) raises IO -> int
   requires true
   ensures result >= 0
   decreases 0
@@ -416,7 +409,7 @@ def lirun_selftest() raises IO -> int
     return 40
   return 0
 
-def lirun_parse_signal(name: var ptr) -> int
+def lirun_parse_signal(name: var ptr) raises IO -> int
   requires true
   ensures result > 0
   decreases 0
@@ -431,6 +424,31 @@ def lirun_parse_signal(name: var ptr) -> int
   if container_str_cmp_i(name, sigkill) == 0:
     return 9
   return 9
+
+def lirun_argv_container_id_idx(arg_idx: int) raises IO -> int
+  requires 0 <= arg_idx
+  ensures result >= arg_idx
+  ensures result <= arg_idx + 1
+  decreases 0
+=
+  var id_flag: ptr = "--id"
+  if container_str_cmp_i(li_rt_argv_i(arg_idx), id_flag) == 0:
+    return arg_idx + 1
+  return arg_idx
+
+def lirun_argv_delete_force(n: int, id_arg_idx: int) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var force_flag: ptr = "--force"
+  if n >= id_arg_idx + 2:
+    if container_str_cmp_i(li_rt_argv_i(id_arg_idx + 1), force_flag) == 0:
+      return 1
+  if n >= id_arg_idx + 3:
+    if container_str_cmp_i(li_rt_argv_i(id_arg_idx + 2), force_flag) == 0:
+      return 1
+  return 0
 
 def lirun_cmd_version() raises IO -> int
   requires true
@@ -544,23 +562,26 @@ def lirun_run_from_argv() raises IO, Alloc -> int
   if container_str_cmp_i(cmd, delete_cmd) == 0:
     if n < 4:
       return 1
-    var force: int = 0
-    if n >= 5:
-      var force_flag: ptr = "--force"
-      if container_str_cmp_i(li_rt_argv_i(4), force_flag) == 0:
-        force = 1
-    return lirun_cmd_delete(li_rt_argv_i(3), force)
+    var del_id: ptr = li_rt_argv_i(lirun_argv_container_id_idx(2))
+    var force: int = lirun_argv_delete_force(n, 2)
+    return lirun_cmd_delete(del_id, force)
   var kill_cmd: ptr = "kill"
   if container_str_cmp_i(cmd, kill_cmd) == 0:
     if n < 4:
       return 1
+    var kill_id: ptr = li_rt_argv_i(lirun_argv_container_id_idx(2))
     var sig: ptr = "SIGKILL"
     if n >= 5:
-      sig = li_rt_argv_i(4)
-    return lirun_cmd_kill(li_rt_argv_i(3), sig)
+      var id_flag_k: ptr = "--id"
+      if container_str_cmp_i(li_rt_argv_i(2), id_flag_k) == 0:
+        if n >= 6:
+          sig = li_rt_argv_i(5)
+      if container_str_cmp_i(li_rt_argv_i(2), id_flag_k) != 0:
+        sig = li_rt_argv_i(4)
+    return lirun_cmd_kill(kill_id, sig)
   var state_cmd: ptr = "state"
   if container_str_cmp_i(cmd, state_cmd) == 0:
     if n < 4:
       return 1
-    return lirun_cmd_state(li_rt_argv_i(3))
+    return lirun_cmd_state(li_rt_argv_i(lirun_argv_container_id_idx(2)))
   return 1

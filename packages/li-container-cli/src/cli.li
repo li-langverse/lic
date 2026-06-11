@@ -1,8 +1,7 @@
-# WP-CTN-061 — lictl user CLI (version, run, ps, stop) + lirun OCI dispatch.
+# WP-CTN-061 — lictl user CLI (pull, run, ps, stop) + lirun OCI dispatch.
 
+import container
 import container.run
-import container.run.runtime
-import container.runerr
 import std.runtime.seam
 
 def container_cli_tag() -> int
@@ -17,7 +16,7 @@ def lictl_cmd_version() raises IO -> int
   ensures result == 0
   decreases 0
 =
-  container_stdout_i("lictl 0.1.0\n")
+  container_stdout_i("lictl 0.2.0\n")
   return 0
 
 def lictl_cmd_run(bundle: var ptr, container_id: var ptr) raises IO, Alloc -> int
@@ -30,6 +29,57 @@ def lictl_cmd_run(bundle: var ptr, container_id: var ptr) raises IO, Alloc -> in
     return rc
   return lirun_cmd_start(container_id)
 
+def lictl_cmd_pull(ref: var ptr, bundle_path: var ptr) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var rc: int = container_registry_pull(ref, bundle_path)
+  if rc != 0:
+    var msg: ptr = "pull failed"
+    if rc == -2:
+      msg = "pull produced no config.json"
+    emit_error_json(error_runtime(), msg)
+    return 1
+  container_stdout_i("pulled ")
+  container_stdout_i(ref)
+  container_stdout_i(" -> ")
+  container_stdout_i(bundle_path)
+  container_stdout_i("\n")
+  return 0
+
+def lictl_cmd_pull_store(ref: var ptr, container_id: var ptr) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var rc: int = container_registry_pull_store(ref, container_id)
+  if rc != 0:
+    var msg_fail: ptr = "pull failed"
+    emit_error_json(error_runtime(), msg_fail)
+    return 1
+  return 0
+
+def lictl_cmd_run_image(ref: var ptr, container_id: var ptr) raises IO, Alloc -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var rc: int = lictl_cmd_pull_store(ref, container_id)
+  if rc != 0:
+    return rc
+  var store: ptr = container_buf_alloc_i(4096)
+  container_getenv_i("LI_CONTAINER_IMAGE_STORE", store, 4096)
+  var bundle: ptr = container_buf_alloc_i(4096)
+  if container_str_cmp_i(store, "") == 0:
+    container_path_join_i("/var/lib/li-container/bundles", container_id, bundle, 4096)
+  if container_str_cmp_i(store, "") != 0:
+    container_path_join_i(store, container_id, bundle, 4096)
+  rc = lictl_cmd_run(bundle, container_id)
+  container_buf_free_i(bundle)
+  container_buf_free_i(store)
+  return rc
+
 def lictl_cmd_stop(container_id: var ptr) raises IO, Alloc -> int
   requires true
   ensures result >= 0
@@ -40,16 +90,45 @@ def lictl_cmd_stop(container_id: var ptr) raises IO, Alloc -> int
 
 def lictl_cmd_ps() raises IO, Alloc -> int
   requires true
-  ensures result == 0
+  ensures result >= 0
   decreases 0
 =
-  var dir: ptr = container_buf_alloc_i(4096)
-  container_state_dir_i(dir, 4096)
-  container_stdout_i("lictl ps: state dir ")
-  container_stdout_i(dir)
-  container_stdout_i(" (use lictl state <id> or lirun state <id>)\n")
-  container_buf_free_i(dir)
-  return 0
+  return container_state_list_stdout_i()
+
+def lictl_dispatch_pull(n: int) raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  if n < 4:
+    return 1
+  var bundle_flag: ptr = "--bundle"
+  if container_str_cmp_i(li_rt_argv_i(3), bundle_flag) == 0:
+    if n < 5:
+      return 1
+    return lictl_cmd_pull(li_rt_argv_i(2), li_rt_argv_i(4))
+  return lictl_cmd_pull(li_rt_argv_i(2), li_rt_argv_i(3))
+
+def lictl_dispatch_run(n: int) raises IO, Alloc -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var image_flag: ptr = "--image"
+  if container_str_cmp_i(li_rt_argv_i(2), image_flag) == 0:
+    if n < 6:
+      return 1
+    var id_flag: ptr = "--id"
+    if container_str_cmp_i(li_rt_argv_i(4), id_flag) != 0:
+      return 1
+    return lictl_cmd_run_image(li_rt_argv_i(3), li_rt_argv_i(5))
+  var bundle_flag: ptr = "--bundle"
+  var id_flag2: ptr = "--id"
+  if container_str_cmp_i(li_rt_argv_i(2), bundle_flag) != 0:
+    return 1
+  if container_str_cmp_i(li_rt_argv_i(4), id_flag2) != 0:
+    return 1
+  return lictl_cmd_run(li_rt_argv_i(3), li_rt_argv_i(5))
 
 def container_cli_dispatch() raises IO, Alloc -> int
   requires true
@@ -63,17 +142,14 @@ def container_cli_dispatch() raises IO, Alloc -> int
   var version_cmd: ptr = "version"
   if container_str_cmp_i(cmd, version_cmd) == 0:
     return lictl_cmd_version()
+  var pull_cmd: ptr = "pull"
+  if container_str_cmp_i(cmd, pull_cmd) == 0:
+    return lictl_dispatch_pull(n)
   var run_cmd: ptr = "run"
   if container_str_cmp_i(cmd, run_cmd) == 0:
     if n < 6:
       return 1
-    var bundle_flag: ptr = "--bundle"
-    var id_flag: ptr = "--id"
-    if container_str_cmp_i(li_rt_argv_i(2), bundle_flag) != 0:
-      return 1
-    if container_str_cmp_i(li_rt_argv_i(4), id_flag) != 0:
-      return 1
-    return lictl_cmd_run(li_rt_argv_i(3), li_rt_argv_i(5))
+    return lictl_dispatch_run(n)
   var stop_cmd: ptr = "stop"
   if container_str_cmp_i(cmd, stop_cmd) == 0:
     if n < 4:
@@ -98,4 +174,6 @@ def container_cli_selftest() raises IO -> int
     return 2
   if lirun_start_tag() != 3:
     return 3
+  if container_registry_pull_tag() != 1:
+    return 4
   return li_container_run_selftest()

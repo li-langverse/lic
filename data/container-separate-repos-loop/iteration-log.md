@@ -11,4 +11,6 @@
 | 2026-06-10 | code_implementer | p5-cross-os | phase5 OK | WP-CTN-050..053: LiOS/Windows/macOS capability backends, host detect seam (is_lios/windows/darwin), container-multi-os-matrix.md |
 | 2026-06-10 | code_implementer | p6-orchestration | phase6 OK | WP-CTN-060..063: li-containerd/cli/cri scaffolds, licontainers retired to deprecated shim delegating to split packages |
 | 2026-06-10 | cursor-agent | p8-product | phase8 OK | WP-CTN-080..083: librebase runtime_create/start/delete/kill/state, emit_error_json, lictl CLI (run/ps/stop/version), --bundle/--id argv |
+| 2026-06-11 | cursor-agent | p9-integration | phase9 OK | WP-CTN-090..092: test-lirun-integration.sh, busybox.li, container_state_list_stdout_i, lictl ps, --id for delete/state/kill |
+| 2026-06-11 | cursor-agent | p10-pull | phase10 OK | WP-CTN-100..102: oci-pull-to-bundle.sh, container_registry_pull_i, lictl pull/run --image, GHCR+private auth |
 | 2026-06-10 | code_implementer | p7-publish | phase7 OK, completion OK | WP-CTN-070..074: GitLab repos li-oci/li-container/li-container-run, push-container-package-mirrors.sh, gap register + PUBLISH metadata |

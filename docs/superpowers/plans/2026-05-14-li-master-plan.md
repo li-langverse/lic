@@ -189,7 +189,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 5b | Benchmarks & sims | `2026-05-14-benchmarks-and-simulations.md` | **Verified** Tier 2 physics + cross-lang CSV + **X plots** |
 | 6 | Self-host (post-live) | `2026-05-14-phase-06-self-host.md` | `lic` built by li (bootstrap seed) |
 | 7 | Native HPC (SIMD + OpenMP) | `2026-05-14-phase-07-native-hpc.md` | Pure-Li simd_dot + md; race suite; fuzz daily |
-| **7d** | **Execution decorators** | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | **Partial:** `@vectorized` scope (#150); **G-par** disjoint= open |
+| **7d** | **Execution decorators** | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | **Partial:** 7d-b–e MIR lowering gate (`check-mir-decorator-lowering.sh`; `mir_parallel_proc` telemetry); **G-par** Lean proofs open |
 | **7e** | **Math → SIMD lowering** | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) § 7e | **Partial:** pure-Li tier-1 (#148); perf bar open |
 | **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | **M1 partial:** epoll static/sendfile + proxy (#153/#156); **li-log** package stub (access sink + redact); **next:** M1 ship gate Lean + Li reactor |
 | **Obs** | Fuzz dashboard + plan canvas | `scripts/export-fuzz-status.sh` + `canvases/*.canvas.tsx` | Nightly updates `.canvas.data.json` sidecars |
@@ -366,8 +366,11 @@ Maps **master plan phases** to gap IDs and what “mathematical provability esta
 | 2f | `Core.lean` | **G-trust** | Typing + contract rules in Lean, not stub | semantics/README |
 | 3 | MIR bounds / refinement | **G-bnd** | Release path does not rely on `li_bounds_fail` for proved indices | architecture, numerics |
 | 7b | Structured `disjoint=` | **G-par** | Disjointness from AST, not `policy.cpp` strings | simd-parallel, gaps |
-| 7d-a | Decorator parse | **G-dec** | (partial) parse only — mark **Partial** | decorators spec |
-| 7d-b–e | Decorator elaborate + exploits | **G-dec** | Elaboration + `decorator_exploits` CI green | language/decorators.md (new), fast-math guide |
+| 7d-a | Decorator parse | **G-dec** | Parse + AST attrs — **done** | decorators spec |
+| 7d-b | MIR proc tags (`@vectorized`, `@cpu`, `@gpu`, `@parallel`) | **G-dec** | `check-mir-decorator-lowering.sh` + `check-mir-parallel-proc-decorator.sh`; `lic verify mir_parallel_proc=` / `mir_vectorized_proc=` / `mir_cpu_def=` / `mir_gpu_def=` telemetry | `decorators/`, `docs/language/decorators.md` |
+| 7d-c | Host `@cpu`+`@parallel(disjoint=…)` lowering | **G-dec**, **G-par** | `mir_parallel_host_lowering=1` + `li_parallel_for_i64` codegen; disjoint= policy witnesses (**G-par** Lean open) | `check-mir-parallel-portable-lowering.sh`, `race_shared_memory/` |
+| 7d-d | Std policy surface | **G-dec** | `std.execution.decorators` + handbook | `stdlib_coverage/`, `docs/language/decorators.md` |
+| 7d-e | Exploit policy | **G-dec** | `decorator_exploits/` 4× `compile_fail` | `li-tests/decorator_exploits/` |
 | 2i | Math surface types | **G-math** | `A @ B` / `dot` shape errors at typecheck; **P-linalg** closed VCs (#151) | linear-algebra.md, math spec, `contracts_verify/linalg_*` |
 | 7e | Math → SIMD MIR | **G-math** | Tier 1 Li sources math-only; lowering proved or documented | gaps, benchmarks plan, `discharge_linalg_int_lean.sh` |
 | 2f | P-linalg corpus | **G-lean**, **G-math** | Closed dot/sum/matmul-entry; loop dot open | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
@@ -452,9 +455,9 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
 - [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
-- [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155):** default `lake build AutoVC` on `lic build`; **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; intentional open: `sqrt_open_bound`; **G-lean** / **G-vc** still open — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
+- [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155, lic#4):** default `lake build AutoVC` on `lic build` (`--no-lean-verify` opt-out); **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); **P-float** `sqrt_open_bound` closed (`Li.Discharge.sqrt_open_bound_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; **G-lean** / **G-vc** still **Partial** (kernel not universal) — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
-- [ ] Phase 7d — Execution decorators — **partial (#150 7d-c):** `@vectorized` on `for` → `ArraySimdScope`; **7d-b** lanes=4; **def `@parallel(disjoint=)`** inherits to nested `parallel for` (policy); **open:** full MIR proc tags, Lean **G-par** proofs
+- [ ] Phase 7d — Execution decorators — **partial (lic#2):** **7d-a/e done** — parse + `decorator_exploits/` CI ([G-dec](../verification/provability-gaps.md#g-dec)); **7d-b–e closed slice** — `check-mir-decorator-lowering.sh` (`mir_parallel_proc`, `mir_vectorized_proc`, `mir_cpu_def`, `mir_gpu_def` telemetry; Host `li_parallel_for_i64`, structured `disjoint=` — [G-par](../verification/provability-gaps.md#g-par) partial); **7d-c closed slice** — `@vectorized` on `for` → `ArraySimdScope`, `disjoint=` on `@parallel` inherits to nested `parallel for`; **7d-d done** — `std/execution/decorators.li`, `docs/language/decorators.md`; **open:** Tier 2 MD `@` example, Lean **P-dec**/**P-par**, Device LKIR (**G-gpu**), `@async` elaboration — [phase-07 exit gates](2026-05-14-phase-07-native-hpc.md#7d--execution-decorators-decorator-first-hpc)
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150, #155):** loop matmul + FMA horner; tier-1 advisory ≤1.2× (`matmul_naive`, `horner_pure_li`); **`check-tier1-li-vs-cpp.sh`** strict optional; **open:** remaining tier-1 slices, full float Lean Props
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, validate/explain/flatten-config, overlap reject, Bearer auth (C), `packages/li-log` (#158); **next:** Li `net.httpd` lib build + M1 ship gate Lean ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
@@ -470,7 +473,7 @@ Track in phase **Doc** until each is checked:
 - [ ] Phase 8p — Parallel compile + CI throughput — **partial (8p-a/b/c/d):** 8p-a parallel `run_all` + isolated `LI_BUILD_DIR` ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200)); 8p-c/d `ResourceOptions` + `lic build --jobs` reserved pass + CI test-job smokes (`compiler/common/`, `scripts/ci.sh`); **open:** 8p-b workspace pool, wall-time SLO ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
-- [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
+- [x] Phase Doc-c — Phase **02**, **03**, **07** plans link **G-*** IDs in exit gates ([phase-02-typechecker](2026-05-14-phase-02-typechecker.md), [phase-03-mir-codegen](2026-05-14-phase-03-mir-codegen.md), [phase-07-native-hpc](2026-05-14-phase-07-native-hpc.md))
 - [x] Phase Doc-d — Contributing / build skill requires gap-register updates
 - [x] Phase Doc-e — `scripts/check-doc-provability-claims.sh` in `scripts/ci.sh` (expand patterns over time)
 - [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../ecosystem/agent-handover-formats.md))
@@ -493,7 +496,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 - **180** `li-tests` manifest entries (`run_all.sh --ci` after gap-closure)
 - **2e/2f partial:** `build/generated/AutoVC.lean` every `lic build`; **P-linalg** closed VCs (#151)
 - **7e partial:** 1d/2d float `@`, element-wise SIMD, pure-Li tier-1 `simd_dot` / `matmul_*` (#148)
-- **7d partial:** `@vectorized(lanes=4)` + scoped `for` (**#150**); structured `disjoint=` still open
+- **7d partial:** 7d-b–e MIR lowering gate (`check-mir-decorator-lowering.sh`; `mir_parallel_proc` telemetry); structured `disjoint=` Host lowering closed; Lean **G-par** proofs open
 
 ### Full master plan — **not complete** (v2 backlog)
 
@@ -501,7 +504,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 |---------|-----------|----------------|
 | **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
 | **2i / 7e** | **G-math** | broadcast, loop-dot proof, remaining tier-1 strict rows |
-| **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
+| **7d** | **G-par**, **G-dec** | Lean **P-dec**/**G-par** proofs; Device LKIR (**G-gpu**); Tier 2 MD `@` examples |
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |
 | **8b–8d v2** | — | Remote registry, full trust store; **blocked on PH-DB-4** ([PH-DB plan](ph-db-lidb-platform.md)) |

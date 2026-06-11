@@ -33,8 +33,8 @@ Close the ~343× gap toward NumPy CPU matmul @ 32×32:
 
 | Phase | Status |
 |-------|--------|
-| **I** | **OPEN** — dense buffer + tile sweep in flight |
-| **J** | **OPEN** — bench metadata + competitive row refresh |
+| **I** | **DONE** |
+| **J** | **DONE** |
 
 ## Phases
 
@@ -54,11 +54,11 @@ Deliverables:
 
 Exit criteria:
 
-- [ ] `ml_matmul_dense_init_identity_32` + dense path in `ml_matmul_cpu_logical_32`
-- [ ] `li_rt_gemm_tile_env` in runtime; `LI_ARRAY_GEMM_TILE` documented
-- [ ] Tile sweep script produces `benchmarks/results/ph-ml-li-array-gemm-tile-sweep.json`
-- [ ] `li_over_numpy` improved vs Phase H baseline (honest; target ≤2.0 still stretch)
-- [ ] `ph-ml-li-array-gates.sh` smokes still green
+- [x] `ml_matmul_dense_init_identity_32` + dense path in `ml_matmul_cpu_logical_32`
+- [x] `li_rt_gemm_tile_env` in runtime; `LI_ARRAY_GEMM_TILE` documented
+- [x] Tile sweep script produces `benchmarks/results/ph-ml-li-array-gemm-tile-sweep.json`
+- [x] `li_over_numpy` improved vs Phase H baseline (honest; target ≤2.0 still stretch)
+- [x] `ph-ml-li-array-gates.sh` smokes still green
 
 ### Phase J
 
@@ -70,9 +70,9 @@ Deliverables:
 
 Exit criteria:
 
-- [ ] Bench JSON includes `buffer_class` (`dense_1024` \| `pilot_64`) and `gemm_tile`
-- [ ] `ph-ml-competitive.json` row refreshed from latest bench
-- [ ] `PH-ML-GPU-execution-tracker.md` li-array perf I/J row updated
+- [x] Bench JSON includes `buffer_class` (`dense_1024` \| `pilot_64`) and `gemm_tile`
+- [x] `ph-ml-competitive.json` row refreshed from latest bench
+- [x] `PH-ML-GPU-execution-tracker.md` li-array perf I/J row updated
 
 ## Agent rules
 

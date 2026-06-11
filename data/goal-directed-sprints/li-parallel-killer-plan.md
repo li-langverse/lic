@@ -28,3 +28,7 @@ Plan loop for `goal-directed-loop` stuck detection (`LI_GOAL_SELF_UNBLOCK=1`).
 - id: par102-ci-enforced
   content: PR #881 lipar-killer-gate + build-and-test green on cursor/li-parallel-native-hpc
   status: done
+
+- id: par103-benchmarks-harness
+  content: benchmarks PR #370 merged — dual-mode harness + Class A main_parallel.li variants on main
+  status: done

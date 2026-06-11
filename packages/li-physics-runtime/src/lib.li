@@ -84,6 +84,21 @@ def physics_rigid_substep(world: var PhysicsWorld, sub_dt: float) -> unit
     return
   rigid_integrate_semi_implicit(world.body, 0.0, 0.0, world.gravity_z, sub_dt)
 
+def physics_integrator_order_for_tier(tier: int) -> int
+  requires tier >= 0
+  requires tier <= 3
+  ensures result >= 1
+  ensures result <= 4
+  decreases tier
+=
+  if tier == 0:
+    return 1
+  if tier == 1:
+    return 2
+  if tier == 2:
+    return 4
+  return 4
+
 def physics_step(world: var PhysicsWorld, frame_dt: float) -> unit
   requires frame_dt > 0.0
   requires world.substeps >= 1
@@ -91,6 +106,9 @@ def physics_step(world: var PhysicsWorld, frame_dt: float) -> unit
   ensures true
   decreases world.substeps
 =
+  var order: int = physics_integrator_order_for_tier(world.tier)
+  if order < 1:
+    return
   var sub: float = frame_dt * world.substep_inv
   var i: int = 0
   while i < world.substeps

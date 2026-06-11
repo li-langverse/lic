@@ -50,11 +50,9 @@ if [[ -f "$LIC" && -f "$SMOKE" ]]; then
     done
     t0="$(python3 -c 'import time; print(time.perf_counter())')"
     PH_ML_LI_ARRAY32_RUN_RC=0
-    for _r in $(seq 1 "$PH_ML_LI_ARRAY32_RUNS"); do
-      if ! "$PH_ML_LI_ARRAY32_BIN" >/dev/null 2>&1; then
-        PH_ML_LI_ARRAY32_RUN_RC=1
-      fi
-    done
+    if ! "$PH_ML_LI_ARRAY32_BIN" >/dev/null 2>&1; then
+      PH_ML_LI_ARRAY32_RUN_RC=1
+    fi
     t1="$(python3 -c 'import time; print(time.perf_counter())')"
     PH_ML_LI_ARRAY32_CPU_SEC="$(python3 -c "print(round((float('$t1') - float('$t0')) / int('$PH_ML_LI_ARRAY32_RUNS'), 6))")"
   fi

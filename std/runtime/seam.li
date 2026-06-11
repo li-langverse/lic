@@ -462,6 +462,11 @@ extern def httpd_li_proxy_inject_conn_close_i(slot: var int) -> int
   ensures true
   decreases 0
 
+extern def httpd_li_proxy_prepare_lb_resp_headers_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
 extern def httpd_li_proxy_relay_pending_i(slot: var int) -> int
   requires 0 <= slot
   ensures true
@@ -1016,6 +1021,21 @@ extern def container_state_read_i(id: var ptr, json_out: var ptr, cap: int) rais
   decreases 0
 
 extern def container_state_delete_i(id: var ptr) raises IO -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern def container_state_list_stdout_i() raises IO -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern def container_registry_pull_i(ref: var ptr, bundle_path: var ptr) raises IO -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern def container_registry_pull_to_store_i(ref: var ptr, container_id: var ptr) raises IO -> int
   requires true
   ensures true
   decreases 0

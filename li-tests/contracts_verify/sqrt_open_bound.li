@@ -1,4 +1,4 @@
-# P-float: `li_rt_sqrt` + abs error bound — intentional open control (Float.abs ensures; contrast vec3_len chain).
+# P-float: `li_rt_sqrt` + abs error bound — closed via Li.Discharge.sqrt_open_bound_spec (trusted libm axiom).
 extern def li_rt_sqrt(x: float) -> float
   requires true
   ensures true

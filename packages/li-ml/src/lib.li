@@ -395,6 +395,24 @@ def ml_blas_matmul_dense32_identity(c_corner: var float) -> int
     return 0
   return 1
 
+def ml_matmul_dense_init_identity_32(a: var array[64, float], b: var array[64, float]) -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  var i: int = 0
+  while i < 64
+    a[i] = 0.0
+    b[i] = 0.0
+    i = i + 1
+  i = 0
+  while i < 8
+    var fi: int = ml_matmul_flat_idx(i, i, 8)
+    a[fi] = 1.0
+    b[fi] = 1.0
+    i = i + 1
+  return 1
+
 # Pilot → dense expansion for 32×32 logical matmul (full dense buffer in C BLAS hook).
 def ml_matmul_pilot_to_dense_32(pilot: var array[64, float], dense: var array[64, float]) -> int
   requires true

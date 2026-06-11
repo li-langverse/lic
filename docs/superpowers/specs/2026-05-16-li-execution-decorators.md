@@ -1,6 +1,6 @@
 # Execution decorators (spec stub)
 
-**Status:** Phase 7d in progress (`@gpu` / `@gpu(devices=N)` MIR telemetry landed; LKIR/codegen open)
+**Status:** Phase 7d **partial** — **7d-b–e closed slice** (`check-mir-decorator-lowering.sh`; delegates to `check-mir-*-decorator.sh`): `@vectorized`/`@no_vectorize` proc tags, `@gpu` MIR telemetry, `@cpu`+`@parallel` Host lowering; LKIR/Device codegen open (**G-gpu**)
 **Plan:** `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md`  
 **Gaps:** [Provability gaps](../../verification/provability-gaps.md) **G-dec**
 
@@ -35,4 +35,4 @@ User `decorator def` names: strict package-prefixed snake_case; typosquat ban; e
 
 This is **placement metadata only**. It does not yet lower kernels to LKIR, allocate device buffers, prove address-space separation, or emit CUDA/HIP/Metal/SPIR-V. Those remain **G-gpu** work.
 
-See master plan Phase **7d** and `li-tests/decorator_exploits/` (to land with 7d-e).
+See master plan Phase **7d** exit gates (7d-b–e) and `scripts/check-mir-decorator-lowering.sh`. Policy exploits: `li-tests/decorator_exploits/` (7d-e, CI green).

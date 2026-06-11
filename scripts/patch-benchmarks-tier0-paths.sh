@@ -67,3 +67,10 @@ PY
 
 patch_file harness/stability.py
 patch_file harness/verify.py
+
+# Until benchmarks migrates tier-0 Li FFI: extern proc is rejected by lic.
+_stress_li="$BENCHMARKS_WORKLOADS/tier2_physics/md_lennard_jones/li/stress.li"
+if [[ -f "$_stress_li" ]] && grep -q 'extern proc li_md_stress_cli_all' "$_stress_li"; then
+  sed -i 's/extern proc li_md_stress_cli_all/extern def li_md_stress_cli_all/' "$_stress_li"
+  echo "patched $_stress_li (extern proc -> extern def)"
+fi

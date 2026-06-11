@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-30  
+**Last updated:** 2026-06-11  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -21,7 +21,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **`lic check`** | Fast IDE feedback | **Yes** — no Lean, not a certificate |
 | **Parallel disjointness** | Lean + structured proofs | **Partial** — substring heuristics in `policy.cpp` |
 | **Index bounds (release)** | Refinement / proved → no user traps | **Partial** — MIR/runtime paths still evolving |
-| **Decorators (`@parallel`, …)** | Compile-time elaboration + proofs | **Partial** — parse + policy (7d-a/e); no MIR lowering yet |
+| **Decorators (`@parallel`, …)** | Compile-time elaboration + proofs | **Partial** — **closed slice:** `@cpu`/`@parallel` → Host `OmpParallelFor` → `li_parallel_for_i64`; `@vectorized` SIMD; `@gpu` placement metadata + memory-space policy (`std/execution/memory_spaces.li`); Device LKIR open |
 | **Math / linalg surface** | Static shapes, compile-time lowering | **Partial** — shape tests + **P-linalg** closed VCs (2i / 7e) |
 | **Zero user runtime errors** | All above + 2f gate | **In progress** — see table below |
 
@@ -38,7 +38,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-par** | Partial | AST `policy_module` accepts `disjoint_*` on `parallel for`; **closed slice:** `par_iteration_independent_tile` + `par_memory_disjoint_rows` + `par_memory_disjoint_elems` + `par_memory_disjoint_grid_rows` + `par_memory_disjoint_grid_elems` + `par_dependent_*_aliasing` + `iteration_independent_tile_spec` + `memory_disjoint_rows_spec` + `memory_disjoint_elems_spec` + `memory_disjoint_grid_rows_spec` + `memory_disjoint_grid_elems_spec` + `array_elem_indices_disjoint` + `array_row_indices_disjoint` + `array_grid_cell_indices_disjoint` + `dependent_flat/grid_row/grid_cell/lookup/mod_aliasing` (7d-c); **closed slice:** `index_bound_elem_spec` / `index_bound_row_spec` / `index_bound_grid_cell_spec` / `index_bound_grid_linear_spec` / `index_bound_affine_spec` / `index_bound_blocked_affine_spec` / `index_bound_lookup_spec` / `index_bound_mod_spec` refine `disjoint_*_spec` + `par_disjoint_*_index_bound` + AutoVC `h_range` discharge (7d-c); **closed slice:** compiler `disjoint_lookup` / `disjoint_mod` → `index_bound_lookup_slot_spec` / `index_bound_mod_slot_spec` + policy witnesses in AutoVC (7d-c); **closed slice:** non-identity reverse permutation lookup → `reverse_lookup_injective_on_tiles` + AutoVC `h_inj` on `parallel_disjoint_lookup_perm_closed.li` (7d-c) |
 | **G-par-dist** | Partial | **Closed slice:** block partition via `li_dpar_block_partition_*` + `distributed for` MIR (`dpar_for_range.li` smoke); Lean partition proofs open |
 | **G-hetero** | Partial | **Closed slice:** CPU+GPU+TPU+ASIC orchestration via `li_rt_hetero_*` runtime seams + chip package probes; address-space proofs open |
-| **G-dec** | Partial | **Closed slice:** MIR telemetry + corpus scripts; Lean **P-dec** open |
+| **G-dec** | Partial | **Closed slice (7d-b–e):** `check-mir-decorator-lowering.sh` — MIR proc tags (`mir_parallel_proc`, `mir_vectorized_proc`, `mir_cpu_def`, `mir_gpu_def`), `@vectorized`/`@no_vectorize` proc MIR tags, `@gpu` MIR telemetry, `@cpu`+`@parallel(disjoint=…)` → Host `OmpParallelFor` + `li_parallel_for_i64`, `decorator_exploits` 4× `compile_fail`, `std.execution.parallel` policy surface — **open:** Lean **P-dec**, `@async` elaboration, Device LKIR (**G-gpu**) |
 | **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
 | **G-bnd** | Partial | **Closed slice:** `bounds_refinement_release_ok.li` + `check_release_bounds_ir.sh`; `discharge_refinement_lean.sh` |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
@@ -53,7 +53,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-gpu** | Partial | **Closed slice:** `@gpu` MIR telemetry; **Wave 13:** `ml_gpu_device_buffer_pipeline` + `lig_gpu_device_buffer_ready` host contract. Still open: address-space proofs, full LKIR lowering |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
-| **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |
+| **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 15 closed `contracts_verify` specimens |
 | **G-proof-db** | Partial | [Proof database](proof-database.md): register at `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`) |
 | **G-physics** | Partial | **P-physics** slice: 7× `P-AX-*` + 3× `P-LM-*`; 2× proved scalar lemmas in `Discharge.lean`; tier-2 **modeling_gap** on extern stubs |
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
@@ -84,13 +84,13 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 
 | ID | Area | Spec / promise | Current state | Phase | How we know |
 |----|------|----------------|---------------|-------|-------------|
-| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — Tier B `lake build AutoVC` when installed; **closed slice:** 14× `prove_lean_ok` corpus; `sqrt_open_bound` intentional open; kernel not universal certificate | **2f** | `discharge_trivial_lean.sh`, `discharge_linalg_int_lean.sh`, `contracts_discharge_corpus.sh`, `check-autovc-open-goals.sh`, `li-tests/run_all.sh` `prove_lean_ok` |
-| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — **closed slice:** call-site `requires`, const-local discharge, E0303/E0304/E0305; open: float `abs`, opaque returns | **2e** | `vc_emit_contracts.sh`, `mir_vc_witness.sh`, `discharge_caller_requires_lean.sh`, `discharge_caller_requires_local_lean.sh`, `contracts_discharge_corpus.sh`, `prove_reject/weak_ensures_true.li` |
+| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — Tier B `lake build AutoVC` when installed; **closed slice:** 15× `prove_lean_ok` corpus incl. `sqrt_open_bound`; kernel not universal certificate | **2f** | `discharge_trivial_lean.sh`, `discharge_linalg_int_lean.sh`, `discharge_sqrt_open_lean.sh`, `contracts_discharge_corpus.sh`, `check-autovc-open-goals.sh`, `li-tests/run_all.sh` `prove_lean_ok` |
+| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — **closed slice:** call-site `requires`, const-local discharge, E0303/E0304/E0305, `sqrt_open_bound` float `abs` (trusted libm); open: opaque returns, loop impl vs closed-form `ensures` | **2e** | `vc_emit_contracts.sh`, `mir_vc_witness.sh`, `discharge_caller_requires_lean.sh`, `discharge_caller_requires_local_lean.sh`, `discharge_sqrt_open_lean.sh`, `contracts_discharge_corpus.sh`, `prove_reject/weak_ensures_true.li` |
 | **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — **closed slice:** 6× `compile_fail` + `good_disjoint_parallel.li` `verify_ok` + `team_block_reduce_f64.li` + `parallel_def_disjoint_inherit.li` smokes + `def_disjoint_inherit_tile` + `par_iteration_independent_tile` + `par_memory_disjoint_rows` + `par_memory_disjoint_elems` + `par_memory_disjoint_grid_rows` + `par_memory_disjoint_grid_elems` + `par_dependent_*_aliasing` lemmas + `iteration_independent_tile_spec` + `memory_disjoint_rows_spec` + `memory_disjoint_elems_spec` + `memory_disjoint_grid_rows_spec` + `memory_disjoint_grid_elems_spec` + `array_elem_indices_disjoint` + `array_row_indices_disjoint` + `array_grid_cell_indices_disjoint` + `dependent_flat/grid_row/grid_cell_aliasing`; **closed slice:** `index_bound_elem_spec` / `index_bound_row_spec` / `index_bound_grid_cell_spec` / `index_bound_grid_linear_spec` refine `disjoint_*_spec` + `par_disjoint_*_index_bound` + AutoVC `h_range` discharge (7d-c) | **7b**, **7d-c** | `li-tests/race_shared_memory/`, `decorator_exploits/missing_disjoint_at_parallel.li`, `li-tests/tooling/li_team_block_reduce_codegen_smoke.sh`, `li-tests/tooling/li_parallel_def_disjoint_inherit_smoke.sh`, `li-tests/tooling/li_par_iteration_independent_tile_smoke.sh`, `li-tests/tooling/li_par_memory_disjoint_rows_smoke.sh`, `li-tests/tooling/li_par_memory_disjoint_elems_smoke.sh`, `li-tests/tooling/li_par_memory_disjoint_grid_rows_smoke.sh`, `li-tests/tooling/li_par_memory_disjoint_grid_elems_smoke.sh`, `li-tests/tooling/li_par_dependent_array_aliasing_smoke.sh`, `li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh`, `packages/li-parallel/src/parallel/proof.li`, `run_all.sh` suite `race_shared_memory` |
 | **G-par-dist** | `distributed for` partition | Block partition assigns disjoint tiles per rank | **Partial** — **closed slice:** `li_dpar_block_partition_*` + `dpar_for_range.li` codegen smoke; Lean partition proofs open | **7b**, **li-parallel** | `li-tests/tooling/li_dpar_for_codegen_smoke.sh`, `packages/li-parallel/src/parallel/proof.li`, `docs/verification/proof-database/entries/parallel-li-par.toml` |
 | **G-hetero** | Hetero orchestration | CPU+GPU+TPU+ASIC via runtime chip seams only | **Partial** — **closed slice:** `li_rt_hetero_*` probes + chip package smokes; address-space proofs open | **li-parallel** | `li-tests/tooling/li_hetero_gate_smoke.sh`, `packages/li-parallel/src/parallel/hetero.li`, `docs/verification/proof-database/entries/parallel-li-par.toml` |
 | **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
-| **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — **closed slice:** 4× `decorator_exploits` `compile_fail`; `@vectorized` on `for` (`vectorized_for_scope_ok.li`); `MIR proc tags + corpus scripts | **7d** | `contracts_discharge_corpus.sh`, `decorator_exploits/` |
+| **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — **closed slice (7d-b–e):** unified gate `check-mir-decorator-lowering.sh`; 4× `decorator_exploits` `compile_fail`; `@vectorized` on `for` (`vectorized_for_scope_ok.li`); `@parallel`/`@vectorized`/`@cpu`/`@gpu` MIR proc tags (`mir_parallel_proc`, `mir_vectorized_proc`, `mir_cpu_def`, `mir_gpu_def`); `@cpu`/`@parallel` Host memory-space MIR + `li_parallel_for_i64` codegen (`portable_parallel_lowering_ok.li`, `check-mir-parallel-portable-lowering.sh`, `check-mir-portable-parallel-lowering.sh`); `@cpu`/`@gpu` memory-space policy (`std/execution/memory_spaces.li`, `std.execution.parallel`); `@gpu` placement telemetry. **G-par** cross-link: `disjoint=` Host lowering shares portable parallel gates | **7d**, **7e** | `check-mir-decorator-lowering.sh`, `decorator_exploits/`, `contracts_discharge_corpus.sh` |
 | **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — **closed slice:** 9× `prove_lean_ok` linalg + `discharge_linalg_int_lean.sh`; `math_linalg/` compile tests; tier-1 `tier1_li_vs_cpp.sh` | **2i**, **7e**, **2f** | `li-tests/math_linalg/`, `li-tests/contracts_verify/linalg_*_closed.li`, `li-tests/tooling/discharge_linalg_int_lean.sh`, `li-tests/tooling/tier1_li_vs_cpp.sh` |
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — [bounds-release-path](bounds-release-path.md) | **2e**, **3** | `check_release_bounds_ir.sh` |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
@@ -106,7 +106,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-wrong-spec** | User contracts | Correct theorem | **Social** — tool cannot fix | — | Review culture |
 | **G-narrow** | Narrowing conversions | Ariane-class truncations rejected without proof | **Partial** — policy rejects `cast[`; width types + proved narrowing pending | **2e** | `historic_ariane5_narrowing.li` |
 | **G-authz** | Capability / IDOR | Object capabilities in OS services | **Missing** | OS phase | `historic-bugs.toml` firefly-iii-idor |
-| **G-test-verify** | Manifest honesty | `verify_ok` vs Lean QED | **Done** — `prove_lean_ok` outcome; 14 closed `contracts_verify` rows | **2f** | `li-tests/run_all.sh`, `li-tests/manifest.toml`, `contracts_discharge_corpus.sh` |
+| **G-test-verify** | Manifest honesty | `verify_ok` vs Lean QED | **Done** — `prove_lean_ok` outcome; 15 closed `contracts_verify` rows | **2f** | `li-tests/run_all.sh`, `li-tests/manifest.toml`, `contracts_discharge_corpus.sh` |
 | **G-proof-db** | Proof database | Axiom → lemma → discharge status vs `lic` commit | **Partial** — physics TOML under `docs/verification/proof-database/entries/physics-*.toml` | **Doc**, **2f**, **5b** | [proof-database.md](proof-database.md) |
 | **G-physics** | Classical physics proofs | Newton + conservation linked to tier-2 benches | **Partial** — `entries/physics-*.toml`; 2× `proved` + 1× open `P-LM-*` in `Discharge.lean` | **Doc**, **2f**, **5b** | [proof-database/entries/physics-*.toml](proof-database/entries/physics-mechanics.toml), `benchmarks/tier2_physics/`, `Discharge.lean` |
 | **G-num** | Number theory / arithmetic | Peano-through-primes lemmas in proof-db catalog | **Stub** — **WP0-A** entry TOML + proof-db/num/ not wired | **Doc**, **2f**, WP0-A | proof-db/math/ axiom overlap; scripts/proof-db/proof-db.py list --field num (planned) |
@@ -136,7 +136,7 @@ What **`lic build`** does **not** run yet (unless Lean 4 installed and not `--no
 
 - Lean 4 kernel discharge of non-trivial ensures  
 - Lean 4 kernel as default hard gate  
-- Decorator elaboration  
+- Full Lean **P-dec** proofs for decorator laws  
 - Math-shape checking beyond ordinary types  
 
 ```mermaid
@@ -144,19 +144,20 @@ flowchart LR
   subgraph today [lic build today]
     pol[policy.cpp heuristics]
     par[parse]
+    dec[decorator MIR tags 7d-b]
     tc[typecheck + borrow]
     vc[AutoVC.lean Props]
     mir[MIR + LLVM]
-    pol --> par --> tc --> vc
+    pol --> par --> dec --> tc --> vc
     tc --> mir
+    dec --> mir
   end
   subgraph missing [not wired]
     lean[Lean kernel discharge]
-    dec[decorator elaborate]
+    pdec[P-dec decorator proofs]
   end
   vc -.->|Phase 2f| lean
-  par -.->|Phase 7d| dec
-  dec -.-> mir
+  dec -.->|Phase 7d| pdec
 ```
 
 ---
@@ -168,7 +169,7 @@ flowchart LR
 | Type / borrow errors | Compile-time only | **Mostly** at typecheck |
 | `parallel for` races | Compile-time reject | **Heuristic** policy + tests |
 | Out-of-bounds | Compile-time proof | **May** still hit `li_bounds_fail` in debug paths |
-| Decorators | Never interpreted at run time | **N/A** — not executed; not elaborated yet |
+| Decorators | Never interpreted at run time | **N/A** — not executed; **7d-b–e closed slice** elaborates to MIR proc tags (`mir_parallel_proc`, `mir_vectorized_proc`, `mir_cpu_def`, `mir_gpu_def`) + Host parallel lowering (**G-dec** partial) |
 | `li_panic` / contract fail | No user path in proved release | **Runtime** hooks exist in `li_rt` |
 | OpenMP | Native threads | **Runtime** library (not user logic validation) |
 | Fuzz / TSan | Find compiler bugs | **CI optional** — not user proof |
@@ -182,9 +183,9 @@ flowchart LR
 | Suite | What it proves |
 |-------|----------------|
 | `li-tests/race_shared_memory/` | Policy + typecheck **reject** bad parallel patterns (not Lean) |
-| `li-tests/decorator_exploits/` | **Planned** — reserved names, macro hijack (7d-e) |
+| `li-tests/decorator_exploits/` | **Closed slice (7d-e)** — 4× `compile_fail` reserved names, typosquat, missing `disjoint=`; wired in `check-mir-decorator-lowering.sh` |
 | `li-tests/math_linalg/` | **Partial** — 1d/2d `@`, element-wise, matmul compile tests (2i/7e) |
-| `li-tests/contracts_verify/` | **Partial** — 14× `prove_lean_ok` closed corpus; `sqrt_open_bound` intentional open (`verify_open_ok`); refinements on `verify_ok` |
+| `li-tests/contracts_verify/` | **Partial** — 15× `prove_lean_ok` closed corpus incl. `sqrt_open_bound`; refinements on `verify_ok`; `false_ensures_allow_open_ok` for `--allow-open-vc` policy |
 | `li-tests/tooling/discharge_linalg_int_lean.sh` | P-linalg closed specimens → zero open AutoVC goals |
 | `li-tests/tooling/vc_emit_contracts.sh` | `sqrt_contract` AutoVC uses `≥` / `Float.abs`, not `True` stubs |
 | `li-tests/tooling/discharge_trivial_lean.sh` | `discharge_trivial.li` → zero open Prop goals + `lake build` when Lean installed |
@@ -207,8 +208,9 @@ When editing handbook pages, do **not** imply features beyond this register with
 | [Build pipeline](../compiler/build-pipeline.md) | Lean stage marked *planned* |
 | [Why provable](../compiler/why-provable.md) | Links here under honest limits |
 | [Language overview](../language/overview.md) | “Status honesty” links here |
-| [SIMD and parallel](../language/simd-parallel.md) | Note heuristic disjoint until 7d-c |
-| Decorator / math spec stubs | Say “planned” until gaps closed |
+| [SIMD and parallel](../language/simd-parallel.md) | Note structured `disjoint=` partial (**G-par**); string heuristics in `policy.cpp` for legacy paths |
+| [Decorators](../language/decorators.md) | MIR proc tags + Host lowering done; Device LKIR open (**G-gpu**) |
+| Decorator / math spec stubs | Link **G-dec** / **G-par** status from this register |
 | [Plan cross-links](../ecosystem/plan-cross-links.md) | Master plan ↔ phase plans ↔ benchmarks; [open PH tracker](../ecosystem/plan-cross-links.md#open-master-plan-tracker-rows-2026-05-30) when rows move |
 | [Handbook index](../handbook/README.md) | Satellite Pages table — audit HEAD green 2026-05-30; [li-language Pages](https://li-langverse.github.io/li-language/) content may lag local mkdocs until [#403](https://github.com/li-langverse/lic/issues/403) |
 | [GUI UX handoff](../ecosystem/gui-ux-quality-handoff.md) | **ui_ux_quality** research goal — surface UX only; never closes **G-*** rows |

@@ -12,5 +12,5 @@ Container CLI scaffold for libernetes. Thin wrapper over `lirun` (`container.run
 ## Build
 
 ```bash
-lic build src/main.li -o licontainer
+lic build src/main.li -o lictl
 ```

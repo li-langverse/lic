@@ -2,6 +2,6 @@
   "phase": "done",
   "started_at": "2026-06-10",
   "completed_at": "2026-06-10",
-  "branch": "feat/extern-def-container-seam",
-  "notes": "P7 gate passed: GitLab repos + mirror script, package-gap-register updated (WP-CTN-070..074). Sprint complete."
+  "branch": "feat/container-product-complete",
+  "notes": "P8 gate passed: librebase runtime lifecycle, emit_error_json, lictl CLI. Product completion sprint done."
 }

@@ -47,9 +47,9 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
 
-## Open master-plan tracker rows (2026-05-30)
+## Open master-plan tracker rows (2026-06-11)
 
-Preflight: `benchmarks/data/latest/ecosystem-audit.json` · `plan_completion_audit.summary.open_tracker_items: 5`. Do not mark **Done** without cited evidence.
+Preflight: `benchmarks/data/latest/ecosystem-audit.json` · `plan_completion_audit.summary.open_tracker_items` = unchecked `- [ ]` rows only. Do not mark **Done** without cited evidence.
 
 | PH | Gap ID(s) | Phase plan (lic) |
 |----|-----------|------------------|
@@ -58,6 +58,16 @@ Preflight: `benchmarks/data/latest/ecosystem-audit.json` · `plan_completion_aud
 | **7e** — Math → SIMD lowering | **G-math** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) · [ph7e-tier1-red-benchmark-honesty](../superpowers/plans/2026-05-30-ph7e-tier1-red-benchmark-honesty.md) |
 | **8p** — Parallel compile / CI | — | [2026-05-22-parallel-compile-ci.md](../superpowers/plans/2026-05-22-parallel-compile-ci.md) |
 | **Vision-LLM** — Agent JSON diagnostics | — | [2026-05-16-li-llm-first-design.md](../superpowers/specs/2026-05-16-li-llm-first-design.md) |
+
+### Partial shipped (master plan `[x]`, **G-*** still open)
+
+Automations must not treat these as fully closed — tracker checkbox marks **shipped slice** only.
+
+| PH | Gap ID(s) | Honest status on `main` | Evidence |
+|----|-----------|-------------------------|----------|
+| **2e** — Contracts + refinements | **G-vc**, **G-bnd** | **Partial** — call-site `requires`, refinements, AutoVC emit; float/nontrivial ensures open | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md); `li-tests/contracts_verify/` |
+| **2f** — Lean 4 verify | **G-lean**, **G-vc**, **G-trust** | **Partial** — Tier B `lake build AutoVC`; P-linalg closed corpus; kernel discharge open | [provability-gaps § still open](../verification/provability-gaps.md#still-open-report-every-session); `prove_lean_ok` in `run_all.sh` |
+| **Phase H** — li-httpd | **G-net** (M1 ship gate) | **Partial** — infra + M1 `.li` slices; full Lean reactor + exploits gate open | [httpd plan](2026-05-16-li-httpd-plan.md) · [httpd-prerequisites](../ecosystem/httpd-prerequisites.md) |
 
 ## UI/UX quality (`ui_ux_quality` research goal)
 

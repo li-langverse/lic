@@ -36,3 +36,14 @@ User `decorator def` names: strict package-prefixed snake_case; typosquat ban; e
 This is **placement metadata only**. It does not yet lower kernels to LKIR, allocate device buffers, prove address-space separation, or emit CUDA/HIP/Metal/SPIR-V. Those remain **G-gpu** work.
 
 See master plan Phase **7d** and `li-tests/decorator_exploits/` (to land with 7d-e).
+
+## Memory-space sync (PH-7e, #110)
+
+Decorators elaborate to **execution-space** tags; cross-space buffer access requires explicit sync intrinsics (names TBD):
+
+| Intrinsic (planned) | When required |
+|---------------------|---------------|
+| `@sync_device(view)` | Host wrote; device kernel will read |
+| `@sync_host(view)` | Device wrote; host will read |
+
+Policy matrix: [kokkos-memory-execution-spaces-rubric.md](../../hpc/kokkos-memory-execution-spaces-rubric.md). Enum tags: `std.execution.memory`. **No implicit DualView** — paired `hostbuffer` / `devicebuffer` only.

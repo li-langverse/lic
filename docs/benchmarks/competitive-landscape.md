@@ -19,7 +19,7 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 | Ecosystem | Why track | Li implication |
 |-----------|-----------|----------------|
 | Chapel | PGAS HPC language | Locale / distribution model → future G-* |
-| Kokkos | Performance portability | Team policies, backends → LLVM/OpenMP alignment |
+| Kokkos 4.6.x | Performance portability | `MemorySpace` / `ExecutionSpace` / `View` policy → [kokkos rubric](../hpc/kokkos-memory-execution-spaces-rubric.md); vendor pin → benchmarks#27 |
 | SYCL / oneAPI | Heterogeneous offload | Watch; no Li GPU story in v1 |
 | Zig | Low-level SIMD/comptime | Patterns for codegen, not a bench column yet |
 | NumPy / BLAS | ML tier baselines | Tier-3 only; label BLAS explicitly |

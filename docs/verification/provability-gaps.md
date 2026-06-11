@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-30  
+**Last updated:** 2026-06-08  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -50,7 +50,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-net** | Partial | Net effect codegen + proofs |
 | **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
 | **G-ann** | Missing | PEP 649 deferred annotations |
-| **G-gpu** | Partial | **Closed slice:** `@gpu` MIR telemetry; **Wave 13:** `ml_gpu_device_buffer_pipeline` + `lig_gpu_device_buffer_ready` host contract. Still open: address-space proofs, full LKIR lowering |
+| **G-gpu** | Partial | **Closed slice:** `@gpu` MIR telemetry; **Wave 13:** `ml_gpu_device_buffer_pipeline` + `lig_gpu_device_buffer_ready` host contract. **Open (#110):** cross-space read without `@sync_host` / `@sync_device` must be compile error; `MemorySpace` / `View[T, Space]` policy in [kokkos rubric](../hpc/kokkos-memory-execution-spaces-rubric.md). Still open: address-space Lean proofs, full LKIR lowering |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |

@@ -95,6 +95,9 @@
 
 ### Phase 2 exit gate
 
+**G-* (Doc-c):** [G-vc](../../verification/provability-gaps.md#g-vc) · [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-def](../../verification/provability-gaps.md#g-def) · [G-math-syn](../../verification/provability-gaps.md#g-math-syn)
+
 - [x] `fib.li` typechecks (`li-tests/typecheck/fib.li`)
 - [x] All `bad_*.li` fail with expected errors
 - [x] Borrow double-mut test fails cleanly (`li-tests/borrow/double_mut.li`)
+- [x] Master plan Phase 2a–2d checkboxes checked (`typecheck`, `borrow`, `prove_reject` gates on `main`)

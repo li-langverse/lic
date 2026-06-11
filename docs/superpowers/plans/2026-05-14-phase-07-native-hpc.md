@@ -63,6 +63,8 @@
 
 ## Exit gate (phase complete)
 
+**G-* (Doc-c):** [G-par](../../verification/provability-gaps.md#g-par) · [G-dec](../../verification/provability-gaps.md#g-dec) · [G-math](../../verification/provability-gaps.md#g-math) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)
+
 **7a–7c (Phase 7 core):**
 
 - [x] `./li-tests/run_all.sh simd race_shared_memory`

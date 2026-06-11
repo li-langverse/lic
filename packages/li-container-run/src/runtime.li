@@ -582,7 +582,7 @@ def lirun_run_from_argv() raises IO, Alloc -> int
       if container_str_cmp_i(li_rt_argv_i(2), id_flag_k) == 0:
         if n >= 6:
           sig = li_rt_argv_i(5)
-      else:
+      if container_str_cmp_i(li_rt_argv_i(2), id_flag_k) != 0:
         sig = li_rt_argv_i(4)
     return lirun_cmd_kill(kill_id, sig)
   var state_cmd: ptr = "state"

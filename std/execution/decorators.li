@@ -2,6 +2,7 @@
 #
 # Users write @cpu, @parallel(disjoint=disjoint_elem), @vectorized on def/for/while.
 # The compiler elaborates these at compile time; they are NOT runtime calls.
+# Portable parallel lowering policy: import std.execution.parallel (Kokkos-class memory spaces).
 #
 # Reserved (cannot user decorator def): parallel, vectorized, async, cpu, gpu, tpu,
 # user_defined, serial, no_vectorize.

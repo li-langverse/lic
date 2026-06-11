@@ -135,6 +135,15 @@ bool mir_decorator_disjoint_proven(const Decorator& d) {
   return false;
 }
 
+MirMemorySpace mir_memory_space_from_decorators(const std::vector<Decorator>& decos) {
+  for (const auto& d : decos) {
+    if (d.name == "gpu") {
+      return MirMemorySpace::Device;
+    }
+  }
+  return MirMemorySpace::Host;
+}
+
 void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator>& dst) {
   for (const auto& d : src) {
     MirDecorator md;
@@ -143,9 +152,14 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
       md.vectorized = true;
       md.lanes = mir_vectorized_lanes_from_decorator(d);
     }
+    if (d.name == "cpu") {
+      md.cpu = true;
+      md.memory_space = MirMemorySpace::Host;
+    }
     if (d.name == "gpu") {
       md.gpu = true;
       md.gpu_devices = mir_gpu_devices_from_decorator(d);
+      md.memory_space = MirMemorySpace::Device;
     }
     if (d.name == "offload") {
       md.offload = true;
@@ -2421,6 +2435,9 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       call.rhs_int = stmt.par_end;
       call.parallel_disjoint_proven =
           parallel_for_disjoint_witness(stmt, ctx.proc ? &ctx.proc->decorators : nullptr);
+      if (ctx.proc != nullptr) {
+        call.memory_space = mir_memory_space_from_decorators(ctx.proc->decorators);
+      }
       if (stmt.par_reduce_kind != ParReduceKind::None && !stmt.par_reduce_var.empty()) {
         call.par_reduce_kind = stmt.par_reduce_kind;
         call.par_reduce_var = stmt.par_reduce_var;

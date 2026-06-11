@@ -24,6 +24,7 @@ Today the repository ships **27 `.li` modules** under `std/` (compile harnesses 
 | `import std.summary` | `std/summary/summary.li` | PH-IO-7 stub (summary JSON build stub) |
 | `import std.plot` | `std/plot/plot.li` | PH-IO-5 stub (static dashboard stub) |
 | `import std.execution.decorators` | `std/execution/decorators.li` | Reserved decorator names |
+| `import std.execution.parallel` | `std/execution/parallel.li` | Kokkos-class memory-space + schedule policy constants |
 | `import std.ui` | `std/ui/ui.li` | Color/Rect stub |
 | `import std.math` | `std/math/math.li` | Tag facade |
 | `import std.physics.*` | `std/physics/*.li` | Tag facades (13 subdomains) |

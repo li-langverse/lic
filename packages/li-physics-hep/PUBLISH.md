@@ -1,16 +1,24 @@
-# Publish metadata — PKG-li-std-physics-hep
+# Publish metadata — PKG-li-physics-hep
 
 | Field | Value |
 |-------|--------|
-| **PKG id** | `PKG-li-std-physics-hep` |
-| **Registry name** | `li-std-physics-hep` (lip, phase 8d) |
+| **PKG id** | `PKG-li-physics-hep` |
+| **Registry name** | `li-physics-hep` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-std-physics-hep |
+| **Repository** | https://github.com/li-langverse/li-physics-hep |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)
 
-Document public `def` names and types here as the API stabilizes.
+Education-tier toy MC (non-SOTA):
+
+- `DecayChannel`, `McEvent`
+- `decay_branching`, `isotropic_sample_angles`, `event_weight_cross_section`
+- `hep_toy_cross_section_smoke`
+
+## Bench refs
+
+Education tier only — no tier-2 production oracle. Composable smoke: `hep_toy_mc_smoke.li`.
 
 ## Proof / coverage tier
 

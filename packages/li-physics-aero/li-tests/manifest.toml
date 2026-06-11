@@ -9,5 +9,5 @@ note = "T-PKG-li-std-physics-aero-smoke"
 [[tests]]
 suite = "smoke"
 file = "smoke/orbit_two_body_smoke.li"
-outcome = "compile_open_ok"
-note = "T-PKG-li-std-physics-aero-orbit"
+outcome = "verify_ok"
+note = "T-PKG-li-physics-aero-orbit-two-body"

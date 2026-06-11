@@ -1,16 +1,23 @@
-# Publish metadata — PKG-li-std-physics-core
+# Publish metadata — PKG-li-physics-core
 
 | Field | Value |
 |-------|--------|
-| **PKG id** | `PKG-li-std-physics-core` |
-| **Registry name** | `li-std-physics-core` (lip, phase 8d) |
+| **PKG id** | `PKG-li-physics-core` |
+| **Registry name** | `li-physics-core` (lip, phase 8d) |
 | **Maintainer** | li-langverse |
-| **Repository** | https://github.com/li-langverse/li-std-physics-core |
+| **Repository** | https://github.com/li-langverse/li-physics-core |
 | **License** | Apache-2.0 OR MIT (SPDX) |
 
 ## Exports (v1)
 
-Document public `def` names and types here as the API stabilizes.
+- `PhysicsProfile`, `NumericalTargets`, `SimulationParams`
+- `select_integrator_order`, `profile_for_tier`
+- `SiUnit`, `PhysicalConstant`, `ScalarField2D`, `VectorField2D`
+- `unit_seconds`, `unit_meters`, `c_light`, `k_boltzmann`
+
+## Bench refs
+
+All tier-2 physics benches via `PhysicsProfile` tier selection.
 
 ## Proof / coverage tier
 

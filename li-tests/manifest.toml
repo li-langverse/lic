@@ -869,6 +869,30 @@ note = "import physics.relativity resolves to packages/li-physics-relativity"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_physics_core.li"
+outcome = "verify_open_ok"
+note = "import physics.core: units, fields, integrator order (lic#7 Wave A)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_physics_hep.li"
+outcome = "verify_open_ok"
+note = "import physics.hep: toy MC DecayChannel + isotropic_sample (lic#7 Wave C)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_physics_aero.li"
+outcome = "verify_open_ok"
+note = "import physics.aero: orbit leapfrog + two_body smoke (lic#7)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_physics_chem.li"
+outcome = "verify_open_ok"
+note = "import physics.chem: Arrhenius rate oracle (lic#7)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_physics_runtime.li"
 outcome = "verify_open_ok"
 note = "2j-c: var RigidBody in-out write-back after rigid_integrate_semi_implicit; runtime exit 0"

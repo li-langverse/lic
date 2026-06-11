@@ -26,11 +26,7 @@ def container_backend_detect() raises IO -> int
   ensures result >= 0
   decreases 0
 =
-  return container_backend_detect_host(
-    container_is_lios_i(),
-    container_is_linux_i(),
-    container_is_windows_i(),
-    container_is_darwin_i())
+  return container_backend_detect_host(container_is_lios_i(), container_is_linux_i(), container_is_windows_i(), container_is_darwin_i())
 
 def li_container_selftest() raises IO -> int
   requires true

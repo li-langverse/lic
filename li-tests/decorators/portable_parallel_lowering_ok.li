@@ -1,0 +1,17 @@
+# PH-7e / G-par / G-dec — Kokkos-class portable parallel lowering slice.
+# @cpu + @parallel(disjoint=…) on def elaborates to li_parallel_for_i64 (not OpenMP user pragma).
+
+@cpu
+@parallel(disjoint=disjoint_elem)
+def portable_host_parallel() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var buf: array[16, f64]
+  parallel for i in 0..<16
+    requires disjoint_elem(i, buf)
+    decreases 16 - i
+  =
+    buf[i] = 1.0
+  return 0

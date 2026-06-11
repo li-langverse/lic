@@ -10,6 +10,7 @@ LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 chmod +x \
   "$ROOT/scripts/check-mir-parallel-decorator.sh" \
   "$ROOT/scripts/check-mir-parallel-portable-lowering.sh" \
+  "$ROOT/scripts/check-mir-portable-parallel-lowering.sh" \
   "$ROOT/scripts/check-mir-vectorized-decorator.sh" \
   "$ROOT/scripts/check-mir-gpu-decorator.sh"
 
@@ -19,6 +20,7 @@ chmod +x \
 
 # 7d-b/c: @cpu + @parallel(disjoint=...) → Host OmpParallelFor → li_parallel_for_i64 (G-par slice)
 "$ROOT/scripts/check-mir-parallel-portable-lowering.sh"
+"$ROOT/scripts/check-mir-portable-parallel-lowering.sh"
 "$ROOT/scripts/check-mir-parallel-decorator.sh"
 
 cpu_out="$("$LIC" verify "$ROOT/li-tests/decorators/cpu_only_ok.li" 2>&1)"

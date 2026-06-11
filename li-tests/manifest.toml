@@ -90,6 +90,12 @@ outcome = "compile_ok"
 
 [[tests]]
 suite = "decorators"
+file = "decorators/portable_parallel_lowering_ok.li"
+outcome = "verify_ok"
+note = "PH-7e/G-par: @cpu @parallel(disjoint=…) lowers to li_parallel_for_i64"
+
+[[tests]]
+suite = "decorators"
 file = "decorators/vectorized_dot_ok.li"
 outcome = "verify_ok"
 

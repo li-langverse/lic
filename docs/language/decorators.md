@@ -14,7 +14,7 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 ## Status
 
-Parsing and policy checks are implemented in `lic check`. **`@cpu` + `@parallel(disjoint=...)`** lower to portable Host `li_parallel_for_i64` (Kokkos-class memory-space policy in `std.execution.parallel`). **`@gpu`** records Device placement in MIR telemetry; vendor LKIR lowering remains **G-gpu**. See [provability-gaps](../verification/provability-gaps.md) (**G-dec**, **G-par**).
+Parsing, policy, and **7d-b–e MIR lowering** are implemented in `lic build`. Exit gate: `./scripts/check-mir-decorator-lowering.sh` (**G-dec** closed slice). **`@cpu` + `@parallel(disjoint=...)`** lower to portable Host `li_parallel_for_i64` (Kokkos-class memory-space policy in `std.execution.parallel`; **G-par** cross-link). **`@gpu`** records Device placement in MIR telemetry; vendor LKIR lowering remains **G-gpu**. See [provability-gaps](../verification/provability-gaps.md) (**G-dec**, **G-par**).
 
 ## Resource knobs (`lic build`)
 

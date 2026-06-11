@@ -1,6 +1,6 @@
 import sim.scientific
 
-extern proc li_rt_studio_aimd_scenario_set_dft_stride(dft_stride: int) -> int
+extern def li_rt_studio_aimd_scenario_set_dft_stride(dft_stride: int) -> int
   requires true
   ensures result == 1
   decreases dft_stride

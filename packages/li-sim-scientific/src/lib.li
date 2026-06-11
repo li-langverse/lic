@@ -372,7 +372,7 @@ def echem_aimd_batch_demo_steps() -> int
 =
   return 5000
 
-extern proc li_rt_studio_aimd_dft_stride_from_env() raises IO -> int
+extern def li_rt_studio_aimd_dft_stride_from_env() raises IO -> int
   requires true
   ensures result >= 1
   ensures result <= 1000
@@ -399,7 +399,7 @@ def echem_aimd_batch_steps_valid(steps: int) -> int
     return 0
   return 1
 
-extern proc li_rt_studio_aimd_gpu_from_env() -> int
+extern def li_rt_studio_aimd_gpu_from_env() -> int
   requires true
   ensures result >= 0
   ensures result <= 1

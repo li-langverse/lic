@@ -21,10 +21,19 @@
 #include <sched.h>
 #include <sys/mount.h>
 #include <sys/prctl.h>
+#include <sys/syscall.h>
 #include <linux/bpf.h>
 #include <linux/filter.h>
 #include <linux/seccomp.h>
 #include <linux/unistd.h>
+
+static inline int li_container_pivot_root(const char* new_root, const char* put_old) {
+  return (int)syscall(__NR_pivot_root, new_root, put_old);
+}
+
+static inline int li_container_seccomp(unsigned int operation, unsigned int flags, void* args) {
+  return (int)syscall(__NR_seccomp, operation, flags, args);
+}
 #endif
 
 #define CONTAINER_RT_TAG 1
@@ -636,7 +645,7 @@ int container_pivot_root_i(char* rootfs_path) {
   if (mkdir(put_old, 0755) != 0 && errno != EEXIST) {
     return -1;
   }
-  if (pivot_root(".", put_old) != 0) {
+  if (li_container_pivot_root(".", put_old) != 0) {
     return -1;
   }
   if (chdir("/") != 0) {
@@ -744,7 +753,7 @@ static int container_seccomp_install_default(void) {
   if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) != 0) {
     return -1;
   }
-  return seccomp(SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC, &prog) == 0 ? 0 : -1;
+  return li_container_seccomp(SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC, &prog) == 0 ? 0 : -1;
 }
 #endif
 

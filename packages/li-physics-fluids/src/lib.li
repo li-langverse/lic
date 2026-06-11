@@ -81,3 +81,45 @@ def physics_fluids_gpu_progress() -> int
   var lap: array[8, float]
   heat_step_explicit(u, lap, 0.1, 0.01)
   return 1
+
+# WP-SCI-06 — mini lid-driven cavity: 8-cell u-velocity strip + diffusion (honest tier-2 stub).
+def cfd_lid_cavity_step(u: var array[8, float], lid_v: float, nu: float, dt: float) -> unit
+  requires lid_v >= 0.0
+  requires nu >= 0.0
+  requires dt > 0.0
+  ensures true
+  decreases 0
+=
+  u[0] = lid_v
+  u[1] = u[1] + nu * dt * (u[2] + lid_v - 2.0 * u[1])
+  u[2] = u[2] + nu * dt * (u[3] + u[1] - 2.0 * u[2])
+  u[3] = u[3] + nu * dt * (u[4] + u[2] - 2.0 * u[3])
+  u[4] = u[4] + nu * dt * (u[5] + u[3] - 2.0 * u[4])
+  u[5] = u[5] + nu * dt * (u[6] + u[4] - 2.0 * u[5])
+  u[6] = u[6] + nu * dt * (u[7] + u[5] - 2.0 * u[6])
+  u[7] = u[7]
+
+def cfd_lid_cavity_checksum() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var u: array[8, float]
+  var i: int = 0
+  while i < 8
+    u[i] = 0.0
+    i = i + 1
+  var step: int = 0
+  while step < 16
+    cfd_lid_cavity_step(u, 1.0, 0.05, 0.01)
+    step = step + 1
+  var sum: float = 0.0
+  i = 0
+  while i < 8
+    sum = sum + u[i]
+    i = i + 1
+  if sum < 0.0:
+    sum = -sum
+  if sum < 1.0e-12:
+    sum = 1.0e-12
+  return sum

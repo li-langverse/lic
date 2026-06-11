@@ -1767,6 +1767,12 @@ outcome = "compile_open_ok"
 note = "PH-SCI-GPU-19 @gpu CHE H* adsorption electrochemistry stub"
 
 [[tests]]
+suite = "science_gpu"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_gpu_md_device_buffer.li"
+outcome = "compile_open_ok"
+note = "PH-SCI-GPU-20 @gpu MD grid device-buffer bind (VENDOR-02)"
+
+[[tests]]
 suite = "composable"
 file = "composable/import_echem_che_h_smoke.li"
 outcome = "compile_open_ok"

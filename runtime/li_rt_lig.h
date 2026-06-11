@@ -9,6 +9,7 @@ int32_t li_rt_lig_emit_env_flag(const char* var_name);
 int32_t li_rt_lig_emit_vendor_progress(void);
 int32_t li_rt_lig_emit_vendor_lowering_ready(void);
 int32_t li_rt_lig_matmul_ready(void);
+int32_t li_rt_lig_gpu_md_grid_device_buffer_bind(int32_t particle_count, int32_t array_count);
 int32_t li_rt_lig_gpu_device_buffer_ready(void);
 
 #endif

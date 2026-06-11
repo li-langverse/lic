@@ -1075,3 +1075,77 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   bad.checksum = 0.0
   bad.detail_emitted = d4
   return bad
+
+# --- WP-SCI-GPU-VENDOR-02: MD grid device-buffer bind (science hot path; PH-ML Wave 13 reuse) ---
+
+def scientific_use_lkir() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return 1
+
+def scientific_lig_md_kernel_id() -> int
+  requires true
+  ensures result == lig_kernel_matmul_f32()
+  decreases 0
+=
+  return lig_kernel_matmul_f32()
+
+def sim_scientific_md_gpu_lkir_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if scientific_use_lkir() == 0:
+    return 0
+  if lig_kernel_run(scientific_lig_md_kernel_id(), lig_backend_select_auto()) != 0:
+    return 0
+  if lig_validity_gate_pass(0.999) != 1:
+    return 0
+  return 1
+
+def sim_scientific_md_grid_particle_count() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def sim_scientific_md_grid_array_count() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def sim_scientific_md_grid_device_buffer_bind_ok() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_md()
+  if chk <= 0.0:
+    return 0
+  if chk >= 1.0e-3:
+    return 0
+  if lig_gpu_md_grid_device_buffer_bind(sim_scientific_md_grid_particle_count(), sim_scientific_md_grid_array_count()) != 1:
+    return 0
+  return 1
+
+def sim_scientific_md_gpu_device_buffer_pipeline() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_scientific_md_gpu_lkir_progress() != 1:
+    return 0
+  if sim_scientific_md_grid_device_buffer_bind_ok() != 1:
+    return 0
+  if lig_gpu_device_buffer_ready() != 1:
+    return 0
+  return 1

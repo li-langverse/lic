@@ -1,23 +1,6 @@
 #if !defined(_WIN32)
 #define _GNU_SOURCE
 #endif
-#if defined(__linux__)
-#include <unistd.h>
-#include <sys/mount.h>
-#include <sys/syscall.h>
-#if !defined(pivot_root)
-int pivot_root(const char* new_root, const char* put_old);
-#endif
-#if __has_include(<sys/seccomp.h>)
-#include <sys/seccomp.h>
-#else
-#include <linux/seccomp.h>
-static inline int li_rt_seccomp(unsigned int operation, unsigned int flags, void* args) {
-  return (int)syscall(__NR_seccomp, operation, flags, args);
-}
-#define seccomp li_rt_seccomp
-#endif
-#endif
 #include "li_rt.h"
 
 #include <stdio.h>
@@ -25,7 +8,6 @@ static inline int li_rt_seccomp(unsigned int operation, unsigned int flags, void
 #include <string.h>
 
 #if !defined(_WIN32)
-#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -37,18 +19,21 @@ static inline int li_rt_seccomp(unsigned int operation, unsigned int flags, void
 
 #if defined(__linux__)
 #include <sched.h>
+#include <sys/mount.h>
 #include <sys/prctl.h>
 #include <sys/syscall.h>
 #include <linux/bpf.h>
 #include <linux/filter.h>
 #include <linux/seccomp.h>
 #include <linux/unistd.h>
-#ifndef SYS_pivot_root
-#define SYS_pivot_root 155
-#endif
-#ifndef SYS_seccomp
-#define SYS_seccomp 317
-#endif
+
+static inline int li_container_pivot_root(const char* new_root, const char* put_old) {
+  return (int)syscall(__NR_pivot_root, new_root, put_old);
+}
+
+static inline int li_container_seccomp(unsigned int operation, unsigned int flags, void* args) {
+  return (int)syscall(__NR_seccomp, operation, flags, args);
+}
 #endif
 
 #define CONTAINER_RT_TAG 1
@@ -450,95 +435,6 @@ int container_state_delete_i(char* id) {
   return container_remove_file_i(path);
 }
 
-int container_state_list_stdout_i(void) {
-#if !defined(_WIN32)
-  char dir[512];
-  container_state_dir_i(dir, (int)sizeof(dir));
-  DIR* dp = opendir(dir);
-  if (dp == NULL) {
-    return -1;
-  }
-  struct dirent* ent;
-  while ((ent = readdir(dp)) != NULL) {
-    if (ent->d_name[0] == '.') {
-      continue;
-    }
-    char state_path[1024];
-    snprintf(state_path, sizeof(state_path), "%s/%s/state.json", dir, ent->d_name);
-    if (container_file_exists_i(state_path) != 1) {
-      continue;
-    }
-    fputs(ent->d_name, stdout);
-    fputc('\n', stdout);
-  }
-  closedir(dp);
-  return 0;
-#else
-  return -1;
-#endif
-}
-
-static const char* container_image_store_root(void) {
-  const char* env = getenv("LI_CONTAINER_IMAGE_STORE");
-  return (env != NULL && env[0] != '\0') ? env : "/var/lib/li-container/bundles";
-}
-
-static const char* container_oci_pull_script(void) {
-  const char* script = getenv("LI_OCI_PULL_SCRIPT");
-  if (script != NULL && script[0] != '\0') {
-    return script;
-  }
-  const char* lic_root = getenv("LIC_ROOT");
-  static char path[2048];
-  if (lic_root != NULL && lic_root[0] != '\0') {
-    snprintf(path, sizeof(path), "%s/scripts/oci-pull-to-bundle.sh", lic_root);
-    return path;
-  }
-  return "scripts/oci-pull-to-bundle.sh";
-}
-
-int container_registry_pull_i(char* ref, char* bundle_path) {
-#if defined(_WIN32)
-  (void)ref;
-  (void)bundle_path;
-  return -1;
-#else
-  if (ref == NULL || ref[0] == '\0' || bundle_path == NULL || bundle_path[0] == '\0') {
-    return -1;
-  }
-  container_mkdir_p_i(bundle_path);
-  setenv("LI_OCI_PULL_REF", ref, 1);
-  setenv("LI_OCI_PULL_OUT", bundle_path, 1);
-  char cmd[4096];
-  snprintf(cmd, sizeof(cmd), "bash '%s'", container_oci_pull_script());
-  int status = system(cmd);
-  if (status != 0) {
-    return status > 0 ? status : -1;
-  }
-  char config_path[2048];
-  snprintf(config_path, sizeof(config_path), "%s/config.json", bundle_path);
-  if (container_file_exists_i(config_path) != 1) {
-    return -2;
-  }
-  return 0;
-#endif
-}
-
-int container_registry_pull_to_store_i(char* ref, char* container_id) {
-#if defined(_WIN32)
-  (void)ref;
-  (void)container_id;
-  return -1;
-#else
-  if (ref == NULL || ref[0] == '\0' || container_id == NULL || container_id[0] == '\0') {
-    return -1;
-  }
-  char bundle[1024];
-  snprintf(bundle, sizeof(bundle), "%s/%s", container_image_store_root(), container_id);
-  return container_registry_pull_i(ref, bundle);
-#endif
-}
-
 int container_cgroup_root_i(char* out, int cap) {
   return container_copy_cstr(out, cap, "/sys/fs/cgroup");
 }
@@ -749,7 +645,7 @@ int container_pivot_root_i(char* rootfs_path) {
   if (mkdir(put_old, 0755) != 0 && errno != EEXIST) {
     return -1;
   }
-  if (syscall(SYS_pivot_root, ".", put_old) != 0) {
+  if (li_container_pivot_root(".", put_old) != 0) {
     return -1;
   }
   if (chdir("/") != 0) {
@@ -857,9 +753,7 @@ static int container_seccomp_install_default(void) {
   if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) != 0) {
     return -1;
   }
-  return syscall(SYS_seccomp, SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC, &prog) == 0
-             ? 0
-             : -1;
+  return li_container_seccomp(SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC, &prog) == 0 ? 0 : -1;
 }
 #endif
 

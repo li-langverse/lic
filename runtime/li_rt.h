@@ -257,6 +257,16 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
 int32_t li_rt_studio_aimd_scenario_reset(void);
 int32_t li_rt_studio_aimd_scenario_set(int32_t steps, int32_t temperature_k, int32_t potential_mv,
                                        int32_t algo_id);
+int32_t li_rt_studio_aimd_scenario_set_dft_stride(int32_t dft_stride);
+int32_t li_rt_studio_aimd_scenario_get_dft_stride(void);
+int32_t li_rt_studio_aimd_dft_stride_from_env(void);
+int32_t li_rt_studio_aimd_scenario_configure(int32_t steps, int32_t temperature_k, int32_t potential_mv,
+                                              int32_t algo_id);
+int32_t li_rt_studio_aimd_scenario_configured(void);
+int32_t li_rt_studio_aimd_scenario_steps(void);
+int32_t li_rt_studio_aimd_scenario_temperature_k(void);
+int32_t li_rt_studio_aimd_scenario_potential_mv(void);
+int32_t li_rt_studio_aimd_scenario_algo_id(void);
 int32_t li_rt_studio_aimd_scenario_get_steps(void);
 int32_t li_rt_studio_aimd_scenario_get_temperature(void);
 int32_t li_rt_studio_aimd_scenario_get_potential(void);
@@ -265,7 +275,8 @@ int32_t li_rt_studio_aimd_scenario_is_configured(void);
 int32_t li_rt_studio_aimd_gpu_from_env(void);
 int32_t li_rt_studio_aimd_batch_steps_from_env(void);
 int32_t li_rt_studio_aimd_batch_write_json(const char* path, int32_t steps, int32_t ok,
-                                           double checksum, double energy_drift, int32_t gpu_path);
+                                           double checksum, double energy_drift, int32_t gpu_path,
+                                           int32_t dft_stride, int32_t dft_calls);
 int32_t li_rt_studio_ppm_unique_colors(const char* path);
 int32_t li_rt_studio_aimd_last_ppm_set(const char* path);
 const char* li_rt_studio_aimd_last_ppm_get(void);

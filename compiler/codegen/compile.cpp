@@ -244,6 +244,10 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (std::filesystem::exists(rt_studio_demo_path)) {
     cmd << " -x c \"" << rt_studio_demo_path.string() << "\"";
   }
+  const std::filesystem::path rt_studio_aimd_path = resolve_runtime_c("li_rt_studio_aimd.c");
+  if (std::filesystem::exists(rt_studio_aimd_path)) {
+    cmd << " -x c \"" << rt_studio_aimd_path.string() << "\"";
+  }
   if ((link_runtime_full || rt_needs.needs_rt_par_reduce || link_par_rt_env) &&
       std::filesystem::exists(rt_par_reduce_path)) {
     cmd << " -x c \"" << rt_par_reduce_path.string() << "\"";

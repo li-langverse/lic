@@ -372,13 +372,20 @@ def echem_aimd_batch_demo_steps() -> int
 =
   return 5000
 
-def echem_aimd_batch_dft_stride() -> int
+extern def li_rt_studio_aimd_dft_stride_from_env() raises IO -> int
   requires true
   ensures result >= 1
   ensures result <= 1000
   decreases 0
+
+def echem_aimd_batch_dft_stride() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 1000
+  ensures result == li_rt_studio_aimd_dft_stride_from_env()
+  decreases 0
 =
-  return 50
+  return li_rt_studio_aimd_dft_stride_from_env()
 
 def echem_aimd_batch_steps_valid(steps: int) -> int
   requires true
@@ -392,16 +399,24 @@ def echem_aimd_batch_steps_valid(steps: int) -> int
     return 0
   return 1
 
+extern def li_rt_studio_aimd_gpu_from_env() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
 def echem_aimd_batch_gpu_path_select() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
-  ensures result == chem_dft_gpu_path_available()
+  ensures result <= chem_dft_gpu_path_available()
   decreases 0
 =
+  if li_rt_studio_aimd_gpu_from_env() != 1:
+    return 0
   return chem_dft_gpu_path_available()
 
-def echem_aimd_batch_run(steps: int) -> AimdBatchResult
+def echem_aimd_batch_run(steps: int) -> AimdBatchResult raises IO
   requires echem_aimd_batch_steps_valid(steps) == 1
   ensures result.steps == steps
   ensures result.ok == 1
@@ -443,6 +458,10 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult
     vx = vx + 0.5 * dt * ax
     echem_aimd_thermostat_step(vx, target_ke)
     md_step = md_step + 1
+  if stride > 1:
+    if steps % stride == 0:
+      echem_aimd_dft_energy_per_step()
+      out.dft_calls = out.dft_calls + 1
   out.final_x = x
   out.final_vx = vx
   var e1: float = echem_aimd_total_energy(x, vx)

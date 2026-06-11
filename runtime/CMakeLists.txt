@@ -20,6 +20,7 @@ set(LI_RT_SOURCES
   li_rt_hetero.c
   li_rt_blas.c
   li_rt_container.c
+  li_rt_studio_aimd.c
 )
 
 add_library(li_rt STATIC ${LI_RT_SOURCES})

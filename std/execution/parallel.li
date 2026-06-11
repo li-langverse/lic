@@ -1,0 +1,64 @@
+# std/execution/parallel.li — Kokkos-class portable parallel lowering policy (Phase 7e/G-par)
+#
+# Decorators `@cpu` + `@parallel(disjoint=...)` elaborate to MIR `OmpParallelFor` with
+# `memory_space=Host`, then codegen calls the portable runtime `li_parallel_for_i64`.
+# `@gpu` records `memory_space=Device` placement metadata; vendor LKIR lowering is G-gpu.
+#
+# Users write `parallel for` or stack `@cpu` / `@parallel` on `def` — never call these
+# policy constants at runtime for dispatch.
+
+def memory_space_host() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def memory_space_device() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def memory_space_unified() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def schedule_static() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def schedule_dynamic() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def schedule_guided() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def schedule_steal() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def __execution_parallel_doc() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

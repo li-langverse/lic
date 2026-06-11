@@ -138,6 +138,13 @@ struct MirParCapture {
   std::int64_t matrix_cols = 0;
 };
 
+/** Kokkos-class execution memory space — Host lowers to `li_parallel_for_i64` today. */
+enum class MirMemorySpace : std::int8_t {
+  Host = 0,
+  Device = 1,
+  Unified = 2,
+};
+
 struct MirInsn {
   MirOp op = MirOp::ReturnVoid;
   std::int64_t int_value = 0;
@@ -174,6 +181,8 @@ struct MirInsn {
   /** Outlined-loop captures published before `li_parallel_for_i64` (WP-PAR-18). */
   std::vector<MirParCapture> par_captures;
   std::vector<MirArg> args;
+  /** Kokkos-class memory space for `OmpParallelFor` lowering (**PH-7e/G-par**). */
+  MirMemorySpace memory_space = MirMemorySpace::Host;
   /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc
    *  unpack into `ident + "_" + name` (scalar locals or ArrayAlloc slots). */
   std::vector<MirParam> object_layout;
@@ -185,10 +194,14 @@ struct MirDecorator {
   std::int64_t lanes = 0;
   /** `@vectorized` on the owning `def` (7d-b MIR proc tag); SIMD LLVM only, never `OmpParallelFor`. */
   bool vectorized = false;
+  /** `@cpu` host-placement tag — portable parallel lowering targets Host memory space. */
+  bool cpu = false;
   /** `@gpu` device-placement tag. Lowering/codegen remains G-gpu; this makes placement visible to gates. */
   bool gpu = false;
   /** Requested device count for `@gpu(devices=N)`; 1 means ordinary single-device placement. */
   std::int64_t gpu_devices = 0;
+  /** Resolved memory space from `@cpu` / `@gpu` stack (**PH-7e**). */
+  MirMemorySpace memory_space = MirMemorySpace::Host;
   /** `@offload` hetero placement tag (**WP-PAR-07**). */
   bool offload = false;
   bool parallel = false;
@@ -286,7 +299,10 @@ struct MirModule {
 std::size_t count_mir_vectorized_proc(const MirModule& mir);
 std::size_t count_mir_gpu_def(const MirModule& mir);
 std::size_t count_mir_gpu_multi_device_def(const MirModule& mir);
+std::size_t count_mir_cpu_def(const MirModule& mir);
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
+/** Count `OmpParallelFor` lowered with Host memory space (portable `li_parallel_for_i64`). */
+std::size_t count_mir_parallel_host_lowering(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
 

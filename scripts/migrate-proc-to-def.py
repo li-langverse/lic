@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-shot: rewrite Li sources from proc to def (keeps extern proc)."""
+"""One-shot: rewrite Li sources from proc/extern proc to def/extern def."""
 from __future__ import annotations
 
 import re
@@ -11,8 +11,7 @@ SKIP = {"build", ".git", "node_modules"}
 
 
 def migrate_line(line: str) -> str:
-    if "extern proc" in line:
-        return line
+    line = line.replace("extern proc", "extern def")
     line = re.sub(r"\basync proc\b", "async def", line)
     if re.match(r"^(\s*)proc\b", line):
         return re.sub(r"^(\s*)proc\b", r"\1def", line, count=1)

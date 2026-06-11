@@ -1,4 +1,5 @@
 # Official package mirror CI — required for every li-langverse package repo.
+# Copied by: ./scripts/li-new-package --official  and  ./scripts/ensure-package-ci.sh
 name: CI
 
 on:
@@ -27,6 +28,7 @@ jobs:
         run: |
           set -euo pipefail
           chmod +x lic/scripts/check-li-def-syntax.sh
+          # Package tree only — lic checkout includes compile_fail proc tests.
           lic/scripts/check-li-def-syntax.sh src
           if [[ -d li-tests ]]; then
             lic/scripts/check-li-def-syntax.sh li-tests

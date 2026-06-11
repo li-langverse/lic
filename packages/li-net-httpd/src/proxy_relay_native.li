@@ -1,0 +1,131 @@
+# Pure-Li CL proxy relay oracle — byte accounting, finish gate, upstream hold.
+
+def relay_cl_take(recv_n: int, body_left: int) -> int
+  requires 0 <= recv_n
+  requires 0 <= body_left
+  ensures 0 <= result
+  ensures result <= recv_n
+  ensures result <= body_left
+  decreases recv_n
+=
+  if recv_n <= body_left:
+    return recv_n
+  return body_left
+
+def relay_account_body(body_left: int, consumed: int, cl_active: int) -> int
+  requires 0 <= body_left
+  requires 0 <= consumed
+  ensures 0 <= result
+  ensures result <= body_left
+  decreases body_left
+=
+  if cl_active != 1:
+    return body_left
+  if consumed <= 0:
+    return body_left
+  if consumed >= body_left:
+    return 0
+  return body_left - consumed
+
+def relay_cl_complete(body_left: int, tls_defer: int, rbuf_pending: int) -> int
+  requires 0 <= body_left
+  requires 0 <= tls_defer
+  requires 0 <= rbuf_pending
+  ensures result == 0 or result == 1
+  decreases body_left + tls_defer + rbuf_pending
+=
+  if body_left > 0:
+    return 0
+  if tls_defer > 0:
+    return 0
+  if rbuf_pending > 0:
+    return 0
+  return 1
+
+def relay_pending_client(rbuf_pending: int, tls_defer: int, wbio_pending: int, ssl_pending: int) -> int
+  requires 0 <= rbuf_pending
+  requires 0 <= tls_defer
+  requires 0 <= wbio_pending
+  requires 0 <= ssl_pending
+  ensures result == 0 or result == 1
+  decreases rbuf_pending + tls_defer + wbio_pending + ssl_pending
+=
+  if rbuf_pending > 0:
+    return 1
+  if tls_defer > 0:
+    return 1
+  if wbio_pending > 0:
+    return 1
+  if ssl_pending > 0:
+    return 1
+  return 0
+
+def relay_upstream_blocked(tls_defer: int, rbuf_pending: int, wbio_pending: int, ssl_pending: int, body_left: int) -> int
+  requires 0 <= tls_defer
+  requires 0 <= rbuf_pending
+  requires 0 <= wbio_pending
+  requires 0 <= ssl_pending
+  requires 0 <= body_left
+  ensures result == 0 or result == 1
+  decreases tls_defer + rbuf_pending + wbio_pending + ssl_pending
+=
+  if relay_pending_client(rbuf_pending, tls_defer, wbio_pending, ssl_pending) == 1:
+    return 1
+  return 0
+
+def relay_finish_ready(
+  body_left: int,
+  tls_defer: int,
+  rbuf_pending: int,
+  wbio_pending: int,
+  ssl_pending: int,
+  resp_parsing: int,
+  cl_active: int
+) -> int
+  requires 0 <= body_left
+  requires 0 <= tls_defer
+  requires 0 <= rbuf_pending
+  requires 0 <= wbio_pending
+  requires 0 <= ssl_pending
+  ensures result == 0 or result == 1
+  decreases body_left + tls_defer + rbuf_pending
+=
+  if resp_parsing == 1:
+    return 0
+  if relay_pending_client(rbuf_pending, tls_defer, wbio_pending, ssl_pending) == 1:
+    return 0
+  if cl_active == 1:
+    if relay_cl_complete(body_left, tls_defer, rbuf_pending) != 1:
+      return 0
+  return 1
+
+def relay_native_oracle_selftest() -> int
+  requires true
+  ensures -30 <= result
+  ensures result <= 0
+  decreases 0
+=
+  if relay_cl_complete(0, 0, 381) != 0:
+    return -1
+  if relay_pending_client(381, 0, 0, 0) != 1:
+    return -2
+  if relay_cl_complete(0, 381, 0) != 0:
+    return -3
+  if relay_cl_take(10645, 10264) != 10264:
+    return -4
+  if relay_account_body(10645, 10264, 1) != 381:
+    return -5
+  if relay_upstream_blocked(0, 0, 1, 0, 1000) != 1:
+    return -6
+  if relay_finish_ready(0, 0, 0, 0, 0, 0, 1) != 1:
+    return -7
+  if relay_finish_ready(100, 0, 0, 0, 0, 0, 1) != 0:
+    return -8
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0 or result < 0
+  decreases 0
+=
+  return relay_native_oracle_selftest()

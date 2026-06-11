@@ -29,9 +29,13 @@ li_array_matmul (32×32 flat)
 
 Explicit API: `li_array_matmul_blas_f32` (RFC Phase F follow-up).
 
-### Pilot buffer note
+### Pilot buffer note (Phase H)
 
-Current `array[64, float]` pilot stores an 8×8 identity tile with logical 32×32 `ArrayDesc`. BLAS is invoked as 8×8×8 with `ld=8` matching the actual FLOPs until the buffer cap rises (Phase I/J).
+Phase H used `array[64, float]` pilot (8×8 identity tile, logical 32×32 `ArrayDesc`). BLAS below 16³ is skipped — 8×8×8 loses to `@vectorized` CPU.
+
+### Dense buffer (Phase I)
+
+Phase I expands pilot → `array[1024, float]` (`ld=32`) and calls `cblas_dgemm` at full 32×32×32 when `LI_ARRAY_BLAS=openblas`. CPU fallback: `ml_matmul_cpu_dense_blocked` with `LI_ARRAY_GEMM_TILE` (`8` \| `16`).
 
 ## Env vars
 
@@ -52,8 +56,8 @@ Current `array[64, float]` pilot stores an 8×8 identity tile with logical 32×3
 
 - [x] Runtime hook + Li dispatch wired
 - [x] Gate script green; warn when `li_over_numpy > 2.0`
-- [ ] Phase I tile sweep
-- [ ] Phase J fair 32×32 dense buffer + `ratio_target_met ≤ 2.0`
+- [x] Phase I dense `array[1024]` + `LI_ARRAY_GEMM_TILE` sweep script (in flight — `ph-ml-li-array-perf-ij`)
+- [ ] Phase J `ratio_target_met ≤ 2.0` honest
 
 ## References
 

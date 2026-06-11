@@ -1,0 +1,13 @@
+# WP-CTN-061 — lictl CLI entry (user commands + lirun OCI dispatch).
+
+import container.cli
+import std.runtime.seam
+
+def main() raises IO, Alloc -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  if li_rt_argc() < 2:
+    return li_container_cli_selftest()
+  return container_cli_dispatch()

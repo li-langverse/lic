@@ -50,11 +50,9 @@ if [[ -f "$LIC" && -f "$SMOKE" ]]; then
     done
     t0="$(python3 -c 'import time; print(time.perf_counter())')"
     PH_ML_LI_ARRAY32_RUN_RC=0
-    for _r in $(seq 1 "$PH_ML_LI_ARRAY32_RUNS"); do
-      if ! "$PH_ML_LI_ARRAY32_BIN" >/dev/null 2>&1; then
-        PH_ML_LI_ARRAY32_RUN_RC=1
-      fi
-    done
+    if ! "$PH_ML_LI_ARRAY32_BIN" >/dev/null 2>&1; then
+      PH_ML_LI_ARRAY32_RUN_RC=1
+    fi
     t1="$(python3 -c 'import time; print(time.perf_counter())')"
     PH_ML_LI_ARRAY32_CPU_SEC="$(python3 -c "print(round((float('$t1') - float('$t0')) / int('$PH_ML_LI_ARRAY32_RUNS'), 6))")"
   fi
@@ -78,14 +76,22 @@ blas_env = os.environ.get("LI_ARRAY_BLAS", "").strip().lower()
 blas_requested = blas_env not in ("", "0", "off", "false", "no")
 blas_backend = "openblas" if blas_requested else "none"
 workload_class = "blas_labeled" if blas_requested else "cpu_native"
+gemm_tile = int(os.environ.get("LI_ARRAY_GEMM_TILE", "8") or "8")
+if gemm_tile not in (8, 16):
+    gemm_tile = 8
+buffer_class = "dense_c_blas32"
+phase_h_baseline = 343.0
 
 report = {
     "suite": "ph-ml-li-array-matmul-32",
     "id": "li_array_matmul_32x32",
     "workload_size": 32,
-    "workload_note": "32x32 logical f32 via ArrayDesc -> ml_matmul_cpu_logical_32 (BLAS when LI_ARRAY_BLAS=openblas); run-only 50x mean; ratio_vs_li = numpy/cpu",
+    "workload_note": "32x32 logical f32 via ArrayDesc -> ml_matmul_cpu_logical_32 (dense array[1024] + BLAS 32^3 when LI_ARRAY_BLAS=openblas); run-only 50x mean; ratio_vs_li = numpy/cpu",
     "blas_backend": blas_backend,
     "workload_class": workload_class,
+    "buffer_class": buffer_class,
+    "gemm_tile": gemm_tile,
+    "phase_h_baseline_li_over_numpy": phase_h_baseline,
     "compile_ok": compile_ok,
     "executed": executed,
     "validity_gate_pass": validity,

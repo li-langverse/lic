@@ -163,4 +163,4 @@ Requires **engineering 100%** (`check-li-parallel-killer-gate.sh`: runtime smoke
 
 ## Current blocker (2026-06-07)
 
-**None — GOAL_COMPLETE.** Engineering (killer gate) and proofs (G-par Done) at 100%. Local `check-li-parallel-goal-complete-gate.sh` green (~20 min, 152 benchmarks dual-mode tiers 0–7). GHA `lipar-killer-gate` + `build-and-test` green on PR #881. Unrelated `httpd-ci-runtime` `runtime-gates` flake is outside li-parallel scope. Future general dependent subscripts beyond compiler surface remain org-tracked outside this sprint.
+**None — GOAL_COMPLETE (2026-06-11).** Engineering (killer gate) and proofs (G-par Done) at 100%. lic PR #881 merged; benchmarks PR #370 merged (dual-mode harness). Local `check-li-parallel-goal-complete-gate.sh` green. Future general dependent subscripts beyond compiler surface remain org-tracked outside this sprint.

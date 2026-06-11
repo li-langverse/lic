@@ -10,9 +10,17 @@ services:
     build:
       context: ../..
       dockerfile: test/gitlab-proxy/Dockerfile.proxy
+    environment:
+      LI_HTTPD_USE_NATIVE_PROXY_RELAY: "1"
     depends_on:
       backend:
         condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-sk", "--http1.1", "--resolve", "gitlab.test:8443:127.0.0.1", "-o", "/dev/null", "https://gitlab.test:8443/users/sign_in"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 15s
     ports:
       - "19543:8443"
     networks: [gitlab]
@@ -21,12 +29,12 @@ services:
     image: curlimages/curl:8.12.1
     depends_on:
       proxy:
-        condition: service_started
+        condition: service_healthy
     networks: [gitlab]
     volumes:
       - ./test-gitlab-parallel.sh:/test.sh:ro
       - ../proxy/proxy-curl-env.sh:/proxy-curl-env.sh:ro
-    entrypoint: ["/bin/sh", "-c", "sleep 3 && PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=gitlab.test sh /test.sh"]
+    entrypoint: ["/bin/sh", "-c", "PROXY_HOST=proxy PROXY_PORT=8443 PROXY_VHOST=gitlab.test sh /test.sh"]
 
 networks:
   gitlab:

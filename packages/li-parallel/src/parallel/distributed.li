@@ -1,23 +1,23 @@
-extern proc li_dpar_rank() -> int
+extern def li_dpar_rank() -> int
   requires true
   ensures result >= 0
 
-extern proc li_dpar_world_size() -> int
+extern def li_dpar_world_size() -> int
   requires true
   ensures result >= 1
 
-extern proc li_dpar_barrier() -> unit
+extern def li_dpar_barrier() -> unit
   requires true
   ensures true
 
-extern proc li_dpar_block_partition_begin(global_n: int, rank: int, world: int) -> int
+extern def li_dpar_block_partition_begin(global_n: int, rank: int, world: int) -> int
   requires global_n >= 0
   requires rank >= 0
   requires world > 0
   ensures result >= 0
   ensures result <= global_n
 
-extern proc li_dpar_block_partition_end(global_n: int, rank: int, world: int) -> int
+extern def li_dpar_block_partition_end(global_n: int, rank: int, world: int) -> int
   requires global_n >= 0
   requires rank >= 0
   requires world > 0
@@ -45,15 +45,15 @@ def barrier() -> unit raises IO
 =
   li_dpar_barrier()
 
-extern proc li_dpar_scatter_f64(sendbuf: ptr, recvbuf: ptr, sendcount: int, root: int) -> unit
+extern def li_dpar_scatter_f64(sendbuf: ptr, recvbuf: ptr, sendcount: int, root: int) -> unit
   requires true
   ensures true
 
-extern proc li_dpar_gather_f64(sendbuf: ptr, recvbuf: ptr, sendcount: int, root: int) -> unit
+extern def li_dpar_gather_f64(sendbuf: ptr, recvbuf: ptr, sendcount: int, root: int) -> unit
   requires true
   ensures true
 
-extern proc li_dpar_scan_sum_f64(local: float, out: ptr) -> unit
+extern def li_dpar_scan_sum_f64(local: float, out: ptr) -> unit
   requires true
   ensures true
 

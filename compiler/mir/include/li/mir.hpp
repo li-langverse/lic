@@ -273,6 +273,8 @@ struct MirModule {
   bool needs_rt_fl = false;
   /** runtime/li_rt_hetero.c — CPU/GPU/TPU/ASIC orchestration probes (**WP-PAR-80**). */
   bool needs_rt_hetero = false;
+  /** runtime/li_rt_container.c — OCI container trusted seam (**WP-CTN-001**). */
+  bool needs_rt_container = false;
   MirExecPlan exec_plan;
   MirCommPlan comm_plan;
   MirXferPlan xfer_plan;

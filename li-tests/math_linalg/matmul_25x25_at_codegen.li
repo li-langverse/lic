@@ -1,7 +1,7 @@
 # Forces ArrayMatMul2DF64 loop codegen (m,k,n > kUnrollMax=24 in emit.cpp).
 # Runtime init + sink so LLVM cannot constant-fold or DCE the `@`.
 
-extern proc li_rt_volatile_sink_f64(v: float) -> unit
+extern def li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true
 

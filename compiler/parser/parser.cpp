@@ -85,7 +85,7 @@ struct Parser {
     }
     if (at(TokenKind::KwProc)) {
       diags.error(loc(cur()),
-                  "use 'def' for Li procedures; 'proc' is only allowed after 'extern'");
+                  "use 'def' for Li procedures; trusted FFI uses 'extern def' in seam.li");
       i++;
       return false;
     }
@@ -111,7 +111,14 @@ struct Parser {
         skip_newlines();
       } else if (at(TokenKind::KwExtern)) {
         i++;
-        if (!expect(TokenKind::KwProc, "'proc'")) {
+        if (at(TokenKind::KwDef)) {
+          i++;
+        } else if (at(TokenKind::KwProc)) {
+          diags.error(loc(cur()),
+                      "use 'extern def' for trusted FFI; 'extern proc' is removed");
+          i++;
+        } else {
+          diags.error(loc(cur()), "expected 'def' after 'extern'");
           return false;
         }
         out.procs.push_back(parse_proc(true));
@@ -153,7 +160,7 @@ struct Parser {
         skip_newlines();
       } else if (at(TokenKind::KwProc)) {
         diags.error(loc(cur()),
-                    "use 'def' for Li procedures; 'proc' is only allowed after 'extern'");
+                    "use 'def' for Li procedures; 'proc' is removed");
         i++;
         skip_newlines();
       } else if (at(TokenKind::KwType)) {

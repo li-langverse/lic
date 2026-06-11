@@ -1,7 +1,7 @@
 # 2×2 float `@` codegen probe — runtime sink prevents DCE of ArrayMatMul2DF64 lowering.
 # Contrast: Li.Discharge.mat2_at2_eval (Lean) vs MIR `A @ B` (no refinement lemma in semantics).
 
-extern proc li_rt_volatile_sink_f64(v: float) -> unit
+extern def li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true
   decreases 0

@@ -1,0 +1,129 @@
+# WP-CTN-024 — backend selection (Linux, LiOS, Windows, macOS).
+
+import backend.darwin
+import backend.lios
+import backend.linux
+import backend.windows
+
+def container_backend_id_unknown() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def container_backend_id_linux() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_backend_id_lios() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def container_backend_id_windows() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def container_backend_id_darwin() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def container_backend_tag_for_id(backend_id: int) -> int
+  requires backend_id >= 0
+  ensures result >= 0
+  decreases 0
+=
+  if backend_id == container_backend_id_linux():
+    return container_linux_backend_tag()
+  if backend_id == container_backend_id_lios():
+    return container_lios_backend_tag()
+  if backend_id == container_backend_id_windows():
+    return container_windows_backend_tag()
+  if backend_id == container_backend_id_darwin():
+    return container_darwin_backend_tag()
+  return container_backend_id_unknown()
+
+def container_backend_detect_linux(is_linux: int) -> int
+  requires is_linux >= 0
+  ensures result >= 0
+  decreases 0
+=
+  if is_linux == 1:
+    return container_backend_id_linux()
+  return container_backend_id_unknown()
+
+def container_backend_detect_host(is_lios: int, is_linux: int, is_windows: int, is_darwin: int) -> int
+  requires is_lios >= 0
+  requires is_linux >= 0
+  requires is_windows >= 0
+  requires is_darwin >= 0
+  ensures result >= 0
+  decreases 0
+=
+  if is_lios == 1:
+    return container_backend_id_lios()
+  if is_linux == 1:
+    return container_backend_id_linux()
+  if is_windows == 1:
+    return container_backend_id_windows()
+  if is_darwin == 1:
+    return container_backend_id_darwin()
+  return container_backend_id_unknown()
+
+def container_backend_select_hint(hint: int) -> int
+  requires hint >= 0
+  ensures result >= 0
+  decreases 0
+=
+  return container_backend_tag_for_id(hint)
+
+def container_backend_select_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if container_backend_tag_for_id(container_backend_id_linux()) != 1:
+    return 1
+  if container_backend_tag_for_id(container_backend_id_lios()) != 2:
+    return 2
+  if container_backend_tag_for_id(container_backend_id_windows()) != 3:
+    return 3
+  if container_backend_tag_for_id(container_backend_id_darwin()) != 4:
+    return 4
+  if container_backend_select_hint(container_backend_id_linux()) != 1:
+    return 5
+  if container_backend_detect_linux(1) != container_backend_id_linux():
+    return 6
+  if container_backend_detect_linux(0) != container_backend_id_unknown():
+    return 7
+  if container_backend_detect_host(1, 1, 0, 0) != container_backend_id_lios():
+    return 8
+  if container_backend_detect_host(0, 1, 0, 0) != container_backend_id_linux():
+    return 9
+  if container_backend_detect_host(0, 0, 1, 0) != container_backend_id_windows():
+    return 10
+  if container_backend_detect_host(0, 0, 0, 1) != container_backend_id_darwin():
+    return 11
+  if container_backend_detect_host(0, 0, 0, 0) != container_backend_id_unknown():
+    return 12
+  if container_linux_backend_selftest() != 0:
+    return 13
+  if container_lios_backend_selftest() != 0:
+    return 14
+  if container_windows_backend_selftest() != 0:
+    return 15
+  if container_darwin_backend_selftest() != 0:
+    return 16
+  return 0

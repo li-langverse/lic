@@ -3,15 +3,15 @@
 
 # euler_fluid_2d — shared C oracle via LI_EXTRA_C (WP3 smoke-scale).
 
-extern proc li_euler_fluid_2d_kernel()
+extern def li_euler_fluid_2d_kernel()
   requires true
   ensures true
 
-extern proc li_euler_fluid_2d_checksum() -> float
+extern def li_euler_fluid_2d_checksum() -> float
   requires true
   ensures true
 
-extern proc li_rt_volatile_sink_f64(v: float) -> unit
+extern def li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true
 

@@ -1677,7 +1677,7 @@ struct Ctx {
           "`ensures true` is not allowed when the procedure returns a value — the postcondition "
           "must relate `result` to the computation.",
           "Use `ensures result == <expr>` when the return is an expression, or a property such as "
-          "`ensures result >= 0.0`. Opaque `extern proc` may still use `ensures true`.");
+          "`ensures result >= 0.0`. Opaque `extern def` may still use `ensures true`.");
       return;
     }
   }
@@ -1698,12 +1698,12 @@ struct Ctx {
     if (p.is_extern) {
       if (!has_requires) {
         diag_error(diags, loc(p.span), ErrorCode::E0301,
-                   "Every `extern proc` must declare what must be true before it runs (`requires`).",
+                   "Every `extern def` must declare what must be true before it runs (`requires`).",
                    "Add a `requires` clause on the line above `=`.");
       }
       if (!has_ensures) {
         diag_error(diags, loc(p.span), ErrorCode::E0302,
-                   "Every `extern proc` must declare what it guarantees on exit (`ensures`).",
+                   "Every `extern def` must declare what it guarantees on exit (`ensures`).",
                    "Add an `ensures` clause (often `ensures true` for opaque runtime calls).");
       }
       in_async = prev_async;

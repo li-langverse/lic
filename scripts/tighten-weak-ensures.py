@@ -24,7 +24,7 @@ def is_unit(ret: str | None) -> bool:
 
 
 def is_extern(proc: str) -> bool:
-    return proc.startswith("extern proc")
+    return proc.startswith("extern def")
 
 
 def count_returns(proc: str) -> list[str]:

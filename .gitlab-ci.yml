@@ -1,16 +1,31 @@
-# Mirrors lic/.github/workflows/ci.yml (version + build-and-test on Ubuntu).
-# macOS job omitted ??? add dedicated macos runner tag if needed.
+# GitLab-primary CI for lic (GitHub mirror is read-only; container images on GHCR).
+# Pipeline schedules (GitLab UI → CI/CD → Schedules; set SCHEDULE_KIND variable per schedule):
+#   fuzz-nightly          cron 0 3 * * *     SCHEDULE_KIND=fuzz
+#   httpd-phase2-nightly  cron 0 6 * * 0     SCHEDULE_KIND=httpd-phase2
 #
-# Requires: group runner with kubernetes executor (homelab-k8s on engine).
+# Required CI/CD variables (group or project):
+#   GITLAB_TOKEN          clone siblings / optional corpus MR push
+#   GHCR_TOKEN or GH_PACKAGES   docker login ghcr.io (publish jobs)
+#   GHCR_USER             optional; default gitlab-ci
+#
+# Runner: homelab-k8s (kubernetes executor). macOS/Windows jobs deferred to GHA-free future runners.
 
 stages:
   - version
   - test
+  - fuzz
+  - httpd
+  - publish
 
 default:
   tags:
     - homelab-k8s
   interruptible: true
+
+# homelab-k8s runner rejects empty default pull_policy ([]); set per-job on image.
+.ubuntu_image: &ubuntu_image
+  name: ubuntu:24.04
+  pull_policy: if-not-present
 
 variables:
   LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
@@ -19,9 +34,26 @@ variables:
   GIT_SSL_NO_VERIFY: "true"
   CI_SERVER_HOST: gitlab.gitlab.svc.cluster.local
 
+.apt_llvm_before: &apt_llvm_before
+  - apt-get update -qq
+  - apt-get install -y -qq git curl ca-certificates sudo python3 lsb-release wget gnupg software-properties-common
+  - chmod +x scripts/ci-install-llvm.sh
+  - sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+
+.ghcr_login: &ghcr_login
+  - |
+    if [[ -n "${GHCR_TOKEN:-}" ]]; then
+      echo "$GHCR_TOKEN" | docker login ghcr.io -u "${GHCR_USER:-gitlab-ci}" --password-stdin
+    elif [[ -n "${GH_PACKAGES:-}" ]]; then
+      echo "$GH_PACKAGES" | docker login ghcr.io -u "${GHCR_USER:-gitlab-ci}" --password-stdin
+    else
+      echo "GHCR_TOKEN or GH_PACKAGES required for image publish"
+      exit 1
+    fi
+
 .version_template: &version_job
   stage: version
-  image: ubuntu:24.04
+  image: *ubuntu_image
   script:
     - apt-get update -qq && apt-get install -y -qq git bash
     - chmod +x scripts/check-version.sh
@@ -31,6 +63,8 @@ version:main:
   <<: *version_job
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
+      when: on_success
+    - when: never
 
 version:mr:
   <<: *version_job
@@ -42,18 +76,16 @@ version:mr:
     - ./scripts/check-version.sh --pr
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - when: never
 
 build-and-test:
   stage: test
-  image: ubuntu:24.04
-  before_script:
-    - apt-get update -qq
-    - apt-get install -y -qq git curl ca-certificates sudo python3 lsb-release wget gnupg software-properties-common
+  image: *ubuntu_image
+  before_script: *apt_llvm_before
   script:
-    - chmod +x scripts/checkout-ecosystem-siblings.sh scripts/ci-install-llvm.sh
-      scripts/ci.sh scripts/build.sh scripts/check-version.sh scripts/resolve-lic.sh li-tests/run_security.sh
+    - chmod +x scripts/checkout-ecosystem-siblings.sh scripts/ci.sh scripts/build.sh
+      scripts/check-version.sh scripts/resolve-lic.sh li-tests/run_security.sh
     - ./scripts/checkout-ecosystem-siblings.sh
-    - sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
     - ./scripts/ci.sh
     - ./scripts/check-version.sh --build
   rules:
@@ -62,15 +94,10 @@ build-and-test:
 
 test-proxy:
   stage: test
-  image: ubuntu:24.04
-  allow_failure: false
-  before_script:
-    - apt-get update -qq
-    - apt-get install -y -qq git curl ca-certificates sudo python3 lsb-release wget gnupg software-properties-common
+  image: *ubuntu_image
+  before_script: *apt_llvm_before
   script:
-    - chmod +x scripts/ci-install-llvm.sh scripts/build.sh
-      test/proxy/run-proxy-tests.sh test/proxy-relay/run-unit-tests.sh
-    - sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+    - chmod +x scripts/build.sh test/proxy/run-proxy-tests.sh test/proxy-relay/run-unit-tests.sh
     - ./scripts/build.sh
     - make test-proxy-c
   rules:
@@ -84,3 +111,137 @@ test-proxy:
         - test/proxy-repro/**/*
         - packages/li-net-httpd/**/*
 
+fuzz-parser:
+  stage: fuzz
+  image: *ubuntu_image
+  timeout: 2h
+  variables:
+    FUZZ_MAX_TOTAL_TIME: "600"
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq git curl ca-certificates sudo python3 lsb-release wget gnupg
+      software-properties-common cmake ninja-build
+    - *apt_llvm_before
+  script:
+    - |
+      if [[ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]]; then
+        FUZZ_MODE=pr
+      elif [[ -n "${FUZZ_MAX_TOTAL_TIME_INPUT:-}" ]]; then
+        FUZZ_MODE=nightly
+        FUZZ_MAX_TOTAL_TIME="$FUZZ_MAX_TOTAL_TIME_INPUT"
+      else
+        FUZZ_MODE=nightly
+      fi
+    - mkdir -p build-fuzz/corpus-work build-fuzz/artifacts
+    - cp -r compiler/fuzz/corpus/* build-fuzz/corpus-work/ 2>/dev/null || true
+    - |
+      cmake -B build-fuzz -G Ninja -DLI_BUILD_FUZZ=ON -DLLVM_DIR="$LLVM_DIR" \
+        -DCMAKE_C_COMPILER=clang-22 -DCMAKE_CXX_COMPILER=clang++-22
+      cmake --build build-fuzz --target parse_fuzz check_fuzz
+    - |
+      FUZZ=build-fuzz/compiler/fuzz/parse_fuzz
+      CORPUS=build-fuzz/corpus-work
+      ART=build-fuzz/artifacts
+      set +e
+      if [[ "$FUZZ_MODE" == "pr" ]]; then
+        "$FUZZ" "$CORPUS" -runs=5000 -max_len=65536 -artifact_prefix="$ART/crash-"
+      else
+        "$FUZZ" "$CORPUS" -max_total_time="$FUZZ_MAX_TOTAL_TIME" -max_len=65536 -artifact_prefix="$ART/crash-"
+      fi
+      FUZZ_EXIT=$?
+      set -e
+    - chmod +x scripts/merge_fuzz_corpus.sh
+    - ./scripts/merge_fuzz_corpus.sh build-fuzz/compiler/fuzz/parse_fuzz compiler/fuzz/corpus build-fuzz/corpus-work build-fuzz/artifacts
+    - |
+      if [[ "$FUZZ_EXIT" -ne 0 ]]; then
+        echo "parse_fuzz reported a crash — see fuzz-crashes artifact"
+        exit 1
+      fi
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "main" && "$CI_PIPELINE_SOURCE" =~ ^(schedule|web)$ && -n "${GITLAB_TOKEN:-}" ]]; then
+        git config user.email "ci@lilangverse.xyz"
+        git config user.name "lic-fuzz-bot"
+        BRANCH="bot/fuzz-corpus-${CI_PIPELINE_ID}"
+        git checkout -b "$BRANCH"
+        git add compiler/fuzz/corpus/
+        git diff --staged --quiet || git commit -m "chore(fuzz): update parser corpus from nightly"
+        git push "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:${BRANCH}" || true
+      fi
+  artifacts:
+    when: always
+    expire_in: 14 days
+    paths:
+      - build-fuzz/artifacts/
+      - compiler/fuzz/corpus/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_KIND == "fuzz"
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - compiler/parser/**/*
+        - compiler/fuzz/**/*
+        - compiler/types/**/*
+        - compiler/lexer/**/*
+        - security/**/*
+        - scripts/merge_fuzz_corpus.sh
+
+httpd-phase2-nightly:
+  stage: httpd
+  image: *ubuntu_image
+  timeout: 90m
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq git curl ca-certificates sudo python3 lsb-release wget gnupg
+      software-properties-common nginx wrk nodejs openssl
+    - *apt_llvm_before
+  script:
+    - chmod +x scripts/checkout-ecosystem-siblings.sh scripts/build.sh scripts/build-li-httpd.sh
+      scripts/httpd-plan-gates.sh scripts/check-tier5-*.sh
+    - ./scripts/checkout-ecosystem-siblings.sh
+    - ./scripts/build.sh
+    - ./scripts/build-li-httpd.sh
+    - test -x build/li-httpd
+    - |
+      export HTTPD_RUN_PHASE2_GATES=1
+      export HTTPD_BENCH_SKIP_TIMING=0
+      export HTTPD_BENCH_DURATION_SEC=30
+      HTTPD_GATES_SKIP_LIC_BUILD=1 ./scripts/httpd-plan-gates.sh
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_KIND == "httpd-phase2"
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+.publish_docker: &publish_docker
+  stage: publish
+  image:
+    name: docker:24
+    pull_policy: if-not-present
+  services:
+    - name: docker:24-dind
+      alias: docker
+      pull_policy: if-not-present
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  before_script: *ghcr_login
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - docker/ci-debian12-llvm22/**/*
+        - docker/ci-ubuntu24-llvm22/**/*
+        - scripts/ci-install-llvm.sh
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+publish-lic-ci-debian12:
+  <<: *publish_docker
+  script:
+    - docker build -t ghcr.io/li-langverse/lic-ci:debian12-llvm22 -t ghcr.io/li-langverse/lic-ci:latest docker/ci-debian12-llvm22
+    - docker push ghcr.io/li-langverse/lic-ci:debian12-llvm22
+    - docker push ghcr.io/li-langverse/lic-ci:latest
+
+publish-lic-ci-ubuntu24:
+  <<: *publish_docker
+  script:
+    - docker build -t ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22 docker/ci-ubuntu24-llvm22
+    - docker push ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22

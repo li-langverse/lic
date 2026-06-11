@@ -15,7 +15,7 @@ def add(a: int, b: int) -> int
 
 - Positional parameters with types.
 - Generic parameters: `def id[T](x: T) -> T`.
-- `extern proc` for C linkage (runtime or libraries).
+- `extern def` for trusted C linkage (`std/runtime/seam.li` only).
 
 ### Return
 

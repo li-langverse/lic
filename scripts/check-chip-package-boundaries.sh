@@ -35,7 +35,7 @@ if [[ -d "$ROOT/packages/li-ml" ]]; then
   fi
 fi
 
-if grep -R --include='*.li' -E 'extern proc.*(litpu_|liasic_)|#include <(cuda|hip)|\bcudaMemcpy|\bhipLaunch|\bopencl|\bvulkan' \
+if grep -R --include='*.li' -E 'extern def.*(litpu_|liasic_)|#include <(cuda|hip)|\bcudaMemcpy|\bhipLaunch|\bopencl|\bvulkan' \
   "$ROOT/packages/li-parallel" 2>/dev/null; then
   report "li-parallel calls vendor SDKs directly — orchestrate via chip packages only"
 fi

@@ -35,7 +35,7 @@ static int li_rt_blas_env_wanted(void) {
   return 1;
 }
 
-static void li_rt_blas_init_once(void) {
+static void li_rt_blas_dlopen_try(void) {
   static const char* lib_names[] = {
 #if defined(_WIN32)
       "libopenblas.dll",
@@ -48,11 +48,7 @@ static void li_rt_blas_init_once(void) {
   };
   int i;
 
-  if (g_blas_init_done) {
-    return;
-  }
-  g_blas_init_done = 1;
-  if (!li_rt_blas_env_wanted()) {
+  if (g_blas_ready) {
     return;
   }
   for (i = 0; lib_names[i] != NULL; ++i) {
@@ -67,9 +63,26 @@ static void li_rt_blas_init_once(void) {
   p_cblas_dgemm = (cblas_dgemm_fn)li_rt_dlsym(g_openblas_lib, "cblas_dgemm");
   if (p_cblas_dgemm != NULL) {
     g_blas_ready = 1;
-    /* Tiny GEMMs pay OpenBLAS thread/dispatch overhead; keep user override if set. */
     (void)setenv("OPENBLAS_NUM_THREADS", "1", 0);
   }
+}
+
+static void li_rt_blas_init_once(void) {
+  if (g_blas_init_done) {
+    return;
+  }
+  g_blas_init_done = 1;
+  if (!li_rt_blas_env_wanted()) {
+    return;
+  }
+  li_rt_blas_dlopen_try();
+}
+
+static void li_rt_blas_init_dense32(void) {
+  if (!g_blas_init_done) {
+    g_blas_init_done = 1;
+  }
+  li_rt_blas_dlopen_try();
 }
 
 /** Li codegen stores `float` as f64; skip BLAS below 16³ — 8×8 pilot is faster on @vectorized CPU. */
@@ -104,5 +117,43 @@ int32_t li_rt_blas_sgemm_f32(int32_t m, int32_t n, int32_t k, int32_t ld, double
   }
   p_cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, (int)m, (int)n, (int)k, 1.0, a, (int)ld,
                 b, (int)ld, 0.0, c, (int)ld);
+  return 0;
+}
+
+int32_t li_rt_gemm_tile_env(void) {
+  const char* v = getenv("LI_ARRAY_GEMM_TILE");
+  if (v == NULL || v[0] == '\0') {
+    return 8;
+  }
+  if (strcmp(v, "16") == 0) {
+    return 16;
+  }
+  return 8;
+}
+
+int32_t li_rt_blas_matmul_dense32_identity(double* out_c00) {
+  double a[32 * 32];
+  double b[32 * 32];
+  double c[32 * 32];
+  int32_t i;
+  if (out_c00 == NULL) {
+    return 1;
+  }
+  for (i = 0; i < 32 * 32; ++i) {
+    a[i] = 0.0;
+    b[i] = 0.0;
+    c[i] = 0.0;
+  }
+  for (i = 0; i < 32; ++i) {
+    a[i * 32 + i] = 1.0;
+    b[i * 32 + i] = 1.0;
+  }
+  li_rt_blas_init_dense32();
+  if (!g_blas_ready || p_cblas_dgemm == NULL) {
+    return 1;
+  }
+  p_cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 32, 32, 32, 1.0, a, 32, b, 32, 0.0, c,
+                32);
+  *out_c00 = c[0];
   return 0;
 }

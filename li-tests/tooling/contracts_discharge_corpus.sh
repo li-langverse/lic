@@ -27,6 +27,8 @@ chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"
 "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean"
 rm -f "$ROOT/build/generated/AutoVC.lean"
 "$LIC" build "$ROOT/li-tests/contracts_verify/sqrt_open_bound.li" -o /dev/null
-"$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean"
-echo "contracts_discharge_corpus: sqrt_open_bound closed (zero open Prop goals)"
+if ! "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean"; then
+  echo "contracts_discharge_corpus: FAIL — sqrt_open_bound should discharge (zero open Prop goals)" >&2
+  exit 1
+fi
 echo "contracts_discharge_corpus: ok"

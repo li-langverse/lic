@@ -458,6 +458,10 @@ def echem_aimd_batch_run(steps: int) -> AimdBatchResult raises IO
     vx = vx + 0.5 * dt * ax
     echem_aimd_thermostat_step(vx, target_ke)
     md_step = md_step + 1
+  if stride > 1:
+    if steps % stride == 0:
+      echem_aimd_dft_energy_per_step()
+      out.dft_calls = out.dft_calls + 1
   out.final_x = x
   out.final_vx = vx
   var e1: float = echem_aimd_total_energy(x, vx)

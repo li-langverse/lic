@@ -192,6 +192,9 @@ int32_t li_rt_studio_aimd_batch_write_json(const char* path, int32_t steps, int3
         dft_calls++;
       }
     }
+    if (dft_stride > 1 && steps > 0 && steps % dft_stride == 0) {
+      dft_calls++;
+    }
     if (dft_calls < 1) {
       dft_calls = 1;
     }

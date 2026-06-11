@@ -1,4 +1,4 @@
-# WP-CTN-061 — licontainer CLI entry (thin wrapper over container.cli).
+# WP-CTN-061 — lictl CLI entry (user commands + lirun OCI dispatch).
 
 import container.cli
 import std.runtime.seam

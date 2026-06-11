@@ -3,7 +3,7 @@ name = "li-container-cli"
 version = "0.1.0"
 edition = "2026"
 license = "Apache-2.0 OR MIT"
-description = "Container CLI scaffold (thin wrapper over lirun / container.run)"
+description = "lictl user CLI (run, ps, stop) + lirun OCI lifecycle dispatch"
 
 [dependencies]
 li-container-run = { path = "../li-container-run" }
@@ -11,7 +11,7 @@ li-container = { path = "../li-container" }
 # registry = "1.0.0"             # lip 8d+
 
 [[bin]]
-name = "licontainer"
+name = "lictl"
 path = "src/main.li"
 
 [package.metadata.li]

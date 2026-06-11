@@ -22,7 +22,7 @@ Gate: `scripts/check-mir-portable-parallel-lowering.sh`.
 
 ## Status
 
-Parsing, policy, and **7d-b–e MIR lowering** are implemented in `lic build`. Exit gate: `./scripts/check-mir-decorator-lowering.sh` (**G-dec** closed slice). **`@cpu` + `@parallel(disjoint=...)`** lower to portable Host `li_parallel_for_i64` (Kokkos-class memory-space policy in `std/execution/memory_spaces.li` and `std.execution.parallel`; **G-par** cross-link). **`@gpu`** records Device placement in MIR telemetry; vendor LKIR lowering remains **G-gpu**. See [provability-gaps](../verification/provability-gaps.md) (**G-dec**, **G-par**).
+Parsing, policy, and **7d-b–e MIR lowering** are implemented in `lic build`. Exit gate: `./scripts/check-mir-decorator-lowering.sh` (**G-dec** closed slice). `lic verify` reports `mir_parallel_proc`, `mir_vectorized_proc`, `mir_cpu_def`, and `mir_gpu_def` for decorated `def` declarations. **`@cpu` + `@parallel(disjoint=...)`** lower to portable Host `li_parallel_for_i64` (Kokkos-class memory-space policy in `std/execution/memory_spaces.li` and `std.execution.parallel`; **G-par** cross-link). **`@gpu`** records Device placement in MIR telemetry; vendor LKIR lowering remains **G-gpu**. See [provability-gaps](../verification/provability-gaps.md) (**G-dec**, **G-par**).
 
 ## Resource knobs (`lic build`)
 

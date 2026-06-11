@@ -9,12 +9,14 @@ LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 
 chmod +x \
   "$ROOT/scripts/check-mir-parallel-decorator.sh" \
+  "$ROOT/scripts/check-mir-parallel-proc-decorator.sh" \
   "$ROOT/scripts/check-mir-parallel-portable-lowering.sh" \
   "$ROOT/scripts/check-mir-portable-parallel-lowering.sh" \
   "$ROOT/scripts/check-mir-vectorized-decorator.sh" \
   "$ROOT/scripts/check-mir-gpu-decorator.sh"
 
 # 7d-b: proc/loop elaboration → MirDecorator tags + verify telemetry
+"$ROOT/scripts/check-mir-parallel-proc-decorator.sh"
 "$ROOT/scripts/check-mir-vectorized-decorator.sh"
 "$ROOT/scripts/check-mir-gpu-decorator.sh"
 

@@ -67,4 +67,14 @@ std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir) {
   return n;
 }
 
+std::size_t count_mir_parallel_proc(const MirModule& mir) {
+  std::size_t n = 0;
+  for (const auto& fn : mir.functions) {
+    for (const auto& d : fn.decorators) {
+      if (d.parallel) { ++n; break; }
+    }
+  }
+  return n;
+}
+
 }  // namespace li

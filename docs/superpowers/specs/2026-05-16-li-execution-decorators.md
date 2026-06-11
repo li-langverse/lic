@@ -1,6 +1,6 @@
 # Execution decorators (spec stub)
 
-**Status:** Phase 7d partial — **7d-b–e closed slice** (`check-mir-decorator-lowering.sh`); Device LKIR/codegen open (**G-gpu**)
+**Status:** Phase 7d **partial** — **7d-b–e closed slice** (`check-mir-decorator-lowering.sh`; delegates to `check-mir-*-decorator.sh`): `@vectorized`/`@no_vectorize` proc tags, `@gpu` MIR telemetry, `@cpu`+`@parallel` Host lowering; LKIR/Device codegen open (**G-gpu**)
 **Plan:** `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md`  
 **Gaps:** [Provability gaps](../../verification/provability-gaps.md) **G-dec**
 

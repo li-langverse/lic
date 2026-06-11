@@ -470,9 +470,6 @@ bool expr_is_sqrt_open_bound_ensures(const Expr& e, const std::string& x) {
   return expr_is_result_sq_minus_x(lhs.args[0].get(), x);
 }
 bool witness_sqrt_open_bound_spec_impl(const ProcDecl& proc, const Expr& ensures_expr) {
-  if (proc.name == "sqrt_open") {
-    return false;
-  }
   if (proc.params.empty()) {
     return false;
   }

@@ -6,7 +6,7 @@ plan: docs/libernetes/master-plan.md
 
 # Container separate repos — goal-directed sprint
 
-**Branch:** `feat/extern-def-container-seam`  
+**Branch:** `feat/container-product-complete`  
 **Agent:** `code_implementer`  
 **North star:** Split monolithic `licontainers` + librebase `licontainer` into published **`li-oci`**, **`li-container`**, **`li-container-run`** repos; merge trusted Container seam into `lic`; cross-platform backends (Linux, LiOS, Windows, macOS) — pure Li packages + audited C in `lic/runtime/` only.
 
@@ -42,6 +42,9 @@ plan: docs/libernetes/master-plan.md
 | **P5** | `p5-cross-os` | WP-CTN-050..053 | LiOS / Windows / macOS backends + `docs/libernetes/container-multi-os-matrix.md` | `bash scripts/container-separate-repos-phase5-gate.sh` |
 | **P6** | `p6-orchestration` | WP-CTN-060..063 | `li-containerd`/`cli`/`cri` scaffolds; retire `licontainers` monolith | `bash scripts/container-separate-repos-phase6-gate.sh` |
 | **P7** | `p7-publish` | WP-CTN-070..074 | GitLab repos + mirror push; update `package-gap-register.md` | `bash scripts/container-separate-repos-phase7-gate.sh` |
+| **P8** | `p8-product` | WP-CTN-080..083 | Port librebase runtime + `emit_error_json`; **lictl** CLI (`run`, `ps`, `stop`, `version`) | `bash scripts/container-separate-repos-phase8-gate.sh` |
+| **P9** | `p9-integration` | WP-CTN-090..092 | Busybox integration script, `lictl ps` state listing, `--id` argv fixes | `bash scripts/container-separate-repos-phase9-gate.sh` |
+| **P10** | `p10-pull` | WP-CTN-100..102 | `lictl pull` any OCI v2 registry (GHCR, redhat.io, private); `run --image` | `bash scripts/container-separate-repos-phase10-gate.sh` |
 
 Advance `state.json` → next phase only when the current phase gate passes.
 

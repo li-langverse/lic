@@ -71,6 +71,37 @@ def cloth_pbd_distance(
   px[j] = px[j] - 0.5 * corr * dx
   py[j] = py[j] - 0.5 * corr * dy
 
+# WP-SCI-06 — lid-driven cavity tier-2 oracle (scalar Jacobi sweep; no dyn array index for @gpu).
+def cfd_lid_cavity_checksum() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var ux0: float = 0.0
+  var ux1: float = 0.0
+  var ux2: float = 0.0
+  var ux3: float = 0.0
+  var ux4: float = 1.0
+  var ux5: float = 1.0
+  var ux6: float = 1.0
+  var ux7: float = 1.0
+  var step: int = 0
+  while step < 16
+    var n1: float = 0.25 * (ux0 + ux2 + 0.5)
+    var n2: float = 0.25 * (ux1 + ux3 + 0.5)
+    var n3: float = 0.25 * (ux2 + ux4 + 0.5)
+    var n4: float = 0.25 * (ux3 + ux5 + 0.5)
+    var n5: float = 0.25 * (ux4 + ux6 + 0.5)
+    var n6: float = 0.25 * (ux5 + ux7 + 0.5)
+    ux1 = n1
+    ux2 = n2
+    ux3 = n3
+    ux4 = n4
+    ux5 = n5
+    ux6 = n6
+    step = step + 1
+  return ux0 + ux1 + ux2 + ux3 + ux4 + ux5 + ux6 + ux7
+
 def physics_fluids_gpu_progress() -> int
   requires true
   ensures result >= 0

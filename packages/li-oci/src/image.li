@@ -53,7 +53,8 @@ def oci_image_store_phase_push() -> int
 =
   return 2
 
-# Net-only lifecycle hooks (Wave 2 stubs; real I/O in later waves).
+# Registry pull is implemented in li-container (container.registry) via scripts/oci-pull-to-bundle.sh
+# until native HTTPS client lands in raises Net. oci_image_pull_ref keeps phase-gate contract tags.
 def oci_image_pull_ref(ref_tag: int) raises Net -> int
   requires ref_tag >= 0
   ensures result == 0

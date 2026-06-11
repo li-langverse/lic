@@ -12,11 +12,11 @@
   "executed": true,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
-  "cpu_sec": 0.001358,
+  "cpu_sec": 0.00027,
   "build_cpu_sec": null,
   "numpy_cpu_sec": 2e-06,
-  "ratio_vs_li": 0.001473,
+  "ratio_vs_li": 0.007407,
   "ratio_target": 2.0,
   "ratio_target_met": false,
-  "li_over_numpy": 679.0
+  "li_over_numpy": 135.0
 }

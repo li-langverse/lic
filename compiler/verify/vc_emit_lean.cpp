@@ -867,6 +867,7 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     for (const auto& p : proc.params) {
       out << ' ' << lean_ident(p.name);
     }
+    out << " h)\n";
   } else if (dot4_discharge_theorem && c.kind == ContractKind::Ensures) {
     out << "/-! Phase 2f: P-loop dot4 — Li.Discharge.dot4_int_loop_eval_spec (G-vc) -/\n";
     out << "theorem " << name << "_proved";

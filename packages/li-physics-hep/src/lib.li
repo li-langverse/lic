@@ -1,23 +1,190 @@
+
+extern def li_rt_sqrt(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+extern def li_rt_int_as_float(v: int) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+
+type HepUnits = object
+  public gev: float
+  public barn: float
+  public mb: float
+
+type FourMomentum = object
+  public px: float
+  public py: float
+  public pz: float
+  public e: float
+
+type CrossSectionField = object
+  public sigma_pb: float
+  public luminosity_inv_fb: float
+  public events: int
+
+type DecayChannel = object
+  public branching: float
+  public mass_mev: float
+  public spin: int
+
+type McEvent = object
+  public weight: float
+  public accepted: int
+  public trials: int
+
+type IsoMcSample = object
+  public weight: float
+  public costheta: float
+  public phi: float
+  public channel: int
+
 def li_std_physics_hep_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
+
+def hep_units_natural() -> HepUnits
+  requires true
+  ensures result.gev == 1.0
+  ensures result.barn == 1.0
+  ensures result.mb == 1000.0
+  decreases 0
+=
+  var u: HepUnits
+  u.gev = 1.0
+  u.barn = 1.0
+  u.mb = 1000.0
+  return u
+
+def gev_to_mev(energy_gev: float) -> float
+  requires energy_gev >= 0.0
+  ensures result == 1000.0 * energy_gev
+  decreases 0
+=
+  return 1000.0 * energy_gev
+
+def barn_to_microbarn(sigma_barn: float) -> float
+  requires sigma_barn >= 0.0
+  ensures result == 1.0e6 * sigma_barn
+  decreases 0
+=
+  return 1000000.0 * sigma_barn
+
+def invariant_mass_sq(p: FourMomentum) -> float
+  requires true
+  ensures result == p.e * p.e - p.px * p.px - p.py * p.py - p.pz * p.pz
+  decreases 0
+=
+  return p.e * p.e - p.px * p.px - p.py * p.py - p.pz * p.pz
+
+def phase_space_2body_kallen(s: float, m1: float, m2: float) -> float
+  requires s >= 0.0
+  requires m1 >= 0.0
+  requires m2 >= 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  var m1sq: float = m1 * m1
+  var m2sq: float = m2 * m2
+  var kallen: float = s * s + m1sq * m1sq + m2sq * m2sq
+  kallen = kallen - 2.0 * s * m1sq - 2.0 * s * m2sq - 2.0 * m1sq * m2sq
+  if kallen < 0.0:
+    return 0.0
+  return kallen
+
+def hep_lcg_mix(seed: int) -> int
+  requires true
+  ensures result >= 0
+  decreases seed
+=
+  var s: int = seed
+  if s < 0:
+    s = -s
+  s = s * 1103515245 + 12345
+  if s < 0:
+    s = -s
+  return s
+
+def hep_seed_unit(seed: int) -> float
+  requires true
+  ensures result >= 0.0
+  ensures result < 1.0
+  decreases 0
+=
+  var s: int = seed
+  if s < 0:
+    s = -s
+  var band: int = s % 1000
+  return li_rt_int_as_float(band) / 1000.0
+
 def decay_branching(valid: int, total: int) -> float
   requires total > 0
   requires valid >= 0
   requires valid <= total
-  ensures result == 0.0
+  ensures result >= 0.0
+  ensures result <= 1.0
   decreases total
 =
-  return 0.0
+  var v: float = li_rt_int_as_float(valid)
+  var t: float = li_rt_int_as_float(total)
+  return v / t
+
 def sample_isotropic_costheta(seed: int) -> float
   requires true
-  ensures result == 0.0
+  ensures result >= -1.0
+  ensures result <= 1.0
   decreases seed
 =
-  return 0.0
+  var u: float = hep_seed_unit(seed)
+  return 2.0 * u - 1.0
+
+def sample_isotropic_phi(seed: int) -> float
+  requires true
+  ensures result >= 0.0
+  decreases seed
+=
+  var u: float = hep_seed_unit(hep_lcg_mix(seed + 17))
+  return 6.2831853 * u
+
+def isotropic_sample_angles(seed: int) -> IsoMcSample
+  requires true
+  ensures result.costheta >= -1.0
+  ensures result.costheta <= 1.0
+  ensures result.weight == 1.0
+  decreases seed
+=
+  var ev: IsoMcSample
+  ev.weight = 1.0
+  ev.costheta = sample_isotropic_costheta(seed)
+  ev.phi = sample_isotropic_phi(seed)
+  ev.channel = 0
+  return ev
+
+def decay_channel_default() -> DecayChannel
+  requires true
+  ensures result.branching == 1.0
+  ensures result.mass_mev > 0.0
+  decreases 0
+=
+  var ch: DecayChannel
+  ch.branching = 1.0
+  ch.mass_mev = 0.511
+  ch.spin = 0
+  return ch
+
+def decay_channel_weight(channel: DecayChannel, energy_mev: float) -> float
+  requires channel.branching >= 0.0
+  requires channel.branching <= 1.0
+  requires energy_mev > 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  return channel.branching * energy_mev / channel.mass_mev
+
 def event_weight_cross_section(sigma: float, luminosity: float) -> float
   requires sigma >= 0.0
   requires luminosity >= 0.0
@@ -25,3 +192,113 @@ def event_weight_cross_section(sigma: float, luminosity: float) -> float
   decreases 0
 =
   return sigma * luminosity
+
+def cross_section_field_expected_events(field: CrossSectionField) -> float
+  requires field.sigma_pb >= 0.0
+  requires field.luminosity_inv_fb >= 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  return field.sigma_pb * field.luminosity_inv_fb
+
+def mc_accept_event(weight: float, threshold: float) -> int
+  requires weight >= 0.0
+  requires threshold >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if weight >= threshold:
+    return 1
+  return 0
+
+def mc_event_accept(weight: float, threshold: float) -> int
+  requires weight >= 0.0
+  requires threshold >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return mc_accept_event(weight, threshold)
+
+def mc_event_integrate_step(
+    e: var McEvent, sigma: float, luminosity: float, dt: float) -> unit
+  requires sigma >= 0.0
+  requires luminosity >= 0.0
+  requires dt > 0.0
+  ensures true
+  decreases 0
+=
+  e.trials = e.trials + 1
+  var w: float = event_weight_cross_section(sigma, luminosity) * dt
+  e.weight = e.weight + w
+  if mc_accept_event(w, 0.5) == 1:
+    e.accepted = e.accepted + 1
+
+def hep_toy_mc_checksum() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var p: FourMomentum
+  p.px = 0.3
+  p.py = 0.4
+  p.pz = 0.0
+  p.e = 1.0
+  var m2: float = invariant_mass_sq(p)
+  var branch: float = decay_branching(3, 10)
+  var cos_theta: float = sample_isotropic_costheta(42)
+  var e: McEvent
+  e.weight = 0.0
+  e.accepted = 0
+  e.trials = 0
+  mc_event_integrate_step(e, 0.5, 10.0, 0.01)
+  return m2 + branch + cos_theta + e.weight + 1.0
+
+def physics_hep_mc_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var chk: float = hep_toy_mc_checksum()
+  if chk <= 0.0:
+    return 0
+  var branch: float = decay_branching(1, 4)
+  if branch <= 0.0:
+    return 0
+  if branch > 1.0:
+    return 0
+  return 1
+
+def hep_toy_cross_section_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var br: float = decay_branching(3, 4)
+  if br <= 0.0:
+    return 0
+  if br > 1.0:
+    return 0
+  var ev: IsoMcSample = isotropic_sample_angles(42)
+  if ev.costheta < -1.0:
+    return 0
+  if ev.costheta > 1.0:
+    return 0
+  var w: float = event_weight_cross_section(1.0e-6, 1.0e34)
+  if w <= 0.0:
+    return 0
+  var ch: DecayChannel = decay_channel_default()
+  if decay_channel_weight(ch, 1.0) <= 0.0:
+    return 0
+  return 1
+
+def physics_hep_gpu_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return hep_toy_cross_section_smoke()

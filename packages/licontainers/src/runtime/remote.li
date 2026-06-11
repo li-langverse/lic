@@ -1,0 +1,14 @@
+# Cross-node CRI forward stub (Wave 4 — multi-node registry).
+def runtime_remote_cri_tag() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def runtime_remote_cri_forward_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -84,8 +84,12 @@ See [execution surface](../superpowers/specs/2026-05-25-li-execution-surface.md)
 
 Values captured into parallel regions must be safe to share. Laws are defined in the Lean semantics; the surface syntax enforces `Sync` when shared mutable state appears.
 
+## Decorators → portable lowering
+
+`@cpu` + `@parallel(disjoint=…)` on `def` elaborates to the same `li_parallel_for_i64` path as `parallel for` keywords. Memory-space policy constants live in `std/execution/memory_spaces.li` (Kokkos-class host/device placement). Gate: `scripts/check-mir-portable-parallel-lowering.sh`.
+
 ## GPU (future)
 
-`gpu proc` and device buffers are **not** v1 — CPU SIMD + OpenMP first.
+`@gpu` records placement in MIR telemetry; LKIR/device-buffer codegen and address-space proofs remain **G-gpu** open work.
 
 Benchmarks: [Benchmarks guide](../benchmarks.md).

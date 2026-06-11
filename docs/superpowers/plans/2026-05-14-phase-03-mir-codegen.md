@@ -87,12 +87,11 @@ def main() -> int =
 
 ---
 
-### Task 5: Snapshot tests
+### Task 5: LLVM IR witness (C++ tree)
 
-**Files:**
-- Create: `crates/li_codegen/tests/llvm_snap.rs`
+**Supersedes:** Rust `insta` snapshot task from v0 plan — compiler migrated to C++ (`compiler/codegen/emit.cpp`).
 
-- [ ] insta snapshot of LLVM IR for `return 0` program
+- [x] Bounds / release IR gates instead of insta snapshot — `li-tests/tooling/check_release_bounds_ir.sh` (**G-bnd** partial)
 
 ---
 
@@ -100,6 +99,9 @@ def main() -> int =
 
 ### Phase 3 exit gate
 
+**G-* (Doc-c):** [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-meta](../../verification/provability-gaps.md#g-meta)
+
 - [x] Native binary from minimal proc
 - [x] `-O2` flag forwarded to clang in `--release` (C++: `-O3 -march=native` in `compile.cpp` when `--release`)
-- [x] Bounds check calls present in IR for dynamic index
+- [x] Bounds check calls present in IR for dynamic index (`check_release_bounds_ir.sh`)
+- [x] Master plan Phase 3 checkbox checked (`lic build` smoke on `main`)

@@ -1872,15 +1872,16 @@ Li’s edge: **security = what compiles** (plus a tiny trusted base). nginx’s 
 
 ## Milestones (not nginx port phases)
 
+**P0 ordered gates (canonical tracker):** [httpd-prerequisites.md](../../ecosystem/httpd-prerequisites.md) — P0-lean → P0-bytes → P0-net → P0-async → P0-http. Phase **2e–2f** may stay **partial** on the full kernel while the httpd path ships under **w0** downgrade: `check-httpd-lean-gate.sh`, closed `http_parse_forward_closed.li`, composite smokes ≤8 open VC with `--allow-open-vc` ([G-lean](../../verification/provability-gaps.md#g-lean) partial). M1 `.li` implementation follows that downgrade; full certificate waits for [G-lean](../../verification/provability-gaps.md#g-lean) close.
 
-| Milestone | Deliverable                                                          | Exit gate                                                        |
-| --------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **P0**    | **2e–2f Lean gate** + bytes + `raises Net` + async reactor           | `lic build` on `parse_request` with real proofs                  |
-| **P0b**   | tier5 harness + nginx audit (`li_invariant` list only)               | `nginx_mitigations.toml`; nginx bench baseline                   |
-| **M1**    | Core + LB + header policy + rate limit + validate-config             | `lic build`; lb_* + rate_limit bench; config_reject; exploit A+B |
-| **M1.5**  | SSE, stream caps, model routing, TLS auto (LE + self_signed), cancel | stream_* bench; staging ACME; tls config_reject                  |
-| **M2**    | HTTP/2, WebSocket, circuit breaker, 429 backpressure                 | agent workload bench vs nginx                                    |
-| **M3**    | Token-budget hooks, optional L4                                      | RFC only                                                         |
+| Milestone | Deliverable                                                          | Exit gate (Doc-c)                                                                 |
+| --------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **P0**    | **2e–2f** ([G-vc](../../verification/provability-gaps.md#g-vc), [G-lean](../../verification/provability-gaps.md#g-lean)) + bytes + [G-net](../../verification/provability-gaps.md#g-net) + [G-async](../../verification/provability-gaps.md#g-async) | `check-httpd-lean-gate.sh`; `lic build` on `parse_request`; w0 downgrade per above |
+| **P0b**   | tier5 harness + nginx audit (`li_invariant` list only)               | `nginx_mitigations.toml`; nginx bench baseline                                   |
+| **M1**    | Core + LB + header policy + rate limit + validate-config             | `lic build`; lb_* + rate_limit bench; config_reject; exploit A+B                 |
+| **M1.5**  | SSE, stream caps, model routing, TLS auto (LE + self_signed), cancel | stream_* bench; staging ACME; tls config_reject                                  |
+| **M2**    | HTTP/2, WebSocket, circuit breaker, 429 backpressure                 | agent workload bench vs nginx                                                    |
+| **M3**    | Token-budget hooks, optional L4                                      | RFC only                                                                         |
 
 
 Drop features from M1 before raising LOC cap.

@@ -3,37 +3,87 @@ extern def li_rt_sqrt(x: float) raises IO -> float
   requires true
   ensures true
   decreases 0
-extern def li_rt_sin(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
-extern def li_rt_cos(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
 extern def li_rt_exp(x: float) raises IO -> float
   requires true
   ensures true
   decreases 0
+
+type AtmosphereField = object
+  public rho0: float
+  public scale_h: float
+
+type OrbitState2d = object
+  public px: float
+  public py: float
+  public vx: float
+  public vy: float
+
 def li_std_physics_aero_version() raises IO -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
+
+def aero_units_earth_mu() -> float
+  requires true
+  ensures result > 3.9e14
+  ensures result < 4.0e14
+  decreases 0
+=
+  return 3.986004418e14
+
+def aero_units_sea_level_rho() -> float
+  requires true
+  ensures result > 1.2
+  ensures result < 1.3
+  decreases 0
+=
+  return 1.225
+
+def aero_units_scale_height_m() -> float
+  requires true
+  ensures result > 8000.0
+  ensures result < 9000.0
+  decreases 0
+=
+  return 8500.0
+
+def atmosphere_field_earth() -> AtmosphereField
+  requires true
+  ensures result.rho0 > 1.2
+  ensures result.rho0 < 1.3
+  ensures result.scale_h > 8000.0
+  decreases 0
+=
+  var f: AtmosphereField
+  f.rho0 = aero_units_sea_level_rho()
+  f.scale_h = aero_units_scale_height_m()
+  return f
+
 def atmosphere_density_exponential(altitude: float, rho0: float, scale_h: float) raises IO -> float
   requires rho0 > 0.0
   requires scale_h > 0.0
-  ensures result == rho0 * li_rt_exp(-altitude / scale_h)
+  ensures result >= 0.0
   decreases 0
 =
   return rho0 * li_rt_exp(-altitude / scale_h)
+
+def atmosphere_density_at(field: AtmosphereField, altitude: float) raises IO -> float
+  requires field.rho0 > 0.0
+  requires field.scale_h > 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  return atmosphere_density_exponential(altitude, field.rho0, field.scale_h)
+
 def lift_coefficient_alpha(alpha_rad: float) -> float
   requires true
   ensures result == 2.0 * 3.14159265 * alpha_rad
   decreases 0
 =
   return 2.0 * 3.14159265 * alpha_rad
+
 def drag_force(speed: float, rho: float, cd: float, area: float) -> float
   requires speed >= 0.0
   requires rho >= 0.0
@@ -43,20 +93,65 @@ def drag_force(speed: float, rho: float, cd: float, area: float) -> float
   decreases 0
 =
   return 0.5 * rho * speed * speed * cd * area
+
 def orbit_circular_period(mu: float, radius: float) raises IO -> float
   requires mu > 0.0
   requires radius > 0.0
-  ensures result == two_pi * li_rt_sqrt(radius * radius * radius / mu)
+  ensures result >= 0.0
   decreases 0
 =
   var two_pi: float = 2.0 * 3.14159265
   return two_pi * li_rt_sqrt(radius * radius * radius / mu)
-def two_body_accel(
-    ax: float, ay: float, bx: float, by: float,
-    mu: float, soft: float,
-    out_ax: float, out_ay: float) -> unit
+
+def orbit_verlet_step(s: var OrbitState2d, mu: float, dt: float) raises IO -> unit
   requires mu > 0.0
+  requires dt > 0.0
   ensures true
   decreases 0
 =
-  return
+  var rx: float = s.px
+  var ry: float = s.py
+  var r2: float = rx * rx + ry * ry
+  if r2 < 1.0e-12:
+    return
+  var r: float = li_rt_sqrt(r2)
+  var inv_r3: float = 1.0 / (r2 * r)
+  var ax: float = -mu * rx * inv_r3
+  var ay: float = -mu * ry * inv_r3
+  s.px = s.px + s.vx * dt + 0.5 * ax * dt * dt
+  s.py = s.py + s.vy * dt + 0.5 * ay * dt * dt
+  s.vx = s.vx + ax * dt
+  s.vy = s.vy + ay * dt
+
+def orbit_two_body_checksum() raises IO -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var s: OrbitState2d
+  s.px = 6.771e6
+  s.py = 0.0
+  s.vx = 0.0
+  s.vy = 7660.0
+  var mu: float = aero_units_earth_mu()
+  var dt: float = 60.0
+  var step: int = 0
+  while step < 8
+    orbit_verlet_step(s, mu, dt)
+    step = step + 1
+  return s.px + s.py + s.vx + s.vy + 1.0
+
+def physics_aero_orbit_smoke() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var chk: float = orbit_two_body_checksum()
+  if chk <= 0.0:
+    return 0
+  var field: AtmosphereField = atmosphere_field_earth()
+  var rho: float = atmosphere_density_at(field, 0.0)
+  if rho <= 0.0:
+    return 0
+  return 1

@@ -183,6 +183,15 @@ int lic_workspace_check_main(int argc, char** argv, const char* lic_executable,
   int fail = 0;
   unsigned active = 0;
   unsigned checked = 0;
+#if !defined(_WIN32)
+  struct PendingCheck {
+    pid_t pid;
+    std::string member;
+    std::string entry;
+    PendingCheck(pid_t p, std::string m, std::string e) : pid(p), member(std::move(m)), entry(std::move(e)) {}
+  };
+  std::vector<PendingCheck> pending;
+#endif
 
   auto make_child_args = [&](const std::filesystem::path& entry) {
     std::vector<std::string> child_args = {"check", entry.string(), "--format=json"};
@@ -221,18 +230,38 @@ int lic_workspace_check_main(int argc, char** argv, const char* lic_executable,
 #else
     if (jobs <= 1) {
       if (spawn_lic_check(lic_executable, child_args) != 0) {
+        std::cerr << "lic check --workspace: FAIL " << member << " (" << entry->string()
+                  << ")\n";
         fail = 1;
       }
     } else {
       while (active >= jobs) {
         int status = 0;
-        if (waitpid(-1, &status, 0) > 0) {
+        const pid_t done = waitpid(-1, &status, 0);
+        if (done > 0) {
           --active;
           if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
             fail = 1;
+            for (auto it = pending.begin(); it != pending.end(); ++it) {
+              if (it->pid == done) {
+                std::cerr << "lic check --workspace: FAIL " << it->member << " ("
+                          << it->entry << ")\n";
+                pending.erase(it);
+                break;
+              }
+            }
+          } else {
+            for (auto it = pending.begin(); it != pending.end(); ++it) {
+              if (it->pid == done) {
+                pending.erase(it);
+                break;
+              }
+            }
           }
         }
       }
+      const std::string member_name = member;
+      const std::string entry_path = entry->string();
       std::vector<std::string> arg_storage = child_args;
       const pid_t pid = fork();
       if (pid == 0) {
@@ -252,7 +281,9 @@ int lic_workspace_check_main(int argc, char** argv, const char* lic_executable,
       }
       if (pid > 0) {
         ++active;
+        pending.emplace_back(pid, member_name, entry_path);
       } else {
+        std::cerr << "lic check --workspace: fork failed for " << member_name << "\n";
         fail = 1;
       }
     }
@@ -264,10 +295,26 @@ int lic_workspace_check_main(int argc, char** argv, const char* lic_executable,
   if (jobs > 1) {
     while (active > 0) {
       int status = 0;
-      if (waitpid(-1, &status, 0) > 0) {
+      const pid_t done = waitpid(-1, &status, 0);
+      if (done > 0) {
         --active;
         if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
           fail = 1;
+          for (auto it = pending.begin(); it != pending.end(); ++it) {
+            if (it->pid == done) {
+              std::cerr << "lic check --workspace: FAIL " << it->member << " ("
+                        << it->entry << ")\n";
+              pending.erase(it);
+              break;
+            }
+          }
+        } else {
+          for (auto it = pending.begin(); it != pending.end(); ++it) {
+            if (it->pid == done) {
+              pending.erase(it);
+              break;
+            }
+          }
         }
       }
     }

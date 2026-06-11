@@ -1,0 +1,31 @@
+# Kubelet sync loop — apiserver↔node state reconciliation (Wave 3 stub).
+
+def kubelet_sync_period_ms() -> int
+  requires true
+  ensures result == 10000
+  decreases 0
+=
+  return 10000
+
+def kubelet_sync_from_apiserver(node_tag: int) -> int
+  requires node_tag >= 0
+  ensures result == 0
+  decreases node_tag
+=
+  return 0
+
+def kubelet_sync_report_status(node_tag: int, ready: int) -> int
+  requires node_tag >= 0
+  requires ready >= 0
+  requires ready <= 1
+  ensures result == 0
+  decreases node_tag + ready
+=
+  return 0
+
+def kubelet_sync_tick(node_tag: int) -> int
+  requires node_tag >= 0
+  ensures result == 0
+  decreases node_tag
+=
+  return kubelet_sync_from_apiserver(node_tag) + kubelet_sync_report_status(node_tag, 1)

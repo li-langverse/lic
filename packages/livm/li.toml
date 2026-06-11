@@ -3,7 +3,7 @@ name = "livm"
 version = "0.0.1"
 edition = "2026"
 license = "Apache-2.0 OR MIT"
-description = "VM runtime for libernetes (KVM + LiOS hypervisor)"
+description = "VM runtime for libernetes (Li-native hypervisor via LiOS ABI)"
 
 [package.metadata.li]
 github_repo = "livm"

@@ -11,7 +11,7 @@ plan: docs/libernetes/master-plan.md
 
 ## Mission
 
-Control plane UX and distributed orchestration. **Waves 0–3 DONE.** Active: **Wave 4** (multi-node join + cluster state).
+Control plane UX and distributed orchestration. **Waves 0–4 DONE.** Active: **Wave 5** (scheduler dispatch + pod sync).
 
 ## Phase checklist
 
@@ -28,7 +28,7 @@ Control plane UX and distributed orchestration. **Waves 0–3 DONE.** Active: **
 | **LB-K15** | Worker join writes `kubelet.conf` persistence | **DONE** | same wave4 gate |
 | **LB-K16** | `li-tests/integration/multi_node_join.li` | **DONE** | same wave4 gate |
 
-## Later waves (unwired until Wave 4 passes)
+## Later waves (unwired until Wave 5 passes)
 
 | Wave | Focus | Gate |
 |------|-------|------|
@@ -40,7 +40,7 @@ Control plane UX and distributed orchestration. **Waves 0–3 DONE.** Active: **
 
 ## Iteration rules
 
-1. Implement **LB-K14/K15/K16** until completion gate passes.
+1. Implement **LB-K17/K18** (Wave 5 scheduler dispatch + pod sync) until completion gate passes.
 2. Commit + push every iteration.
 
 ## Completion gate

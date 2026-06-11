@@ -167,6 +167,7 @@ typedef struct {
   int proxy_cl_body_active; /* 1: CL body_left accounting (skip response header bytes) */
   int proxy_upstream_hold; /* 1: defer upstream recv until client TLS backlog drains */
   int proxy_pump_budget; /* per-slot relay fairness budget */
+  int proxy_up_retry_used; /* upstream reconnect attempts consumed (max 2) */
 } httpd_slot_t;
 
 static httpd_slot_t g_slots[HTTPD_MAX_CONN];
@@ -1087,6 +1088,8 @@ static int httpd_proxy_snap_disabled(void) {
          g_lb_pool_count > 0;
 }
 
+static int httpd_upstream_wait_loopback_ready(int32_t port);
+
 int32_t httpd_proxy_snap_disabled_i(void) { return httpd_proxy_snap_disabled() ? 1 : 0; }
 
 static int httpd_m2_webhook_url_allowed(const char* url) {
@@ -1151,6 +1154,9 @@ int32_t httpd_set_upstream_ports_csv_i(intptr_t csv, int32_t proxy_all) {
   }
   if (count > 0) {
     httpd_proxy_snap_reset();
+    for (int i = 0; i < g_up_peer_count; i++) {
+      (void)httpd_upstream_wait_loopback_ready(g_up_peers[i].port);
+    }
     upstream_pool_prewarm_all();
   }
   return count > 0 ? count : -1;
@@ -1961,6 +1967,21 @@ static int tcp_connect_loopback_port(int port) {
   return fd;
 }
 
+static int httpd_upstream_wait_loopback_ready(int32_t port) {
+  if (port <= 0) {
+    return -1;
+  }
+  for (int attempt = 0; attempt < 50; attempt++) {
+    int fd = tcp_connect_loopback_port((int)port);
+    if (fd >= 0) {
+      li_rt_sock_close(fd);
+      return 0;
+    }
+    usleep(20000);
+  }
+  return -1;
+}
+
 static httpd_upstream_peer_t* upstream_peer_find(int32_t port) {
   for (int i = 0; i < g_up_peer_count; i++) {
     if (g_up_peers[i].port == port) {
@@ -2018,6 +2039,9 @@ int32_t httpd_set_lb_mode_i(int32_t mode) {
     g_lb_mode = HTTPD_LB_MODE_ROUND_ROBIN;
   } else {
     g_lb_mode = mode;
+  }
+  if (g_lb_mode == HTTPD_LB_MODE_COOKIE) {
+    g_health_max_fails = 3;
   }
   return 0;
 }
@@ -3948,6 +3972,7 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
   s->proxy_cl_body_active = 0;
   s->proxy_upstream_hold = 0;
   s->proxy_pump_budget = 0;
+  s->proxy_up_retry_used = 0;
   s->proxy_client_epoll_events = 0;
   s->proxy_up_epoll_events = 0;
   httpd_li_proxy_slot_clear_i(slot);
@@ -4270,6 +4295,20 @@ static void httpd_proxy_enter_relay(int epfd, int32_t slot) {
 
 static void httpd_proxy_try_send_chunked(int epfd, int32_t slot);
 static void httpd_proxy_pump_relay(int epfd, int32_t slot);
+static int httpd_proxy_upstream_reconnect(int epfd, int32_t slot);
+
+static int httpd_proxy_upstream_retry_once(int epfd, int32_t slot) {
+  httpd_slot_t* s = &g_slots[slot];
+  if (s->proxy_up_retry_used >= 2) {
+    return -1;
+  }
+  s->proxy_up_retry_used++;
+  if (httpd_proxy_upstream_reconnect(epfd, slot) != 0) {
+    return -1;
+  }
+  s->proxy_send_off = 0;
+  return 0;
+}
 
 static int httpd_proxy_upstream_reconnect(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
@@ -6048,6 +6087,15 @@ static void httpd_proxy_up_handler(int epfd, int32_t slot, uint32_t events) {
     return;
   }
   if (events & (EPOLLERR | EPOLLHUP)) {
+    if ((s->proxy_phase == HTTPD_PROXY_PHASE_SEND_REQ || s->proxy_phase == HTTPD_PROXY_PHASE_SEND_BODY) &&
+        httpd_proxy_upstream_retry_once(epfd, slot) == 0) {
+      if (s->proxy_phase == HTTPD_PROXY_PHASE_SEND_REQ) {
+        httpd_proxy_try_send_req(epfd, slot);
+      } else {
+        httpd_proxy_try_send_body(epfd, slot);
+      }
+      return;
+    }
     if (s->proxy_phase == HTTPD_PROXY_PHASE_RELAY) {
       httpd_proxy_pump_relay(epfd, slot);
       if (!s->proxy_active) {
@@ -6186,7 +6234,16 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
     return -1;
   }
   /* Fresh upstream TCP per proxy request — no keep-alive pool reuse (parallel bleed). */
-  int up = tcp_connect_loopback_port((int)peer_port);
+  int up = -1;
+  for (int attempt = 0; attempt < 5 && up < 0; attempt++) {
+    if (attempt > 0) {
+      usleep(20000);
+    }
+    up = tcp_connect_loopback_port((int)peer_port);
+    if (up < 0 && attempt == 0) {
+      (void)httpd_upstream_wait_loopback_ready(peer_port);
+    }
+  }
   if (up < 0) {
     httpd_upstream_peer_note_failure(peer_port);
     return -1;
@@ -6198,6 +6255,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_active = 1;
   s->proxy_up_fd = up;
   s->proxy_peer_port = peer_port;
+  s->proxy_up_retry_used = 0;
   s->proxy_keep = keep;
   s->proxy_hdr_end = hdr_end;
   s->proxy_req = *req;
@@ -6225,6 +6283,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_tls_cl_defer = 0;
   s->proxy_cl_body_active = 0;
   s->proxy_upstream_hold = 0;
+  s->proxy_up_retry_used = 0;
   s->proxy_pump_budget = HTTPD_PROXY_PUMP_BUDGET_BYTES;
   s->proxy_is_sse = httpd_client_wants_sse(g_slots[slot].buf, hdr_end);
   s->proxy_is_ws =
@@ -7633,13 +7692,23 @@ int32_t httpd_upstream_acquire_for_slot_i(int32_t slot) {
     return -1;
   }
   /* Fresh upstream TCP per proxy request — pool reuse caused parallel burst bleed on run2. */
-  int up = tcp_connect_loopback_port((int)peer_port);
+  int up = -1;
+  for (int attempt = 0; attempt < 5 && up < 0; attempt++) {
+    if (attempt > 0) {
+      usleep(20000);
+    }
+    up = tcp_connect_loopback_port((int)peer_port);
+    if (up < 0 && attempt == 0) {
+      (void)httpd_upstream_wait_loopback_ready(peer_port);
+    }
+  }
   if (up < 0) {
     httpd_upstream_peer_note_failure(peer_port);
     return -1;
   }
   httpd_upstream_peer_note_success(peer_port);
   g_slots[slot].proxy_peer_port = peer_port;
+  g_slots[slot].proxy_up_retry_used = 0;
   set_nonblocking(up);
   tcp_tune_client(up);
   return up;
@@ -8045,6 +8114,17 @@ int32_t httpd_li_proxy_inject_conn_close_i(int32_t slot) {
   return httpd_proxy_resp_force_connection_close(&g_slots[slot]);
 }
 
+int32_t httpd_li_proxy_prepare_lb_resp_headers_i(int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return -1;
+  }
+  httpd_slot_t* s = &g_slots[slot];
+  if (httpd_proxy_resp_inject_sticky_cookie(s) < 0) {
+    return -1;
+  }
+  return httpd_proxy_resp_force_connection_close(s);
+}
+
 int32_t httpd_li_proxy_relay_pending_i(int32_t slot) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN) {
     return 0;
@@ -8236,6 +8316,7 @@ int32_t httpd_li_proxy_mark_active_i(int32_t epfd, int32_t slot, int32_t up_fd, 
   s->proxy_is_sse = httpd_client_wants_sse(s->buf, hdr_end);
   s->proxy_last_chunk_ts = 0.0;
   s->proxy_stream_start_ts = s->proxy_is_sse ? httpd_monotonic_now() : 0.0;
+  s->proxy_up_retry_used = 0;
   g_lp_up_fd[slot] = up_fd;
   g_lp_hdr_end[slot] = hdr_end;
   g_lp_keep[slot] = keep ? 1 : 0;

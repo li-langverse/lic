@@ -462,6 +462,11 @@ extern def httpd_li_proxy_inject_conn_close_i(slot: var int) -> int
   ensures true
   decreases 0
 
+extern def httpd_li_proxy_prepare_lb_resp_headers_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
 extern def httpd_li_proxy_relay_pending_i(slot: var int) -> int
   requires 0 <= slot
   ensures true

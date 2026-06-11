@@ -194,12 +194,42 @@ int32_t httpd_pure_tls_alpn(int32_t slot) {
 
 
 static int tls_load_sym(void* lib, const char* name, void** out) {
-  void* sym = li_rt_dlsym(lib, name);
+  void* sym = NULL;
+  if (lib) {
+    sym = li_rt_dlsym(lib, name);
+  }
+#if !defined(_WIN32)
+  if (!sym) {
+    sym = dlsym(RTLD_DEFAULT, name);
+  }
+#endif
   if (!sym) {
     return -1;
   }
   *out = sym;
   return 0;
+}
+
+static void tls_ensure_openssl_modules_env(void) {
+#if !defined(_WIN32)
+  if (getenv("OPENSSL_MODULES")) {
+    return;
+  }
+  static const char* candidates[] = {
+      "/usr/lib/x86_64-linux-gnu/ossl-modules",
+      "/usr/lib64/ossl-modules",
+      "/usr/local/lib/ossl-modules",
+      NULL,
+  };
+  for (int i = 0; candidates[i]; i++) {
+    char probe[512];
+    snprintf(probe, sizeof(probe), "%s/legacy.so", candidates[i]);
+    if (access(probe, R_OK) == 0) {
+      setenv("OPENSSL_MODULES", candidates[i], 0);
+      return;
+    }
+  }
+#endif
 }
 
 typedef struct dh_st DH;
@@ -225,22 +255,92 @@ static void tls_release_tmp_dh(void) {
   g_tls_tmp_dh = NULL;
 }
 
-static int tls_ctx_load_dhparam(SSL_CTX* ctx, const char* path) {
-  typedef DH* (*pem_read_dh_fn)(FILE*, DH**, void*, void*);
-  typedef void (*dh_free_fn)(DH*);
+static int tls_ctx_install_tmp_dh_pkey(SSL_CTX* ctx, DH* dh) {
   typedef long (*ssl_ctx_set0_tmp_dh_pkey_fn)(SSL_CTX*, void*);
   typedef void (*ssl_ctx_set_tmp_dh_cb_fn)(SSL_CTX*, DH* (*)(SSL*, int, int));
-
-  pem_read_dh_fn p_pem_read = NULL;
-  dh_free_fn p_dh_free = NULL;
   ssl_ctx_set0_tmp_dh_pkey_fn p_set0_pkey = NULL;
   ssl_ctx_set_tmp_dh_cb_fn p_set_cb = NULL;
+  g_tls_tmp_dh = dh;
+  if (tls_load_sym(g_ssl_lib, "SSL_CTX_set_tmp_dh_callback", (void**)&p_set_cb) == 0 && p_set_cb) {
+    p_set_cb(ctx, tls_tmp_dh_callback);
+  }
+  if (tls_load_sym(g_ssl_lib, "SSL_CTX_set0_tmp_dh_pkey", (void**)&p_set0_pkey) != 0 || !p_set0_pkey) {
+    return 0;
+  }
+  typedef struct evp_pkey_st EVP_PKEY;
+  typedef EVP_PKEY* (*evp_pkey_new_fn)(void);
+  typedef int (*evp_pkey_set1_dh_fn)(EVP_PKEY*, DH*);
+  typedef void (*evp_pkey_free_fn)(EVP_PKEY*);
+  evp_pkey_new_fn p_pkey_new = NULL;
+  evp_pkey_set1_dh_fn p_pkey_set1_dh = NULL;
+  evp_pkey_free_fn p_pkey_free = NULL;
+  if (tls_load_sym(g_crypto_lib, "EVP_PKEY_new", (void**)&p_pkey_new) != 0 ||
+      tls_load_sym(g_crypto_lib, "EVP_PKEY_set1_DH", (void**)&p_pkey_set1_dh) != 0 ||
+      tls_load_sym(g_crypto_lib, "EVP_PKEY_free", (void**)&p_pkey_free) != 0 || !p_pkey_new ||
+      !p_pkey_set1_dh || !p_pkey_free) {
+    return 0;
+  }
+  EVP_PKEY* pkey = p_pkey_new();
+  if (!pkey || p_pkey_set1_dh(pkey, dh) != 1) {
+    if (pkey) {
+      p_pkey_free(pkey);
+    }
+    return -1;
+  }
+  if (p_set0_pkey(ctx, pkey) != 1) {
+    p_pkey_free(pkey);
+    return -1;
+  }
+  return 0;
+}
+
+static int tls_ctx_load_dhparam(SSL_CTX* ctx, const char* path) {
+  typedef void* (*bio_new_file_fn)(const char*, const char*);
+  typedef int (*bio_free_fn)(void*);
+  typedef int (*pem_read_bio_parameters_fn)(void*, void**);
+  typedef DH* (*pem_read_dh_fn)(FILE*, DH**, void*, void*);
+  typedef void (*dh_free_fn)(DH*);
+
+  bio_new_file_fn p_bio_new = NULL;
+  bio_free_fn p_bio_free = NULL;
+  pem_read_bio_parameters_fn p_pem_bio_params = NULL;
+  pem_read_dh_fn p_pem_read = NULL;
+  dh_free_fn p_dh_free = NULL;
+
+  tls_release_tmp_dh();
+
+  if (tls_load_sym(g_crypto_lib, "BIO_new_file", (void**)&p_bio_new) == 0 &&
+      tls_load_sym(g_crypto_lib, "BIO_free", (void**)&p_bio_free) == 0 &&
+      tls_load_sym(g_crypto_lib, "PEM_read_bio_Parameters", (void**)&p_pem_bio_params) == 0 && p_bio_new &&
+      p_bio_free && p_pem_bio_params) {
+    void* bio = p_bio_new(path, "r");
+    if (bio) {
+      void* pkey = NULL;
+      if (p_pem_bio_params(bio, &pkey) == 1 && pkey) {
+        typedef long (*ssl_ctx_set0_tmp_dh_pkey_fn)(SSL_CTX*, void*);
+        ssl_ctx_set0_tmp_dh_pkey_fn p_set0_pkey = NULL;
+        p_bio_free(bio);
+        if (tls_load_sym(g_ssl_lib, "SSL_CTX_set0_tmp_dh_pkey", (void**)&p_set0_pkey) == 0 && p_set0_pkey &&
+            p_set0_pkey(ctx, pkey) == 1) {
+          return 0;
+        }
+        typedef void (*evp_pkey_free_fn)(void*);
+        evp_pkey_free_fn p_pkey_free = NULL;
+        if (tls_load_sym(g_crypto_lib, "EVP_PKEY_free", (void**)&p_pkey_free) == 0 && p_pkey_free) {
+          p_pkey_free(pkey);
+        }
+        fprintf(stderr, "li-httpd tls: SSL_CTX_set0_tmp_dh_pkey failed for %s\n", path);
+        return -1;
+      }
+      p_bio_free(bio);
+    }
+  }
+
   if (tls_load_sym(g_crypto_lib, "PEM_read_DHparams", (void**)&p_pem_read) != 0 ||
       tls_load_sym(g_crypto_lib, "DH_free", (void**)&p_dh_free) != 0) {
     fprintf(stderr, "li-httpd tls: OpenSSL DH read symbols missing for %s\n", path);
     return -1;
   }
-  tls_release_tmp_dh();
   FILE* fp = fopen(path, "r");
   if (!fp) {
     fprintf(stderr, "li-httpd tls: cannot open dhparam %s\n", path);
@@ -252,31 +352,11 @@ static int tls_ctx_load_dhparam(SSL_CTX* ctx, const char* path) {
     fprintf(stderr, "li-httpd tls: PEM_read_DHparams failed for %s\n", path);
     return -1;
   }
-  g_tls_tmp_dh = dh;
-  if (tls_load_sym(g_ssl_lib, "SSL_CTX_set_tmp_dh_callback", (void**)&p_set_cb) == 0 && p_set_cb) {
-    p_set_cb(ctx, tls_tmp_dh_callback);
-  }
-  if (tls_load_sym(g_ssl_lib, "SSL_CTX_set0_tmp_dh_pkey", (void**)&p_set0_pkey) == 0 && p_set0_pkey) {
-    typedef struct evp_pkey_st EVP_PKEY;
-    typedef EVP_PKEY* (*evp_pkey_new_fn)(void);
-    typedef int (*evp_pkey_set1_dh_fn)(EVP_PKEY*, DH*);
-    typedef void (*evp_pkey_free_fn)(EVP_PKEY*);
-    evp_pkey_new_fn p_pkey_new = NULL;
-    evp_pkey_set1_dh_fn p_pkey_set1_dh = NULL;
-    evp_pkey_free_fn p_pkey_free = NULL;
-    if (tls_load_sym(g_crypto_lib, "EVP_PKEY_new", (void**)&p_pkey_new) == 0 &&
-        tls_load_sym(g_crypto_lib, "EVP_PKEY_set1_DH", (void**)&p_pkey_set1_dh) == 0 &&
-        tls_load_sym(g_crypto_lib, "EVP_PKEY_free", (void**)&p_pkey_free) == 0 && p_pkey_new &&
-        p_pkey_set1_dh && p_pkey_free) {
-      EVP_PKEY* pkey = p_pkey_new();
-      if (pkey && p_pkey_set1_dh(pkey, dh) == 1) {
-        if (p_set0_pkey(ctx, pkey) != 1) {
-          p_pkey_free(pkey);
-        }
-      } else if (pkey) {
-        p_pkey_free(pkey);
-      }
-    }
+  if (tls_ctx_install_tmp_dh_pkey(ctx, dh) != 0) {
+    p_dh_free(dh);
+    g_tls_tmp_dh = NULL;
+    fprintf(stderr, "li-httpd tls: failed to install dhparam for %s\n", path);
+    return -1;
   }
   return 0;
 }
@@ -285,6 +365,8 @@ static int tls_load_openssl(void) {
   if (g_tls_ready) {
     return 0;
   }
+  tls_read_env_mode();
+  tls_ensure_openssl_modules_env();
 #if defined(_WIN32)
   const char* ssl_names[] = {"libssl-3-x64.dll", "libssl-3.dll", "libssl.dll", NULL};
   const char* crypto_names[] = {"libcrypto-3-x64.dll", "libcrypto-3.dll", "libcrypto.dll", NULL};
@@ -370,13 +452,19 @@ static int tls_load_openssl(void) {
   if (p_OPENSSL_init_ssl) {
     p_OPENSSL_init_ssl(0, NULL);
   }
-  {
+  if (g_legacy_openssl) {
     typedef void* (*ossl_provider_load_fn)(void*, const char*);
     ossl_provider_load_fn p_provider_load = NULL;
     if (tls_load_sym(g_crypto_lib, "OSSL_PROVIDER_load", (void**)&p_provider_load) == 0 &&
         p_provider_load) {
-      p_provider_load(NULL, "default");
-      p_provider_load(NULL, "legacy");
+      if (!p_provider_load(NULL, "default")) {
+        fprintf(stderr, "li-httpd tls: OSSL_PROVIDER_load(default) failed\n");
+      }
+      if (!p_provider_load(NULL, "legacy")) {
+        fprintf(stderr, "li-httpd tls: OSSL_PROVIDER_load(legacy) failed — DHE ciphers unavailable\n");
+      } else {
+        fprintf(stderr, "li-httpd tls: legacy OpenSSL provider loaded\n");
+      }
     }
   }
   {
@@ -594,12 +682,6 @@ int32_t httpd_tls_global_init_files(const char* cert_path, const char* key_path)
         p_max_proto) {
       p_max_proto(g_tls_ctx, TLS1_2_VERSION);
     }
-    typedef int (*ssl_ctx_set_ciphersuites_fn)(SSL_CTX*, const char*);
-    ssl_ctx_set_ciphersuites_fn p_ciphersuites_off = NULL;
-    if (tls_load_sym(g_ssl_lib, "SSL_CTX_set_ciphersuites", (void**)&p_ciphersuites_off) == 0 &&
-        p_ciphersuites_off) {
-      p_ciphersuites_off(g_tls_ctx, "");
-    }
     typedef int (*ssl_ctx_set_sec_lvl_fn)(SSL_CTX*, int);
     ssl_ctx_set_sec_lvl_fn p_sec_lvl = NULL;
     if (tls_load_sym(g_ssl_lib, "SSL_CTX_set_security_level", (void**)&p_sec_lvl) == 0 && p_sec_lvl) {
@@ -626,26 +708,16 @@ int32_t httpd_tls_global_init_files(const char* cert_path, const char* key_path)
         p_cipher_list) {
       const char* legacy_ciphers =
           g_tls_dhparam_path[0]
-              ? "DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:"
+              ? "@SECLEVEL=0:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:"
                 "ECDHE-RSA-AES128-GCM-SHA256"
-              : "ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256:"
+              : "@SECLEVEL=0:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256:"
                 "DHE-RSA-AES256-GCM-SHA384";
-      if (p_cipher_list(g_tls_ctx, legacy_ciphers) != 1) {
-        if (g_tls_dhparam_path[0] &&
-            p_cipher_list(g_tls_ctx,
-                          "ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256:"
-                          "DHE-RSA-AES256-GCM-SHA384") != 1) {
-          fprintf(stderr, "li-httpd tls: cipher_list rejected\n");
-          p_SSL_CTX_free(g_tls_ctx);
-          g_tls_ctx = NULL;
-          return -1;
-        }
-        if (!g_tls_dhparam_path[0]) {
-          fprintf(stderr, "li-httpd tls: cipher_list rejected (%s)\n", legacy_ciphers);
-          p_SSL_CTX_free(g_tls_ctx);
-          g_tls_ctx = NULL;
-          return -1;
-        }
+      if (p_cipher_list(g_tls_ctx, legacy_ciphers) != 1 &&
+          p_cipher_list(g_tls_ctx, "ALL:@SECLEVEL=0") != 1) {
+        fprintf(stderr, "li-httpd tls: cipher_list rejected\n");
+        p_SSL_CTX_free(g_tls_ctx);
+        g_tls_ctx = NULL;
+        return -1;
       }
     }
   }
@@ -720,6 +792,25 @@ static int32_t httpd_tls_accept_step(int32_t slot) {
   if (err == 3) {
     g_slot_hs_want_write[slot] = 1;
     return 1;
+  }
+  {
+    typedef unsigned long (*err_get_error_fn)(void);
+    typedef void (*err_error_string_n_fn)(unsigned long, char*, size_t);
+    err_get_error_fn p_err_get = NULL;
+    err_error_string_n_fn p_err_str_n = NULL;
+    if (tls_load_sym(g_crypto_lib, "ERR_get_error", (void**)&p_err_get) == 0 && p_err_get) {
+      tls_load_sym(g_crypto_lib, "ERR_error_string_n", (void**)&p_err_str_n);
+      unsigned long e = p_err_get();
+      while (e != 0) {
+        char buf[256];
+        buf[0] = '\0';
+        if (p_err_str_n) {
+          p_err_str_n(e, buf, sizeof(buf));
+        }
+        fprintf(stderr, "li-httpd tls: SSL_accept error %d (rc=%d) openssl: %s\n", err, rc, buf);
+        e = p_err_get();
+      }
+    }
   }
   return -1;
 }

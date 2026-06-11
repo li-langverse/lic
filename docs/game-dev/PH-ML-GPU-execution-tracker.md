@@ -25,6 +25,7 @@
 | WP-ML-21 | 32×32 blocked LKIR matmul competitive row (Wave 13 T6) | 13 | done | ml_matmul_lkir_logical_32 + bench-ph-ml-lkir-matmul-32.sh |
 | WP-RL-08 | Li process fork env pool + Studio hook (Wave 13 T4) | 13 | done | env_pool_li_process_fork.li + studio_sim_rl_step_hook |
 | WP-RL-09 | SB3/Ray hard CI benches (Wave 13 T5) | 13 | done | bench_ph_ml_competitor_sb3_vecenv.py + bench_ph_ml_competitor_ray_rllib.py |
+| WP-ML-25 | li-array dense 32×32 BLAS + tile sweep (perf I/J) | 13 | done | ph-ml-li-array-perf-ij-gates.sh + bench-ph-ml-li-array-gemm-tile-sweep.sh |
 
 **Wave 13:** program complete — closes Wave 12 deferred items (T1–T8); milestone gate `ph-ml-wave13-gates.sh`, completion gate `ph-ml-program-complete-gates.sh`
 

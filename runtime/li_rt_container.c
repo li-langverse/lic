@@ -1,6 +1,23 @@
 #if !defined(_WIN32)
 #define _GNU_SOURCE
 #endif
+#if defined(__linux__)
+#include <unistd.h>
+#include <sys/mount.h>
+#include <sys/syscall.h>
+#if !defined(pivot_root)
+int pivot_root(const char* new_root, const char* put_old);
+#endif
+#if __has_include(<sys/seccomp.h>)
+#include <sys/seccomp.h>
+#else
+#include <linux/seccomp.h>
+static inline int li_rt_seccomp(unsigned int operation, unsigned int flags, void* args) {
+  return (int)syscall(__NR_seccomp, operation, flags, args);
+}
+#define seccomp li_rt_seccomp
+#endif
+#endif
 #include "li_rt.h"
 
 #include <stdio.h>
@@ -20,7 +37,6 @@
 
 #if defined(__linux__)
 #include <sched.h>
-#include <sys/mount.h>
 #include <sys/prctl.h>
 #include <linux/bpf.h>
 #include <linux/filter.h>

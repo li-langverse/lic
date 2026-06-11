@@ -189,7 +189,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 5b | Benchmarks & sims | `2026-05-14-benchmarks-and-simulations.md` | **Verified** Tier 2 physics + cross-lang CSV + **X plots** |
 | 6 | Self-host (post-live) | `2026-05-14-phase-06-self-host.md` | `lic` built by li (bootstrap seed) |
 | 7 | Native HPC (SIMD + OpenMP) | `2026-05-14-phase-07-native-hpc.md` | Pure-Li simd_dot + md; race suite; fuzz daily |
-| **7d** | **Execution decorators** | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | **Partial:** 7d-b–e MIR lowering gate (`check-mir-decorator-lowering.sh`); **G-par** Lean proofs open |
+| **7d** | **Execution decorators** | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | **Partial:** 7d-b–e MIR lowering gate (`check-mir-decorator-lowering.sh`; `mir_parallel_proc` telemetry); **G-par** Lean proofs open |
 | **7e** | **Math → SIMD lowering** | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) § 7e | **Partial:** pure-Li tier-1 (#148); perf bar open |
 | **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | **M1 partial:** epoll static/sendfile + proxy (#153/#156); **li-log** package stub (access sink + redact); **next:** M1 ship gate Lean + Li reactor |
 | **Obs** | Fuzz dashboard + plan canvas | `scripts/export-fuzz-status.sh` + `canvases/*.canvas.tsx` | Nightly updates `.canvas.data.json` sidecars |
@@ -367,7 +367,7 @@ Maps **master plan phases** to gap IDs and what “mathematical provability esta
 | 3 | MIR bounds / refinement | **G-bnd** | Release path does not rely on `li_bounds_fail` for proved indices | architecture, numerics |
 | 7b | Structured `disjoint=` | **G-par** | Disjointness from AST, not `policy.cpp` strings | simd-parallel, gaps |
 | 7d-a | Decorator parse | **G-dec** | Parse + AST attrs — **done** | decorators spec |
-| 7d-b | MIR proc tags (`@vectorized`, `@cpu`, `@gpu`, `@parallel`) | **G-dec** | `check-mir-decorator-lowering.sh` vectorized/gpu/cpu telemetry green | `decorators/`, `check-mir-*-decorator.sh` |
+| 7d-b | MIR proc tags (`@vectorized`, `@cpu`, `@gpu`, `@parallel`) | **G-dec** | `check-mir-decorator-lowering.sh` + `check-mir-parallel-proc-decorator.sh`; `lic verify mir_parallel_proc=` / `mir_vectorized_proc=` / `mir_cpu_def=` / `mir_gpu_def=` telemetry | `decorators/`, `docs/language/decorators.md` |
 | 7d-c | Host `@cpu`+`@parallel(disjoint=…)` lowering | **G-dec**, **G-par** | `mir_parallel_host_lowering=1` + `li_parallel_for_i64` codegen; disjoint= policy witnesses (**G-par** Lean open) | `check-mir-parallel-portable-lowering.sh`, `race_shared_memory/` |
 | 7d-d | Std policy surface | **G-dec** | `std.execution.decorators` + handbook | `stdlib_coverage/`, `docs/language/decorators.md` |
 | 7d-e | Exploit policy | **G-dec** | `decorator_exploits/` 4× `compile_fail` | `li-tests/decorator_exploits/` |
@@ -457,7 +457,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
 - [x] Phase 2f — Lean 4 verify — **partial (#83, #151, #155, lic#4):** default `lake build AutoVC` on `lic build` (`--no-lean-verify` opt-out); **P-linalg** closed corpus + loop dot (`dot4_int_loop_eval_spec`); **P-float** `sqrt_open_bound` closed (`Li.Discharge.sqrt_open_bound_spec`); fib/recursive call-site + `decreases`/`_par*` VCs typecheck; **G-lean** / **G-vc** still **Partial** (kernel not universal) — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
-- [ ] Phase 7d — Execution decorators — **partial (lic#2):** **7d-a/e done** — parse + `decorator_exploits/` CI ([G-dec](../verification/provability-gaps.md#g-dec)); **7d-b–e closed slice** — `check-mir-decorator-lowering.sh` (`@vectorized`/`@cpu`/`@gpu`/`@parallel` MIR tags, Host `li_parallel_for_i64`, structured `disjoint=` — [G-par](../verification/provability-gaps.md#g-par) partial); **7d-c closed slice** — `@vectorized` on `for` → `ArraySimdScope`, `disjoint=` on `@parallel` inherits to nested `parallel for`; **7d-d done** — `std/execution/decorators.li`, `docs/language/decorators.md`; **open:** Tier 2 MD `@` example, Lean **P-dec**/**P-par**, Device LKIR (**G-gpu**), `@async` elaboration — [phase-07 exit gates](2026-05-14-phase-07-native-hpc.md#7d--execution-decorators-decorator-first-hpc)
+- [ ] Phase 7d — Execution decorators — **partial (lic#2):** **7d-a/e done** — parse + `decorator_exploits/` CI ([G-dec](../verification/provability-gaps.md#g-dec)); **7d-b–e closed slice** — `check-mir-decorator-lowering.sh` (`mir_parallel_proc`, `mir_vectorized_proc`, `mir_cpu_def`, `mir_gpu_def` telemetry; Host `li_parallel_for_i64`, structured `disjoint=` — [G-par](../verification/provability-gaps.md#g-par) partial); **7d-c closed slice** — `@vectorized` on `for` → `ArraySimdScope`, `disjoint=` on `@parallel` inherits to nested `parallel for`; **7d-d done** — `std/execution/decorators.li`, `docs/language/decorators.md`; **open:** Tier 2 MD `@` example, Lean **P-dec**/**P-par**, Device LKIR (**G-gpu**), `@async` elaboration — [phase-07 exit gates](2026-05-14-phase-07-native-hpc.md#7d--execution-decorators-decorator-first-hpc)
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150, #155):** loop matmul + FMA horner; tier-1 advisory ≤1.2× (`matmul_naive`, `horner_pure_li`); **`check-tier1-li-vs-cpp.sh`** strict optional; **open:** remaining tier-1 slices, full float Lean Props
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, validate/explain/flatten-config, overlap reject, Bearer auth (C), `packages/li-log` (#158); **next:** Li `net.httpd` lib build + M1 ship gate Lean ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
@@ -496,7 +496,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 - **180** `li-tests` manifest entries (`run_all.sh --ci` after gap-closure)
 - **2e/2f partial:** `build/generated/AutoVC.lean` every `lic build`; **P-linalg** closed VCs (#151)
 - **7e partial:** 1d/2d float `@`, element-wise SIMD, pure-Li tier-1 `simd_dot` / `matmul_*` (#148)
-- **7d partial:** 7d-b–e MIR lowering gate (`check-mir-decorator-lowering.sh`); structured `disjoint=` Host lowering closed; Lean **G-par** proofs open
+- **7d partial:** 7d-b–e MIR lowering gate (`check-mir-decorator-lowering.sh`; `mir_parallel_proc` telemetry); structured `disjoint=` Host lowering closed; Lean **G-par** proofs open
 
 ### Full master plan — **not complete** (v2 backlog)
 

@@ -44,7 +44,7 @@
 | Sub | Task | Exit gate (Doc-c) |
 |-----|------|-------------------|
 | **7d-a** | Lexer `@`, decorator lists on `def`/`for`/`while`, AST attrs | `./li-tests/run_all.sh decorators` parse rows — **done** |
-| **7d-b** | Elaboration → `MirDecorator` proc tags (`@vectorized`, `@cpu`, `@gpu`, `@parallel`) + verify telemetry | `./scripts/check-mir-decorator-lowering.sh` (delegates to `check-mir-*-decorator.sh`) — **closed slice** ([G-dec](../../verification/provability-gaps.md#g-dec)): `@vectorized`/`@no_vectorize` proc tags, `@gpu` MIR telemetry, `@cpu`+`@parallel` → Host `li_parallel_for_i64` |
+| **7d-b** | Elaboration → `MirDecorator` proc tags (`@vectorized`, `@cpu`, `@gpu`, `@parallel`) + verify telemetry | `./scripts/check-mir-decorator-lowering.sh` (delegates to `check-mir-*-decorator.sh` incl. `check-mir-parallel-proc-decorator.sh`) — **closed slice** ([G-dec](../../verification/provability-gaps.md#g-dec)): `mir_parallel_proc` / `mir_vectorized_proc` / `mir_cpu_def` / `mir_gpu_def` telemetry, `@vectorized`/`@no_vectorize` proc tags, `@gpu` MIR telemetry, `@cpu`+`@parallel` → Host `li_parallel_for_i64` |
 | **7d-c** | Structured `disjoint=`; scoped `@vectorized` on `for` (`ArraySimdScope`); Host `@cpu`+`@parallel` → `li_parallel_for_i64` | `vectorized_for_scope_ok.li`, `parallel_with_disjoint.li`, `parallel_def_disjoint_inherit.li` — **closed slice** ([G-par](../../verification/provability-gaps.md#g-par) partial): AST `disjoint_*` witnesses + `mir_parallel_disjoint=1`; full Lean **P-par** open |
 | **7d-d** | `std/execution/decorators.li` + `docs/language/decorators.md` | `std/execution/decorators.li`, `std/execution/parallel.li`, handbook — **done** |
 | **7d-e** | Policy: reserved names, typosquat, `parallel_requires_disjoint`, `decorator def` naming | `./li-tests/run_all.sh decorator_exploits` all **compile_fail** — **done** ([G-dec](../../verification/provability-gaps.md#g-dec)); CI in `scripts/ci.sh` |
@@ -75,7 +75,7 @@
 **7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):**
 
 - [x] `./li-tests/run_all.sh decorators decorator_exploits` — **7d-a/e** ([G-dec](../../verification/provability-gaps.md#g-dec))
-- [x] **7d-b–e MIR lowering gate:** `./scripts/check-mir-decorator-lowering.sh` (**G-dec** closed slice; **G-par** Host `disjoint=` lowering cross-linked)
+- [x] **7d-b–e MIR lowering gate:** `./scripts/check-mir-decorator-lowering.sh` incl. `check-mir-parallel-proc-decorator.sh` (`mir_parallel_proc` telemetry; **G-dec** closed slice; **G-par** Host `disjoint=` lowering cross-linked)
 - [x] `parallel_with_disjoint.li` + `parallel_def_disjoint_inherit.li` — **7d-c** structured `disjoint=` ([G-par](../../verification/provability-gaps.md#g-par) partial)
 - [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
 - [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds (`compiler/fuzz/corpus/seed_decorators`)

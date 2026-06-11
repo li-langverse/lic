@@ -301,6 +301,8 @@ std::size_t count_mir_gpu_def(const MirModule& mir);
 std::size_t count_mir_gpu_multi_device_def(const MirModule& mir);
 std::size_t count_mir_cpu_def(const MirModule& mir);
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
+/** Count `def` declarations tagged with `@parallel` (7d-b MIR proc tag). */
+std::size_t count_mir_parallel_proc(const MirModule& mir);
 /** Count `OmpParallelFor` lowered with Host memory space (portable `li_parallel_for_i64`). */
 std::size_t count_mir_parallel_host_lowering(const MirModule& mir);
 

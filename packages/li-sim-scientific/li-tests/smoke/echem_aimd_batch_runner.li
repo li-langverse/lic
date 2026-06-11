@@ -11,7 +11,7 @@ extern proc li_rt_studio_aimd_batch_write_json(path: str, steps: int, ok: int, c
   ensures result <= 1
   decreases steps
 
-def main() -> int raises IO
+def main() -> int raises IO, Alloc
   requires true
   ensures result == 0
   decreases 0
@@ -22,7 +22,6 @@ def main() -> int raises IO
   var batch: AimdBatchResult = echem_aimd_batch_run(steps)
   if batch.ok != 1:
     return 2
-  var out_path: str = "build/aimd-demo/out/batch-result.json"
-  if li_rt_studio_aimd_batch_write_json(out_path, batch.steps, batch.ok, batch.checksum, batch.energy_drift, batch.gpu_path, batch.dft_stride, batch.dft_calls) != 1:
+  if li_rt_studio_aimd_batch_write_json("build/aimd-demo/out/batch-result.json", batch.steps, batch.ok, batch.checksum, batch.energy_drift, batch.gpu_path, batch.dft_stride, batch.dft_calls) != 1:
     return 3
   return 0

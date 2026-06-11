@@ -399,13 +399,21 @@ def echem_aimd_batch_steps_valid(steps: int) -> int
     return 0
   return 1
 
+extern proc li_rt_studio_aimd_gpu_from_env() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
 def echem_aimd_batch_gpu_path_select() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
-  ensures result == chem_dft_gpu_path_available()
+  ensures result <= chem_dft_gpu_path_available()
   decreases 0
 =
+  if li_rt_studio_aimd_gpu_from_env() != 1:
+    return 0
   return chem_dft_gpu_path_available()
 
 def echem_aimd_batch_run(steps: int) -> AimdBatchResult raises IO

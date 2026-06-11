@@ -1,0 +1,31 @@
+# std/execution/memory_spaces.li — Kokkos-class memory space policy (Phase 7d/7e, PH-7e)
+#
+# Compile-time placement policy tying execution decorators to address spaces:
+#   @cpu  → MemorySpaceHost   — portable shared-memory parallel_for via li_parallel_for_i64
+#   @gpu  → MemorySpaceDevice — MIR placement metadata; LKIR/device-buffer lowering is G-gpu
+#
+# Decorators elaborate at lic build; there is no runtime memory-space registry.
+# Kokkos Views and distributed multi-GPU views remain G-par-dist / G-gpu open work.
+#
+# See also: std/execution/decorators.li, docs/language/decorators.md
+
+def memory_space_for_cpu_decorator() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def memory_space_for_gpu_decorator() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def __execution_memory_spaces_doc() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

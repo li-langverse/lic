@@ -15,6 +15,9 @@
 #   @vectorized(lanes=4) — SIMD vector width in one core; never spawns li_parallel_for_i64
 #
 # User decorators must use multi-segment names (e.g. li_math_tiled_parallel).
+#
+# Memory-space policy (@cpu → host, @gpu → device): std/execution/memory_spaces.li
+# Portable parallel lowering: @parallel(disjoint=…) → li_parallel_for_i64 (PH-7e / G-par).
 
 def __execution_decorators_doc() -> int
   requires true

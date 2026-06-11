@@ -1,3 +1,5 @@
+import cluster_state
+
 def libernetes_version() -> int
   requires true
   ensures result == 0

@@ -1695,6 +1695,18 @@ outcome = "compile_open_ok"
 note = "PH-SCI-GPU-07 @gpu wavefunction normalize"
 
 [[tests]]
+suite = "smoke"
+file = "packages/li-physics-hep/li-tests/smoke/hep_mc_smoke.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-std-physics-hep-mc — domain import + toy MC hook (open VC for float externs)"
+
+[[tests]]
+suite = "smoke"
+file = "packages/li-physics-aero/li-tests/smoke/orbit_two_body_smoke.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-std-physics-aero-orbit — orbit integrator + atmosphere (IO externs)"
+
+[[tests]]
 suite = "science_gpu"
 file = "packages/li-physics-weather/li-tests/smoke/physics_gpu_weather_diffuse.li"
 outcome = "compile_open_ok"

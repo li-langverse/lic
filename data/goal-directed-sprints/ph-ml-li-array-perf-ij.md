@@ -33,8 +33,8 @@ Close the ~343× gap toward NumPy CPU matmul @ 32×32:
 
 | Phase | Status |
 |-------|--------|
-| **I** | **DONE** — dense BLAS path + tile sweep + in-process hot loop |
-| **J** | **DONE** — bench metadata + competitive row refresh |
+| **I** | **DONE** |
+| **J** | **DONE** |
 
 ## Phases
 

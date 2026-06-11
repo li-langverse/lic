@@ -18,6 +18,10 @@ type OrbitState2d = object
   public vx: float
   public vy: float
 
+type Accel2D = object
+  public ax: float
+  public ay: float
+
 def li_std_physics_aero_version() raises IO -> int
   requires true
   ensures result == 2
@@ -103,6 +107,35 @@ def orbit_circular_period(mu: float, radius: float) raises IO -> float
   var two_pi: float = 2.0 * 3.14159265
   return two_pi * li_rt_sqrt(radius * radius * radius / mu)
 
+def gravity_accel_from_offset(dx: float, dy: float, mu: float, soft: float) raises IO -> Accel2D
+  requires mu > 0.0
+  requires soft >= 0.0
+  ensures result.ax == -mu * dx / (li_rt_sqrt(dx * dx + dy * dy + soft * soft) * (dx * dx + dy * dy + soft * soft))
+  ensures result.ay == -mu * dy / (li_rt_sqrt(dx * dx + dy * dy + soft * soft) * (dx * dx + dy * dy + soft * soft))
+  decreases 0
+=
+  var r2: float = dx * dx + dy * dy + soft * soft
+  var r: float = li_rt_sqrt(r2)
+  var inv_r3: float = 1.0 / (r * r2)
+  var a: Accel2D
+  a.ax = -mu * dx * inv_r3
+  a.ay = -mu * dy * inv_r3
+  return a
+
+def two_body_accel_on_body(
+    body_px: float, body_py: float,
+    other_px: float, other_py: float,
+    mu: float, soft: float) raises IO -> Accel2D
+  requires mu > 0.0
+  requires soft >= 0.0
+  ensures result.ax == gravity_accel_from_offset(other_px - body_px, other_py - body_py, mu, soft).ax
+  ensures result.ay == gravity_accel_from_offset(other_px - body_px, other_py - body_py, mu, soft).ay
+  decreases 0
+=
+  var dx: float = other_px - body_px
+  var dy: float = other_py - body_py
+  return gravity_accel_from_offset(dx, dy, mu, soft)
+
 def orbit_verlet_step(s: var OrbitState2d, mu: float, dt: float) raises IO -> unit
   requires mu > 0.0
   requires dt > 0.0
@@ -123,6 +156,21 @@ def orbit_verlet_step(s: var OrbitState2d, mu: float, dt: float) raises IO -> un
   s.vx = s.vx + ax * dt
   s.vy = s.vy + ay * dt
 
+def orbit_leapfrog_step(
+    s: var OrbitState2d, other_px: float, other_py: float,
+    mu: float, soft: float, dt: float) raises IO -> unit
+  requires dt > 0.0
+  requires mu > 0.0
+  requires soft >= 0.0
+  ensures true
+  decreases 0
+=
+  var acc: Accel2D = two_body_accel_on_body(s.px, s.py, other_px, other_py, mu, soft)
+  s.vx = s.vx + acc.ax * dt
+  s.vy = s.vy + acc.ay * dt
+  s.px = s.px + s.vx * dt
+  s.py = s.py + s.vy * dt
+
 def orbit_two_body_checksum() raises IO -> float
   requires true
   ensures result > 0.0
@@ -141,6 +189,28 @@ def orbit_two_body_checksum() raises IO -> float
     step = step + 1
   return s.px + s.py + s.vx + s.vy + 1.0
 
+def orbit_two_body_smoke() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var s: OrbitState2d
+  s.px = 1.0
+  s.py = 0.0
+  s.vx = 0.0
+  s.vy = 1.0
+  var mu: float = 1.0
+  var i: int = 0
+  while i < 16
+    orbit_leapfrog_step(s, 0.0, 0.0, mu, 0.01, 0.05)
+    i = i + 1
+  if s.px <= 0.0:
+    return 0
+  if s.py == 0.0:
+    return 0
+  return 1
+
 def physics_aero_orbit_smoke() raises IO -> int
   requires true
   ensures result >= 0
@@ -155,3 +225,11 @@ def physics_aero_orbit_smoke() raises IO -> int
   if rho <= 0.0:
     return 0
   return 1
+
+def physics_aero_gpu_progress() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return orbit_two_body_smoke()

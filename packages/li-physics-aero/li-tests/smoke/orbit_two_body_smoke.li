@@ -7,6 +7,12 @@ def main() raises IO -> int
 =
   if li_std_physics_aero_version() != 2:
     return 1
-  if physics_aero_orbit_smoke() != 1:
+  if orbit_two_body_smoke() != 1:
     return 2
+  if physics_aero_orbit_smoke() != 1:
+    return 3
+  var mu: float = 1.0
+  var period: float = orbit_circular_period(mu, 1.0)
+  if period <= 0.0:
+    return 4
   return 0

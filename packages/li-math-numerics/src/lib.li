@@ -19,6 +19,21 @@ def li_std_numerics_version() -> int
 =
   return 1
 
+# REQ-PHYS-INT-01 — integrator order tags for physics.core select_integrator_order.
+def numerics_integrator_tag(order: int) -> int
+  requires order >= 1
+  requires order <= 4
+  ensures result == order
+  decreases order
+=
+  if order == 1:
+    return 1
+  if order == 2:
+    return 2
+  if order == 3:
+    return 3
+  return 4
+
 # Semi-implicit Euler: v += a*dt; x += v*dt
 def euler_step_vec2(
     px: var array[3, float], py: var array[3, float],

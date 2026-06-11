@@ -1,6 +1,12 @@
+import physics.chem
+
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  if li_std_physics_chem_version() < 2:
+    return 1
+  if chem_arrhenius_smoke() != 1:
+    return 2
   return 0

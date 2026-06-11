@@ -14,7 +14,7 @@ def li_container_version() -> int
 =
   return 3
 
-def container_linux_available() -> int
+def container_linux_available() raises IO -> int
   requires true
   ensures result >= 0
   decreases 0

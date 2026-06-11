@@ -1,10 +1,7 @@
 # WP-CTN-061 — lictl user CLI (pull, run, ps, stop) + lirun OCI dispatch.
 
 import container
-import container.registry
 import container.run
-import container.run.runtime
-import container.runerr
 import std.runtime.seam
 
 def container_cli_tag() -> int
@@ -75,7 +72,7 @@ def lictl_cmd_run_image(ref: var ptr, container_id: var ptr) raises IO, Alloc ->
   var bundle: ptr = container_buf_alloc_i(4096)
   if container_str_cmp_i(store, "") == 0:
     container_path_join_i("/var/lib/li-container/bundles", container_id, bundle, 4096)
-  else:
+  if container_str_cmp_i(store, "") != 0:
     container_path_join_i(store, container_id, bundle, 4096)
   rc = lictl_cmd_run(bundle, container_id)
   container_buf_free_i(bundle)

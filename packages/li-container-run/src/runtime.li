@@ -1,14 +1,7 @@
 # WP-CTN-040..042 — lirun OCI lifecycle (backend-aware; depends li-container + li-oci).
 
 import container
-import container.backend.darwin
-import container.backend.lios
-import container.backend.select
-import container.backend.windows
-import container.bundle
-import container.runerr
-import container.state
-import oci.spec
+import oci
 import std.runtime.seam
 
 def lirun_create_tag() -> int
@@ -92,7 +85,7 @@ def runtime_create(container_id: var ptr, bundle_path: var ptr) raises IO, Alloc
   container_buf_free_i(config)
   return 0
 
-def runtime_child_setup(container_id: var ptr, bundle_path: var ptr, config: var ptr) -> int
+def runtime_child_setup(container_id: var ptr, bundle_path: var ptr, config: var ptr) raises IO -> int
   requires true
   ensures result >= 0
   decreases 0
@@ -416,7 +409,7 @@ def lirun_selftest() raises IO -> int
     return 40
   return 0
 
-def lirun_parse_signal(name: var ptr) -> int
+def lirun_parse_signal(name: var ptr) raises IO -> int
   requires true
   ensures result > 0
   decreases 0
@@ -432,7 +425,7 @@ def lirun_parse_signal(name: var ptr) -> int
     return 9
   return 9
 
-def lirun_argv_container_id(arg_idx: int) -> ptr
+def lirun_argv_container_id(arg_idx: int) raises IO -> ptr
   requires 0 <= arg_idx
   ensures true
   decreases 0
@@ -442,7 +435,7 @@ def lirun_argv_container_id(arg_idx: int) -> ptr
     return li_rt_argv_i(arg_idx + 1)
   return li_rt_argv_i(arg_idx)
 
-def lirun_argv_delete_force(n: int, id_arg_idx: int) -> int
+def lirun_argv_delete_force(n: int, id_arg_idx: int) raises IO -> int
   requires true
   ensures result >= 0
   decreases 0

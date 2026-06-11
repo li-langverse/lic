@@ -65,7 +65,7 @@ def bundle_read_config(bundle_path: var ptr, buf: var ptr, cap: int) raises IO -
     return 1
   return 0
 
-def bundle_validate_rootfs(bundle_path: var ptr, config_json: var ptr) -> int
+def bundle_validate_rootfs(bundle_path: var ptr, config_json: var ptr) raises IO -> int
   requires true
   ensures result >= 0
   decreases 0
@@ -74,7 +74,7 @@ def bundle_validate_rootfs(bundle_path: var ptr, config_json: var ptr) -> int
     return 1
   return 0
 
-def bundle_oci_version(config_json: var ptr, out: var ptr, cap: int) -> int
+def bundle_oci_version(config_json: var ptr, out: var ptr, cap: int) raises IO -> int
   requires 0 < cap
   ensures result >= 0
   decreases 0
@@ -83,14 +83,14 @@ def bundle_oci_version(config_json: var ptr, out: var ptr, cap: int) -> int
     return 0
   return 1
 
-def bundle_process_uid(config_json: var ptr) -> int
+def bundle_process_uid(config_json: var ptr) raises IO -> int
   requires true
   ensures result >= 0
   decreases 0
 =
   return container_json_process_uid_i(config_json)
 
-def bundle_process_gid(config_json: var ptr) -> int
+def bundle_process_gid(config_json: var ptr) raises IO -> int
   requires true
   ensures result >= 0
   decreases 0

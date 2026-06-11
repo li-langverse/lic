@@ -425,15 +425,16 @@ def lirun_parse_signal(name: var ptr) raises IO -> int
     return 9
   return 9
 
-def lirun_argv_container_id(arg_idx: int) raises IO -> ptr
+def lirun_argv_container_id_idx(arg_idx: int) raises IO -> int
   requires 0 <= arg_idx
-  ensures true
+  ensures result >= arg_idx
+  ensures result <= arg_idx + 1
   decreases 0
 =
   var id_flag: ptr = "--id"
   if container_str_cmp_i(li_rt_argv_i(arg_idx), id_flag) == 0:
-    return li_rt_argv_i(arg_idx + 1)
-  return li_rt_argv_i(arg_idx)
+    return arg_idx + 1
+  return arg_idx
 
 def lirun_argv_delete_force(n: int, id_arg_idx: int) raises IO -> int
   requires true
@@ -561,14 +562,14 @@ def lirun_run_from_argv() raises IO, Alloc -> int
   if container_str_cmp_i(cmd, delete_cmd) == 0:
     if n < 4:
       return 1
-    var del_id: ptr = lirun_argv_container_id(2)
+    var del_id: ptr = li_rt_argv_i(lirun_argv_container_id_idx(2))
     var force: int = lirun_argv_delete_force(n, 2)
     return lirun_cmd_delete(del_id, force)
   var kill_cmd: ptr = "kill"
   if container_str_cmp_i(cmd, kill_cmd) == 0:
     if n < 4:
       return 1
-    var kill_id: ptr = lirun_argv_container_id(2)
+    var kill_id: ptr = li_rt_argv_i(lirun_argv_container_id_idx(2))
     var sig: ptr = "SIGKILL"
     if n >= 5:
       var id_flag_k: ptr = "--id"
@@ -582,5 +583,5 @@ def lirun_run_from_argv() raises IO, Alloc -> int
   if container_str_cmp_i(cmd, state_cmd) == 0:
     if n < 4:
       return 1
-    return lirun_cmd_state(lirun_argv_container_id(2))
+    return lirun_cmd_state(li_rt_argv_i(lirun_argv_container_id_idx(2)))
   return 1

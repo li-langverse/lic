@@ -16,7 +16,7 @@ libernetes worker join https://cp.homelab.lan:6443 \
   --profile auto
 ```
 
-Auto-detected labels: `libernetes.io/arch`, `libernetes.io/kvm`, `libernetes.io/container`, `libernetes.io/gpu`.
+Auto-detected labels: `libernetes.io/arch`, `libernetes.io/hypervisor` (`li-native` when LiOS hypervisor is present), `libernetes.io/container`, `libernetes.io/gpu`.
 
 ## Profiles
 

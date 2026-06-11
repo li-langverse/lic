@@ -1,4 +1,4 @@
-# Stub — KubeVirt-compatible VirtualMachine CRD spec (Wave 1 livm)
+# Stub — libernetes VirtualMachine CRD spec (Wave 1 livm; KubeVirt API shape for compat)
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:

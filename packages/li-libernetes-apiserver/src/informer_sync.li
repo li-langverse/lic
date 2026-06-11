@@ -1,0 +1,30 @@
+# Apiserver informer wiring — watch cache resync stub (Wave 3).
+
+def informer_sync_resync_period_ms() -> int
+  requires true
+  ensures result == 30000
+  decreases 0
+=
+  return 30000
+
+def informer_sync_list(resource_tag: int) -> int
+  requires resource_tag >= 0
+  ensures result == 0
+  decreases resource_tag
+=
+  return 0
+
+def informer_sync_watch(resource_tag: int, from_revision: int) -> int
+  requires resource_tag >= 0
+  requires from_revision >= 0
+  ensures result == 0
+  decreases resource_tag + from_revision
+=
+  return 0
+
+def informer_sync_resync() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return informer_sync_list(0) + informer_sync_list(1)

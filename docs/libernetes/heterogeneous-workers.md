@@ -12,7 +12,7 @@ kind: WorkerProfile
 metadata:
   name: vm-gpu-pool
 spec:
-  capabilities: [kvm, gpu]
+  capabilities: [hypervisor, gpu]
   architectures: [amd64]
   runtimes: [vm, container]
 ```
@@ -24,10 +24,14 @@ Join: `libernetes worker join ... --profile vm-gpu-pool`
 | Signal | Label |
 |--------|-------|
 | `uname -m` | `libernetes.io/arch` |
-| `/dev/kvm` | `libernetes.io/kvm=true` |
+| LiOS + `li-hypervisor` | `libernetes.io/hypervisor=li-native` |
 | cgroups v2 | `libernetes.io/container=true` |
 | GPU/VFIO | `libernetes.io/gpu=true` |
 | LiOS kernel | `libernetes.io/os=lios` |
+
+VM workloads schedule only onto nodes with `libernetes.io/hypervisor=li-native`.
+
+> **Industry reference:** KubeVirt-style `VirtualMachine` scheduling patterns inform WorkerProfile design. KVM/QEMU are learn-from baselines, not registered capability labels.
 
 ## Scheduling
 

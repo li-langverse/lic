@@ -14,7 +14,7 @@ plan: docs/libernetes/master-plan.md
 
 Platform foundation for libernetes: docs, workspace wiring, foundation packages (`li-etcd`, `li-watch`, `li-workqueue`).
 
-**Wave 0 is DONE.** **Wave 1 is DONE.** Completion gate now requires **Wave 2** (etcd client, watch reflector, workqueue, `li-grpc` package).
+**Waves 0–2 DONE.** Active: **Wave 3** (single-node runnable stack wiring on platform track).
 
 ## Phase checklist
 
@@ -31,7 +31,7 @@ Platform foundation for libernetes: docs, workspace wiring, foundation packages 
 
 ## Iteration rules
 
-1. Implement **LB-P5/P6/P7** until completion gate passes.
+1. Implement **LB-P8/P9** (Wave 3 platform stack wiring) until completion gate passes.
 2. Commit + push every iteration.
 3. Append rows to `data/libernetes-platform/iteration-log.md`.
 

@@ -1,0 +1,16 @@
+%%{init: {'theme': 'base', 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 60, 'padding': 16}}}%%
+flowchart TB
+  subgraph ops ["Cluster operations Waves 7-9"]
+    selfheal["li-controller self_heal.li"]
+    storage["PV/PVC + etcd backup"]
+    metrics["li-metrics + node conditions"]
+    dashboard[libernetes-dashboard.sh]
+  end
+
+  cm[li-controller-manager] --> selfheal
+  selfheal --> kubelet[li-kubelet]
+  storage --> etcd[li-etcd]
+  storage --> kubelet
+  kubelet --> metrics
+  metrics --> dashboard
+  apiserver[li-apiserver] --> metrics

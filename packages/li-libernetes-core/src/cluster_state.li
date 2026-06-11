@@ -1,0 +1,62 @@
+# Cluster state — multi-node registry + revision tracking (Wave 4 stub).
+
+def cluster_state_max_nodes() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
+def cluster_state_register_node(node_tag: int) -> int
+  requires node_tag >= 0
+  requires node_tag < cluster_state_max_nodes()
+  ensures result == 0
+  decreases node_tag
+=
+  return 0
+
+def cluster_state_node_ready(node_tag: int) -> int
+  requires node_tag >= 0
+  requires node_tag < cluster_state_max_nodes()
+  ensures result >= 0
+  ensures result <= 1
+  decreases node_tag
+=
+  return 1
+
+def cluster_state_apply_revision(revision: int) -> int
+  requires revision >= 0
+  ensures result == revision
+  decreases revision
+=
+  return revision
+
+def cluster_state_join_worker(control_plane_tag: int, worker_tag: int) -> int
+  requires control_plane_tag >= 0
+  requires worker_tag >= 0
+  requires control_plane_tag < cluster_state_max_nodes()
+  requires worker_tag < cluster_state_max_nodes()
+  requires worker_tag != control_plane_tag
+  ensures result == 0
+  decreases control_plane_tag + worker_tag
+=
+  return cluster_state_register_node(control_plane_tag) + cluster_state_register_node(worker_tag) + cluster_state_node_ready(worker_tag) - 1
+
+def cluster_state_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if cluster_state_max_nodes() != 64:
+    return 1
+  if cluster_state_register_node(0) != 0:
+    return 2
+  if cluster_state_register_node(1) != 0:
+    return 3
+  if cluster_state_node_ready(1) != 1:
+    return 4
+  if cluster_state_apply_revision(1) != 1:
+    return 5
+  if cluster_state_join_worker(0, 1) != 0:
+    return 6
+  return 0

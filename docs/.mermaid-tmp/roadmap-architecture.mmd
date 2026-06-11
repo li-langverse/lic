@@ -1,0 +1,40 @@
+%%{init: {'theme': 'base', 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 60, 'padding': 16}}}%%
+flowchart TB
+  subgraph livm ["livm — production"]
+    vapi[li-vm API]
+    hypervisor[li-hypervisor]
+    disk[li-disk CoW]
+    firmware[li-firmware measured boot]
+    cloudinit[li-cloud-init]
+  end
+
+  subgraph licont ["licontainers — production"]
+    cri[li-cri]
+    liosbe[LiOSBackend]
+  end
+
+  subgraph lios [LiOS]
+    abi[LiOS kernel ABI]
+    hv[li-hypervisor syscall surface]
+  end
+
+  subgraph ref ["industry reference (learn-from / compat)"]
+    kvmref["KVM/QEMU patterns"]
+    ovmfref["OVMF/UEFI compat notes"]
+    cgroupsref["Linux cgroups shim"]
+  end
+
+  kubelet[li-kubelet] --> vapi
+  kubelet --> cri
+  vapi --> hypervisor
+  hypervisor --> disk
+  hypervisor --> firmware
+  hypervisor --> cloudinit
+  hypervisor --> hv
+  cri --> liosbe
+  liosbe --> abi
+  hv --> abi
+
+  kvmref -.-> hypervisor
+  ovmfref -.-> firmware
+  cgroupsref -.-> liosbe

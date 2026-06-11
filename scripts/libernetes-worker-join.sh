@@ -7,6 +7,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 JOIN_URL=""
 TOKEN=""
 PROFILE="auto"
+KUBELET_CONF="${LIBERNETES_KUBELET_CONF:-/etc/libernetes/kubelet.conf}"
 
 usage() {
   cat <<EOF
@@ -23,7 +24,7 @@ Options:
   -h, --help            show this help
 
 Auto-discovered node labels (see docs/libernetes/heterogeneous-workers.md):
-  libernetes.io/arch, libernetes.io/kvm, libernetes.io/container, libernetes.io/gpu, libernetes.io/os
+  libernetes.io/arch, libernetes.io/hypervisor, libernetes.io/container, libernetes.io/gpu, libernetes.io/os
 EOF
 }
 
@@ -42,11 +43,14 @@ detect_arch() {
   esac
 }
 
-detect_kvm() {
-  if [[ -e /dev/kvm && -r /dev/kvm ]]; then
-    echo "true"
+detect_hypervisor() {
+  # Li-native hypervisor only — KVM/QEMU probing removed from target architecture.
+  if [[ -f /etc/lios-release ]]; then
+    echo "li-native"
+  elif [[ -e /dev/li-hypervisor || -S /var/run/livm/hypervisor.sock ]]; then
+    echo "li-native"
   else
-    echo "false"
+    echo "none"
   fi
 }
 
@@ -77,19 +81,60 @@ detect_os() {
 }
 
 print_labels() {
-  local arch kvm container gpu os
+  local arch hypervisor container gpu os
   arch="$(detect_arch)"
-  kvm="$(detect_kvm)"
+  hypervisor="$(detect_hypervisor)"
   container="$(detect_container)"
   gpu="$(detect_gpu)"
   os="$(detect_os)"
 
   echo "libernetes worker join: discovered capabilities:"
   echo "  libernetes.io/arch=$arch"
-  echo "  libernetes.io/kvm=$kvm"
+  echo "  libernetes.io/hypervisor=$hypervisor"
   echo "  libernetes.io/container=$container"
   echo "  libernetes.io/gpu=$gpu"
   echo "  libernetes.io/os=$os"
+}
+
+write_kubelet_conf() {
+  local arch hypervisor container gpu os
+  arch="$(detect_arch)"
+  hypervisor="$(detect_hypervisor)"
+  container="$(detect_container)"
+  gpu="$(detect_gpu)"
+  os="$(detect_os)"
+
+  local conf_dir
+  conf_dir="$(dirname "$KUBELET_CONF")"
+  if [[ ! -d "$conf_dir" ]]; then
+    if mkdir -p "$conf_dir" 2>/dev/null; then
+      :
+    elif [[ -n "${LIBERNETES_KUBELET_CONF:-}" ]]; then
+      die "cannot create kubelet config directory: $conf_dir"
+    else
+      KUBELET_CONF="${ROOT}/.libernetes/kubelet.conf"
+      conf_dir="$(dirname "$KUBELET_CONF")"
+      mkdir -p "$conf_dir" || die "cannot create kubelet config directory: $conf_dir"
+      echo "libernetes worker join: /etc/libernetes not writable; using $KUBELET_CONF" >&2
+    fi
+  fi
+
+  cat >"$KUBELET_CONF" <<EOF
+# libernetes kubelet config — written by libernetes-worker-join.sh (Wave 4)
+apiServer: ${JOIN_URL}
+profile: ${PROFILE}
+bootstrapToken: ${TOKEN}
+criSocket: /var/run/libernetes/cri.sock
+livmSocket: /var/run/libernetes/livm.sock
+labels:
+  libernetes.io/arch: ${arch}
+  libernetes.io/hypervisor: ${hypervisor}
+  libernetes.io/container: ${container}
+  libernetes.io/gpu: ${gpu}
+  libernetes.io/os: ${os}
+EOF
+
+  echo "libernetes worker join: wrote kubelet config -> ${KUBELET_CONF}"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -144,12 +189,13 @@ fi
 
 echo "libernetes worker join: url=$JOIN_URL profile=$PROFILE"
 print_labels
+write_kubelet_conf
 
-echo "libernetes worker join: planned steps (Wave 1 scaffold):"
+echo "libernetes worker join: planned steps (Wave 4):"
 echo "  1. validate bootstrap token with apiserver at $JOIN_URL"
-echo "  2. install kubelet config + CRI/livm socket paths"
+echo "  2. kubelet config persisted at ${KUBELET_CONF}"
 echo "  3. apply WorkerProfile '$PROFILE' and node labels"
 echo "  4. start li-libernetes-kubelet and report NodeReady"
 
 bash "$ROOT/scripts/libernetes-doctor.sh"
-echo "libernetes worker join: OK (scaffold complete — kubelet not started in Wave 1)"
+echo "libernetes worker join: OK (kubelet.conf written — kubelet start in Wave 5+)"

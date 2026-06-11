@@ -9,7 +9,12 @@ From tier-5 harness `nginx_lb_proxy_prefix_conf` (see `benchmarks` / `lis-tier5`
 | `upstream { keepalive 32; }` | `httpd_upstream_acquire_i` / `release_i` pool in `li_rt_net.c` |
 | `proxy_http_version 1.1` | Request forwarded as HTTP/1.1 bytes on upstream socket |
 | `proxy_set_header Connection ""` | `httpd_proxy_compact_req_hdr()` strips `Connection:` / `Proxy-Connection:` before upstream send |
+| `proxy_set_header Accept-Encoding ""` | `httpd_proxy_compact_req_hdr()` strips `Accept-Encoding:` (avoids chunked+gzip upstream bodies that stall relay) |
+| `proxy_set_header X-Forwarded-Proto $scheme` | `httpd_inject_proxy_forward_headers()` adds `X-Forwarded-Proto`, `X-Forwarded-Host`, `X-Real-IP`, `X-Forwarded-For` |
 | `proxy_buffering off` (loopback) | CL body relay via splice pump + epoll edge/level handlers |
+| `client_max_body_size` | `[limits].max_body` → `max_request_body_bytes` in `runtime.conf` |
+| `large_client_header_buffers` | `[limits].max_header` → `max_header_bytes` |
+| *(no nginx cap on proxied response size)* | `[limits].proxy_max_response_body` → `max_proxy_response_body_bytes` (default `64m`) |
 | epoll accept + worker loop | **`nginx_proxy_epoll_serve`** in `packages/li-net-httpd/src/lib.li` |
 
 ## Architecture (current)

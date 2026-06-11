@@ -12,6 +12,9 @@
 | li-containerd | scaffold | container daemon |
 | li-container-cli | scaffold | ctr-style CLI |
 | li-container-cri | scaffold | CRI shim |
+| li-hypervisor | missing | livm Li-native VM backend (LiOS ABI) |
+| li-firmware | missing | livm measured boot (Li-native; OVMF/UEFI compat notes only) |
+| li-disk | missing | livm CoW disk (qemu-img patterns as reference) |
 | li-kvm | missing | livm Linux backend |
 | licontainers | deprecated shim | use li-oci + li-container + li-container-run |
 | livm | wave2 stub | VMs |

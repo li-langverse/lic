@@ -1,0 +1,7 @@
+# Local CRI Unix socket (Wave 3 stub).
+def runtime_cri_socket_tag() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4

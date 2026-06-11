@@ -1,0 +1,17 @@
+# li-containerd public surface — daemon scaffold (import container.d).
+
+import daemon
+
+def li_containerd_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def li_containerd_selftest() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return containerd_runtime_wiring_selftest()

@@ -1,0 +1,30 @@
+# WP-CTN-061 — container CLI scaffold (delegates to container.run).
+
+import container.run
+
+def container_cli_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def container_cli_dispatch() raises IO, Alloc -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return lirun_run_from_argv()
+
+def container_cli_selftest() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if container_cli_tag() != 1:
+    return 1
+  if lirun_create_tag() != 2:
+    return 2
+  if lirun_start_tag() != 3:
+    return 3
+  return li_container_run_selftest()

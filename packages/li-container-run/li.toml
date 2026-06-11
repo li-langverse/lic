@@ -1,0 +1,28 @@
+[package]
+name = "li-container-run"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "lirun OCI lifecycle (depends li-container + li-oci)"
+
+[dependencies]
+li-container = { path = "../li-container" }
+li-oci = { path = "../li-oci" }
+# registry = "1.0.0"             # lip 8d+
+
+[[bin]]
+name = "lirun"
+path = "src/main.li"
+
+[package.metadata.li]
+gitlab_repo = "li-langverse/li-container-run"
+github_repo = "li-container-run"
+import_name = "container.run"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-container-run"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-container-run"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-container-run/"
+changelog = "https://github.com/li-langverse/li-container-run/blob/main/CHANGELOG.md"

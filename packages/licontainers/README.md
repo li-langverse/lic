@@ -1,9 +1,14 @@
-# licontainers
+# licontainers (deprecated)
 
-OCI runtime + CRI v1 for libernetes.
+**Deprecated** — the monolithic OCI/CRI runtime has been split into:
 
-**Li-native way:** `LiOSBackend` — process/namespace/cgroup isolation via LiOS kernel ABI.
+| Package | Import | Role |
+|---------|--------|------|
+| `li-oci` | `oci` | OCI spec, layout, manifest, pull/store |
+| `li-container` | `container` | Bundle, state, backends |
+| `li-container-run` | `container.run` | `lirun` lifecycle |
+| `li-container-cri` | `cri` | CRI v1 API |
+| `li-containerd` | `container.d` | Daemon scaffold |
+| `li-container-cli` | `container.cli` | CLI (`licontainer`) |
 
-> **Industry reference:** OCI image spec + CRI v1 gRPC; compare vs containerd in `li-cluster-bench`.
->
-> **Interim shim (dev-only):** `linux_backend.li` — cgroups v2 + namespaces on Linux hosts during LiOS bring-up.
+This package remains as a thin compatibility shim for existing `import licontainers` callers and libernetes gate fixtures. New code should depend on the split packages directly.

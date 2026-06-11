@@ -1,43 +1,43 @@
 
 # lig.present — swapchain create / present contracts (PH-HW HW-1).
 
-extern proc li_rt_lig_wgpu_swapchain_create(viewport_w: int, viewport_h: int) -> int
+extern def li_rt_lig_wgpu_swapchain_create(viewport_w: int, viewport_h: int) -> int
   requires viewport_w >= 0
   requires viewport_h >= 0
   ensures result >= 0
   decreases viewport_w
 
-extern proc li_rt_lig_wgpu_present_frame(swapchain_ok: int) -> int
+extern def li_rt_lig_wgpu_present_frame(swapchain_ok: int) -> int
   requires swapchain_ok >= 0
   requires swapchain_ok <= 1
   ensures result >= 0
   ensures result <= 1
   decreases swapchain_ok
 
-extern proc li_rt_lig_host_present_active() -> int
+extern def li_rt_lig_host_present_active() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_lig_host_present_dt_ms() -> float
+extern def li_rt_lig_host_present_dt_ms() -> float
   requires true
   ensures result >= 0.0
   decreases 0
 
-extern proc li_rt_lig_host_native_pixels() -> int
+extern def li_rt_lig_host_native_pixels() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_lig_host_native_pixel_source() -> int
+extern def li_rt_lig_host_native_pixel_source() -> int
   requires true
   ensures result >= 0
   ensures result <= 4
   decreases 0
 
-extern proc li_rt_lig_wgpu_draw_list_submit(viewport_w: int, viewport_h: int, cmd_count: int, pbr_tag: int) -> int
+extern def li_rt_lig_wgpu_draw_list_submit(viewport_w: int, viewport_h: int, cmd_count: int, pbr_tag: int) -> int
   requires viewport_w >= 0
   requires viewport_h >= 0
   requires cmd_count >= 0
@@ -46,7 +46,7 @@ extern proc li_rt_lig_wgpu_draw_list_submit(viewport_w: int, viewport_h: int, cm
   ensures result <= 1
   decreases viewport_w
 
-extern proc li_rt_lig_wgpu_ui_raster_stub(viewport_w: int, viewport_h: int, paint_cmd_count: int, profile_id: int) -> int
+extern def li_rt_lig_wgpu_ui_raster_stub(viewport_w: int, viewport_h: int, paint_cmd_count: int, profile_id: int) -> int
   requires viewport_w >= 0
   requires viewport_h >= 0
   requires paint_cmd_count >= 0
@@ -56,13 +56,13 @@ extern proc li_rt_lig_wgpu_ui_raster_stub(viewport_w: int, viewport_h: int, pain
   ensures result <= 1
   decreases viewport_w
 
-extern proc li_rt_lig_present_surface_ok() -> int
+extern def li_rt_lig_present_surface_ok() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_lig_present_blit_rgba8(viewport_w: int, viewport_h: int, profile_id: int, paint_cmd_count: int, tag_h_px: int) -> int
+extern def li_rt_lig_present_blit_rgba8(viewport_w: int, viewport_h: int, profile_id: int, paint_cmd_count: int, tag_h_px: int) -> int
   requires viewport_w >= 0
   requires viewport_h >= 0
   requires profile_id >= 0
@@ -73,13 +73,13 @@ extern proc li_rt_lig_present_blit_rgba8(viewport_w: int, viewport_h: int, profi
   ensures result <= 1
   decreases viewport_w
 
-extern proc li_rt_lig_wgpu_readback_active() -> int
+extern def li_rt_lig_wgpu_readback_active() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_lig_wgpu_readback_stub(viewport_w: int, viewport_h: int, profile_id: int, paint_cmd_count: int, tag_h_px: int) -> int
+extern def li_rt_lig_wgpu_readback_stub(viewport_w: int, viewport_h: int, profile_id: int, paint_cmd_count: int, tag_h_px: int) -> int
   requires viewport_w >= 0
   requires viewport_h >= 0
   requires profile_id >= 0
@@ -469,19 +469,19 @@ def lig_wgpu_smoke_surface_ready(smoke: LigWgpuSmoke) -> int
 =
   return smoke.surface_ok
 
-extern proc li_rt_lig_wgpu_swapchain_active() -> int
+extern def li_rt_lig_wgpu_swapchain_active() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_lig_wgpu_swapchain_readback_status() -> int
+extern def li_rt_lig_wgpu_swapchain_readback_status() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_lig_wgpu_swapchain_readback_run(viewport_w: int, viewport_h: int) -> int
+extern def li_rt_lig_wgpu_swapchain_readback_run(viewport_w: int, viewport_h: int) -> int
   requires viewport_w >= 0
   requires viewport_h >= 0
   ensures result >= 0

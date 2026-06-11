@@ -1,30 +1,30 @@
 # Heterogeneous orchestration (WP-PAR-80): CPU+GPU+TPU+ASIC via runtime chip seams only.
 
-extern proc li_rt_hetero_probe_gpu() -> int
+extern def li_rt_hetero_probe_gpu() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_hetero_probe_tpu() -> int
+extern def li_rt_hetero_probe_tpu() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_hetero_probe_asic() -> int
+extern def li_rt_hetero_probe_asic() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_hetero_available_mask() -> int
+extern def li_rt_hetero_available_mask() -> int
   requires true
   ensures result >= 1
   ensures result <= 15
   decreases 0
 
-extern proc li_rt_hetero_probe_pipeline() -> int
+extern def li_rt_hetero_probe_pipeline() -> int
   requires true
   ensures result >= 0
   ensures result <= 1

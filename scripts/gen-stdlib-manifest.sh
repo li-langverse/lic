@@ -7,4 +7,4 @@ if [[ ! -d "$STD" ]]; then
   echo "no std/ directory" >&2
   exit 1
 fi
-rg -n '^(def|proc|type|extern proc) ' "$STD" --glob '*.li' 2>/dev/null || true
+rg -n '^(def|type|extern def) ' "$STD" --glob '*.li' 2>/dev/null || true

@@ -1,6 +1,5 @@
 set(LI_RT_SOURCES
   li_rt.c
-  li_rt_studio_aimd.c
   li_rt_httpd.c
   li_rt_log.c
   li_rt_net.c
@@ -20,6 +19,7 @@ set(LI_RT_SOURCES
   li_fl.c
   li_rt_hetero.c
   li_rt_blas.c
+  li_rt_container.c
 )
 
 add_library(li_rt STATIC ${LI_RT_SOURCES})

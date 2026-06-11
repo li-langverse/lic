@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Breaking:** Trusted FFI uses `extern def` only; `extern proc` and bare `proc` are rejected. OCI `container_*` seam in `std/runtime/seam.li`. See [2026-06-08-extern-def-only.md](docs/release-notes/2026-06-08-extern-def-only.md).
+
 - **Docs:** GitHub Pages handbook hub at https://li-langverse.github.io/lic/ (`site/index.html`, `pages.yml`) — [2026-05-30-lic-handbook-pages.md](docs/release-notes/2026-05-30-lic-handbook-pages.md), [2026-05-30-lic-pages-site-artifact.md](docs/release-notes/2026-05-30-lic-pages-site-artifact.md) (fix missing `site/` artifact after #535).
 
 ### Changed

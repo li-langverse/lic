@@ -3,7 +3,7 @@
 
 # three_body_pure — shared C oracle (mini three-body; CI-scale steps in core).
 
-extern proc li_three_body_kernel()
+extern def li_three_body_kernel()
   requires true
   ensures true
 

@@ -45,4 +45,22 @@ axiom li_rt_sqrt : Float → Float
 axiom li_rt_sqrt_square_bound (x : Float) :
     Float.abs (li_rt_sqrt x * li_rt_sqrt x - x) < 1e-12
 
+/-- Abstract container monad (OCI runtime — `runtime/li_rt_container.c` audited shim). -/
+axiom Container : Type → Type
+
+axiom Container.bind : {α β : Type} → Container α → (α → Container β) → Container β
+axiom Container.pure : {α : Type} → α → Container α
+
+/-- v1 namespace unshare: returns 0 on success, -1 on failure (Linux only). -/
+axiom container_unshare_stub : Nat → Container Nat
+
+/-- v1 cgroup join: child process enters cgroup v2 leaf (audited path under `/sys/fs/cgroup`). -/
+axiom container_cgroup_join_stub : String → Container Nat
+
+/-- v1 pivot_root: switch root mount in container mount namespace. -/
+axiom container_pivot_root_stub : String → Container Nat
+
+/-- v1 seccomp: apply default BPF filter when OCI config requests seccomp. -/
+axiom container_seccomp_apply_stub : String → Container Nat
+
 end Li.Trusted

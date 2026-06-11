@@ -6,12 +6,21 @@
 | li-grpc | stub | CRI, webhooks |
 | li-watch | stub | informers |
 | li-workqueue | stub | controllers |
-| li-oci | stub | licontainers |
+| li-oci | published (mirror) | OCI image format, pull/store |
+| li-container | published (mirror) | bundle, state, backends |
+| li-container-run | published (mirror) | lirun lifecycle |
+| li-containerd | scaffold | container daemon |
+| li-container-cli | scaffold | ctr-style CLI |
+| li-container-cri | scaffold | CRI shim |
 | li-hypervisor | missing | livm Li-native VM backend (LiOS ABI) |
 | li-firmware | missing | livm measured boot (Li-native; OVMF/UEFI compat notes only) |
 | li-disk | missing | livm CoW disk (qemu-img patterns as reference) |
-| licontainers | scaffold | containers (LiOSBackend primary) |
-| livm | scaffold | VMs |
+| li-kvm | missing | livm Linux backend |
+| licontainers | deprecated shim | use li-oci + li-container + li-container-run |
+| livm | wave2 stub | VMs |
 | li-libernetes-core | scaffold | shared types |
+
+Primary repos: GitLab `gitlab.lilangverse.xyz/li-langverse/{li-oci,li-container,li-container-run}`.  
+GitHub mirrors via `./scripts/push-container-package-mirrors.sh`.
 
 Update this file as stubs land.

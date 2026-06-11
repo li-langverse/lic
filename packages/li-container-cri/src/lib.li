@@ -1,0 +1,41 @@
+# li-container-cri public surface — CRI v1 (import cri).
+
+import container.run
+import v1
+
+def li_container_cri_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def cri_v1_lifecycle_selftest() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if cri_v1_api_version() != 1:
+    return 1
+  if cri_v1_runtime_service_tag() != 1:
+    return 2
+  if cri_v1_image_service_tag() != 2:
+    return 3
+  if lirun_create_tag() != 2:
+    return 4
+  if lirun_start_tag() != 3:
+    return 5
+  if lirun_stop_tag() != 4:
+    return 6
+  if lirun_delete_tag() != 5:
+    return 7
+  if lirun_state_tag() != 6:
+    return 8
+  return 0
+
+def li_container_cri_selftest() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return cri_v1_lifecycle_selftest()

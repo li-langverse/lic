@@ -1,13 +1,13 @@
 # Li bootstrap compiler — Phase 6 self-host seed
 # Built by the C++ host:  lic build bootstrap/lic/main.li -o lic-from-li
 
-extern proc li_rt_argc() -> int
+extern def li_rt_argc() -> int
   requires true
   ensures true
-extern proc li_rt_argv(i: int) -> ptr
+extern def li_rt_argv(i: int) -> ptr
   requires true
   ensures true
-extern proc strcmp(a: ptr, b: ptr) -> int
+extern def strcmp(a: ptr, b: ptr) -> int
   requires true
   ensures true
 

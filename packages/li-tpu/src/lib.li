@@ -1,25 +1,25 @@
 # li-tpu — TPU device layer (WP-PAR-83): backend probe via runtime seam only.
 
-extern proc li_rt_litpu_device_kind() -> int
+extern def li_rt_litpu_device_kind() -> int
   requires true
   ensures result >= 1
   ensures result <= 3
   decreases 0
 
-extern proc li_rt_litpu_backend_available(backend_id: int) -> int
+extern def li_rt_litpu_backend_available(backend_id: int) -> int
   requires backend_id >= 1
   requires backend_id <= 3
   ensures result >= 0
   ensures result <= 1
   decreases backend_id
 
-extern proc li_rt_litpu_backend_select_auto() -> int
+extern def li_rt_litpu_backend_select_auto() -> int
   requires true
   ensures result >= 1
   ensures result <= 3
   decreases 0
 
-extern proc li_rt_litpu_capability_json() raises IO, Alloc -> str
+extern def li_rt_litpu_capability_json() raises IO, Alloc -> str
   requires true
   ensures result != ""
   decreases 0

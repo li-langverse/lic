@@ -17,6 +17,7 @@ bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-16.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-lkir-matmul-32.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
 bash "$ROOT/scripts/bench-ph-ml-mlp-train-step.sh"
+bash "$ROOT/scripts/bench-ph-ml-mlp-train-competitive.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-async-env-collect.sh"
 bash "$ROOT/scripts/bench-ph-ml-llm-forward.sh"
 bash "$ROOT/scripts/bench-ph-ml-llm-logits-oracle.sh" || true
@@ -94,6 +95,7 @@ liarray_matmul32 = load("ph-ml-li-array-matmul-32.json")
 matmul32 = load("ph-ml-lkir-matmul-32.json")
 mlp = load("ph-ml-mlp-forward.json")
 train = load("ph-ml-mlp-train-step.json")
+mlp_train = load("ph-ml-mlp-train-competitive.json")
 async_env = load("ph-ml-async-env-collect.json")
 llm = load("ph-ml-llm-forward.json")
 llamacpp = load("ph-ml-competitor-llamacpp.json")
@@ -185,6 +187,31 @@ rows = [
             comp_row(cpp_openmp_mlp, li_mlp_sec, "cpp_openmp", "C++ MLP forward", "reference_native", "Wave 10 C++ MLP"),
             comp_row(numpy_mlp, li_mlp_sec, "python_numpy", "NumPy manual MLP", "blas_labeled", "Wave 10 NumPy MLP"),
             comp_row(pytorch_cpu_mlp, li_mlp_sec, "pytorch_cpu", "PyTorch CPU MLP forward", "blas_labeled", "torch pinned"),
+        ],
+    },
+    {
+        "id": "mlp_train",
+        "kernel": "ml.mlp_sgd_step_f32",
+        "workload_class": "tier3_cpu" if mlp_train.get("executed") else "pilot",
+        "workload_note": mlp_train.get("workload_note") or "50-step XOR SGD; Li runtime autograd vs PyTorch CPU",
+        "executed": bool(mlp_train.get("executed")),
+        "li": {
+            **li_row(mlp_train.get("li") or mlp_train, "tier3_cpu" if mlp_train.get("executed") else "pilot"),
+            "cpu_sec": mlp_train.get("li_cpu_sec") or (mlp_train.get("li") or {}).get("cpu_sec"),
+        },
+        "competitors": [
+            comp_row(
+                {
+                    "cpu_sec": mlp_train.get("pytorch_cpu_sec"),
+                    "executed": bool((mlp_train.get("competitors") or [{}])[0].get("executed")),
+                    "validity_gate_pass": (mlp_train.get("competitors") or [{}])[0].get("validity_gate_pass"),
+                },
+                mlp_train.get("li_cpu_sec"),
+                "pytorch_cpu",
+                "PyTorch CPU SGD",
+                "blas_labeled",
+                "same XOR fixture; manual SGD step",
+            ),
         ],
     },
     {

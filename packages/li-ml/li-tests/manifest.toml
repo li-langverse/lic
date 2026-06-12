@@ -81,3 +81,15 @@ suite = "smoke"
 file = "smoke/ml_gpu_device_buffer.li"
 outcome = "compile_open_ok"
 note = "PH-ML Wave 13 T2 @gpu device buffer pipeline"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_mlp_xor_sgd.li"
+outcome = "compile_open_ok"
+note = "PH-ML training sprint Phase K XOR SGD smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_mlp_train_step.li"
+outcome = "compile_open_ok"
+note = "PH-ML MLP train step backward smoke"

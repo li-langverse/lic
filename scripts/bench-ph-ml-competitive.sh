@@ -19,6 +19,7 @@ bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
 bash "$ROOT/scripts/bench-ph-ml-mlp-train-step.sh"
 bash "$ROOT/scripts/bench-ph-ml-mlp-train-competitive.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-async-env-collect.sh"
+bash "$ROOT/scripts/bench-ph-ml-sb3-train-step.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-llm-forward.sh"
 bash "$ROOT/scripts/bench-ph-ml-llm-logits-oracle.sh" || true
 bash "$ROOT/scripts/bench-ph-ml-llm-transformer-multilayer-parity.sh" || true
@@ -123,6 +124,7 @@ pytorch_cpu_mlp = load("ph-ml-competitor-pytorch-cpu-mlp.json")
 numpy_mlp = load("ph-ml-competitor-numpy-mlp.json")
 cpp_openmp_mlp = load("ph-ml-competitor-cpp-openmp-mlp.json")
 sb3_vecenv = load("ph-ml-competitor-sb3-vecenv.json")
+sb3_train = load("ph-ml-sb3-train-step.json")
 ray_rllib = load("ph-ml-competitor-ray-rllib.json")
 
 rows = [
@@ -218,6 +220,7 @@ rows = [
         "id": "async_env_collect",
         "kernel": "ml.rl.async_env_collect",
         "workload_class": "pilot",
+        "workload_note": async_env.get("semantics_honesty_note") or "Li reward-shard stub x4; SB3 uses real CartPole-v1",
         "executed": bool(async_env.get("executed")),
         "li": {
             **li_row(async_env, "pilot" if async_env.get("executed") else "stub"),
@@ -227,10 +230,22 @@ rows = [
             "worker_backend": async_env.get("worker_backend"),
             "parallelism_model": async_env.get("parallelism_model"),
             "env_semantics": async_env.get("env_semantics"),
+            "semantics_honesty_note": async_env.get("semantics_honesty_note"),
         },
         "competitors": [
             comp_row(sb3_vecenv, (async_env.get("cpu_sec") or 0.001), "sb3_vecenv", "SB3 SubprocVecEnv", "stub", "Wave 10 when gymnasium installed"),
             comp_row(ray_rllib, None, "ray_rllib", "Ray RLlib RolloutWorker", "stub", "honest pattern stub"),
+        ],
+    },
+    {
+        "id": "sb3_train_step",
+        "kernel": "ml.rl.sb3_ppo_train",
+        "workload_class": "pilot",
+        "workload_note": sb3_train.get("semantics_honesty_note") or "SB3 PPO.learn CartPole-v1; Li native row pending",
+        "executed": bool(sb3_train.get("executed")),
+        "li": comp_stub("li", "Li native RL train", "stub", "no native policy-training loop yet"),
+        "competitors": [
+            comp_row(sb3_train, None, "sb3_train_step", "SB3 PPO CPU", "pilot", sb3_train.get("note") or "when gymnasium+sb3 installed"),
         ],
     },
     {

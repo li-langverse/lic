@@ -29,6 +29,9 @@ python3 "$ROOT/scripts/bench_ph_ml_competitor_rust_ndarray_matmul.py" || true
 export PH_ML_SB3_VECENV_OUT="${PH_ML_SB3_VECENV_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-sb3-vecenv.json}"
 python3 "$ROOT/scripts/bench_ph_ml_competitor_sb3_vecenv.py" || true
 
+export PH_ML_SB3_TRAIN_STEP_OUT="${PH_ML_SB3_TRAIN_STEP_OUT:-$BENCHMARKS_RESULTS/ph-ml-sb3-train-step.json}"
+python3 "$ROOT/scripts/bench_ph_ml_competitor_sb3_train_step.py" || true
+
 export PH_ML_PYTORCH_CPU_MATMUL_OUT="${PH_ML_PYTORCH_CPU_MATMUL_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-pytorch-cpu-matmul.json}"
 python3 "$ROOT/scripts/bench_ph_ml_competitor_pytorch_cpu_matmul.py" || true
 

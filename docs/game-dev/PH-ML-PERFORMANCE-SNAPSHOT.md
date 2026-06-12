@@ -3,7 +3,7 @@
 **Shareable overview** of Li native ML/RL/LLM benchmark results on CPU.  
 **Generated from:** `benchmarks/results/ph-ml-*.json` on `main`  
 **Snapshot date:** 2026-06-12  
-**Commit:** `7c575bd7c` (benchmark JSON from `b2a20871c` on main; Phase K on branch)
+**Commit:** `8378b7a64` (Phase L merge); Phase M honesty refresh pending Phase N regen
 
 ---
 
@@ -70,7 +70,17 @@ Smoke path includes LKIR probe + nested matmul; not yet competitive with BLAS-ba
 | `autograd_mode` | `full_backward` |
 | Topology | 2-2-1 f32 |
 
-Backward pass is real; **no weight update or multi-step loop** in this bench (pre-Phase K).
+Backward pass is real; single-step bench only. Multi-step SGD: see **mlp_train** competitive row below.
+
+### MLP training loop (Phase L — `mlp_train`)
+
+| Field | Value |
+|-------|-------|
+| Kernel | `ml_mlp_sgd_step_f32` |
+| Fixture | 2-2-1 XOR, 50 SGD steps |
+| Li row | runtime autograd + weight update (`ml_mlp_train_bench.li`) |
+| Competitor | PyTorch CPU SGD on same weights |
+| JSON | `benchmarks/results/ph-ml-mlp-train-competitive.json` (generated; `executed` depends on lic+torch in env) |
 
 ---
 
@@ -78,11 +88,11 @@ Backward pass is real; **no weight update or multi-step loop** in this bench (pr
 
 | Framework | `cpu_sec` | `ratio_vs_li` | Semantics |
 |-----------|-----------|---------------|-----------|
-| **Li** | **0.325 s** | 1.0 | `cartpole_v1_stub_x4`, pthread pool |
+| **Li** | **0.325 s** | 1.0 | `cartpole_v1_reward_shard_stub_x4`, pthread pool |
 | SB3 SubprocVecEnv | 2.92 s | 8.99 | **real CartPole-v1** ×4 |
 | Ray RLlib | 0.043 s | — | Ray core fallback (RLlib API deprecated) |
 
-**Caveat:** Li bench uses **stub env rewards**, not OpenAI Gym CartPole physics. SB3 runs **real CartPole-v1** — Li appears faster but workloads differ. `env_semantics: cartpole_v1_stub_x4` is declared in JSON.
+**Caveat:** Li bench uses **per-env reward shards**, not OpenAI Gym CartPole physics. SB3 runs **real CartPole-v1** — Li appears faster but workloads differ. See `docs/game-dev/ph-ml-cartpole-stub-honesty.md`.
 
 Worker model: `pthread_pool`, 4 workers, 4 collect rounds.
 
@@ -108,10 +118,11 @@ Li forward + matmul oracle pass; competitor rows are **honestly skipped**, not f
 | MLP forward | **exists** | `ml_mlp_forward_f32`, `ph-ml-mlp-forward.json` |
 | MLP backward (single step) | **exists** | `ml_mlp_train_step_f32`, `autograd_mode: full_backward` |
 | SGD weight update | **exists (Phase K)** | `ml_mlp_sgd_step_f32`, `ml_mlp_xor_sgd.li` gate |
-| Multi-step training loop | **not benchmarked** | no competitive `mlp_train` row yet |
-| PyTorch training parity bench | **partial** | `ph-ml-mlp-train-parity.json` uses env vars for dw — not runtime SGD |
-| RL policy training | **stub** | `ml_rl_job_graph_train_step` scaffold only |
-| SB3 / Ray training bench | **not present** | collect only, not `learn()` |
+| Multi-step training loop | **exists (Phase L)** | `mlp_train` row + `bench_ph_ml_mlp_train_competitive.py` |
+| PyTorch training parity bench | **partial** | `ph-ml-mlp-train-parity.json` uses env vars for dw — superseded by Phase L competitive row |
+| RL policy training | **stub** | `ml_rl_job_graph_train_step` scaffold only; no Li CartPole physics |
+| SB3 train-step bench | **scaffold (Phase M)** | `sb3_train_step` row; `executed:false` when SB3/gymnasium missing |
+| SB3 / Ray collect bench | **collect only** | `async_env_collect`; not policy `learn()` on Li side |
 | LLM fine-tuning | **not present** | forward stub only |
 
 ---
@@ -134,8 +145,8 @@ Li forward + matmul oracle pass; competitor rows are **honestly skipped**, not f
 | Field | Value |
 |-------|-------|
 | **Date** | 2026-06-12 |
-| **Commit SHA** | `7c575bd7c` (snapshot); bench JSON from `b2a20871c` |
-| **Primary JSON** | `benchmarks/results/ph-ml-competitive.json` (2026-06-07T16:51:26Z) |
-| **Supporting** | `ph-ml-li-array-matmul-32.json`, `ph-ml-li-array-gemm-tile-sweep.json`, `ph-ml-mlp-forward.json`, `ph-ml-mlp-train-step.json`, `ph-ml-async-env-collect.json`, `ph-ml-llm-forward.json`, `ph-ml-lkir-matmul-32.json` |
+| **Commit SHA** | `8378b7a64` (Phase L merge); Phase M doc refresh on main |
+| **Primary JSON** | `benchmarks/results/ph-ml-competitive.json` (2026-06-07T16:51:26Z; Phase N regen pending) |
+| **Supporting** | `ph-ml-li-array-matmul-32.json`, `ph-ml-li-array-gemm-tile-sweep.json`, `ph-ml-mlp-forward.json`, `ph-ml-mlp-train-step.json`, `ph-ml-mlp-train-competitive.json`, `ph-ml-async-env-collect.json`, `ph-ml-sb3-train-step.json`, `ph-ml-llm-forward.json`, `ph-ml-lkir-matmul-32.json` |
 
 *Refresh this document after Phase N (`ph-ml-training-toy-sota` sprint).*

@@ -73,7 +73,8 @@ report = {
     "worker_count": env_count,
     "worker_backend": "pthread_pool",
     "parallelism_model": "pthread_pool_env_rewards",
-    "env_semantics": "cartpole_v1_stub_x4",
+    "env_semantics": "cartpole_v1_reward_shard_stub_x4",
+    "semantics_honesty_note": "Li uses per-env reward shards, not Gym CartPole-v1 physics — see docs/game-dev/ph-ml-cartpole-stub-honesty.md",
     "native_collect_note": "full session collect pending lic native struct mutation fix on WSL",
     "ipc_mode": "thread_pool",
     "samples_collected": executed,
@@ -91,7 +92,7 @@ report["envs"] = [
         "worker": "thread_pool",
         "worker_backend": "pthread_pool",
         "ipc_shard": i + 1,
-        "semantics": "cartpole_v1_stub",
+        "semantics": "cartpole_v1_reward_shard_stub",
     }
     for i in range(env_count)
 ]

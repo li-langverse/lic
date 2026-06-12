@@ -22,7 +22,7 @@ Ship honest toy-dataset training loops and competitive training benchmarks (Li n
 |-------|--------|
 | **K** | **DONE** — `ml_mlp_sgd_step_f32`, XOR smoke, gate |
 | **L** | **DONE** — `mlp_train` competitive row + `bench_ph_ml_mlp_train_competitive.py` |
-| **M** | pending |
+| **M** | **DONE** — CartPole stub honesty doc + `sb3_train_step` bench scaffold |
 | **N** | pending |
 
 ## Phases
@@ -56,8 +56,9 @@ Exit criteria:
 
 ### Phase M
 
-- RL: either `cartpole_v1_real` semantics in `li-ml-rl` or explicit stub documentation in competitive JSON
-- Optional: SB3 `PPO.learn(total_timesteps=N)` one-epoch bench row
+- [x] `docs/game-dev/ph-ml-cartpole-stub-honesty.md` — explicit reward-shard stub vs real Gym labels
+- [x] `env_semantics: cartpole_v1_reward_shard_stub_x4` on async collect JSON
+- [x] `sb3_train_step` row in `ph-ml.toml` + `bench_ph_ml_competitor_sb3_train_step.py` (honest `executed:false` when deps missing)
 
 ### Phase N
 

@@ -79,4 +79,37 @@ print("Phase L: mlp_train competitive row executed")
 PY
 fi
 
-echo "ph-ml-training-toy-sota: Phase K+L gate OK"
+echo "==> Phase M CartPole honesty doc"
+[[ -f docs/game-dev/ph-ml-cartpole-stub-honesty.md ]] \
+  || { echo "missing ph-ml-cartpole-stub-honesty.md"; exit 1; }
+grep -q 'cartpole_v1_reward_shard_stub' docs/game-dev/ph-ml-cartpole-stub-honesty.md \
+  || { echo "CartPole honesty doc missing reward-shard label"; exit 1; }
+
+echo "==> Phase M sb3_train_step row"
+grep -q 'id = "sb3_train_step"' benchmarks/competitive/ph-ml.toml \
+  || { echo "missing sb3_train_step row in ph-ml.toml"; exit 1; }
+[[ -f scripts/bench_ph_ml_competitor_sb3_train_step.py ]] \
+  || { echo "missing bench_ph_ml_competitor_sb3_train_step.py"; exit 1; }
+[[ -f scripts/bench-ph-ml-sb3-train-step.sh ]] \
+  || { echo "missing bench-ph-ml-sb3-train-step.sh"; exit 1; }
+
+bash scripts/bench-ph-ml-sb3-train-step.sh || true
+if [[ -f benchmarks/results/ph-ml-sb3-train-step.json ]]; then
+  python3 - <<'PY'
+import json, sys
+from pathlib import Path
+p = Path("benchmarks/results/ph-ml-sb3-train-step.json")
+d = json.loads(p.read_text())
+if not d.get("suite") == "ph-ml-sb3-train-step":
+    print("Phase M: bad sb3 train-step JSON suite")
+    sys.exit(1)
+if d.get("executed") and not d.get("validity_gate_pass"):
+    print("Phase M: sb3 train-step executed but validity_gate_pass false")
+    sys.exit(1)
+if not d.get("executed"):
+    print("Phase M: sb3_train_step scaffold OK (executed:false — deps may be missing)")
+print("Phase M: sb3_train_step honesty scaffold OK")
+PY
+fi
+
+echo "ph-ml-training-toy-sota: Phase K+L+M gate OK"

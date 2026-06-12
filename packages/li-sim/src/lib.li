@@ -1064,6 +1064,8 @@ def env_obs_fill_fields(
   r.obs6 = 0.0
   r.obs7 = 0.0
 
+# Phase M honesty: returns 1 to route reward-shard stub path — NOT OpenAI Gym CartPole-v1 physics.
+# See docs/game-dev/ph-ml-cartpole-stub-honesty.md before comparing async_env_collect vs SB3.
 def sim_rl_env_cartpole_v1_semantics() -> int
   requires true
   ensures result == 1

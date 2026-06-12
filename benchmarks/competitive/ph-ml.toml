@@ -57,9 +57,18 @@ id = "async_env_collect"
 kernel = "ml.rl.async_env_collect"
 workload_class = "pilot"
 workload = "async_env_collect_4"
-workload_note = "CartPole-v1 x4 collect (Li thread_pool; SB3/Ray honest drivers)"
+workload_note = "CartPole reward-shard stub x4 collect (Li thread_pool; SB3/Ray honest drivers) — see ph-ml-cartpole-stub-honesty.md"
 incumbent = "SB3 VecEnv / Ray RLlib"
 competitors = ["sb3_vecenv", "ray_rllib"]
+
+[[row]]
+id = "sb3_train_step"
+kernel = "ml.rl.sb3_ppo_train"
+workload_class = "pilot"
+workload = "sb3_ppo_cartpole_train_1epoch"
+workload_note = "SB3 PPO.learn on CartPole-v1; Li has no native policy-training row (executed:false when deps missing)"
+incumbent = "SB3 PPO CPU"
+competitors = ["sb3_train_step"]
 
 [[row]]
 id = "llm_forward"

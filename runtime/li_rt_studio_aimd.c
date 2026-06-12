@@ -20,31 +20,6 @@ typedef struct {
 } LiRtStudioAimdScenario;
 
 static LiRtStudioAimdScenario g_studio_aimd_scenario = {0, 5000, 300, 0, 433, 50};
-
-static int32_t li_rt_studio_aimd_clamp_stride(int32_t stride) {
-  if (stride < 1) {
-    return 1;
-  }
-  if (stride > 1000) {
-    return 1000;
-  }
-  return stride;
-}
-
-static int32_t li_rt_studio_aimd_resolve_dft_stride(void) {
-  const char* real = getenv("REAL_AIMD");
-  if (real != NULL && real[0] == '1' && real[1] == '\0') {
-    return 1;
-  }
-  if (g_studio_aimd_scenario.dft_stride >= 1) {
-    return li_rt_studio_aimd_clamp_stride(g_studio_aimd_scenario.dft_stride);
-  }
-  const char* stride_env = getenv("STUDIO_AIMD_DFT_STRIDE");
-  if (stride_env != NULL && stride_env[0] != '\0') {
-    return li_rt_studio_aimd_clamp_stride((int32_t)atoi(stride_env));
-  }
-  return 50;
-}
 static char g_studio_aimd_last_ppm[1024] = "";
 
 static int32_t li_rt_studio_aimd_mkdir_parents(const char* path) {
@@ -71,12 +46,38 @@ static int32_t li_rt_studio_aimd_mkdir_parents(const char* path) {
   return 1;
 }
 
+static int32_t li_rt_studio_aimd_clamp_stride(int32_t stride) {
+  if (stride < 1) {
+    return 1;
+  }
+  if (stride > 1000) {
+    return 1000;
+  }
+  return stride;
+}
+
+static int32_t li_rt_studio_aimd_resolve_dft_stride(void) {
+  const char* real = getenv("REAL_AIMD");
+  if (real != NULL && real[0] == '1' && real[1] == '\0') {
+    return 1;
+  }
+  if (g_studio_aimd_scenario.dft_stride >= 1) {
+    return li_rt_studio_aimd_clamp_stride(g_studio_aimd_scenario.dft_stride);
+  }
+  const char* stride_env = getenv("STUDIO_AIMD_DFT_STRIDE");
+  if (stride_env != NULL && stride_env[0] != '\0') {
+    return li_rt_studio_aimd_clamp_stride((int32_t)atoi(stride_env));
+  }
+  return 50;
+}
+
 int32_t li_rt_studio_aimd_scenario_reset(void) {
   g_studio_aimd_scenario.configured = 0;
   g_studio_aimd_scenario.steps = 5000;
   g_studio_aimd_scenario.temperature_k = 300;
   g_studio_aimd_scenario.potential_mv = 0;
   g_studio_aimd_scenario.algo_id = 433;
+  g_studio_aimd_scenario.dft_stride = 50;
   return 0;
 }
 
@@ -93,8 +94,20 @@ int32_t li_rt_studio_aimd_scenario_set(int32_t steps, int32_t temperature_k, int
   g_studio_aimd_scenario.temperature_k = temperature_k;
   g_studio_aimd_scenario.potential_mv = potential_mv;
   g_studio_aimd_scenario.algo_id = algo_id;
+  g_studio_aimd_scenario.dft_stride = li_rt_studio_aimd_resolve_dft_stride();
   return 1;
 }
+
+int32_t li_rt_studio_aimd_scenario_set_dft_stride(int32_t dft_stride) {
+  g_studio_aimd_scenario.dft_stride = li_rt_studio_aimd_clamp_stride(dft_stride);
+  return 1;
+}
+
+int32_t li_rt_studio_aimd_scenario_get_dft_stride(void) {
+  return li_rt_studio_aimd_resolve_dft_stride();
+}
+
+int32_t li_rt_studio_aimd_dft_stride_from_env(void) { return li_rt_studio_aimd_resolve_dft_stride(); }
 
 int32_t li_rt_studio_aimd_scenario_get_steps(void) { return g_studio_aimd_scenario.steps; }
 
@@ -107,6 +120,21 @@ int32_t li_rt_studio_aimd_scenario_get_potential(void) { return g_studio_aimd_sc
 int32_t li_rt_studio_aimd_scenario_get_algo(void) { return g_studio_aimd_scenario.algo_id; }
 
 int32_t li_rt_studio_aimd_scenario_is_configured(void) { return g_studio_aimd_scenario.configured; }
+
+int32_t li_rt_studio_aimd_scenario_configure(int32_t steps, int32_t temperature_k, int32_t potential_mv,
+                                              int32_t algo_id) {
+  return li_rt_studio_aimd_scenario_set(steps, temperature_k, potential_mv, algo_id);
+}
+
+int32_t li_rt_studio_aimd_scenario_configured(void) { return li_rt_studio_aimd_scenario_is_configured(); }
+
+int32_t li_rt_studio_aimd_scenario_steps(void) { return li_rt_studio_aimd_scenario_get_steps(); }
+
+int32_t li_rt_studio_aimd_scenario_temperature_k(void) { return li_rt_studio_aimd_scenario_get_temperature(); }
+
+int32_t li_rt_studio_aimd_scenario_potential_mv(void) { return li_rt_studio_aimd_scenario_get_potential(); }
+
+int32_t li_rt_studio_aimd_scenario_algo_id(void) { return li_rt_studio_aimd_scenario_get_algo(); }
 
 int32_t li_rt_studio_aimd_gpu_from_env(void) {
   const char* v = getenv("STUDIO_AIMD_GPU");
@@ -143,7 +171,8 @@ static const char* li_rt_studio_aimd_batch_tier_label(int32_t gpu_path) {
 }
 
 int32_t li_rt_studio_aimd_batch_write_json(const char* path, int32_t steps, int32_t ok,
-                                           double checksum, double energy_drift, int32_t gpu_path) {
+                                           double checksum, double energy_drift, int32_t gpu_path,
+                                           int32_t dft_stride, int32_t dft_calls) {
   if (path == NULL || path[0] == '\0') {
     return 0;
   }
@@ -153,12 +182,23 @@ int32_t li_rt_studio_aimd_batch_write_json(const char* path, int32_t steps, int3
     return 0;
   }
   const char* tier = li_rt_studio_aimd_batch_tier_label(gpu_path);
-  const char* stride_env = getenv("STUDIO_AIMD_DFT_STRIDE");
-  int dft_stride = (stride_env != NULL && stride_env[0] != '\0') ? atoi(stride_env) : 50;
   if (dft_stride < 1) {
-    dft_stride = 1;
+    dft_stride = li_rt_studio_aimd_resolve_dft_stride();
   }
-  int dft_calls = steps / dft_stride + 1;
+  if (dft_calls < 1) {
+    dft_calls = 0;
+    for (int md_step = 0; md_step < steps; md_step++) {
+      if (md_step % dft_stride == 0) {
+        dft_calls++;
+      }
+    }
+    if (dft_stride > 1 && steps > 0 && steps % dft_stride == 0) {
+      dft_calls++;
+    }
+    if (dft_calls < 1) {
+      dft_calls = 1;
+    }
+  }
   fprintf(f,
           "{\n"
           "  \"native_only\": true,\n"

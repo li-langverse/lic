@@ -28,6 +28,4 @@ def kubelet_sync_tick(node_tag: int) -> int
   ensures result == 0
   decreases node_tag
 =
-  let pull = kubelet_sync_from_apiserver(node_tag)
-  let report = kubelet_sync_report_status(node_tag, 1)
-  return pull + report
+  return kubelet_sync_from_apiserver(node_tag) + kubelet_sync_report_status(node_tag, 1)

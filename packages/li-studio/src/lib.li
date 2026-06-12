@@ -274,6 +274,66 @@ extern def li_rt_studio_mcp_tool_name(tool_id: int) raises IO, Alloc -> str
   ensures result != ""
   decreases tool_id
 
+extern def li_rt_studio_aimd_scenario_reset() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+
+extern def li_rt_studio_aimd_scenario_set(steps: int, temperature_k: int, potential_mv: int, algo_id: int) -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases steps
+
+extern def li_rt_studio_aimd_scenario_get_steps() -> int raises IO
+  requires true
+  ensures result >= 64
+  decreases 0
+
+extern def li_rt_studio_aimd_batch_steps_from_env() -> int raises IO
+  requires true
+  ensures result >= 64
+  decreases 0
+
+extern def li_rt_studio_aimd_scenario_set_dft_stride(dft_stride: int) -> int raises IO
+  requires dft_stride >= 1
+  ensures result == 1
+  decreases dft_stride
+
+extern def li_rt_studio_aimd_scenario_get_dft_stride() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 1000
+  decreases 0
+
+extern def li_rt_studio_aimd_dft_stride_from_env() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 1000
+  decreases 0
+
+extern def li_rt_studio_aimd_batch_write_json(path: str, steps: int, ok: int, checksum: float, energy_drift: float, gpu_path: int, dft_stride: int, dft_calls: int) -> int raises IO
+  requires path != ""
+  ensures result >= 0
+  ensures result <= 1
+  decreases steps
+
+extern def li_rt_studio_ppm_unique_colors(path: str) -> int raises IO
+  requires path != ""
+  ensures result >= 0
+  decreases 0
+
+extern def li_rt_studio_aimd_last_ppm_set(path: str) -> int raises IO
+  requires path != ""
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern def li_rt_studio_aimd_last_ppm_get() -> str raises IO
+  requires true
+  ensures result != ""
+  decreases 0
+
 # wsv-w0/w5 — Li CPU raster PPM writer (no C paint_fb mirror as product truth).
 extern def li_rt_studio_headless_raster_ppm(path: str, width: int, height: int, profile_id: int, cmd_count: int, cpu_pixels: int, digest: int) -> int raises IO, Alloc
   requires width >= 8
@@ -1892,12 +1952,26 @@ def studio_mcp_ui_session_stop() -> int
 =
   return 21
 
-def studio_mcp_tool_count() -> int
+def studio_mcp_aimd_configure_scenario() -> int
   requires true
-  ensures result == 21
+  ensures result == 22
   decreases 0
 =
-  return 21
+  return 22
+
+def studio_mcp_aimd_get_scenario() -> int
+  requires true
+  ensures result == 23
+  decreases 0
+=
+  return 23
+
+def studio_mcp_tool_count() -> int
+  requires true
+  ensures result == 23
+  decreases 0
+=
+  return 23
 
 def studio_mcp_tool_id_valid(tool_id: int) -> int
   requires true
@@ -1948,6 +2022,10 @@ def studio_mcp_tool_id_valid(tool_id: int) -> int
   if tool_id == studio_mcp_ui_session_start():
     return 1
   if tool_id == studio_mcp_ui_session_stop():
+    return 1
+  if tool_id == studio_mcp_aimd_configure_scenario():
+    return 1
+  if tool_id == studio_mcp_aimd_get_scenario():
     return 1
   return 0
 
@@ -2651,6 +2729,28 @@ def studio_mcp_tool_dispatch_mode_arg(mode: int, tool_id: int, arg: int) -> Stud
     out.result_code = li_rt_studio_viewport_display_set_biomol_style(style)
     out.status = studio_mcp_tool_status_ok()
     return out
+  if tool_id == studio_mcp_aimd_configure_scenario():
+    var steps: int = arg
+    if steps < 64:
+      steps = 64
+    if steps > 10000:
+      steps = 10000
+    var stride: int = li_rt_studio_aimd_dft_stride_from_env()
+    if li_rt_studio_aimd_scenario_set_dft_stride(stride) != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    if li_rt_studio_aimd_scenario_set(steps, 300, 0, algo_echem_aimd_interface()) != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = steps
+    return out
+  if tool_id == studio_mcp_aimd_get_scenario():
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = li_rt_studio_aimd_scenario_get_steps()
+    return out
   out.status = studio_mcp_tool_status_failed()
   out.result_code = studio_mcp_tool_result_err_io()
   return out
@@ -2782,7 +2882,11 @@ def studio_mcp_server_tool_id_at(index: int) -> int
     return studio_mcp_demo_record_finish()
   if index == 19:
     return studio_mcp_ui_session_start()
-  return studio_mcp_ui_session_stop()
+  if index == 20:
+    return studio_mcp_ui_session_stop()
+  if index == 21:
+    return studio_mcp_aimd_configure_scenario()
+  return studio_mcp_aimd_get_scenario()
 
 def studio_mcp_server_default_arg_for_tool(tool_id: int) -> int
   requires studio_mcp_tool_id_valid(tool_id) == 1
@@ -2809,6 +2913,10 @@ def studio_mcp_server_default_arg_for_tool(tool_id: int) -> int
     return scene_md_tier_1k()
   if tool_id == studio_mcp_set_biomol_style():
     return studio_biomol_style_cartoon()
+  if tool_id == studio_mcp_aimd_configure_scenario():
+    return 5000
+  if tool_id == studio_mcp_aimd_get_scenario():
+    return 0
   return 0
 
 def studio_mcp_server_reply_ok(method: int) -> StudioMcpServerReply
@@ -6161,6 +6269,119 @@ def studio_sim_scientific_step_hook(sim_out: var SimSessionStub, dt: float) -> i
   if sim_step(sim_out, dt) != sim_status_ok():
     return sim_status_invalid_dt()
   return sim_status_ok()
+
+# W1/W4/W5 — AIMD hero demo: MCP scenario + batch final-state viewport + headless PPM.
+def studio_aimd_algo_echem_interface() -> int
+  requires true
+  ensures result == algo_echem_aimd_interface()
+  decreases 0
+=
+  return algo_echem_aimd_interface()
+
+def studio_aimd_hero_configure(steps: int, temperature_k: int, potential_mv: int, algo_id: int) -> int raises IO
+  requires steps >= 64
+  requires steps <= 10000
+  requires algo_id == algo_echem_aimd_interface()
+  ensures result >= 0
+  ensures result <= 1
+  decreases steps
+=
+  return li_rt_studio_aimd_scenario_set(steps, temperature_k, potential_mv, algo_id)
+
+def studio_aimd_hero_demo_steps() -> int raises IO
+  requires true
+  ensures result >= 64
+  ensures result <= 10000
+  decreases 0
+=
+  return li_rt_studio_aimd_batch_steps_from_env()
+
+def studio_aimd_final_tick_for_batch(batch: AimdBatchResult) -> int
+  requires batch.ok == 1
+  requires batch.steps >= 64
+  ensures result >= 1
+  ensures result <= 64
+  decreases batch.steps
+=
+  if batch.steps >= 64:
+    return 64
+  return batch.steps
+
+def studio_aimd_sync_final_viewport(batch: AimdBatchResult) -> int
+  requires batch.ok == 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases batch.steps
+=
+  var tick: int = studio_aimd_final_tick_for_batch(batch)
+  var tier: int = studio_sim_scientific_tier_for_tick(tick)
+  if studio_md_particle_tier_select_ok(tier) != 1:
+    tier = scene_md_tier_10k()
+  var tier_meta: SceneMdParticleTier = scene_md_particle_tier_by_id(tier)
+  var bench: SceneParticleDraw = scene_bench_particle_tier_simulate(tier)
+  var particle_n: int = tier_meta.particles
+  if bench.draw_points > 0:
+    particle_n = bench.draw_points
+  if li_rt_studio_viewport_display_sync_scientific_step(tier, particle_n) != 1:
+    return 0
+  return 1
+
+def studio_aimd_final_viz_digest(batch: AimdBatchResult, width: int, height: int) -> int
+  requires batch.ok == 1
+  requires width >= 64
+  requires height >= 64
+  ensures result > 0
+  decreases batch.steps
+=
+  var tick: int = studio_aimd_final_tick_for_batch(batch)
+  var d: int = studio_profile_sim_scientific() * 1000000 + tick * 10000 + width * 10 + height
+  var fx: int = 0
+  if batch.final_x >= 0.0:
+    fx = 1
+  var drift: int = 0
+  if batch.energy_drift > 0.0:
+    drift = 1
+  return d + fx * 137 + drift * 911 + batch.gpu_path * 17
+
+def studio_aimd_final_viz_ok(batch: AimdBatchResult, path: str, width: int, height: int) -> int raises IO, Alloc
+  requires batch.ok == 1
+  requires path != ""
+  requires width >= 64
+  requires height >= 64
+  ensures result >= 0
+  ensures result <= 1
+  decreases batch.steps
+=
+  if studio_aimd_sync_final_viewport(batch) != 1:
+    return 0
+  var tick: int = studio_aimd_final_tick_for_batch(batch)
+  var digest: int = studio_aimd_final_viz_digest(batch, width, height)
+  var compose: StudioShellCompose = studio_vertical_demo_compose(studio_profile_sim_scientific(), tick % 3, 0)
+  var cmd_c: int = studio_shell_chrome_count_for_compose(compose)
+  if cmd_c <= 0:
+    cmd_c = 1
+  var cpu_pixels: int = cmd_c + batch.steps % 997 + batch.gpu_path * 113
+  var wrote: int = li_rt_studio_headless_raster_ppm(path, width, height, studio_profile_sim_scientific(), cmd_c, cpu_pixels, digest)
+  if wrote != 1:
+    return 0
+  if digest <= 0:
+    return 0
+  return 1
+
+def studio_aimd_final_viz_color_budget_ok(batch: AimdBatchResult, min_colors: int, width: int, height: int, path: str) -> int raises IO, Alloc
+  requires batch.ok == 1
+  requires min_colors >= 1
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  ensures result <= 1
+  decreases batch.steps
+=
+  var unique: int = li_rt_studio_ppm_unique_colors(path)
+  if unique < min_colors:
+    return 0
+  return 1
 
 # PH-SIM SIM-3 — RL profile: env pool batches sim_step on the studio session (contract stub, not PH-ML async).
 def studio_sim_rl_step_hook(sim_out: var SimSessionStub, dt: float) -> int

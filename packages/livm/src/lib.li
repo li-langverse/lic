@@ -1,6 +1,9 @@
 import disk.qcow2
 import cloudinit.cloudinit
 import hypervisor.kvm_probe
+import hypervisor.lios_probe
+import hypervisor.backend
+import runtime.remote
 
 def livm_version() -> int
   requires true
@@ -19,5 +22,29 @@ def livm_wave2_smoke() -> int
   if cloudinit_datasource_nocloud() != 1:
     return 1
   if kvm_probe_smoke() != 0:
+    return 1
+  return 0
+
+def livm_wave3_smoke() -> int
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  if lios_probe_smoke() != 0:
+    return 1
+  if lios_probe_backend_tag() != backend_lios_tag():
+    return 1
+  return 0
+
+def livm_wave4_smoke() -> int
+  requires true
+  ensures result == 0 or result == 1
+  decreases 0
+=
+  if remote_vm_smoke() != 0:
+    return 1
+  if remote_vm_backend_kvm_tag() != backend_kvm_tag():
+    return 1
+  if remote_vm_backend_lios_tag() != backend_lios_tag():
     return 1
   return 0

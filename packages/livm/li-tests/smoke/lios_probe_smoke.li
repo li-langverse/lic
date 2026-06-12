@@ -1,0 +1,10 @@
+import livm
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if livm_wave3_smoke() != 0:
+    return 1
+  return 0

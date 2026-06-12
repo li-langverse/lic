@@ -27,6 +27,4 @@ def informer_sync_resync() -> int
   ensures result == 0
   decreases 0
 =
-  let pods = informer_sync_list(0)
-  let nodes = informer_sync_list(1)
-  return pods + nodes
+  return informer_sync_list(0) + informer_sync_list(1)

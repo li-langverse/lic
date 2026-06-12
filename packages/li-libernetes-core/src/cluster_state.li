@@ -40,10 +40,7 @@ def cluster_state_join_worker(control_plane_tag: int, worker_tag: int) -> int
   ensures result == 0
   decreases control_plane_tag + worker_tag
 =
-  let cp = cluster_state_register_node(control_plane_tag)
-  let worker = cluster_state_register_node(worker_tag)
-  let ready = cluster_state_node_ready(worker_tag)
-  return cp + worker + ready - 1
+  return cluster_state_register_node(control_plane_tag) + cluster_state_register_node(worker_tag) + cluster_state_node_ready(worker_tag) - 1
 
 def cluster_state_selftest() -> int
   requires true

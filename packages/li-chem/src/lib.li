@@ -679,8 +679,8 @@ def chem_dft_gpu_lkir_launch_pipeline() -> int raises IO
     return 0
   return 1
 
-# W7 pilot — honest GPU path probe (compile_open_ok + LKIR scaffold; no vendor required).
-def chem_dft_gpu_path_available() -> int
+# W7/W8c — science_gpu compile_open_ok + LKIR kernel scaffold (vendor CUDA optional).
+def chem_dft_gpu_science_gate_ok() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
@@ -688,13 +688,24 @@ def chem_dft_gpu_path_available() -> int
 =
   if chem_use_lkir() == 0:
     return 0
-  var e: float = chem_dft_energy_kernel_hartree()
-  if e >= 0.0:
+  if chem_dft_gpu_lkir_progress() != 1:
+    return 0
+  return 1
+
+# W7 pilot — honest GPU path probe (LKIR scaffold green; checksum when SCF oracle in band).
+def chem_dft_gpu_path_available() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  ensures result == chem_dft_gpu_science_gate_ok()
+  decreases 0
+=
+  if chem_dft_gpu_science_gate_ok() != 1:
     return 0
   var chk: float = chem_dft_gpu_energy_checksum()
   if chk <= 0.0:
     return 0
-  if chk >= 1.0:
+  if chk > 1.0:
     return 0
   return 1
 

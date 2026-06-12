@@ -9,3 +9,15 @@ suite = "smoke"
 file = "smoke/wave2_modules.li"
 outcome = "verify_ok"
 note = "T-PKG-livm-wave2-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/lios_probe_smoke.li"
+outcome = "verify_ok"
+note = "T-PKG-livm-wave3-lios-probe"
+
+[[tests]]
+suite = "integration"
+file = "integration/remote_vm.li"
+outcome = "verify_ok"
+note = "T-PKG-livm-wave4-remote-vm"

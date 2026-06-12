@@ -18,7 +18,7 @@ Build **livm** VM runtime on the **Li-native stack**:
 - **Disk:** `li-disk` CoW
 - **Config:** `li-cloud-init`
 
-Wave 0 **DONE**. Wave 1 **DONE**. Wave 2 adds disk/cloud-init modules, Li-native hypervisor probe, and Windows in multi-OS matrix.
+**Waves 0–4 DONE.** Active: **Wave 5** (distributed VM exec).
 
 > **Industry reference:** KubeVirt API compat for CRDs; KVM/QEMU cold-boot baselines in `li-cluster-bench`; OVMF/UEFI cited for guest image compat only — not production firmware.
 >
@@ -28,16 +28,28 @@ Wave 0 **DONE**. Wave 1 **DONE**. Wave 2 adds disk/cloud-init modules, Li-native
 
 | Phase | Deliverable | Status | Gate |
 |-------|-------------|--------|------|
-| **LB-V0** | package scaffold | **DONE** | `check-libernetes-livm-scaffold-gate.sh` |
-| **LB-V1** | hypervisor backend interface | **DONE** | `check-libernetes-livm-hypervisor-gate.sh` |
-| **LB-V2** | VirtualMachine CRD yaml | **DONE** | `check-libernetes-livm-crd-gate.sh` |
-| **LB-V3** | `src/hypervisor/kvm.li` (interim shim — dev-only) | **DONE** | `check-libernetes-livm-wave1-gate.sh` |
-| **LB-V4** | `docs/libernetes/multi-os-matrix.md` | **DONE** | same wave1 gate |
-| **LB-V5** | `li-tests/smoke/builds.li` | **DONE** | same wave1 gate |
-| **LB-V6** | `src/disk/qcow2.li` | pending | `check-libernetes-livm-wave2-gate.sh` |
-| **LB-V7** | `src/cloudinit/cloudinit.li` | pending | same wave2 gate |
-| **LB-V8** | `src/hypervisor/li_native_probe.li` + Windows in matrix | pending | same wave2 gate |
-| **LB-V9** | `src/hypervisor/li_native.li` — Li-native backend MVP | pending | wave3 gate (planned) |
+| **LB-V0–V5** | scaffold, KVM, matrix, smoke | **DONE** | wave0–1 gates |
+| **LB-V6–V8** | qcow2, cloud-init, kvm probe, Windows | **DONE** | `check-libernetes-livm-wave2-gate.sh` |
+| **LB-V9** | `src/hypervisor/lios_probe.li` | **DONE** | `check-libernetes-livm-wave3-gate.sh` |
+| **LB-V10** | LiOS row in `multi-os-matrix.md` | **DONE** | same wave3 gate |
+| **LB-V11** | `li-tests/smoke/lios_probe_smoke.li` | **DONE** | same wave3 gate |
+| **LB-V12** | `src/runtime/remote.li` | **DONE** | `check-libernetes-livm-wave4-gate.sh` |
+| **LB-V13** | `li-tests/integration/remote_vm.li` | **DONE** | same wave4 gate |
+
+## Later waves (unwired until Wave 5 passes)
+
+| Wave | Focus | Gate |
+|------|-------|------|
+| 5 | Distributed VM exec | `check-libernetes-livm-wave5-gate.sh` |
+| 6 | VM boot benchmark | `check-libernetes-livm-wave6-gate.sh` |
+| 7 | VM restart policy | `check-libernetes-livm-wave7-gate.sh` |
+| 8 | Disk persist across reboot | `check-libernetes-livm-wave8-gate.sh` |
+| 9 | VM metrics stub | `check-libernetes-livm-wave9-gate.sh` |
+
+## Iteration rules
+
+1. Implement **LB-V14/V15** (Wave 5) until completion gate passes.
+2. Commit + push every iteration.
 
 ## Completion gate
 

@@ -141,6 +141,12 @@ int32_t li_rt_studio_aimd_gpu_from_env(void) {
   return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
 }
 
+/* STUDIO_AIMD_GPU=0 forces CPU stub on GPU-capable hosts (CI fast gates). */
+int32_t li_rt_studio_aimd_gpu_force_cpu(void) {
+  const char* v = getenv("STUDIO_AIMD_GPU");
+  return (v != NULL && v[0] == '0' && v[1] == '\0') ? 1 : 0;
+}
+
 int32_t li_rt_studio_aimd_batch_steps_from_env(void) {
   const char* v = getenv("STUDIO_AIMD_BATCH_STEPS");
   if (v == NULL || v[0] == '\0') {

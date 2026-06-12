@@ -44,6 +44,15 @@ incumbent = "PyTorch nn.Linear stack"
 competitors = ["cpp_openmp", "python_numpy", "pytorch_cpu"]
 
 [[row]]
+id = "mlp_train"
+kernel = "ml.mlp_sgd_step_f32"
+workload_class = "tier3_cpu"
+workload_sizes = [2, 2, 1]
+workload_note = "50-step XOR SGD loop; Li runtime autograd vs PyTorch CPU SGD"
+incumbent = "PyTorch CPU SGD"
+competitors = ["pytorch_cpu"]
+
+[[row]]
 id = "async_env_collect"
 kernel = "ml.rl.async_env_collect"
 workload_class = "pilot"

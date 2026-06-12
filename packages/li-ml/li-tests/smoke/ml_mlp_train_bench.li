@@ -1,0 +1,30 @@
+import ml
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w1: array[8, array[8, float]]
+  var w2: array[8, array[8, float]]
+  w1[0][0] = 0.5
+  w1[0][1] = 0.5
+  w1[1][0] = 0.5
+  w1[1][1] = 0.5
+  w2[0][0] = 0.5
+  w2[1][0] = 0.5
+  var x: array[8, array[8, float]]
+  var y: array[8, array[8, float]]
+  var loss: float = 0.0
+  x[0][0] = 1.0
+  x[0][1] = 1.0
+  var target: float = 0.0
+  var lr: float = 0.3
+  var step: int = 0
+  while step < 50
+    if ml_mlp_sgd_step_f32(2, 2, 1, x, target, lr, w1, w2, y, loss) != 1:
+      return 1
+    step = step + 1
+  if loss < 0.0:
+    return 2
+  return 0

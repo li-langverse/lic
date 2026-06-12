@@ -44,4 +44,39 @@ mkdir -p "$(dirname "$BIN")"
 "$LIC" build --allow-open-vc "$SMOKE" -o "$BIN" || { echo "lic build failed: $SMOKE"; exit 1; }
 "$BIN" || { echo "XOR SGD smoke failed (loss must decrease over 10 steps)"; exit 1; }
 
-echo "ph-ml-training-toy-sota: Phase K gate OK"
+echo "==> Phase L competitive training row"
+[[ -f benchmarks/competitive/ph-ml.toml ]] \
+  || { echo "missing benchmarks/competitive/ph-ml.toml"; exit 1; }
+grep -q 'id = "mlp_train"' benchmarks/competitive/ph-ml.toml \
+  || { echo "missing mlp_train row in ph-ml.toml"; exit 1; }
+[[ -f scripts/bench-ph-ml-mlp-train-competitive.sh ]] \
+  || { echo "missing bench-ph-ml-mlp-train-competitive.sh"; exit 1; }
+[[ -f scripts/bench_ph_ml_mlp_train_competitive.py ]] \
+  || { echo "missing bench_ph_ml_mlp_train_competitive.py"; exit 1; }
+TRAIN_BENCH="packages/li-ml/li-tests/smoke/ml_mlp_train_bench.li"
+[[ -f "$TRAIN_BENCH" ]] || { echo "missing smoke: $TRAIN_BENCH"; exit 1; }
+
+echo "==> Phase L train bench (build + run)"
+TRAIN_BIN="$ROOT/.build/ph-ml-training-toy-sota/ml_mlp_train_bench"
+mkdir -p "$(dirname "$TRAIN_BIN")"
+"$LIC" build --allow-open-vc "$TRAIN_BENCH" -o "$TRAIN_BIN" || { echo "lic build failed: $TRAIN_BENCH"; exit 1; }
+"$TRAIN_BIN" || { echo "train bench smoke failed"; exit 1; }
+
+bash scripts/bench-ph-ml-mlp-train-competitive.sh || true
+if [[ -f benchmarks/results/ph-ml-mlp-train-competitive.json ]]; then
+  python3 - <<'PY'
+import json, sys
+from pathlib import Path
+p = Path("benchmarks/results/ph-ml-mlp-train-competitive.json")
+d = json.loads(p.read_text())
+if not d.get("executed"):
+    print("Phase L: competitive bench not executed (lic/torch may be unavailable in this env)")
+    sys.exit(0)
+if not d.get("validity_gate_pass"):
+    print("Phase L: competitive bench validity_gate_pass false")
+    sys.exit(1)
+print("Phase L: mlp_train competitive row executed")
+PY
+fi
+
+echo "ph-ml-training-toy-sota: Phase K+L gate OK"

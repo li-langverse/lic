@@ -21,7 +21,7 @@ Ship honest toy-dataset training loops and competitive training benchmarks (Li n
 | Phase | Status |
 |-------|--------|
 | **K** | **DONE** — `ml_mlp_sgd_step_f32`, XOR smoke, gate |
-| **L** | pending |
+| **L** | **DONE** — `mlp_train` competitive row + `bench_ph_ml_mlp_train_competitive.py` |
 | **M** | pending |
 | **N** | pending |
 

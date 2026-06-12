@@ -416,7 +416,7 @@ def echem_aimd_batch_gpu_path_select() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
-  ensures result == chem_dft_gpu_path_available() || result == 0
+  ensures result <= chem_dft_gpu_path_available()
   decreases 0
 =
   if li_rt_studio_aimd_gpu_force_cpu() == 1:

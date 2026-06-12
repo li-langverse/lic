@@ -10,4 +10,6 @@ def main() -> int raises IO
     return 1
   if chem_dft_gpu_lkir_progress() != 1:
     return 2
+  if chem_dft_gpu_path_available() != 1:
+    return 3
   return 0

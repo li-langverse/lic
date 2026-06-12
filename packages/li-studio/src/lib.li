@@ -3691,10 +3691,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 50
+  ensures result == 57
   decreases 0
 =
-  return 50
+  return 57
 
 def studio_shell_widget_tree_version() -> int
   requires true

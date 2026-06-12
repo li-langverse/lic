@@ -405,14 +405,21 @@ extern def li_rt_studio_aimd_gpu_from_env() -> int
   ensures result <= 1
   decreases 0
 
+extern def li_rt_studio_aimd_gpu_force_cpu() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+# W9a — default hero/batch path uses GPU when chem_dft_gpu_path_available(); STUDIO_AIMD_GPU=0 opts out.
 def echem_aimd_batch_gpu_path_select() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
-  ensures result <= chem_dft_gpu_path_available()
+  ensures result == chem_dft_gpu_path_available() || result == 0
   decreases 0
 =
-  if li_rt_studio_aimd_gpu_from_env() != 1:
+  if li_rt_studio_aimd_gpu_force_cpu() == 1:
     return 0
   return chem_dft_gpu_path_available()
 

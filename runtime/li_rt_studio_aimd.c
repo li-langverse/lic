@@ -165,6 +165,47 @@ int32_t li_rt_studio_aimd_batch_steps_from_env(void) {
   return (int32_t)n;
 }
 
+int32_t li_rt_studio_aimd_batch_temperature_from_env(void) {
+  const char* v = getenv("STUDIO_AIMD_TEMPERATURE_K");
+  if (v != NULL && v[0] != '\0') {
+    const int n = atoi(v);
+    if (n >= 1 && n <= 10000) {
+      return (int32_t)n;
+    }
+  }
+  if (g_studio_aimd_scenario.temperature_k >= 1) {
+    return g_studio_aimd_scenario.temperature_k;
+  }
+  return 450;
+}
+
+int32_t li_rt_studio_aimd_batch_potential_mv_from_env(void) {
+  const char* v = getenv("STUDIO_AIMD_POTENTIAL_MV");
+  if (v != NULL && v[0] != '\0') {
+    return (int32_t)atoi(v);
+  }
+  return g_studio_aimd_scenario.potential_mv;
+}
+
+int32_t li_rt_studio_aimd_viz_seed_from_env(void) {
+  const char* v = getenv("STUDIO_AIMD_VIZ_SEED");
+  if (v != NULL && v[0] != '\0') {
+    const int n = atoi(v);
+    if (n > 0) {
+      return (int32_t)n;
+    }
+  }
+  return 2803;
+}
+
+int32_t li_rt_studio_aimd_temperature_from_env(void) {
+  return li_rt_studio_aimd_batch_temperature_from_env();
+}
+
+int32_t li_rt_studio_aimd_potential_mv_from_env(void) {
+  return li_rt_studio_aimd_batch_potential_mv_from_env();
+}
+
 static const char* li_rt_studio_aimd_batch_tier_label(int32_t gpu_path) {
   const char* pilot = getenv("STUDIO_AIMD_PILOT");
   if (pilot != NULL && pilot[0] == '1' && pilot[1] == '\0') {

@@ -1,7 +1,7 @@
 import sim.scientific
 import studio
 
-# W5 — E2E hero pipeline: MCP configure → batch run → final viz (in-process; no UI step replay).
+# W5 — E2E hero pipeline: MCP configure → batch run → final viz (IL-PE depolymerization cell).
 def main() -> int raises IO, Alloc
   requires true
   ensures result == 0
@@ -14,7 +14,7 @@ def main() -> int raises IO, Alloc
   var steps: int = studio_aimd_hero_demo_steps()
   if echem_aimd_batch_steps_valid(steps) != 1:
     return 3
-  if studio_aimd_hero_configure(steps, 300, 0, studio_aimd_algo_echem_interface()) != 1:
+  if studio_aimd_hero_configure_from_env(steps) != 1:
     return 4
   var batch: AimdBatchResult = echem_aimd_batch_run(steps)
   if batch.ok != 1:
@@ -28,9 +28,8 @@ def main() -> int raises IO, Alloc
     return 8
   if studio_aimd_sync_final_viewport(batch) != 1:
     return 9
-  var path: str = "/tmp/studio-aimd-hero-e2e.ppm"
-  if studio_aimd_final_viz_ok(batch, path, 1280, 720) != 1:
+  if studio_aimd_final_viz_ok(batch, "/tmp/studio-aimd-hero-e2e.ppm", 1280, 720) != 1:
     return 10
-  if studio_aimd_final_viz_color_budget_ok(batch, 100, 1280, 720) != 1:
+  if studio_aimd_final_viz_color_budget_ok(batch, 48, 1280, 720, "/tmp/studio-aimd-hero-e2e.ppm") != 1:
     return 11
   return 0

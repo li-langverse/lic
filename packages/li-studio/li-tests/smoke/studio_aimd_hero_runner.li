@@ -27,7 +27,7 @@ def main() -> int raises IO, Alloc
   var steps: int = li_rt_studio_aimd_batch_steps_from_env()
   if echem_aimd_batch_steps_valid(steps) != 1:
     return 2
-  if studio_aimd_hero_configure(steps, 300, 0, studio_aimd_algo_echem_interface()) != 1:
+  if studio_aimd_hero_configure_from_env(steps) != 1:
     return 3
   var batch: AimdBatchResult = echem_aimd_batch_run(steps)
   if batch.ok != 1:

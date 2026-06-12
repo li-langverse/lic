@@ -4,6 +4,7 @@
 #include "li/platform.hpp"
 #include "li/prelude.hpp"
 #include "li/smoke_llvm.hpp"
+#include "li/smoke_kernel.hpp"
 #include "li/vc_emit.hpp"
 #include "li/mir.hpp"
 #include "li/vc_summary.hpp"
@@ -16,6 +17,7 @@
 
 #include "li_rt.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -108,6 +110,7 @@ int usage() {
             << "  lic verify <file>      VC summary; --lean lake; --strict-lean fails open VCs\n"
             << "                       [--allow-open-vc] [--no-lean-verify]\n"
             << "  lic build <file> -o <out> [--release] [--numerically-stable]\n"
+            << "                       [--target TRIPLE]  freestanding kernel (e.g. x86_64-unknown-none)\n"
             << "                       [--strict-lean]  fail on open AutoVC goals + lake strict check\n"
             << "                       [--allow-open-vc]  allow obligations without Lean proof (dev only)\n"
             << "                       [--prob-check]     Monte Carlo discharge for prob_ensures P(event)<ε\n"
@@ -117,6 +120,8 @@ int usage() {
             << "                       [--threads=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
+            << "  lic smoke-kernel <elf> [--timeout SEC] [--stub virtio-mmio|mm-bump]\n"
+            << "                       execute freestanding kernel; trap @hw outb on COM1\n"
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
             << "  lic httpd validate-config <file.toml>  validate [routes] (E0501–E0504)\n"
             << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"
@@ -514,6 +519,36 @@ int main(int argc, char** argv) {
     std::cout << "smoke-llvm: ok (main returns 0)\n";
     return 0;
   }
+  if (cmd == "smoke-kernel") {
+    if (argc < 3) {
+      std::cerr << "usage: lic smoke-kernel <elf> [--timeout SEC] [--stub virtio-mmio|mm-bump]\n";
+      return 1;
+    }
+    li::SmokeKernelOptions smoke_opts;
+    smoke_opts.elf_path = argv[2];
+    for (int i = 3; i < argc; ++i) {
+      const std::string_view arg = argv[i];
+      if (arg == "--timeout" && i + 1 < argc) {
+        smoke_opts.timeout_sec = std::max(1, std::atoi(argv[++i]));
+      } else if (arg == "--stub" && i + 1 < argc) {
+        smoke_opts.stub = argv[++i];
+        if (smoke_opts.stub != "virtio-mmio" && smoke_opts.stub != "mm-bump") {
+          std::cerr << "usage: lic smoke-kernel <elf> [--timeout SEC] [--stub virtio-mmio|mm-bump]\n";
+          return 1;
+        }
+      } else {
+        std::cerr << "usage: lic smoke-kernel <elf> [--timeout SEC] [--stub virtio-mmio|mm-bump]\n";
+        return 1;
+      }
+    }
+    std::string err;
+    if (!li::smoke_kernel(smoke_opts, &err)) {
+      std::cerr << "smoke-kernel failed: " << err << '\n';
+      return 1;
+    }
+    std::cerr << "smoke-kernel: PASS (" << err << ")\n";
+    return 0;
+  }
   if (cmd == "parse") {
     if (argc < 3) {
       return usage();
@@ -592,6 +627,10 @@ int main(int argc, char** argv) {
       const std::string_view arg = argv[i];
       if (arg == "-o" && i + 1 < argc) {
         output = argv[++i];
+      } else if (arg.rfind("--target=", 0) == 0) {
+        opts.target_triple = std::string(arg.substr(9));
+      } else if (arg == "--target" && i + 1 < argc) {
+        opts.target_triple = argv[++i];
       } else if (!input && arg[0] != '-' && arg != "--release") {
         input = argv[i];
       } else if (arg == "--release") {
@@ -622,6 +661,10 @@ int main(int argc, char** argv) {
     }
     if (!input) {
       return usage();
+    }
+    if (opts.is_freestanding()) {
+      li::proof_cli_flags().allow_open_vc = true;
+      li::proof_cli_flags().no_lean_verify = true;
     }
     const std::string source = read_file(input);
     li::Module module;

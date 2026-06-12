@@ -6,6 +6,7 @@
 #include <llvm/IR/GlobalVariable.h>
 #include <llvm/IR/Intrinsics.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/InlineAsm.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Type.h>
@@ -1065,6 +1066,37 @@ struct EmitCtx {
         builder->CreateCall(rt_fn, {string_ptr(*builder, gv)});
         return true;
       }
+      case MirOp::HwOutb: {
+        llvm::Value* port = ins.index_is_literal ? int32_val(*builder, context, ins.int_value)
+                                                 : load_int(ins.index_ident);
+        llvm::Value* val = ins.rhs_is_literal ? int32_val(*builder, context, ins.rhs_int)
+                                              : load_int(ins.rhs_ident);
+        port = builder->CreateTrunc(port, llvm::Type::getInt16Ty(context));
+        val = builder->CreateTrunc(val, llvm::Type::getInt8Ty(context));
+        llvm::FunctionType* asm_ty =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(context),
+                                    {llvm::Type::getInt8Ty(context), llvm::Type::getInt16Ty(context)},
+                                    false);
+        llvm::InlineAsm* asm_fn = llvm::InlineAsm::get(asm_ty, "outb $0, $1", "{ax},{dx}", true);
+        builder->CreateCall(asm_fn, {val, port});
+        return true;
+      }
+      case MirOp::HwHlt: {
+        llvm::FunctionType* asm_ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
+        llvm::InlineAsm* asm_fn = llvm::InlineAsm::get(asm_ty, "hlt", "~{flags}", true);
+        builder->CreateCall(asm_fn);
+        return true;
+      }
+      case MirOp::HwMmioRead32: {
+        llvm::Value* addr = ins.index_is_literal ? int32_val(*builder, context, ins.int_value)
+                                                 : load_int(ins.index_ident);
+        llvm::Type* i32 = llvm::Type::getInt32Ty(context);
+        llvm::Value* ptr = builder->CreateIntToPtr(addr, llvm::PointerType::getUnqual(i32));
+        llvm::LoadInst* load = builder->CreateLoad(i32, ptr);
+        load->setVolatile(true);
+        builder->CreateStore(load, ensure_int_local(ins.ident));
+        return true;
+      }
       case MirOp::CallExtern: {
         llvm::Function* callee = module->getFunction(ins.callee);
         if (!callee) {
@@ -1901,10 +1933,23 @@ void emit_xfer_plan_global(llvm::Module* module, const MirXferPlan& plan) {
 }  // namespace
 
 bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime_team_size,
-                  std::string* error) {
+                  bool freestanding, std::string* error) {
   llvm::LLVMContext context;
   auto module = std::make_unique<llvm::Module>("li", context);
 
+  if (freestanding) {
+    llvm::FunctionType* bf_ty = llvm::FunctionType::get(llvm::Type::getVoidTy(context), false);
+    llvm::Function* bf_fn = llvm::Function::Create(bf_ty, llvm::Function::ExternalLinkage,
+                                                   "li_bounds_fail", module.get());
+    llvm::BasicBlock* bf_entry = llvm::BasicBlock::Create(context, "entry", bf_fn);
+    llvm::BasicBlock* bf_loop = llvm::BasicBlock::Create(context, "loop", bf_fn);
+    llvm::IRBuilder<> bf_builder(bf_entry);
+    bf_builder.CreateBr(bf_loop);
+    llvm::IRBuilder<> loop_builder(bf_loop);
+    llvm::InlineAsm* hlt_asm = llvm::InlineAsm::get(bf_ty, "hlt", "~{flags}", true);
+    loop_builder.CreateCall(hlt_asm);
+    loop_builder.CreateBr(bf_loop);
+  } else {
   module->getOrInsertFunction("li_rt_print_int",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context),
                                                       {i32_ty(context)}, false));
@@ -2334,6 +2379,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction("tcp_close",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context),
                                                       {i32_ty(context)}, false));
+  }
 
   if (mir.needs_rt_exec_plan) {
     emit_exec_plan_global(module.get(), mir.exec_plan);
@@ -2370,6 +2416,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
 
   llvm::Function* user_main = nullptr;
   bool user_main_argv_wrapper = false;
+  llvm::Function* user_start = nullptr;
 
   struct UserFnEmit {
     const MirFn* mir_fn = nullptr;
@@ -2449,13 +2496,17 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       }
     }
     llvm::FunctionType* fn_ty = llvm::FunctionType::get(ret_ty, param_tys, false);
-    const bool argv_main = fn.name == "main" && fn.params.empty();
+    const bool freestanding_entry = freestanding && fn.name == "_start";
+    const bool argv_main = !freestanding_entry && fn.name == "main" && fn.params.empty();
     const std::string llvm_name = argv_main ? "li_user_main" : fn.name;
     llvm::Function* func =
         llvm::Function::Create(fn_ty, llvm::Function::ExternalLinkage, llvm_name, module.get());
     if (fn.name == "main") {
       user_main = func;
       user_main_argv_wrapper = argv_main;
+    }
+    if (freestanding_entry) {
+      user_start = func;
     }
     user_fns.push_back(UserFnEmit{&fn, func, ret_ty, is_par_fn});
   }
@@ -2578,7 +2629,9 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
     builder.setFastMathFlags(saved_fmf);
   }
 
-  if (user_main && user_main_argv_wrapper) {
+  if (freestanding && user_start) {
+    // Freestanding kernel: _start is the ELF entry; no hosted main wrapper.
+  } else if (user_main && user_main_argv_wrapper) {
     llvm::Type* argv_ty = llvm::PointerType::getUnqual(i8_ptr(context));
     llvm::FunctionType* main_ty =
         llvm::FunctionType::get(i32_ty(context), {i32_ty(context), argv_ty}, false);
@@ -2590,7 +2643,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
     main_builder.CreateCall(set_args, {main_fn->getArg(0), main_fn->getArg(1)});
     llvm::CallInst* user_ret = main_builder.CreateCall(user_main, {});
     main_builder.CreateRet(user_ret);
-  } else if (!user_main) {
+  } else if (!user_main && !freestanding) {
     llvm::FunctionType* main_ty = llvm::FunctionType::get(i32_ty(context), {}, false);
     llvm::Function* main_fn =
         llvm::Function::Create(main_ty, llvm::Function::ExternalLinkage, "main", module.get());

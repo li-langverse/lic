@@ -28,6 +28,24 @@ std::string unique_temp_ll_path() {
       .string();
 }
 
+std::string unique_temp_o_path() {
+  static std::atomic<std::uint64_t> seq{0};
+  const auto tick =
+      static_cast<std::uint64_t>(std::chrono::steady_clock::now().time_since_epoch().count());
+  const auto n = seq.fetch_add(1, std::memory_order_relaxed);
+  return (std::filesystem::temp_directory_path() /
+          ("li_build_" + std::to_string(tick) + "_" + std::to_string(n) + ".o"))
+      .string();
+}
+
+std::string freestanding_path_prefix() {
+  const char* path_env = std::getenv("PATH");
+  return "PATH=/usr/bin:/usr/lib/llvm-22/bin" +
+         (path_env != nullptr ? std::string(":") + path_env : std::string());
+}
+
+int run_shell(const std::string& cmd) { return std::system(cmd.c_str()); }
+
 
 void maybe_keep_emit_ll(const std::string& ll_path) {
   if (const char* keep = std::getenv("LI_KEEP_LL"); keep == nullptr || keep[0] != '1' ||
@@ -96,6 +114,110 @@ std::string resolve_link_cc() {
   return "clang";
 }
 
+std::string resolve_lld() {
+  if (const char* env = std::getenv("LLD"); env != nullptr && *env != '\0') {
+    return env;
+  }
+  const std::string candidates[] = {
+      "/usr/lib/llvm-22/bin/ld.lld",
+      "ld.lld",
+      "lld-22",
+      "lld",
+  };
+  for (const auto& candidate : candidates) {
+    if (clang_executable_exists(candidate)) {
+      return candidate;
+    }
+  }
+  return "ld.lld";
+}
+
+std::filesystem::path resolve_kernel_link_script() {
+  if (const char* script = std::getenv("LI_KERNEL_LINK_SCRIPT")) {
+    const std::filesystem::path from_env(script);
+    if (std::filesystem::exists(from_env)) {
+      return from_env;
+    }
+  }
+  if (const char* lik = std::getenv("LIK_ROOT")) {
+    const std::filesystem::path from_lik =
+        std::filesystem::path(lik) / "arch" / "i686" / "link.ld";
+    if (std::filesystem::exists(from_lik)) {
+      return from_lik;
+    }
+  }
+  if (const char* root = std::getenv("LI_REPO_ROOT")) {
+    const std::filesystem::path from_root = std::filesystem::path(root) / "kernel" / "link.ld";
+    if (std::filesystem::exists(from_root)) {
+      return from_root;
+    }
+  }
+  const std::filesystem::path candidates[] = {
+      std::filesystem::path("arch/i686/link.ld"),
+      std::filesystem::path("../lik/arch/i686/link.ld"),
+      std::filesystem::path("kernel/link.ld"),
+      std::filesystem::path("../kernel/link.ld"),
+  };
+  for (const auto& c : candidates) {
+    if (std::filesystem::exists(c)) {
+      return c;
+    }
+  }
+  return std::filesystem::path("kernel/link.ld");
+}
+
+bool link_freestanding_kernel(const std::string& ll_path, const std::string& output_path,
+                              const CompileOptions& opts, const std::string& extra_clang_flags,
+                              std::string* error) {
+  const std::string obj_path = unique_temp_o_path();
+  const std::filesystem::path link_script = resolve_kernel_link_script();
+  const std::string cc = resolve_link_cc();
+  const std::string lld = resolve_lld();
+
+  std::ostringstream compile_cmd;
+  compile_cmd << cc << " -Wno-override-module";
+#if defined(LLVM_VERSION_MAJOR) && LLVM_VERSION_MAJOR >= 15
+  compile_cmd << " -opaque-pointers";
+#endif
+  compile_cmd << " -c -x ir \"" << ll_path << "\" -o \"" << obj_path << "\"";
+  if (!opts.target_triple.empty()) {
+    compile_cmd << " -target " << opts.target_triple;
+  }
+  if (opts.release) {
+    compile_cmd << " -O2";
+    if (!opts.fp_numerically_stable) {
+      compile_cmd << " -ffast-math -ffp-contract=fast";
+    }
+  }
+  if (opts.fp_numerically_stable) {
+    compile_cmd << " -fno-fast-math -ffp-contract=off";
+  }
+  if (!extra_clang_flags.empty()) {
+    compile_cmd << " " << extra_clang_flags;
+  }
+
+  if (run_shell(freestanding_path_prefix() + " " + compile_cmd.str()) != 0) {
+    std::filesystem::remove(obj_path);
+    if (error) {
+      *error = "freestanding compile failed";
+    }
+    return false;
+  }
+
+  std::ostringstream link_cmd;
+  link_cmd << lld << " -static -T \"" << link_script.string() << "\" -e _start --gc-sections \""
+           << obj_path << "\" -o \"" << output_path << "\"";
+  const int link_rc = run_shell(link_cmd.str());
+  std::filesystem::remove(obj_path);
+  if (link_rc != 0) {
+    if (error) {
+      *error = "freestanding link failed";
+    }
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 bool compile_module(const Module& module, const std::string& output_path,
@@ -119,7 +241,7 @@ bool compile_module(const Module& module, const std::string& output_path,
     ll_path = unique_temp_ll_path();
   }
 
-  if (!emit_llvm_ir(mir, ll_path, opts.runtime_team_size, error)) {
+  if (!emit_llvm_ir(mir, ll_path, opts.runtime_team_size, opts.is_freestanding(), error)) {
     return false;
   }
 
@@ -139,6 +261,15 @@ bool compile_module(const Module& module, const std::string& output_path,
       std::filesystem::remove(ll_path);
     }
     return false;
+  }
+
+  if (opts.is_freestanding()) {
+    const bool ok = link_freestanding_kernel(ll_path, output_path, opts, extra_clang_flags, error);
+    maybe_keep_emit_ll(ll_path);
+    if (!emit_ll || !emit_ll[0]) {
+      std::filesystem::remove(ll_path);
+    }
+    return ok;
   }
 
   auto resolve_runtime_c = [](const char* name) -> std::filesystem::path {
@@ -192,7 +323,8 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (link_par_rt_env) {
     cmd << " -DLI_PAR_REDUCE_RT";
   }
-  cmd << " -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
+  cmd << " -x ir \"" << ll_path << "\"";
+  cmd << " -x c \"" << rt_path.string() << "\"";
   cmd << " -x c \"" << rt_par_pool_path.string() << "\"";
   if (link_runtime_full || rt_needs.needs_rt_httpd) {
     if (std::filesystem::exists(rt_httpd_path)) {

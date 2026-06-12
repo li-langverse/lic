@@ -99,6 +99,12 @@ enum class MirOp {
   CommPlanApply,
   /** WP-PAR-87 — apply embedded __li_xfer_plan at program entry. */
   XferPlanApply,
+  /** `@hw.outb(port, value)` — x86 I/O port write (freestanding kernel). */
+  HwOutb,
+  /** `@hw.hlt()` — halt until interrupt (freestanding kernel). */
+  HwHlt,
+  /** `@hw.mmio_read32(phys)` — 32-bit MMIO load (freestanding kernel). */
+  HwMmioRead32,
 };
 
 struct MirArg {

@@ -143,8 +143,8 @@ def bench_pytorch() -> tuple[float | None, bool]:
         loss = (y[0, 0] - target) ** 2
         loss.backward()
         with torch.no_grad():
-            w1 -= lr * w1.grad
-            w2 -= lr * w2.grad
+            w1.sub_(w1.grad, alpha=lr)
+            w2.sub_(w2.grad, alpha=lr)
         return loss
 
     def sanity(loss) -> bool:

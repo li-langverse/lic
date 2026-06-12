@@ -1,0 +1,30 @@
+{
+  "suite": "ph-ml-mlp-train-competitive",
+  "workload_class": "tier3_cpu",
+  "workload_note": "ml_mlp_sgd_step_f32 2-2-1 XOR; 50 SGD steps; Li runtime autograd vs PyTorch CPU SGD",
+  "in_dim": 2,
+  "hidden": 2,
+  "out_dim": 1,
+  "train_steps": 50,
+  "executed": true,
+  "validity_gate_pass": true,
+  "li_cpu_sec": 0.000736,
+  "pytorch_cpu_sec": 8.7e-05,
+  "ratio_vs_li": 0.118207,
+  "li": {
+    "executed": true,
+    "cpu_sec": 0.000736,
+    "validity_gate_pass": true,
+    "kernel": "ml.mlp_sgd_step_f32"
+  },
+  "competitors": [
+    {
+      "id": "pytorch_cpu",
+      "incumbent": "PyTorch CPU SGD",
+      "executed": true,
+      "cpu_sec": 8.7e-05,
+      "validity_gate_pass": true,
+      "ratio_vs_li": 0.118207
+    }
+  ]
+}

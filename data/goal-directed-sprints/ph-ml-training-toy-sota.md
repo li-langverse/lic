@@ -23,7 +23,7 @@ Ship honest toy-dataset training loops and competitive training benchmarks (Li n
 | **K** | **DONE** — `ml_mlp_sgd_step_f32`, XOR smoke, gate |
 | **L** | **DONE** — `mlp_train` competitive row + `bench_ph_ml_mlp_train_competitive.py` |
 | **M** | **DONE** — CartPole stub honesty doc + `sb3_train_step` bench scaffold |
-| **N** | pending |
+| **N** | **DONE** — competitive JSON regen + snapshot refresh |
 
 ## Phases
 
@@ -62,8 +62,9 @@ Exit criteria:
 
 ### Phase N
 
-- Regenerate `benchmarks/results/ph-ml-competitive.json` training section
-- Update `docs/game-dev/PH-ML-PERFORMANCE-SNAPSHOT.md` training honesty table
+- [x] Regenerate `benchmarks/results/ph-ml-competitive.json` training section (`mlp_train`, `sb3_train_step`)
+- [x] Update `docs/game-dev/PH-ML-PERFORMANCE-SNAPSHOT.md` training honesty table
+- [x] Fix `bench_ph_ml_mlp_train_competitive.py` PyTorch `w1` UnboundLocalError (`sub_` in-place SGD)
 
 ## Agent rules
 

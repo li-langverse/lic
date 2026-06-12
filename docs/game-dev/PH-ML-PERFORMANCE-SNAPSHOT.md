@@ -3,13 +3,13 @@
 **Shareable overview** of Li native ML/RL/LLM benchmark results on CPU.  
 **Generated from:** `benchmarks/results/ph-ml-*.json` on `main`  
 **Snapshot date:** 2026-06-12  
-**Commit:** `8378b7a64` (Phase L merge); Phase M honesty refresh pending Phase N regen
+**Commit:** `9c03088da` + Phase N refresh (2026-06-12)
 
 ---
 
 ## 1. Executive summary
 
-PH-ML has **gate-complete** inference and pilot autograd: 32×32 li-array matmul, LKIR matmul, 2-2-1 MLP forward, full backward train-step, async RL env collect, and LLM forward stub all **execute with validity gates passing**. The **performance gap vs NumPy/PyTorch CPU remains large** on matmul (Li ~122–135× slower than NumPy @ 32×32; target ≤2× not met) and MLP forward (Li ~0.29 s vs competitors ~2–7 µs per step — dominated by compile/runtime overhead in the smoke path). RL async collect shows Li **faster than SB3 SubprocVecEnv** on the current bench, but Li uses a **CartPole stub** while SB3 runs **real CartPole-v1** — not apples-to-apples. LLM forward runs natively; **no competitor executed** (llama.cpp, vLLM, transformers not installed in oracle image). **Multi-step training loops and competitive training benchmarks are starting** (Phase K: XOR SGD); prior state was inference + single-step backward only.
+PH-ML has **gate-complete** inference and pilot autograd: 32×32 li-array matmul, LKIR matmul, 2-2-1 MLP forward, full backward train-step, async RL env collect, and LLM forward stub all **execute with validity gates passing**. The **performance gap vs NumPy/PyTorch CPU remains large** on matmul (Li ~122–135× slower than NumPy @ 32×32; target ≤2× not met) and MLP forward (Li ~0.29 s vs competitors ~2–7 µs per step — dominated by compile/runtime overhead in the smoke path). **Multi-step MLP training** (`mlp_train`) now executes with Li runtime autograd; PyTorch CPU SGD is ~8× faster on the 50-step XOR loop (87 µs vs 0.7 ms). RL async collect shows Li **faster than SB3 SubprocVecEnv** on the current bench, but Li uses a **CartPole stub** while SB3 runs **real CartPole-v1** — not apples-to-apples. **SB3 PPO train-step** bench executes (1.67 s / 2048 timesteps on real CartPole-v1); Li has no native policy-training row. LLM forward runs natively; competitor rows depend on optional deps in the bench env.
 
 ---
 
@@ -72,15 +72,25 @@ Smoke path includes LKIR probe + nested matmul; not yet competitive with BLAS-ba
 
 Backward pass is real; single-step bench only. Multi-step SGD: see **mlp_train** competitive row below.
 
-### MLP training loop (Phase L — `mlp_train`)
+### MLP training loop (Phase L/N — `mlp_train`)
+
+| Framework | `cpu_sec` | `ratio_vs_li` | Notes |
+|-----------|-----------|---------------|-------|
+| **Li** | **0.000703 s** | 1.0 | 50-step XOR SGD, runtime autograd |
+| PyTorch CPU SGD | 87 µs | 0.124 | same 2-2-1 fixture; ~8× faster |
+
+Kernel: `ml_mlp_sgd_step_f32`. JSON: `ph-ml-mlp-train-competitive.json`, row in `ph-ml-competitive.json`.
+
+### SB3 train step (Phase M/N — `sb3_train_step`)
 
 | Field | Value |
 |-------|-------|
-| Kernel | `ml_mlp_sgd_step_f32` |
-| Fixture | 2-2-1 XOR, 50 SGD steps |
-| Li row | runtime autograd + weight update (`ml_mlp_train_bench.li`) |
-| Competitor | PyTorch CPU SGD on same weights |
-| JSON | `benchmarks/results/ph-ml-mlp-train-competitive.json` (generated; `executed` depends on lic+torch in env) |
+| `executed` | **true** |
+| `cpu_sec` | **1.668 s** |
+| `train_timesteps` | 2048 |
+| `env_semantics` | `cartpole_v1_real` |
+| `framework_version` | SB3 2.5.0 |
+| Li row | `executed: false` (no native policy-training loop) |
 
 ---
 
@@ -121,7 +131,7 @@ Li forward + matmul oracle pass; competitor rows are **honestly skipped**, not f
 | Multi-step training loop | **exists (Phase L)** | `mlp_train` row + `bench_ph_ml_mlp_train_competitive.py` |
 | PyTorch training parity bench | **partial** | `ph-ml-mlp-train-parity.json` uses env vars for dw — superseded by Phase L competitive row |
 | RL policy training | **stub** | `ml_rl_job_graph_train_step` scaffold only; no Li CartPole physics |
-| SB3 train-step bench | **scaffold (Phase M)** | `sb3_train_step` row; `executed:false` when SB3/gymnasium missing |
+| SB3 train-step bench | **executed (Phase M/N)** | `sb3_train_step` row; PPO.learn CartPole-v1 when deps present |
 | SB3 / Ray collect bench | **collect only** | `async_env_collect`; not policy `learn()` on Li side |
 | LLM fine-tuning | **not present** | forward stub only |
 
@@ -145,8 +155,8 @@ Li forward + matmul oracle pass; competitor rows are **honestly skipped**, not f
 | Field | Value |
 |-------|-------|
 | **Date** | 2026-06-12 |
-| **Commit SHA** | `8378b7a64` (Phase L merge); Phase M doc refresh on main |
-| **Primary JSON** | `benchmarks/results/ph-ml-competitive.json` (2026-06-07T16:51:26Z; Phase N regen pending) |
+| **Commit SHA** | `9c03088da` + Phase N refresh |
+| **Primary JSON** | `benchmarks/results/ph-ml-competitive.json` (2026-06-12T04:45:19Z) |
 | **Supporting** | `ph-ml-li-array-matmul-32.json`, `ph-ml-li-array-gemm-tile-sweep.json`, `ph-ml-mlp-forward.json`, `ph-ml-mlp-train-step.json`, `ph-ml-mlp-train-competitive.json`, `ph-ml-async-env-collect.json`, `ph-ml-sb3-train-step.json`, `ph-ml-llm-forward.json`, `ph-ml-lkir-matmul-32.json` |
 
-*Refresh this document after Phase N (`ph-ml-training-toy-sota` sprint).*
+*Phase N refresh complete (`ph-ml-training-toy-sota` sprint).*

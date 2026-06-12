@@ -275,6 +275,11 @@ int32_t li_rt_studio_aimd_scenario_is_configured(void);
 int32_t li_rt_studio_aimd_gpu_from_env(void);
 int32_t li_rt_studio_aimd_gpu_force_cpu(void);
 int32_t li_rt_studio_aimd_batch_steps_from_env(void);
+int32_t li_rt_studio_aimd_batch_temperature_from_env(void);
+int32_t li_rt_studio_aimd_batch_potential_mv_from_env(void);
+int32_t li_rt_studio_aimd_viz_seed_from_env(void);
+int32_t li_rt_studio_aimd_temperature_from_env(void);
+int32_t li_rt_studio_aimd_potential_mv_from_env(void);
 int32_t li_rt_studio_aimd_batch_write_json(const char* path, int32_t steps, int32_t ok,
                                            double checksum, double energy_drift, int32_t gpu_path,
                                            int32_t dft_stride, int32_t dft_calls);

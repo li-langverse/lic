@@ -1,0 +1,26 @@
+import sim.scientific
+
+# IL-catalyzed PE depolymerization hero scenario — batch oracle at dev step count.
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() < 7:
+    return 1
+  if echem_aimd_batch_steps_valid(128) != 1:
+    return 2
+  var batch: AimdBatchResult = echem_aimd_batch_run(128)
+  if batch.ok != 1:
+    return 3
+  if batch.steps != 128:
+    return 4
+  if batch.checksum_ok != 1:
+    return 5
+  if batch.dft_stride != echem_aimd_batch_dft_stride():
+    return 6
+  if batch.dft_calls < 1:
+    return 7
+  if batch.gpu_path != echem_aimd_batch_gpu_path_select():
+    return 8
+  return 0

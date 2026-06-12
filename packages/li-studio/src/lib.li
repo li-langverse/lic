@@ -295,6 +295,31 @@ extern def li_rt_studio_aimd_batch_steps_from_env() -> int raises IO
   ensures result >= 64
   decreases 0
 
+extern def li_rt_studio_aimd_batch_temperature_from_env() -> int raises IO
+  requires true
+  ensures result >= 1
+  decreases 0
+
+extern def li_rt_studio_aimd_batch_potential_mv_from_env() -> int raises IO
+  requires true
+  ensures true
+  decreases 0
+
+extern def li_rt_studio_aimd_temperature_from_env() -> int raises IO
+  requires true
+  ensures result >= 1
+  decreases 0
+
+extern def li_rt_studio_aimd_potential_mv_from_env() -> int raises IO
+  requires true
+  ensures true
+  decreases 0
+
+extern def li_rt_studio_aimd_viz_seed_from_env() -> int raises IO
+  requires true
+  ensures true
+  decreases 0
+
 extern def li_rt_studio_aimd_scenario_set_dft_stride(dft_stride: int) -> int raises IO
   requires dft_stride >= 1
   ensures result == 1
@@ -2740,7 +2765,9 @@ def studio_mcp_tool_dispatch_mode_arg(mode: int, tool_id: int, arg: int) -> Stud
       out.status = studio_mcp_tool_status_failed()
       out.result_code = studio_mcp_tool_result_err_io()
       return out
-    if li_rt_studio_aimd_scenario_set(steps, 300, 0, algo_echem_aimd_interface()) != 1:
+    var temp_k: int = li_rt_studio_aimd_batch_temperature_from_env()
+    var pot_mv: int = li_rt_studio_aimd_batch_potential_mv_from_env()
+    if li_rt_studio_aimd_scenario_set(steps, temp_k, pot_mv, algo_echem_aimd_interface()) != 1:
       out.status = studio_mcp_tool_status_failed()
       out.result_code = studio_mcp_tool_result_err_io()
       return out
@@ -6278,6 +6305,28 @@ def studio_aimd_algo_echem_interface() -> int
 =
   return algo_echem_aimd_interface()
 
+def studio_aimd_hero_temperature_k() -> int raises IO
+  requires true
+  ensures result >= 1
+  decreases 0
+=
+  return li_rt_studio_aimd_batch_temperature_from_env()
+
+def studio_aimd_hero_potential_mv() -> int raises IO
+  requires true
+  ensures result >= -5000
+  ensures result <= 5000
+  decreases 0
+=
+  return li_rt_studio_aimd_batch_potential_mv_from_env()
+
+def studio_aimd_system_il_pe_depolymerization() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
 def studio_aimd_hero_configure(steps: int, temperature_k: int, potential_mv: int, algo_id: int) -> int raises IO
   requires steps >= 64
   requires steps <= 10000
@@ -6287,6 +6336,15 @@ def studio_aimd_hero_configure(steps: int, temperature_k: int, potential_mv: int
   decreases steps
 =
   return li_rt_studio_aimd_scenario_set(steps, temperature_k, potential_mv, algo_id)
+
+def studio_aimd_hero_configure_from_env(steps: int) -> int raises IO
+  requires steps >= 64
+  requires steps <= 10000
+  ensures result >= 0
+  ensures result <= 1
+  decreases steps
+=
+  return studio_aimd_hero_configure(steps, studio_aimd_hero_temperature_k(), studio_aimd_hero_potential_mv(), studio_aimd_algo_echem_interface())
 
 def studio_aimd_hero_demo_steps() -> int raises IO
   requires true
@@ -6341,7 +6399,8 @@ def studio_aimd_final_viz_digest(batch: AimdBatchResult, width: int, height: int
   var drift: int = 0
   if batch.energy_drift > 0.0:
     drift = 1
-  return d + fx * 137 + drift * 911 + batch.gpu_path * 17
+  var viz_seed: int = li_rt_studio_aimd_viz_seed_from_env()
+  return d + fx * 137 + drift * 911 + batch.gpu_path * 17 + viz_seed * 131 + 10000000
 
 def studio_aimd_final_viz_ok(batch: AimdBatchResult, path: str, width: int, height: int) -> int raises IO, Alloc
   requires batch.ok == 1

@@ -1,0 +1,61 @@
+# Remote VM runtime stub (Wave 4).
+# Cross-node VMI control via node registry; production path uses worker kubelet gRPC.
+
+def remote_vm_transport_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def remote_vm_api_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def remote_vm_registry_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def remote_vm_backend_kvm_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def remote_vm_backend_lios_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def remote_vm_signal() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def remote_vm_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if remote_vm_transport_tag() != 1:
+    return 1
+  if remote_vm_api_version() != 1:
+    return 1
+  if remote_vm_registry_tag() != 1:
+    return 1
+  if remote_vm_backend_kvm_tag() != 1:
+    return 1
+  if remote_vm_backend_lios_tag() != 2:
+    return 1
+  return 0

@@ -11,7 +11,7 @@ plan: docs/libernetes/master-plan.md
 
 ## Mission
 
-Build **licontainers** OCI/CRI runtime. **Waves 0–3 DONE.** Active: **Wave 4** (remote CRI stub for multi-node).
+Build **licontainers** OCI/CRI runtime. **Waves 0–4 DONE.** Active: **Wave 5** (distributed workload exec).
 
 ## Phase checklist
 
@@ -25,7 +25,7 @@ Build **licontainers** OCI/CRI runtime. **Waves 0–3 DONE.** Active: **Wave 4**
 | **LB-C11** | `src/runtime/remote.li` | **DONE** | `check-libernetes-licontainers-wave4-gate.sh` |
 | **LB-C12** | `li-tests/integration/remote_cri.li` | **DONE** | same wave4 gate |
 
-## Later waves (unwired until Wave 4 passes)
+## Later waves (unwired until Wave 5 passes)
 
 | Wave | Focus | Gate |
 |------|-------|------|
@@ -37,7 +37,7 @@ Build **licontainers** OCI/CRI runtime. **Waves 0–3 DONE.** Active: **Wave 4**
 
 ## Iteration rules
 
-1. Implement **LB-C11/C12** until completion gate passes.
+1. Implement **LB-C13/C14** (Wave 5 distributed workload exec) until completion gate passes.
 2. Commit + push every iteration.
 
 ## Completion gate

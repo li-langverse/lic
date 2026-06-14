@@ -1,0 +1,24 @@
+﻿Li World Studio on Windows
+==========================
+
+Quick start
+-----------
+1. Install WSL2 with Ubuntu (if not already):  wsl --install
+2. Launch from Start Menu: "Li World Studio"
+   For an SDL window: "Li World Studio (host present)"
+
+The installer ships a Linux demo binary; Launch-LiWorldStudio.cmd runs it via WSL automatically.
+
+Demo profile
+------------
+Default profile is stored in studio-profile.txt (set during install).
+Override:  Launch-LiWorldStudio.cmd sim_rl
+
+SDL windowed mode (host present)
+--------------------------------
+Start Menu -> Li World Studio (host present)
+Requires studio_shell_present_host in the install folder (built during installer compile via WSL).
+
+Native Windows demo (optional)
+--------------------------------
+Build lic on Windows, rebuild li-studio-demo, replace li-studio-demo.exe in the install folder.

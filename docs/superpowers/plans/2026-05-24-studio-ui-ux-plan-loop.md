@@ -79,7 +79,7 @@ todos:
     status: done
   - id: studio-ux-25-proactive-sweep-20260531
     content: "Proactive briefing refresh — wave-5 gaps + ecosystem follow-ups for studio_ui_ux_builder"
-    status: pending
+    status: done
 isProject: false
 ---
 

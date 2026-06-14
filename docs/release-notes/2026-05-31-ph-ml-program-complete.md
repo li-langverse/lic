@@ -17,6 +17,10 @@
 | **T7** | `llm_path_is_*_fixture` helpers + `prepare_ph_ml_weights_fixture.py` + smoke `llm_weights_file_mmap.li` against on-disk safetensors/GGUF |
 | **T8** | `bench_ph_ml_llm_trusted_httpd.py` spins live Ollama-compat proxy when `PH_ML_LLM_TRUSTED_HTTPD_LIVE=1` (`live_proxy: true`) |
 
+## Agent verification (run 1780513138548)
+
+On Debian glibc 2.36 agent hosts, `scripts/lib/lic-runnable.sh` prefers a native `build/compiler/lic/lic` that passes `--version` over a stale `build-wsl` binary (GLIBC 2.38). Set `LIC_ROOT` when the workflow clone has no local build.
+
 ## Verification
 
 ```bash

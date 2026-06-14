@@ -3,6 +3,8 @@
 set -euo pipefail
 ROOT="${PH_ML_WAVE12_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1
@@ -31,15 +33,11 @@ run_in_wsl() {
 
 lic_bin_for_smokes() {
   local lic="$1"
-  if [[ "$lic" == "$ROOT/build-wsl/compiler/lic/lic" ]] && [[ -x "./build-wsl/compiler/lic/lic" ]]; then
-    echo "./build-wsl/compiler/lic/lic"
+  if [[ -n "$lic" ]] && "$lic" --version &>/dev/null; then
+    echo "$lic"
     return
   fi
-  if [[ "$lic" == "$ROOT/build/compiler/lic/lic" ]] && [[ -x "./build/compiler/lic/lic" ]]; then
-    echo "./build/compiler/lic/lic"
-    return
-  fi
-  echo "$lic"
+  li_pick_lic_bin "$ROOT"
 }
 
 lic_check_smokes() {
@@ -66,7 +64,7 @@ lic_check_smokes() {
   done
 }
 
-if [[ "${PH_ML_WAVE12_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] && command -v wsl.exe >/dev/null 2>&1; then
+if [[ "${PH_ML_WAVE12_INNER:-0}" != "1" ]] && ! li_pick_lic_bin "$ROOT" >/dev/null 2>&1 && command -v wsl.exe >/dev/null 2>&1; then
   wsl_root="$(_wsl_path_u "$ROOT")"
   if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
     run_in_wsl
@@ -74,8 +72,6 @@ if [[ "${PH_ML_WAVE12_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
   fi
 fi
 
-# shellcheck source=lib/lic-bin-select.sh
-source "$ROOT/scripts/lib/lic-bin-select.sh"
 li_ensure_lic "$ROOT" "ph-ml-wave12-gates: build lic (./scripts/build.sh or --build-dir build-wsl in WSL)" || exit 1
 
 grep -q 'Wave 12' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 12"; exit 1; }

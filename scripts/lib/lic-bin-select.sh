@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 # Pick the first lic binary that executes on this host (build-wsl may exist but need newer glibc).
+
+li_lic_is_runnable() {
+  local bin="$1"
+  [[ -n "$bin" && -x "$bin" ]] && "$bin" --version &>/dev/null
+}
+
+li_has_runnable_lic() {
+  local root="${1:?root required}"
+  if [[ -n "${LIC:-}" ]] && li_lic_is_runnable "$LIC"; then
+    return 0
+  fi
+  li_pick_lic_bin "$root" >/dev/null
+}
+
 li_pick_lic_bin() {
   local root="${1:?root required}"
   local cand rel

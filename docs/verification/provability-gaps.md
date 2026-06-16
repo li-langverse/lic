@@ -101,7 +101,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; await not parsed | **2+**, **7d** | `li-tests/effects/` |
 | **G-net** | `raises Net` | Trusted syscall surface | **Partial** — effect propagation + `trusted.lean` axioms; no codegen | **H**, **2f** | `li-tests/effects/net_*.li` |
 | **G-trust** | Trusted base growth | Only `trusted.lean` | **Stub** — file exists; `Core.lean` / `MIR.lean` **planned** | **2f** | [semantics/README.md](../semantics/README.md) |
-| **G-meta** | Compiler correctness | C++ compiler ≡ Lean semantics | **Missing** (research) | long-term | Not started |
+| **G-meta** | Compiler correctness | C++ compiler ≡ Lean semantics | **Missing** (research) | long-term | Not started — positioning doc [competitive-safety-matrix.md](../ecosystem/competitive-safety-matrix.md) does not close this gap |
 | **G-hw** | Hardware / FP | Model vs IEEE / CPU bugs | **Axiomatic** | — | Documented limit |
 | **G-wrong-spec** | User contracts | Correct theorem | **Social** — tool cannot fix | — | Review culture |
 | **G-narrow** | Narrowing conversions | Ariane-class truncations rejected without proof | **Partial** — policy rejects `cast[`; width types + proved narrowing pending | **2e** | `historic_ariane5_narrowing.li` |
@@ -212,6 +212,7 @@ When editing handbook pages, do **not** imply features beyond this register with
 | [Decorators](../language/decorators.md) | MIR proc tags + Host lowering done; Device LKIR open (**G-gpu**) |
 | Decorator / math spec stubs | Link **G-dec** / **G-par** status from this register |
 | [Plan cross-links](../ecosystem/plan-cross-links.md) | Master plan ↔ phase plans ↔ benchmarks; [open PH tracker](../ecosystem/plan-cross-links.md#open-master-plan-tracker-rows-2026-05-30) when rows move |
+| [Competitive safety matrix](../ecosystem/competitive-safety-matrix.md) | **G-meta** positioning — Carbon / Mojo / Rust vs Li; does not imply gap closure |
 | [Handbook index](../handbook/README.md) | Satellite Pages table — audit HEAD green 2026-05-30; [li-language Pages](https://li-langverse.github.io/li-language/) content may lag local mkdocs until [#403](https://github.com/li-langverse/lic/issues/403) |
 | [GUI UX handoff](../ecosystem/gui-ux-quality-handoff.md) | **ui_ux_quality** research goal — surface UX only; never closes **G-*** rows |
 

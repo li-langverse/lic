@@ -2,7 +2,7 @@
 
 **Status:** Active (2026-05-26)  
 **Sprint:** Wave 3 = **WP-G … WP-K** (CI, containers, hosting, production gates)  
-**Plans:** [ph-db-battle-plan.md](ph-db-battle-plan.md) (engine WPs A–F) · [ph-db-ci-hosting-plan.md](ph-db-ci-hosting-plan.md) (CI/hosting WPs G–K) · [ph-db-lidb-platform.md](ph-db-lidb-platform.md) (phase index)
+**Plans:** [ph-db-battle-plan.md](ph-db-battle-plan.md) (engine WPs A–F) · [ph-db-ci-hosting-plan.md](ph-db-ci-hosting-plan.md) (CI/hosting WPs G–K) · [ph-db-lidb-platform.md](ph-db-lidb-platform.md) (phase index) · **Gate registry:** [2026-06-07-ph-db-gate-decomposition.md](2026-06-07-ph-db-gate-decomposition.md)
 
 ---
 

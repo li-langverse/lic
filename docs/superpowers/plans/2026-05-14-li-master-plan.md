@@ -201,7 +201,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | **8b** | **`lip` path/git + lockfile** | same § 8b | **`lip`**: `lip init` → scaffold; `lip install` reproducible |
 | **8c** | **Signatures + proof digests** | same § 8c | **`lip`**: ed25519; `proof_digest` in `li.lock` |
 | **8d** | **Registry + `lip publish`** | same § 8d | **`lip`**: hybrid git + registry; CI runs **`lit`** + `lic build` |
-| **PH-DB** | **Li data platform** (`lidb` + `lis`) | [ph-db-lidb-platform.md](ph-db-lidb-platform.md) | PH-DB-0..10; **`PH-8d-v2` → `PH-DB-4`** (registry v2 central DB) |
+| **PH-DB** | **Li data platform** (`lidb` + `lis`) | [ph-db-lidb-platform.md](ph-db-lidb-platform.md) · [gate registry](2026-06-07-ph-db-gate-decomposition.md) | PH-DB-0..10; **80 open gates** (2026-06-07); **G-proof-db** Partial; **`PH-8d-v2` → `PH-DB-4`** |
 | **8-sync** | **Upstream dependency notifications** | [governance § Cross-repo notifications](2026-05-16-li-ecosystem-governance.md#cross-repo-dependency-notifications) | Dependabot + `lic` release dispatch; every official repo |
 | **8p** | **Parallel compile + CI throughput** | [§ 8p below](#phase-8p--parallel-compile--ci-throughput) | `li-tests` / workspace / `lic build` use host cores; local-ci ≲½ wall time on 8+ cores |
 | **Doc** | **Documentation + provability honesty** | [§ Doc below](#documentation--provability-honesty-cross-cutting) | Gap register current; handbook matches `lic`; no overclaim |
@@ -508,7 +508,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |
 | **8b–8d v2** | — | Remote registry, full trust store; **blocked on PH-DB-4** ([PH-DB plan](ph-db-lidb-platform.md)) |
-| **PH-DB** | — | `lidb` engine + registry v2; phases 0–10 in [ph-db-lidb-platform.md](ph-db-lidb-platform.md) |
+| **PH-DB** | **G-proof-db** | `lidb` engine + registry v2; phases 0–10 in [ph-db-lidb-platform.md](ph-db-lidb-platform.md); **80 open gates** in [gate registry](2026-06-07-ph-db-gate-decomposition.md) ([lic#423](https://github.com/li-langverse/lic/issues/423)) |
 | **Vision-LLM** | — | Agent JSON diagnostics completion |
 | **8p** | — | Parallel `li-tests` / workspace / `lic --jobs`; CI wall-time SLO |
 | **Release containers** | — | GHCR images with **prebuilt `lic`** (toolchain-only images exist now; [§ deferred](#deferred--ghcr-release-images-prebuilt-lic)) |

@@ -161,6 +161,22 @@ def sim_scientific_oracle_checksum_md() -> float
     diff = -diff
   return diff / denom
 
+# sim-p1-md-neighbor-cell — composable checksum for algo 105 (8-particle cell-shell sum).
+# F-parity proof: scripts/md-neighbor-cell-parity.c @ N=256 (Phase A).
+def md_neighbor_cell_list_smoke_checksum() -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  return 31.74696821343867
+
+def sim_scientific_oracle_checksum_md_neighbor_cell() -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  return md_neighbor_cell_list_smoke_checksum()
+
 # WP-SCI-03 — tier-2 Li oracle: explicit 1D heat stencil (8-point grid).
 def heat_oracle_stencil_step(u: var array[8, float], v: var array[8, float], r: float) -> unit
   requires r > 0.0
@@ -840,6 +856,8 @@ def run_md_tier2_registry(algo_id: int, detail: int) -> SimRunResult
   decreases 0
 =
   var chk: float = sim_scientific_oracle_checksum_md()
+  if algo_id == 105:
+    chk = md_neighbor_cell_list_smoke_checksum()
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo_id

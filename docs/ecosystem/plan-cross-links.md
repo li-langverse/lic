@@ -51,13 +51,18 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 
 Preflight: `benchmarks/data/latest/ecosystem-audit.json` · `plan_completion_audit.summary.open_tracker_items` = unchecked `- [ ]` rows only. Do not mark **Done** without cited evidence.
 
-| PH | Gap ID(s) | Phase plan (lic) |
-|----|-----------|------------------|
-| **2i** — Math / linalg | **G-math**, **G-math-syn** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) |
-| **7d** — Execution decorators | **G-dec**, **G-par** | [2026-05-16-li-execution-decorators.md](../superpowers/specs/2026-05-16-li-execution-decorators.md) · [phase-07-native-hpc](../superpowers/plans/2026-05-14-phase-07-native-hpc.md) |
-| **7e** — Math → SIMD lowering | **G-math** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) · [ph7e-tier1-red-benchmark-honesty](../superpowers/plans/2026-05-30-ph7e-tier1-red-benchmark-honesty.md) |
-| **8p** — Parallel compile / CI | — | [2026-05-22-parallel-compile-ci.md](../superpowers/plans/2026-05-22-parallel-compile-ci.md) |
-| **Vision-LLM** — Agent JSON diagnostics | — | [2026-05-16-li-llm-first-design.md](../superpowers/specs/2026-05-16-li-llm-first-design.md) |
+**Closure checklists:** [master plan § Partial tracker rows — definition of done](../superpowers/plans/2026-05-14-li-master-plan.md#partial-tracker-rows--definition-of-done) — concrete `li-tests`/Lean/CI commands per partial row (lic#25).
+
+| PH | Gap ID(s) | Phase plan (lic) | DoD checklist |
+|----|-----------|------------------|---------------|
+| **2e** — Contracts (partial) | **G-vc** | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) | [§ Phase 2e](../superpowers/plans/2026-05-14-li-master-plan.md#phase-2e--contracts--refinements-g-vc) |
+| **2f** — Lean verify (partial) | **G-lean**, **G-vc**, **G-trust** | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) | [§ Phase 2f](../superpowers/plans/2026-05-14-li-master-plan.md#phase-2f--lean-4-verify-g-lean-g-vc-g-trust) |
+| **2i** — Math / linalg | **G-math**, **G-math-syn** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) | [§ Phase 2i](../superpowers/plans/2026-05-14-li-master-plan.md#phase-2i--math--linalg-surface-g-math-g-math-syn) |
+| **7d** — Execution decorators | **G-dec**, **G-par** | [2026-05-16-li-execution-decorators.md](../superpowers/specs/2026-05-16-li-execution-decorators.md) · [phase-07-native-hpc](../superpowers/plans/2026-05-14-phase-07-native-hpc.md) | [§ Phase 7d](../superpowers/plans/2026-05-14-li-master-plan.md#phase-7d--execution-decorators-g-dec-g-par) |
+| **7e** — Math → SIMD lowering | **G-math** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) · [ph7e-tier1-red-benchmark-honesty](../superpowers/plans/2026-05-30-ph7e-tier1-red-benchmark-honesty.md) | [§ Phase 7e](../superpowers/plans/2026-05-14-li-master-plan.md#phase-7e--math--simdparallel-lowering-g-math-perf-slice) |
+| **H** — httpd M1 (partial) | **G-net**, **G-async** | [2026-05-16-li-httpd-plan.md](../superpowers/plans/2026-05-16-li-httpd-plan.md) | [§ Phase H](../superpowers/plans/2026-05-14-li-master-plan.md#phase-h--li-httpd-m1-ship-gate-g-net-g-async-no-g-lean-closure-from-infra-alone) |
+| **8p** — Parallel compile / CI | — | [2026-05-22-parallel-compile-ci.md](../superpowers/plans/2026-05-22-parallel-compile-ci.md) | (8p exit gates in phase plan) |
+| **Vision-LLM** — Agent JSON diagnostics | — | [2026-05-16-li-llm-first-design.md](../superpowers/specs/2026-05-16-li-llm-first-design.md) | [§ Vision-LLM](../superpowers/plans/2026-05-14-li-master-plan.md#vision-llm--agent-json-diagnostics-no-g-closure) |
 
 ### Partial shipped (master plan `[x]`, **G-*** still open)
 

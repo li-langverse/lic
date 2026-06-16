@@ -1,0 +1,26 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_version() < 8:
+    return 1
+  var face: FontAtlasFace = font_atlas_face_new(font_face_inter())
+  var run: GlyphRunLayout = text_glyph_run_layout(face, studio_typography_body_px(), 72, 3)
+  var expected_w: float = text_metrics_advance_run_px(face, 72, 3)
+  if run.used_width_px != expected_w:
+    return 2
+  if run.used_height_px < studio_typography_body_px():
+    return 3
+  var anchor: Rect = rect_make(10.0, 20.0, 120.0, 24.0)
+  var dest: Rect = text_layout_glyph_dest_in_anchor(anchor, face, studio_typography_body_px(), 72, 3)
+  if text_layout_rect_inside(dest, anchor, 1.0) != 1:
+    return 4
+  var cmd: PaintCmd = paint_cmd_draw_glyphs_run(dest, font_face_inter(), studio_color_text_primary(), 72, 3)
+  if paint_cmd_glyph_run_used_width(cmd) != expected_w:
+    return 5
+  if paint_cmd_glyph_run_used_height(cmd) <= 0.0:
+    return 6
+  return 0

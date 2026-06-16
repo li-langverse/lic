@@ -96,6 +96,20 @@ def paint_cmd_clip_pop() -> PaintCmd
   paint_cmd_ext_zero(c)
   return c
 
+def paint_cmd_glyph_run_used_width(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_draw_glyphs()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.stroke_px
+
+def paint_cmd_glyph_run_used_height(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_draw_glyphs()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.radius_px
+
 def paint_cmd_draw_glyph(dest: Rect, face_id: int, codepoint: int, color: Color) -> PaintCmd
   requires dest.w >= 0.0
   requires dest.h >= 0.0
@@ -107,14 +121,17 @@ def paint_cmd_draw_glyph(dest: Rect, face_id: int, codepoint: int, color: Color)
   ensures result.face_id == face_id
   ensures result.codepoint == codepoint
   ensures result.glyph_count == 1
+  ensures result.stroke_px == font_atlas_glyph_advance_px(font_atlas_face_new(face_id), codepoint)
+  ensures result.radius_px == font_atlas_glyph_run_line_height_px(font_atlas_face_new(face_id))
   decreases codepoint
 =
+  var face: FontAtlasFace = font_atlas_face_new(face_id)
   var c: PaintCmd
   c.kind = paint_op_draw_glyphs()
   c.rect = dest
   c.color = color
-  c.stroke_px = 0.0
-  c.radius_px = 0.0
+  c.stroke_px = font_atlas_glyph_advance_px(face, codepoint)
+  c.radius_px = font_atlas_glyph_run_line_height_px(face)
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   c.face_id = face_id
   c.codepoint = codepoint
@@ -136,14 +153,17 @@ def paint_cmd_draw_glyphs_run(dest: Rect, face_id: int, color: Color, first_code
   ensures result.face_id == face_id
   ensures result.codepoint == first_codepoint
   ensures result.glyph_count == glyph_count
+  ensures result.stroke_px == font_atlas_glyph_run_used_width_px(font_atlas_face_new(face_id), first_codepoint, glyph_count)
+  ensures result.radius_px == font_atlas_glyph_run_line_height_px(font_atlas_face_new(face_id))
   decreases glyph_count
 =
+  var face: FontAtlasFace = font_atlas_face_new(face_id)
   var c: PaintCmd
   c.kind = paint_op_draw_glyphs()
   c.rect = dest
   c.color = color
-  c.stroke_px = 0.0
-  c.radius_px = 0.0
+  c.stroke_px = font_atlas_glyph_run_used_width_px(face, first_codepoint, glyph_count)
+  c.radius_px = font_atlas_glyph_run_line_height_px(face)
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   c.face_id = face_id
   c.codepoint = first_codepoint
@@ -197,3 +217,66 @@ def paint_frame_pop_clip_scope(frame: var PaintFrame) -> unit
   decreases 0
 =
   paint_frame_push(frame, paint_cmd_clip_pop())
+
+def paint_cmd_blur_sigma_px(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_layer_blur()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.stroke_px
+
+def paint_cmd_blur_radius_px(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_layer_blur()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.radius_px
+
+def paint_cmd_blur_passes(cmd: PaintCmd) -> int
+  requires cmd.kind == paint_op_layer_blur()
+  ensures result >= 1
+  decreases 0
+=
+  return cmd.glyph_count
+
+def paint_cmd_layer_blur(layer_rect: Rect, sigma_px: float, radius_px: float, passes: int) -> PaintCmd
+  requires layer_rect.w >= 0.0
+  requires layer_rect.h >= 0.0
+  requires sigma_px >= 0.0
+  requires radius_px >= 0.0
+  requires passes >= 1
+  requires passes <= 4
+  ensures result.kind == paint_op_layer_blur()
+  ensures result.rect == layer_rect
+  ensures result.stroke_px == sigma_px
+  ensures result.radius_px == radius_px
+  ensures result.glyph_count == passes
+  decreases passes
+=
+  var c: PaintCmd
+  c.kind = paint_op_layer_blur()
+  c.rect = layer_rect
+  c.color = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.stroke_px = sigma_px
+  c.radius_px = radius_px
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.face_id = blur_kernel_radius_from_sigma(sigma_px)
+  c.codepoint = 0
+  c.glyph_count = passes
+  c.image_id = 0
+  c.src_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  return c
+
+def paint_frame_push_layer_blur(frame: var PaintFrame, layer_rect: Rect, sigma_px: float, radius_px: float, passes: int) -> unit
+  requires frame.cmd_count >= 0
+  requires layer_rect.w >= 0.0
+  requires layer_rect.h >= 0.0
+  requires sigma_px >= 0.0
+  requires radius_px >= 0.0
+  requires passes >= 1
+  requires passes <= 4
+  ensures frame.cmd_count == old(frame.cmd_count) + 1
+  ensures frame.last_kind == paint_op_layer_blur()
+  decreases passes
+=
+  paint_frame_push(frame, paint_cmd_layer_blur(layer_rect, sigma_px, radius_px, passes))

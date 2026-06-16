@@ -75,3 +75,9 @@ suite = "smoke"
 file = "smoke/compose_cache_partial_recompose.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-gui-compose-cache"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/motion_easing.li"
+outcome = "check_ok"
+note = "wtfx-w5: easing library + tween boundary values"

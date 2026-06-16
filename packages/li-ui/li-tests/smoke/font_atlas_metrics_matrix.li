@@ -1,0 +1,36 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_ui_version() < 7:
+    return 1
+  var inter: FontAtlasFace = font_atlas_face_new(font_face_inter())
+  var mono: FontAtlasFace = font_atlas_face_new(font_face_ui_mono())
+  var cp: int = font_atlas_first_codepoint()
+  while cp <= font_atlas_last_codepoint():
+    if font_atlas_codepoint_supported(cp) != 1:
+      return 2
+    var adv_i: float = font_atlas_glyph_advance_px(inter, cp)
+    var adv_m: float = font_atlas_glyph_advance_px(mono, cp)
+    if adv_i <= 0.0:
+      return 3
+    if adv_m <= 0.0:
+      return 4
+    var ink_i: int = font_atlas_has_ink(inter, cp)
+    var ink_m: int = font_atlas_has_ink(mono, cp)
+    if ink_i == 1 and adv_i <= 0.0:
+      return 5
+    if ink_m == 1 and adv_m <= 0.0:
+      return 6
+    if cp != 32:
+      if ink_i == 0 and cp >= 33:
+        return 7
+    cp = cp + 1
+  if font_atlas_has_ink(inter, 65) != 1:
+    return 8
+  if font_atlas_has_ink(inter, 32) != 0:
+    return 9
+  return 0

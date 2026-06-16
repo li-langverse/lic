@@ -5,10 +5,12 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_ui_version() < 7:
+  if li_std_ui_version() < 10:
     return 1
-  if paint_op_kind_max() != paint_op_draw_image():
+  if paint_op_kind_max() != paint_op_layer_blur():
     return 2
+  if paint_op_layer_blur() != 11:
+    return 20
   if paint_op_clip_push() != 7:
     return 3
   if paint_op_clip_pop() != 8:
@@ -38,6 +40,10 @@ def main() -> int
     return 12
   if run.codepoint != 72:
     return 13
+  if paint_cmd_glyph_run_used_width(run) <= 0.0:
+    return 18
+  if paint_cmd_glyph_run_used_height(run) <= 0.0:
+    return 19
   var src: Rect = rect_make(0.0, 0.0, 16.0, 16.0)
   var img: PaintCmd = paint_cmd_draw_image(panel, paint_image_id_studio_logo(), src, studio_color_text_primary())
   if img.kind != paint_op_draw_image():

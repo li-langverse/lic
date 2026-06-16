@@ -266,6 +266,30 @@ def font_atlas_glyph_advance_px(face: FontAtlasFace, codepoint: int) -> float
     return 6.0
   return 6.0
 
+def font_atlas_glyph_run_used_width_px(face: FontAtlasFace, first_codepoint: int, glyph_count: int) -> float
+  requires glyph_count >= 1
+  requires glyph_count <= 32
+  requires font_atlas_codepoint_supported(first_codepoint) == 1
+  requires first_codepoint + glyph_count - 1 <= font_atlas_last_codepoint()
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result > 0.0
+  decreases glyph_count
+=
+  var total: float = 0.0
+  var i: int = 0
+  while i < glyph_count:
+    var cp: int = first_codepoint + i
+    total = total + font_atlas_glyph_advance_px(face, cp)
+    i = i + 1
+  return total
+
+def font_atlas_glyph_run_line_height_px(face: FontAtlasFace) -> float
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= face.cell_h
+  decreases 0
+=
+  return face.ascent_px + face.descent_px + 2.0
+
 def font_atlas_glyph_metrics(face: FontAtlasFace, codepoint: int) -> FontGlyphMetrics
   requires font_atlas_codepoint_supported(codepoint) == 1
   requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()

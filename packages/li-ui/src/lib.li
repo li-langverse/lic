@@ -30,10 +30,10 @@ type UiFrame = object
   public viewport_h: float
 def li_std_ui_version() -> int
   requires true
-  ensures result == 7
+  ensures result == 10
   decreases 0
 =
-  return 7
+  return 10
 
 def li_std_ui_studio_composables_version() -> int
   requires true
@@ -592,6 +592,20 @@ def studio_panel_transition_ms() -> float
   decreases 0
 =
   return 100.0
+
+def studio_animation_easing_default_len() -> int
+  requires true
+  ensures result == 14
+  decreases 0
+=
+  return 14
+
+def studio_animation_reduced_motion_scale() -> float
+  requires true
+  ensures result == 0.0
+  decreases 0
+=
+  return 0.0
 
 # UX-04 command palette — docs/design/studio-design-tokens.toml [semantic] command_palette_hint
 def studio_command_palette_hint_len() -> int
@@ -1353,12 +1367,19 @@ def paint_op_draw_image() -> int
 =
   return 10
 
-def paint_op_kind_max() -> int
+def paint_op_layer_blur() -> int
   requires true
-  ensures result == paint_op_draw_image()
+  ensures result == 11
   decreases 0
 =
-  return paint_op_draw_image()
+  return 11
+
+def paint_op_kind_max() -> int
+  requires true
+  ensures result == paint_op_layer_blur()
+  decreases 0
+=
+  return paint_op_layer_blur()
 
 type PaintCmd = object
   public kind: int
@@ -1622,6 +1643,20 @@ def paint_cmd_clip_pop() -> PaintCmd
   paint_cmd_ext_zero(c)
   return c
 
+def paint_cmd_glyph_run_used_width(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_draw_glyphs()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.stroke_px
+
+def paint_cmd_glyph_run_used_height(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_draw_glyphs()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.radius_px
+
 def paint_cmd_draw_glyph(dest: Rect, face_id: int, codepoint: int, color: Color) -> PaintCmd
   requires dest.w >= 0.0
   requires dest.h >= 0.0
@@ -1633,14 +1668,17 @@ def paint_cmd_draw_glyph(dest: Rect, face_id: int, codepoint: int, color: Color)
   ensures result.face_id == face_id
   ensures result.codepoint == codepoint
   ensures result.glyph_count == 1
+  ensures result.stroke_px == font_atlas_glyph_advance_px(font_atlas_face_new(face_id), codepoint)
+  ensures result.radius_px == font_atlas_glyph_run_line_height_px(font_atlas_face_new(face_id))
   decreases codepoint
 =
+  var face: FontAtlasFace = font_atlas_face_new(face_id)
   var c: PaintCmd
   c.kind = paint_op_draw_glyphs()
   c.rect = dest
   c.color = color
-  c.stroke_px = 0.0
-  c.radius_px = 0.0
+  c.stroke_px = font_atlas_glyph_advance_px(face, codepoint)
+  c.radius_px = font_atlas_glyph_run_line_height_px(face)
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   c.face_id = face_id
   c.codepoint = codepoint
@@ -1662,14 +1700,17 @@ def paint_cmd_draw_glyphs_run(dest: Rect, face_id: int, color: Color, first_code
   ensures result.face_id == face_id
   ensures result.codepoint == first_codepoint
   ensures result.glyph_count == glyph_count
+  ensures result.stroke_px == font_atlas_glyph_run_used_width_px(font_atlas_face_new(face_id), first_codepoint, glyph_count)
+  ensures result.radius_px == font_atlas_glyph_run_line_height_px(font_atlas_face_new(face_id))
   decreases glyph_count
 =
+  var face: FontAtlasFace = font_atlas_face_new(face_id)
   var c: PaintCmd
   c.kind = paint_op_draw_glyphs()
   c.rect = dest
   c.color = color
-  c.stroke_px = 0.0
-  c.radius_px = 0.0
+  c.stroke_px = font_atlas_glyph_run_used_width_px(face, first_codepoint, glyph_count)
+  c.radius_px = font_atlas_glyph_run_line_height_px(face)
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   c.face_id = face_id
   c.codepoint = first_codepoint
@@ -1723,6 +1764,69 @@ def paint_frame_pop_clip_scope(frame: var PaintFrame) -> unit
   decreases 0
 =
   paint_frame_push(frame, paint_cmd_clip_pop())
+
+def paint_cmd_blur_sigma_px(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_layer_blur()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.stroke_px
+
+def paint_cmd_blur_radius_px(cmd: PaintCmd) -> float
+  requires cmd.kind == paint_op_layer_blur()
+  ensures result >= 0.0
+  decreases 0
+=
+  return cmd.radius_px
+
+def paint_cmd_blur_passes(cmd: PaintCmd) -> int
+  requires cmd.kind == paint_op_layer_blur()
+  ensures result >= 1
+  decreases 0
+=
+  return cmd.glyph_count
+
+def paint_cmd_layer_blur(layer_rect: Rect, sigma_px: float, radius_px: float, passes: int) -> PaintCmd
+  requires layer_rect.w >= 0.0
+  requires layer_rect.h >= 0.0
+  requires sigma_px >= 0.0
+  requires radius_px >= 0.0
+  requires passes >= 1
+  requires passes <= 4
+  ensures result.kind == paint_op_layer_blur()
+  ensures result.rect == layer_rect
+  ensures result.stroke_px == sigma_px
+  ensures result.radius_px == radius_px
+  ensures result.glyph_count == passes
+  decreases passes
+=
+  var c: PaintCmd
+  c.kind = paint_op_layer_blur()
+  c.rect = layer_rect
+  c.color = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.stroke_px = sigma_px
+  c.radius_px = radius_px
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.face_id = blur_kernel_radius_from_sigma(sigma_px)
+  c.codepoint = 0
+  c.glyph_count = passes
+  c.image_id = 0
+  c.src_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  return c
+
+def paint_frame_push_layer_blur(frame: var PaintFrame, layer_rect: Rect, sigma_px: float, radius_px: float, passes: int) -> unit
+  requires frame.cmd_count >= 0
+  requires layer_rect.w >= 0.0
+  requires layer_rect.h >= 0.0
+  requires sigma_px >= 0.0
+  requires radius_px >= 0.0
+  requires passes >= 1
+  requires passes <= 4
+  ensures frame.cmd_count == old(frame.cmd_count) + 1
+  ensures frame.last_kind == paint_op_layer_blur()
+  decreases passes
+=
+  paint_frame_push(frame, paint_cmd_layer_blur(layer_rect, sigma_px, radius_px, passes))
 # END paint-cmds-ext
 
 def paint_frame_push_elevated_panel(frame: var PaintFrame, rect: Rect) -> unit
@@ -2045,6 +2149,30 @@ def font_atlas_glyph_advance_px(face: FontAtlasFace, codepoint: int) -> float
   if codepoint >= 97 and codepoint <= 122:
     return 6.0
   return 6.0
+
+def font_atlas_glyph_run_used_width_px(face: FontAtlasFace, first_codepoint: int, glyph_count: int) -> float
+  requires glyph_count >= 1
+  requires glyph_count <= 32
+  requires font_atlas_codepoint_supported(first_codepoint) == 1
+  requires first_codepoint + glyph_count - 1 <= font_atlas_last_codepoint()
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result > 0.0
+  decreases glyph_count
+=
+  var total: float = 0.0
+  var i: int = 0
+  while i < glyph_count:
+    var cp: int = first_codepoint + i
+    total = total + font_atlas_glyph_advance_px(face, cp)
+    i = i + 1
+  return total
+
+def font_atlas_glyph_run_line_height_px(face: FontAtlasFace) -> float
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= face.cell_h
+  decreases 0
+=
+  return face.ascent_px + face.descent_px + 2.0
 
 def font_atlas_glyph_metrics(face: FontAtlasFace, codepoint: int) -> FontGlyphMetrics
   requires font_atlas_codepoint_supported(codepoint) == 1
@@ -7243,3 +7371,364 @@ def icon_atlas_data_checksum() -> int
 =
   return 2138295166
 # END icon-atlas-generated
+
+# BEGIN text-layout (src/text_layout.li)
+# Typography layout metrics — canonical split mirrored into lib.li for `import ui`.
+# Ellipsis policy: when width exceeded, fit prefix glyphs then append three '.' (cp 46) if width allows.
+
+def text_layout_ellipsis_codepoint() -> int
+  requires true
+  ensures result == 46
+  decreases 0
+=
+  return 46
+
+def text_layout_ellipsis_glyph_count() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def text_metrics_line_height_px(face: FontAtlasFace, size_px: float) -> float
+  requires size_px > 0.0
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= size_px
+  decreases 0
+=
+  if size_px == face.line_height_px:
+    return face.ascent_px + face.descent_px + 2.0
+  return size_px + 4.0
+
+def text_metrics_advance_one_px(face: FontAtlasFace, codepoint: int) -> float
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result > 0.0
+  decreases codepoint
+=
+  return font_atlas_glyph_advance_px(face, codepoint)
+
+def text_metrics_advance_run_px(face: FontAtlasFace, first_cp: int, count: int) -> float
+  requires count >= 0
+  requires count <= 32
+  requires font_atlas_codepoint_supported(first_cp) == 1
+  requires first_cp + count - 1 <= font_atlas_last_codepoint()
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= 0.0
+  decreases count
+=
+  if count <= 0:
+    return 0.0
+  var total: float = 0.0
+  var i: int = 0
+  while i < count:
+    var cp: int = first_cp + i
+    total = total + text_metrics_advance_one_px(face, cp)
+    i = i + 1
+  return total
+
+type TextTruncateResult = object
+  public visible_glyph_count: int
+  public used_width_px: float
+  public ellipsis_applied: int
+
+def text_truncate_to_width_px(face: FontAtlasFace, first_cp: int, glyph_count: int, max_width_px: float) -> TextTruncateResult
+  requires glyph_count >= 0
+  requires glyph_count <= 32
+  requires max_width_px >= 0.0
+  requires font_atlas_codepoint_supported(first_cp) == 1
+  requires first_cp + glyph_count - 1 <= font_atlas_last_codepoint()
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result.visible_glyph_count >= 0
+  ensures result.visible_glyph_count <= glyph_count
+  ensures result.used_width_px >= 0.0
+  ensures result.ellipsis_applied >= 0
+  ensures result.ellipsis_applied <= 1
+  decreases glyph_count
+=
+  var out: TextTruncateResult
+  out.visible_glyph_count = 0
+  out.used_width_px = 0.0
+  out.ellipsis_applied = 0
+  if glyph_count <= 0:
+    return out
+  if max_width_px <= 0.0:
+    return out
+  var ellipsis_w: float = text_metrics_advance_one_px(face, text_layout_ellipsis_codepoint()) * 3.0
+  var used: float = 0.0
+  var visible: int = 0
+  var i: int = 0
+  while i < glyph_count:
+    var cp: int = first_cp + i
+    var adv: float = text_metrics_advance_one_px(face, cp)
+    var need_ellipsis: int = 0
+    if i < glyph_count - 1:
+      need_ellipsis = 1
+    var budget: float = max_width_px
+    if need_ellipsis == 1:
+      budget = max_width_px - ellipsis_w
+    if budget < 0.0:
+      budget = 0.0
+    if used + adv > budget:
+      if need_ellipsis == 1 and ellipsis_w <= max_width_px:
+        out.ellipsis_applied = 1
+        out.used_width_px = used + ellipsis_w
+      if need_ellipsis != 1 or ellipsis_w > max_width_px:
+        out.used_width_px = used
+      out.visible_glyph_count = visible
+      return out
+    used = used + adv
+    visible = visible + 1
+    i = i + 1
+  out.visible_glyph_count = visible
+  out.used_width_px = used
+  return out
+
+def text_layout_rect_inside(inner: Rect, outer: Rect, eps: float) -> int
+  requires eps >= 0.0
+  requires outer.w >= 0.0
+  requires outer.h >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if inner.x < outer.x - eps:
+    return 0
+  if inner.y < outer.y - eps:
+    return 0
+  if inner.x + inner.w > outer.x + outer.w + eps:
+    return 0
+  if inner.y + inner.h > outer.y + outer.h + eps:
+    return 0
+  return 1
+
+def text_layout_baseline_y_px(face: FontAtlasFace, line_top_y: float, size_px: float) -> float
+  requires size_px > 0.0
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result >= line_top_y
+  decreases 0
+=
+  return line_top_y + face.ascent_px
+
+type GlyphRunLayout = object
+  public used_width_px: float
+  public used_height_px: float
+
+def text_glyph_run_layout(face: FontAtlasFace, size_px: float, first_cp: int, count: int) -> GlyphRunLayout
+  requires size_px > 0.0
+  requires count >= 1
+  requires count <= 32
+  requires font_atlas_codepoint_supported(first_cp) == 1
+  requires first_cp + count - 1 <= font_atlas_last_codepoint()
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result.used_width_px > 0.0
+  ensures result.used_height_px >= size_px
+  decreases count
+=
+  var out: GlyphRunLayout
+  out.used_width_px = text_metrics_advance_run_px(face, first_cp, count)
+  out.used_height_px = text_metrics_line_height_px(face, size_px)
+  if out.used_height_px < font_atlas_glyph_run_line_height_px(face):
+    out.used_height_px = font_atlas_glyph_run_line_height_px(face)
+  return out
+
+def text_layout_glyph_dest_in_anchor(anchor: Rect, face: FontAtlasFace, size_px: float, first_cp: int, count: int) -> Rect
+  requires anchor.w >= 0.0
+  requires anchor.h >= 0.0
+  requires size_px > 0.0
+  requires count >= 1
+  requires count <= 32
+  requires font_atlas_codepoint_supported(first_cp) == 1
+  requires face.face_id == font_face_inter() or face.face_id == font_face_ui_mono()
+  ensures result.w > 0.0
+  ensures result.h > 0.0
+  ensures text_layout_rect_inside(result, anchor, 1.0) == 1
+  decreases count
+=
+  var run: GlyphRunLayout = text_glyph_run_layout(face, size_px, first_cp, count)
+  var x: float = anchor.x + (anchor.w - run.used_width_px) / 2.0
+  if x < anchor.x:
+    x = anchor.x
+  var y: float = anchor.y + (anchor.h - run.used_height_px) / 2.0
+  if y < anchor.y:
+    y = anchor.y
+  return rect_make(x, y, run.used_width_px, run.used_height_px)
+# END text-layout
+
+# BEGIN color-composite (src/color_composite.li)
+# Color compositing — straight-alpha source-over (sRGB channels; see GUI-LIBRARY-PLAN RFC stub).
+# Porter-Duff "over": Co = Cs*As + Cd*Ad*(1-As), Ao = As + Ad*(1-As).
+
+def color_with_alpha(c: Color, alpha: float) -> Color
+  requires 0.0 <= alpha
+  requires alpha <= 1.0
+  requires c.a >= 0.0
+  requires c.a <= 1.0
+  ensures result.r == c.r
+  ensures result.g == c.g
+  ensures result.b == c.b
+  ensures result.a == alpha
+  decreases 0
+=
+  return color_rgb(c.r, c.g, c.b, alpha)
+
+def color_over(dst: Color, src: Color) -> Color
+  requires dst.a >= 0.0
+  requires dst.a <= 1.0
+  requires src.a >= 0.0
+  requires src.a <= 1.0
+  ensures result.a >= 0.0
+  ensures result.a <= 1.0
+  decreases 0
+=
+  var out_a: float = src.a + dst.a * (1.0 - src.a)
+  if out_a <= 0.0:
+    return color_rgb(0.0, 0.0, 0.0, 0.0)
+  var dst_weight: float = dst.a * (1.0 - src.a)
+  var out_r: float = (src.r * src.a + dst.r * dst_weight) / out_a
+  var out_g: float = (src.g * src.a + dst.g * dst_weight) / out_a
+  var out_b: float = (src.b * src.a + dst.b * dst_weight) / out_a
+  return color_rgb(out_r, out_g, out_b, out_a)
+
+def color_over_opaque_dst(dst_rgb_r: float, dst_rgb_g: float, dst_rgb_b: float, src: Color) -> Color
+  requires src.a >= 0.0
+  requires src.a <= 1.0
+  ensures result.a == 1.0
+  decreases 0
+=
+  var dst: Color = color_rgb(dst_rgb_r, dst_rgb_g, dst_rgb_b, 1.0)
+  var blended: Color = color_over(dst, src)
+  if blended.a >= 1.0:
+    return blended
+  return color_rgb(blended.r, blended.g, blended.b, 1.0)
+# END color-composite
+
+# BEGIN paint-raster (src/paint_raster.li)
+# CPU raster compositing helpers — source-over via color_over (PaintCmd / paint_blit truth path).
+
+def paint_raster_source_over(dst: Color, src: Color) -> Color
+  requires dst.a >= 0.0
+  requires dst.a <= 1.0
+  requires src.a >= 0.0
+  requires src.a <= 1.0
+  ensures result.a >= 0.0
+  ensures result.a <= 1.0
+  decreases 0
+=
+  return color_over(dst, src)
+
+def paint_raster_fill_pixel(dst: Color, fill: Color) -> Color
+  requires dst.a >= 0.0
+  requires dst.a <= 1.0
+  requires fill.a >= 0.0
+  requires fill.a <= 1.0
+  ensures result.a >= 0.0
+  ensures result.a <= 1.0
+  decreases 0
+=
+  return paint_raster_source_over(dst, fill)
+
+def paint_raster_glyph_pixel(dst: Color, ink: Color, coverage: float) -> Color
+  requires dst.a >= 0.0
+  requires dst.a <= 1.0
+  requires ink.a >= 0.0
+  requires ink.a <= 1.0
+  requires coverage >= 0.0
+  requires coverage <= 1.0
+  ensures result.a >= 0.0
+  ensures result.a <= 1.0
+  decreases 0
+=
+  var eff_a: float = ink.a * coverage
+  var src: Color = color_with_alpha(ink, eff_a)
+  return paint_raster_source_over(dst, src)
+# END paint-raster
+
+# BEGIN blur-kernel (src/blur_kernel.li)
+# Separable box-blur kernel — normalized weights for shadow-layer diffusion (wtfx-w4).
+# One-dimensional taps: w(i) = 1 / (2*radius + 1) for i in [-radius, radius].
+
+def blur_kernel_int_as_float(v: int) -> float
+  requires v >= 0
+  ensures result >= 0.0
+  decreases v
+=
+  var acc: float = 0.0
+  var i: int = 0
+  while i < v:
+    acc = acc + 1.0
+    i = i + 1
+  return acc
+
+def blur_kernel_radius_from_sigma(sigma_px: float) -> int
+  requires sigma_px >= 0.0
+  ensures result >= 0
+  decreases 0
+=
+  var r: int = 0
+  if sigma_px >= 3.0:
+    r = 3
+  if r == 0 and sigma_px >= 2.0:
+    r = 2
+  if r == 0 and sigma_px >= 1.0:
+    r = 1
+  return r
+
+def blur_kernel_tap_count(radius: int) -> int
+  requires radius >= 0
+  requires radius <= 8
+  ensures result == radius * 2 + 1
+  ensures result >= 1
+  decreases radius
+=
+  return radius * 2 + 1
+
+def blur_kernel_weight_at(radius: int, tap_index: int) -> float
+  requires radius >= 0
+  requires radius <= 8
+  requires tap_index >= 0
+  requires tap_index < blur_kernel_tap_count(radius)
+  ensures result > 0.0
+  ensures result <= 1.0
+  decreases radius
+=
+  var taps: int = blur_kernel_tap_count(radius)
+  return 1.0 / blur_kernel_int_as_float(taps)
+
+def blur_kernel_weight_sum(radius: int) -> float
+  requires radius >= 0
+  requires radius <= 8
+  ensures result >= 0.999
+  ensures result <= 1.001
+  decreases radius
+=
+  var sum: float = 0.0
+  var i: int = 0
+  var taps: int = blur_kernel_tap_count(radius)
+  while i < taps:
+    sum = sum + blur_kernel_weight_at(radius, i)
+    i = i + 1
+  return sum
+
+def blur_separable_passes_for_radius(radius_px: float, token_passes: int) -> int
+  requires radius_px >= 0.0
+  requires token_passes >= 1
+  requires token_passes <= 4
+  ensures result >= 1
+  ensures result <= 4
+  decreases token_passes
+=
+  if token_passes < 1:
+    return 1
+  return token_passes
+
+def blur_effective_sigma_px(sigma_px: float, radius_px: float) -> float
+  requires sigma_px >= 0.0
+  requires radius_px >= 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  if sigma_px > radius_px:
+    return radius_px
+  return sigma_px
+# END blur-kernel

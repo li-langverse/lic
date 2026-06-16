@@ -31,6 +31,17 @@ if [[ -d "$ROOT/packages" ]]; then
       echo "FAIL $pub: missing PKG- id"
       FAIL=1
     fi
+    # Example scaffold package must carry full PH/T traceability (Pkg exit gate).
+    if [[ "$pub" == *"/li-demo/PUBLISH.md" ]]; then
+      if ! grep -qE 'PH-[A-Za-z0-9-]+' "$pub"; then
+        echo "FAIL $pub: missing PH- traceability id"
+        FAIL=1
+      fi
+      if ! grep -qE 'T-[A-Za-z0-9_-]+' "$pub"; then
+        echo "FAIL $pub: missing T- test traceability id"
+        FAIL=1
+      fi
+    fi
     check_file "$(dirname "$pub")/CHANGELOG.md"
     check_file "$(dirname "$pub")/SECURITY.md"
     ci="$(dirname "$pub")/.github/workflows/ci.yml"

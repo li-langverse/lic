@@ -160,10 +160,12 @@ struct Stmt {
   TypeExpr var_type;
   std::unique_ptr<Expr> init;
   bool borrow_mut = false;
-  // for i in start..<end  (serial)
+  // for i in start..<end  (serial) or for i in range(n) sugar (start=0)
   std::string for_iter;
   std::int64_t for_start = 0;
   std::int64_t for_end = 0;
+  bool for_range_sugar = false;
+  std::unique_ptr<Expr> for_range_bound;
   std::vector<Contract> for_contracts;
   std::vector<Stmt> for_body;
   // parallel for i in start..<end

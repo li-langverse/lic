@@ -6,25 +6,26 @@
 
 ## Summary (one sentence)
 
-Documents and tests **`for i in start..<end`** as a **G-math-syn** closed slice; Python `range()` remains open.
+Documents and tests **`for i in start..<end`** and **`for i in range(n)`** (compile-time bound) as **G-math-syn** closed slices; dynamic `range()` remains open.
 
 ## Agent continuation (required)
 
 1. Read: `docs/verification/provability-gaps.md` and `li-tests/math_syntax/for_range_sum.li`.
 2. Run: `LI_REPO_ROOT=$PWD ./li-tests/run_all.sh math_syntax`.
-3. Then: `range(n)` helper or dynamic bounds if needed.
+3. Then: dynamic `range()` bounds if needed.
 4. Blocked on: none for this slice.
 
 ## Changed (specific)
 
 | Area | What | Evidence |
 |------|------|----------|
-| Corpus | `math_syntax/for_range_sum.li` | `verify_open_ok` |
+| Corpus | `math_syntax/for_range_sum.li`, `for_range_literal_ok.li`, `for_range_const_ok.li` | `verify_open_ok` / `compile_ok` |
+| Corpus | `math_syntax/for_range_dynamic_fail.li` | `compile_fail` |
 | Register | `provability-gaps.md` **G-math-syn** | Partial |
 
 ## Not changed (scope fence)
 
-- Python `range()` — not in this PR
+- Dynamic `range()` bounds — not in this PR
 - **G-par**, **G-dec**, **G-vc** — other open PRs (#193, #196)
 
 ## Breaking changes

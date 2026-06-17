@@ -34,7 +34,9 @@ bash scripts/ph-ml-program-complete-gates.sh
 
 **Agent verification (2026-06-04):** run `code_implementer-1780540275403` — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~122s) on Debian glibc 2.36 with `scripts/lib/lic-bin-select.sh` (prefers `build/compiler/lic` when runnable; falls back to `build-wsl` only when native lic is missing or not loadable).
 
-**Agent verification (2026-06-01):** latest run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) — all CI green, await human `merge-approved`.
+**Agent verification (2026-06-03):** run `code_implementer-1780511207735` — PR [#676](https://github.com/li-langverse/lic/pull/676) confirmed **MERGED** on `main`; T1 vendor artifact, T5 SB3/Ray (`executed:true`), T6 matmul-32 (`ratio_vs_li` 5.4e-05), T7 weights fixture, T8 live proxy (`live_proxy:true`) re-verified on `main`; full `ph-ml-program-complete-gates.sh` skipped here (WSL `build-wsl` lic requires GLIBC_2.38 — sandbox mismatch).
+
+**Agent verification (2026-06-01):** run `code_implementer-1780280189367` — `bash scripts/run-ph-ml-program-complete-gates-wsl.sh` exit 0 (~115s); `ratio_vs_li` 0.001065; PR [#676](https://github.com/li-langverse/lic/pull/676) merged to `main`.
 
 **Prior run `code_implementer-1780279881936`:** `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (~116s); `ratio_vs_li` 0.0044 (T6), `live_proxy` true (T8).
 

@@ -9,7 +9,7 @@ export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 source "$ROOT/scripts/lib/li-ui.sh"
 # shellcheck source=lib/lic-bin-select.sh
 source "$ROOT/scripts/lib/lic-bin-select.sh"
-li_export_lic "$ROOT" || { echo "bench-ph-ml-mlp-forward: no runnable lic"; exit 1; }
+li_ensure_lic "$ROOT" "bench-ph-ml-mlp-forward: build lic" || exit 1
 OUT="$BENCHMARKS_RESULTS/ph-ml-mlp-forward.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_mlp_forward.li"
 mkdir -p "$BENCHMARKS_RESULTS"

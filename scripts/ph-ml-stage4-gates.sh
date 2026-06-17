@@ -28,7 +28,7 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 
-li_export_lic "$ROOT" || { echo "ph-ml-stage4-gates: build lic (./scripts/build.sh)"; exit 1; }
+li_ensure_lic "$ROOT" "ph-ml-stage4-gates: build lic (./scripts/build.sh)" || exit 1
 
 bash scripts/ph-ml-program-complete-gates.sh
 

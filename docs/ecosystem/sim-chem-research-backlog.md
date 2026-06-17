@@ -20,12 +20,12 @@ todos:
   study_only: true
 
 - id: chem-r2-dft-scf-gap
-  content: "sim-chem-research: pending plan todo chem-r2-dft-scf-gap — gap orchestrator"
+  content: "Psi4 oracle harness for qm_dft_scf_energy (418) — plan docs/superpowers/plans/2026-06-05-chem-r2-r3-qm-dft-plan.md"
   status: pending
   handoff_implement: sim-p2-qm-dft-scf
 
 - id: chem-r3-package-placement
-  content: "sim-chem-research: pending plan todo chem-r3-package-placement — gap orchestrator"
+  content: "Package placement ADR (li-chem vs li-physics-quantum) — plan docs/superpowers/plans/2026-06-05-chem-r2-r3-qm-dft-plan.md § chem-r3"
   status: pending
   study_only: true
 

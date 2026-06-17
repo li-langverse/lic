@@ -1587,6 +1587,12 @@ note = "run_all compile_fail substring helper must work on bash 3.2 (macOS CI)"
 
 [[tests]]
 suite = "tooling"
+file = "tooling/tui_a11y_export_smoke.sh"
+outcome = "script_ok"
+note = "Vision-LLM: tui-a11y-export-v1 example envelope validates"
+
+[[tests]]
+suite = "tooling"
 file = "tooling/lean_lake_lock_smoke.sh"
 outcome = "script_ok"
 note = "parallel li-tests must serialize lake AutoVC via .autovc.lock (G-lean)"

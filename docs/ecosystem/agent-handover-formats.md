@@ -24,8 +24,9 @@ Use a **layered handover**:
 1. **`AGENTS.md`** — pillar order, PR-only, three gates (short; link out).
 2. **`docs/ecosystem/li-agent-manifest.toml`** — canonical commands (`check_json`, `diagnose`, `tests`, `bench`).
 3. **`docs/schemas/diagnostic-v1.json`** — stable error envelope for fix loops.
-4. **`.cursor/rules/*.mdc`** — editor policy (provability, llm-first token discipline).
-5. **Generated (optional):** `scripts/gen-li-agent-manifest.sh` → `li-agent.json` + `.cursor/AGENTS.generated.md`.
+4. **`docs/schemas/tui-a11y-export-v1.json`** — TUI plain/JSON export for agent keyboard-flow audits (see [llm-first spec](../superpowers/specs/2026-05-16-li-llm-first-design.md#tui-accessibility-export-contract-vision-llm)).
+5. **`.cursor/rules/*.mdc`** — editor policy (provability, llm-first token discipline).
+6. **Generated (optional):** `scripts/gen-li-agent-manifest.sh` → `li-agent.json` + `.cursor/AGENTS.generated.md`.
 
 Do **not** duplicate full language spec in handover files — link to `docs/superpowers/specs/`.
 

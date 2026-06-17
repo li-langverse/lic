@@ -21,6 +21,13 @@ schema = "docs/schemas/diagnostic-v1.json"
 json_flag = "--format=json"
 fix_suggest = "scripts/lic-fix-suggest.sh"
 
+[tui]
+a11y_schema = "docs/schemas/tui-a11y-export-v1.json"
+a11y_example = "docs/schemas/examples/tui-a11y-export-v1.example.json"
+export_env = "LI_TUI_EXPORT_A11Y"
+error_env = "LI_TUI_ERROR"
+noninteractive_env = "LI_TUI_NONINTERACTIVE"
+
 [handover]
 formats_doc = "docs/ecosystem/agent-handover-formats.md"
 agents_md = "AGENTS.md"

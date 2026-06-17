@@ -20,9 +20,10 @@ Agents **never** push directly to protected branches (`main`, `dev`, `master`). 
 1. Commit on your feature branch with a clear message (`feat(phase-N): …` or `chore: …`).
 2. Push the branch and open/update the PR:
    ```bash
-   git push -u origin HEAD
-   gh pr create --fill || gh pr view --web
+   ./scripts/agent-push-github.sh "feat(scope): summary"
+   ./scripts/agent-create-pr.sh --title "feat(scope): summary" --body-file docs/release-notes/….md
    ```
+   Do **not** rely on Cursor **ManagePullRequest** (`create_pr`) — use `agent-create-pr.sh` ([#120](https://github.com/li-langverse/lic/issues/120)).
 3. Uses [`scripts/with-github-env.sh`](../../scripts/with-github-env.sh) when available. Never commit tokens.
 
 **Opt out (rare):** `LI_HOOK_ALLOW=1` for intentional direct-push (emergency only).

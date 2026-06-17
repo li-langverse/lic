@@ -34,6 +34,27 @@ clang-22 --version
 /agent/repos/lic/build/compiler/lic/lic --version
 ```
 
+## GitHub push and PR (Cloud Agent)
+
+Cursor **ManagePullRequest** (`create_pr`) can falsely report *"head branch has no commits on the remote"* even when `git ls-remote origin <branch>` shows the tip SHA ([#120](https://github.com/li-langverse/lic/issues/120)).
+
+**Use lic scripts instead of ManagePullRequest:**
+
+```bash
+# After gates pass — commit + push (clears stale url.*.insteadOf rewrites)
+./scripts/agent-push-github.sh "feat(scope): summary"
+
+# Open PR (waits for origin/<branch>, then gh pr create)
+./scripts/agent-create-pr.sh --title "feat(scope): summary" --body-file docs/release-notes/….md
+```
+
+Manual reset when push/PR tools misbehave:
+
+```bash
+./scripts/reset-git-github-profile.sh
+./scripts/with-github-env.sh gh auth setup-git
+```
+
 ## Related
 
 - [getting-started-tools.md](../guide/getting-started-tools.md) — LLVM 22 manual install

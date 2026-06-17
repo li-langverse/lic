@@ -82,6 +82,26 @@ last_reviewed = "2026-05-16"
 notes = "Performance portability; watch Kokkos 4 OpenMP/SYCL backends."
 
 [[ecosystem]]
+id = "petsc"
+track = "watch"
+repo_url = "https://gitlab.com/petsc/petsc"
+compare = ["pde_heat_implicit_jacobi", "fea_solver_iterative"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-08"
+notes = "PETSc 3.25 pin — KSP/SNES + PCBJKOKKOS GPU PC; oracle stub benchmarks/competitive/petsc_heat_implicit_stub.py (lic#108)."
+
+[[ecosystem]]
+id = "hypre"
+track = "watch"
+repo_url = "https://github.com/hypre-space/hypre"
+compare = ["pde_heat_implicit_jacobi"]
+csv_lang = ""
+kernel_honesty = "external_binary"
+last_reviewed = "2026-06-08"
+notes = "hypre 2.32 BoomerAMG pin via ph-sci-pde-implicit.toml; complements PETSc PCHYPRE row."
+
+[[ecosystem]]
 id = "sycl_dpcpp"
 track = "watch"
 repo_url = "https://github.com/intel/llvm"

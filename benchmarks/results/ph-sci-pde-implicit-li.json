@@ -1,0 +1,20 @@
+{
+  "id": "li_jacobi",
+  "engine": "Li physics.fluids",
+  "workload": {
+    "nx": 8,
+    "steps": 200,
+    "jacobi_iters": 4,
+    "alpha": 0.25,
+    "dx": 0.125,
+    "dt": 0.0001,
+    "catalog_bench": "pde_heat_implicit_jacobi",
+    "algo_id": 204
+  },
+  "executed": false,
+  "cpu_sec": null,
+  "checksum": 5.100578530846,
+  "checksum_source": "python_mirror",
+  "validity_gate_pass": true,
+  "note": "lic binary or smoke missing \u2014 checksum from python mirror only"
+}

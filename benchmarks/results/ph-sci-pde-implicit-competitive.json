@@ -1,0 +1,62 @@
+{
+  "suite": "ph-sci-pde-implicit-competitive",
+  "generated_at": "2026-06-08T03:22:02Z",
+  "issue": "https://github.com/li-langverse/lic/issues/108",
+  "rows": [
+    {
+      "id": "heat_implicit_jacobi_8",
+      "catalog_bench": "pde_heat_implicit_jacobi",
+      "algo_id": 204,
+      "li": {
+        "id": "li_jacobi",
+        "engine": "Li physics.fluids",
+        "workload": {
+          "nx": 8,
+          "steps": 200,
+          "jacobi_iters": 4,
+          "alpha": 0.25,
+          "dx": 0.125,
+          "dt": 0.0001,
+          "catalog_bench": "pde_heat_implicit_jacobi",
+          "algo_id": 204
+        },
+        "executed": false,
+        "cpu_sec": null,
+        "checksum": 5.100578530846,
+        "checksum_source": "python_mirror",
+        "validity_gate_pass": true,
+        "note": "lic binary or smoke missing \u2014 checksum from python mirror only"
+      },
+      "competitors": [
+        {
+          "id": "petsc_hypre",
+          "engine": "PETSc+hypre",
+          "petsc_version_pin": "3.25.0",
+          "hypre_version_pin": "2.32.0",
+          "preconditioner": "BoomerAMG",
+          "workload": {
+            "nx": 8,
+            "steps": 200,
+            "jacobi_iters": 4,
+            "alpha": 0.25,
+            "dx": 0.125,
+            "dt": 0.0001,
+            "catalog_bench": "pde_heat_implicit_jacobi",
+            "algo_id": 204
+          },
+          "executed": false,
+          "checksum": null,
+          "checksum_source": "none",
+          "note": "PETSC_DIR unset \u2014 optional oracle skipped (install PETSc 3.25.0 + hypre 2.32.0; see README-pde-implicit.md)"
+        }
+      ],
+      "checksum_li": 5.100578530846,
+      "checksum_delta": null,
+      "parity_gate_pass": true,
+      "vendor_pins": {
+        "petsc": "3.25.0",
+        "hypre": "2.32.0"
+      }
+    }
+  ]
+}

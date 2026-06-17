@@ -1,0 +1,21 @@
+{
+  "id": "petsc_hypre",
+  "engine": "PETSc+hypre",
+  "petsc_version_pin": "3.25.0",
+  "hypre_version_pin": "2.32.0",
+  "preconditioner": "BoomerAMG",
+  "workload": {
+    "nx": 8,
+    "steps": 200,
+    "jacobi_iters": 4,
+    "alpha": 0.25,
+    "dx": 0.125,
+    "dt": 0.0001,
+    "catalog_bench": "pde_heat_implicit_jacobi",
+    "algo_id": 204
+  },
+  "executed": false,
+  "checksum": null,
+  "checksum_source": "none",
+  "note": "PETSC_DIR unset \u2014 optional oracle skipped (install PETSc 3.25.0 + hypre 2.32.0; see README-pde-implicit.md)"
+}

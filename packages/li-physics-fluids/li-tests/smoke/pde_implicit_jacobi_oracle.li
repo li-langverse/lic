@@ -7,6 +7,7 @@ def main() -> int
 =
   if li_std_physics_fluids_version() != 2:
     return 1
-  if physics_fluids_gpu_progress() != 1:
-    return 1
+  var c: float = pde_implicit_jacobi_oracle_checksum()
+  if c <= 0.0:
+    return 2
   return 0

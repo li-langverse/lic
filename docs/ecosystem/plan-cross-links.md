@@ -46,6 +46,8 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-30-ph7e-tier1-red-benchmark-honesty.md` | **PH-7e** tier-1 honesty · **G-math** doc sync |
 | `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
 | `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
+| `2026-06-07-li-physics-org-mirrors-plan.md` | **PH-5b** — org mirrors for 12 `li-physics-*` (lic#50) |
+| `2026-06-08-li-physics-domain-api-plan.md` | **PH-5b**, **PH-2i**, **PH-7e** · **G-physics** — domain API depth (lic#14) |
 
 ## Open master-plan tracker rows (2026-06-11)
 

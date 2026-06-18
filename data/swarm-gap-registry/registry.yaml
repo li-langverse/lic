@@ -916,6 +916,21 @@ gaps:
   ph_id: PH-5b
   handoff_to:
   - numerics_researcher
+- id: gap-hpc-hpx-futures-tier2
+  gap_kind: competitor_feature
+  title: HPX-style async futures vs Li tier-2 game physics scheduling
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[hpx] li_status=missing
+  - https://hpx.stellar-group.org/
+  - docs/superpowers/plans/2026-06-07-li-hpx-futures-tier2-physics-scheduling.md
+  - lic issue 112
+  ph_id: PH-7d
+  handoff_to:
+  - issue_planner
+  - code_implementer
 - id: gap-hpc-raja-execution-policies
   gap_kind: competitor_feature
   title: RAJA policy-based loop abstractions vs Li std/execution decorators

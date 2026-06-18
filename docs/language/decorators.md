@@ -24,6 +24,8 @@ Gate: `scripts/check-mir-portable-parallel-lowering.sh`.
 
 Parsing, policy, and **7d-b–e MIR lowering** are implemented in `lic build`. Exit gate: `./scripts/check-mir-decorator-lowering.sh` (**G-dec** closed slice). `lic verify` reports `mir_parallel_proc`, `mir_vectorized_proc`, `mir_cpu_def`, and `mir_gpu_def` for decorated `def` declarations. **`@cpu` + `@parallel(disjoint=...)`** lower to portable Host `li_parallel_for_i64` (Kokkos-class memory-space policy in `std/execution/memory_spaces.li` and `std.execution.parallel`; **G-par** cross-link). **`@gpu`** records Device placement in MIR telemetry; vendor LKIR lowering remains **G-gpu**. See [provability-gaps](../verification/provability-gaps.md) (**G-dec**, **G-par**).
 
+**GPU offload (OpenMPTarget):** decorator → OpenMP `target` mapping is **docs-only** until [#34](https://github.com/li-langverse/lic/issues/34) lowering is `plan-approved`. See [OpenMPTarget offload rubric](../superpowers/specs/2026-06-07-li-openmptarget-offload-rubric.md) ([#116](https://github.com/li-langverse/lic/issues/116)).
+
 ## Resource knobs (`lic build`)
 
 These are **CLI flags**, not decorators:

@@ -6,6 +6,8 @@
 
 Do not edit ecosystem policy here — open a PR to the roadmap repo (human merge for governance paths).
 
+**Handbook:** published from [`li-langverse/lic-docs`](https://github.com/li-langverse/lic-docs) — see [docs-site.md](docs-site.md).
+
 ## Strict by default
 
 Org and package policy assumes **strict by default**: no optional provability; gate relaxation requires explicit `li.toml` / documented env and human review on protected branches. See [strict-by-default.md](strict-by-default.md).

@@ -149,8 +149,9 @@ chmod +x "$ROOT/li-tests/tooling/li_new_package_smoke.sh"
 "$ROOT/li-tests/tooling/li_new_package_smoke.sh"
 
 li_phase "traceability (official packages)"
-chmod +x "$ROOT/scripts/check-traceability.sh"
+chmod +x "$ROOT/scripts/check-traceability.sh" "$ROOT/scripts/check-docs-site-alignment.sh"
 "$ROOT/scripts/check-traceability.sh"
+"$ROOT/scripts/check-docs-site-alignment.sh"
 
 li_phase "master plan v1 gates"
 chmod +x "$ROOT/scripts/check-master-plan-gates.sh"

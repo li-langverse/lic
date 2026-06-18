@@ -17,6 +17,39 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 
+li_local_ci_wall_s() {
+  local start="$1" end wall_s
+  end="$(date +%s.%N)"
+  wall_s="$(python3 - "$start" "$end" <<'PY'
+import sys
+print(round(float(sys.argv[2]) - float(sys.argv[1]), 2))
+PY
+)"
+  echo "$wall_s"
+}
+
+li_local_ci_log_wall_s() {
+  local start="$1" label="${2:-local-ci}"
+  local wall_s
+  wall_s="$(li_local_ci_wall_s "$start")"
+  echo "${label}: wall_s=${wall_s}s"
+  local results_dir="$ROOT/benchmarks/data/latest"
+  mkdir -p "$results_dir"
+  python3 - "$results_dir/local-ci-wall.json" "$label" "$wall_s" <<'PY'
+import json, sys, datetime
+path, label, wall_s = sys.argv[1], sys.argv[2], float(sys.argv[3])
+try:
+    with open(path) as f:
+        data = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    data = {}
+data[label] = {"wall_s": wall_s, "recorded_at": datetime.datetime.utcnow().isoformat() + "Z"}
+with open(path, "w") as f:
+    json.dump(data, f, indent=2)
+    f.write("\n")
+PY
+}
+
 USE_DOCKER=0
 RUN_MEMORY=0
 PREPARE_DOCKER=0
@@ -55,6 +88,8 @@ run_docker_ci() {
   CONTAINER_RUNTIME="$CTR" LI_CI_DOCKER_IMAGE="$LI_CI_DOCKER_IMAGE" "$ROOT/scripts/prepare-docker-ci-image.sh"
 
   local stage="/tmp/li-local-ci-$$"
+  local wall_start
+  wall_start="$(date +%s.%N)"
   # shellcheck disable=SC2064
   trap "rm -rf '$stage'" EXIT
   if command -v rsync >/dev/null 2>&1; then
@@ -81,6 +116,7 @@ run_docker_ci() {
     -w /src \
     "$LI_CI_DOCKER_IMAGE" \
     bash -lc 'chmod +x scripts/ci.sh scripts/build.sh scripts/local-ci.sh; ./scripts/ci.sh'
+  li_local_ci_log_wall_s "$wall_start" "local-ci-docker"
 }
 
 detect_llvm_dir() {
@@ -159,6 +195,7 @@ echo "==> local-ci (native)"
 detect_compilers
 check_native_prereqs
 chmod +x "$ROOT/scripts/ci.sh" "$ROOT/scripts/build.sh" "$ROOT/scripts/check-version.sh"
+wall_start="$(date +%s.%N)"
 "$ROOT/scripts/check-version.sh"
 "$ROOT/scripts/ci.sh"
 "$ROOT/scripts/check-version.sh" --build
@@ -166,4 +203,5 @@ if [[ "$RUN_MEMORY" -eq 1 ]]; then
   chmod +x "$ROOT/scripts/memory-ci.sh"
   "$ROOT/scripts/memory-ci.sh"
 fi
+li_local_ci_log_wall_s "$wall_start" "local-ci-native"
 echo "local-ci: ok (native)"

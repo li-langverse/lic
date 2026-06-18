@@ -17,3 +17,10 @@ suite = "smoke"
 file = "smoke/echem_solvent_gr_smoke.li"
 outcome = "compile_open_ok"
 note = "WP-ECHEM-10 explicit water sphere g(r) peak smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/md_neighbor_cell_list_smoke.li"
+packages = ["li-sim-scientific"]
+outcome = "compile_open_ok"
+note = "sim-p1-md-neighbor-cell: cell-list smoke checksum via sim.scientific (algo 105)"

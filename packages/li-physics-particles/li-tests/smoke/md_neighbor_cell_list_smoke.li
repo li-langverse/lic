@@ -1,0 +1,11 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var chk: float = md_neighbor_cell_list_smoke_checksum()
+  if chk < 0.01:
+    return 1
+  return 0

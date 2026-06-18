@@ -912,6 +912,13 @@ note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via phy
 
 [[tests]]
 suite = "composable"
+file = "composable/import_physics_particles_neighbor_cell.li"
+packages = ["li-sim-scientific"]
+outcome = "compile_open_ok"
+note = "sim-p1-md-neighbor-cell: algo 105 cell-list smoke checksum (C parity @ N=256 in scripts/md-neighbor-cell-parity.c)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_studio_sim_profile_bridge.li"
 packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
 outcome = "check_ok"

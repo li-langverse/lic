@@ -1,0 +1,10 @@
+# G-math-syn: dynamic range() bound rejected (compile-time witness required).
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var n: int = 4
+  for i in range(n)
+    discard
+  return 0

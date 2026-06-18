@@ -1,10 +1,10 @@
-# G-math-syn: plain `for i in start..<end` (no Python `range()` helper yet).
+# G-math-syn: `for i in range(n)` semantic sum (open VC until loop witness in 2f).
 def main() -> int
   requires true
   ensures result == 6
   decreases 0
 =
   var acc: int = 0
-  for i in 0..<4
+  for i in range(4)
     acc = acc + i
   return acc

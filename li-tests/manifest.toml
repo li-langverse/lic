@@ -1237,7 +1237,17 @@ outcome = "verify_open_ok"
 suite = "math_syntax"
 file = "math_syntax/for_range_sum.li"
 outcome = "verify_open_ok"
-note = "G-math-syn: plain for i in start..<end (no range() helper)"
+note = "G-math-syn: for i in range(n) sum witness (verify_open_ok)"
+[[tests]]
+suite = "math_syntax"
+file = "math_syntax/for_range_ok.li"
+outcome = "compile_ok"
+note = "G-math-syn: for i in range(n) compile-time bound witness (PH-2h)"
+[[tests]]
+suite = "math_syntax"
+file = "math_syntax/for_range_dyn_fail.li"
+outcome = "compile_fail"
+expected_substr = "compile-time integer literal"
 
 # --- stdlib_coverage (8e — std/**/*.li instrumented build) ---
 note = "open VC until 2f full (Lean gate on devbox)"

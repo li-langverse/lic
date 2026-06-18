@@ -105,6 +105,45 @@ struct Parser {
     return false;
   }
 
+  /// Parse `start..<end` or Python `range(n)` (desugars to `0..<n`; compile-time int bounds only).
+  bool parse_for_half_open_range(const SourceLoc& loc, std::int64_t& start, std::int64_t& end) {
+    start = 0;
+    end = 0;
+    if (at(TokenKind::Ident) && cur().text == "range") {
+      i++;
+      if (!accept(TokenKind::LParen)) {
+        diags.error(loc, "expected '(' after 'range'");
+        return false;
+      }
+      if (!at(TokenKind::IntLit)) {
+        diags.error(loc, "range() bound must be a compile-time integer literal");
+        return false;
+      }
+      end = cur().int_value;
+      i++;
+      if (!accept(TokenKind::RParen)) {
+        diags.error(loc, "expected ')' after range() bound");
+        return false;
+      }
+      return true;
+    }
+    if (at(TokenKind::IntLit)) {
+      start = cur().int_value;
+      i++;
+    }
+    if (!accept(TokenKind::DotDotLt)) {
+      diags.error(loc, "for loop requires '..<' range or range(n)");
+      return false;
+    }
+    if (!at(TokenKind::IntLit)) {
+      diags.error(loc, "for loop end bound must be a compile-time integer literal");
+      return false;
+    }
+    end = cur().int_value;
+    i++;
+    return true;
+  }
+
   bool parse_module(Module& out) {
     skip_newlines();
     while (!at(TokenKind::Eof)) {
@@ -940,19 +979,9 @@ Stmt Parser::parse_stmt() {
       } else {
         i++;
       }
-      if (at(TokenKind::IntLit)) {
-        s.par_start = cur().int_value;
-        i++;
-      }
-      if (at(TokenKind::DotDotLt)) {
-        i++;
-      } else {
-        diags.error({file, start_tok.line, 1, start_tok.start},
-                    "parallel for requires '..<' range");
-      }
-      if (at(TokenKind::IntLit)) {
-        s.par_end = cur().int_value;
-        i++;
+      const SourceLoc par_loc{file, start_tok.line, 1, start_tok.start};
+      if (!parse_for_half_open_range(par_loc, s.par_start, s.par_end)) {
+        return s;
       }
       skip_newlines();
       if (accept(TokenKind::Indent)) {
@@ -998,18 +1027,9 @@ Stmt Parser::parse_stmt() {
       } else {
         i++;
       }
-      if (at(TokenKind::IntLit)) {
-        s.for_start = cur().int_value;
-        i++;
-      }
-      if (at(TokenKind::DotDotLt)) {
-        i++;
-      } else {
-        diags.error({file, start_tok.line, 1, start_tok.start}, "for loop requires '..<' range");
-      }
-      if (at(TokenKind::IntLit)) {
-        s.for_end = cur().int_value;
-        i++;
+      const SourceLoc for_loc{file, start_tok.line, 1, start_tok.start};
+      if (!parse_for_half_open_range(for_loc, s.for_start, s.for_end)) {
+        return s;
       }
       if (at(TokenKind::Colon)) {
         i++;
@@ -1098,18 +1118,9 @@ Stmt Parser::parse_stmt() {
     } else {
       i++;
     }
-    if (at(TokenKind::IntLit)) {
-      s.for_start = cur().int_value;
-      i++;
-    }
-    if (at(TokenKind::DotDotLt)) {
-      i++;
-    } else {
-      diags.error({file, start_tok.line, 1, start_tok.start}, "for loop requires '..<' range");
-    }
-    if (at(TokenKind::IntLit)) {
-      s.for_end = cur().int_value;
-      i++;
+    const SourceLoc for_loc{file, start_tok.line, 1, start_tok.start};
+    if (!parse_for_half_open_range(for_loc, s.for_start, s.for_end)) {
+      return s;
     }
     if (at(TokenKind::Colon)) {
       i++;
@@ -1354,19 +1365,9 @@ Stmt Parser::parse_stmt() {
     } else {
       i++;
     }
-    if (at(TokenKind::IntLit)) {
-      s.par_start = cur().int_value;
-      i++;
-    }
-    if (at(TokenKind::DotDotLt)) {
-      i++;
-    } else {
-      diags.error({file, start_tok.line, 1, start_tok.start},
-                  "parallel for requires '..<' range");
-    }
-    if (at(TokenKind::IntLit)) {
-      s.par_end = cur().int_value;
-      i++;
+    const SourceLoc par_loc{file, start_tok.line, 1, start_tok.start};
+    if (!parse_for_half_open_range(par_loc, s.par_start, s.par_end)) {
+      return s;
     }
     skip_newlines();
     if (accept(TokenKind::Indent)) {

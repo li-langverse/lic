@@ -16,7 +16,7 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 |----|------|
 | Package | `{{PKG_ID}}` |
 | Org repo | https://github.com/li-langverse/{{NAME}} |
-| Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
+| Governance | [Ecosystem governance](https://docs.lilangverse.xyz/ecosystem/governance/) |
 
 See `PUBLISH.md` and `docs/traceability.md`.
 

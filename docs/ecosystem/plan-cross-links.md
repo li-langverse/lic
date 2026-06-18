@@ -90,7 +90,7 @@ Surface quality is **not** proof — keep separate from **G-*** rows. Supports *
 
 ### Live handbook vs audit HEAD (2026-05-30)
 
-`ecosystem-audit.json` reports `repos_without_live_docs: []` and `live_docs_down: []` (URL roots respond). **Content** on [li-language Pages](https://li-langverse.github.io/li-language/) can still be **stale** (5-tab nav vs 12-tab local `mkdocs.yml`; hero paths 404) until [lic#403](https://github.com/li-langverse/lic/issues/403) strict build + deploy lands. Treat audit green as **reachability**, not **IA freshness** — see docs-ux digest above.
+`ecosystem-audit.json` reports `repos_without_live_docs: []` and `live_docs_down: []` (URL roots respond). **Content** on [lic-docs Pages](https://docs.lilangverse.xyz/) can still be **stale** vs local `lic-docs/mkdocs.yml` until [lic#403](https://github.com/li-langverse/lic/issues/403) strict build + deploy lands. Treat audit green as **reachability**, not **IA freshness** — see [docs-site.md](docs-site.md) and docs-ux digest above.
 
 ## Automation
 

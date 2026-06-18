@@ -216,7 +216,7 @@ Third-party packages are **not** listed here; they appear only in the public `li
 
 - [x] Confirm org access: `gh api orgs/li-langverse` (or org owner invites bot/users)
 - [x] `docs/ecosystem/official-packages.md` with `PKG-` table (all repos under `li-langverse`)
-- [ ] On execute: align `mkdocs.yml` `repo_url` / GitHub Pages with `li-langverse/li-language` when repo home moves
+- [x] Docs site split: `lic-docs/mkdocs.yml` uses `repo_url: https://github.com/li-langverse/lic-docs` (Pages `https://li-langverse.github.io/lic-docs/` · primary `https://docs.lilangverse.xyz/`) — see [docs-site.md](../../ecosystem/docs-site.md); `./scripts/check-docs-site-alignment.sh`
 - [x] `docs/ecosystem/governance.md` user-facing summary (links here)
 - [x] `scripts/templates/github-repo/` + `scripts/check-traceability.sh`
 - [x] `create-li-package` skill: `--official` → org checklist

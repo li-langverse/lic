@@ -282,7 +282,7 @@ The table above describes the **target**. Where **`lic` has not established math
 | Layer | Today | 8p target |
 |-------|--------|-----------|
 | **C++ `lic` binary** (CMake/Ninja) | **Done** — `LI_BUILD_JOBS` / `nproc` in `scripts/build.sh` | Keep; document in getting-started |
-| **`li-tests/run_all.sh`** | One `lic build` at a time (~200 invocations) | **`LI_TEST_JOBS`** (default: host cores); pool over manifest rows |
+| **`li-tests/run_all.sh`** | **Done (8p-a)** — `LI_TEST_JOBS` / `-j N`; isolated `--build-dir` per worker ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200); smoke: `li-tests/tooling/run_all_parallel_smoke.sh`) | Keep; `LI_TEST_JOBS=1` for golden bisect logs |
 | **`lic-workspace-build.sh`** | Sequential workspace members | Parallel member builds when isolated |
 | **`benchmarks/harness/bench.py` tier 0** | Runs full `run_all` then `verify.py` | Reuse parallel runner; avoid duplicate full sweeps where possible |
 | **Single `lic build file.li`** | Single-threaded frontend pipeline | **`lic build --jobs=N`** / `LI_COMPILE_JOBS` — wire reserved flag in `compiler/lic/main.cpp` |
@@ -292,7 +292,7 @@ The table above describes the **target**. Where **`lic` has not established math
 
 | Sub | Task | Exit gate |
 |-----|------|-----------|
-| **8p-a** | **Parallel test orchestration** — `run_all.sh` accepts `-j N` / `LI_TEST_JOBS`; each worker gets isolated `build/` subtree (or temp dir) so AutoVC/Lean do not stomp | **196/196** manifest green with `-j8` on Linux; `LI_TEST_JOBS=1` reproduces current sequential logs |
+| **8p-a** | **Done** — parallel test orchestration — `run_all.sh` accepts `-j N` / `LI_TEST_JOBS`; each worker gets isolated `--build-dir` so AutoVC/Lean do not stomp | **196/196** manifest green with `-j8` on Linux; `LI_TEST_JOBS=1` reproduces sequential logs (smokes: `run_all_parallel_smoke.sh`, `ci_test_jobs_smoke.sh`) |
 | **8p-b** | **Parallel workspace + package smoke** — `lic-workspace-build.sh`, `lit` manifest runner (when split) use same job pool | Workspace build wall time ∝ `members / cores` (within ~1.3× ideal) |
 | **8p-c** | **Compiler frontend jobs** — implement `--jobs` / `LI_COMPILE_JOBS` for independent MIR/LLVM units inside one TU where safe; document vs LLVM’s own threading | Measurable speedup on large `packages/li-net-httpd/src/lib.li` smoke |
 | **8p-d** | **CI policy** — `scripts/ci.sh` exports sensible defaults; GHA `ubuntu-latest` sets `LI_TEST_JOBS`; skill `run-local-ci-gha-quota` mentions `-j`; optional wall-time budget in baseline | `local-ci.sh` logged “wall_s” in ecosystem baseline; target **≤50%** vs sequential on 8-core devbox |
@@ -470,7 +470,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 8c — ed25519 + `proof_digest` in lock — **v1:** lock fields + optional `publisher.key` signing
 - [x] Phase 8d — Registry + `lip publish` — **v1:** local `registry/index.json` + publish gate (`lit` + `lic`)
 - [x] Phase 8-sync — cross-repo workflows; optional PAT scope fix for `repository_dispatch`
-- [ ] Phase 8p — Parallel compile + CI throughput — **partial (8p-a/b/c/d):** 8p-a parallel `run_all` + isolated `LI_BUILD_DIR` ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200)); 8p-c/d `ResourceOptions` + `lic build --jobs` reserved pass + CI test-job smokes (`compiler/common/`, `scripts/ci.sh`); **open:** 8p-b workspace pool, wall-time SLO ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
+- [ ] Phase 8p — Parallel compile + CI throughput — **8p-a shipped:** parallel `run_all` + isolated `--build-dir` per worker ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200), tracker [#460](https://github.com/li-langverse/lic/issues/460)); **8p-c partial:** `ResourceOptions` + `lic build --jobs` reserved pass + CI smokes; **open:** 8p-b workspace pool (`LI_WORKSPACE_JOBS`), 8p-d wall-time SLO ([#385](https://github.com/li-langverse/lic/issues/385)) ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
 - [x] Phase Doc-c — Phase **02**, **03**, **07** plans link **G-*** IDs in exit gates ([phase-02-typechecker](2026-05-14-phase-02-typechecker.md), [phase-03-mir-codegen](2026-05-14-phase-03-mir-codegen.md), [phase-07-native-hpc](2026-05-14-phase-07-native-hpc.md))

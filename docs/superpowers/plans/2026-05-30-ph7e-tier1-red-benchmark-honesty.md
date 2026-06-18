@@ -2,7 +2,11 @@
 
 > **Issue:** [#463](https://github.com/li-langverse/lic/issues/463) · **Repo:** li-langverse/lic  
 > **Vision:** **Provable** (honest G-math claims), **Fast** (tier-1 ≤1.2× C++ advisory)  
-> **Learned from:** [master plan §7e](2026-05-14-li-master-plan.md), [math-linalg surface](2026-05-16-li-math-linalg-surface.md), [provability-gaps.md](../../verification/provability-gaps.md), [proof_gap cycle 18 Horner FMA](https://github.com/li-langverse/benchmarks/blob/main/data/digest/proof_gap_researcher-2026-05-30-horner-fma-literal-drift.md)
+> **Learned from:** [master plan §7e](2026-05-14-li-master-plan.md), [math-linalg surface](2026-05-16-li-math-linalg-surface.md), [provability-gaps.md](../../verification/provability-gaps.md), [matmul-blocked study](../../numerics/studies/2026-05-30-matmul-blocked-7e.md), [proof_gap cycle 18 Horner FMA](https://github.com/li-langverse/benchmarks/blob/main/data/digest/proof_gap_researcher-2026-05-30-horner-fma-literal-drift.md)
+
+**north_star_fit:** scientific computing / HPC — **PH-7e**, **PH-5b**, **G-math** (proof-before-perf; no threshold weakening)
+
+**Duplicate tracker:** [#424](https://github.com/li-langverse/lic/issues/424) — same six-row audit; close #424 when #463 plan is approved and implementation agents are queued.
 
 ## Goal
 
@@ -22,11 +26,35 @@ Close the gap between **master-plan / G-math “closed slice” wording** and **
 - **benchmarks** [#179](https://github.com/li-langverse/benchmarks/issues/179) — catalog path honesty (parallel track).
 - Orchestration: `bench_improver`, `numerics_researcher`, `proof_gap_researcher` (G-meta FMA gates).
 
+## PH / REQ / G-* map
+
+| ID | Role in this plan |
+|----|-------------------|
+| **PH-7e** | Math → SIMD/parallel lowering; tier-1 Li sources math-only |
+| **PH-5b** | Benchmarks & simulations harness; cross-lang oracle parity |
+| **PH-2f** | Float codegen / `fp_numerically_stable` (Horner FMA policy) |
+| **G-math** | Retract overstated tier-1 closed-slice claims until dashboard green |
+| **G-meta** | Gate `FmaFloatF64` / `HornerFmaUnroll` on numerics-stable policy |
+| **REQ-tier1-advisory** | `threshold_ratio_cpp` = 1.2 advisory; strict via `LI_TIER1_PERF_STRICT=1` |
+
 ## Sub-phases
+
+### A — Red-row inventory (audit 2026-05-29T23:51Z)
+
+| Bench id | Ratio vs C++ | PH ids | Harness / codegen knob | Owner agent |
+|----------|--------------|--------|------------------------|-------------|
+| `matmul_blocked` | 1.549× | PH-5b | `ArrayMatMulBlocked2DF64` BK=64 IKJ tiles; [study](../../numerics/studies/2026-05-30-matmul-blocked-7e.md) | `bench_improver` |
+| `matmul_naive` | 1.333× | PH-5b, PH-7e | `ArrayMatMul2DF64` loop `@` lowering; OpenMP outer | `bench_improver` |
+| `ml_conv2d_forward` | 1.333× | PH-5b | pure-Li conv graph lowering / extern honesty | `numerics_researcher` |
+| `ml_mlp_forward` | 1.333× | PH-5b | MLP forward kernel + SIMD inner | `numerics_researcher` |
+| `ml_mlp_train_step` | 1.333× | PH-5b | backward + optimizer micro-kernels | `numerics_researcher` |
+| `num_gmres` | 1.4× | PH-5b | Krylov dot-heavy inner loops (PH-5b numerics) | `numerics_researcher` |
+
+**Honesty note:** `horner_pure_li` is cited in G-math closed slice but is **not** in the six-row red set; keep FMA policy gate (G-meta) before re-claiming green.
 
 | Sub | Deliverable | Exit gate |
 |-----|-------------|-----------|
-| A | **Inventory** — red row → harness path → codegen knob (IKJ, FMA, OpenMP, ML graph) | Table in issue #463 |
+| A | **Inventory** — table above posted on #463; no duplicate plan on #424 | Maintainer ack |
 | B | **matmul_blocked** (1.55×) — blocked IKJ + SIMD scope; study [matmul-blocked-7e](../../numerics/studies/2026-05-30-matmul-blocked-7e.md) | `ratio_vs_cpp` ≤1.2 on advisory run |
 | C | **matmul_naive** (1.33×) — align with `ArrayMatMul2DF64` + `fp_numerically_stable` policy | Green on dashboard ingest |
 | D | **ML trio** (`ml_conv2d_forward`, `ml_mlp_*`) — pure-Li lowering or honest `status=planned` in catalog until kernels land | Green or catalog `planned` + lic issue |

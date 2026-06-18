@@ -51,7 +51,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
 | **G-ann** | Missing | PEP 649 deferred annotations |
 | **G-gpu** | Partial | **Closed slice:** `@gpu` MIR telemetry; **Wave 13:** `ml_gpu_device_buffer_pipeline` + `lig_gpu_device_buffer_ready` host contract. Still open: address-space proofs, full LKIR lowering |
-| **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
+| **G-meta** | Missing | Compiler ↔ Lean equivalence (research); competitive positioning → [competitive-safety-matrix.md](../ecosystem/competitive-safety-matrix.md) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 15 closed `contracts_verify` specimens |
 | **G-proof-db** | Partial | [Proof database](proof-database.md): register at `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`) |
@@ -101,7 +101,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; await not parsed | **2+**, **7d** | `li-tests/effects/` |
 | **G-net** | `raises Net` | Trusted syscall surface | **Partial** — effect propagation + `trusted.lean` axioms; no codegen | **H**, **2f** | `li-tests/effects/net_*.li` |
 | **G-trust** | Trusted base growth | Only `trusted.lean` | **Stub** — file exists; `Core.lean` / `MIR.lean` **planned** | **2f** | [semantics/README.md](../semantics/README.md) |
-| **G-meta** | Compiler correctness | C++ compiler ≡ Lean semantics | **Missing** (research) | long-term | Not started |
+| **G-meta** | Compiler correctness | C++ compiler ≡ Lean semantics | **Missing** (research) — positioning doc [competitive-safety-matrix.md](../ecosystem/competitive-safety-matrix.md) does not close this row | long-term | Not started |
 | **G-hw** | Hardware / FP | Model vs IEEE / CPU bugs | **Axiomatic** | — | Documented limit |
 | **G-wrong-spec** | User contracts | Correct theorem | **Social** — tool cannot fix | — | Review culture |
 | **G-narrow** | Narrowing conversions | Ariane-class truncations rejected without proof | **Partial** — policy rejects `cast[`; width types + proved narrowing pending | **2e** | `historic_ariane5_narrowing.li` |

@@ -35,13 +35,7 @@ if [[ "${PH_ML_MLP_COMP_INNER:-0}" != "1" ]] \
   fi
 fi
 
-LIC="${LIC:-}"
-if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-fi
-[[ -x "$LIC" ]] || LIC="$($ROOT/scripts/resolve-lic.sh)"
+LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
 
 bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
 export PH_ML_NUMPY_MLP_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-mlp.json"

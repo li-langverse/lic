@@ -9,9 +9,6 @@ export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
-if [[ ! -x "$LIC" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build-wsl/compiler/lic/lic"
-fi
 OUT="$BENCHMARKS_RESULTS/ph-ml-li-array-matmul.json"
 SMOKE="$ROOT/packages/li-array/li-tests/smoke/array_matmul_4.li"
 mkdir -p "$BENCHMARKS_RESULTS"

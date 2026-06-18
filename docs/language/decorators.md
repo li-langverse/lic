@@ -1,6 +1,6 @@
 # Execution decorators
 
-**Handbook:** [Parallelism](parallelism.md). **Surface:** [execution surface](../superpowers/specs/2026-05-25-li-execution-surface.md).
+**Handbook:** [Parallelism](parallelism.md). **Surface:** [execution surface](../superpowers/specs/2026-05-25-li-execution-surface.md). **Lowering map:** [parallel-lowering-map](parallel-lowering-map.md) (LLVM OpenMP IR / MLIR `omp`, [#34](https://github.com/li-langverse/lic/issues/34)).
 
 Li attaches **execution decorators** to `def` and to `for` / `while` loops with `@name` syntax (see [execution decorators spec](../superpowers/specs/2026-05-16-li-execution-decorators.md)).
 

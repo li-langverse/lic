@@ -12,7 +12,7 @@ Li targets **CPU HPC**: vector lanes on one core, many cores on shared memory â€
 | SIMD | `simd[T, N]` | AVX / NEON vector units |
 | Multi-core | `parallel for` | `li_parallel_for` (`--cores`) (linked by `lic build`) |
 
-Inner SIMD + outer `parallel for` is the standard Li pattern for hot loops.
+Inner SIMD + outer `parallel for` is the standard Li pattern for hot loops. See [parallel lowering map](parallel-lowering-map.md) for MIR â†’ LLVM / MLIR targets ([#34](https://github.com/li-langverse/lic/issues/34)).
 
 ## SIMD type
 

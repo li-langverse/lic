@@ -1,0 +1,25 @@
+Li World Studio on Linux (AppImage)
+====================================
+
+Build
+-----
+  bash scripts/build-li-world-studio-appimage.sh
+  Output: installer/out/LiWorldStudio-x86_64.AppImage
+
+Run
+---
+  chmod +x installer/out/LiWorldStudio-x86_64.AppImage
+  ./installer/out/LiWorldStudio-x86_64.AppImage
+
+SDL window (host present)
+-------------------------
+  ./installer/out/LiWorldStudio-x86_64.AppImage game present
+
+Profile override
+----------------
+  STUDIO_DEMO_PROFILE=sim_rl ./installer/out/LiWorldStudio-x86_64.AppImage
+
+Dependencies
+------------
+SDL2 is bundled when possible (linuxdeploy / ldd copy into usr/lib).
+If present mode fails, install libsdl2-2.0-0 and retry.

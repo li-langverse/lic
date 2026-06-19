@@ -478,6 +478,104 @@ Track in phase **Doc** until each is checked:
 - [x] Phase Doc-e — `scripts/check-doc-provability-claims.sh` in `scripts/ci.sh` (expand patterns over time)
 - [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../ecosystem/agent-handover-formats.md))
 
+### Partial tracker rows — definition of done (closure evidence)
+
+Do **not** flip a partial checkbox to `[x]` or remove the **partial** label from narrative-only doc edits. Each row below lists the **commands, CI workflows, and G-* register moves** required before closure. Cross-check [provability-gaps.md](../verification/provability-gaps.md#still-open-report-every-session) on every proof-surface PR.
+
+#### Phase 2e — Contracts + refinements (**G-vc** Partial)
+
+Tracker stays `[x]` with **partial** narrative until **G-vc** is **Done** (not Partial) in the gap register.
+
+- [ ] `./li-tests/run_all.sh contracts_verify` — all `verify_ok` / `prove_lean_ok` specimens green
+- [ ] `./li-tests/tooling/vc_emit_contracts.sh` — AutoVC uses real Props (not `True` stubs) for `sqrt_contract.li`
+- [ ] `./li-tests/tooling/mir_vc_witness.sh` — MIR-linked VC witnesses emit
+- [ ] `./li-tests/tooling/discharge_caller_requires_lean.sh` and `discharge_caller_requires_local_lean.sh` — call-site `requires` discharged
+- [ ] Negative corpus: `caller_requires_fail.li` (**E0304**), `refinement_call_fail.li` / `refinement_init_fail.li` (**E0305**), `prove_reject/weak_ensures_true.li` (**E0303**)
+- [ ] `./li-tests/tooling/check_release_bounds_ir.sh` — release bounds path (**G-bnd** slice; tied to 2e refinements)
+- [ ] CI: `scripts/ci.sh` VC tooling phase (same scripts as `check-master-plan-gates.sh` § VC emit)
+
+**Open until closed:** float/opaque-return `ensures` (**P-ensures-witness**, **P-float**) — see [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md).
+
+#### Phase 2f — Lean 4 verify (**G-lean**, **G-vc**, **G-trust** Partial)
+
+Tracker stays `[x]` with **partial** until default `lic build` is a proof certificate (open Prop goals → exit 1 without `--allow-open-vc`).
+
+- [ ] Every `lic build` emits `build/generated/AutoVC.lean` (`check-master-plan-gates.sh` § VC emit)
+- [ ] `./scripts/check-autovc-open-goals.sh build/generated/AutoVC.lean` — zero open goals on closed corpus specimens
+- [ ] `./li-tests/tooling/contracts_discharge_corpus.sh` — trivial/const/caller-requires/linalg closed slices
+- [ ] `./li-tests/tooling/discharge_trivial_lean.sh`, `discharge_const_lean.sh`, `discharge_sqrt_contract_lean.sh`
+- [ ] `./li-tests/tooling/discharge_linalg_int_lean.sh` — **P-linalg** closed int specimens + loop dot witness
+- [ ] When Lean 4 + lake on PATH: `./li-tests/tooling/autovc_lake_typecheck.sh`, `./li-tests/tooling/glean_strict_build_smoke.sh` (`--strict-lean`)
+- [ ] `(cd docs/semantics && lake build)` — semantics package builds
+- [ ] `./li-tests/run_all.sh contracts_verify` — **`prove_lean_ok`** outcome for all closed-corpus rows in `manifest.toml`
+- [ ] **G-lean** → **Done**; **G-trust** → at least **Partial+** with `Core.lean` typing rules documented in [semantics/README.md](../semantics/README.md) (not placeholder-only)
+
+**Intentional open until human-approved:** `trusted.lean` axiom growth — defer to labeled issues; do not close **2f** from corpus narrative alone.
+
+#### Phase 2i — Math / linalg surface (**G-math** Partial)
+
+Checkbox flips `[ ]` → `[x]` only when shape/broadcast rules **and** linked Lean Props are closed (or explicitly deferred with compile_fail specimens).
+
+- [ ] `./li-tests/run_all.sh math_linalg` — shape errors, `@` dim mismatch, element-wise rules
+- [ ] `./li-tests/run_all.sh math_syntax` — **2h** dependency (`for i in start..<end`, scalar `**`)
+- [ ] `./li-tests/tooling/discharge_linalg_int_lean.sh` — closed int dot/sum/matmul-entry/norm/axpy + loop dot
+- [ ] `./li-tests/contracts_verify/linalg_mat2_at2_float_closed.li` and related float Props — **`prove_lean_ok`**
+- [ ] Length-1 broadcast: `math_linalg/broadcast_len1_*.li` green; non-broadcast mismatches still **compile_fail**
+- [ ] Full NumPy rank broadcast: either implemented with tests **or** remains open with documented compile_fail matrix (do not claim done without tests)
+- [ ] Handbook: [linear-algebra.md](../language/linear-algebra.md) matches implemented surface (no user `simd(...)` as default path)
+- [ ] **G-math** → **Done** in gap register when float `@`/broadcast Props + typecheck surface complete
+
+#### Phase 7d — Execution decorators (**G-par**, **G-dec** Partial)
+
+Checkbox flips `[ ]` → `[x]` when elaboration + proofs replace parse/policy-only slices.
+
+- [ ] `./li-tests/run_all.sh decorator_exploits` — reserved names, macro hijack, illegal stacks (**7d-e**)
+- [ ] `./li-tests/run_all.sh decorators` — `@vectorized`, `@parallel`, `@gpu` parse + smoke
+- [ ] `./scripts/check-mir-vectorized-decorator.sh`, `check-mir-parallel-decorator.sh`, `check-mir-gpu-decorator.sh` — MIR proc tags present
+- [ ] `./li-tests/run_all.sh race_shared_memory` — bad parallel patterns rejected
+- [ ] `./li-tests/tooling/li_parallel_def_disjoint_inherit_smoke.sh` — `def @parallel(disjoint=)` inheritance
+- [ ] `./li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh` — zero open AutoVC on closed disjoint corpus (when **G-par** closes)
+- [ ] `./li-tests/tooling/contracts_discharge_corpus.sh` — decorator telemetry slice
+- [ ] **G-dec** → **Done** (static elaboration, not parse-only); **G-par** → **Done** (structured `disjoint=`, not `policy.cpp` substring heuristics alone)
+- [ ] CI: `scripts/ci.sh` § decorators (7d)
+
+#### Phase 7e — Math → SIMD/parallel lowering (**G-math** Partial)
+
+Checkbox flips `[ ]` → `[x]` when tier-1 math-only sources meet perf **and** remaining Lean Props close.
+
+- [ ] Tier 1 Li benchmark sources contain **zero** `__li_simd_*` / extern C kernels in user files (`li_pure=True` on `simd_dot`, `matmul_*`, `horner_pure_li`)
+- [ ] `./li-tests/tooling/tier1_li_vs_cpp.sh` — advisory pass (default in `check-master-plan-gates.sh`)
+- [ ] `LI_TIER1_PERF_STRICT=1 ./scripts/check-tier1-li-vs-cpp.sh` — **all** tier-1 rows (`simd_dot`, `matmul_naive`, `matmul_blocked`, `horner_pure_li`) ≤ **1.2×** C++ in `benchmarks/results/latest.csv`
+- [ ] `./li-tests/run_all.sh math_linalg` — lowering shape tests green
+- [ ] `./li-tests/tooling/discharge_linalg_int_lean.sh` — float Props closed where tier-1 kernels claim proof
+- [ ] **G-math** → **Done**; update [2026-05-30-ph7e-tier1-red-benchmark-honesty.md](2026-05-30-ph7e-tier1-red-benchmark-honesty.md) if bench policy changes
+
+#### Phase H — li-httpd M1 `.li` (partial; **G-net**, **G-async** Partial)
+
+Infra row (`lis` harness) is **Done** separately. M1 `.li` row loses **partial** when Li server + Lean ship gate pass.
+
+- [ ] `./li-tests/run_all.sh httpd` — config/routing smokes
+- [ ] `./li-tests/run_httpd_config.sh` — Python oracle + Li `match_routes.li`
+- [ ] `./scripts/check-httpd-explain-config.sh`, `check-httpd-config-desugar.sh`, `lic-validate-httpd-config.sh`
+- [ ] `./scripts/check-w0-bytes-io.sh`, `check-w1-async-reactor.sh` — P0 bytes + async (**httpd-prerequisites**)
+- [ ] `./scripts/check-httpd-lean-gate.sh` — closed httpd VC corpus without `--allow-open-vc`
+- [ ] `./scripts/build-li-httpd.sh` — M1 ship binary gate exit 0
+- [ ] `./scripts/httpd-plan-gates.sh` — composite M1 plan loop (when enabled in CI)
+- [ ] Li `net.httpd` workspace library builds (`packages/` or `std/net` per [httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
+- [ ] **G-net** / **G-async** rows updated with M1 codegen evidence (not effect-propagation-only)
+
+#### Vision-LLM — agent JSON diagnostics (no **G-*** closure from JSON alone)
+
+Checkbox flips `[ ]` → `[x]` when agent manifest + edit IR are complete per [llm-first spec](../specs/2026-05-16-li-llm-first-design.md).
+
+- [ ] `./li-tests/tooling/diagnose_json_smoke.sh` — `lic check --format=json` + `lic diagnose`; `diagnostic-v1` envelope
+- [ ] `docs/schemas/diagnostic-v1.json` matches CLI fields (version, schema, severity, fix_hint)
+- [ ] `./scripts/check-doc-provability-claims.sh` — no overclaim that JSON diagnostics replace `lic build`
+- [ ] `./scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json` valid and listed in [li-agent-manifest.toml](../ecosystem/li-agent-manifest.toml)
+- [ ] `./scripts/gen-li-agent-manifest.sh` — generates `li-agent.json` + agent doc fragment (or spec updated to defer)
+- [ ] `lic edit --patch=json` implemented **or** explicitly deferred in spec with issue link
+- [ ] CI: `scripts/ci.sh` § diagnose / agent slice
+
 **Dashboards (Cursor):** `canvases/li-master-plan-progress.canvas.tsx` — phase tracker; `canvases/li-fuzz-security-dashboard.canvas.tsx` — updated by `scripts/export-fuzz-status.sh` after nightly fuzz.
 
 **Maintenance:** When ecosystem or org layout changes (`lic` / `lip` / `lit` repos, phase gates, policies, **future-repo table**), update **this file**, [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md), and [2026-05-16-li-ecosystem-governance.md](2026-05-16-li-ecosystem-governance.md) in the same PR. Agents: add a row to **Future org repos** when a plan introduces a new `li-langverse/*` home.

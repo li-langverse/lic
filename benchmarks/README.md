@@ -2,6 +2,10 @@
 
 All harness drivers, workloads, and bench results live in the **benchmarks** repo.
 
+**Exception — tier-0 correctness:** canonical `.li` sources are under
+`li-tests/benchmarks/tier0_correctness/`; `benchmarks/tier0_correctness/` here is a
+catalog compatibility anchor (symlinks + ADR — see that directory's `README.md`).
+
 ```bash
 export BENCHMARKS_ROOT=/path/to/benchmarks   # sibling checkout
 export LIC_ROOT=/path/to/lic

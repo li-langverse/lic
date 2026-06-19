@@ -18,7 +18,7 @@ On a Linux devbox with **≥8 logical cores** and LLVM 22 + Lean installed:
 
 ## Implementation queue (order matters)
 
-### 8p-a — Parallel test orchestration (highest ROI)
+### 8p-a — Parallel test orchestration (highest ROI) — **shipped**
 
 **Files:** `li-tests/run_all.sh`, `scripts/lib/li-ui.sh` (optional progress), `docs/guide/getting-started-tools.md`
 
@@ -59,7 +59,7 @@ On a Linux devbox with **≥8 logical cores** and LLVM 22 + Lean installed:
 | Variable | Scope | Default |
 |----------|--------|---------|
 | `LI_BUILD_JOBS` | CMake/Ninja C++ build | host cores |
-| `LI_TEST_JOBS` | `run_all.sh`, workspace smoke | host cores (8p-a); until shipped: **1** |
+| `LI_TEST_JOBS` | `run_all.sh`, workspace smoke | host cores when `CI=true`; **1** locally (8p-a shipped: [#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200)) |
 | `LI_COMPILE_JOBS` | `lic build` frontend (8p-c) | host cores when wired |
 | `lic build --threads=N` | **Runtime** OpenMP only | not compile parallelism |
 
@@ -71,6 +71,6 @@ On a Linux devbox with **≥8 logical cores** and LLVM 22 + Lean installed:
 ## Agent continuation
 
 1. Read master plan § 8p.
-2. Implement **8p-a** first; verify with `LI_TEST_JOBS=8` and `=1`.
-3. Update ecosystem baseline wall-time row when gate met.
+2. **8p-a shipped** — verify with `LI_TEST_JOBS=8` and `=1`; smokes: `li-tests/tooling/run_all_parallel_smoke.sh`.
+3. Next: **8p-b** workspace pool (`LI_WORKSPACE_JOBS`); **8p-d** wall-time SLO ([#385](https://github.com/li-langverse/lic/issues/385)).
 4. Close master plan tracker checkbox for **8p** when all sub-phases exit gates pass.

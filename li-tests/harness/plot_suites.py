@@ -12,8 +12,28 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 LI_TESTS = REPO / "li-tests"
-HARNESS = REPO / "benchmarks" / "harness"
 SHARE = REPO / "benchmarks" / "results" / "share"
+
+
+def _resolve_harness() -> Path:
+    env = __import__("os").environ.get("HARNESS", "").strip()
+    if env:
+        p = Path(env)
+        if (p / "plot_theme.py").is_file():
+            return p
+    for candidate in (
+        REPO / ".cache" / "li-benchmarks" / "harness",
+        REPO / "benchmarks" / "harness",
+        REPO.parent / "benchmarks" / "harness",
+    ):
+        if (candidate / "plot_theme.py").is_file():
+            return candidate
+    raise FileNotFoundError(
+        "plot_theme.py not found — set HARNESS or clone li-langverse/benchmarks"
+    )
+
+
+HARNESS = _resolve_harness()
 
 sys.path.insert(0, str(HARNESS))
 from plot_theme import FAIL, PASS, PRIMARY, MUTED, TEXT, brand_figure, save_share  # noqa: E402

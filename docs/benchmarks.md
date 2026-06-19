@@ -53,6 +53,8 @@ python3 benchmarks/harness/bench.py --tier 12 --runs 3 --skip-verify
 ./scripts/plot_shareables.sh
 ```
 
+Shareable **16:9 dark-theme PNGs** for X/blog posts land in [`benchmarks/results/share/`](benchmarks/results/share/) (gitignored; regenerate locally or in CI). See [plots & social plan](superpowers/plans/2026-05-14-plots-and-social.md).
+
 ## Dashboard ([li-langverse/benchmarks](https://github.com/li-langverse/benchmarks))
 
 CI on `lic` `dev`/`main` uploads `benchmarks/results/latest.csv` (+ `stability.csv`, `security.csv`) and dispatches ingest.

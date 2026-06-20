@@ -14,6 +14,9 @@ run_in_wsl() {
   wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_WAVE11_ROOT='$wsl_root' PH_ML_WAVE11_INNER=1 LIC=./build-wsl/compiler/lic/lic source scripts/ph-ml-wave11-gates.sh"
 }
 
+# shellcheck source=lib/lic-bin-select.sh
+source "$ROOT/scripts/lib/lic-bin-select.sh"
+
 lic_bin_for_smokes() {
   local lic="$1"
   if [[ "$lic" == "$ROOT/build-wsl/compiler/lic/lic" ]] && [[ -x "./build-wsl/compiler/lic/lic" ]]; then
@@ -54,7 +57,7 @@ lic_check_smokes() {
   done
 }
 
-if [[ "${PH_ML_WAVE11_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] && command -v wsl.exe >/dev/null 2>&1; then
+if [[ "${PH_ML_WAVE11_INNER:-0}" != "1" ]] && ! li_pick_lic_bin "$ROOT" >/dev/null 2>&1 && command -v wsl.exe >/dev/null 2>&1; then
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
   if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
     run_in_wsl
@@ -62,8 +65,6 @@ if [[ "${PH_ML_WAVE11_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/
   fi
 fi
 
-# shellcheck source=lib/lic-bin-select.sh
-source "$ROOT/scripts/lib/lic-bin-select.sh"
 li_ensure_lic "$ROOT" "ph-ml-wave11-gates: build lic (./scripts/build.sh or --build-dir build-wsl in WSL)" || exit 1
 
 grep -q 'Wave 11' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 11"; exit 1; }

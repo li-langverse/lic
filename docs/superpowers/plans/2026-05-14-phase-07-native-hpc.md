@@ -17,6 +17,8 @@
 
 ## 7b — `parallel for` + OpenMP
 
+> **Lowering map (OpenMPIRBuilder / MLIR `omp`):** [2026-06-07-std-execution-openmp-mlir-lowering-map.md](2026-06-07-std-execution-openmp-mlir-lowering-map.md) ([#34](https://github.com/li-langverse/lic/issues/34))
+
 | Task | Exit |
 |------|------|
 | `Stmt::ParallelFor` AST + parser | Parses exploit fixtures |

@@ -93,7 +93,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-ensures-witness** | MIR-linked `ensures` for non-literal returns | `witnessed_ensures` partial | `caller()`, `use_positive.li`, physics smokes |
 | **P-float** | `Float.abs`, sqrt error bounds | **G-vc** partial — `sqrt_open_bound` closed (trusted libm); other float ensures open | `sqrt_open_bound.li` + `Li.Discharge` + `trusted.lean` |
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |
-| **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + loop witness. **Open:** float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
+| **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + **fixed-trip loop witnesses** (dot4 int, 2×2 matmul IKJ). **Open:** float loop, `vec3_dot` Props, N×N matmul, Horner FMA — see [P-linalg loop backlog](#p-linalg-loop-backlog) | `contracts_verify/linalg_*`, `math_linalg/*` |
 | **P-par** | `parallel for` disjointness | **Partial** — `_par*` → `disjoint_*_spec` + policy witnesses + MIR tag + `iteration_independent_tile_spec` + `memory_disjoint_rows_spec` + `memory_disjoint_elems_spec` + `memory_disjoint_grid_rows_spec` + `memory_disjoint_grid_elems_spec` + `array_elem_indices_disjoint` + `array_row_indices_disjoint` + `array_grid_cell_indices_disjoint` + `dependent_flat/grid_row/grid_cell_aliasing` compositional slices | Full index-bound refinement of `disjoint_*_spec` (7d-c) |
 | **P-dec** | Decorators never run at runtime | **G-dec** partial — **7d-b–e closed slice:** `check-mir-decorator-lowering.sh`; Lean elaboration proofs open | `decorator_exploits/` + `check-mir-decorator-lowering.sh` |
 | **P-bnd** | Release builds omit `li_bounds_fail` | **Partial** — `check_release_bounds_ir.sh` | [bounds-release-path](bounds-release-path.md) |
@@ -112,6 +112,21 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-meta** | Compiler ↔ `Core.lean` | **G-meta** research | Long-term; cite Dafny/CakeML VCG literature |
 
 **Learned from (external):** Dafny `requires`/`ensures`/`decreases`; Lean 4 `mvcgen` / WP tactics; verified Dafny VCG (HOL4) for “what a finished pipeline proves.”
+
+## P-linalg loop backlog
+
+Tracked slices for **loop implementation ≡ closed-form `ensures`** (lic#472, [reconcile plan](../superpowers/plans/2026-06-07-p-linalg-loop-ensures-reconcile-ph2i.md)). Closed rows must not regress; open rows are explicit backlog for implementer agents.
+
+| Slice | Specimen / gap script | Gap ID(s) | Status |
+|-------|----------------------|-----------|--------|
+| Fixed-trip int dot loop | `contracts_verify/linalg_dot4_int_loop_open.li`, `tooling/dot4_loop_ensures_lean_stub_gap.sh` | **G-lean** | **Closed** (#696, BUG-C-01) |
+| Closed-form int dot/sum/matmul-entry | `tooling/discharge_linalg_int_lean.sh`, `linalg_*_closed.li` | **G-math**, **G-lean** | **Closed** (#151) |
+| 2×2 matmul IKJ loop witness | `tooling/matmul_loop_codegen_witness_gap.sh`, `Discharge.matmul2_at2_loop_eval_spec` | **G-lean** | **Closed (partial)** (BUG-C-06) |
+| Float dot loop (N=4) | design: `linalg_dot4_float_loop_open.li` | **G-vc**, **G-math** | Open — reconcile Sub D |
+| `vec3_dot` opaque ensures | `linalg_vec3_dot_float_opaque.li`, `tooling/vec3_dot_opaque_ensures_gap.sh` | **G-vc** | Open — BUG-C-11 |
+| Parametric sum/reduction loop | design TBD (extend dot4 pattern) | **G-lean**, **G-math** | Open — reconcile Sub C |
+| N×N matmul loop | tier-1 `matmul_naive` beyond 2×2 | **G-lean**, **G-math** | Open — reconcile Sub E |
+| Horner FMA loop | `tooling/horner_fma_numerically_stable_gap.sh` | **G-math**, **G-hw** | Open — reconcile Sub F / **P-float** |
 
 ## Gap **G-test-verify** (manifest honesty)
 

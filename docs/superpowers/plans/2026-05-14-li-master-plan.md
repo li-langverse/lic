@@ -373,7 +373,7 @@ Maps **master plan phases** to gap IDs and what “mathematical provability esta
 | 7d-e | Exploit policy | **G-dec** | `decorator_exploits/` 4× `compile_fail` | `li-tests/decorator_exploits/` |
 | 2i | Math surface types | **G-math** | `A @ B` / `dot` shape errors at typecheck; **P-linalg** closed VCs (#151) | linear-algebra.md, math spec, `contracts_verify/linalg_*` |
 | 7e | Math → SIMD MIR | **G-math** | Tier 1 Li sources math-only; lowering proved or documented | gaps, benchmarks plan, `discharge_linalg_int_lean.sh` |
-| 2f | P-linalg corpus | **G-lean**, **G-math** | Closed dot/sum/matmul-entry; loop dot open | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
+| 2f | P-linalg corpus | **G-lean**, **G-math** | Closed dot/sum/matmul-entry + **fixed-trip loop witnesses** (dot4 int, 2×2 matmul IKJ); float / N×N / parametric loops open — [reconcile plan](./2026-06-07-p-linalg-loop-ensures-reconcile-ph2i.md) | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md#p-linalg-loop-backlog) |
 | 2g / 2h | `def`, math syntax | — | Syntax only unless tied to VC | language overview |
 | 4 | Deferred annotations | **G-ann** | PEP 649 resolve at check time | architecture diagram |
 | H / GPU | Device / async | **G-gpu**, **G-async** | Device laws in Lean + codegen | decorator spec, effects |
